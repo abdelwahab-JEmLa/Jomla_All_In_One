@@ -26,26 +26,25 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var needUpdateListener: ValueEventListener? = null
 
-
     fun addToFirebaseAsync(dataBasesInfosSql: DataBasesInfosSql, onSuccess: () -> Unit = {}) {
         val firebaseData = mapToFirebaseFormat(dataBasesInfosSql)
         val updates = mutableMapOf<String, Any>()
 
         // Use the refFireBase fields from DataBasesInfosSql model to ensure consistency
-        if (firebaseData.containsKey("produits")) {
-            updates[dataBasesInfosSql.refFireBaseA_ProduitInfos] = firebaseData["produits"] as Any
+        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseA_ProduitInfos)) {
+            updates[dataBasesInfosSql.refFireBaseA_ProduitInfos] = firebaseData[dataBasesInfosSql.refFireBaseA_ProduitInfos] as Any
         }
 
-        if (firebaseData.containsKey("clients")) {
-            updates[dataBasesInfosSql.refFireBaseB_ClientInfos] = firebaseData["clients"] as Any
+        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseB_ClientInfos)) {
+            updates[dataBasesInfosSql.refFireBaseB_ClientInfos] = firebaseData[dataBasesInfosSql.refFireBaseB_ClientInfos] as Any
         }
 
-        if (firebaseData.containsKey("typeTarifications")) {
-            updates[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] = firebaseData["typeTarifications"] as Any
+        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseC_TypeTarificationInfos)) {
+            updates[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] = firebaseData[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] as Any
         }
 
-        if (firebaseData.containsKey("tarifications")) {
-            updates[dataBasesInfosSql.refFireBaseD_TarificationInfos] = firebaseData["tarifications"] as Any
+        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseD_TarificationInfos)) {
+            updates[dataBasesInfosSql.refFireBaseD_TarificationInfos] = firebaseData[dataBasesInfosSql.refFireBaseD_TarificationInfos] as Any
         }
 
         if (updates.isEmpty()) {

@@ -16,7 +16,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         } catch (e: Exception) {}
     }
     if (productsMap.isNotEmpty()) {
-        data["produits"] = productsMap
+        // Using reference from DataBasesInfosSql instead of hardcoded "produits"
+        data[dataBasesInfosSql.refFireBaseA_ProduitInfos] = productsMap
     }
 
     val clientsMap = mutableMapOf<String, Any>()
@@ -29,7 +30,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         } catch (e: Exception) {}
     }
     if (clientsMap.isNotEmpty()) {
-        data["clients"] = clientsMap
+        // Using reference from DataBasesInfosSql instead of hardcoded "clients"
+        data[dataBasesInfosSql.refFireBaseB_ClientInfos] = clientsMap
     }
 
     val typeTarifMap = mutableMapOf<String, Any>()
@@ -50,7 +52,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         } catch (e: Exception) {}
     }
     if (typeTarifMap.isNotEmpty()) {
-        data["typeTarifications"] = typeTarifMap
+        // Using reference from DataBasesInfosSql instead of hardcoded "typeTarifications"
+        data[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] = typeTarifMap
     }
 
     val tarifsMap = mutableMapOf<String, Any>()
@@ -63,7 +66,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         } catch (e: Exception) {}
     }
     if (tarifsMap.isNotEmpty()) {
-        data["tarifications"] = tarifsMap
+        // Using reference from DataBasesInfosSql instead of hardcoded "tarifications"
+        data[dataBasesInfosSql.refFireBaseD_TarificationInfos] = tarifsMap
     }
 
     return data
