@@ -19,6 +19,7 @@ class ConvertiseurNoSqlToSqlRepository(
     private val sqlRepository: InfosSqlDataBasesRepository,
 ) {
     private val repositoryCoroutine = CoroutineScope(Dispatchers.IO)
+
     private val _noSqlDataFlow = MutableStateFlow(ProduitNoSqlDataBase(emptyList()))
     val noSqlDataFlow: StateFlow<ProduitNoSqlDataBase> = _noSqlDataFlow.asStateFlow()
 
