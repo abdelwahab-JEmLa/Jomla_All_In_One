@@ -138,8 +138,6 @@ fun MainList(
         items(typeTarificationsList) { typeTarification ->
             NoSqlTarificationTypeSection(
                 typeTarification = typeTarification,
-                selectedProductId = selectedProductId,
-                selectedClientId = selectedClientId,
                 showOnlyLatestPrices = showOnlyLatestPrices,
             )
         }
@@ -183,8 +181,6 @@ fun NoSqlProductClientInfoCard(
 @Composable
 fun NoSqlTarificationTypeSection(
     typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
-    selectedProductId: Long,
-    selectedClientId: Long,
     showOnlyLatestPrices: Boolean = false,
     modifier: Modifier = Modifier
 ) {
