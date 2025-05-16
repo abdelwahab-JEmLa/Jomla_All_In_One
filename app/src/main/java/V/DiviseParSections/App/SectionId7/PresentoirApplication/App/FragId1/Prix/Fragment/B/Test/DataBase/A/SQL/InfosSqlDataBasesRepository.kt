@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.FireBaseHandler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.testDatasDataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,9 @@ class InfosSqlDataBasesRepository(
         coroutineScope.launch {
             addNeedUpdateAuAllSiEmpty()
             loadDataFromFirebaseAuRoomSiUnDataANeedUpdate()
+            {
+                setToFireBase(testDatasDataBasesInfosSql())
+            }
             collectRoom()
         }
     }
@@ -38,7 +42,8 @@ class InfosSqlDataBasesRepository(
         coroutineScope.launch {
             val produitsFlow = database.a_ProduitInfosDao().getAllProduits()
             val clientsFlow = database.b_ClientInfosDao().getAllClients()
-            val typeTarificationsFlow = database.c_TypeTarificationInfosDao().getAllTypeTarifications()
+            val typeTarificationsFlow =
+                database.c_TypeTarificationInfosDao().getAllTypeTarifications()
             val tarificationsFlow = database.dTarificationInfosDao().getAllTarifications()
 
             combine(
@@ -97,7 +102,8 @@ class InfosSqlDataBasesRepository(
         try {
             val produits = database.a_ProduitInfosDao().getAllProduitsSync()
             val clients = database.b_ClientInfosDao().getAllClientsSync()
-            val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
+            val typeTarifications =
+                database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
             val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
 
             modelList = listOf(
@@ -162,18 +168,34 @@ class InfosSqlDataBasesRepository(
             val firebaseData = fireBaseHandler.getDataFromFirebase()
 
             // Log for debugging database state
-            android.util.Log.d("InfosSqlRepo", "Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}")
+            android.util.Log.d(
+                "InfosSqlRepo",
+                "Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}"
+            )
             if (firebaseData == null) {
-                android.util.Log.d("InfosSqlRepo", "Firebase data is null. Check Firebase connection and data structure.")
-                android.util.Log.d("InfosSqlRepo", "Reference path: ${fireBaseHandler.getRefPath()}")
+                android.util.Log.d(
+                    "InfosSqlRepo",
+                    "Firebase data is null. Check Firebase connection and data structure."
+                )
+                android.util.Log.d(
+                    "InfosSqlRepo",
+                    "Reference path: ${fireBaseHandler.getRefPath()}"
+                )
             }
 
             if (firebaseData != null) {
                 val updatedData = DataBasesInfosSql(
-                    a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }.toMutableList(),
-                    b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = true) }.toMutableList(),
-                    c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map { it.copy(needUpdate = true) }.toMutableList(),
-                    d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = true) }.toMutableList()
+                    a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }
+                        .toMutableList(),
+                    b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = true) }
+                        .toMutableList(),
+                    c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map {
+                        it.copy(
+                            needUpdate = true
+                        )
+                    }.toMutableList(),
+                    d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = true) }
+                        .toMutableList()
                 )
                 setToFireBase(updatedData)
             }
@@ -182,11 +204,14 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    private suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate() {
+    private suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate(
+        siFireBaseEstVide: () -> Unit = {}
+    ) {
         try {
             val produits = database.a_ProduitInfosDao().getAllProduitsSync()
             val clients = database.b_ClientInfosDao().getAllClientsSync()
-            val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
+            val typeTarifications =
+                database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
             val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
 
             val needsUpdate = produits.any { it.needUpdate } ||
@@ -200,10 +225,20 @@ class InfosSqlDataBasesRepository(
                     insertToRoom(firebaseData) {
                         // Reset needUpdate flags in Firebase after successful sync to Room
                         val updatedData = DataBasesInfosSql(
-                            a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = false) }.toMutableList(),
-                            b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = false) }.toMutableList(),
-                            c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map { it.copy(needUpdate = false) }.toMutableList(),
-                            d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = false) }.toMutableList()
+                            a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = false) }
+                                .toMutableList(),
+                            b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = false) }
+                                .toMutableList(),
+                            c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map {
+                                it.copy(
+                                    needUpdate = false
+                                )
+                            }.toMutableList(),
+                            d_TarificationInfos = firebaseData.d_TarificationInfos.map {
+                                it.copy(
+                                    needUpdate = false
+                                )
+                            }.toMutableList()
                         )
                         setToFireBase(updatedData)
                     }
