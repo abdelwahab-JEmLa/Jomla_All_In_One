@@ -37,8 +37,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PreviewTest() {
     Fragment(
-        selectedProductId=1,
-        selectedClientId=1
+        selectedProductId = 1,
+        selectedClientId = 1
     )
 }
 
