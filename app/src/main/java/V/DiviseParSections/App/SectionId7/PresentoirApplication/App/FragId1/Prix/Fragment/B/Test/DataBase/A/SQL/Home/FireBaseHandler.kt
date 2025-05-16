@@ -116,10 +116,6 @@ class FireBaseHandler {
         return summary.toString().trimEnd(',', ' ')
     }
 
-
-
-
-
     private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
         addOnSuccessListener { result ->
             continuation.resume(result)
