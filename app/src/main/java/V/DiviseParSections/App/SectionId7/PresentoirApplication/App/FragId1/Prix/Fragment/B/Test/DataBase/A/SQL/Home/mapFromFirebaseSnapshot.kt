@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.TypeTarificationEnum
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 
 fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
@@ -16,28 +17,34 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     // Create a default model to get reference names
     val defaultModel = DataBasesInfosSql()
 
+    // Debug tag
+    val TAG = "FirebaseMapping"
+
     val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
         for (productSnap in productsSnapshot.children) {
             try {
-                val product = A_ProduitInfos::class.java.getDeclaredConstructor().newInstance()
-                for (field in A_ProduitInfos::class.java.declaredFields) {
-                    field.isAccessible = true
-                    val childSnapshot = productSnap.child(field.name)
-                    if (childSnapshot.exists()) {
-                        val value = when (field.type) {
-                            Long::class.java -> childSnapshot.getValue(Long::class.java)
-                            String::class.java -> childSnapshot.getValue(String::class.java)
-                            Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
-                            else -> null
-                        }
-                        if (value != null) {
-                            field.set(product, value)
-                        }
-                    }
-                }
+                // Log the product data for debugging
+                Log.d(TAG, "Processing product: ${productSnap.key}, data: ${productSnap.value}")
+
+                // Extract values directly from the snapshot
+                val id = productSnap.child("id").getValue(Long::class.java) ?: 0L
+                val nom = productSnap.child("nom").getValue(String::class.java) ?: ""
+                val needUpdate = productSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+                // Create product instance with extracted values
+                val product = A_ProduitInfos(
+                    id = id,
+                    nom = nom,
+                    needUpdate = needUpdate
+                )
+
+                // Add the product to the list
                 products.add(product)
-            } catch (e: Exception) {}
+                Log.d(TAG, "Added product: $id, $nom, $needUpdate")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing product ${productSnap.key}: ${e.message}", e)
+            }
         }
     }
 
@@ -45,24 +52,24 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     if (clientsSnapshot.exists()) {
         for (clientSnap in clientsSnapshot.children) {
             try {
-                val client = B_ClientInfos::class.java.getDeclaredConstructor().newInstance()
-                for (field in B_ClientInfos::class.java.declaredFields) {
-                    field.isAccessible = true
-                    val childSnapshot = clientSnap.child(field.name)
-                    if (childSnapshot.exists()) {
-                        val value = when (field.type) {
-                            Long::class.java -> childSnapshot.getValue(Long::class.java)
-                            String::class.java -> childSnapshot.getValue(String::class.java)
-                            Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
-                            else -> null
-                        }
-                        if (value != null) {
-                            field.set(client, value)
-                        }
-                    }
-                }
+                // Extract values directly
+                val id = clientSnap.child("id").getValue(Long::class.java) ?: 0L
+                val nom = clientSnap.child("nom").getValue(String::class.java) ?: "Non Difinie"
+                val idActiveTypeTarificationDataBase = clientSnap.child("idActiveTypeTarificationDataBase").getValue(Long::class.java) ?: 0L
+                val needUpdate = clientSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+                // Create client instance
+                val client = B_ClientInfos(
+                    id = id,
+                    nom = nom,
+                    idActiveTypeTarificationDataBase = idActiveTypeTarificationDataBase,
+                    needUpdate = needUpdate
+                )
+
                 clients.add(client)
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing client ${clientSnap.key}: ${e.message}", e)
+            }
         }
     }
 
@@ -70,32 +77,29 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     if (typeTarifsSnapshot.exists()) {
         for (typeSnap in typeTarifsSnapshot.children) {
             try {
-                val typeTarif = C_TypeTarificationInfos::class.java.getDeclaredConstructor().newInstance()
-                for (field in C_TypeTarificationInfos::class.java.declaredFields) {
-                    field.isAccessible = true
-                    val childSnapshot = typeSnap.child(field.name)
-                    if (childSnapshot.exists()) {
-                        val value = when (field.type) {
-                            Long::class.java -> childSnapshot.getValue(Long::class.java)
-                            String::class.java -> childSnapshot.getValue(String::class.java)
-                            Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
-                            TypeTarificationEnum::class.java -> {
-                                val typeTarifString = childSnapshot.getValue(String::class.java) ?: "ParBenifice"
-                                try {
-                                    TypeTarificationEnum.valueOf(typeTarifString)
-                                } catch (e: Exception) {
-                                    TypeTarificationEnum.ParBenifice
-                                }
-                            }
-                            else -> null
-                        }
-                        if (value != null) {
-                            field.set(typeTarif, value)
-                        }
-                    }
+                // Extract values directly
+                val id = typeSnap.child("id").getValue(Long::class.java) ?: 0L
+                val typeTarifString = typeSnap.child("typeTarificationEnum").getValue(String::class.java) ?: "ParBenifice"
+                val needUpdate = typeSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+                // Convert string to enum
+                val typeTarifEnum = try {
+                    TypeTarificationEnum.valueOf(typeTarifString)
+                } catch (e: Exception) {
+                    TypeTarificationEnum.ParBenifice
                 }
+
+                // Create type tarification instance
+                val typeTarif = C_TypeTarificationInfos(
+                    id = id,
+                    typeTarificationEnum = typeTarifEnum,
+                    needUpdate = needUpdate
+                )
+
                 typeTarifications.add(typeTarif)
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing type tarification ${typeSnap.key}: ${e.message}", e)
+            }
         }
     }
 
@@ -103,24 +107,28 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     if (tarifsSnapshot.exists()) {
         for (tarifSnap in tarifsSnapshot.children) {
             try {
-                val tarif = D_TarificationInfos::class.java.getDeclaredConstructor().newInstance()
-                for (field in D_TarificationInfos::class.java.declaredFields) {
-                    field.isAccessible = true
-                    val childSnapshot = tarifSnap.child(field.name)
-                    if (childSnapshot.exists()) {
-                        val value = when (field.type) {
-                            Long::class.java -> childSnapshot.getValue(Long::class.java)
-                            Double::class.java -> childSnapshot.getValue(Double::class.java)
-                            Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
-                            else -> null
-                        }
-                        if (value != null) {
-                            field.set(tarif, value)
-                        }
-                    }
-                }
+                // Extract values directly
+                val vidTimestamp = tarifSnap.child("vidTimestamp").getValue(Long::class.java) ?: 0L
+                val idProduit = tarifSnap.child("idProduit").getValue(Long::class.java) ?: 0L
+                val idClient = tarifSnap.child("idClient").getValue(Long::class.java) ?: 0L
+                val idTypeTarification = tarifSnap.child("idTypeTarification").getValue(Long::class.java) ?: 0L
+                val prixCurrency = tarifSnap.child("prixCurrency").getValue(Double::class.java) ?: 0.0
+                val needUpdate = tarifSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+                // Create tarification instance
+                val tarif = D_TarificationInfos(
+                    vidTimestamp = vidTimestamp,
+                    idProduit = idProduit,
+                    idClient = idClient,
+                    idTypeTarification = idTypeTarification,
+                    prixCurrency = prixCurrency,
+                    needUpdate = needUpdate
+                )
+
                 tarifications.add(tarif)
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing tarification ${tarifSnap.key}: ${e.message}", e)
+            }
         }
     }
 

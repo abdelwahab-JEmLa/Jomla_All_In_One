@@ -119,7 +119,20 @@ class FireBaseHandler(private val database: AppDatabase) {
 
                         if (needsUpdate) {
                             Log.d(TAG, "Detected data with needUpdate=true, syncing from Firebase to Room")
+
+                            // Improved: Log the actual data we're reading from Firebase
                             val firebaseData = mapFromFirebaseSnapshot(snapshot)
+                            Log.d(TAG, "Mapped Firebase data to Room entities. Found: " +
+                                    "${firebaseData.a_ProduitInfos.size} products, " +
+                                    "${firebaseData.b_ClientInfos.size} clients, " +
+                                    "${firebaseData.c_TypeTarificationInfos.size} type tarifications, " +
+                                    "${firebaseData.d_TarificationInfos.size} tarifications")
+
+                            // Log the product details to verify the data is correct
+                            firebaseData.a_ProduitInfos.forEach { product ->
+                                Log.d(TAG, "Product to update in Room: ID=${product.id}, Name=${product.nom}, NeedUpdate=${product.needUpdate}")
+                            }
+
                             updateRoomFromFirebase(firebaseData)
                             resetNeedUpdateFlags(firebaseData)
                         } else {
@@ -217,11 +230,42 @@ class FireBaseHandler(private val database: AppDatabase) {
     private suspend fun updateRoomFromFirebase(data: DataBasesInfosSql) {
         withContext(Dispatchers.IO) {
             try {
-                // Using the AppDatabase instance to insert data
-                database?.a_ProduitInfosDao()?.insertAll(data.a_ProduitInfos)
-                database?.b_ClientInfosDao()?.insertAll(data.b_ClientInfos)
-                database?.c_TypeTarificationInfosDao()?.insertAll(data.c_TypeTarificationInfos)
-                database?.dTarificationInfosDao()?.insertAll(data.d_TarificationInfos)
+                // First, log what we're about to insert
+                Log.d(TAG, "About to update Room database with ${data.a_ProduitInfos.size} products")
+
+                // Using deleteAndInsert pattern for more reliable updates when we need complete replacement
+                if (data.a_ProduitInfos.isNotEmpty()) {
+                    // Delete and insert approach for more reliable update
+                    database.a_ProduitInfosDao().deleteAll()
+                    database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
+                    Log.d(TAG, "Updated products in Room database. Sample: ${data.a_ProduitInfos.firstOrNull()?.nom}")
+                }
+
+                if (data.b_ClientInfos.isNotEmpty()) {
+                    database.b_ClientInfosDao().deleteAll()
+                    database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
+                    Log.d(TAG, "Updated clients in Room database")
+                }
+
+                if (data.c_TypeTarificationInfos.isNotEmpty()) {
+                    database.c_TypeTarificationInfosDao().deleteAll()
+                    database.c_TypeTarificationInfosDao().insertAll(data.c_TypeTarificationInfos)
+                    Log.d(TAG, "Updated type tarifications in Room database")
+                }
+
+                if (data.d_TarificationInfos.isNotEmpty()) {
+                    database.dTarificationInfosDao().deleteAll()
+                    database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
+                    Log.d(TAG, "Updated tarifications in Room database")
+                }
+
+                // Verify the update by reading back first product
+                if (data.a_ProduitInfos.isNotEmpty()) {
+                    val firstProductId = data.a_ProduitInfos.first().id
+                    val productFromDb = database.a_ProduitInfosDao().getProductById(firstProductId)
+                    Log.d(TAG, "Verification - Product read from Room after update: ID=${productFromDb?.id}, Name=${productFromDb?.nom}")
+                }
+
                 Log.d(TAG, "Room database updated with Firebase data successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating Room from Firebase: ${e.message}", e)

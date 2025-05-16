@@ -1,15 +1,17 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.D_TarificationInfos
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+
 @Dao
 interface A_ProduitInfosDao {
     @Query("SELECT * FROM A_ProduitInfos")
@@ -18,20 +20,18 @@ interface A_ProduitInfosDao {
     @Query("SELECT * FROM A_ProduitInfos")
     suspend fun getAllProduitsSync(): List<A_ProduitInfos>
 
-    @Query("SELECT * FROM A_ProduitInfos WHERE id = :id")
-    suspend fun getProduitById(id: Long): A_ProduitInfos?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(produit: A_ProduitInfos): Long
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(produits: List<A_ProduitInfos>)
 
-    @Update
-    suspend fun update(produit: A_ProduitInfos)
+    @Delete
+    suspend fun delete(produit: A_ProduitInfos)
 
     @Query("DELETE FROM A_ProduitInfos")
     suspend fun deleteAll()
+
+    // Add this method to support product verification
+    @Query("SELECT * FROM A_ProduitInfos WHERE id = :productId LIMIT 1")
+    suspend fun getProductById(productId: Long): A_ProduitInfos?
 }
 
 @Dao
