@@ -1,23 +1,22 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.SQl.RoomOperationsHandler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable.cancel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler(val database: AppDatabase) {
+class FireBaseOperationsHandler(
+     val roomOperationsHandler: RoomOperationsHandler
+) {
     companion object {
-        const val TAG = "FireBaseHandler"
+        const val TAG = "FireBaseOperationsHandler"
     }
 
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
@@ -81,15 +80,5 @@ class FireBaseHandler(val database: AppDatabase) {
                 })
                 onSuccess()
             }
-    }
-
-    private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
-        addOnSuccessListener { result -> continuation.resume(result) }
-        addOnFailureListener { exception -> continuation.resumeWithException(exception) }
-        continuation.invokeOnCancellation {
-            if (isComplete.not()) {
-                cancel()
-            }
-        }
     }
 }

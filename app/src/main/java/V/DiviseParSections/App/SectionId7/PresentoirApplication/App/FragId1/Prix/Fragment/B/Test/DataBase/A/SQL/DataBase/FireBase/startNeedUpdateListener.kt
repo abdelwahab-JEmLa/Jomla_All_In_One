@@ -1,15 +1,13 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-fun FireBaseHandler.startNeedUpdateListener() {
-    if (needUpdateListener != null || database == null) return
+fun FireBaseOperationsHandler.startNeedUpdateListener() {
+    if (needUpdateListener != null) return
 
     needUpdateListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -20,7 +18,7 @@ fun FireBaseHandler.startNeedUpdateListener() {
                     val needsUpdate = checkIfNeedsUpdate(snapshot)
                     if (needsUpdate) {
                         val firebaseData = mapFromFirebaseSnapshot(snapshot)
-                        updateRoomFromFirebase(firebaseData)
+                        roomOperationsHandler.updateData(firebaseData)
                         resetNeedUpdateFlags(firebaseData)
                     }
                 } catch (e: Exception) { }
@@ -33,7 +31,7 @@ fun FireBaseHandler.startNeedUpdateListener() {
     ref.addValueEventListener(needUpdateListener!!)
 }
 
-fun FireBaseHandler.stopNeedUpdateListener() {
+fun FireBaseOperationsHandler.stopNeedUpdateListener() {
     needUpdateListener?.let {
         ref.removeEventListener(it)
         needUpdateListener = null
@@ -86,33 +84,7 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
     return false
 }
 
-suspend fun FireBaseHandler.updateRoomFromFirebase(data: DataBasesInfosSql) {
-    withContext(Dispatchers.IO) {
-        try {
-            if (data.a_ProduitInfos.isNotEmpty()) {
-                database.a_ProduitInfosDao().deleteAll()
-                database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
-            }
-
-            if (data.b_ClientInfos.isNotEmpty()) {
-                database.b_ClientInfosDao().deleteAll()
-                database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
-            }
-
-            if (data.c_TypeTarificationInfos.isNotEmpty()) {
-                database.c_TypeTarificationInfosDao().deleteAll()
-                database.c_TypeTarificationInfosDao().insertAll(data.c_TypeTarificationInfos)
-            }
-
-            if (data.d_TarificationInfos.isNotEmpty()) {
-                database.dTarificationInfosDao().deleteAll()
-                database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
-            }
-        } catch (e: Exception) { }
-    }
-}
-
-fun FireBaseHandler.resetNeedUpdateFlags(data: DataBasesInfosSql) {
+fun FireBaseOperationsHandler.resetNeedUpdateFlags(data: DataBasesInfosSql) {
     val updatedData = DataBasesInfosSql(
         a_ProduitInfos = data.a_ProduitInfos.map { it.copy(needUpdate = false) }.toMutableList(),
         b_ClientInfos = data.b_ClientInfos.map { it.copy(needUpdate = false) }.toMutableList(),

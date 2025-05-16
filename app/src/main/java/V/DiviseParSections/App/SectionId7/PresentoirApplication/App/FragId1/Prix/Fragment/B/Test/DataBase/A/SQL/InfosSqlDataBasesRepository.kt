@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.FireBaseHandler
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.getDataFromFirebase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.startNeedUpdateListener
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.stopNeedUpdateListener
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase.FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.SQl.RoomOperationsHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase.getDataFromFirebase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase.startNeedUpdateListener
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase.stopNeedUpdateListener
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.testDatasDataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -18,7 +19,8 @@ import kotlinx.coroutines.withContext
 
 class InfosSqlDataBasesRepository(
     val database: AppDatabase,
-    private val fireBaseHandler: FireBaseHandler,
+    private val fireBaseOperationsHandler: FireBaseOperationsHandler,
+    private val roomOperationsHandler: RoomOperationsHandler
 ) {
     private val TAG = "InfosSqlRepo"
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -36,27 +38,17 @@ class InfosSqlDataBasesRepository(
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
             verifieFireBaseEstVide()
             collectRoom()
-            fireBaseHandler.startNeedUpdateListener()
+            fireBaseOperationsHandler.startNeedUpdateListener()
         }
     }
 
     private fun verifieFireBaseEstVide() {
         coroutineScope.launch {
             try {
-                val isEmpty = fireBaseHandler.isDatabaseEmptyAsync()
+                val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
                 if (isEmpty) {
-                    addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
-                }
-            } catch (e: Exception) {
-            }
-        }
-    }
-
-    private fun addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener() {
-        coroutineScope.launch {
-            try {
-                val testData = testDatasDataBasesInfosSql()
-                add(testData) {
+                    val testData = testDatasDataBasesInfosSql()
+                    add(testData) {}
                 }
             } catch (e: Exception) {
             }
@@ -66,26 +58,17 @@ class InfosSqlDataBasesRepository(
     private fun verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener() {
         coroutineScope.launch {
             try {
-                val produits = database.a_ProduitInfosDao().getAllProduitsSync()
-                val clients = database.b_ClientInfosDao().getAllClientsSync()
-                val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
-                val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
-
-                if (produits.isEmpty() && clients.isEmpty() && typeTarifications.isEmpty() && tarifications.isEmpty()) {
-                    val firebaseData = fireBaseHandler.getDataFromFirebase()
+                val isEmpty = roomOperationsHandler.isDatabaseEmpty()
+                if (isEmpty) {
+                    val firebaseData = fireBaseOperationsHandler.getDataFromFirebase()
                     if (firebaseData != null &&
                         (firebaseData.a_ProduitInfos.isNotEmpty() ||
                                 firebaseData.b_ClientInfos.isNotEmpty() ||
                                 firebaseData.c_TypeTarificationInfos.isNotEmpty() ||
-                                firebaseData.d_TarificationInfos.isNotEmpty())) {
-
-                        insertToRoom(firebaseData) {
-                            coroutineScope.launch {
-                                collectLatestData()
-                            }
-                        }
-                    } else {
-                        addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
+                                firebaseData.d_TarificationInfos.isNotEmpty())
+                    ) {
+                        roomOperationsHandler.insertAll(firebaseData)
+                        collectLatestData()
                     }
                 }
             } catch (e: Exception) {
@@ -94,7 +77,7 @@ class InfosSqlDataBasesRepository(
     }
 
     fun cleanup() {
-        fireBaseHandler.stopNeedUpdateListener()
+        fireBaseOperationsHandler.stopNeedUpdateListener()
     }
 
     private fun collectRoom() {
@@ -130,7 +113,7 @@ class InfosSqlDataBasesRepository(
     ) {
         withContext(Dispatchers.IO) {
             try {
-                insertToRoom(data)
+                roomOperationsHandler.insertAll(data)
                 setToFireBase(data)
                 collectLatestData()
             } catch (e: Exception) {
@@ -155,49 +138,17 @@ class InfosSqlDataBasesRepository(
         onSuccess: () -> Unit = {}
     ) {
         try {
-            val produits = database.a_ProduitInfosDao().getAllProduitsSync()
-            val clients = database.b_ClientInfosDao().getAllClientsSync()
-            val typeTarifications =
-                database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
-            val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
-
-            modelList = listOf(
-                DataBasesInfosSql(
-                    a_ProduitInfos = produits.toMutableList(),
-                    b_ClientInfos = clients.toMutableList(),
-                    c_TypeTarificationInfos = typeTarifications.toMutableList(),
-                    d_TarificationInfos = tarifications.toMutableList()
-                )
-            )
-
+            val data = roomOperationsHandler.getAllData()
+            modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
-        }
-    }
-
-    private suspend fun insertToRoom(
-        data: DataBasesInfosSql,
-        onSuccess: () -> Unit = {}
-    ) {
-        withContext(Dispatchers.IO) {
-            try {
-                database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
-                database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
-                database.c_TypeTarificationInfosDao().insertAll(data.c_TypeTarificationInfos)
-                database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
-                onSuccess()
-            } catch (e: Exception) {
-            }
         }
     }
 
     suspend fun deleteAllRoom() {
         withContext(Dispatchers.IO) {
             try {
-                database.a_ProduitInfosDao().deleteAll()
-                database.b_ClientInfosDao().deleteAll()
-                database.c_TypeTarificationInfosDao().deleteAll()
-                database.dTarificationInfosDao().deleteAll()
+                roomOperationsHandler.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
             }
@@ -209,7 +160,7 @@ class InfosSqlDataBasesRepository(
         onSuccess: () -> Unit = {}
     ) {
         try {
-            fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql) {
+            fireBaseOperationsHandler.addToFirebaseAsync(dataBasesInfosSql) {
                 onSuccess()
             }
         } catch (e: Exception) {

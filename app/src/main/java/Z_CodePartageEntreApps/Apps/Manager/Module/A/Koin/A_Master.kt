@@ -9,7 +9,8 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.FireBaseHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.FireBase.FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.DataBase.SQl.RoomOperationsHandler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.InfosSqlDataBasesRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.B.FireBase.ConvertiseurNoSqlToSqlRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.TarificationViewModel
@@ -62,7 +63,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-const val itsProductionMode =  false
+const val itsProductionMode = false
 
 val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
@@ -71,35 +72,50 @@ val commonRepositoriesModule = module {
         InfosSqlDataBasesRepository(
             get(),
             get(),
+            get(),
         )
     }
-    single { FireBaseHandler(
-        get(),
-        ) }
+
+    single {
+        FireBaseOperationsHandler(
+            get(),
+        )
+    }
+
+    single {
+        RoomOperationsHandler(
+            get(),
+        )
+    }
     single {
         ConvertiseurNoSqlToSqlRepository(
             get(),
         )
     }
     single<_01_VentsHistoriquesDataBase_Repository> {
-        _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode) }
+        _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode)
+    }
 
-    single<_0_0_HeadSQLRepositorys> { _0_0_Head_SQL_RepositorysImpl(
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-        get(),
-    ) }
+    single<_0_0_HeadSQLRepositorys> {
+        _0_0_Head_SQL_RepositorysImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
 
-    single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(
-        get(),
-    ) }
+    single<E1SecteurDeClientsRepository> {
+        E1SecteurDeClientsRepositoryImpl(
+            get(),
+        )
+    }
 
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
@@ -111,7 +127,8 @@ val commonRepositoriesModule = module {
 
     single<_3_ClientsDataBase_Repository> { _3_ClientsDataBase_RepositoryImpl(get()) }
     single<_4_CouleurOperationCommand_Repository> {
-        _4_CouleurOperationCommand_RepositoryImpl(get()) }
+        _4_CouleurOperationCommand_RepositoryImpl(get())
+    }
 
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
@@ -130,21 +147,28 @@ val navigationModule = module {
 
 val viewModelModule = module {
 
-    viewModel { TarificationViewModel(
-        get(),
-    ) }
-    viewModel { ViewModelMessageur(
-        get(),
-    ) }
+    viewModel {
+        TarificationViewModel(
+            get(),
+        )
+    }
+    viewModel {
+        ViewModelMessageur(
+            get(),
+        )
+    }
     factory { (viewModel: HeadViewModel, context: Context) ->
         ConnectionManager(
             context = context,
         )
     }
 
-    viewModel { (context: Context) -> HeadViewModel(get(),
-        AppDatabase.DatabaseModule.getDatabase(get())
-    ) }
+    viewModel { (context: Context) ->
+        HeadViewModel(
+            get(),
+            AppDatabase.DatabaseModule.getDatabase(get())
+        )
+    }
 
     viewModel { Windows__ViewModel(get()) }
 
@@ -153,11 +177,13 @@ val viewModelModule = module {
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { VendeursViewModel(get(), get()) }
-    viewModel { ViewModel_MapClients_App2FragID1(
-        get(),
-        get(),
-        get()
-    ) }
+    viewModel {
+        ViewModel_MapClients_App2FragID1(
+            get(),
+            get(),
+            get()
+        )
+    }
 
     // Update this ViewModel to use the navigation handler
     viewModel {
@@ -172,7 +198,6 @@ val viewModelModule = module {
         )
     }
 }
-
 
 
 // Function to determine the application type
@@ -194,7 +219,13 @@ val uiHandlersModule = module {
 
 // Ensuite, incluez ce module dans votre appModule
 val appModule = module {
-    includes(commonRepositoriesModule, appTypeModule, viewModelModule, navigationModule, uiHandlersModule)
+    includes(
+        commonRepositoriesModule,
+        appTypeModule,
+        viewModelModule,
+        navigationModule,
+        uiHandlersModule
+    )
 
     // Rest of the code remains the same
     single {
