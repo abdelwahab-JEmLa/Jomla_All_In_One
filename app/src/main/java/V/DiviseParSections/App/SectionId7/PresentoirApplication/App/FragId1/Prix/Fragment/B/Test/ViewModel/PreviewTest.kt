@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test.formatTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.B.NoSQL.Model.ProduitNoSqlDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.B.NoSQL.Model.testDatasProduitNoSqlDataBase
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -34,44 +32,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleEventObserver
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Preview
 @Composable
 fun PreviewTest() {
-    Fragment()
+    val selectedProductId by remember { mutableLongStateOf(1L) }
+    val selectedClientId by remember { mutableLongStateOf(1L) }
+
+    Fragment(
+        selectedProductId=selectedProductId,
+        selectedClientId=selectedClientId
+    )
 }
 
 @Composable
 private fun Fragment(
-    viewModel: TarificationViewModel = koinViewModel()
+    viewModel: TarificationViewModel = koinViewModel(),
+    selectedProductId: Long,
+    selectedClientId: Long
 ) {
     val uiState by viewModel.uiState
 
-    // Track lifecycle for debugging UI rendering
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, _ -> }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    // Handle potential empty initial state with fallback data for preview
     var noSqlData by remember {
         mutableStateOf(
-            if (uiState.outputModel.produits.isEmpty()) {
-                testDatasProduitNoSqlDataBase()
-            } else {
-                uiState.outputModel
-            }
+            uiState.outputModel
         )
     }
 
-    // Update noSqlData when uiState.outputModel changes and is not empty
     LaunchedEffect(uiState.outputModel) {
         if (uiState.outputModel.produits.isNotEmpty()) {
             noSqlData = uiState.outputModel
@@ -79,8 +68,6 @@ private fun Fragment(
     }
 
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
-    val selectedProductId by remember { mutableLongStateOf(1L) }
-    val selectedClientId by remember { mutableLongStateOf(1L) }
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
@@ -104,11 +91,9 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     onToggleLatestPrices: () -> Unit,
 ) {
-    // Find the selected product and client
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
 
-    // Extract all type tarifications for the selected product and client
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
     Box(modifier = modifier.fillMaxSize()) {
