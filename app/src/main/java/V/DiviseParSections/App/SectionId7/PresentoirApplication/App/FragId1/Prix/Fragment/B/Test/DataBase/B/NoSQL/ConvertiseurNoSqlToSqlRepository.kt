@@ -157,31 +157,6 @@ class ConvertiseurNoSqlToSqlRepository(
         return tarifications.maxByOrNull { it.vidTimestamp }
     }
 
-    fun getAllProduits(): List<A_ProduitInfos> {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return emptyList()
-
-        val sqlData = sqlDataList.first()
-        return sqlData.a_ProduitInfos
-    }
-
-    fun getAllClients(): List<SqlClientInfos> {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return emptyList()
-
-        val sqlData = sqlDataList.first()
-        return sqlData.b_ClientInfos
-    }
-
-    fun getAllTypeTarifications(): List<C_TypeTarificationInfos> {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return emptyList()
-
-        val sqlData = sqlDataList.first()
-        return sqlData.c_TypeTarificationInfos
-    }
-
-    // Force immediate update of NoSQL data - useful for testing
     suspend fun refreshNoSqlData() {
         val noSqlData = convertSqlToNoSql()
         _noSqlDataFlow.value = noSqlData
