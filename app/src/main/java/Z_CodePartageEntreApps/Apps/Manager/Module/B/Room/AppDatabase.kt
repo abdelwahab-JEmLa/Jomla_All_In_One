@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
+
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
@@ -51,11 +52,54 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Date
 
+@Database(
+    entities = [
+        ArticlesBasesStatsTable::class,
+        CategoriesTabelle::class,
+        ColorsArticlesTabelle::class,
+        SoldArticlesTabelle::class,
+        AppSettingsSaverModel::class,
+        DevicesTypeManager::class,
+        DiviseurDeDisplayProductForEachClient::class,
+        BaseDonne::class,
+        B_ClientDataBase::class,
+
+        I_CategorieProduits::class,
+        A_Produit::class,
+        _1_1_CouleurAcheteOperation::class,
+        _1_2_ProduitAcheteOperation::class,
+        _1_3_TransactionCommercial::class,
+        _1_4_PeriodeVent::class,
+        _1_5_Vendeur::class,
+
+        _2_1_ProduitsDataBase::class,
+        _3_ClientsDataBase::class,
+        _4_CouleurOperationCommand::class,
+
+        E1SecteurDeClients::class,
+        PolygonGeoLimite::class,
+
+        MessageVocale::class,
+        EtateMessageVocale::class,
+
+        A_ProduitInfos::class,
+        B_ClientInfos::class,
+        C_TypeTarificationInfos::class,
+        D_TarificationInfos::class
+    ],
+    version = 3, // Increment version number since we're adding new entities
+    exportSchema = false
+)
+
+@TypeConverters(DateConverter::class, ListLongConverter::class)
 abstract class AppDatabase : RoomDatabase() {
+
+    // All DAOs
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun colorsArticlesDao(): ColorsArticlesDao
@@ -112,46 +156,6 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
-
-@Database(
-    entities = [
-        ArticlesBasesStatsTable::class,
-        CategoriesTabelle::class,
-        ColorsArticlesTabelle::class,
-        SoldArticlesTabelle::class,
-        AppSettingsSaverModel::class,
-        DevicesTypeManager::class,
-        DiviseurDeDisplayProductForEachClient::class,
-        BaseDonne::class,
-        B_ClientDataBase::class,
-
-        I_CategorieProduits::class,
-        A_Produit::class,
-        _1_1_CouleurAcheteOperation::class,
-        _1_2_ProduitAcheteOperation::class,
-        _1_3_TransactionCommercial::class,
-        _1_4_PeriodeVent::class,
-        _1_5_Vendeur::class,
-
-        _2_1_ProduitsDataBase::class,
-        _3_ClientsDataBase::class,
-        _4_CouleurOperationCommand::class,
-
-        E1SecteurDeClients::class,
-        PolygonGeoLimite::class,
-
-        MessageVocale::class,
-        EtateMessageVocale::class,
-
-        A_ProduitInfos::class,
-        B_ClientInfos::class,
-        C_TypeTarificationInfos::class,
-        D_TarificationInfos::class
-    ],
-    version = 3, // Increment version number since we're adding new entities
-    exportSchema = false
-)
-
 
 class ListLongConverter {
     @TypeConverter
