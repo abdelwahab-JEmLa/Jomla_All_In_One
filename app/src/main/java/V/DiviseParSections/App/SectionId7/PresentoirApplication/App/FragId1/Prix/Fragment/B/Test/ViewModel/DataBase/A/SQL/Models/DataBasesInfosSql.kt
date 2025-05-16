@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,7 +14,7 @@ data class DataBasesInfosSql(
     val c_TypeTarificationInfos: MutableList<C_TypeTarificationInfos> = mutableListOf(),
     val refFireBaseC_TypeTarificationInfos: String="C_TypeTarificationInfos",
 
-    val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf() ,
+    val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
     val refFireBaseD_TarificationInfos: String="D_TarificationInfos",
 
     )
