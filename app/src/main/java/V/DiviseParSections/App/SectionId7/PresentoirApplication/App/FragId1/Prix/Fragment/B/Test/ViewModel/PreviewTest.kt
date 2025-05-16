@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.View
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test.formatTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.B.NoSQL.Model.ProduitNoSqlDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.B.NoSQL.Model.testDatasProduitNoSqlDataBase
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,14 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.koinViewModel
+
+private const val TAG = "PreviewTest"
 
 @Preview
 @Composable
 fun PreviewTest() {
+    // Log at the start of the function to track when composition begins
+    Log.d(TAG, "PreviewTest: Starting composition")
     Fragment()
 }
 
@@ -45,15 +56,68 @@ fun PreviewTest() {
 private fun Fragment(
     viewModel: TarificationViewModel = koinViewModel()
 ) {
+    // Track when Fragment composition begins
+    val startTime = System.currentTimeMillis()
+    Log.d(TAG, "Fragment: Starting composition at $startTime")
+
     val uiState by viewModel.uiState
 
-    val noSqlData by remember { mutableStateOf(uiState.outputModel) }
-    var showOnlyLatestPrices by remember { mutableStateOf(false) }
+    // Log whenever uiState changes
+    SideEffect {
+        Log.d(TAG, "Fragment: UI State updated, isLoading=${uiState.isLoading}, " +
+                "produits size=${uiState.outputModel.produits.size}, " +
+                "time elapsed=${System.currentTimeMillis() - startTime}ms")
+    }
 
+    // Track lifecycle for debugging UI rendering
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> Log.d(TAG, "Fragment lifecycle: ON_CREATE")
+                Lifecycle.Event.ON_START -> Log.d(TAG, "Fragment lifecycle: ON_START")
+                Lifecycle.Event.ON_RESUME -> Log.d(TAG, "Fragment lifecycle: ON_RESUME, UI is visible")
+                Lifecycle.Event.ON_PAUSE -> Log.d(TAG, "Fragment lifecycle: ON_PAUSE")
+                Lifecycle.Event.ON_STOP -> Log.d(TAG, "Fragment lifecycle: ON_STOP")
+                Lifecycle.Event.ON_DESTROY -> Log.d(TAG, "Fragment lifecycle: ON_DESTROY")
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    // Handle potential empty initial state with fallback data for preview
+    var noSqlData by remember {
+        mutableStateOf(
+            if (uiState.outputModel.produits.isEmpty()) {
+                Log.d(TAG, "Fragment: Using test data because uiState.outputModel is empty")
+                testDatasProduitNoSqlDataBase()
+            } else {
+                Log.d(TAG, "Fragment: Using real data from uiState.outputModel")
+                uiState.outputModel
+            }
+        )
+    }
+
+    // Update noSqlData when uiState.outputModel changes and is not empty
+    LaunchedEffect(uiState.outputModel) {
+        if (uiState.outputModel.produits.isNotEmpty()) {
+            Log.d(TAG, "Fragment: LaunchedEffect - Updating noSqlData with ${uiState.outputModel.produits.size} products")
+            noSqlData = uiState.outputModel
+        }
+    }
+
+    var showOnlyLatestPrices by remember { mutableStateOf(false) }
     val selectedProductId by remember { mutableLongStateOf(1L) }
     val selectedClientId by remember { mutableLongStateOf(1L) }
 
     ClientJetPackTheme(darkTheme = true) {
+        // Log right before MainScreen is called to track rendering time
+        Log.d(TAG, "Fragment: About to render MainScreen with ${noSqlData.produits.size} products")
+
         MainScreen(
             noSqlData = noSqlData,
             selectedProductId = selectedProductId,
@@ -61,9 +125,15 @@ private fun Fragment(
             showOnlyLatestPrices = showOnlyLatestPrices,
             onToggleLatestPrices = {
                 showOnlyLatestPrices = !showOnlyLatestPrices
-            },
-
+                Log.d(TAG, "Fragment: Toggled showOnlyLatestPrices to $showOnlyLatestPrices")
+            }
         )
+
+        // Log after MainScreen has been composed
+        SideEffect {
+            val renderTime = System.currentTimeMillis() - startTime
+            Log.d(TAG, "Fragment: MainScreen composed in $renderTime ms")
+        }
     }
 }
 
@@ -76,12 +146,31 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     onToggleLatestPrices: () -> Unit,
 ) {
+    // Log when MainScreen is composed
+    Log.d(TAG, "MainScreen: Starting composition with ${noSqlData.produits.size} products")
+
     // Find the selected product and client
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
 
+    // Log selected product and client details for debugging
+    if (selectedProduct == null) {
+        Log.d(TAG, "MainScreen: Could not find product with ID $selectedProductId")
+    } else {
+        Log.d(TAG, "MainScreen: Found product with ID ${selectedProduct.infosId}, " +
+                "has ${selectedProduct.clientAchteurs.size} clients")
+    }
+
+    if (selectedClient == null) {
+        Log.d(TAG, "MainScreen: Could not find client with ID $selectedClientId for product ID $selectedProductId")
+    } else {
+        Log.d(TAG, "MainScreen: Found client with ID ${selectedClient.infosId}, " +
+                "has ${selectedClient.typeTarification.size} tarification types")
+    }
+
     // Extract all type tarifications for the selected product and client
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
+    Log.d(TAG, "MainScreen: Using ${typeTarificationsList.size} tarification types for the UI")
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -92,13 +181,13 @@ fun MainScreen(
                 )
             }
 
-                MainList(
-                    typeTarificationsList = typeTarificationsList,
-                    selectedProductId = selectedProductId,
-                    selectedClientId = selectedClientId,
-                    showOnlyLatestPrices = showOnlyLatestPrices,
-                    modifier = Modifier.weight(1f)
-                )
+            MainList(
+                typeTarificationsList = typeTarificationsList,
+                selectedProductId = selectedProductId,
+                selectedClientId = selectedClientId,
+                showOnlyLatestPrices = showOnlyLatestPrices,
+                modifier = Modifier.weight(1f)
+            )
         }
 
         Column(
@@ -107,7 +196,6 @@ fun MainScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             FloatingActionButton(
                 onClick = onToggleLatestPrices,
                 modifier = Modifier
@@ -119,6 +207,11 @@ fun MainScreen(
             }
         }
     }
+
+    // Log when MainScreen composition completes
+    SideEffect {
+        Log.d(TAG, "MainScreen: Composition complete")
+    }
 }
 
 @Composable
@@ -129,6 +222,9 @@ fun MainList(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
+    // Log when MainList is composed
+    Log.d(TAG, "MainList: Starting composition with ${typeTarificationsList.size} tarification types")
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -142,6 +238,11 @@ fun MainList(
                 showOnlyLatestPrices = showOnlyLatestPrices,
             )
         }
+    }
+
+    // Log when MainList composition completes
+    SideEffect {
+        Log.d(TAG, "MainList: Composition complete")
     }
 }
 
