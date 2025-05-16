@@ -88,7 +88,7 @@ fun MainScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {
-                NoSqlProductClientInfoCard(
+                ProductClientInfoCard(
                     produit = selectedProduct,
                     client = selectedClient
                 )
@@ -96,8 +96,6 @@ fun MainScreen(
 
             MainList(
                 typeTarificationsList = typeTarificationsList,
-                selectedProductId = selectedProductId,
-                selectedClientId = selectedClientId,
                 showOnlyLatestPrices = showOnlyLatestPrices,
                 modifier = Modifier.weight(1f)
             )
@@ -125,8 +123,6 @@ fun MainScreen(
 @Composable
 fun MainList(
     typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>,
-    selectedProductId: Long,
-    selectedClientId: Long,
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -136,7 +132,7 @@ fun MainList(
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
         items(typeTarificationsList) { typeTarification ->
-            NoSqlTarificationTypeSection(
+            TarificationTypeSection(
                 typeTarification = typeTarification,
                 showOnlyLatestPrices = showOnlyLatestPrices,
             )
@@ -145,7 +141,7 @@ fun MainList(
 }
 
 @Composable
-fun NoSqlProductClientInfoCard(
+fun ProductClientInfoCard(
     produit: ProduitNoSqlDataBase.Produit,
     client: ProduitNoSqlDataBase.Produit.ClientAchteur,
     modifier: Modifier = Modifier
@@ -179,7 +175,7 @@ fun NoSqlProductClientInfoCard(
 }
 
 @Composable
-fun NoSqlTarificationTypeSection(
+fun TarificationTypeSection(
     typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
     showOnlyLatestPrices: Boolean = false,
     modifier: Modifier = Modifier
@@ -225,14 +221,14 @@ fun NoSqlTarificationTypeSection(
         }
 
         pricesToShow.forEach { prix ->
-            NoSqlTarificationItem(prix = prix)
+            TarificationItem(prix = prix)
             Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-fun NoSqlTarificationItem(
+fun TarificationItem(
     prix: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
     modifier: Modifier = Modifier
 ) {
