@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,16 +51,23 @@ private fun Fragment(
 ) {
     val uiState by viewModel.uiState
 
-    val noSqlData by remember {
+    var noSqlData by remember {
         mutableStateOf(
             uiState.outputModel
         )
+    }
+
+    LaunchedEffect(uiState.outputModel) {
+        if (uiState.outputModel.produits.isNotEmpty()) {
+            noSqlData = uiState.outputModel
+        }
     }
 
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
+            viewModel=viewModel,
             noSqlData = noSqlData,
             selectedProductId = selectedProductId,
             selectedClientId = selectedClientId,
@@ -79,16 +87,17 @@ fun MainScreen(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier,
     onToggleLatestPrices: () -> Unit,
+    viewModel: TarificationViewModel,
 ) {
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
-
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {
                 ProductClientInfoCard(
+                    viewModel=viewModel,
                     produit = selectedProduct,
                     client = selectedClient
                 )
@@ -142,10 +151,12 @@ fun MainList(
 
 @Composable
 fun ProductClientInfoCard(
+    viewModel: TarificationViewModel,
     produit: ProduitNoSqlDataBase.Produit,
     client: ProduitNoSqlDataBase.Produit.ClientAchteur,
     modifier: Modifier = Modifier
 ) {
+    val produitInfosParGet =viewModel.getSqlProduitParSonNoSql(noSqlData =produit)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -153,8 +164,10 @@ fun ProductClientInfoCard(
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
+
         Text(
-            text = "Produit ID: ${produit.infosId}",
+            text = "Produit:(${produit.infosId})" +
+                    "${produitInfosParGet?.nom}",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )

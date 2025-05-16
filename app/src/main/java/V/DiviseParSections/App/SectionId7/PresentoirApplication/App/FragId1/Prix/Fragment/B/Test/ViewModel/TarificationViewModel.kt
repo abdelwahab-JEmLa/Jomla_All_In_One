@@ -41,6 +41,9 @@ class TarificationViewModel(
     fun getSqlProduit(id: Long): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepository.getProduitInfos(id)
     }
+    fun getSqlProduitParSonNoSql(noSqlData: ProduitNoSqlDataBase.Produit) : A_ProduitInfos?{
+        return convertiseurNoSqlToSqlRepository.getProduitInfos(noSqlData.infosId)
+    }
 
     fun getSqlClient(id: Long): SqlClientInfos? {
         return convertiseurNoSqlToSqlRepository.getClientInfos(id)
