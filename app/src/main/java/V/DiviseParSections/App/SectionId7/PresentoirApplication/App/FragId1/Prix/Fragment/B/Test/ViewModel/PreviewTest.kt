@@ -166,10 +166,7 @@ fun ProductClientInfoCard(
     ) {
 
         Text(
-            text =
-                "${produitInfosParGet?.nom}"
-                        +
-                        "ID:(${produit.infosId})",
+            text = "${produitInfosParGet?.nom} > (Id=${produit.infosId})",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
