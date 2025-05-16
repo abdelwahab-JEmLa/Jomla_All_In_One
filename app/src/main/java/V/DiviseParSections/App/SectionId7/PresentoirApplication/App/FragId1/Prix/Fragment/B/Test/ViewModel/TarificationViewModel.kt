@@ -50,8 +50,4 @@ class TarificationViewModel(
     fun getSqlTarifications(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
         return convertiseurNoSqlToSqlRepository.getTarificationInfos(idProduit, idClient, idTypeTarification)
     }
-
-    fun getLatestSqlTarification(idProduit: Long, idClient: Long, idTypeTarification: Long): D_TarificationInfos? {
-        return convertiseurNoSqlToSqlRepository.getLatestTarificationInfo(idProduit, idClient, idTypeTarification)
-    }
 }

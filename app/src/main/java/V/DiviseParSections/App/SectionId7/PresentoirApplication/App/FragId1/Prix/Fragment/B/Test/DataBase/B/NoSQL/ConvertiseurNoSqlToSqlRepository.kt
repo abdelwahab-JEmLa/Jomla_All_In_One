@@ -138,11 +138,6 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
-    fun getLatestTarificationInfo(idProduit: Long, idClient: Long, idTypeTarification: Long): D_TarificationInfos? {
-        val tarifications = getTarificationInfos(idProduit, idClient, idTypeTarification)
-        return tarifications.maxByOrNull { it.vidTimestamp }
-    }
-
     suspend fun refreshNoSqlData() {
         val noSqlData = convertSqlToNoSql()
         _noSqlDataFlow.value = noSqlData
