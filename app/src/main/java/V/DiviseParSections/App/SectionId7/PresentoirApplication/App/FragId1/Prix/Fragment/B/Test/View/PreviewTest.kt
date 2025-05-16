@@ -46,11 +46,11 @@ private fun Fragment(
 ) {
     val uiState by viewModel.uiState
 
-    var noSqlData by remember { mutableStateOf(uiState.outputModel) }
+    val noSqlData by remember { mutableStateOf(uiState.outputModel) }
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
     // Selection state for active product and client
-    var selectedProductId by remember { mutableStateOf(1L) }
-    var selectedClientId by remember { mutableStateOf(1L) }
+    val selectedProductId by remember { mutableStateOf(1L) }
+    val selectedClientId by remember { mutableStateOf(1L) }
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
