@@ -67,7 +67,7 @@ private fun Fragment(
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
-            viewModel=viewModel,
+            viewModel = viewModel,
             noSqlData = noSqlData,
             selectedProductId = selectedProductId,
             selectedClientId = selectedClientId,
@@ -97,7 +97,7 @@ fun MainScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {
                 ProductClientInfoCard(
-                    viewModel=viewModel,
+                    viewModel = viewModel,
                     produit = selectedProduct,
                     client = selectedClient
                 )
@@ -156,7 +156,7 @@ fun ProductClientInfoCard(
     client: ProduitNoSqlDataBase.Produit.ClientAchteur,
     modifier: Modifier = Modifier
 ) {
-    val produitInfosParGet =viewModel.getSqlProduitParSonNoSql(noSqlData =produit)
+    val produitInfosParGet = viewModel.getSqlProduitParSonNoSql(noSqlData = produit)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -166,8 +166,10 @@ fun ProductClientInfoCard(
     ) {
 
         Text(
-            text = "Produit:(${produit.infosId})" +
-                    "${produitInfosParGet?.nom}",
+            text =
+                "${produitInfosParGet?.nom}"
+                        +
+                        "ID:(${produit.infosId})",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
