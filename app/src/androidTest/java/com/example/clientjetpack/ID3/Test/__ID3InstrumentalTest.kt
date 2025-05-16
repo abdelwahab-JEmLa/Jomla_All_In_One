@@ -3,14 +3,14 @@ package com.example.clientjetpack.ID3.Test
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.clientjetpack.ID3.Test.DataBase.FireBase.ConvertiseurNoSqlToSqlRepository
-import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
-import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.testDatasProduitNoSqlDataBase
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.TestAppDatabase
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.testDatasDataBasesInfosSql
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.FireBase.ConvertiseurNoSqlToSqlRepository
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.FireBase.Model.testDatasProduitNoSqlDataBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Home.FireBaseHandler
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.testDatasDataBasesInfosSql
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,7 +61,7 @@ class __ID3InstrumentalTest : KoinTest {
             modules(
                 module {
                     single {
-                        TestAppDatabase.getTestDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
+                        AppDatabase.getTestDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
                     }
                     single {
                         InfosSqlDataBasesRepository(

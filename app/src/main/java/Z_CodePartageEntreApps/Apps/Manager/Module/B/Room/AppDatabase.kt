@@ -11,6 +11,14 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.MessageVocaleDao
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Dao.A_ProduitInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Dao.B_ClientInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Dao.C_TypeTarificationInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Dao.D_TarificationInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -43,10 +51,67 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Date
+
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
+    abstract fun categoriesModelDao(): CategoriesModelDao
+    abstract fun colorsArticlesDao(): ColorsArticlesDao
+    abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
+    abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
+    abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
+    abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
+    abstract fun articleDao(): ArticleDao
+
+    abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
+    abstract fun I_CategorieProduitsDao(): I_CategorieProduitsDao
+    abstract fun a_ProduiteDao(): A_ProduitDao
+
+    abstract fun _1_1_CouleurAcheteOperationDao(): _1_1_CouleurAcheteOperationDao
+    abstract fun _1_2_ProduitAcheteOperationDao(): _1_2_ProduitAcheteOperationDao
+    abstract fun _1_3_TransactionCommercialDao(): _1_3_TransactionCommercialDao
+    abstract fun _1_4_PeriodeVentDao(): _1_4_PeriodeVentDao
+    abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
+
+    abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
+    abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
+    abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
+
+    abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
+    abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
+
+    abstract fun messageVocaleDao(): MessageVocaleDao
+    abstract fun etateMessageVocaleDao(): EtateMessageVocaleDao
+
+    abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
+    abstract fun b_ClientInfosDao(): B_ClientInfosDao
+    abstract fun c_TypeTarificationInfosDao(): C_TypeTarificationInfosDao
+    abstract fun dTarificationInfosDao(): D_TarificationInfosDao
+
+
+    object DatabaseModule {
+
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        fun getDatabase(context: Context): AppDatabase {
+
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
 
 @Database(
     entities = [
@@ -77,66 +142,16 @@ import java.util.Date
 
         MessageVocale::class,
         EtateMessageVocale::class,
+
+        A_ProduitInfos::class,
+        B_ClientInfos::class,
+        C_TypeTarificationInfos::class,
+        D_TarificationInfos::class
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
 )
 
-@TypeConverters(DateConverter::class, ListLongConverter::class)
-abstract class AppDatabase : RoomDatabase() {
-
-    // All DAOs
-    abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
-    abstract fun categoriesModelDao(): CategoriesModelDao
-    abstract fun colorsArticlesDao(): ColorsArticlesDao
-    abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
-    abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
-    abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
-    abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
-    abstract fun articleDao(): ArticleDao
-
-    abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
-    abstract fun I_CategorieProduitsDao(): I_CategorieProduitsDao
-    abstract fun a_ProduiteDao(): A_ProduitDao
-
-    abstract fun _1_1_CouleurAcheteOperationDao(): _1_1_CouleurAcheteOperationDao
-    abstract fun _1_2_ProduitAcheteOperationDao(): _1_2_ProduitAcheteOperationDao
-    abstract fun _1_3_TransactionCommercialDao(): _1_3_TransactionCommercialDao
-    abstract fun _1_4_PeriodeVentDao(): _1_4_PeriodeVentDao
-    abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
-
-    abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
-    abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
-    abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
-
-    abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
-    abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
-
-    abstract fun messageVocaleDao(): MessageVocaleDao
-    abstract fun etateMessageVocaleDao(): EtateMessageVocaleDao
-
-
-    object DatabaseModule {
-
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-}
 
 class ListLongConverter {
     @TypeConverter
