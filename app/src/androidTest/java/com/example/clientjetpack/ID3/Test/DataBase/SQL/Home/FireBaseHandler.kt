@@ -25,6 +25,11 @@ class FireBaseHandler {
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InfosSqlDataBases")
 
+    // Added getter for reference path to help with debugging
+    fun getRefPath(): String {
+        return ref.toString()
+    }
+
     fun addToFirebaseAsync(
         dataBasesInfosSql: DataBasesInfosSql,
         onSuccess: () -> Unit={}

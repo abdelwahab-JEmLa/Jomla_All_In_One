@@ -3,10 +3,7 @@ package com.example.clientjetpack.ID3.Test
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.ProduitNoSqlDataBase
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models._InfosSqlDataBases
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
-import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
 
 
 class TarificationViewModel(
@@ -21,25 +18,25 @@ class TarificationViewModel(
         //TODO(1): ajout un collect du
     }
 
-
-    fun getSqlClient(id: Long): B_ClientInfos? {
-    }
-
-    fun getSqlProduit(id: Long): A_ProduitInfos? {
-        infosSqlDataBasesRepository.get
-    }
-
-    fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
-    }
-
-    /**
-     * Adds a random tarification entry to the database
-     */
-    fun addRandomTarification() {
-    }
-
-    fun getOutputModel(): ProduitNoSqlDataBase {
-    }
+//
+//    fun getSqlClient(id: Long): B_ClientInfos? {
+//    }
+//
+//    fun getSqlProduit(id: Long): A_ProduitInfos? {
+//        infosSqlDataBasesRepository.get
+//    }
+//
+//    fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
+//    }
+//
+//    /**
+//     * Adds a random tarification entry to the database
+//     */
+//    fun addRandomTarification() {
+//    }
+//
+//    fun getOutputModel(): ProduitNoSqlDataBase {
+//    }
 
 }
 

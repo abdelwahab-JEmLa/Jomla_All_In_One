@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.junit.Assert
 
 class InfosSqlDataBasesRepository(
     val database: TestAppDatabase,
@@ -162,6 +163,19 @@ class InfosSqlDataBasesRepository(
     private suspend fun addNeedUpdateAuAllSiEmpty() {
         try {
             val firebaseData = fireBaseHandler.getDataFromFirebase()
+
+            // Log for debugging database state
+            println("Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}")      //<--
+            //TODO(1): change le a un log d
+            if (firebaseData == null) {
+                println("DEBUG: Firebase data is null. Check Firebase connection and data structure.")
+                println("DEBUG: Reference path: ${fireBaseHandler.getRefPath()}")
+            }
+
+            Assert.assertTrue(
+                firebaseData != null
+            )
+
             if (firebaseData != null) {
                 val updatedData = DataBasesInfosSql(
                     a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }.toMutableList(),
