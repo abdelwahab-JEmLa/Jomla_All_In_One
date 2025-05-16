@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test._A.View
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.View
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test.Produit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test.formatTimestamp
@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProductClientInfoCard(produit: Produit, client: Produit.Client, modifier: Modifier = Modifier) {
+fun ProductClientInfoCard(produit: Produit,
+                          client: Produit.Client,
+                          modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
