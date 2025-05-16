@@ -9,6 +9,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 // Improved tag for logging
 private const val TAG = "FirebaseMapping"
@@ -34,35 +35,10 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         clients.addAll(mapSnapshotToObjects(clientsSnapshot, B_ClientInfos::class))
     }
 
-    // Type tarifications need special handling for the enum
+    // Type tarifications now use reflection with special handling for the enum
     val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
     if (typeTarifsSnapshot.exists()) {
-        for (typeSnap in typeTarifsSnapshot.children) {
-            try {
-                // Extract values directly
-                val id = typeSnap.child("id").getValue(Long::class.java) ?: 0L
-                val typeTarifString = typeSnap.child("typeTarificationEnum").getValue(String::class.java) ?: "ParBenifice"
-                val needUpdate = typeSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
-
-                // Convert string to enum
-                val typeTarifEnum = try {
-                    TypeTarificationEnum.valueOf(typeTarifString)
-                } catch (e: Exception) {
-                    TypeTarificationEnum.ParBenifice
-                }
-
-                // Create type tarification instance
-                val typeTarif = C_TypeTarificationInfos(
-                    id = id,
-                    typeTarificationEnum = typeTarifEnum,
-                    needUpdate = needUpdate
-                )
-
-                typeTarifications.add(typeTarif)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error processing type tarification ${typeSnap.key}: ${e.message}", e)
-            }
-        }
+        typeTarifications.addAll(mapTypeTarificationsWithReflection(typeTarifsSnapshot))
     }
 
     // Map tarifications using reflection
@@ -88,9 +64,45 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     )
 }
 
-/**
- * Generic function to map Firebase snapshot children to a list of objects using reflection
- */
+// Specialized function for mapping TypeTarificationInfos with enum handling using reflection
+private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_TypeTarificationInfos> {
+    val results = mutableListOf<C_TypeTarificationInfos>()
+
+    for (childSnap in snapshot.children) {
+        try {
+            val constructor = C_TypeTarificationInfos::class.primaryConstructor
+                ?: throw Exception("No primary constructor found for C_TypeTarificationInfos")
+
+            // Extract all parameters needed for the constructor
+            val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
+            val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+            // Handle enum using reflection
+            val typeTarifString = childSnap.child("typeTarificationEnum").getValue(String::class.java) ?: "ParBenifice"
+            val typeTarifEnum = try {
+                java.lang.Enum.valueOf(TypeTarificationEnum::class.java, typeTarifString)
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to parse enum value '$typeTarifString', using default. Error: ${e.message}")
+                TypeTarificationEnum.ParBenifice
+            }
+
+            // Create the instance using constructor parameters
+            val instance = C_TypeTarificationInfos(
+                id = id,
+                typeTarificationEnum = typeTarifEnum,
+                needUpdate = needUpdate
+            )
+
+            results.add(instance)
+            Log.d(TAG, "Successfully mapped TypeTarification: id=$id, enum=$typeTarifEnum")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error mapping TypeTarification ${childSnap.key}: ${e.message}", e)
+        }
+    }
+
+    return results
+}
+
 private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot, kClass: KClass<T>): List<T> {
     val results = mutableListOf<T>()
 

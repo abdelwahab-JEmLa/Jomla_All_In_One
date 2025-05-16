@@ -2,10 +2,11 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.FireBaseHandler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.getDataFromFirebase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.startNeedUpdateListener
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.stopNeedUpdateListener
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.testDatasDataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,6 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            // Initialize data and set up listeners
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
             verifieFireBaseEstVide()
             collectRoom()
@@ -43,14 +43,11 @@ class InfosSqlDataBasesRepository(
     private fun verifieFireBaseEstVide() {
         coroutineScope.launch {
             try {
-                // Fixed: Properly use Firebase functions to check if the database is empty
                 val isEmpty = fireBaseHandler.isDatabaseEmptyAsync()
                 if (isEmpty) {
-                    Log.d(TAG, "Firebase is empty, adding test data")
                     addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error checking Firebase data: ${e.message}", e)
             }
         }
     }
@@ -60,10 +57,8 @@ class InfosSqlDataBasesRepository(
             try {
                 val testData = testDatasDataBasesInfosSql()
                 add(testData) {
-                    Log.d(TAG, "Test data added successfully to both Firebase and Room")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error adding test data: ${e.message}", e)
             }
         }
     }
@@ -77,8 +72,6 @@ class InfosSqlDataBasesRepository(
                 val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
 
                 if (produits.isEmpty() && clients.isEmpty() && typeTarifications.isEmpty() && tarifications.isEmpty()) {
-                    Log.d(TAG, "Room database is empty, initializing from Firebase")
-
                     val firebaseData = fireBaseHandler.getDataFromFirebase()
                     if (firebaseData != null &&
                         (firebaseData.a_ProduitInfos.isNotEmpty() ||
@@ -87,24 +80,19 @@ class InfosSqlDataBasesRepository(
                                 firebaseData.d_TarificationInfos.isNotEmpty())) {
 
                         insertToRoom(firebaseData) {
-                            Log.d(TAG, "Room database initialized from Firebase")
-                            // Fix: Launch a new coroutine to call the suspending function
                             coroutineScope.launch {
                                 collectLatestData()
                             }
                         }
                     } else {
-                        Log.d(TAG, "Both Room and Firebase are empty, adding test data")
                         addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error verifying Room database: ${e.message}", e)
             }
         }
     }
 
-    // Don't forget to stop the listener when the repository is no longer needed
     fun cleanup() {
         fireBaseHandler.stopNeedUpdateListener()
     }
@@ -137,7 +125,6 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    // Modified to support suspending operations
     suspend fun add(
         data: DataBasesInfosSql
     ) {
@@ -147,12 +134,10 @@ class InfosSqlDataBasesRepository(
                 setToFireBase(data)
                 collectLatestData()
             } catch (e: Exception) {
-                Log.e(TAG, "Error adding data: ${e.message}", e)
             }
         }
     }
 
-    // Add non-suspending version with callback for backward compatibility
     fun add(
         data: DataBasesInfosSql,
         onSuccess: () -> Unit = {}
@@ -162,7 +147,6 @@ class InfosSqlDataBasesRepository(
                 add(data)
                 onSuccess()
             } catch (e: Exception) {
-                Log.e(TAG, "Error adding data with callback: ${e.message}", e)
             }
         }
     }
@@ -188,7 +172,6 @@ class InfosSqlDataBasesRepository(
 
             onSuccess()
         } catch (e: Exception) {
-            Log.e(TAG, "Error collecting latest data: ${e.message}", e)
         }
     }
 
@@ -204,12 +187,10 @@ class InfosSqlDataBasesRepository(
                 database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
                 onSuccess()
             } catch (e: Exception) {
-                Log.e(TAG, "Error inserting to Room: ${e.message}", e)
             }
         }
     }
 
-    // Modified to support suspending operations
     suspend fun deleteAllRoom() {
         withContext(Dispatchers.IO) {
             try {
@@ -219,24 +200,19 @@ class InfosSqlDataBasesRepository(
                 database.dTarificationInfosDao().deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
-                Log.e(TAG, "Error deleting all data from Room: ${e.message}", e)
             }
         }
     }
-
 
     private fun setToFireBase(
         dataBasesInfosSql: DataBasesInfosSql,
         onSuccess: () -> Unit = {}
     ) {
         try {
-            Log.d(TAG, "Uploading data to Firebase")
             fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql) {
-                Log.d(TAG, "Data uploaded to Firebase successfully")
                 onSuccess()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error uploading to Firebase: ${e.message}", e)
         }
     }
 }
