@@ -18,19 +18,19 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler(private val database: AppDatabase? = null) {
-    val TAG = "FireBaseHandler"
+class FireBaseHandler(private val database: AppDatabase) {
+    // Changed from val to const val to ensure the tag is optimized for logging
+    companion object {
+        private const val TAG = "FireBaseHandler"
+    }
+
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var needUpdateListener: ValueEventListener? = null
 
-    /**
-     * Checks if the Firebase reference is empty
-     * @param onResult Callback with boolean result (true if empty, false otherwise)
-     */
-    fun isDatabaseEmpty(onResult: (Boolean) -> Unit) {
+    private fun isDatabaseEmpty(onResult: (Boolean) -> Unit) {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val isEmpty = !snapshot.exists() || !snapshot.hasChildren()
@@ -46,10 +46,6 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
         })
     }
 
-    /**
-     * Asynchronously checks if the Firebase reference is empty
-     * @return Suspended function that returns true if empty, false otherwise
-     */
     suspend fun isDatabaseEmptyAsync(): Boolean = suspendCancellableCoroutine { continuation ->
         isDatabaseEmpty { isEmpty ->
             continuation.resume(isEmpty)
@@ -83,8 +79,12 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
         }
 
         ref.updateChildren(updates)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener {
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully updated Firebase data")
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                Log.e(TAG, "Failed to update Firebase data: ${error.message}")
                 ref.root.child(".info/connected").addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {}
                     override fun onCancelled(error: DatabaseError) {}
@@ -95,14 +95,21 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
 
     fun startNeedUpdateListener() {
         if (needUpdateListener != null || database == null) {
+            Log.w(TAG, "Cannot start listener: ${if (needUpdateListener != null) "listener already active" else "database is null"}")
             return // Already listening or database not provided
         }
 
-        Log.d(TAG, "Starting needUpdate listener for Firebase data")
+        // Fixed log statement with better visibility and using println for direct console logging
+        Log.i(TAG, "Starting needUpdate listener for Firebase data")
+        println("FireBaseHandler: Starting needUpdate listener for Firebase data")
 
         needUpdateListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Log when data changes are detected
+                Log.d(TAG, "Firebase data changed, checking for updates")
+
                 if (!snapshot.exists()) {
+                    Log.d(TAG, "Snapshot doesn't exist, returning")
                     return
                 }
 
@@ -115,6 +122,8 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
                             val firebaseData = mapFromFirebaseSnapshot(snapshot)
                             updateRoomFromFirebase(firebaseData)
                             resetNeedUpdateFlags(firebaseData)
+                        } else {
+                            Log.d(TAG, "No updates needed")
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Error in needUpdate listener: ${e.message}", e)
@@ -128,6 +137,7 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
         }
 
         ref.addValueEventListener(needUpdateListener!!)
+        Log.d(TAG, "Added value event listener to Firebase reference")
     }
 
     fun stopNeedUpdateListener() {
@@ -141,6 +151,7 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
     private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
         // Create a default DataBasesInfosSql to get references
         val defaultModel = DataBasesInfosSql()
+        var needsUpdate = false
 
         // Check produits
         val produitsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
@@ -148,45 +159,59 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
             for (productSnap in produitsSnapshot.children) {
                 val needUpdateSnapshot = productSnap.child("needUpdate")
                 if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                    return true
+                    Log.d(TAG, "Product ${productSnap.key} needs update")
+                    needsUpdate = true
+                    break
                 }
             }
         }
 
         // Check clients
-        val clientsSnapshot = snapshot.child(defaultModel.refFireBaseB_ClientInfos)
-        if (clientsSnapshot.exists()) {
-            for (clientSnap in clientsSnapshot.children) {
-                val needUpdateSnapshot = clientSnap.child("needUpdate")
-                if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                    return true
+        if (!needsUpdate) {
+            val clientsSnapshot = snapshot.child(defaultModel.refFireBaseB_ClientInfos)
+            if (clientsSnapshot.exists()) {
+                for (clientSnap in clientsSnapshot.children) {
+                    val needUpdateSnapshot = clientSnap.child("needUpdate")
+                    if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
+                        Log.d(TAG, "Client ${clientSnap.key} needs update")
+                        needsUpdate = true
+                        break
+                    }
                 }
             }
         }
 
         // Check typeTarifications
-        val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
-        if (typeTarifsSnapshot.exists()) {
-            for (typeSnap in typeTarifsSnapshot.children) {
-                val needUpdateSnapshot = typeSnap.child("needUpdate")
-                if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                    return true
+        if (!needsUpdate) {
+            val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
+            if (typeTarifsSnapshot.exists()) {
+                for (typeSnap in typeTarifsSnapshot.children) {
+                    val needUpdateSnapshot = typeSnap.child("needUpdate")
+                    if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
+                        Log.d(TAG, "Type Tarification ${typeSnap.key} needs update")
+                        needsUpdate = true
+                        break
+                    }
                 }
             }
         }
 
         // Check tarifications
-        val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
-        if (tarifsSnapshot.exists()) {
-            for (tarifSnap in tarifsSnapshot.children) {
-                val needUpdateSnapshot = tarifSnap.child("needUpdate")
-                if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                    return true
+        if (!needsUpdate) {
+            val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
+            if (tarifsSnapshot.exists()) {
+                for (tarifSnap in tarifsSnapshot.children) {
+                    val needUpdateSnapshot = tarifSnap.child("needUpdate")
+                    if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
+                        Log.d(TAG, "Tarification ${tarifSnap.key} needs update")
+                        needsUpdate = true
+                        break
+                    }
                 }
             }
         }
 
-        return false
+        return needsUpdate
     }
 
     private suspend fun updateRoomFromFirebase(data: DataBasesInfosSql) {
