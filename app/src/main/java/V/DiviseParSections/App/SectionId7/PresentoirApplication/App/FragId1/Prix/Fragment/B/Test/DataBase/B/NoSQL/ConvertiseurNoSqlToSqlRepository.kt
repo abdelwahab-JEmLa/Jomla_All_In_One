@@ -20,17 +20,14 @@ class ConvertiseurNoSqlToSqlRepository(
 ) {
     private val repositoryCoroutine = CoroutineScope(Dispatchers.IO)
 
-    // State flow for NoSQL data
     private val _noSqlDataFlow = MutableStateFlow(ProduitNoSqlDataBase(emptyList()))
     val noSqlDataFlow: StateFlow<ProduitNoSqlDataBase> = _noSqlDataFlow.asStateFlow()
 
     init {
         repositoryCoroutine.launch {
-            // Perform initial conversion
             val initialNoSqlData = convertSqlToNoSql()
             _noSqlDataFlow.value = initialNoSqlData
 
-            // Then collect SQL data changes and convert to NoSQL format
             sqlRepository.modelListFlow.collect { sqlDataList ->
                 if (sqlDataList.isNotEmpty()) {
                     val noSqlData = convertSqlToNoSql()
@@ -45,7 +42,6 @@ class ConvertiseurNoSqlToSqlRepository(
     ): ProduitNoSqlDataBase {
         return withContext(Dispatchers.IO) {
             try {
-                // Get the latest data from the SQL repository
                 val sqlDataList = sqlRepository.modelListFlow.first()
                 if (sqlDataList.isEmpty()) {
                     return@withContext ProduitNoSqlDataBase(emptyList())
@@ -53,30 +49,21 @@ class ConvertiseurNoSqlToSqlRepository(
 
                 val sqlData = sqlDataList.first()
 
-                // Process each product
                 val produitsList = sqlData.a_ProduitInfos.map { produit ->
-                    // Get all tarifications for this product
                     val produitTarifications = sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
 
-                    // Group tarifications by client ID
                     val clientGroups = produitTarifications.groupBy { it.idClient }
 
-                    // Process each client group
                     val clientAcheteurs = clientGroups.map { (clientId, clientTarifications) ->
-                        // Find client info
                         val clientInfo = sqlData.b_ClientInfos.find { it.id == clientId }
                             ?: SqlClientInfos(id = clientId)
 
-                        // Group by tarification type
                         val typeGroups = clientTarifications.groupBy { it.idTypeTarification }
 
-                        // Process each tarification type
                         val typeTarifications = typeGroups.map { (typeId, tarificationsForType) ->
-                            // Find type info
                             val typeInfo = sqlData.c_TypeTarificationInfos.find { it.id == typeId }
                                 ?: C_TypeTarificationInfos(id = typeId)
 
-                            // Create price list
                             val prixList = tarificationsForType.map { tarif ->
                                 ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                     vidTimestamp = tarif.vidTimestamp,
@@ -153,7 +140,6 @@ class ConvertiseurNoSqlToSqlRepository(
 
     fun getLatestTarificationInfo(idProduit: Long, idClient: Long, idTypeTarification: Long): D_TarificationInfos? {
         val tarifications = getTarificationInfos(idProduit, idClient, idTypeTarification)
-        // Return the most recent tarification (highest timestamp)
         return tarifications.maxByOrNull { it.vidTimestamp }
     }
 
