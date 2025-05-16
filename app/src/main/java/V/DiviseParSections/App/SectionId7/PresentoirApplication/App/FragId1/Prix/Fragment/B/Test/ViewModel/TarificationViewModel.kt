@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-// Changed from class to data class to enable copy() method
 data class UiState(
     val outputModel: ProduitNoSqlDataBase = ProduitNoSqlDataBase(emptyList()),
     val isLoading: Boolean = false,
