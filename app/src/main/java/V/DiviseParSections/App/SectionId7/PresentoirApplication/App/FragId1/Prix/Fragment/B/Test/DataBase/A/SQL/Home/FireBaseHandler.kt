@@ -26,6 +26,36 @@ class FireBaseHandler(private val database: AppDatabase? = null) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var needUpdateListener: ValueEventListener? = null
 
+    /**
+     * Checks if the Firebase reference is empty
+     * @param onResult Callback with boolean result (true if empty, false otherwise)
+     */
+    fun isDatabaseEmpty(onResult: (Boolean) -> Unit) {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val isEmpty = !snapshot.exists() || !snapshot.hasChildren()
+                Log.d(TAG, "Firebase database reference is empty: $isEmpty")
+                onResult(isEmpty)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Firebase check failed: ${error.message}")
+                // In case of error, assume database is not empty to be safe
+                onResult(false)
+            }
+        })
+    }
+
+    /**
+     * Asynchronously checks if the Firebase reference is empty
+     * @return Suspended function that returns true if empty, false otherwise
+     */
+    suspend fun isDatabaseEmptyAsync(): Boolean = suspendCancellableCoroutine { continuation ->
+        isDatabaseEmpty { isEmpty ->
+            continuation.resume(isEmpty)
+        }
+    }
+
     fun addToFirebaseAsync(dataBasesInfosSql: DataBasesInfosSql, onSuccess: () -> Unit = {}) {
         val firebaseData = mapToFirebaseFormat(dataBasesInfosSql)
         val updates = mutableMapOf<String, Any>()

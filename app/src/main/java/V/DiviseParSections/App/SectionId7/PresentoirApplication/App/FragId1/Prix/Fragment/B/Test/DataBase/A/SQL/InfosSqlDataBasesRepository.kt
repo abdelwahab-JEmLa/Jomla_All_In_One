@@ -43,13 +43,9 @@ class InfosSqlDataBasesRepository(
     private fun verifieFireBaseEstVide() {
         coroutineScope.launch {
             try {
-                val firebaseData = fireBaseHandler.getDataFromFirebase()
-                if (firebaseData == null ||
-                    (firebaseData.a_ProduitInfos.isEmpty() &&
-                            firebaseData.b_ClientInfos.isEmpty() &&
-                            firebaseData.c_TypeTarificationInfos.isEmpty() &&
-                            firebaseData.d_TarificationInfos.isEmpty())) {
-
+                // Fixed: Properly use Firebase functions to check if the database is empty
+                val isEmpty = fireBaseHandler.isDatabaseEmptyAsync()
+                if (isEmpty) {
                     Log.d(TAG, "Firebase is empty, adding test data")
                     addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
                 }
