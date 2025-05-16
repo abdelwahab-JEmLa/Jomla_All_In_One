@@ -17,12 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.koinViewModel
-
 
 @Preview
 @Composable
@@ -52,8 +48,6 @@ private fun Fragment(
 
     var noSqlData by remember { mutableStateOf(uiState.outputModel) }
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
-    var showDebugLogs by remember { mutableStateOf(false) }
-
     // Selection state for active product and client
     var selectedProductId by remember { mutableStateOf(1L) }
     var selectedClientId by remember { mutableStateOf(1L) }
@@ -64,59 +58,10 @@ private fun Fragment(
             selectedProductId = selectedProductId,
             selectedClientId = selectedClientId,
             showOnlyLatestPrices = showOnlyLatestPrices,
-            showDebugLogs = showDebugLogs,
-            onAddPrice = { produitId, clientId, typeTarificationId ->
-                // Find the product
-                val produitIndex = noSqlData.produits.indexOfFirst { it.infosId == produitId }
-                if (produitIndex >= 0) {
-                    val produits = noSqlData.produits.toMutableList()
-                    val produit = produits[produitIndex]
-
-                    // Find the client
-                    val clientIndex = produit.clientAchteurs.indexOfFirst { it.infosId == clientId }
-                    if (clientIndex >= 0) {
-                        val clientAchteurs = produit.clientAchteurs.toMutableList()
-                        val client = clientAchteurs[clientIndex]
-
-                        // Find the type tarification
-                        val typeIndex = client.typeTarification.indexOfFirst { it.infosId == typeTarificationId }
-                        if (typeIndex >= 0) {
-                            val typeTarifications = client.typeTarification.toMutableList()
-                            val typeTarification = typeTarifications[typeIndex]
-
-                            // Create a new price
-                            val newPrice = ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                vidTimestamp = System.currentTimeMillis(),
-                                valeur = 0.0
-                            )
-
-                            // Add the new price
-                            val updatedTypeTarification = typeTarification.copy(
-                                PrixsCurrency = typeTarification.PrixsCurrency + newPrice
-                            )
-                            typeTarifications[typeIndex] = updatedTypeTarification
-
-                            // Update the state
-                            val updatedClient = client.copy(typeTarification = typeTarifications)
-                            clientAchteurs[clientIndex] = updatedClient
-                            val updatedProduit = produit.copy(clientAchteurs = clientAchteurs)
-                            produits[produitIndex] = updatedProduit
-                            noSqlData = noSqlData.copy(produits = produits)
-
-                        }
-                    }
-                }
-            },
             onToggleLatestPrices = {
                 showOnlyLatestPrices = !showOnlyLatestPrices
             },
-            onToggleDebugLogs = {
-                showDebugLogs = !showDebugLogs
-            },
-            onSelectProductAndClient = { produitId, clientId ->
-                selectedProductId = produitId
-                selectedClientId = clientId
-            }
+
         )
     }
 }
@@ -127,12 +72,8 @@ fun MainScreen(
     selectedProductId: Long,
     selectedClientId: Long,
     showOnlyLatestPrices: Boolean,
-    showDebugLogs: Boolean = false,
     modifier: Modifier = Modifier,
-    onAddPrice: (Long, Long, Long) -> Unit,
     onToggleLatestPrices: () -> Unit,
-    onToggleDebugLogs: () -> Unit = {},
-    onSelectProductAndClient: (Long, Long) -> Unit = { _, _ -> }
 ) {
     // Find the selected product and client
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
@@ -155,7 +96,6 @@ fun MainScreen(
                     selectedProductId = selectedProductId,
                     selectedClientId = selectedClientId,
                     showOnlyLatestPrices = showOnlyLatestPrices,
-                    onAddPrice = onAddPrice,
                     modifier = Modifier.weight(1f)
                 )
         }
@@ -166,16 +106,6 @@ fun MainScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Debug Log toggle button
-            FloatingActionButton(
-                onClick = onToggleDebugLogs,
-                modifier = Modifier
-            ) {
-                Icon(
-                    Icons.Default.List,
-                    contentDescription = "Toggle Debug Logs"
-                )
-            }
 
             FloatingActionButton(
                 onClick = onToggleLatestPrices,
@@ -196,7 +126,6 @@ fun MainList(
     selectedProductId: Long,
     selectedClientId: Long,
     showOnlyLatestPrices: Boolean,
-    onAddPrice: (Long, Long, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -210,7 +139,6 @@ fun MainList(
                 selectedProductId = selectedProductId,
                 selectedClientId = selectedClientId,
                 showOnlyLatestPrices = showOnlyLatestPrices,
-                onAddPrice = onAddPrice
             )
         }
     }
@@ -256,7 +184,6 @@ fun NoSqlTarificationTypeSection(
     selectedProductId: Long,
     selectedClientId: Long,
     showOnlyLatestPrices: Boolean = false,
-    onAddPrice: (Long, Long, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(typeTarification.vidTimestamp)
@@ -283,16 +210,6 @@ fun NoSqlTarificationTypeSection(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
-
-                IconButton(onClick = {
-                    onAddPrice(selectedProductId, selectedClientId, typeTarification.infosId)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Ajouter un prix",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
             }
         }
 

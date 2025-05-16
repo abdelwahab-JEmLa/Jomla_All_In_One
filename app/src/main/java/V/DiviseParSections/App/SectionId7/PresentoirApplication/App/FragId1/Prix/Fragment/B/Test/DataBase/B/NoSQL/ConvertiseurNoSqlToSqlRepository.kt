@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.InfosSqlDataBasesRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.B.NoSQL.Model.ProduitNoSqlDataBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -120,6 +121,64 @@ class ConvertiseurNoSqlToSqlRepository(
 
         val sqlData = sqlDataList.first()
         return sqlData.a_ProduitInfos.find { it.id == id }
+    }
+
+    fun getClientInfos(id: Long): SqlClientInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.b_ClientInfos.find { it.id == id }
+    }
+
+    fun getTypeTarificationInfos(id: Long): C_TypeTarificationInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.c_TypeTarificationInfos.find { it.id == id }
+    }
+
+    fun getTarificationInfos(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return emptyList()
+
+        val sqlData = sqlDataList.first()
+        return sqlData.d_TarificationInfos.filter {
+            it.idProduit == idProduit &&
+                    it.idClient == idClient &&
+                    it.idTypeTarification == idTypeTarification
+        }
+    }
+
+    fun getLatestTarificationInfo(idProduit: Long, idClient: Long, idTypeTarification: Long): D_TarificationInfos? {
+        val tarifications = getTarificationInfos(idProduit, idClient, idTypeTarification)
+        // Return the most recent tarification (highest timestamp)
+        return tarifications.maxByOrNull { it.vidTimestamp }
+    }
+
+    fun getAllProduits(): List<A_ProduitInfos> {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return emptyList()
+
+        val sqlData = sqlDataList.first()
+        return sqlData.a_ProduitInfos
+    }
+
+    fun getAllClients(): List<SqlClientInfos> {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return emptyList()
+
+        val sqlData = sqlDataList.first()
+        return sqlData.b_ClientInfos
+    }
+
+    fun getAllTypeTarifications(): List<C_TypeTarificationInfos> {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return emptyList()
+
+        val sqlData = sqlDataList.first()
+        return sqlData.c_TypeTarificationInfos
     }
 
     // Force immediate update of NoSQL data - useful for testing
