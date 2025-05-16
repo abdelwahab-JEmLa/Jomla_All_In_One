@@ -29,18 +29,11 @@ class TarificationViewModel(
         _uiState.value = _uiState.value.copy(isLoading = true)
 
         viewModelScope.launch {
-
             convertiseurNoSqlToSqlRepository.noSqlDataFlow.collectLatest { noSqlData ->
-                val collectTime = System.currentTimeMillis()
-
-                val processStartTime = System.currentTimeMillis()
-
                 _uiState.value = _uiState.value.copy(
                     outputModel = noSqlData,
                     isLoading = false
                 )
-
-                val updateCompleteTime = System.currentTimeMillis()
             }
         }
     }
@@ -59,20 +52,5 @@ class TarificationViewModel(
 
     fun getSqlTarifications(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
         return convertiseurNoSqlToSqlRepository.getTarificationInfos(idProduit, idClient, idTypeTarification)
-    }
-
-    fun refreshData() {
-        _uiState.value = _uiState.value.copy(isLoading = true)
-
-        viewModelScope.launch {
-            try {
-                convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Failed to refresh data: ${e.message}"
-                )
-            }
-        }
     }
 }
