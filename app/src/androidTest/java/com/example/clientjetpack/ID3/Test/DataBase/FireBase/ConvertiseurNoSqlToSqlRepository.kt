@@ -2,6 +2,7 @@ package com.example.clientjetpack.ID3.Test.DataBase.FireBase
 
 import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.C_TypeTarificationInfos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -113,6 +114,10 @@ class ConvertiseurNoSqlToSqlRepository(
                 ProduitNoSqlDataBase(emptyList())
             }
         }
+    }
+    fun geta_ProduitInfos(id:Long): A_ProduitInfos {
+         //<--
+         //TODO(1): regle
     }
 
     // Force immediate update of NoSQL data - useful for testing
