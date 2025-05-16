@@ -28,26 +28,22 @@ data class ProduitNoSqlDataBase(
         }
     }
 }
+
 fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
-    // This should match the structure expected after conversion from testDatas()
     return ProduitNoSqlDataBase(
         produits = listOf(
-            // Produit 1: "Produit Optila"
             ProduitNoSqlDataBase.Produit(
-                vidTimestamp = System.currentTimeMillis(),  // Exact timestamp doesn't matter in test
+                vidTimestamp = System.currentTimeMillis(),
                 infosId = 1,
                 clientAchteurs = listOf(
-                    // Client 1: "ClientAchteur Abderrahman"
                     ProduitNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            // Type Tarification 1: "ParBenifice"
                             ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
                                 PrixsCurrency = listOf(
-                                    // Two prices for this combination
                                     ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 1,
@@ -68,12 +64,10 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
                             )
                         )
                     ),
-                    // Client 2: "ClientAchteur Beta"
                     ProduitNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 2,
                         typeTarification = listOf(
-                            // Type Tarification 2: "Historique"
                             ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 2,
@@ -92,17 +86,14 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
                     )
                 )
             ),
-            // Produit 2: "Produit Hnina"
             ProduitNoSqlDataBase.Produit(
                 vidTimestamp = System.currentTimeMillis(),
                 infosId = 2,
                 clientAchteurs = listOf(
-                    // Client 1: "ClientAchteur Abderrahman"
                     ProduitNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            // Type Tarification 1: "ParBenifice"
                             ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
@@ -121,17 +112,14 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
                     )
                 )
             ),
-            // Produit 3: "Produit kemya"
             ProduitNoSqlDataBase.Produit(
                 vidTimestamp = System.currentTimeMillis(),
                 infosId = 3,
                 clientAchteurs = listOf(
-                    // Client 1: "ClientAchteur Abderrahman"
                     ProduitNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            // Type Tarification 3: "LeMaxPrixArrive"
                             ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 3,
