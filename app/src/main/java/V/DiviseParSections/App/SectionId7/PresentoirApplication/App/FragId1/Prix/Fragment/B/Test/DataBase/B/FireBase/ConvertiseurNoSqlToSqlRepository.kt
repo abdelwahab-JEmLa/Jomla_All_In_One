@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.FireBase
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.B.FireBase
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.InfosSqlDataBasesRepository
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.B.FireBase.Model.ProduitNoSqlDataBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.B_ClientInfos as SqlClientInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.B_ClientInfos as SqlClientInfos
 
 class ConvertiseurNoSqlToSqlRepository(
     private val sqlRepository: InfosSqlDataBasesRepository,
@@ -112,10 +113,13 @@ class ConvertiseurNoSqlToSqlRepository(
             }
         }
     }
-//    fun geta_ProduitInfos(id:Long): A_ProduitInfos {
-//         //<--
-//         //TODO(1): regle
-//    }
+    fun getProduitInfos(id: Long): A_ProduitInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.a_ProduitInfos.find { it.id == id }
+    }
 
     // Force immediate update of NoSQL data - useful for testing
     suspend fun refreshNoSqlData() {

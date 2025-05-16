@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Home.FireBaseHandler
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Home.FireBaseHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.A.SQL.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -162,11 +162,10 @@ class InfosSqlDataBasesRepository(
             val firebaseData = fireBaseHandler.getDataFromFirebase()
 
             // Log for debugging database state
-            println("Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}")      //<--
-            //TODO(1): change le a un log d
+            android.util.Log.d("InfosSqlRepo", "Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}")
             if (firebaseData == null) {
-                println("DEBUG: Firebase data is null. Check Firebase connection and data structure.")
-                println("DEBUG: Reference path: ${fireBaseHandler.getRefPath()}")
+                android.util.Log.d("InfosSqlRepo", "Firebase data is null. Check Firebase connection and data structure.")
+                android.util.Log.d("InfosSqlRepo", "Reference path: ${fireBaseHandler.getRefPath()}")
             }
 
             if (firebaseData != null) {

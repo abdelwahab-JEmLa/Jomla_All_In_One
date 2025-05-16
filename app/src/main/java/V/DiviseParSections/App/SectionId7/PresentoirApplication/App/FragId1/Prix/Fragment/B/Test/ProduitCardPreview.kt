@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test
-       /*
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.ProduitNoSqlDataBase
+
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.DataBase.B.FireBase.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.TarificationViewModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.function.strDateEtTempFromVidTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,31 +18,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-@Preview(showBackground = true)
-@Composable
-fun ProduitCardPreview() {
-    // Create a new view model to get test data
-    val viewModel = TarificationViewModel()
-
-    // Get the output model containing all data
-    val outputModel = viewModel.getOutputModel()
-
-    // Select the first product for preview (if available)
-    if (outputModel.produits.isNotEmpty()) {
-        val firstProduit = outputModel.produits.first()
-        val produitName = viewModel.getSqlProduit(firstProduit.infosId)?.nom ?: "Produit ${firstProduit.infosId}"
-
-        // Display the product card with the data
-        ProduitCard(
-            produit = firstProduit,
-            produitName = produitName,
-            tarificationViewModel = viewModel
-        )
-    }
+// Add function to format timestamp
+fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
+    val date = Date(timestamp)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return Pair(dateFormat.format(date), timeFormat.format(date))
 }
+
 @Composable
 fun ProduitCard(
     produit: ProduitNoSqlDataBase.Produit,
@@ -86,10 +73,8 @@ fun ProduitCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             produit.clientAchteurs.forEach { client ->
-                val clientInfo = tarificationViewModel?.getSqlClient(client.infosId)
                 ClientSection(
                     clientAchteur = client,
-                    clientName = clientInfo?.nom ?: "ClientAchteur ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -101,9 +86,8 @@ fun ProduitCard(
 @Composable
 fun ClientSection(
     clientAchteur: ProduitNoSqlDataBase.Produit.ClientAchteur,
-    clientName: String,
-    tarificationViewModel: TarificationViewModel?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tarificationViewModel: TarificationViewModel?
 ) {
     val (date, time) = strDateEtTempFromVidTimestamp(clientAchteur.vidTimestamp)
 
@@ -117,11 +101,6 @@ fun ClientSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = clientName,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
             Text(
                 text = "$date $time",
                 style = MaterialTheme.typography.bodySmall,
@@ -138,10 +117,8 @@ fun ClientSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         clientAchteur.typeTarification.forEach { typeTarif ->
-            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
-                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.infosId}"
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -151,7 +128,6 @@ fun ClientSection(
 @Composable
 fun TarificationTypeSection(
     typeTarif: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
-    typeName: String,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = strDateEtTempFromVidTimestamp(typeTarif.vidTimestamp)
@@ -166,11 +142,6 @@ fun TarificationTypeSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = typeName,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
             Text(
                 text = "$date $time",
                 style = MaterialTheme.typography.bodySmall,
@@ -201,4 +172,3 @@ fun TarificationTypeSection(
         }
     }
 }
-                                  */
