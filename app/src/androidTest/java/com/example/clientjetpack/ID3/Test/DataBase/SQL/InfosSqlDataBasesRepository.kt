@@ -131,7 +131,7 @@ class InfosSqlDataBasesRepository(
     }
 
     // Modified to support suspending operations
-    suspend fun deleteAll() {
+    suspend fun deleteAllRoom() {
         withContext(ioDispatcher) {
             try {
                 database.a_ProduitInfosDao().deleteAll()
@@ -145,19 +145,6 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    // Add non-suspending version with callback for backward compatibility
-    fun deleteAll(
-        onSuccess: () -> Unit = {}
-    ) {
-        coroutineScope.launch {
-            try {
-                deleteAll()
-                onSuccess()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
     private fun setToFireBase(
         dataBasesInfosSql: DataBasesInfosSql,

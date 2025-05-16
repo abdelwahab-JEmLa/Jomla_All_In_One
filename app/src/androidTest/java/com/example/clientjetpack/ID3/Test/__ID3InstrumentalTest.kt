@@ -49,7 +49,6 @@ class __ID3InstrumentalTest : KoinTest {
     private val testDispatcher = StandardTestDispatcher(testScheduler)
     private val infosSqlDataBasesRepository: InfosSqlDataBasesRepository by inject()
     private val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository by inject()
-    private val testDatas = testDatasDataBasesInfosSql()
 
     @Before
     fun setup() = runTest(testDispatcher) {
@@ -161,12 +160,12 @@ class __ID3InstrumentalTest : KoinTest {
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
         // First, delete all existing data
-        infosSqlDataBasesRepository.deleteAll()
+        infosSqlDataBasesRepository.deleteAllRoom()
         // Advance time to process all coroutines related to deletion
         testScheduler.advanceUntilIdle()
 
         // Add test data
-        infosSqlDataBasesRepository.add(testDatas)
+        infosSqlDataBasesRepository.add(testDatasDataBasesInfosSql())
         // Advance time to process all coroutines related to adding data
         testScheduler.advanceUntilIdle()
 
@@ -174,7 +173,7 @@ class __ID3InstrumentalTest : KoinTest {
         val actualDataList = infosSqlDataBasesRepository.modelListFlow.first()
         val actualData = actualDataList.firstOrNull()
             ?: throw AssertionError("Expected data not found")
-        assertDataMatchesExpected(testDatas, actualData)
+        assertDataMatchesExpected(testDatasDataBasesInfosSql(), actualData)
 
         // Explicitly force the refresh of NoSQL data
         convertiseurNoSqlToSqlRepository.refreshNoSqlData()
