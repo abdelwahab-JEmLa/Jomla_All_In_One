@@ -13,7 +13,10 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
     val tarifications = mutableListOf<D_TarificationInfos>()
 
-    val productsSnapshot = snapshot.child("produits")
+    // Create a default model to get reference names
+    val defaultModel = DataBasesInfosSql()
+
+    val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
         for (productSnap in productsSnapshot.children) {
             try {
@@ -38,7 +41,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         }
     }
 
-    val clientsSnapshot = snapshot.child("clients")
+    val clientsSnapshot = snapshot.child(defaultModel.refFireBaseB_ClientInfos)
     if (clientsSnapshot.exists()) {
         for (clientSnap in clientsSnapshot.children) {
             try {
@@ -63,7 +66,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         }
     }
 
-    val typeTarifsSnapshot = snapshot.child("typeTarifications")
+    val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
     if (typeTarifsSnapshot.exists()) {
         for (typeSnap in typeTarifsSnapshot.children) {
             try {
@@ -96,7 +99,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         }
     }
 
-    val tarifsSnapshot = snapshot.child("tarifications")
+    val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
     if (tarifsSnapshot.exists()) {
         for (tarifSnap in tarifsSnapshot.children) {
             try {

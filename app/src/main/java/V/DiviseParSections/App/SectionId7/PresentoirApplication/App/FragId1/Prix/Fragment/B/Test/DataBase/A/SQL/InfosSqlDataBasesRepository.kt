@@ -32,22 +32,85 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            addNeedUpdateAuAllSiEmpty()
-            loadDataFromFirebaseAuRoomSiUnDataANeedUpdate {
-                // This callback is now properly called when Firebase is empty
-                Log.d(TAG, "Firebase is empty, uploading test data")
-                val testData = testDatasDataBasesInfosSql()
-                setToFireBase(testData)
+            // Initialize data and set up listeners
+            verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
+            verifieFireBaseEstVide()
+            collectRoom()
+            fireBaseHandler.startNeedUpdateListener()
+        }
+    }
 
-                // Fixed the suspension function call in callback issue
-                coroutineScope.launch {
-                    insertToRoom(testData) {
-                        Log.d(TAG, "Test data uploaded to Firebase and inserted to Room successfully")
+    private fun verifieFireBaseEstVide() {
+        coroutineScope.launch {
+            try {
+                val firebaseData = fireBaseHandler.getDataFromFirebase()
+                if (firebaseData == null ||
+                    (firebaseData.a_ProduitInfos.isEmpty() &&
+                            firebaseData.b_ClientInfos.isEmpty() &&
+                            firebaseData.c_TypeTarificationInfos.isEmpty() &&
+                            firebaseData.d_TarificationInfos.isEmpty())) {
+
+                    Log.d(TAG, "Firebase is empty, adding test data")
+                    addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error checking Firebase data: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener() {
+        coroutineScope.launch {
+            try {
+                val testData = testDatasDataBasesInfosSql()
+                add(testData) {
+                    Log.d(TAG, "Test data added successfully to both Firebase and Room")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error adding test data: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener() {
+        coroutineScope.launch {
+            try {
+                val produits = database.a_ProduitInfosDao().getAllProduitsSync()
+                val clients = database.b_ClientInfosDao().getAllClientsSync()
+                val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
+                val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
+
+                if (produits.isEmpty() && clients.isEmpty() && typeTarifications.isEmpty() && tarifications.isEmpty()) {
+                    Log.d(TAG, "Room database is empty, initializing from Firebase")
+
+                    val firebaseData = fireBaseHandler.getDataFromFirebase()
+                    if (firebaseData != null &&
+                        (firebaseData.a_ProduitInfos.isNotEmpty() ||
+                                firebaseData.b_ClientInfos.isNotEmpty() ||
+                                firebaseData.c_TypeTarificationInfos.isNotEmpty() ||
+                                firebaseData.d_TarificationInfos.isNotEmpty())) {
+
+                        insertToRoom(firebaseData) {
+                            Log.d(TAG, "Room database initialized from Firebase")
+                            // Fix: Launch a new coroutine to call the suspending function
+                            coroutineScope.launch {
+                                collectLatestData()
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "Both Room and Firebase are empty, adding test data")
+                        addTestDataAuFireBaseEtRoomEtUiAprestartNeedUpdateListener()
                     }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error verifying Room database: ${e.message}", e)
             }
-            collectRoom()
         }
+    }
+
+    // Don't forget to stop the listener when the repository is no longer needed
+    fun cleanup() {
+        fireBaseHandler.stopNeedUpdateListener()
     }
 
     private fun collectRoom() {
@@ -178,104 +241,6 @@ class InfosSqlDataBasesRepository(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error uploading to Firebase: ${e.message}", e)
-        }
-    }
-
-    private suspend fun addNeedUpdateAuAllSiEmpty() {
-        try {
-            val firebaseData = fireBaseHandler.getDataFromFirebase()
-
-            // Log for debugging database state
-            Log.d(
-                TAG,
-                "Firebase data retrieval: ${if (firebaseData != null) "Success" else "FAILED - Database is empty"}"
-            )
-            if (firebaseData == null) {
-                Log.d(
-                    TAG,
-                    "Firebase data is null. Check Firebase connection and data structure."
-                )
-                Log.d(
-                    TAG,
-                    "Reference path: ${fireBaseHandler.getRefPath()}"
-                )
-                return // No data to process
-            }
-
-            val updatedData = DataBasesInfosSql(
-                a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }
-                    .toMutableList(),
-                b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = true) }
-                    .toMutableList(),
-                c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map {
-                    it.copy(
-                        needUpdate = true
-                    )
-                }.toMutableList(),
-                d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = true) }
-                    .toMutableList()
-            )
-            setToFireBase(updatedData)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in addNeedUpdateAuAllSiEmpty: ${e.message}", e)
-        }
-    }
-
-    private suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate(
-        siFireBaseEstVide: () -> Unit = {}
-    ) {
-        try {
-            // First check if Firebase has data
-            val firebaseData = fireBaseHandler.getDataFromFirebase()
-            if (firebaseData == null) {
-                Log.d(TAG, "Firebase database is empty, calling siFireBaseEstVide callback")
-                siFireBaseEstVide() // Call the callback when Firebase is empty
-                return
-            }
-
-            // If Firebase has data, check if local data needs update
-            val produits = database.a_ProduitInfosDao().getAllProduitsSync()
-            val clients = database.b_ClientInfosDao().getAllClientsSync()
-            val typeTarifications =
-                database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
-            val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
-
-            val roomIsEmpty = produits.isEmpty() && clients.isEmpty() &&
-                    typeTarifications.isEmpty() && tarifications.isEmpty()
-
-            val needsUpdate = roomIsEmpty || produits.any { it.needUpdate } ||
-                    clients.any { it.needUpdate } ||
-                    typeTarifications.any { it.needUpdate } ||
-                    tarifications.any { it.needUpdate }
-
-            if (needsUpdate) {
-                Log.d(TAG, "Local data needs update, syncing from Firebase")
-                insertToRoom(firebaseData) {
-                    // Reset needUpdate flags in Firebase after successful sync to Room
-                    val updatedData = DataBasesInfosSql(
-                        a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = false) }
-                            .toMutableList(),
-                        b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = false) }
-                            .toMutableList(),
-                        c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map {
-                            it.copy(
-                                needUpdate = false
-                            )
-                        }.toMutableList(),
-                        d_TarificationInfos = firebaseData.d_TarificationInfos.map {
-                            it.copy(
-                                needUpdate = false
-                            )
-                        }.toMutableList()
-                    )
-                    setToFireBase(updatedData)
-                    Log.d(TAG, "Data synced from Firebase successfully")
-                }
-            } else {
-                Log.d(TAG, "Local data is up to date, no sync needed")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in loadDataFromFirebaseAuRoomSiUnDataANeedUpdate: ${e.message}", e)
         }
     }
 }
