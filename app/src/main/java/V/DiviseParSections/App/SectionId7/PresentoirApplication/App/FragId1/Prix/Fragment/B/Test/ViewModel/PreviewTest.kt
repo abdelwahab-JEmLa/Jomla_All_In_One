@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,16 +50,10 @@ private fun Fragment(
 ) {
     val uiState by viewModel.uiState
 
-    var noSqlData by remember {
+    val noSqlData by remember {
         mutableStateOf(
             uiState.outputModel
         )
-    }
-
-    LaunchedEffect(uiState.outputModel) {
-        if (uiState.outputModel.produits.isNotEmpty()) {
-            noSqlData = uiState.outputModel
-        }
     }
 
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
