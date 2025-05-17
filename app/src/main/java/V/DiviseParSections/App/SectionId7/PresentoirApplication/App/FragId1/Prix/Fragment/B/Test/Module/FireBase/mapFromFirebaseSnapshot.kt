@@ -62,14 +62,19 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
                 TypeTarificationEnum.ParBenifice
             }
 
+            // Use Firebase key as keyFireBase property
+            val keyFireBase = childSnap.key ?: "-<$id($typeTarifEnum.name)"
+
             val instance = C_TypeTarificationInfos(
                 id = id,
-                typeTarificationEnum = typeTarifEnum,
-                needUpdate = needUpdate
+                entityCorrespond = typeTarifEnum,
+                needUpdate = needUpdate,
+                keyFireBase = keyFireBase
             )
 
             results.add(instance)
         } catch (e: Exception) {
+            // Consider logging the exception here
         }
     }
 
@@ -79,14 +84,19 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
 private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot, kClass: KClass<T>): List<T> {
     val results = mutableListOf<T>()
 
-    for (childSnap in snapshot.children) {      //<--
-    //TODO(1): fait que le key de chaque data = idInfo
+    for (childSnap in snapshot.children) {
         try {
             val constructor = kClass.constructors.firstOrNull()
                 ?: throw Exception("No constructor found for ${kClass.simpleName}")
 
             val parameters = constructor.parameters.associateWith { param ->
                 val paramName = param.name ?: ""
+
+                // Special handling for keyFireBase parameter
+                if (paramName == "keyFireBase") {
+                    return@associateWith childSnap.key // Use the Firebase key directly
+                }
+
                 val childValue = childSnap.child(paramName)
 
                 when {
@@ -103,6 +113,7 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
             val instance = constructor.callBy(parameters)
             results.add(instance)
         } catch (e: Exception) {
+            // Consider logging the exception here
         }
     }
 

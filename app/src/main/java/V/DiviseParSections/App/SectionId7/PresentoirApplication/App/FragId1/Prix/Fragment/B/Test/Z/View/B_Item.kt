@@ -42,7 +42,7 @@ fun TarificationTypeSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Type ${sqlRelatedInfos?.typeTarificationEnum?.name} " +
+                text = "Type ${sqlRelatedInfos?.entityCorrespond?.name} " +
                         "ID:(${composeDataMutable.infosId})",
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground

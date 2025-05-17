@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models
 
+import android.annotation.SuppressLint
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Calendar
@@ -24,6 +25,8 @@ data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = "",
+    val keyFireBase: String = "-<$id($nom)",
+
     val needUpdate: Boolean = false
 )
 
@@ -31,7 +34,9 @@ data class A_ProduitInfos(
 data class B_ClientInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val nom: String = "",
+    val nom: String = "Non Difinie",
+    val keyFireBase: String = "-<$id($nom)",
+
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = false
 )
@@ -40,8 +45,10 @@ data class B_ClientInfos(
 data class C_TypeTarificationInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val nom: String= "",
-    val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
+    val entityCorrespond: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
+    val nom: String= entityCorrespond.name,
+    val keyFireBase: String = "-<$id($nom)",
+
     val needUpdate: Boolean = false
 )
 
@@ -49,12 +56,15 @@ data class C_TypeTarificationInfos(
 data class D_TarificationInfos(
     @PrimaryKey
     val vidTimestamp: Long = 0L,
+    val nom: String= getStrDateTime(),
+    val keyFireBase: String = "-<$vidTimestamp($nom)",
     val idProduit: Long = 0L,
     val idClient: Long = 0L,
     val idTypeTarification: Long = 0L,
     val prixCurrency: Double = 0.0 ,
-    val needUpdate: Boolean = false
-)
+
+    val needUpdate: Boolean = false ,
+    )
 
 enum class TypeTarificationEnum {
     ParBenifice,
@@ -131,4 +141,16 @@ fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minut
     calendar.set(year, month - 1, day, hour, minute, 0)
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis
+}
+@SuppressLint("DefaultLocale")
+fun getStrDateTime(): String {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1 // Month is 0-based
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+
+    // Format: yyyy-mm-dd -< HH:mm
+    return String.format("%04d-%02d-%02d -< %02d:%02d", year, month, day, hour, minute)
 }

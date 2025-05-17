@@ -19,8 +19,8 @@ fun TypeTarifications(
 
         assertEquals(
             "Type Tarification enum should match for ID ${expectedType.id}",
-            expectedType.typeTarificationEnum,
-            actualType.typeTarificationEnum
+            expectedType.entityCorrespond,
+            actualType.entityCorrespond
         )
     }
 }
