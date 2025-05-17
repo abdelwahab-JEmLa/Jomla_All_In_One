@@ -45,7 +45,7 @@ private fun FragmentMain(
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
 
     ClientJetPackTheme(darkTheme = true) {
-        ScreenMainFilter(
+        FilterMainScreen(
             viewModel = viewModel,
             noSqlData = uiState.outputModel,
             selectedProductId = selectedProductId,
@@ -59,7 +59,7 @@ private fun FragmentMain(
 }
 
 @Composable
-fun ScreenMainFilter(
+fun FilterMainScreen(
     noSqlData: ProduitNoSqlDataBase,
     selectedProductId: Long,
     selectedClientId: Long,
