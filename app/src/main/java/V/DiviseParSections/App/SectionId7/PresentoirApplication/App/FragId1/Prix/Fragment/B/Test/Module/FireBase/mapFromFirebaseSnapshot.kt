@@ -79,7 +79,8 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
 private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot, kClass: KClass<T>): List<T> {
     val results = mutableListOf<T>()
 
-    for (childSnap in snapshot.children) {
+    for (childSnap in snapshot.children) {      //<--
+    //TODO(1): fait que le key de chaque data = idInfo
         try {
             val constructor = kClass.constructors.firstOrNull()
                 ?: throw Exception("No constructor found for ${kClass.simpleName}")

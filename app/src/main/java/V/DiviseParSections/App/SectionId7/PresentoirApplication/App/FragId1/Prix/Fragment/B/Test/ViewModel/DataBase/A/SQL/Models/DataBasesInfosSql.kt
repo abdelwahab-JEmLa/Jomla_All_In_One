@@ -31,7 +31,7 @@ data class A_ProduitInfos(
 data class B_ClientInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val nom: String = "Non Difinie",
+    val nom: String = "",
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = false
 )
@@ -40,6 +40,7 @@ data class B_ClientInfos(
 data class C_TypeTarificationInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+    val nom: String= "",
     val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
     val needUpdate: Boolean = false
 )
