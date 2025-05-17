@@ -63,7 +63,7 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
             }
 
             // Use Firebase key as keyFireBase property
-            val keyFireBase = childSnap.key ?: "-<$id($typeTarifEnum.name)"
+            val keyFireBase = childSnap.key ?: ""
 
             val instance = C_TypeTarificationInfos(
                 id = id,
@@ -89,25 +89,35 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
             val constructor = kClass.constructors.firstOrNull()
                 ?: throw Exception("No constructor found for ${kClass.simpleName}")
 
+            // Create a map to hold parameter values
+            val paramValues = mutableMapOf<String, Any?>()
+
+            // First pass: collect all values from the snapshot
+            for (param in constructor.parameters) {
+                val paramName = param.name ?: continue
+
+                if (paramName == "keyFireBase") {
+                    // For keyFireBase, use the Firebase key directly
+                    paramValues[paramName] = childSnap.key
+                } else {
+                    val childValue = childSnap.child(paramName)
+                    if (childValue.exists()) {
+                        when (param.type.classifier) {
+                            Long::class -> paramValues[paramName] = childValue.getValue(Long::class.java)
+                            String::class -> paramValues[paramName] = childValue.getValue(String::class.java)
+                            Boolean::class -> paramValues[paramName] = childValue.getValue(Boolean::class.java)
+                            Double::class -> paramValues[paramName] = childValue.getValue(Double::class.java)
+                            Int::class -> paramValues[paramName] = childValue.getValue(Int::class.java)?.toLong()
+                            else -> paramValues[paramName] = null
+                        }
+                    }
+                }
+            }
+
+            // Second pass: map the values to constructor parameters
             val parameters = constructor.parameters.associateWith { param ->
                 val paramName = param.name ?: ""
-
-                // Special handling for keyFireBase parameter
-                if (paramName == "keyFireBase") {
-                    return@associateWith childSnap.key // Use the Firebase key directly
-                }
-
-                val childValue = childSnap.child(paramName)
-
-                when {
-                    !childValue.exists() -> null
-                    param.type.classifier == Long::class -> childValue.getValue(Long::class.java)
-                    param.type.classifier == String::class -> childValue.getValue(String::class.java)
-                    param.type.classifier == Boolean::class -> childValue.getValue(Boolean::class.java)
-                    param.type.classifier == Double::class -> childValue.getValue(Double::class.java)
-                    param.type.classifier == Int::class -> childValue.getValue(Int::class.java)?.toLong()
-                    else -> null
-                }
+                paramValues[paramName]
             }
 
             val instance = constructor.callBy(parameters)

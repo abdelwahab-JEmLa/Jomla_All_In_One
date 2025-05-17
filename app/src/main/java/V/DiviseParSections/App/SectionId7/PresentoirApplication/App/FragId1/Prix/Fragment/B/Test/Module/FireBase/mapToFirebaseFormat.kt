@@ -12,12 +12,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val produitMap = produit::class.memberProperties.associate {
                 it.name to (it.getter.call(produit) ?: "null")
             }
-            // Use keyFireBase as the key if it's valid, otherwise fallback to default format
-            val key = if (produit.keyFireBase.isNotBlank() && !produit.keyFireBase.startsWith("-<")) {
-                produit.keyFireBase
-            } else {
-                "prod_${produit.id}"
-            }
+            // Always use keyFireBase as the key
+            val key = produit.keyFireBase
             productsMap[key] = produitMap
         } catch (e: Exception) {}
     }
@@ -31,12 +27,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val clientMap = client::class.memberProperties.associate {
                 it.name to (it.getter.call(client) ?: "null")
             }
-            // Use keyFireBase as the key if it's valid, otherwise fallback to default format
-            val key = if (client.keyFireBase.isNotBlank() && !client.keyFireBase.startsWith("-<")) {
-                client.keyFireBase
-            } else {
-                "client_${client.id}"
-            }
+            // Always use keyFireBase as the key
+            val key = client.keyFireBase
             clientsMap[key] = clientMap
         } catch (e: Exception) {}
     }
@@ -58,12 +50,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
                     typeMap[prop.name] = "null"
                 }
             }
-            // Use keyFireBase as the key if it's valid, otherwise fallback to default format
-            val key = if (typeTarif.keyFireBase.isNotBlank() && !typeTarif.keyFireBase.startsWith("-<")) {
-                typeTarif.keyFireBase
-            } else {
-                "type_${typeTarif.id}"
-            }
+            // Always use keyFireBase as the key
+            val key = typeTarif.keyFireBase
             typeTarifMap[key] = typeMap
         } catch (e: Exception) {}
     }
@@ -77,12 +65,8 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val tarifMap = tarif::class.memberProperties.associate {
                 it.name to (it.getter.call(tarif) ?: "null")
             }
-            // Use keyFireBase as the key if it's valid, otherwise fallback to default format
-            val key = if (tarif.keyFireBase.isNotBlank() && !tarif.keyFireBase.startsWith("-<")) {
-                tarif.keyFireBase
-            } else {
-                "tarif_${tarif.vidTimestamp}"
-            }
+            // Always use keyFireBase as the key
+            val key = tarif.keyFireBase
             tarifsMap[key] = tarifMap
         } catch (e: Exception) {}
     }
