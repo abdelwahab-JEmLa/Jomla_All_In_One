@@ -58,7 +58,7 @@ data class D_TarificationInfos(
     @PrimaryKey
     val vidTimestamp: Long = 0L,
     val nom: String= getStrDateTime(),
-    val keyFireBase: String = getkeyFireBase(vidTimestamp, nom),
+    val keyFireBase: String = getkeyFireBase(dataNom=nom),
     val idProduit: Long = 0L,
     val idClient: Long = 0L,
     val idTypeTarification: Long = 0L,
@@ -68,8 +68,8 @@ data class D_TarificationInfos(
 )
 
 fun getkeyFireBase(
-    dataId: Long,
-    dataNom: String
+    dataId: Long? = null,
+    dataNom: String? = null
 ): String {
     return "-<$dataId($dataNom)"
 }
