@@ -85,6 +85,7 @@ fun FilterMainScreen(
             }
 
             MainList(
+                viewModel=viewModel,
                 typeTarificationsList = typeTarificationsList,
                 showOnlyLatestPrices = showOnlyLatestPrices,
                 modifier = Modifier.weight(1f)
@@ -112,6 +113,7 @@ fun FilterMainScreen(
 
 @Composable
 fun MainList(
+    viewModel: TarificationViewModel,
     typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>,
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
@@ -123,6 +125,7 @@ fun MainList(
     ) {
         items(typeTarificationsList) { typeTarification ->
             TarificationTypeSection(
+                viewModel=viewModel,
                 typeTarification = typeTarification,
                 showOnlyLatestPrices = showOnlyLatestPrices,
             )

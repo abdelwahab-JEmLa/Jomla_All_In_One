@@ -52,6 +52,12 @@ class TarificationViewModel(
     fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
     }
+    fun getSql_TypeTarification(
+        noSqlData: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification
+    ) : C_TypeTarificationInfos? {
+        return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
+    }
+
 
     fun getSqlTarifications(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
         return convertiseurNoSqlToSqlRepository.getTarificationInfos(idProduit, idClient, idTypeTarification)
