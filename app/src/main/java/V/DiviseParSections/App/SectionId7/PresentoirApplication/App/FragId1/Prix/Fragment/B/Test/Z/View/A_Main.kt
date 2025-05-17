@@ -42,7 +42,9 @@ private fun FragmentMain(
     selectedClientId: Long
 ) {
     val uiState by viewModel.uiState
-    var showOnlyLatestPrices by remember { mutableStateOf(false) }
+    var showOnlyLatestPrices by remember {
+        mutableStateOf(false)
+    }
 
     ClientJetPackTheme(darkTheme = true) {
         FilterMainScreen(
