@@ -110,6 +110,18 @@ fun MainUi(
     val parentCompose_1_3_BonAchatVid by
     _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
+    val active_parent_1_3_TransactionCommercialclientAcheteurID =
+        repositorysModel.repository_1_3_TransactionCommercial
+            .modelDatasSnapList.find {
+            it.ouvert
+        }?.clientAcheteurID
+    val active__3_ClientsDataBase =
+        repositorysModel.repository_3_ClientsDataBase
+            .modelDatasSnapList.find {
+            it.vid== active_parent_1_3_TransactionCommercialclientAcheteurID
+        }
+
+
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(
@@ -230,7 +242,7 @@ fun MainUi(
 
                                 FragmentMain(
                                     produitSelectioneDuAncienDataBase=stats,
-                                    currentClient=currentClient
+                                    active__3_ClientsDataBase=active__3_ClientsDataBase
                                 )
                             }
                         }

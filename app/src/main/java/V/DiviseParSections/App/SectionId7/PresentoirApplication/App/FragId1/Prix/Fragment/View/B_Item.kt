@@ -29,7 +29,7 @@ fun TarificationTypeSection(
     showOnlyLatestPrices: Boolean = false
 ) {
     val composeDataMutable by remember { mutableStateOf(typeTarification) }
-    val sqlRelatedInfos= viewModel.getSql_TypeTarification(composeDataMutable)
+    val sqlRelatedInfos= viewModel.get_C_TypeTarificationInfos(composeDataMutable)
 
     Column(
         modifier = modifier
@@ -62,12 +62,10 @@ fun TarificationTypeSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         val pricesToShow = if (showOnlyLatestPrices) {
-            // Get only the most recent price by timestamp
             typeTarification.PrixsCurrency
                 .maxByOrNull { it.vidTimestamp }
                 ?.let { listOf(it) } ?: emptyList()
         } else {
-            // Show all prices sorted by timestamp
             typeTarification.PrixsCurrency
                 .sortedByDescending { it.vidTimestamp }
         }

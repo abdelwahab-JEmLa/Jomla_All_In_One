@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,14 +31,14 @@ import org.koin.androidx.compose.koinViewModel
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable,
-    currentClient: B_ClientsDataBase?,
+    active__3_ClientsDataBase: _3_ClientsDataBase?,
 ) {
     val uiState by viewModel.uiState
 
     LaunchedEffect(produitSelectioneDuAncienDataBase, ) {
         viewModel.verifierAddNewDatasSiExistPas(
-            produitDuAncienDataBase=produitSelectioneDuAncienDataBase,
-            currentClient=currentClient,
+            produitDuAncienDataBase =produitSelectioneDuAncienDataBase,
+            active__3_ClientsDataBase =active__3_ClientsDataBase,
         )
     }
 
@@ -46,7 +46,7 @@ fun FragmentMain(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
         selectedProductId = produitSelectioneDuAncienDataBase.idArticle.toLong() ,
-        selectedClientId = currentClient?.id ?: 0L,
+        selectedClientId = active__3_ClientsDataBase?.vid ?: 0L,
     )
 }
 
@@ -111,6 +111,12 @@ fun MainList(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(typeTarificationsList, ) {
+        viewModel.verifierAddNew_C_TypeTarificationInfos(
+            typeTarificationsList
+        )
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),

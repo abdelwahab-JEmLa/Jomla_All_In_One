@@ -80,7 +80,8 @@ fun getKeyFireBase(
 enum class TypeTarificationEnum {
     ParBenifice,
     Historique,
-    LeMaxPrixArrive
+    LeMaxPrixArrive,
+    PRIX_BASE
 }
 
 fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
@@ -125,6 +126,12 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 entityCorrespond = TypeTarificationEnum.LeMaxPrixArrive,
                 nom = "Prix Maximum",
                 keyFireBase = getKeyFireBase(3, "Prix Maximum")
+            ),
+            C_TypeTarificationInfos(
+                id = 4,
+                entityCorrespond = TypeTarificationEnum.PRIX_BASE,
+                nom = TypeTarificationEnum.PRIX_BASE.name,
+                keyFireBase = getKeyFireBase(4, TypeTarificationEnum.PRIX_BASE.name)
             )
         ),
         d_TarificationInfos = mutableListOf(

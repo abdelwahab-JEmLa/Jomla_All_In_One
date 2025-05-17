@@ -38,6 +38,38 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
+    fun copyAdd_D_TarificationInfos(newData: D_TarificationInfos): Unit {
+        repositoryCoroutine.launch {
+            val currentData = sqlRepository
+                .modelListFlow.value.firstOrNull()
+            if (currentData != null) {
+                val updatedData = currentData.copy(
+                    d_TarificationInfos = currentData.d_TarificationInfos.toMutableList().apply {
+                        add(newData)
+                    }
+                )
+
+                sqlRepository.add(updatedData)
+            }
+        }
+    }
+
+    fun copyAdd_C_TypeTarificationInfos(newData: C_TypeTarificationInfos): Unit {
+        repositoryCoroutine.launch {
+            val currentData = sqlRepository
+                .modelListFlow.value.firstOrNull()
+            if (currentData != null) {
+                val updatedData = currentData.copy(
+                    c_TypeTarificationInfos = currentData.c_TypeTarificationInfos.toMutableList().apply {
+                        add(newData)
+                    }
+                )
+
+                sqlRepository.add(updatedData)
+            }
+        }
+    }
+
     fun copyAdd_A_ProduitInfos(newData: A_ProduitInfos): Unit {
         repositoryCoroutine.launch {
             val currentData = sqlRepository
@@ -53,6 +85,7 @@ class ConvertiseurNoSqlToSqlRepository(
             }
         }
     }
+
     fun copyAdd_B_ClientInfos(newData: B_ClientInfos): Unit {
         repositoryCoroutine.launch {
             val currentData = sqlRepository
