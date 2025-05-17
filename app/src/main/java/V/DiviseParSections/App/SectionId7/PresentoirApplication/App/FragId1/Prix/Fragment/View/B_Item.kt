@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View
 
-import com.example.clientjetpack.ID4.Test.formatTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Function.formatTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.background
@@ -50,9 +50,9 @@ fun TarificationTypeSection(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = com.example.clientjetpack.ID4.Test.formatTimestamp(composeDataMutable.vidTimestamp).first
+                    text = formatTimestamp(composeDataMutable.vidTimestamp).first
                             +" "+
-                            com.example.clientjetpack.ID4.Test.formatTimestamp(composeDataMutable.vidTimestamp).second,
+                            formatTimestamp(composeDataMutable.vidTimestamp).second,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
@@ -84,7 +84,7 @@ fun TarificationItem(
     prix: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
     modifier: Modifier = Modifier
 ) {
-    val (date, time) = com.example.clientjetpack.ID4.Test.formatTimestamp(prix.vidTimestamp)
+    val (date, time) = formatTimestamp(prix.vidTimestamp)
 
     Row(
         modifier = modifier

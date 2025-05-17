@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View
 
-import com.example.clientjetpack.ID4.Test.formatTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Function.formatTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.background
@@ -43,7 +43,7 @@ fun ProductClientInfoCard(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        val (date, time) = com.example.clientjetpack.ID4.Test.formatTimestamp(produit.vidTimestamp)
+        val (date, time) = formatTimestamp(produit.vidTimestamp)
         Text(
             text = "Date: $date $time",
             style = MaterialTheme.typography.bodySmall,
