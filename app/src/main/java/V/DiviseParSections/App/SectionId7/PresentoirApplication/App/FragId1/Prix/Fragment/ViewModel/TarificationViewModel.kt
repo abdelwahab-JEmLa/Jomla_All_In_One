@@ -60,10 +60,14 @@ class TarificationViewModel(
                 produitDuAncienDataBase.idArticle.toLong(),
                 produitDuAncienDataBase.nomArticleFinale
             )
-            ajouteSiExistePas_B_ClientsDataBase(
-                active__3_ClientsDataBase?.vid!!,
-                active__3_ClientsDataBase.nom
-            )
+
+            // Safely handle null client case
+            if (active__3_ClientsDataBase != null) {
+                ajouteSiExistePas_B_ClientsDataBase(
+                    active__3_ClientsDataBase.vid,
+                    active__3_ClientsDataBase.nom
+                )
+            }
 
             val selectedProduct = _uiState.value.outputModel.produits.find { it.infosId == _selectedProductId.value }
             val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == _selectedClientId.value }
@@ -135,8 +139,6 @@ class TarificationViewModel(
         }
     }
 
-
-
     private fun ajouteSiExistePas_B_ClientsDataBase(id: Long, nom: String) {
         val existingProduct = convertiseurNoSqlToSqlRepository.getB_ClientInfos(id)
 
@@ -148,7 +150,6 @@ class TarificationViewModel(
             )
             convertiseurNoSqlToSqlRepository.copyAdd_B_ClientInfos(newData)
         }
-
     }
 
     private fun ajouteSiExistePas_A_ProduitInfos(id: Long, nom: String? = null) {

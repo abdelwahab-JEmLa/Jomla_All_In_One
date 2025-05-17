@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,18 +36,21 @@ fun FragmentMain(
 ) {
     val uiState by viewModel.uiState
 
-    LaunchedEffect(produitSelectioneDuAncienDataBase, ) {
+    LaunchedEffect(produitSelectioneDuAncienDataBase) {
         viewModel.verifierAddNewDatasSiExistPas(
-            produitDuAncienDataBase =produitSelectioneDuAncienDataBase,
-            active__3_ClientsDataBase =active__3_ClientsDataBase,
+            produitDuAncienDataBase = produitSelectioneDuAncienDataBase,
+            active__3_ClientsDataBase = active__3_ClientsDataBase,
         )
     }
+
+    // Handle null client safely
+    val clientId = active__3_ClientsDataBase?.vid ?: 0L
 
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
-        selectedProductId = produitSelectioneDuAncienDataBase.idArticle.toLong() ,
-        selectedClientId = active__3_ClientsDataBase?.vid ?: 0L,
+        selectedProductId = produitSelectioneDuAncienDataBase.idArticle.toLong(),
+        selectedClientId = clientId,
     )
 }
 
@@ -72,6 +76,12 @@ fun FilterMainScreen(
                     viewModel = viewModel,
                     produit = selectedProduct,
                     client = selectedClient
+                )
+            } else if (selectedProduct != null) {
+                // Display product info only if client is missing
+                Text(
+                    text = "Product information available, but client data is missing",
+                    modifier = Modifier.padding(16.dp)
                 )
             }
 
@@ -111,7 +121,7 @@ fun MainList(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(typeTarificationsList, ) {
+    LaunchedEffect(typeTarificationsList) {
         viewModel.verifierAddNew_C_TypeTarificationInfos(
             typeTarificationsList
         )
