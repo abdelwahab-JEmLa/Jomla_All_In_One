@@ -113,7 +113,7 @@ fun MainUi(
     val active_parent_1_3_TransactionCommercialclientAcheteurID =
         repositorysModel.repository_1_3_TransactionCommercial
             .modelDatasSnapList.find {
-            it.ouvert
+            it.vid==parentCompose_1_3_BonAchatVid
         }?.clientAcheteurID
 
     val active__3_ClientsDataBase =
