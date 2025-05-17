@@ -51,9 +51,6 @@ private fun Fragment(
     val uiState by viewModel.uiState
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
 
-    // No need for the extra state variable and LaunchedEffect
-    // Just use the uiState.outputModel directly
-
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             viewModel = viewModel,
