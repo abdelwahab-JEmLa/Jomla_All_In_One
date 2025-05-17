@@ -115,6 +115,7 @@ fun MainUi(
             .modelDatasSnapList.find {
             it.ouvert
         }?.clientAcheteurID
+
     val active__3_ClientsDataBase =
         repositorysModel.repository_3_ClientsDataBase
             .modelDatasSnapList.find {
