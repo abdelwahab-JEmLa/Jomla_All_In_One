@@ -27,15 +27,22 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
-    selectedProductId: Long,
-    selectedClientId: Long
+    produitIdSelectioneDuAncienDataBase: Long,
+    clientIdSelectioneDuAncienDataBase: Long
 ) {
     val uiState by viewModel.uiState
+
+   //<--
+   //TODO(1): ajout une lunched effecte qui lence vm .addNewDatasSiExistePas()
+    viewModel.addNewDatasSiExistePas(
+        produitIdSelectioneDuAncienDataBase,
+        clientIdSelectioneDuAncienDataBase
+    )
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
-        selectedProductId = selectedProductId,
-        selectedClientId = selectedClientId,
+        selectedProductId = produitIdSelectioneDuAncienDataBase,
+        selectedClientId = clientIdSelectioneDuAncienDataBase,
     )
 }
 

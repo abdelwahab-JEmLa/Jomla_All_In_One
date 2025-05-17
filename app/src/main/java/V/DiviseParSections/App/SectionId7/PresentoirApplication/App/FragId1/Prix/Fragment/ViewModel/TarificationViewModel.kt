@@ -18,6 +18,7 @@ data class UiState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
+
 class TarificationViewModel(
     private val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository,
 ) : ViewModel() {
@@ -38,10 +39,18 @@ class TarificationViewModel(
         }
     }
 
+    fun addNewDatasSiExistePas(
+        produitIdSelectioneDuAncienDataBase: Long,
+        clientIdSelectioneDuAncienDataBase: Long
+    ) {
+
+    }
+
     fun getSqlProduit(id: Long): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepository.getProduitInfos(id)
     }
-    fun getSqlProduitParSonNoSql(noSqlData: ProduitNoSqlDataBase.Produit) : A_ProduitInfos?{
+
+    fun getSqlProduitParSonNoSql(noSqlData: ProduitNoSqlDataBase.Produit): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepository.getProduitInfos(noSqlData.infosId)
     }
 
@@ -52,14 +61,23 @@ class TarificationViewModel(
     fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
     }
+
     fun getSql_TypeTarification(
         noSqlData: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification
-    ) : C_TypeTarificationInfos? {
+    ): C_TypeTarificationInfos? {
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
     }
 
 
-    fun getSqlTarifications(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
-        return convertiseurNoSqlToSqlRepository.getTarificationInfos(idProduit, idClient, idTypeTarification)
+    fun getSqlTarifications(
+        idProduit: Long,
+        idClient: Long,
+        idTypeTarification: Long
+    ): List<D_TarificationInfos> {
+        return convertiseurNoSqlToSqlRepository.getTarificationInfos(
+            idProduit,
+            idClient,
+            idTypeTarification
+        )
     }
 }
