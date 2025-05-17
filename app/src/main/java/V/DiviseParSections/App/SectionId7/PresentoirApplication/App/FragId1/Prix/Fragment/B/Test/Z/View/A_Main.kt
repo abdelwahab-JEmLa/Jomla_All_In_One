@@ -52,10 +52,6 @@ private fun FragmentMain(
             noSqlData = uiState.outputModel,
             selectedProductId = selectedProductId,
             selectedClientId = selectedClientId,
-            showOnlyLatestPrices = showOnlyLatestPrices,
-            onToggleLatestPrices = {
-                showOnlyLatestPrices = !showOnlyLatestPrices
-            }
         )
     }
 }
@@ -65,18 +61,19 @@ fun FilterMainScreen(
     noSqlData: ProduitNoSqlDataBase,
     selectedProductId: Long,
     selectedClientId: Long,
-    showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier,
-    onToggleLatestPrices: () -> Unit,
     viewModel: TarificationViewModel,
 ) {
+    var showOnlyLatestPrices by remember {
+        mutableStateOf(false)
+    }
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (selectedProduct != null && selectedClient != null) {
+            if (selectedProduct != null && selectedClient != null ) {
                 ProductClientInfoCard(
                     viewModel = viewModel,
                     produit = selectedProduct,
@@ -99,7 +96,9 @@ fun FilterMainScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             FloatingActionButton(
-                onClick = onToggleLatestPrices,
+                onClick = {
+                    showOnlyLatestPrices = !showOnlyLatestPrices
+                },
                 modifier = Modifier
             ) {
                 Icon(
