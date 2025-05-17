@@ -42,9 +42,6 @@ private fun FragmentMain(
     selectedClientId: Long
 ) {
     val uiState by viewModel.uiState
-    var showOnlyLatestPrices by remember {
-        mutableStateOf(false)
-    }
 
     ClientJetPackTheme(darkTheme = true) {
         FilterMainScreen(
@@ -73,7 +70,7 @@ fun FilterMainScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (selectedProduct != null && selectedClient != null ) {
+            if (selectedProduct != null && selectedClient != null) {
                 ProductClientInfoCard(
                     viewModel = viewModel,
                     produit = selectedProduct,
@@ -82,7 +79,7 @@ fun FilterMainScreen(
             }
 
             MainList(
-                viewModel=viewModel,
+                viewModel = viewModel,
                 typeTarificationsList = typeTarificationsList,
                 showOnlyLatestPrices = showOnlyLatestPrices,
                 modifier = Modifier.weight(1f)
@@ -124,7 +121,7 @@ fun MainList(
     ) {
         items(typeTarificationsList) { typeTarification ->
             TarificationTypeSection(
-                viewModel=viewModel,
+                viewModel = viewModel,
                 typeTarification = typeTarification,
                 showOnlyLatestPrices = showOnlyLatestPrices,
             )
