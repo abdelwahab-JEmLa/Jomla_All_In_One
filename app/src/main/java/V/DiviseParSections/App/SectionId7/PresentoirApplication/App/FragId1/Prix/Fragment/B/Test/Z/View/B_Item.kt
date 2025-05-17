@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TarificationTypeSection(
+    modifier: Modifier = Modifier,
     viewModel: TarificationViewModel,
     typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
-    showOnlyLatestPrices: Boolean = false,
-    modifier: Modifier = Modifier
+    showOnlyLatestPrices: Boolean = false
 ) {
     val composeDataMutable by remember { mutableStateOf(typeTarification) }
     val sqlRelatedInfos= viewModel.getSql_TypeTarification(composeDataMutable)
