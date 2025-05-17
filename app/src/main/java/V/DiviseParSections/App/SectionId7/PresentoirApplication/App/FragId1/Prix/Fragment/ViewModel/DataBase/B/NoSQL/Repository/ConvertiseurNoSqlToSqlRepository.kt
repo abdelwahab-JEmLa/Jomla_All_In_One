@@ -77,7 +77,7 @@ class ConvertiseurNoSqlToSqlRepository(
         return sqlData.a_ProduitInfos.find { it.id == id }
     }
 
-    fun getClientInfos(id: Long): SqlClientInfos? {
+    fun getB_ClientInfos(id: Long): B_ClientInfos? {
         val sqlDataList = sqlRepository.modelListFlow.value
         if (sqlDataList.isEmpty()) return null
 

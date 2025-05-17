@@ -58,7 +58,7 @@ class TarificationViewModel(
     }
 
     private fun ajouteSiExistePas_B_ClientsDataBase(id: Long, nom: String) {
-        val existingProduct = convertiseurNoSqlToSqlRepository.getProduitInfos(id)
+        val existingProduct = convertiseurNoSqlToSqlRepository.getB_ClientInfos(id)
 
         if (existingProduct == null ) {
             val newData = B_ClientInfos(
