@@ -40,7 +40,7 @@ fun Main(
     val uiState by viewModel.uiState.collectAsState()
     val progress by viewModel._01_VentsHistoriquesDataBase_Repository.progressRepo.collectAsState()
 
-    MainScreen(
+    FilterMain(
         uiState = uiState,
         progress = progress,
         modifier = modifier
@@ -48,7 +48,7 @@ fun Main(
 }
 
 @Composable
-fun MainScreen(
+fun FilterMain(
     uiState: PeriodesUiState,
     progress: Float,
     modifier: Modifier = Modifier,
