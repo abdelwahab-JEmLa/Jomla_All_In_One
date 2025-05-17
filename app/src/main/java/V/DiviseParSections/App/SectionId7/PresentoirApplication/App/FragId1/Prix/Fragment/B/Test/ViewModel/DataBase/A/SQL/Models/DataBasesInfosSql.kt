@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.A.Test.Models.createTimestamp
 import android.annotation.SuppressLint
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -71,7 +72,11 @@ fun getkeyFireBase(
     dataId: Long? = null,
     dataNom: String? = null
 ): String {
-    return "-<$dataId($dataNom)"
+     return if (dataId != null) {
+         "-<$dataId($dataNom)"
+     } else {
+         "-<$dataNom"
+     }
 }
 
 enum class TypeTarificationEnum {
@@ -102,6 +107,26 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 id = 3,
                 nom = "ClientAchteur Gamma",
                 idActiveTypeTarificationDataBase = 3
+            )
+        ),
+        c_TypeTarificationInfos = mutableListOf(
+            C_TypeTarificationInfos(
+                id = 1,
+                entityCorrespond = TypeTarificationEnum.ParBenifice,
+                nom = "Par Bénifice",
+                keyFireBase = getkeyFireBase(1, "Par Bénifice")
+            ),
+            C_TypeTarificationInfos(
+                id = 2,
+                entityCorrespond = TypeTarificationEnum.Historique,
+                nom = "Historique",
+                keyFireBase = getkeyFireBase(2, "Historique")
+            ),
+            C_TypeTarificationInfos(
+                id = 3,
+                entityCorrespond = TypeTarificationEnum.LeMaxPrixArrive,
+                nom = "Prix Maximum",
+                keyFireBase = getkeyFireBase(3, "Prix Maximum")
             )
         ),
         d_TarificationInfos = mutableListOf(
@@ -155,7 +180,7 @@ fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minut
 fun getStrDateTime(): String {
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1 // Month is 0-based
+    val month = calendar.get(Calendar.MONTH) + 1
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
