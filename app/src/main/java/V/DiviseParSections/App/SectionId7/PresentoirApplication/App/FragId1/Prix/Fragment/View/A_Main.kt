@@ -21,36 +21,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import org.koin.androidx.compose.koinViewModel
 
-@Preview
 @Composable
-fun PreviewTest() {
-    FragmentMain(
-        selectedProductId = 1,
-        selectedClientId = 1
-    )
-}
-
-@Composable
-private fun FragmentMain(
+fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     selectedProductId: Long,
     selectedClientId: Long
 ) {
     val uiState by viewModel.uiState
-
-    ClientJetPackTheme(darkTheme = true) {
-        FilterMainScreen(
-            viewModel = viewModel,
-            noSqlData = uiState.outputModel,
-            selectedProductId = selectedProductId,
-            selectedClientId = selectedClientId,
-        )
-    }
+    FilterMainScreen(
+        viewModel = viewModel,
+        noSqlData = uiState.outputModel,
+        selectedProductId = selectedProductId,
+        selectedClientId = selectedClientId,
+    )
 }
 
 @Composable

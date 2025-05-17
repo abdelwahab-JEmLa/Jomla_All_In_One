@@ -64,7 +64,6 @@ fun Details(
                     enter = slideInVertically() + expandVertically(),
                     exit = shrinkVertically()
                 ) {
-                    // Replace LazyColumn with a regular Column to avoid nested scrollable components
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

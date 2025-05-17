@@ -1,5 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View.FragmentMain
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
@@ -10,7 +12,6 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
@@ -223,6 +224,13 @@ fun MainUi(
                                     viewModel = viewModel,
                                     lockExpandedPrices = lockExpandedPrices,
                                     onToggleLockExpandedPricex = onToggleLockExpandedPricex
+                                )
+                            }
+                            item {
+
+                                FragmentMain(
+                                    selectedProductId=stats.idArticle.toLong(),
+                                    selectedClientId = currentSale.clientSoldToItId
                                 )
                             }
                         }
