@@ -229,8 +229,8 @@ fun MainUi(
                             item {
 
                                 FragmentMain(
-                                    produitIdSelectioneDuAncienDataBase=stats.idArticle.toLong(),
-                                    clientIdSelectioneDuAncienDataBase = currentSale.clientSoldToItId
+                                    produitSelectioneDuAncienDataBase=stats,
+                                    currentClient=currentClient
                                 )
                             }
                         }

@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
@@ -37,26 +38,33 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
-    fun ajouteSiExistePas(id: Long, nom: String? = null) {
-        val existingProduct = getProduitInfos(id)
+    fun copyAdd_A_ProduitInfos(newData: A_ProduitInfos): Unit {
+        repositoryCoroutine.launch {
+            val currentData = sqlRepository
+                .modelListFlow.value.firstOrNull()
+            if (currentData != null) {
+                val updatedData = currentData.copy(
+                    a_ProduitInfos = currentData.a_ProduitInfos.toMutableList().apply {
+                        add(newData)
+                    }
+                )
 
-        if (existingProduct == null) {
-            val newData = A_ProduitInfos(
-                id = id,
-                nom = nom ?: "Product $id",
-                needUpdate = true
-            )
+                sqlRepository.add(updatedData)
+            }
+        }
+    }
+    fun copyAdd_B_ClientInfos(newData: B_ClientInfos): Unit {
+        repositoryCoroutine.launch {
+            val currentData = sqlRepository
+                .modelListFlow.value.firstOrNull()
+            if (currentData != null) {
+                val updatedData = currentData.copy(
+                    b_ClientInfos = currentData.b_ClientInfos.toMutableList().apply {
+                        add(newData)
+                    }
+                )
 
-            repositoryCoroutine.launch {
-                val currentData = sqlRepository.modelListFlow.value.firstOrNull()
-                if (currentData != null) {
-                    val updatedData = currentData.copy(
-                        a_ProduitInfos = currentData.a_ProduitInfos.toMutableList().apply {
-                            add(newData)
-                        }
-                    )
-                    sqlRepository.add(updatedData)
-                }
+                sqlRepository.add(updatedData)
             }
         }
     }

@@ -20,7 +20,6 @@ data class DataBasesInfosSql(
 
     )
 
-// Updated entity classes in DataBasesInfosSql.kt
 @Entity
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
