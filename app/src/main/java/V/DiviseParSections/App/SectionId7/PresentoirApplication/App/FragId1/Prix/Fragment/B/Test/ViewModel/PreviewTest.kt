@@ -36,14 +36,14 @@ import org.koin.androidx.compose.koinViewModel
 @Preview
 @Composable
 fun PreviewTest() {
-    Fragment(
+    FragmentMain(
         selectedProductId = 1,
         selectedClientId = 1
     )
 }
 
 @Composable
-private fun Fragment(
+private fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     selectedProductId: Long,
     selectedClientId: Long
@@ -52,7 +52,7 @@ private fun Fragment(
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
 
     ClientJetPackTheme(darkTheme = true) {
-        MainScreen(
+        FilterMain(
             viewModel = viewModel,
             noSqlData = uiState.outputModel,
             selectedProductId = selectedProductId,
@@ -66,7 +66,7 @@ private fun Fragment(
 }
 
 @Composable
-fun MainScreen(
+fun FilterMain(
     noSqlData: ProduitNoSqlDataBase,
     selectedProductId: Long,
     selectedClientId: Long,
