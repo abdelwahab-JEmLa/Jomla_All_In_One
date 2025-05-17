@@ -20,12 +20,13 @@ data class DataBasesInfosSql(
 
     )
 
+// Updated entity classes in DataBasesInfosSql.kt
 @Entity
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = "",
-    val keyFireBase: String = "-<$id($nom)",
+    val keyFireBase: String = getkeyFireBase(id, nom),
 
     val needUpdate: Boolean = false
 )
@@ -35,7 +36,7 @@ data class B_ClientInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = "Non Difinie",
-    val keyFireBase: String = "-<$id($nom)",
+    val keyFireBase: String = getkeyFireBase(id, nom),
 
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = false
@@ -47,7 +48,7 @@ data class C_TypeTarificationInfos(
     val id: Long = 0,
     val entityCorrespond: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
     val nom: String= entityCorrespond.name,
-    val keyFireBase: String = "-<$id($nom)",
+    val keyFireBase: String = getkeyFireBase(id, nom),
 
     val needUpdate: Boolean = false
 )
@@ -57,14 +58,21 @@ data class D_TarificationInfos(
     @PrimaryKey
     val vidTimestamp: Long = 0L,
     val nom: String= getStrDateTime(),
-    val keyFireBase: String = "-<$vidTimestamp($nom)",
+    val keyFireBase: String = getkeyFireBase(vidTimestamp, nom),
     val idProduit: Long = 0L,
     val idClient: Long = 0L,
     val idTypeTarification: Long = 0L,
-    val prixCurrency: Double = 0.0 ,
+    val prixCurrency: Double = 0.0,
 
-    val needUpdate: Boolean = false ,
-    )
+    val needUpdate: Boolean = false
+)
+
+fun getkeyFireBase(
+    dataId: Long,
+    dataNom: String
+): String {
+    return "-<$dataId($dataNom)"
+}
 
 enum class TypeTarificationEnum {
     ParBenifice,
@@ -142,6 +150,7 @@ fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minut
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis
 }
+
 @SuppressLint("DefaultLocale")
 fun getStrDateTime(): String {
     val calendar = Calendar.getInstance()
@@ -150,7 +159,8 @@ fun getStrDateTime(): String {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
+    val second = calendar.get(Calendar.SECOND)
 
-    // Format: yyyy-mm-dd -< HH:mm
-    return String.format("%04d-%02d-%02d -< %02d:%02d", year, month, day, hour, minute)
+    // Format: yyyy-mm-dd -< HH:mm:ss
+    return String.format("%04d-%02d-%02d -< %02d:%02d:%02d", year, month, day, hour, minute, second)
 }

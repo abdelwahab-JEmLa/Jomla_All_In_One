@@ -1,3 +1,4 @@
+// Updated mapFromFirebaseSnapshot.kt
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
@@ -6,6 +7,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.getkeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 
@@ -63,7 +65,7 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
             }
 
             // Use Firebase key as keyFireBase property
-            val keyFireBase = childSnap.key ?: ""
+            val keyFireBase = childSnap.key ?: getkeyFireBase(id, typeTarifEnum.name)
 
             val instance = C_TypeTarificationInfos(
                 id = id,
@@ -92,13 +94,25 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
             // Create a map to hold parameter values
             val paramValues = mutableMapOf<String, Any?>()
 
+            // Get id and name for keyFireBase generation
+            var id: Long = 0
+            var nom: String = ""
+
             // First pass: collect all values from the snapshot
             for (param in constructor.parameters) {
                 val paramName = param.name ?: continue
 
-                if (paramName == "keyFireBase") {
-                    // For keyFireBase, use the Firebase key directly
-                    paramValues[paramName] = childSnap.key
+                if (paramName == "id") {
+                    val idValue = childSnap.child(paramName).getValue(Long::class.java) ?: 0L
+                    paramValues[paramName] = idValue
+                    id = idValue
+                } else if (paramName == "nom") {
+                    val nomValue = childSnap.child(paramName).getValue(String::class.java) ?: ""
+                    paramValues[paramName] = nomValue
+                    nom = nomValue
+                } else if (paramName == "keyFireBase") {
+                    // For keyFireBase, use the Firebase key directly or generate one
+                    paramValues[paramName] = childSnap.key ?: getkeyFireBase(id, nom)
                 } else {
                     val childValue = childSnap.child(paramName)
                     if (childValue.exists()) {

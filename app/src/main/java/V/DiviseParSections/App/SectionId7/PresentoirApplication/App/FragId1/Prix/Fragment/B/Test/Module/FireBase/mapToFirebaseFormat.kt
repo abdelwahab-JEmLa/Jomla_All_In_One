@@ -1,6 +1,8 @@
+// Updated mapToFirebaseFormat.kt
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.Module.FireBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.getkeyFireBase
 import kotlin.reflect.full.memberProperties
 
 fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {
@@ -12,8 +14,9 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val produitMap = produit::class.memberProperties.associate {
                 it.name to (it.getter.call(produit) ?: "null")
             }
-            // Always use keyFireBase as the key
-            val key = produit.keyFireBase
+            // Always use keyFireBase as the key, or generate one if empty
+            val key = produit.keyFireBase.takeIf { it.isNotEmpty() }
+                ?: getkeyFireBase(produit.id, produit.nom)
             productsMap[key] = produitMap
         } catch (e: Exception) {}
     }
@@ -27,8 +30,9 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val clientMap = client::class.memberProperties.associate {
                 it.name to (it.getter.call(client) ?: "null")
             }
-            // Always use keyFireBase as the key
-            val key = client.keyFireBase
+            // Always use keyFireBase as the key, or generate one if empty
+            val key = client.keyFireBase.takeIf { it.isNotEmpty() }
+                ?: getkeyFireBase(client.id, client.nom)
             clientsMap[key] = clientMap
         } catch (e: Exception) {}
     }
@@ -50,8 +54,9 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
                     typeMap[prop.name] = "null"
                 }
             }
-            // Always use keyFireBase as the key
-            val key = typeTarif.keyFireBase
+            // Always use keyFireBase as the key, or generate one if empty
+            val key = typeTarif.keyFireBase.takeIf { it.isNotEmpty() }
+                ?: getkeyFireBase(typeTarif.id, typeTarif.nom)
             typeTarifMap[key] = typeMap
         } catch (e: Exception) {}
     }
@@ -65,8 +70,9 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             val tarifMap = tarif::class.memberProperties.associate {
                 it.name to (it.getter.call(tarif) ?: "null")
             }
-            // Always use keyFireBase as the key
-            val key = tarif.keyFireBase
+            // Always use keyFireBase as the key, or generate one if empty
+            val key = tarif.keyFireBase.takeIf { it.isNotEmpty() }
+                ?: getkeyFireBase(tarif.vidTimestamp, tarif.nom)
             tarifsMap[key] = tarifMap
         } catch (e: Exception) {}
     }
