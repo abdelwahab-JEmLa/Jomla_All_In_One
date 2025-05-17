@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models
 
-import com.example.clientjetpack.ID4.Test.Models.createTimestamp
 import android.annotation.SuppressLint
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -131,7 +130,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
         ),
         d_TarificationInfos = mutableListOf(
             D_TarificationInfos(
-                vidTimestamp = com.example.clientjetpack.ID4.Test.Models.createTimestamp(
+                vidTimestamp = createTimestamp(
                     day = 1,
                     hour = 12,
                     minute = 30
@@ -142,7 +141,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 prixCurrency = 20.99
             ),
             D_TarificationInfos(
-                vidTimestamp = com.example.clientjetpack.ID4.Test.Models.createTimestamp(
+                vidTimestamp = createTimestamp(
                     day = 5,
                     hour = 13,
                     minute = 30
@@ -153,7 +152,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 prixCurrency = 25.50
             ),
             D_TarificationInfos(
-                vidTimestamp = com.example.clientjetpack.ID4.Test.Models.createTimestamp(
+                vidTimestamp = createTimestamp(
                     day = 5,
                     hour = 14,
                     minute = 30
@@ -164,7 +163,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 prixCurrency = 9.75
             ),
             D_TarificationInfos(
-                vidTimestamp = com.example.clientjetpack.ID4.Test.Models.createTimestamp(
+                vidTimestamp = createTimestamp(
                     day = 6,
                     hour = 3,
                     minute = 30
@@ -175,7 +174,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 prixCurrency = 15.25
             ),
             D_TarificationInfos(
-                vidTimestamp = com.example.clientjetpack.ID4.Test.Models.createTimestamp(
+                vidTimestamp = createTimestamp(
                     day = 6,
                     hour = 4,
                     minute = 30
