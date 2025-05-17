@@ -37,6 +37,75 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
+    fun ajouteSiExistePas(id: Long, nom: String? = null) {
+        val existingProduct = getProduitInfos(id)
+
+        if (existingProduct == null) {
+            val newData = A_ProduitInfos(
+                id = id,
+                nom = nom ?: "Product $id",
+                needUpdate = true
+            )
+
+            repositoryCoroutine.launch {
+                val currentData = sqlRepository.modelListFlow.value.firstOrNull()
+                if (currentData != null) {
+                    val updatedData = currentData.copy(
+                        a_ProduitInfos = currentData.a_ProduitInfos.toMutableList().apply {
+                            add(newData)
+                        }
+                    )
+                    sqlRepository.add(updatedData)
+                }
+            }
+        }
+    }
+
+    fun getProduitInfos(id: Long): A_ProduitInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.a_ProduitInfos.find { it.id == id }
+    }
+
+    fun getClientInfos(id: Long): SqlClientInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.b_ClientInfos.find { it.id == id }
+    }
+
+    fun getTypeTarificationInfos(id: Long): C_TypeTarificationInfos? {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return null
+
+        val sqlData = sqlDataList.first()
+        return sqlData.c_TypeTarificationInfos.find { it.id == id }
+    }
+
+    fun getTarificationInfos(
+        idProduit: Long,
+        idClient: Long,
+        idTypeTarification: Long
+    ): List<D_TarificationInfos> {
+        val sqlDataList = sqlRepository.modelListFlow.value
+        if (sqlDataList.isEmpty()) return emptyList()
+
+        val sqlData = sqlDataList.first()
+        return sqlData.d_TarificationInfos.filter {
+            it.idProduit == idProduit &&
+                    it.idClient == idClient &&
+                    it.idTypeTarification == idTypeTarification
+        }
+    }
+
+    suspend fun refreshNoSqlData() {
+        val noSqlData = convertSqlToNoSql()
+        _noSqlDataFlow.value = noSqlData
+    }
+
     private suspend fun convertSqlToNoSql(
         onSuccess: () -> Unit = {}
     ): ProduitNoSqlDataBase {
@@ -51,7 +120,8 @@ class ConvertiseurNoSqlToSqlRepository(
                 val sqlData = sqlDataList.first()
 
                 val produitsList = sqlData.a_ProduitInfos.map { produit ->
-                    val produitTarifications = sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
+                    val produitTarifications =
+                        sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
                     val clientGroups = produitTarifications.groupBy { it.idClient }
 
                     val clientAcheteurs = clientGroups.map { (clientId, clientTarifications) ->
@@ -100,46 +170,5 @@ class ConvertiseurNoSqlToSqlRepository(
                 ProduitNoSqlDataBase(emptyList())
             }
         }
-    }
-
-    fun getProduitInfos(id: Long): A_ProduitInfos? {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return null
-
-        val sqlData = sqlDataList.first()
-        return sqlData.a_ProduitInfos.find { it.id == id }
-    }
-
-    fun getClientInfos(id: Long): SqlClientInfos? {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return null
-
-        val sqlData = sqlDataList.first()
-        return sqlData.b_ClientInfos.find { it.id == id }
-    }
-
-    fun getTypeTarificationInfos(id: Long): C_TypeTarificationInfos? {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return null
-
-        val sqlData = sqlDataList.first()
-        return sqlData.c_TypeTarificationInfos.find { it.id == id }
-    }
-
-    fun getTarificationInfos(idProduit: Long, idClient: Long, idTypeTarification: Long): List<D_TarificationInfos> {
-        val sqlDataList = sqlRepository.modelListFlow.value
-        if (sqlDataList.isEmpty()) return emptyList()
-
-        val sqlData = sqlDataList.first()
-        return sqlData.d_TarificationInfos.filter {
-            it.idProduit == idProduit &&
-                    it.idClient == idClient &&
-                    it.idTypeTarification == idTypeTarification
-        }
-    }
-
-    suspend fun refreshNoSqlData() {
-        val noSqlData = convertSqlToNoSql()
-        _noSqlDataFlow.value = noSqlData
     }
 }

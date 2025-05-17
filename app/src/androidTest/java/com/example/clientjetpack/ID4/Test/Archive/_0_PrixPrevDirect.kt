@@ -74,8 +74,9 @@ private fun FragmentMain(
                 ) {
                     items(uiState.outputModel.produits) { produit ->
                         val produitName =
-                            viewModel.getSqlProduit(produit.infosId)?.nom
+                            viewModel.getSqlProduitParSonNoSql(produit)?.nom
                                 ?: "Produit ${produit.infosId}"
+
                         ProduitCard(
                             produit = produit,
                             produitName = produitName,

@@ -39,27 +39,23 @@ class TarificationViewModel(
         }
     }
 
-    fun addNewDatasSiExistePas(
+    fun verifierAddNewDatasSiExistPas(
         produitIdSelectioneDuAncienDataBase: Long,
         clientIdSelectioneDuAncienDataBase: Long
     ) {
-
-    }
-
-    fun getSqlProduit(id: Long): A_ProduitInfos? {
-        return convertiseurNoSqlToSqlRepository.getProduitInfos(id)
+        viewModelScope.launch {
+            convertiseurNoSqlToSqlRepository.ajouteSiExistePas(produitIdSelectioneDuAncienDataBase, nom)
+        }
     }
 
     fun getSqlProduitParSonNoSql(noSqlData: ProduitNoSqlDataBase.Produit): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepository.getProduitInfos(noSqlData.infosId)
     }
 
-    fun getSqlClient(id: Long): SqlClientInfos? {
-        return convertiseurNoSqlToSqlRepository.getClientInfos(id)
-    }
-
-    fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
-        return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
+    fun getSql_SqlClient(
+        noSqlData: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification
+    ): C_TypeTarificationInfos? {
+        return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
     }
 
     fun getSql_TypeTarification(
@@ -67,7 +63,6 @@ class TarificationViewModel(
     ): C_TypeTarificationInfos? {
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
     }
-
 
     fun getSqlTarifications(
         idProduit: Long,

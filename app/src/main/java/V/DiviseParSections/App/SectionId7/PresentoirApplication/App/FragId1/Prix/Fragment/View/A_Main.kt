@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,12 +33,14 @@ fun FragmentMain(
 ) {
     val uiState by viewModel.uiState
 
-   //<--
-   //TODO(1): ajout une lunched effecte qui lence vm .addNewDatasSiExistePas()
-    viewModel.addNewDatasSiExistePas(
-        produitIdSelectioneDuAncienDataBase,
-        clientIdSelectioneDuAncienDataBase
-    )
+    // Added LaunchedEffect to call verifierAddNewDatasSiExistPas when component is first rendered
+    LaunchedEffect(produitIdSelectioneDuAncienDataBase, clientIdSelectioneDuAncienDataBase) {
+        viewModel.verifierAddNewDatasSiExistPas(
+            produitIdSelectioneDuAncienDataBase,
+            clientIdSelectioneDuAncienDataBase
+        )
+    }
+
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
