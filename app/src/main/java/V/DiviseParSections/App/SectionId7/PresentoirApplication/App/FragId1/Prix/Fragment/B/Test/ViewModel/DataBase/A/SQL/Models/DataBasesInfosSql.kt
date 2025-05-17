@@ -27,7 +27,7 @@ data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = "",
-    val keyFireBase: String = getkeyFireBase(id, nom),
+    val keyFireBase: String = getKeyFireBase(id, nom),
 
     val needUpdate: Boolean = false
 )
@@ -37,7 +37,7 @@ data class B_ClientInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = "Non Difinie",
-    val keyFireBase: String = getkeyFireBase(id, nom),
+    val keyFireBase: String = getKeyFireBase(id, nom),
 
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = false
@@ -49,7 +49,7 @@ data class C_TypeTarificationInfos(
     val id: Long = 0,
     val entityCorrespond: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
     val nom: String= entityCorrespond.name,
-    val keyFireBase: String = getkeyFireBase(id, nom),
+    val keyFireBase: String = getKeyFireBase(id, nom),
 
     val needUpdate: Boolean = false
 )
@@ -58,8 +58,8 @@ data class C_TypeTarificationInfos(
 data class D_TarificationInfos(
     @PrimaryKey
     val vidTimestamp: Long = 0L,
-    val nom: String= getStrDateTime(),
-    val keyFireBase: String = getkeyFireBase(dataNom=nom),
+    val nom: String= getStrDateTime(vidTimestamp),
+    val keyFireBase: String = getKeyFireBase(dataNom=nom),
     val idProduit: Long = 0L,
     val idClient: Long = 0L,
     val idTypeTarification: Long = 0L,
@@ -68,7 +68,7 @@ data class D_TarificationInfos(
     val needUpdate: Boolean = false
 )
 
-fun getkeyFireBase(
+fun getKeyFireBase(
     dataId: Long? = null,
     dataNom: String? = null
 ): String {
@@ -114,19 +114,19 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 id = 1,
                 entityCorrespond = TypeTarificationEnum.ParBenifice,
                 nom = "Par Bénifice",
-                keyFireBase = getkeyFireBase(1, "Par Bénifice")
+                keyFireBase = getKeyFireBase(1, "Par Bénifice")
             ),
             C_TypeTarificationInfos(
                 id = 2,
                 entityCorrespond = TypeTarificationEnum.Historique,
                 nom = "Historique",
-                keyFireBase = getkeyFireBase(2, "Historique")
+                keyFireBase = getKeyFireBase(2, "Historique")
             ),
             C_TypeTarificationInfos(
                 id = 3,
                 entityCorrespond = TypeTarificationEnum.LeMaxPrixArrive,
                 nom = "Prix Maximum",
-                keyFireBase = getkeyFireBase(3, "Prix Maximum")
+                keyFireBase = getKeyFireBase(3, "Prix Maximum")
             )
         ),
         d_TarificationInfos = mutableListOf(
@@ -177,8 +177,10 @@ fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minut
 }
 
 @SuppressLint("DefaultLocale")
-fun getStrDateTime(): String {
+fun getStrDateTime(vidTimestamp: Long): String {
     val calendar = Calendar.getInstance()
+    calendar.timeInMillis = vidTimestamp  // Use the provided timestamp
+
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
     val day = calendar.get(Calendar.DAY_OF_MONTH)

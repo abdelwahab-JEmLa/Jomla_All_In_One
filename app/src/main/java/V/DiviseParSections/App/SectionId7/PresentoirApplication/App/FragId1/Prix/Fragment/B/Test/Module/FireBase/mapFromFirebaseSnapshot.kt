@@ -7,7 +7,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.getkeyFireBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 
@@ -65,7 +65,7 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
             }
 
             // Use Firebase key as keyFireBase property
-            val keyFireBase = childSnap.key ?: getkeyFireBase(id, typeTarifEnum.name)
+            val keyFireBase = childSnap.key ?: getKeyFireBase(id, typeTarifEnum.name)
 
             val instance = C_TypeTarificationInfos(
                 id = id,
@@ -112,7 +112,7 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
                     nom = nomValue
                 } else if (paramName == "keyFireBase") {
                     // For keyFireBase, use the Firebase key directly or generate one
-                    paramValues[paramName] = childSnap.key ?: getkeyFireBase(id, nom)
+                    paramValues[paramName] = childSnap.key ?: getKeyFireBase(id, nom)
                 } else {
                     val childValue = childSnap.child(paramName)
                     if (childValue.exists()) {
