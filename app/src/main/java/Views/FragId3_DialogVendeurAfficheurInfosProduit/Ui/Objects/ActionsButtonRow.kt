@@ -1,36 +1,46 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View.FragmentMain
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
- fun ActionsButtonRow(
+fun ActionsButtonRow(
     viewModel: HeadViewModel,
     currentSale: SoldArticlesTabelle,
     currentClient: B_ClientsDataBase?,
@@ -40,12 +50,66 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
     viewModelInitApp: ViewModelInitApp,
     parentCompose_1_2_ProduitAcheteOperationVid: Long
 ) {
+    // State for showing the pricing history dialog
+    var showPricingHistoryDialog by remember { mutableStateOf(false) }
+
+    // Handle the pricing history dialog display
+    if (showPricingHistoryDialog) {
+        Dialog(
+            onDismissRequest = { showPricingHistoryDialog = false },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = true
+            )
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = 2.dp
+            ) {
+                // Get the product stats from current sale to pass to FragmentMain
+                val produitStats = viewModel._uiState.value.articlesBasesStatTables.find {
+                    it.idArticle.toLong() == currentSale.idArticle
+                }
+
+                produitStats?.let {
+                    FragmentMain(
+                        produitSelectioneDuAncienDataBase = it
+                    )
+                } ?: Text(
+                    text = "Product information not available",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
     ) {
+        // New pricing history button
+        OutlinedButton(
+            onClick = { showPricingHistoryDialog = true },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
+            )
+        ) {
+            Icon(
+                Icons.Outlined.History,
+                contentDescription = "View pricing history",
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text("Pricing History")
+        }
+
+        // Delete/Cancel button
         OutlinedButton(
             onClick = {
                 updateState(
@@ -77,6 +141,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             Text(stringResource(R.string.cancel_button))
         }
 
+        // Confirm purchase button
         FilledTonalButton(
             onClick = {
                 updateState(
@@ -86,7 +151,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
                 )
 
                 onConfirm()
-                      },
+            },
             modifier = Modifier.weight(1f)
         ) {
             Icon(
@@ -99,5 +164,3 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
         }
     }
 }
-
-

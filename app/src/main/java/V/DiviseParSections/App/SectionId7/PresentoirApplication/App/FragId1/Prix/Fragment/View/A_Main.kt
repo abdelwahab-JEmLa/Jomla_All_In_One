@@ -8,23 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,12 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 private const val TAG = "FragmentMain"
 
@@ -48,34 +36,24 @@ fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable,
 ) {
-    Log.d(TAG, "FragmentMain: Starting with product ID: ${produitSelectioneDuAncienDataBase.idArticle}")
-
     val uiState by viewModel.uiState
     val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
     val clientId = viewModel.ancienRepoOuvertClientId
-
-    Log.d(TAG, "FragmentMain: Product ID: $productId, Client ID: $clientId")
 
     var initialSetupComplete by remember { mutableStateOf(false) }
 
     LaunchedEffect(productId, clientId) {
         if (!initialSetupComplete) {
-            Log.d(TAG, "FragmentMain: Starting initial setup")
-
             viewModel.ajouteSiExistePas_A_ProduitInfos(
                 productId,
                 produitSelectioneDuAncienDataBase,
             )
-            Log.d(TAG, "FragmentMain: Product info added")
 
             viewModel.ajouteSiExistePas_B_ClientsDataBase()
-            Log.d(TAG, "FragmentMain: Client database setup complete")
 
             viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            Log.d(TAG, "FragmentMain: NoSQL data refreshed")
 
             initialSetupComplete = true
-            Log.d(TAG, "FragmentMain: Initial setup complete")
         }
     }
 
@@ -103,19 +81,31 @@ fun FilterMainScreen(
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
     LaunchedEffect(Unit) {
+        val previewData = getPreviewTypeTarificationsList()
 
         // Use a single log statement to reduce overhead
         val logBuilder = StringBuilder()
         logBuilder.append("DATA COMPARISON REPORT\n")
+        logBuilder.append("Real data size: ${typeTarificationsList.size}, Preview data size: ${previewData.size}\n")
 
         // Compare IDs and prices
         val realIds = typeTarificationsList.map { it.infosId }
+        val previewIds = previewData.map { it.infosId }
 
         logBuilder.append("Real data IDs: $realIds\n")
+        logBuilder.append("Preview data IDs: $previewIds\n")
 
         // Log differences between real and preview data
+        val missingInPreview = realIds.filter { it !in previewIds }
+        val missingInReal = previewIds.filter { it !in realIds }
 
+        if (missingInPreview.isNotEmpty()) {
+            logBuilder.append("IDs in real data but missing in preview: $missingInPreview\n")
+        }
 
+        if (missingInReal.isNotEmpty()) {
+            logBuilder.append("IDs in preview data but missing in real: $missingInReal\n")
+        }
 
         // Compare prices (only once)
         typeTarificationsList.forEach { type ->
@@ -179,6 +169,7 @@ fun FilterMainScreen(
                 MainList(
                     viewModel = viewModel,
                     typeTarificationsList = typeTarificationsList,
+                    // Using real data from database which now matches updated preview data
                     showOnlyLatestPrices = showOnlyLatestPrices,
                     modifier = Modifier.weight(1f)
                 )
@@ -223,6 +214,34 @@ fun FilterMainScreen(
     }
 }
 
+// Extract the preview data creation to a separate function so it can be reused for logging comparison
+fun getPreviewTypeTarificationsList(): List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+    return listOf(
+        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+            vidTimestamp = System.currentTimeMillis(),
+            infosId = 4, // Matches the real data ID
+            PrixsCurrency = listOf(
+                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                    vidTimestamp = System.currentTimeMillis(),
+                    valeur = 10.0 // Matches the real data price
+                )
+            )
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun prevMainList() {
+    // Use the extracted function to get preview data
+    val previewTypeTarificationsList = getPreviewTypeTarificationsList()
+
+    MainList(
+        typeTarificationsList = previewTypeTarificationsList,
+        showOnlyLatestPrices = false
+    )
+}
+
 @Composable
 fun MainList(
     viewModel: TarificationViewModel = koinViewModel(),
@@ -230,178 +249,18 @@ fun MainList(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val sortedTypes = remember(typeTarificationsList) {
-        typeTarificationsList.sortedBy { it.infosId }
-    }
-
-    Column(
-        modifier = modifier
-            .padding(16.dp)
+    Text("")
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        if (sortedTypes.isEmpty()) {
-            EmptyStateMessage()
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(sortedTypes) { typeTarification ->
-                    TarificationTypeCard(
-                        viewModel = viewModel,
-                        typeTarification = typeTarification,
-                        showOnlyLatestPrices = showOnlyLatestPrices
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateMessage() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "No pricing information available",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
-@Composable
-private fun TarificationTypeCard(
-    viewModel: TarificationViewModel,
-    typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
-    showOnlyLatestPrices: Boolean
-) {
-    val typeInfo = remember(typeTarification) {
-        viewModel.get_C_TypeTarificationInfos(typeTarification)
-    }
-
-    val prices = remember(typeTarification, showOnlyLatestPrices) {
-        if (showOnlyLatestPrices && typeTarification.PrixsCurrency.isNotEmpty()) {
-            listOf(typeTarification.PrixsCurrency.maxByOrNull { it.vidTimestamp } ?: typeTarification.PrixsCurrency.first())
-        } else {
-            typeTarification.PrixsCurrency.sortedByDescending { it.vidTimestamp }
-        }
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = typeInfo?.nom ?: "Type ${typeTarification.infosId}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                OutlinedButton(
-                    onClick = { /* Add functionality for adding new price */ },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Text("Add Price")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (prices.isNotEmpty()) {
-                PricesList(prices = prices)
-            } else {
-                Text(
-                    text = "No prices available",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun PricesList(prices: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        prices.forEachIndexed { index, price ->
-            PriceItem(
-                price = price,
-                isLatest = index == 0
-            )
-
-            if (index < prices.size - 1) {
-                Divider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    thickness = 0.5.dp
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun PriceItem(
-    price: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
-    isLatest: Boolean
-) {
-    val formattedDate = remember(price.vidTimestamp) {
-        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-        sdf.format(Date(price.vidTimestamp))
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = if (isLatest) "Current Price" else "Historical Price",
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (isLatest)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Text(
-                text = formattedDate,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+        items(typeTarificationsList) { typeTarification ->
+            TarificationTypeSection(
+                viewModel = viewModel,
+                typeTarification = typeTarification,
+                showOnlyLatestPrices = showOnlyLatestPrices,
             )
         }
-
-        Text(
-            text = "$${String.format("%.2f", price.valeur)}",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = if (isLatest) FontWeight.Bold else FontWeight.Normal,
-            color = if (isLatest)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.onSurface
-        )
     }
 }

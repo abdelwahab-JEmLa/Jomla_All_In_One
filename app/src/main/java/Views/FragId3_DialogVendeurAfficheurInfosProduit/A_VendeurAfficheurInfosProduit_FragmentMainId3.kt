@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View.FragmentMain
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ConfirmExitDialog
@@ -193,7 +193,7 @@ fun MainUi(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 4.dp)
+                            .padding(bottom = 80.dp)
                     ) {
                         articlesBaseStats?.let { stats ->
                             item {
@@ -202,34 +202,27 @@ fun MainUi(
                                 )
                             }
 
-//                            item {
-//                                // Add this debug log before passing the value
-//                                android.util.Log.d(
-//                                    "DEBUG_VID",
-//                                    "Passing to A_MainListFragId3: $parentCompose_1_2_ProduitAcheteOperationVid"
-//                                )
-//
-//                                A_MainListFragId3(
-//                                    currentSale = currentSale,
-//                                    stats = stats,
-//                                    colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-//                                    viewModel = viewModel,
-//                                    reloadTrigger = reloadTrigger,
-//                                    viewModelInitApp = viewModelInitApp,
-//                                    currentClient = currentClient,
-//                                    colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-//                                    parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-//                                    clickedCouleurIndex = clickedCouleurIndex,
-//
-//                                    )
-//                            }
                             item {
-                                repository_1_3_TransactionCommercialclientAcheteurID?.let {
-                                    FragmentMain(
-                                        produitSelectioneDuAncienDataBase = stats,
+                                // Add this debug log before passing the value
+                                android.util.Log.d(
+                                    "DEBUG_VID",
+                                    "Passing to A_MainListFragId3: $parentCompose_1_2_ProduitAcheteOperationVid"
+                                )
+
+                                A_MainListFragId3(
+                                    currentSale = currentSale,
+                                    stats = stats,
+                                    colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                                    viewModel = viewModel,
+                                    reloadTrigger = reloadTrigger,
+                                    viewModelInitApp = viewModelInitApp,
+                                    currentClient = currentClient,
+                                    colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                                    parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
+                                    clickedCouleurIndex = clickedCouleurIndex,
                                     )
-                                }
                             }
+
                             item {
                                 Details(
                                     isDetailsVisible = isDetailsVisible,
