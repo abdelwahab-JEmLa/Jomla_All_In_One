@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun PreviewTest() {
     FragmentMain(
         produitSelectioneDuAncienDataBase= ArticlesBasesStatsTable(
-            idArticle = 849,
+            idArticle = 1,
             nomArticleFinale = "Non",
             monPrixVent = 100.00
         )

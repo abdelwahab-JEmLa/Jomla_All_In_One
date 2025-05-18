@@ -44,7 +44,7 @@ class InfosSqlDataBasesRepository(
     init {
         coroutineScope.launch {
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
-          //  verifieFireBaseEstVide()
+            verifieFireBaseEstVide()
             collectRoom()
             fireBaseOperationsHandler.startNeedUpdateListener()
         }
@@ -114,22 +114,6 @@ class InfosSqlDataBasesRepository(
                 modelList = combinedData
             }
         }
-    }
-
-    fun changeOuvertClient(
-        b_ClientInfos: B_ClientInfos,
-        sqlRepository: InfosSqlDataBasesRepository
-    ) {
-        // Create updated list with the target client set to open
-        val updatedClientList = currentData?.b_ClientInfosList?.map { cli ->
-            if (cli.id == b_ClientInfos.id) {
-                cli.copy(cLeDataOuvertDuParentList = true)
-            } else {
-                cli.copy(cLeDataOuvertDuParentList = false)
-            }
-        }?.toMutableList()
-
-        updatedClientList?.let { sqlRepository.updateMultiClientInfos(it) }
     }
 
     suspend fun upsert(
