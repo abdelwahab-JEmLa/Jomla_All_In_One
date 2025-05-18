@@ -49,7 +49,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // Title or header for the transactions section
+        // Title or header for the transactions sectionSqlRepository
 
 
         // Regular Column without scrolling behavior

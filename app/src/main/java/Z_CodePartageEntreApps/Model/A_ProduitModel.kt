@@ -53,7 +53,7 @@ class A_ProduitModel(
                 _coloursEtGoutsIds.addAll(value)
             }
 
-        // Function to add a new color ID
+        // Function to upsert a new color ID
         fun addColorId(colorId: Long) {
             _coloursEtGoutsIds.add(colorId)
         }

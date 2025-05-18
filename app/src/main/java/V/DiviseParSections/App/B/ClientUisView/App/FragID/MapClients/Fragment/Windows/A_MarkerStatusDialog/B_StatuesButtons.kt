@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -108,10 +108,8 @@ fun CommandButton(
                 val selectedMarkedID = selectedMarker.id.toLong()
                 viewModel.updateLongAppSetting(selectedMarkedID)
 
-                // Finish and dismiss the dialog
                 onUpdateLongAppSetting()
                 onDismiss()
-
             }
         },
         modifier = modifier.fillMaxWidth(),

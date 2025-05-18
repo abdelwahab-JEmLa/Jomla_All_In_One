@@ -202,7 +202,7 @@ fun formatDateLabel(timestamp: Long): String {
     return when {
         com.example.clientjetpack.isSameDay(today.timeInMillis, timestamp) -> "Aujourd'hui"
         com.example.clientjetpack.isSameDay(today.apply {
-            add(
+            upsert(
                 Calendar.DAY_OF_MONTH,
                 -1
             )
@@ -221,7 +221,7 @@ fun getWeekDateRange(weekStartTimestamp: Long): String {
 
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = weekStartTimestamp
-    calendar.add(Calendar.DAY_OF_WEEK, 6) // End of week (6 days after start)
+    calendar.upsert(Calendar.DAY_OF_WEEK, 6) // End of week (6 days after start)
     val endDate = calendar.time
 
     return "${dateFormat.format(startDate)} - ${dateFormat.format(endDate)}"

@@ -81,7 +81,7 @@ class K_TempTravailleRepositoryImpl :
                 modelDatas = modelDatas,
                 date = currentDate.split("/").let { "${it[1]}.${it[2]}" } // Convert from yyyy/MM/dd to MM.dd
             ) { recordId ->
-                // Now add the interval
+                // Now upsert the interval
                 val record = modelDatas.find { it.vid == recordId }
                 if (record != null) {
                     IntervalesEtJoursHandler.addNewInterval(
@@ -185,7 +185,7 @@ class K_TempTravailleRepositoryImpl :
         intervalId: String?,
         startTime: String?
     ) {
-        // Use the BonAchatInfos_FragID3 handler to add a new interval
+        // Use the BonAchatInfos_FragID3 handler to upsert a new interval
         IntervalesEtJoursHandler.addNewInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -396,7 +396,7 @@ class K_TempTravailleRepositoryImpl :
     }
 
     override fun ajoutJour(date: String) {
-        // Use the BonAchatInfos_FragID3 handler to add a new day
+        // Use the BonAchatInfos_FragID3 handler to upsert a new day
         IntervalesEtJoursHandler.ajoutJour(
             modelDatas = modelDatas,
             date = date

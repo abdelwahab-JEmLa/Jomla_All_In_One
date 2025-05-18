@@ -20,7 +20,7 @@ interface _02_VendeursActiveDonsCettePeriode_RoomSQlModelDao {
     suspend fun getAll(): MutableList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(produitAcheteOperation: _02_VendeursActiveDonsCettePeriodeRoomSQlModel): Long
+    suspend fun upsert(produitAcheteOperation: _02_VendeursActiveDonsCettePeriodeRoomSQlModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertEtReturnSonNewVid(item: _02_VendeursActiveDonsCettePeriodeRoomSQlModel)

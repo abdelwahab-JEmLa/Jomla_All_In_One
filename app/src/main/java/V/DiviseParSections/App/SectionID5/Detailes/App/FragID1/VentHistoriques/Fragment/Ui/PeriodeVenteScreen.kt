@@ -280,7 +280,7 @@ fun PeriodeDetailScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Vendeurs section
+        // Vendeurs sectionSqlRepository
         Text(
             text = "Vendeurs (${periode.child_012_Compts_Vendeurs.size})",
             style = MaterialTheme.typography.titleLarge,

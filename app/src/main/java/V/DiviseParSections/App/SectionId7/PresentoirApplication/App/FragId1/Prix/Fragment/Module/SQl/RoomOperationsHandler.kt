@@ -9,7 +9,7 @@ class RoomOperationsHandler(private val database: AppDatabase) {
     suspend fun insertAll(data: DataBasesInfosSql): Boolean = withContext(Dispatchers.IO) {
         try {
             database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
-            database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
+            database.b_ClientInfosDao().insertAll(data.b_ClientInfosList)
             database.c_TypeTarificationInfosDao().insertAll(data.c_TypeTarificationInfos)
             database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
             true
@@ -37,9 +37,9 @@ class RoomOperationsHandler(private val database: AppDatabase) {
                 database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
             }
 
-            if (data.b_ClientInfos.isNotEmpty()) {
+            if (data.b_ClientInfosList.isNotEmpty()) {
                 database.b_ClientInfosDao().deleteAll()
-                database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
+                database.b_ClientInfosDao().insertAll(data.b_ClientInfosList)
             }
 
             if (data.c_TypeTarificationInfos.isNotEmpty()) {
@@ -66,7 +66,7 @@ class RoomOperationsHandler(private val database: AppDatabase) {
             
             DataBasesInfosSql(
                 a_ProduitInfos = produits.toMutableList(),
-                b_ClientInfos = clients.toMutableList(),
+                b_ClientInfosList = clients.toMutableList(),
                 c_TypeTarificationInfos = typeTarifications.toMutableList(),
                 d_TarificationInfos = tarifications.toMutableList()
             )

@@ -19,12 +19,12 @@ fun addToMapOsmdroid(
     mapView: MapView, secteurPolygonInfoList: List<NoSqlSecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<E1SecteurDeClients>,
 ) {
-    Log.d("PolygonCreator", "Starting to add sectors to map")
+    Log.d("PolygonCreator", "Starting to upsert sectors to map")
     Log.d("PolygonCreator", "Number of sectors: ${allSecteurs.size}")
     Log.d("PolygonCreator", "Number of polygon points: ${allPolygonPoints.size}")
     Log.d("PolygonCreator", "Number of secteurPolygonInfo items: ${secteurPolygonInfoList.size}")
 
-    // For each secteurPolygonInfo, create and add a polygon to the map
+    // For each secteurPolygonInfo, create and upsert a polygon to the map
     secteurPolygonInfoList.forEach { secteurPolygonInfo ->
         Log.d("PolygonCreator", "Processing secteur info: ${secteurPolygonInfo.keyIDSecteurDeClients}")
 

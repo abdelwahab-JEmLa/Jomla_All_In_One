@@ -87,7 +87,7 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
 fun FireBaseOperationsHandler.resetNeedUpdateFlags(data: DataBasesInfosSql) {
     val updatedData = DataBasesInfosSql(
         a_ProduitInfos = data.a_ProduitInfos.map { it.copy(needUpdate = false) }.toMutableList(),
-        b_ClientInfos = data.b_ClientInfos.map { it.copy(needUpdate = false) }.toMutableList(),
+        b_ClientInfosList = data.b_ClientInfosList.map { it.copy(needUpdate = false) }.toMutableList(),
         c_TypeTarificationInfos = data.c_TypeTarificationInfos.map { it.copy(needUpdate = false) }.toMutableList(),
         d_TarificationInfos = data.d_TarificationInfos.map { it.copy(needUpdate = false) }.toMutableList()
     )

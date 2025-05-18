@@ -286,7 +286,7 @@ object FromAncienDataBase {
                     viewModel._modelAppsFather.grossistsDataBase.removeAll { it.id == deletedId }
                 }
 
-                // Update or add suppliers
+                // Update or upsert suppliers
                 snapshot.children.forEach { snap ->
                     val supplier = snap.getValue(TabelleSuppliersSA::class.java) ?: return@forEach
                     val grossist = C_GrossistsDataBase(

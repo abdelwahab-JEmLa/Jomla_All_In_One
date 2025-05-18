@@ -84,7 +84,7 @@ fun SearchFilterPB(
                 },
             trailingIcon = {
                 if (filterText.isNotEmpty()) {
-                    // Row to contain both clear and add buttons
+                    // Row to contain both clear and upsert buttons
                     Row {
                         // Clear button
                         IconButton(

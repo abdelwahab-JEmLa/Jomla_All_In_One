@@ -51,7 +51,7 @@ data class C_GrossistsDataBase(
                     if (index != -1) {
                         updatedList[index] = currentState
                     } else {
-                        // If grossist doesn't exist, add them
+                        // If grossist doesn't exist, upsert them
                         updatedList.add(currentState)
                     }
 

@@ -40,7 +40,7 @@ fun creeDepuitAncienDataBases(
                     }
 
                     var colorsAdded = 0
-                    // In creeDepuitAncienDataBases.kt, modify the relevant section:
+                    // In creeDepuitAncienDataBases.kt, modify the relevant sectionSqlRepository:
                     listOf(
                         ancien.idcolor1 to 1L,
                         ancien.idcolor2 to 2L,

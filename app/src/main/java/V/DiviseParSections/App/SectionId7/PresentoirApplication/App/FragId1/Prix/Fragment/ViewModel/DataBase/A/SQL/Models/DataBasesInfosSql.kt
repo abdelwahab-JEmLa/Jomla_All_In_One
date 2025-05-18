@@ -9,7 +9,7 @@ data class DataBasesInfosSql(
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val refFireBaseA_ProduitInfos: String="A_ProduitInfos",
 
-    val b_ClientInfos: MutableList<B_ClientInfos> = mutableListOf(),
+    val b_ClientInfosList: MutableList<B_ClientInfos> = mutableListOf(),
     val refFireBaseB_ClientInfos: String="B_ClientInfos",
 
     val c_TypeTarificationInfos: MutableList<C_TypeTarificationInfos> = mutableListOf(),
@@ -37,6 +37,7 @@ data class B_ClientInfos(
     val nom: String = "Non Difinie",
     val keyFireBase: String = getKeyFireBase(id, nom),
 
+    var cLeDataOuvertDuParentList: Boolean = false,
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = true
 )
@@ -91,7 +92,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
             A_ProduitInfos(id = 2, nom = "Produit Hnina"),
             A_ProduitInfos(id = 3, nom = "Produit kemya")
         ),
-        b_ClientInfos = mutableListOf(
+        b_ClientInfosList = mutableListOf(
             B_ClientInfos(
                 id = 1,
                 nom = "ClientAchteur Abderrahman",

@@ -79,13 +79,13 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
 
                 // Set the data in Firebase
                 C_GrossistsDataBaseRepository.caReference.child(sanitizedKey).setValue(firebaseData)
-                    .addOnFailureListener { e -> println("Firebase add failed: ${e.message}") }
+                    .addOnFailureListener { e -> println("Firebase upsert failed: ${e.message}") }
             } else {
                 // If it already exists, upsert_1_3_TransactionCommercial it instead
                 updateData(data)
             }
         } catch (e: Exception) {
-            println("Failed to add data: ${e.message}")
+            println("Failed to upsert data: ${e.message}")
         }
     }
 

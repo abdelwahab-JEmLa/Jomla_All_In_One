@@ -71,12 +71,12 @@ fun Clients(
     // Clients
     assertEquals(
         "Clients list size should match",
-        expected.b_ClientInfos.size,
-        actual.b_ClientInfos.size
+        expected.b_ClientInfosList.size,
+        actual.b_ClientInfosList.size
     )
 
-    expected.b_ClientInfos.forEach { expectedClient ->
-        val actualClient = actual.b_ClientInfos.find { it.id == expectedClient.id }
+    expected.b_ClientInfosList.forEach { expectedClient ->
+        val actualClient = actual.b_ClientInfosList.find { it.id == expectedClient.id }
             ?: throw AssertionError("Client with ID ${expectedClient.id} not found")
 
         assertEquals(

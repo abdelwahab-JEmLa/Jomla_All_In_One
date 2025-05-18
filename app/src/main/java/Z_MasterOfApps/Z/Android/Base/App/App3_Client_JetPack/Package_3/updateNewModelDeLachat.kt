@@ -56,7 +56,7 @@ fun updateNewModelDeLachat(
             if (colorIndex != -1) {
                 existingSale.colours_Achete[colorIndex] = colorPurchase
             } else {
-                existingSale.colours_Achete.add(colorPurchase)
+                existingSale.colours_Achete.upsert(colorPurchase)
             }
         } else {
             val newSale = ClientBonVentModel(
@@ -64,9 +64,9 @@ fun updateNewModelDeLachat(
                 clientIdChoisi = currentClient.id
             ).apply {
 
-                colours_Achete.add(colorPurchase)
+                colours_Achete.upsert(colorPurchase)
             }
-            product.bonsVentDeCetteCota.add(newSale)
+            product.bonsVentDeCetteCota.upsert(newSale)
         }
 
         // Format current date as yyyy-MM-dd
@@ -109,7 +109,7 @@ fun updateNewModelDeLachat(
                 it.mutableBasesStates
                     ?.dateInString == currentDate
             }) {
-            product.historiqueBonsCommend.add(newBonCommande)
+            product.historiqueBonsCommend.upsert(newBonCommande)
         }
 
         viewModelInitApp.viewModelScope.launch {
@@ -134,12 +134,12 @@ fun createNewProduct(
         itsTempProduit = true,
     ).apply {
         nom = nameArticle ?: "New Product ${maxId + 1}"
-        coloursEtGouts.add(
+        coloursEtGouts.upsert(
             A_ProduitModel.ColourEtGout_Model(
                 sonImageNeExistPas = true
             )
         )
     }.also {
-        viewModelInitApp._modelAppsFather.produitsMainDataBase.add(it)
+        viewModelInitApp._modelAppsFather.produitsMainDataBase.upsert(it)
     }      */
 }

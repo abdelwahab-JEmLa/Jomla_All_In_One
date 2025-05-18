@@ -141,7 +141,7 @@ class __ID3InstrumentalTest : KoinTest {
         testScheduler.advanceUntilIdle()
 
         // Add test data
-        infosSqlDataBasesRepository.add(testDatasDataBasesInfosSql())
+        infosSqlDataBasesRepository.upsert(testDatasDataBasesInfosSql())
         // Advance time to process all coroutines related to adding data
         testScheduler.advanceUntilIdle()
 

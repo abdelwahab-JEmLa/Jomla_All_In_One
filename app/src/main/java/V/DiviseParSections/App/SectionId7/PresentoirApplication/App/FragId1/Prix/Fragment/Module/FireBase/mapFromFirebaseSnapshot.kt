@@ -43,7 +43,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
 
     return DataBasesInfosSql(
         a_ProduitInfos = products,
-        b_ClientInfos = clients,
+        b_ClientInfosList = clients,
         c_TypeTarificationInfos = typeTarifications,
         d_TarificationInfos = tarifications
     )

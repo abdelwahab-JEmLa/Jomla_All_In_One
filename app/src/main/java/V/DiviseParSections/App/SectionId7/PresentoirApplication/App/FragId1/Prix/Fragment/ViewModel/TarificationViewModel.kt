@@ -10,6 +10,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -62,6 +63,9 @@ class TarificationViewModel(
 
             ajouteSiExistePas_B_ClientsDataBase()
 
+            // Wait for data to refresh after client addition
+            convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
             val selectedProduct =
                 _uiState.value.outputModel.produits.find { it.infosId == _uiState.value.selectedProductId }
             val selectedClient =
@@ -70,7 +74,7 @@ class TarificationViewModel(
 
             verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
 
-            // Check all type tarifications and add missing D_TarificationInfos
+            // Check all type tarifications and upsert missing D_TarificationInfos
             typeTarificationsList.forEach { typeTarification ->
                 verifierAdd_D_TarificationInfos(typeTarification)
             }
@@ -108,7 +112,7 @@ class TarificationViewModel(
                     val currentData = convertiseurNoSqlToSqlRepository
                         .noSqlDataFlow.value
 
-                    // Use the repository to add the new tarification
+                    // Use the repository to upsert the new tarification
                     convertiseurNoSqlToSqlRepository.copyAdd_D_TarificationInfos(newTarification)
                 }
             }
@@ -142,12 +146,55 @@ class TarificationViewModel(
             val clientRelated = ancienClientRepository.modelDatas.find { it.id == clientId }
 
             if (clientRelated != null) {
+                Log.d(TAG, "Adding client with ID: ${clientRelated.id}, Name: ${clientRelated.nom}")
+
                 val new = B_ClientInfos(
-                    clientRelated.id,
-                    clientRelated.nom,
+                    id = clientRelated.id,
+                    nom = clientRelated.nom,
+                    needUpdate = true
                 )
-                convertiseurNoSqlToSqlRepository.copyAdd_B_ClientInfos(new)
+
+                // Add client synchronously and wait for completion
+                viewModelScope.launch {
+                    convertiseurNoSqlToSqlRepository.copyAdd_B_ClientInfos(new)
+
+                    // Double check if client was added
+                    val clientAfterAdd = convertiseurNoSqlToSqlRepository.getB_ClientInfos(clientId)
+                    if (clientAfterAdd == null) {
+                        Log.e(TAG, "Failed to upsert client with ID: $clientId")
+                    } else {
+                        Log.d(TAG, "Successfully added client with ID: $clientId")
+
+                        // Create default type tarification and entry for this client-product pair
+                        val productId = _uiState.value.selectedProductId
+                        if (productId != null) {
+                            // Create a default pricing entry
+                            val defaultTypeTarification = 4L // PRIX_BASE
+                            val defaultPrice = 0.0
+                            val timestamp = System.currentTimeMillis()
+
+                            val newTarification = D_TarificationInfos(
+                                vidTimestamp = timestamp,
+                                idProduit = productId,
+                                idClient = clientId,
+                                idTypeTarification = defaultTypeTarification,
+                                prixCurrency = defaultPrice,
+                                needUpdate = true
+                            )
+
+                            convertiseurNoSqlToSqlRepository.copyAdd_D_TarificationInfos(newTarification)
+                            Log.d(TAG, "Added default tarification for client-product pair")
+                        }
+                    }
+
+                    // Force refresh the NoSQL data to reflect changes
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                }
+            } else {
+                Log.e(TAG, "ClientRelated not found in ancienClientRepository for ID: $clientId")
             }
+        } else {
+            Log.d(TAG, "Client already exists with ID: $clientId")
         }
     }
 
@@ -155,6 +202,8 @@ class TarificationViewModel(
         val existingProduct = convertiseurNoSqlToSqlRepository.getProduitInfos(id)
 
         if (existingProduct == null && nom != null) {
+            Log.d(TAG, "Adding product with ID: $id, Name: $nom")
+
             val newData = A_ProduitInfos(
                 id = id,
                 nom = nom,

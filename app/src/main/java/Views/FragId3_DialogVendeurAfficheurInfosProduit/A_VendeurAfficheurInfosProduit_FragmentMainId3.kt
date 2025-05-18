@@ -110,11 +110,13 @@ fun MainUi(
     val parentCompose_1_3_BonAchatVid by
     _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
+    val find = repositorysModel.repository_1_3_TransactionCommercial
+        .modelDatasSnapList.find {
+            it.vid == parentCompose_1_3_BonAchatVid
+        }
+
     val repository_1_3_TransactionCommercialclientAcheteurID =
-        repositorysModel.repository_1_3_TransactionCommercial
-            .modelDatasSnapList.find {
-                it.vid == parentCompose_1_3_BonAchatVid
-            }?.clientAcheteurID
+        find?.clientAcheteurID
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
@@ -222,7 +224,14 @@ fun MainUi(
 
                                     )
                             }
-
+                            item {
+                                repository_1_3_TransactionCommercialclientAcheteurID?.let {
+                                    FragmentMain(
+                                        produitSelectioneDuAncienDataBase = stats,
+                                        selectedClientId = it
+                                    )
+                                }
+                            }
                             item {
                                 Details(
                                     isDetailsVisible = isDetailsVisible,
@@ -233,14 +242,7 @@ fun MainUi(
                                     onToggleLockExpandedPricex = onToggleLockExpandedPricex
                                 )
                             }
-                            item {
-                                repository_1_3_TransactionCommercialclientAcheteurID?.let {
-                                    FragmentMain(
-                                        produitSelectioneDuAncienDataBase = stats,
-                                        selectedClientId = it
-                                    )
-                                }
-                            }
+
                         }
                     }
 

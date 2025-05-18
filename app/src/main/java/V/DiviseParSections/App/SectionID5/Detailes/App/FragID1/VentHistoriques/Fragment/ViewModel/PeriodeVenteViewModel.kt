@@ -52,14 +52,14 @@ class PeriodeVenteViewModel(
         observeDataChanges()
     }
 
-    // In PeriodeVenteViewModel.kt, add this function to implement search
+    // In PeriodeVenteViewModel.kt, upsert this function to implement search
     fun updateSearchQuery(query: String) {
         viewModelScope.launch {
 
         }
     }
 
-    // In PeriodeVenteViewModel.kt, add this function to implement view mode switching
+    // In PeriodeVenteViewModel.kt, upsert this function to implement view mode switching
     fun setViewMode(mode: ViewMode) {
         _uiState.update { it.copy(viewMode = mode) }
     }

@@ -65,7 +65,7 @@ fun ClientsMapFilter(
                                 if (isSelected) {
                                     currentList.remove(day)
                                 } else {
-                                    currentList.add(day)
+                                    currentList.upsert(day)
                                 }
                                 viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = currentList
                             }

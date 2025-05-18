@@ -90,7 +90,7 @@ class _4_CouleurOperationCommand_RepositoryImpl(
                 return
             }
 
-            Log.d(TAG, "addMultiDATAsEtReturnVIDsList: Starting to add ${dataList.size} items")
+            Log.d(TAG, "addMultiDATAsEtReturnVIDsList: Starting to upsert ${dataList.size} items")
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {

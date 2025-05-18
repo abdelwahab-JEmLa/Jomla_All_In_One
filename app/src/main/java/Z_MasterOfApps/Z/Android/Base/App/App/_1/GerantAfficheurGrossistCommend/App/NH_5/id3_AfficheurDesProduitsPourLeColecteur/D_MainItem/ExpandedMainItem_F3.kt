@@ -142,7 +142,7 @@ fun ExpandedMainItem_F3(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         items(bonVent.colours_Achete.filter { it.quantity_Achete > 0 }) { color ->
-                            // In ExpandedMainItem_F2.kt - Modified Column section for color display
+                            // In ExpandedMainItem_F2.kt - Modified Column sectionSqlRepository for color display
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier

@@ -149,7 +149,7 @@ class _013_ClientTransaction : RealmObject {
                     child_14A_HistoriquesDeCetteJour = realmListOf()
                 }
 
-                // Create and add products
+                // Create and upsert products
                 val produits = _015_Produits.testData()
                 produits.forEach { produit ->
                     acheteur.child_14Produits.add(produit)

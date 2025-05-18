@@ -126,7 +126,7 @@ class ViewModelInitApp(
                 if (index != -1) {
                     updatedList[index] = currentState
                 } else {
-                    // If client doesn't exist, add them
+                    // If client doesn't exist, upsert them
                     updatedList.add(currentState)
                 }
 

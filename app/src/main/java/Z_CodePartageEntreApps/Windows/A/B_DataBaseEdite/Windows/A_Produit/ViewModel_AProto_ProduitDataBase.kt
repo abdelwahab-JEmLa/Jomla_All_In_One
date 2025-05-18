@@ -178,7 +178,7 @@ class ViewModel_AProto_ProduitDataBase(
                 // Check database repository before insertion
                 Log.d(TAG, "Repository instance check: ${_2_1_ProduitsDataBase_Repository != null}")
 
-                // Use the repository to add multiple items at once and get their VIDs
+                // Use the repository to upsert multiple items at once and get their VIDs
                 Log.d(TAG, "Calling addMultiDATAsEtReturnVIDsList with ${convertedData.size} items")
                 _2_1_ProduitsDataBase_Repository.addMultiDATAsEtReturnVIDsList(convertedData) { vids ->
                     // Log the VIDs being returned for tracking purposes

@@ -25,7 +25,7 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
     }
 
     val clientsMap = mutableMapOf<String, Any>()
-    dataBasesInfosSql.b_ClientInfos.forEach { client ->
+    dataBasesInfosSql.b_ClientInfosList.forEach { client ->
         try {
             val clientMap = client::class.memberProperties.associate {
                 it.name to (it.getter.call(client) ?: "null")

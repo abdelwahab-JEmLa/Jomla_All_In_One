@@ -130,7 +130,7 @@ fun B_CouleurAfficheur(
             val existingVids = allExistingOperations.map { it.vid }
             val newVid = VidGenerator.generateNewVid(existingVids)
 
-            // Create and add the new entry
+            // Create and upsert the new entry
             val clickedCouleur = clickedCouleurIndex.toLong() == couleurActuelleIndex
             val newColorOp = _1_1_CouleurAcheteOperation(
                 vid = newVid,
@@ -142,7 +142,7 @@ fun B_CouleurAfficheur(
                     _1_1_CouleurAcheteOperation.EtateActuellementEst.VUE
             )
 
-            // Explicitly add the data and verify
+            // Explicitly upsert the data and verify
             _1_1_CouleurAcheteOperation_Repository.addData(newColorOp)
 
             // Log successful creation

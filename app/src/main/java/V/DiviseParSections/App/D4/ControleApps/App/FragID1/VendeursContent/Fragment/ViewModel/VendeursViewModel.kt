@@ -76,7 +76,7 @@ open class VendeursViewModel(
 
     fun addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository() {
         viewModelScope.launch {
-            // Find the maximum ID in the existing list and add 1, or use 1 if the list is empty
+            // Find the maximum ID in the existing list and upsert 1, or use 1 if the list is empty
 
 
             list_01_VentsHistoriquesDataBase.add(

@@ -1,7 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,6 +20,7 @@ fun upsert_1_3_TransactionCommercial(
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
     }
+
     val repositorysModel =
         _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
@@ -26,7 +30,7 @@ fun upsert_1_3_TransactionCommercial(
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     val clientId = relatedClients?.id ?: 0L
-    // Check if a BonAchat already exists for this client in the active period
+
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
@@ -34,7 +38,6 @@ fun upsert_1_3_TransactionCommercial(
     }
 
     if (existingBonAchat != null) {
-        // Update the existing BonAchat
         val updatedBonAchat = existingBonAchat.copy(
             cJustPourVoirPanie = cJustPourVoirPanie,
         )
@@ -66,4 +69,41 @@ fun upsert_1_3_TransactionCommercial(
         }
 
     }
+    sectionSqlRepository(
+        sqlRepository = viewModel.sqlRepository,
+        relatedClients = relatedClients!!,
+    )
+}
+
+fun sectionSqlRepository(
+    relatedClients: B_ClientDataBase,
+    sqlRepository: InfosSqlDataBasesRepository
+): Unit {
+    val currentData = sqlRepository.modelListFlow.value.firstOrNull()
+        ?: return
+
+    // First, check if the client exists in the database
+    val existingClient = currentData.b_ClientInfosList.find {
+        it.id == relatedClients.id
+    }
+
+    // If client exists, use it; otherwise create a new one and add it to the database
+    val clientInfos = if (existingClient != null) {
+        existingClient
+    } else {
+        // Create new client with data from relatedClients
+        val newClient = B_ClientInfos(
+            id = relatedClients.id,
+            nom = relatedClients.nom
+        )
+
+        // Add the new client to the database
+        sqlRepository.addoneClientInfos(newClient)
+
+        // Return the newly created client
+        newClient
+    }
+
+    // Mark this client as the open/active client
+    sqlRepository.changeOuvertClient(clientInfos, sqlRepository)
 }

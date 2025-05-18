@@ -38,7 +38,6 @@ data class SecID5FragID2UiState(
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     val r_0_0_HeadOfRepositorys_SQL_Repository: _0_0_HeadSQLRepositorys,
     private val navigationHandler: FragmentNavigationHandler
-
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())

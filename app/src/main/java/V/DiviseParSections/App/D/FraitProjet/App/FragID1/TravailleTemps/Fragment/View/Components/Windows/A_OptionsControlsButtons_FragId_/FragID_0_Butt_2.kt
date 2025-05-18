@@ -69,6 +69,6 @@ fun FragID_0_Butt_2(
         contentDescription = "Add new day",
         showLabels = showLabels,
         labelText = labelText,
-        containerColor = Color(0xFF4CAF50)  // Green color for add button
+        containerColor = Color(0xFF4CAF50)  // Green color for upsert button
     )
 }

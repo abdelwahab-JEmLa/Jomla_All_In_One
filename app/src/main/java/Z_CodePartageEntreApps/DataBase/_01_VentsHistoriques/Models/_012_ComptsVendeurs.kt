@@ -87,7 +87,7 @@ class _012_ComptsVendeurs : RealmObject {
                 startDesignation = nom
                 child_013_Acheteurs = realmListOf()
 
-                // Create and add acheteurs
+                // Create and upsert acheteurs
                 val acheteursList = _013_ClientTransaction.testData()
                 acheteursList.forEach { acheteur ->
                     child_013_Acheteurs.add(acheteur)

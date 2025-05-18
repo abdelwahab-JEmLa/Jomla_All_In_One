@@ -158,7 +158,7 @@ fun ClientSelectionDialog(
                     if (!groupedClients[true].isNullOrEmpty()) {
                         item(key = "active_header_${UUID.randomUUID()}") {
                             ListHeader("Active Clients")
-                            Log.d(TAG, "Rendering Active Clients section: ${groupedClients[true]?.size} clientAchteurs")
+                            Log.d(TAG, "Rendering Active Clients sectionSqlRepository: ${groupedClients[true]?.size} clientAchteurs")
                         }
 
                         items(
@@ -195,7 +195,7 @@ fun ClientSelectionDialog(
                     if (!groupedClients[false].isNullOrEmpty()) {
                         item(key = "other_header_${UUID.randomUUID()}") {
                             ListHeader("Other Clients")
-                            Log.d(TAG, "Rendering Other Clients section: ${groupedClients[false]?.size} clientAchteurs")
+                            Log.d(TAG, "Rendering Other Clients sectionSqlRepository: ${groupedClients[false]?.size} clientAchteurs")
                         }
 
                         items(

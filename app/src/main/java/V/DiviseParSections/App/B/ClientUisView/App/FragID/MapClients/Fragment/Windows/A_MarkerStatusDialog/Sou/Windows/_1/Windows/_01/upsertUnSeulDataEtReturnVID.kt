@@ -24,7 +24,7 @@ override fun upsertUnSeulDataEtReturnVID(data: _01_VentsNoSQl, onSuccess: (Long)
                             if (index >= 0) {
                                 modelDatasSnapList[index] = dataToUpsert
                             } else {
-                                modelDatasSnapList.add(dataToUpsert)
+                                modelDatasSnapList.upsert(dataToUpsert)
                             }
                         }
 
@@ -42,7 +42,7 @@ override fun upsertUnSeulDataEtReturnVID(data: _01_VentsNoSQl, onSuccess: (Long)
                         dataToUpsert.vid = newVid
 
                         withContext(Dispatchers.Main) {
-                            modelDatasSnapList.add(dataToUpsert)
+                            modelDatasSnapList.upsert(dataToUpsert)
                         }
 
                         // Update Firebase with the new vid
@@ -152,7 +152,7 @@ private fun FireBaseOnDataChangeListner() {
                         for (dataSnapshot in snapshot.children) {
                             val data = dataSnapshot.getValue(_01_VentsNoSQl::class.java)
                             data?.let {
-                                updatedList.add(it)
+                                updatedList.upsert(it)
                             }
                         }
 
@@ -229,7 +229,7 @@ private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
                     try {
                         val data = dataSnapshot.getValue(_01_VentsNoSQl::class.java)
                         data?.let {
-                            dataList.add(it)
+                            dataList.upsert(it)
                         }
                     } catch (e: Exception) {
                     }

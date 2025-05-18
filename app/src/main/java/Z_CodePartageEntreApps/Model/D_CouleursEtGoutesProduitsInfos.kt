@@ -47,7 +47,7 @@ data class D_CouleursEtGoutesProduitsInfos(
                     if (index != -1) {
                         updatedList[index] = currentState
                     } else {
-                        // If grossist doesn't exist, add them
+                        // If grossist doesn't exist, upsert them
                         updatedList.add(currentState)
                     }
 

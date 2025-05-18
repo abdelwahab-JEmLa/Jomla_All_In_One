@@ -33,7 +33,7 @@ class Startup_Extension(
         val model = android.os.Build.MODEL
         val phoneName = "$manufacturer $model"
 
-        // Verify and add the phone
+        // Verify and upsert the phone
         verifyAndAddPhone(phoneName, metricsWidthPixels)
     }
 
@@ -69,7 +69,7 @@ class Startup_Extension(
                 }
             }
 
-            // If phone doesn't exist, add it
+            // If phone doesn't exist, upsert it
             if (!phoneExists) {
                 val newId = maxId + 1
 
@@ -106,9 +106,9 @@ class Startup_Extension(
 
         // Process each product safely
         productsToProcess.forEach { produit ->
-            // Safely add current data to history
+            // Safely upsert current data to history
             produit.bonCommendDeCetteCota?.let { currentBonCommend ->
-                // Create a new list and add all items to avoid concurrent modification
+                // Create a new list and upsert all items to avoid concurrent modification
                 val updatedHistorique = ArrayList(produit.historiqueBonsCommend)
                 updatedHistorique.add(currentBonCommend)
                 produit.historiqueBonsCommend.clear()
@@ -116,7 +116,7 @@ class Startup_Extension(
             }
 
             if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
-                // Create a new list and add all items to avoid concurrent modification
+                // Create a new list and upsert all items to avoid concurrent modification
                 val updatedHistoriqueVents = ArrayList(produit.historiqueBonsVents)
                 updatedHistoriqueVents.addAll(produit.bonsVentDeCetteCotaList)
                 produit.historiqueBonsVents.clear()

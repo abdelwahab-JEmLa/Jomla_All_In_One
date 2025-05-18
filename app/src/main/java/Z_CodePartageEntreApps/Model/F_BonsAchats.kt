@@ -188,7 +188,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
                         // Vérifier si le téléphone est déjà dans la liste locale
                         if (modelDatas.none { it.id == id }) {
-                            modelDatas.add(phone)
+                            modelDatas.upsert(phone)
                         }
                     }
                 } catch (e: Exception) {
@@ -211,7 +211,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
                 // Ajouter à la liste locale
                 if (modelDatas.none { it.id == newId }) {
-                    modelDatas.add(newPhone)
+                    modelDatas.upsert(newPhone)
 
                     // Ajouter à Firebase
                     J_AppInstalleDonTelephoneRepository.caReference
@@ -239,7 +239,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                         category?.let { cat ->
                             // Set tablet status based on screen width
                             cat.infosDeBase.itsTablette = cat.infosDeBase.widthScreen > 400
-                            modelDatas.add(cat)
+                            modelDatas.upsert(cat)
                         }
 
                         processedItems++
@@ -292,8 +292,8 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                             category?.let { cat ->
                                 // Set tablet status based on screen width
                                 cat.infosDeBase.itsTablette = cat.infosDeBase.widthScreen > 400
-                                categories.add(cat)
-                                modelDatas.add(cat)
+                                categories.upsert(cat)
+                                modelDatas.upsert(cat)
                             }
 
                             processedItems++

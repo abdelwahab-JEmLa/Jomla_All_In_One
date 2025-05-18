@@ -406,7 +406,7 @@ open class HeadViewModel(
 
         } catch (exception: Exception) {
             _uiState.update {
-                it.copy(error = "Failed to add article: ${exception.message}")
+                it.copy(error = "Failed to upsert article: ${exception.message}")
             }
             null
         }

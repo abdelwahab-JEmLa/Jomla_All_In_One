@@ -110,12 +110,12 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
                         .setValue(updatedData)
                         .await()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating Firebase after add: ${e.message}")
+                    Log.e(TAG, "Error updating Firebase after upsert: ${e.message}")
                 }
 
                 insertedId
             } catch (e: Exception) {
-                Log.e(TAG, "Error in add method: ${e.message}")
+                Log.e(TAG, "Error in upsert method: ${e.message}")
                 -1L
             }
         }
