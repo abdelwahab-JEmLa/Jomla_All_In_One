@@ -9,6 +9,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import android.util.Log
 import androidx.compose.runtime.State
@@ -23,6 +24,7 @@ private const val TAG = "TarificationViewModel"
 
 data class UiState(
     val outputModel: ProduitNoSqlDataBase = ProduitNoSqlDataBase(emptyList()),
+    var produitAncienDB: ArticlesBasesStatsTable? = null,
     val isLoading: Boolean = false,
     val selectedProductId: Long? = null,
     val error: String? = null
@@ -36,11 +38,9 @@ class TarificationViewModel(
     private val _uiState = mutableStateOf(UiState())
     val uiState: State<UiState> = _uiState
 
-    private val ancienRepoProduitPrixVent = ancienRepo.repositorys_Model
-        ._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-        .find { it.vid == _uiState.value.selectedProductId }?.monPrixVent
+    private val ancienRepoProduitPrixVent = uiState.value.produitAncienDB?.monPrixVent
 
-    val ancienRepoOuverClientId = ancienRepo.repositorys_Model
+    val ancienRepoOuvertClientId = ancienRepo.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
         .find { it.cLeDataOuvertDuParentList == true }?.clientAcheteurID
 
@@ -48,7 +48,7 @@ class TarificationViewModel(
         _uiState.value = _uiState.value.copy(isLoading = true)
 
         Log.d(TAG, "Initializing ViewModel - Selected product ID: ${_uiState.value.selectedProductId}")
-        Log.d(TAG, "Client ID from ancien repo: $ancienRepoOuverClientId")
+        Log.d(TAG, "Client ID from ancien repo: $ancienRepoOuvertClientId")
 
         viewModelScope.launch {
             convertiseurNoSqlToSqlRepository.noSqlDataFlow.collectLatest { noSqlData ->
@@ -70,15 +70,19 @@ class TarificationViewModel(
         }
     }
 
-    fun ajouteSiExistePas_A_ProduitInfos(id: Long, nom: String? = null) {
+    fun ajouteSiExistePas_A_ProduitInfos(
+        id: Long,
+        produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable, ) {
         val existingProduct = convertiseurNoSqlToSqlRepository.getProduitInfos(id)
 
-        if (existingProduct == null && nom != null) {
-            Log.d(TAG, "Adding product with ID: $id, Name: $nom")
+        _uiState.value.produitAncienDB = produitSelectioneDuAncienDataBase
+
+        if (existingProduct == null) {
+            Log.d(TAG, "Adding product with ID: $id, Name: ${produitSelectioneDuAncienDataBase.nomArticleFinale}")
 
             val newData = A_ProduitInfos(
                 id = id,
-                nom = nom,
+                nom = produitSelectioneDuAncienDataBase.nomArticleFinale,
                 needUpdate = true
             )
             convertiseurNoSqlToSqlRepository.copyAdd_A_ProduitInfos(newData)
@@ -86,14 +90,14 @@ class TarificationViewModel(
             // Update selected product ID
             _uiState.value = _uiState.value.copy(selectedProductId = id)
         } else {
-            Log.d(TAG, "Product already exists or name is null - ID: $id, Exists: ${existingProduct != null}, Name: $nom")
+            Log.d(TAG, "Product already exists or name is null - ID: $id, Exists: ${true}, Name: $")
         }
     }
 
     // Improved verifierAdd_D_TarificationInfos method
     fun verifierAdd_D_TarificationInfos(typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
-        val clientId = ancienRepoOuverClientId ?: return
+        val clientId = ancienRepoOuvertClientId ?: return
 
         Log.d(TAG, "Verifying D_TarificationInfos for product=$productId, client=$clientId, typeTarif=${typeTarification.infosId}")
 
@@ -243,7 +247,7 @@ class TarificationViewModel(
         convertiseurNoSqlToSqlRepository.refreshNoSqlData()
 
         // Now ensure we have at least one tarification entry
-        val clientId = ancienRepoOuverClientId ?: return
+        val clientId = ancienRepoOuvertClientId ?: return
         val productId = _uiState.value.selectedProductId ?: return
 
         // Default to PRIX_BASE type (4)
@@ -251,7 +255,7 @@ class TarificationViewModel(
     }
 
     fun ajouteSiExistePas_B_ClientsDataBase() {
-        val clientId = ancienRepoOuverClientId ?: return
+        val clientId = ancienRepoOuvertClientId ?: return
         val existingClient = convertiseurNoSqlToSqlRepository.getB_ClientInfos(clientId)
 
         if (existingClient == null) {

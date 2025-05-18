@@ -37,7 +37,7 @@ fun FragmentMain(
 ) {
     val uiState by viewModel.uiState
     val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
-    val clientId = viewModel.ancienRepoOuverClientId
+    val clientId = viewModel.ancienRepoOuvertClientId
 
     // Use remember to track whether initial setup has been completed
     var initialSetupComplete by remember { mutableStateOf(false) }
@@ -49,7 +49,7 @@ fun FragmentMain(
 
             viewModel.ajouteSiExistePas_A_ProduitInfos(
                 productId,
-                produitSelectioneDuAncienDataBase.nomArticleFinale,
+                produitSelectioneDuAncienDataBase,
             )
 
             viewModel.ajouteSiExistePas_B_ClientsDataBase()
@@ -117,7 +117,8 @@ fun FilterMainScreen(
                 Log.d(TAG, "Final NoSQL refresh after tarification data processing")
                 viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
             } else if (selectedClientId > 0) {
-                Log.d(TAG, "No tarification types found for client $selectedClientId, creating default")
+                Log.d(TAG, "No tarification types found for client $selectedClientId, creating default")   //<--
+                //TODO(1): PK CA ME SORT CA 
                 viewModel.createDefaultTarificationIfNeeded(selectedClientId)
             } else {
                 Log.w(TAG, "Cannot create default tarification: Invalid client ID: $selectedClientId")

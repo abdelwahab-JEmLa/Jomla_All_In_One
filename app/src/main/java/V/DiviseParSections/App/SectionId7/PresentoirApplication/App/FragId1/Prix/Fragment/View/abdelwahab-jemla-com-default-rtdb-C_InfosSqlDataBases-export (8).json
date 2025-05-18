@@ -1,0 +1,61 @@
+{
+  "A_ProduitInfos": {
+    "-<849(chahrazed 80g)": {
+      "id": 849,
+      "keyFireBase": "-<849(chahrazed 80g)",
+      "needUpdate": false,
+      "nom": "chahrazed 80g"
+    }
+  },
+  "B_ClientInfos": {
+    "-<4(abdelhamid)": {
+      "cLeDataOuvertDuParentList": false,
+      "id": 4,
+      "keyFireBase": "-<4(abdelhamid)",
+      "needUpdate": false,
+      "nom": "abdelhamid"
+    }
+  },
+  "C_TypeTarificationInfos": {
+    "-<1(ParBenifice)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 1,
+      "keyFireBase": "-<1(ParBenifice)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<2(Historique)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 2,
+      "keyFireBase": "-<2(Historique)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<3(LeMaxPrixArrive)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 3,
+      "keyFireBase": "-<3(LeMaxPrixArrive)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<4(PRIX_BASE)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 4,
+      "keyFireBase": "-<4(PRIX_BASE)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    }
+  },
+  "D_TarificationInfos": {
+    "-<2025-05-18 -< 15:32:38": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:32:38",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:32:38",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747578758671
+    }
+  }
+}
