@@ -1,20 +1,47 @@
-Choreographer     Skipped 87 frames!  The application may be doing too much work on its main thread.
-InputEv...eceiver App Input: 816ms before dispatchInputEvent (MotionEvent: event_seq=315, seq=764495, action=ACTION_HOVER_MOVE)
-_0_0_He...sitorys Upsert completed for _1_3_TransactionCommercial with VID: 6
-System.out        Active operations canceled successfully
-                  Active operations canceled successfully
-                  Map resources cleaned up successfully
-System            A resource failed to call release. 
-DEBUG_VID         Passing to A_MainListFragId3: 0
-Tarific...ewModel Adding product with ID: 849, Name: chahrazed 80g
-                  Client already exists with ID: 4
-Convert...SqlRepo Adding A_ProduitInfos: 849
-DEBUG_VID         Passing to A_MainListFragId3: 17
-ColorOperation    Checking: Index=0, ParentVID=17
-chatty            uid=10380(com.example.clientjetpack) identical 6 lines
-GlideDisplay      Found valid image file: /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/849_1.webp
-                  Final image path: /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/849_1.webp
-chatty            uid=10380(com.example.clientjetpack) identical 3 lines
-ColorScroll       Scrolling to index: 0
-GlideDisplay      Load complete for 849_1
-Tarific...ewModel Client already exists with ID: 4
+---------------------------- PROCESS STARTED (28876) for package com.example.clientjetpack ----------------------------
+FragmentMain      Initial setup - ProductID: 849, ClientID: 4
+                  LaunchedEffect triggered - ClientID: 4, TypeTarifications: 0
+                  No tarification types found for client 4, creating default
+                  Attempting to load client data for product: 849
+                  Initial setup complete - Refreshed NoSQL data
+                  Product information not found in NoSQL database. ID: 849
+                  Product information not found in NoSQL database. ID: 849
+                  Attempting to load client data for product: 849
+                  Product information not found in NoSQL database. ID: 849
+                  LaunchedEffect triggered - ClientID: 4, TypeTarifications: 1
+                  Processing 1 tarification types for client 4
+                  Type[0]: ID=4
+                  Refreshing NoSQL data after type tarification verification
+                  Processing tarification data for type[0]: ID=4
+                  Final NoSQL refresh after tarification data processing
+                  LaunchedEffect triggered - ClientID: 4, TypeTarifications: 1
+                  Processing 1 tarification types for client 4
+                  Type[0]: ID=4
+                  Refreshing NoSQL data after type tarification verification
+                  Processing tarification data for type[0]: ID=4
+                  Final NoSQL refresh after tarification data processing
+                  LaunchedEffect triggered - ClientID: 4, TypeTarifications: 1
+                  Processing 1 tarification types for client 4
+                  Type[0]: ID=4
+                  Refreshing NoSQL data after type tarification verification
+                  Processing tarification data for type[0]: ID=4
+                  Final NoSQL refresh after tarification data processing
+                  Initial setup - ProductID: 859, ClientID: 4
+                  LaunchedEffect triggered - ClientID: 4, TypeTarifications: 0
+                  No tarification types found for client 4, creating default
+                  Attempting to load client data for product: 859
+                  Initial setup complete - Refreshed NoSQL data
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859
+                  Product information not found in NoSQL database. ID: 859
+                  Attempting to load client data for product: 859

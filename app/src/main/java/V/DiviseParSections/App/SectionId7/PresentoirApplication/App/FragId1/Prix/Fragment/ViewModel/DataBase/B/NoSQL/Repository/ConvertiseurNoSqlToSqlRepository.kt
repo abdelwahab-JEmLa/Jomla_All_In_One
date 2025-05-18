@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos as SqlClientInfos
 
 class ConvertiseurNoSqlToSqlRepository(
-    private val sqlRepository: InfosSqlDataBasesRepository,
+    val sqlRepository: InfosSqlDataBasesRepository,
 ) {
     private val TAG = "ConvertiseurNoSqlToSqlRepo"
     private val repositoryCoroutine = CoroutineScope(Dispatchers.IO)
@@ -130,7 +130,6 @@ class ConvertiseurNoSqlToSqlRepository(
         refreshNoSqlData()
     }
 
-    // FIXED: Renamed the suspend function to avoid naming conflict
     suspend fun addTarificationInfos(newData: D_TarificationInfos): Boolean {
         return mutex.withLock {
             try {
@@ -140,6 +139,43 @@ class ConvertiseurNoSqlToSqlRepository(
                 )
                 val currentData = sqlRepository.modelListFlow.value.firstOrNull()
                 if (currentData != null) {
+                    // Check if an equivalent tarification already exists (same product, client, and type)
+                    val existingTarification = currentData.d_TarificationInfos.find { tarif ->
+                        tarif.idProduit == newData.idProduit &&
+                                tarif.idClient == newData.idClient &&
+                                tarif.idTypeTarification == newData.idTypeTarification
+                    }
+
+                    if (existingTarification != null) {
+                        Log.d(TAG, "Found existing tarification with same key attributes, updating instead of adding new")
+
+                        // Only update if price has changed
+                        if (existingTarification.prixCurrency != newData.prixCurrency) {
+                            val updatedTarification = existingTarification.copy(
+                                prixCurrency = newData.prixCurrency,
+                                vidTimestamp = System.currentTimeMillis(),
+                                needUpdate = true
+                            )
+
+                            // Remove old and add updated
+                            val updatedTarifications = currentData.d_TarificationInfos.toMutableList().apply {
+                                remove(existingTarification)
+                                add(updatedTarification)
+                            }
+
+                            val updatedData = currentData.copy(
+                                d_TarificationInfos = updatedTarifications
+                            )
+
+                            sqlRepository.upsert(updatedData)
+                            refreshNoSqlData()
+                        } else {
+                            Log.d(TAG, "Existing tarification has same price, no update needed")
+                        }
+
+                        return@withLock true
+                    }
+
                     val updatedData = currentData.copy(
                         d_TarificationInfos = currentData.d_TarificationInfos.toMutableList()
                             .apply {
@@ -158,13 +194,6 @@ class ConvertiseurNoSqlToSqlRepository(
                 Log.e(TAG, "Error adding D_TarificationInfos", e)
                 false
             }
-        }
-    }
-
-    // FIXED: Now calls the renamed suspend function
-    fun copyAdd_D_TarificationInfos(newData: D_TarificationInfos) {
-        repositoryCoroutine.launch {
-            addTarificationInfos(newData)
         }
     }
 

@@ -1,0 +1,168 @@
+{
+  "A_ProduitInfos": {
+    "-<849(chahrazed 80g)": {
+      "id": 849,
+      "keyFireBase": "-<849(chahrazed 80g)",
+      "needUpdate": false,
+      "nom": "chahrazed 80g"
+    },
+    "-<859(saco gm)": {
+      "id": 859,
+      "keyFireBase": "-<859(saco gm)",
+      "needUpdate": false,
+      "nom": "saco gm"
+    }
+  },
+  "B_ClientInfos": {
+    "-<4(abdelhamid)": {
+      "cLeDataOuvertDuParentList": true,
+      "id": 4,
+      "keyFireBase": "-<4(abdelhamid)",
+      "needUpdate": false,
+      "nom": "abdelhamid"
+    }
+  },
+  "C_TypeTarificationInfos": {
+    "-<1(ParBenifice)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 1,
+      "keyFireBase": "-<1(ParBenifice)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<2(Historique)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 2,
+      "keyFireBase": "-<2(Historique)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<3(LeMaxPrixArrive)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 3,
+      "keyFireBase": "-<3(LeMaxPrixArrive)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    },
+    "-<4(PRIX_BASE)": {
+      "entityCorrespond": "ParBenifice",
+      "id": 4,
+      "keyFireBase": "-<4(PRIX_BASE)",
+      "needUpdate": false,
+      "nom": "ParBenifice"
+    }
+  },
+  "D_TarificationInfos": {     //<--
+  //TODO(1): pk ca cre plusieur entre normalement c 1 
+    "-<2025-05-18 -< 15:08:47": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:47",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:47",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577327606
+    },
+    "-<2025-05-18 -< 15:08:48": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:48",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:48",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577328907
+    },
+    "-<2025-05-18 -< 15:08:49": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:49",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:49",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577329240
+    },
+    "-<2025-05-18 -< 15:08:50": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:50",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:50",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577330014
+    },
+    "-<2025-05-18 -< 15:08:51": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:51",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:51",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577331928
+    },
+    "-<2025-05-18 -< 15:08:52": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:52",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:52",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577332900
+    },
+    "-<2025-05-18 -< 15:08:53": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:53",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:53",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577333518
+    },
+    "-<2025-05-18 -< 15:08:54": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:54",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:54",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577334446
+    },
+    "-<2025-05-18 -< 15:08:55": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:55",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:55",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577335359
+    },
+    "-<2025-05-18 -< 15:08:56": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:56",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:56",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577336982
+    },
+    "-<2025-05-18 -< 15:08:57": {
+      "idClient": 4,
+      "idProduit": 849,
+      "idTypeTarification": 4,
+      "keyFireBase": "-<2025-05-18 -< 15:08:57",
+      "needUpdate": false,
+      "nom": "2025-05-18 -< 15:08:57",
+      "prixCurrency": 0,
+      "vidTimestamp": 1747577337054
+    }
+  }
+}

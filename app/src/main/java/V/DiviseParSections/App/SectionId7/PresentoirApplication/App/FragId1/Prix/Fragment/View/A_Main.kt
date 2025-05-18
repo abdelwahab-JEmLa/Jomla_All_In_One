@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+private const val TAG = "FragmentMain"
 
 @Composable
 fun FragmentMain(
@@ -36,17 +38,27 @@ fun FragmentMain(
     val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
     val clientId = viewModel.ancienRepoOuverClientId
 
-    // First LaunchedEffect to set up the basic data
+    // Use remember to track whether initial setup has been completed
+    var initialSetupComplete by remember { mutableStateOf(false) }
+
+    // First LaunchedEffect to set up the basic data - runs only once
     LaunchedEffect(productId, clientId) {
-        viewModel.ajouteSiExistePas_A_ProduitInfos(
-            productId,
-            produitSelectioneDuAncienDataBase.nomArticleFinale,
-        )
+        if (!initialSetupComplete) {
+            Log.d(TAG, "Initial setup - ProductID: $productId, ClientID: $clientId")
 
-        viewModel.ajouteSiExistePas_B_ClientsDataBase()
+            viewModel.ajouteSiExistePas_A_ProduitInfos(
+                productId,
+                produitSelectioneDuAncienDataBase.nomArticleFinale,
+            )
 
-        // Force refresh of NoSQL data after setting up basic data
-        viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+            viewModel.ajouteSiExistePas_B_ClientsDataBase()
+
+            // Force refresh of NoSQL data after setting up basic data
+            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
+            Log.d(TAG, "Initial setup complete - Refreshed NoSQL data")
+            initialSetupComplete = true
+        }
     }
 
     FilterMainScreen(
@@ -72,19 +84,46 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    LaunchedEffect(key1 = typeTarificationsList, key2 = selectedClientId) {
-        if (typeTarificationsList.isNotEmpty()) {
-            viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+    // Track if we've processed tarification types to avoid redundant processing
+    var tarificationTypesProcessed by remember { mutableStateOf(false) }
 
-            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+    // Only process tarification types once per client and product
+    LaunchedEffect(key1 = selectedClientId, key2 = selectedProductId) {
+        // Skip if already processed for this client/product combo
+        if (!tarificationTypesProcessed) {
+            Log.d(TAG, "Processing tarifications for clientID: $selectedClientId, product: $selectedProductId")
 
-            typeTarificationsList.forEach { typeTarification ->
-                viewModel.verifierAdd_D_TarificationInfos(typeTarification)
+            if (typeTarificationsList.isNotEmpty()) {
+                Log.d(TAG, "Processing ${typeTarificationsList.size} tarification types for client $selectedClientId")
+
+                // Log each tarification type ID for debugging
+                typeTarificationsList.forEachIndexed { index, type ->
+                    Log.d(TAG, "Type[$index]: ID=${type.infosId}")
+                }
+
+                // Add logic for type tarifications
+                viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+
+                Log.d(TAG, "Refreshing NoSQL data after type tarification verification")
+                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
+                // Process each tarification type for pricing data
+                typeTarificationsList.forEachIndexed { index, typeTarification ->
+                    Log.d(TAG, "Processing tarification data for type[$index]: ID=${typeTarification.infosId}")
+                    viewModel.verifierAdd_D_TarificationInfos(typeTarification)
+                }
+
+                Log.d(TAG, "Final NoSQL refresh after tarification data processing")
+                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+            } else if (selectedClientId > 0) {
+                Log.d(TAG, "No tarification types found for client $selectedClientId, creating default")
+                viewModel.createDefaultTarificationIfNeeded(selectedClientId)
+            } else {
+                Log.w(TAG, "Cannot create default tarification: Invalid client ID: $selectedClientId")
             }
 
-            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-        } else if (selectedClientId > 0) {
-            viewModel.createDefaultTarificationIfNeeded(selectedClientId)
+            // Mark as processed to prevent reprocessing
+            tarificationTypesProcessed = true
         }
     }
 
@@ -109,15 +148,21 @@ fun FilterMainScreen(
                     modifier = Modifier.padding(16.dp)
                 )
 
-                // Add this to trigger client data loading
+                // Add this to trigger client data loading - only once
                 LaunchedEffect(Unit) {
-                    viewModel.ajouteSiExistePas_B_ClientsDataBase()
+                    if (!tarificationTypesProcessed) {
+                        Log.d(TAG, "Attempting to load client data for product: $selectedProductId")
+                        viewModel.ajouteSiExistePas_B_ClientsDataBase()
+                        tarificationTypesProcessed = true
+                    }
                 }
             } else {
                 Text(
                     text = "Product information not found. ID: $selectedProductId",
                     modifier = Modifier.padding(16.dp)
                 )
+
+                Log.e(TAG, "Product information not found in NoSQL database. ID: $selectedProductId")
             }
         }
 
@@ -130,6 +175,7 @@ fun FilterMainScreen(
             FloatingActionButton(
                 onClick = {
                     showOnlyLatestPrices = !showOnlyLatestPrices
+                    Log.d(TAG, "Toggle latest prices: $showOnlyLatestPrices")
                 },
                 modifier = Modifier
             ) {
