@@ -193,7 +193,7 @@ fun MainUi(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 80.dp)
+                            .padding(bottom = 4.dp)
                     ) {
                         articlesBaseStats?.let { stats ->
                             item {
