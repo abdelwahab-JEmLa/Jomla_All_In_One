@@ -36,18 +36,13 @@ fun FragmentMain(
     val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
     val clientId = viewModel.ancienRepoOuverClientId
 
-    // Move verification operations to LaunchedEffect here
     LaunchedEffect(productId, clientId) {
-        // Step 1: Add product info if not exists
         viewModel.ajouteSiExistePas_A_ProduitInfos(
             productId,
             produitSelectioneDuAncienDataBase.nomArticleFinale,
         )
 
-        // Step 2: Add client info if not exists
         viewModel.ajouteSiExistePas_B_ClientsDataBase()
-
-        // Step 3: Refresh data
         viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
     }
 
@@ -74,13 +69,10 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    // Move the verification for type tarifications here
     LaunchedEffect(typeTarificationsList) {
         if (typeTarificationsList.isNotEmpty()) {
-            // Add typeTarification info if not exists
             viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
 
-            // Add tarification data for each type
             typeTarificationsList.forEach { typeTarification ->
                 viewModel.verifierAdd_D_TarificationInfos(typeTarification)
             }
