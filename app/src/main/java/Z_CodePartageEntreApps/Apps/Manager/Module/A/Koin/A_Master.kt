@@ -150,6 +150,7 @@ val viewModelModule = module {
     viewModel {
         TarificationViewModel(
             get(),
+            get(),
         )
     }
     viewModel {

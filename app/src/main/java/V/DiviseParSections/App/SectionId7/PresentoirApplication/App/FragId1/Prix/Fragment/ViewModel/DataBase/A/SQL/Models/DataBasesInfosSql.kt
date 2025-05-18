@@ -27,7 +27,7 @@ data class A_ProduitInfos(
     val nom: String = "",
     val keyFireBase: String = getKeyFireBase(id, nom),
 
-    val needUpdate: Boolean = false
+    val needUpdate: Boolean = true
 )
 
 @Entity
@@ -38,7 +38,7 @@ data class B_ClientInfos(
     val keyFireBase: String = getKeyFireBase(id, nom),
 
     val idActiveTypeTarificationDataBase: Long = 0,
-    val needUpdate: Boolean = false
+    val needUpdate: Boolean = true
 )
 
 @Entity
@@ -49,7 +49,7 @@ data class C_TypeTarificationInfos(
     val nom: String= entityCorrespond.name,
     val keyFireBase: String = getKeyFireBase(id, nom),
 
-    val needUpdate: Boolean = false
+    val needUpdate: Boolean = true
 )
 
 @Entity
@@ -63,7 +63,7 @@ data class D_TarificationInfos(
     val idTypeTarification: Long = 0L,
     val prixCurrency: Double = 0.0,
 
-    val needUpdate: Boolean = false
+    val needUpdate: Boolean = true
 )
 
 fun getKeyFireBase(

@@ -76,7 +76,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
-            clickedCouleurIndex=clickedCouleurIndex,
+            clickedCouleurIndex = clickedCouleurIndex,
         )
     }
 }
@@ -110,17 +110,12 @@ fun MainUi(
     val parentCompose_1_3_BonAchatVid by
     _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
-    val active_parent_1_3_TransactionCommercialclientAcheteurID =
+    val repository_1_3_TransactionCommercialclientAcheteurID =
         repositorysModel.repository_1_3_TransactionCommercial
             .modelDatasSnapList.find {
-            it.vid==parentCompose_1_3_BonAchatVid
-        }?.clientAcheteurID
+                it.vid == parentCompose_1_3_BonAchatVid
+            }?.clientAcheteurID
 
-    val active__3_ClientsDataBase =
-        repositorysModel.repository_3_ClientsDataBase
-            .modelDatasSnapList.find {
-            it.vid== active_parent_1_3_TransactionCommercialclientAcheteurID
-        }
 
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -138,7 +133,8 @@ fun MainUi(
             if (existing_1_2_ProduitAcheteOperation != null) {
                 repositorysModel.repository_1_2_ProduitAcheteOperation.updateUnSeulData(
                     existing_1_2_ProduitAcheteOperation.apply {
-                        etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
+                        etateActuellementEst =
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
                     }
                 )
                 existing_1_2_ProduitAcheteOperation.vid
@@ -224,7 +220,7 @@ fun MainUi(
                                     currentClient = currentClient,
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                     parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                                    clickedCouleurIndex=clickedCouleurIndex,
+                                    clickedCouleurIndex = clickedCouleurIndex,
 
                                     )
                             }
@@ -240,10 +236,9 @@ fun MainUi(
                                 )
                             }
                             item {
-
                                 FragmentMain(
-                                    produitSelectioneDuAncienDataBase=stats,
-                                    active__3_ClientsDataBase=active__3_ClientsDataBase
+                                    produitSelectioneDuAncienDataBase = stats,
+                                    selectedClientId = repository_1_3_TransactionCommercialclientAcheteurID!!
                                 )
                             }
                         }

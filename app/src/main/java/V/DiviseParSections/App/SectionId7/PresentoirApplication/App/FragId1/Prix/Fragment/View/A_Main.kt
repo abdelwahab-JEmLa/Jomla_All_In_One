@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,25 +31,23 @@ import org.koin.androidx.compose.koinViewModel
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable,
-    active__3_ClientsDataBase: _3_ClientsDataBase?,
+    selectedClientId: Long,
 ) {
     val uiState by viewModel.uiState
 
     LaunchedEffect(produitSelectioneDuAncienDataBase) {
+        viewModel.uiState.value.selectedClientId = selectedClientId
+
         viewModel.verifierAddNewDatasSiExistPas(
             produitDuAncienDataBase = produitSelectioneDuAncienDataBase,
-            active__3_ClientsDataBase = active__3_ClientsDataBase,
         )
     }
-
-    // Handle null client safely
-    val clientId = active__3_ClientsDataBase?.vid ?: 0L
 
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
         selectedProductId = produitSelectioneDuAncienDataBase.idArticle.toLong(),
-        selectedClientId = clientId,
+        selectedClientId = selectedClientId,
     )
 }
 
