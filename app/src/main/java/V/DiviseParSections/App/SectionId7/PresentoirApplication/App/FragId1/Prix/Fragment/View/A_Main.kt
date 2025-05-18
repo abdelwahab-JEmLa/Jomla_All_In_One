@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -78,6 +80,44 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
+    // Log comparison between actual data and preview data
+    // Only run once to avoid performance issues with repeated logging
+    LaunchedEffect(Unit) {
+        val previewData = getPreviewTypeTarificationsList()
+
+        // Use a single log statement to reduce overhead
+        val logBuilder = StringBuilder()
+        logBuilder.append("DATA COMPARISON REPORT\n")
+        logBuilder.append("Real data size: ${typeTarificationsList.size}, Preview data size: ${previewData.size}\n")
+
+        // Compare IDs and prices
+        val realIds = typeTarificationsList.map { it.infosId }
+        val previewIds = previewData.map { it.infosId }
+
+        logBuilder.append("Real data IDs: $realIds\n")
+        logBuilder.append("Preview data IDs: $previewIds\n")
+
+        // Log differences between real and preview data
+        val missingInPreview = realIds.filter { it !in previewIds }
+        val missingInReal = previewIds.filter { it !in realIds }
+
+        if (missingInPreview.isNotEmpty()) {
+            logBuilder.append("IDs in real data but missing in preview: $missingInPreview\n")
+        }
+
+        if (missingInReal.isNotEmpty()) {
+            logBuilder.append("IDs in preview data but missing in real: $missingInReal\n")
+        }
+
+        // Compare prices (only once)
+        typeTarificationsList.forEach { type ->
+            val prices = type.PrixsCurrency.map { it.valeur }
+            logBuilder.append("Real data ID ${type.infosId} prices: $prices\n")
+        }
+
+        Log.d(TAG, logBuilder.toString())
+    }
+
     var tarificationTypesProcessed by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = selectedClientId, key2 = selectedProductId) {
@@ -92,7 +132,6 @@ fun FilterMainScreen(
             } else emptyList()
 
             if (existingTarifications.isNotEmpty()) {
-                val existingTypeIds = existingTarifications.map { it.idTypeTarification }.distinct()
 
                 viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
 
@@ -132,6 +171,7 @@ fun FilterMainScreen(
                 MainList(
                     viewModel = viewModel,
                     typeTarificationsList = typeTarificationsList,
+                    // Using real data from database which now matches updated preview data
                     showOnlyLatestPrices = showOnlyLatestPrices,
                     modifier = Modifier.weight(1f)
                 )
@@ -176,9 +216,51 @@ fun FilterMainScreen(
     }
 }
 
+// Extract the preview data creation to a separate function so it can be reused for logging comparison
+fun getPreviewTypeTarificationsList(): List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+    return listOf(
+        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+            vidTimestamp = System.currentTimeMillis(),
+            infosId = 4, // Updated to match real data ID
+            PrixsCurrency = listOf(
+                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                    vidTimestamp = System.currentTimeMillis() - 86400000, // Yesterday
+                    valeur = 10.0 // Updated to match real data price
+                ),
+                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                    vidTimestamp = System.currentTimeMillis(), // Today
+                    valeur = 10.0 // Updated to match real data price
+                )
+            )
+        ),
+        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+            vidTimestamp = System.currentTimeMillis(),
+            infosId = 2,
+            PrixsCurrency = listOf(
+                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                    vidTimestamp = System.currentTimeMillis(),
+                    valeur = 9.75
+                )
+            )
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun prevMainList() {
+    // Use the extracted function to get preview data
+    val previewTypeTarificationsList = getPreviewTypeTarificationsList()
+
+    MainList(
+        typeTarificationsList = previewTypeTarificationsList,
+        showOnlyLatestPrices = false
+    )
+}
+
 @Composable
 fun MainList(
-    viewModel: TarificationViewModel,
+    viewModel: TarificationViewModel = koinViewModel(),
     typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>,
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
