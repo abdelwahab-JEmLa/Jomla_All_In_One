@@ -89,7 +89,10 @@ class ConvertiseurNoSqlToSqlRepository(
     }
 
     // Add this helper method to verify client-product connections exist
-    private suspend fun verifyClientProductConnections(currentData: DataBasesInfosSql, clientId: Long) {
+    private suspend fun verifyClientProductConnections(
+        currentData: DataBasesInfosSql,
+        clientId: Long
+    ) {
         // Ensure that each product has a connection to this client with at least PRIX_BASE type
         for (product in currentData.a_ProduitInfos) {
             // Check if this product has any tarification for this client
@@ -126,17 +129,22 @@ class ConvertiseurNoSqlToSqlRepository(
         // Force refresh to ensure NoSQL data is updated
         refreshNoSqlData()
     }
+
     // FIXED: Renamed the suspend function to avoid naming conflict
     suspend fun addTarificationInfos(newData: D_TarificationInfos): Boolean {
         return mutex.withLock {
             try {
-                Log.d(TAG, "Adding D_TarificationInfos: ${newData.idProduit}-${newData.idClient}-${newData.idTypeTarification}")
+                Log.d(
+                    TAG,
+                    "Adding D_TarificationInfos: ${newData.idProduit}-${newData.idClient}-${newData.idTypeTarification}"
+                )
                 val currentData = sqlRepository.modelListFlow.value.firstOrNull()
                 if (currentData != null) {
                     val updatedData = currentData.copy(
-                        d_TarificationInfos = currentData.d_TarificationInfos.toMutableList().apply {
-                            add(newData)
-                        }
+                        d_TarificationInfos = currentData.d_TarificationInfos.toMutableList()
+                            .apply {
+                                add(newData)
+                            }
                     )
 
                     sqlRepository.upsert(updatedData)
@@ -168,16 +176,20 @@ class ConvertiseurNoSqlToSqlRepository(
                 val currentData = sqlRepository.modelListFlow.value.firstOrNull()
                 if (currentData != null) {
                     val updatedData = currentData.copy(
-                        c_TypeTarificationInfos = currentData.c_TypeTarificationInfos.toMutableList().apply {
-                            add(newData)
-                        }
+                        c_TypeTarificationInfos = currentData.c_TypeTarificationInfos.toMutableList()
+                            .apply {
+                                add(newData)
+                            }
                     )
 
                     sqlRepository.upsert(updatedData)
                     refreshNoSqlData()
                     true
                 } else {
-                    Log.e(TAG, "Failed to upsert C_TypeTarificationInfos: no current data available")
+                    Log.e(
+                        TAG,
+                        "Failed to upsert C_TypeTarificationInfos: no current data available"
+                    )
                     false
                 }
             } catch (e: Exception) {
@@ -264,7 +276,8 @@ class ConvertiseurNoSqlToSqlRepository(
     fun getTarificationInfos(
         idProduit: Long,
         idClient: Long,
-        idTypeTarification: Long
+        idTypeTarification: Long,
+        ancienRepoProduitPrixVent: Double?
     ): List<D_TarificationInfos> {
         val sqlDataList = sqlRepository.modelListFlow.value
         if (sqlDataList.isEmpty()) return emptyList()
@@ -273,9 +286,11 @@ class ConvertiseurNoSqlToSqlRepository(
         return sqlData.d_TarificationInfos.filter {
             it.idProduit == idProduit &&
                     it.idClient == idClient &&
-                    it.idTypeTarification == idTypeTarification
+                    it.idTypeTarification == idTypeTarification &&
+                    it.prixCurrency == ancienRepoProduitPrixVent
         }
     }
+
 
     suspend fun refreshNoSqlData() {
         val noSqlData = convertSqlToNoSql()

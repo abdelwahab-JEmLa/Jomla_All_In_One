@@ -44,7 +44,7 @@ class InfosSqlDataBasesRepository(
     init {
         coroutineScope.launch {
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
-            verifieFireBaseEstVide()
+          //  verifieFireBaseEstVide()
             collectRoom()
             fireBaseOperationsHandler.startNeedUpdateListener()
         }

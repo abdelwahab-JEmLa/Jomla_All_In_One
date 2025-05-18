@@ -27,12 +27,16 @@ data class UiState(
 
 class TarificationViewModel(
     val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository,
-    val ancienRepo: _0_0_HeadSQLRepositorys,
+    private val ancienRepo: _0_0_HeadSQLRepositorys,
     private val ancienClientRepository: B_ClientDataBaseRepository,
 ) : ViewModel() {
     private val TAG = "TarificationViewModel"
     private val _uiState = mutableStateOf(UiState())
     val uiState: State<UiState> = _uiState
+
+    private val ancienRepoProduitPrixVent = ancienRepo.repositorys_Model
+        ._2_1_ProduitsDataBase_Repository.modelDatasSnapList
+        .find { it.vid == _uiState.value.selectedProductId }?.monPrixVent
 
     val ancienRepoOuverClientId = ancienRepo.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -51,9 +55,6 @@ class TarificationViewModel(
         }
     }
 
-    // Removed the verifierAddNewDatasSiExistPas function and split it into more focused functions
-    // that can be called directly from composables
-
     fun ajouteSiExistePas_A_ProduitInfos(id: Long, nom: String? = null) {
         val existingProduct = convertiseurNoSqlToSqlRepository.getProduitInfos(id)
 
@@ -69,6 +70,8 @@ class TarificationViewModel(
         }
     }
 
+
+    // Fix for verifierAdd_D_TarificationInfos method in TarificationViewModel.kt
     fun verifierAdd_D_TarificationInfos(typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
         val clientId = ancienRepoOuverClientId ?: return
@@ -77,32 +80,26 @@ class TarificationViewModel(
         val existingTarifications = get_D_TarificationInfos(
             idProduit = productId,
             idClient = clientId,
-            idTypeTarification = typeTarification.infosId
+            idTypeTarification = typeTarification.infosId,
+            ancienRepoProduitPrixVent = ancienRepoProduitPrixVent
         )
 
         // Rule for adding if not available
         if (existingTarifications.isEmpty() && typeTarification.PrixsCurrency.isNotEmpty()) {
-            // Take the most recent price from NoSQL data
-            val mostRecentPrice = typeTarification.PrixsCurrency.maxByOrNull { it.vidTimestamp }
+            val defaultPrice = ancienRepoProduitPrixVent ?: 0.0 // Use default value if null
 
-            mostRecentPrice?.let { price ->
-                val newTarification = D_TarificationInfos(
-                    vidTimestamp = price.vidTimestamp,
-                    idProduit = productId,
-                    idClient = clientId,
-                    idTypeTarification = typeTarification.infosId,
-                    prixCurrency = price.valeur,
-                    needUpdate = true
-                )
+            val newTarification = D_TarificationInfos(
+                vidTimestamp = System.currentTimeMillis(),
+                idProduit = productId,
+                idClient = clientId,
+                idTypeTarification = typeTarification.infosId,
+                prixCurrency = defaultPrice,
+                needUpdate = true
+            )
 
-                // Add to the repository
-                viewModelScope.launch {
-                    val currentData = convertiseurNoSqlToSqlRepository
-                        .noSqlDataFlow.value
-
-                    // Use the repository to upsert the new tarification
-                    convertiseurNoSqlToSqlRepository.copyAdd_D_TarificationInfos(newTarification)
-                }
+            // Add to the repository
+            viewModelScope.launch {
+                convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification) // Using the renamed suspend function
             }
         }
     }
@@ -188,7 +185,8 @@ class TarificationViewModel(
         val existingTarifications = get_D_TarificationInfos(
             idProduit = productId,
             idClient = clientId,
-            idTypeTarification = 4L // PRIX_BASE
+            idTypeTarification = 4L,
+            ancienRepoProduitPrixVent = ancienRepoProduitPrixVent // PRIX_BASE
         )
 
         if (existingTarifications.isEmpty()) {
@@ -222,15 +220,19 @@ class TarificationViewModel(
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
     }
 
+
+    // Fix for get_D_TarificationInfos method in TarificationViewModel.kt
     fun get_D_TarificationInfos(
         idProduit: Long,
         idClient: Long,
-        idTypeTarification: Long
+        idTypeTarification: Long,
+        ancienRepoProduitPrixVent: Double? // We'll keep this parameter but not pass it to the repository
     ): List<D_TarificationInfos> {
         return convertiseurNoSqlToSqlRepository.getTarificationInfos(
             idProduit,
             idClient,
-            idTypeTarification
+            idTypeTarification ,
+            ancienRepoProduitPrixVent
         )
     }
 }

@@ -39,7 +39,6 @@ data class B_ClientInfos(
 
     var cLeDataOuvertDuParentList: Boolean = false,
 
-    val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = true
 )
 
@@ -97,17 +96,14 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
             B_ClientInfos(
                 id = 1,
                 nom = "ClientAchteur Abderrahman",
-                idActiveTypeTarificationDataBase = 1
             ),
             B_ClientInfos(
                 id = 2,
                 nom = "ClientAchteur Beta",
-                idActiveTypeTarificationDataBase = 2
             ),
             B_ClientInfos(
                 id = 3,
                 nom = "ClientAchteur Gamma",
-                idActiveTypeTarificationDataBase = 3
             )
         ),
         c_TypeTarificationInfos = mutableListOf(

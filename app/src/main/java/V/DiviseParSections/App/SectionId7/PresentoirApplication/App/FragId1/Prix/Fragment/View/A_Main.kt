@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +41,7 @@ fun FragmentMain(
         // Step 1: Add product info if not exists
         viewModel.ajouteSiExistePas_A_ProduitInfos(
             productId,
-            produitSelectioneDuAncienDataBase.nomArticleFinale
+            produitSelectioneDuAncienDataBase.nomArticleFinale,
         )
 
         // Step 2: Add client info if not exists
@@ -74,18 +73,6 @@ fun FilterMainScreen(
     val selectedProduct = noSqlData.produits.find { it.infosId == selectedProductId }
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
-
-    // Add this log to debug the issue
-    LaunchedEffect(selectedProduct, selectedClient) {
-        Log.d("FilterMainScreen", "Product found: ${selectedProduct != null}, Client found: ${selectedClient != null}")
-        Log.d("FilterMainScreen", "Looking for client ID: $selectedClientId in ${selectedProduct?.clientAchteurs?.map { "ID: ${it.infosId}" }}")
-
-        // If the client is missing, force a data refresh
-        if (selectedProduct != null && selectedClient == null) {
-            viewModel.ajouteSiExistePas_B_ClientsDataBase()
-            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-        }
-    }
 
     // Move the verification for type tarifications here
     LaunchedEffect(typeTarificationsList) {
