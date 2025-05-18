@@ -1,0 +1,129 @@
+--------------------------- PROCESS STARTED (30531) for package com.example.clientjetpack ----------------------------
+Perf              Connecting to perf service.
+Network...yConfig No Network Security Config specified, using platform default
+                  No Network Security Config specified, using platform default
+FirebaseApp       Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+Firebas...rovider FirebaseApp initialization successful
+WM-WrkM...ializer Initializing WorkManager with default configuration.
+TetheringManager  registerTetheringEventCallback:com.example.clientjetpack
+PreviewActivity   PreviewActivity has composable V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View.PreviewTestKt.PreviewTest
+                  Previewing 'PreviewTest' without a parameter provider.
+DecorView[]       getWindowModeFromSystem  windowmode is 1
+Choreographer     Skipped 32 frames!  The application may be doing too much work on its main thread.
+System            A resource failed to call close. 
+                  A resource failed to call close. 
+_2_1_Pr...ataBase ====== FIREBASE REFERENCE DEBUG INFO ======
+                  Firebase reference complete path: https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app/00_DataPrototype-04-02/_1_developingRef/A_ProduitsDataBase/A_MainDataBase
+                  Firebase database URL: https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app
+                  Expected URL: https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app
+                  URL check - Contains expected URL: true
+                  Expected path structure: 00_DataPrototype-04-02 -> _1_developingRef -> A_ProduitsDataBase -> A_MainDataBase
+                  Actual path: https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app/00_DataPrototype-04-02/_1_developingRef/A_ProduitsDataBase/A_MainDataBase
+                  Path check - Contains all expected components: true
+                  Production mode: true, Expected ref type: _2_productionTestRef
+                  Reference contains expected ref type: false
+                  ==========================================
+Tarific...ewModel Initializing ViewModel - Selected product ID: null
+                  Client ID from ancien repo: null
+                  NoSQL data updated - Products: 0
+_0_0_He...sitorys Starting repository initialization
+FragmentMain      Product information not found in NoSQL database. ID: 849
+Convert...SqlRepo Converting SQL to NoSQL - Products: 2, Clients: 1, Types: 4, Tarifs: 1
+                  Found tarification: ProduitID=849, ClientID=4, TypeID=4, Price=10.0, Timestamp=1747585728591
+                  Grouped tarifications by 1 products
+                  Product 1 (Non) has no tarifications
+                  Product 849 (chahrazed 80g) has 1 tarifications
+                  Product 849 has tarifications for 1 clients
+                  Client 4 (abdelhamid) has 1 tarification types
+                  Type 4 has 1 prices, latest: 10.0
+                  Conversion complete - Products in NoSQL: 2
+                  NoSQL Product 1 has 0 clients
+                  NoSQL Product 849 has 1 clients
+                    - Client 4 has 1 tarification types
+                      - Type 4 has 1 prices
+LB                fail to open file: No such file or directory
+FragmentMain      Initial setup - ProductID: 849, ClientID: null
+Tarific...ewModel Product already exists or name is null - ID: 849, Exists: true, Name: $
+FragmentMain      Processing tarifications for clientID: 0, product: 849
+                  Cannot create default tarification: Invalid client ID: 0
+Convert...SqlRepo Converting SQL to NoSQL - Products: 2, Clients: 1, Types: 4, Tarifs: 1
+                  Found tarification: ProduitID=849, ClientID=4, TypeID=4, Price=10.0, Timestamp=1747585728591
+                  Grouped tarifications by 1 products
+                  Product 1 (Non) has no tarifications
+                  Product 849 (chahrazed 80g) has 1 tarifications
+                  Product 849 has tarifications for 1 clients
+                  Client 4 (abdelhamid) has 1 tarification types
+                  Type 4 has 1 prices, latest: 10.0
+                  Conversion complete - Products in NoSQL: 2
+                  NoSQL Product 1 has 0 clients
+                  NoSQL Product 849 has 1 clients
+                    - Client 4 has 1 tarification types
+                      - Type 4 has 1 prices
+Choreographer     Skipped 48 frames!  The application may be doing too much work on its main thread.
+FragmentMain      Initial setup complete - Refreshed NoSQL data
+Tarific...ewModel NoSQL data updated - Products: 2
+                  Setting selected product ID to: 1
+_0_0_He...sitorys Repository initialization completed
+_1_5_Vendeur      _1_5_Vendeur_Repository status: 
+                  - Data count: 2
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+_1_2_Pr...eration _1_2_ProduitAcheteOperation_Repository status: 
+                  - Data count: 20
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+chatty            uid=10380(com.example.clientjetpack) identical 18 lines
+_0_0_He...sitorys Combined progress: 87,50%
+                  Possible reasons for incomplete progress:
+                  - _2_2_Repository incomplete: 0.0
+_3_Clie...ataBase _3_ClientsDataBase_Repository status: 
+                  - Data count: 0
+                  - Initial data loaded: true
+                  - Progress value: 0.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+_1_4_PeriodeVent  _1_4_PeriodeVent_Repository status: 
+                  - Data count: 1
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+_1_1_Co...eration _1_1_CouleurAcheteOperation_Repository status: 
+                  - Data count: 20
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+_1_3_Tr...mercial _1_3_TransactionCommercial_Repository status: 
+                  - Data count: 19
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+chatty            uid=10380(com.example.clientjetpack) identical 44 lines
+                  uid=10380(com.example.clientjetpack) identical 36 lines
+                  uid=10380(com.example.clientjetpack) identical 20 lines
+                  uid=10380(com.example.clientjetpack) identical 25 lines
+                  uid=10380(com.example.clientjetpack) identical 17 lines
+_2_1_Pr...ataBase Data consistency check - Room count: 839, Firebase count: 839
+                  Firebase data change listener set up successfully
+                  _2_1_ProduitsDataBase_Repository status: 
+                  - Data count: 839
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+_4_Coul...Command _4_CouleurOperationCommand_Repository status: 
+                  - Data count: 0
+                  - Initial data loaded: true
+                  - Progress value: 1.0
+                  - Last upsert_1_3_TransactionCommercial timestamp: 0
+                  - Listeners active: isListenerActive=false, isFlowListenerActive=true
+MiuiFra...Factory get AllImpl object = android.common.MiuiFrameworkFactoryImpl@a7cba46
+MirrorManager     this model don't Support
+ProfileInstaller  Installing profile for com.example.clientjetpack
+chatty            uid=10380(com.example.clientjetpack) DefaultDispatch identical 135 lines

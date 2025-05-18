@@ -1,8 +1,0 @@
----------------------------- PROCESS STARTED (18358) for package com.example.clientjetpack ----------------------------
-FragmentMain      Product information not found in NoSQL database. ID: 849
-                  Initial setup - ProductID: 849, ClientID: 4
-                  Processing tarifications for clientID: 4, product: 849
-                  No tarification types found for client 4, creating default
-                  Initial setup complete - Refreshed NoSQL data
-                  Product information not found in NoSQL database. ID: 849
-                  Product information not found in NoSQL database. ID: 849

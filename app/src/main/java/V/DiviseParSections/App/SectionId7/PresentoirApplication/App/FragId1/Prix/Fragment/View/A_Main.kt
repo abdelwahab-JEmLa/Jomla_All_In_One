@@ -85,17 +85,41 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    // Track if we've processed tarification types to avoid redundant processing
     var tarificationTypesProcessed by remember { mutableStateOf(false) }
 
-    // Only process tarification types once per client and product
     LaunchedEffect(key1 = selectedClientId, key2 = selectedProductId) {
-        // Skip if already processed for this client/product combo
         if (!tarificationTypesProcessed) {
             Log.d(TAG, "Processing tarifications for clientID: $selectedClientId, product: $selectedProductId")
 
-            if (typeTarificationsList.isNotEmpty()) {
-                Log.d(TAG, "Processing ${typeTarificationsList.size} tarification types for client $selectedClientId")
+            val sqlDataList = viewModel.convertiseurNoSqlToSqlRepository.sqlRepository.modelListFlow.value
+
+            val existingTarifications = if (sqlDataList.isNotEmpty()) {
+                val sqlData = sqlDataList.first()
+                sqlData.d_TarificationInfos.filter {
+                    it.idClient == selectedClientId && it.idProduit == selectedProductId
+                }
+            } else emptyList()
+
+            // Log the findings
+            if (existingTarifications.isNotEmpty()) {
+                Log.d(TAG, "Found ${existingTarifications.size} existing tarifications in SQL database")
+
+                // Extract the distinct type IDs
+                val existingTypeIds = existingTarifications.map { it.idTypeTarification }.distinct()
+                Log.d(TAG, "Existing tarification types: $existingTypeIds")
+
+                // Update types first to ensure they exist
+                viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+
+                // Force refresh to update NoSQL data with SQL data
+                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
+                // No need to create default tarifications since they already exist
+                Log.d(TAG, "Using existing tarifications from database")
+            }
+            // Handle case when we have types in NoSQL but not in SQL (shouldn't happen but just in case)
+            else if (typeTarificationsList.isNotEmpty()) {
+                Log.d(TAG, "Processing ${typeTarificationsList.size} tarification types from NoSQL data")
 
                 // Log each tarification type ID for debugging
                 typeTarificationsList.forEachIndexed { index, type ->
@@ -116,19 +140,22 @@ fun FilterMainScreen(
 
                 Log.d(TAG, "Final NoSQL refresh after tarification data processing")
                 viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            } else if (selectedClientId > 0) {
-                Log.d(TAG, "No tarification types found for client $selectedClientId, creating default")   //<--
-                //TODO(1): PK CA ME SORT CA 
+            }
+            // Create default tarifications ONLY if none exist in EITHER SQL or NoSQL AND we have a valid client ID
+            else if (selectedClientId > 0 && existingTarifications.isEmpty()) {
+                Log.d(TAG, "No tarification data found. Creating default tarification for client $selectedClientId")
                 viewModel.createDefaultTarificationIfNeeded(selectedClientId)
-            } else {
+            } else if (selectedClientId <= 0) {
                 Log.w(TAG, "Cannot create default tarification: Invalid client ID: $selectedClientId")
+            } else {
+                Log.d(TAG, "Tarifications likely exist in database but aren't displaying correctly, refreshing data...")
+                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
             }
 
             // Mark as processed to prevent reprocessing
             tarificationTypesProcessed = true
         }
     }
-
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {

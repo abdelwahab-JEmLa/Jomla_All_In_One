@@ -17,24 +17,10 @@
     }
   },
   "C_TypeTarificationInfos": {
-    "-<1(ParBenifice)": {
-      "entityCorrespond": "ParBenifice",
-      "id": 1,
-      "keyFireBase": "-<1(ParBenifice)",
-      "needUpdate": false,
-      "nom": "ParBenifice"
-    },
     "-<2(Historique)": {
       "entityCorrespond": "ParBenifice",
       "id": 2,
       "keyFireBase": "-<2(Historique)",
-      "needUpdate": false,
-      "nom": "ParBenifice"
-    },
-    "-<3(LeMaxPrixArrive)": {
-      "entityCorrespond": "ParBenifice",
-      "id": 3,
-      "keyFireBase": "-<3(LeMaxPrixArrive)",
       "needUpdate": false,
       "nom": "ParBenifice"
     },
@@ -47,15 +33,15 @@
     }
   },
   "D_TarificationInfos": {
-    "-<2025-05-18 -< 15:32:38": {
+    "-<2025-05-18 -< 17:28:48": {
       "idClient": 4,
       "idProduit": 849,
       "idTypeTarification": 4,
-      "keyFireBase": "-<2025-05-18 -< 15:32:38",
+      "keyFireBase": "-<2025-05-18 -< 17:28:48",
       "needUpdate": false,
-      "nom": "2025-05-18 -< 15:32:38",
-      "prixCurrency": 0,
-      "vidTimestamp": 1747578758671
+      "nom": "2025-05-18 -< 17:28:48",
+      "prixCurrency": 10,
+      "vidTimestamp": 1747585728591
     }
   }
 }

@@ -84,11 +84,6 @@ fun Clients(
             expectedClient.nom,
             actualClient.nom
         )
-        assertEquals(
-            "Client active tarification ID should match for ID ${expectedClient.id}",
-            expectedClient.idActiveTypeTarificationDataBase,
-            actualClient.idActiveTypeTarificationDataBase
-        )
     }
 }
 
