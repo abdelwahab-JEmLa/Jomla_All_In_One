@@ -39,8 +39,6 @@ class InfosSqlDataBasesRepository(
 
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
-    private val currentData = modelListFlow.value.firstOrNull()
-
     init {
         coroutineScope.launch {
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()

@@ -20,9 +20,7 @@ suspend fun ConvertiseurNoSqlToSqlRepository.convertSqlToNoSql(
 
             val sqlData = sqlDataList.first()
 
-            val productGroups = sqlData.d_TarificationInfos.groupBy { it.idProduit }
-
-            val produitsList = sqlData.a_ProduitInfos.mapNotNull { produit ->
+            val produitsList = sqlData.a_ProduitInfos.map { produit ->
                 val produitTarifications = sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
 
                 if (produitTarifications.isEmpty()) {
