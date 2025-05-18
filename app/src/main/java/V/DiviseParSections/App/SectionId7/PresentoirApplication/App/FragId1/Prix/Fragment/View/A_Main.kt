@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-
-private const val TAG = "FragmentMain"
 
 @Composable
 fun FragmentMain(
@@ -79,25 +76,6 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    LaunchedEffect(Unit) {
-
-        val logBuilder = StringBuilder()
-        logBuilder.append("DATA COMPARISON REPORT\n")
-
-        // Compare IDs and prices
-        val realIds = typeTarificationsList.map { it.infosId }
-
-        logBuilder.append("Real data IDs: $realIds\n")
-
-        // Compare prices (only once)
-        typeTarificationsList.forEach { type ->
-            val prices = type.PrixsCurrency.map { it.valeur }
-            logBuilder.append("Real data ID ${type.infosId} prices: $prices\n")
-        }
-
-        Log.d(TAG, logBuilder.toString())
-    }
-
     var tarificationTypesProcessed by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = selectedClientId, key2 = selectedProductId) {
@@ -112,14 +90,11 @@ fun FilterMainScreen(
             } else emptyList()
 
             if (existingTarifications.isNotEmpty()) {
-
                 viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
-
                 viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
             }
             else if (typeTarificationsList.isNotEmpty()) {
                 viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
-
                 viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
 
                 typeTarificationsList.forEach { typeTarification ->
@@ -131,7 +106,6 @@ fun FilterMainScreen(
             else if (selectedClientId > 0 && existingTarifications.isEmpty()) {
                 viewModel.createDefaultTarificationIfNeeded(selectedClientId)
             } else if (selectedClientId <= 0) {
-                // Invalid client ID
             } else {
                 viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
             }
@@ -151,7 +125,6 @@ fun FilterMainScreen(
                 MainList(
                     viewModel = viewModel,
                     typeTarificationsList = typeTarificationsList,
-                    // Using real data from database which now matches updated preview data
                     showOnlyLatestPrices = showOnlyLatestPrices,
                     modifier = Modifier.weight(1f)
                 )
