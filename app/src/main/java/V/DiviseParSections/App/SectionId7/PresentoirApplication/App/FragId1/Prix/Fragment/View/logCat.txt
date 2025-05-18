@@ -1,0 +1,20 @@
+Choreographer     Skipped 87 frames!  The application may be doing too much work on its main thread.
+InputEv...eceiver App Input: 816ms before dispatchInputEvent (MotionEvent: event_seq=315, seq=764495, action=ACTION_HOVER_MOVE)
+_0_0_He...sitorys Upsert completed for _1_3_TransactionCommercial with VID: 6
+System.out        Active operations canceled successfully
+                  Active operations canceled successfully
+                  Map resources cleaned up successfully
+System            A resource failed to call release. 
+DEBUG_VID         Passing to A_MainListFragId3: 0
+Tarific...ewModel Adding product with ID: 849, Name: chahrazed 80g
+                  Client already exists with ID: 4
+Convert...SqlRepo Adding A_ProduitInfos: 849
+DEBUG_VID         Passing to A_MainListFragId3: 17
+ColorOperation    Checking: Index=0, ParentVID=17
+chatty            uid=10380(com.example.clientjetpack) identical 6 lines
+GlideDisplay      Found valid image file: /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/849_1.webp
+                  Final image path: /storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/849_1.webp
+chatty            uid=10380(com.example.clientjetpack) identical 3 lines
+ColorScroll       Scrolling to index: 0
+GlideDisplay      Load complete for 849_1
+Tarific...ewModel Client already exists with ID: 4

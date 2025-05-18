@@ -70,56 +70,122 @@ class TarificationViewModel(
         }
     }
 
-
-    // Fix for verifierAdd_D_TarificationInfos method in TarificationViewModel.kt
+    // Fixed verifierAdd_D_TarificationInfos method
     fun verifierAdd_D_TarificationInfos(typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
         val clientId = ancienRepoOuverClientId ?: return
 
-        // Get existing tarification info
-        val existingTarifications = get_D_TarificationInfos(
-            idProduit = productId,
-            idClient = clientId,
-            idTypeTarification = typeTarification.infosId,
-            ancienRepoProduitPrixVent = ancienRepoProduitPrixVent
-        )
+        Log.d(TAG, "Verifying D_TarificationInfos for product=$productId, client=$clientId, typeTarif=${typeTarification.infosId}")
 
-        // Rule for adding if not available
-        if (existingTarifications.isEmpty() && typeTarification.PrixsCurrency.isNotEmpty()) {
-            val defaultPrice = ancienRepoProduitPrixVent ?: 0.0 // Use default value if null
+        // This is a direct coroutine launch to ensure this operation completes
+        viewModelScope.launch {
+            try {
+                // Get existing tarification info
+                val existingTarifications = get_D_TarificationInfos(
+                    idProduit = productId,
+                    idClient = clientId,
+                    idTypeTarification = typeTarification.infosId,
+                    ancienRepoProduitPrixVent = ancienRepoProduitPrixVent
+                )
 
-            val newTarification = D_TarificationInfos(
-                vidTimestamp = System.currentTimeMillis(),
-                idProduit = productId,
-                idClient = clientId,
-                idTypeTarification = typeTarification.infosId,
-                prixCurrency = defaultPrice,
-                needUpdate = true
-            )
+                // If we don't have any tarifications, create one with a default price
+                if (existingTarifications.isEmpty()) {
+                    val defaultPrice = ancienRepoProduitPrixVent ?: 0.0
 
-            // Add to the repository
-            viewModelScope.launch {
-                convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification) // Using the renamed suspend function
+                    Log.d(TAG, "Creating new D_TarificationInfos: product=$productId, client=$clientId, type=${typeTarification.infosId}, price=$defaultPrice")
+
+                    val newTarification = D_TarificationInfos(
+                        vidTimestamp = System.currentTimeMillis(),
+                        idProduit = productId,
+                        idClient = clientId,
+                        idTypeTarification = typeTarification.infosId,
+                        prixCurrency = defaultPrice,
+                        needUpdate = true
+                    )
+
+                    // Use direct suspend function to add tarification and wait for completion
+                    val result = convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
+                    Log.d(TAG, "D_TarificationInfos add result: $result")
+
+                    // Force refresh after adding
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                } else {
+                    Log.d(TAG, "D_TarificationInfos already exists: ${existingTarifications.size} entries found")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in verifierAdd_D_TarificationInfos", e)
             }
         }
     }
 
+    // Fixed method for C_TypeTarificationInfos
     fun verifierAddNew_C_TypeTarificationInfos(typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>) {
-        val id: Long = 4
-        val tarificationInfosHistorique =
-            convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
+        viewModelScope.launch {
+            try {
+                Log.d(TAG, "Verifying C_TypeTarificationInfos with list size: ${typeTarificationsList.size}")
 
-        if (
-            typeTarificationsList.isEmpty() || tarificationInfosHistorique == null
-        ) {
-            val newData =
-                C_TypeTarificationInfos(
-                    id = 4,
-                    entityCorrespond = TypeTarificationEnum.PRIX_BASE,
-                    nom = TypeTarificationEnum.PRIX_BASE.name,
-                    keyFireBase = getKeyFireBase(4, TypeTarificationEnum.PRIX_BASE.name)
-                )
-            convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(newData)
+                // Check for PRIX_BASE type (ID=4)
+                val id: Long = 4
+                val tarificationInfosHistorique = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
+
+                // Add PRIX_BASE type if it doesn't exist
+                if (tarificationInfosHistorique == null) {
+                    Log.d(TAG, "Creating new C_TypeTarificationInfos for PRIX_BASE")
+
+                    val newData = C_TypeTarificationInfos(
+                        id = 4,
+                        entityCorrespond = TypeTarificationEnum.PRIX_BASE,
+                        nom = TypeTarificationEnum.PRIX_BASE.name,
+                        keyFireBase = getKeyFireBase(4, TypeTarificationEnum.PRIX_BASE.name)
+                    )
+
+                    // Add all enum types to ensure we have a complete dataset
+                    TypeTarificationEnum.values().forEach { enumType ->
+                        val enumId = enumType.ordinal + 1L
+                        val existingType = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(enumId)
+
+                        if (existingType == null) {
+                            val typeData = C_TypeTarificationInfos(
+                                id = enumId,
+                                entityCorrespond = enumType,
+                                nom = enumType.name,
+                                keyFireBase = getKeyFireBase(enumId, enumType.name)
+                            )
+
+                            convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(typeData)
+                        }
+                    }
+
+                    // Finally add our PRIX_BASE type and refresh
+                    convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(newData)
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                } else {
+                    Log.d(TAG, "C_TypeTarificationInfos for PRIX_BASE already exists")
+                }
+
+                // Check for any missing type tarifications from the list and add them
+                typeTarificationsList.forEach { typeTarif ->
+                    val existingType = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(typeTarif.infosId)
+                    if (existingType == null) {
+                        Log.d(TAG, "Adding missing type tarification: ${typeTarif.infosId}")
+
+                        // Default to ParBenifice enum for any unknown type
+                        val newType = C_TypeTarificationInfos(
+                            id = typeTarif.infosId,
+                            entityCorrespond = TypeTarificationEnum.ParBenifice,
+                            nom = "Type ${typeTarif.infosId}",
+                            keyFireBase = getKeyFireBase(typeTarif.infosId, "Type ${typeTarif.infosId}")
+                        )
+
+                        convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(newType)
+                    }
+                }
+
+                // Final refresh
+                convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in verifierAddNew_C_TypeTarificationInfos", e)
+            }
         }
     }
 
@@ -177,36 +243,64 @@ class TarificationViewModel(
         }
     }
 
-    // Add this helper method to create default tarification for client-product pair
-    private fun createDefaultTarificationIfNeeded(clientId: Long) {
+    // Make this method public so it can be called from the UI
+    fun createDefaultTarificationIfNeeded(clientId: Long) {
         val productId = _uiState.value.selectedProductId ?: return
 
-        // Check if we already have tarification data
-        val existingTarifications = get_D_TarificationInfos(
-            idProduit = productId,
-            idClient = clientId,
-            idTypeTarification = 4L,
-            ancienRepoProduitPrixVent = ancienRepoProduitPrixVent // PRIX_BASE
-        )
+        viewModelScope.launch {
+            try {
+                // Ensure we have the PRIX_BASE type
+                val defaultTypeTarificationId = 4L // PRIX_BASE
+                val typeTarifExists = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(defaultTypeTarificationId)
 
-        if (existingTarifications.isEmpty()) {
-            Log.d(TAG, "Creating default tarification for client $clientId and product $productId")
+                if (typeTarifExists == null) {
+                    Log.d(TAG, "Creating TYPE_TARIFICATION_PRIX_BASE first")
+                    val newType = C_TypeTarificationInfos(
+                        id = defaultTypeTarificationId,
+                        entityCorrespond = TypeTarificationEnum.PRIX_BASE,
+                        nom = TypeTarificationEnum.PRIX_BASE.name,
+                        keyFireBase = getKeyFireBase(defaultTypeTarificationId, TypeTarificationEnum.PRIX_BASE.name)
+                    )
 
-            // Create a default pricing entry
-            val defaultTypeTarification = 4L // PRIX_BASE
-            val defaultPrice = 0.0
-            val timestamp = System.currentTimeMillis()
+                    convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(newType)
+                    // Force refresh after adding type
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                }
 
-            val newTarification = D_TarificationInfos(
-                vidTimestamp = timestamp,
-                idProduit = productId,
-                idClient = clientId,
-                idTypeTarification = defaultTypeTarification,
-                prixCurrency = defaultPrice,
-                needUpdate = true
-            )
+                // Check if we already have tarification data
+                val existingTarifications = get_D_TarificationInfos(
+                    idProduit = productId,
+                    idClient = clientId,
+                    idTypeTarification = defaultTypeTarificationId,
+                    ancienRepoProduitPrixVent = ancienRepoProduitPrixVent
+                )
 
-            convertiseurNoSqlToSqlRepository.copyAdd_D_TarificationInfos(newTarification)
+                if (existingTarifications.isEmpty()) {
+                    Log.d(TAG, "Creating default tarification for client $clientId and product $productId")
+
+                    // Create a default pricing entry
+                    val defaultPrice = ancienRepoProduitPrixVent ?: 0.0
+                    val timestamp = System.currentTimeMillis()
+
+                    val newTarification = D_TarificationInfos(
+                        vidTimestamp = timestamp,
+                        idProduit = productId,
+                        idClient = clientId,
+                        idTypeTarification = defaultTypeTarificationId,
+                        prixCurrency = defaultPrice,
+                        needUpdate = true
+                    )
+
+                    // Use direct suspend function for reliable adding
+                    val result = convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
+                    Log.d(TAG, "Default tarification add result: $result")
+
+                    // Force refresh after adding tarification
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in createDefaultTarificationIfNeeded", e)
+            }
         }
     }
 
@@ -220,18 +314,16 @@ class TarificationViewModel(
         return convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(noSqlData.infosId)
     }
 
-
-    // Fix for get_D_TarificationInfos method in TarificationViewModel.kt
     fun get_D_TarificationInfos(
         idProduit: Long,
         idClient: Long,
         idTypeTarification: Long,
-        ancienRepoProduitPrixVent: Double? // We'll keep this parameter but not pass it to the repository
+        ancienRepoProduitPrixVent: Double?
     ): List<D_TarificationInfos> {
         return convertiseurNoSqlToSqlRepository.getTarificationInfos(
             idProduit,
             idClient,
-            idTypeTarification ,
+            idTypeTarification,
             ancienRepoProduitPrixVent
         )
     }

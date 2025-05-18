@@ -169,7 +169,7 @@ class ConvertiseurNoSqlToSqlRepository(
     }
 
     // FIXED: Renamed the suspend function to avoid naming conflict
-    suspend fun addTypeTarificationInfos(newData: C_TypeTarificationInfos): Boolean {
+    private suspend fun addTypeTarificationInfos(newData: C_TypeTarificationInfos): Boolean {
         return mutex.withLock {
             try {
                 Log.d(TAG, "Adding C_TypeTarificationInfos: ${newData.id}")
