@@ -1,12 +1,10 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
-
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -38,8 +36,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
-const val TAG = "ControlButton"
-
 @Composable
 fun A_OptionsControlsButtons_FragId_(
     viewModel: Windows__ViewModel,
@@ -51,7 +47,6 @@ fun A_OptionsControlsButtons_FragId_(
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -109,45 +104,35 @@ fun ControlButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    Log.d(TAG, "ControlButton called with icon type: ${icon.javaClass.simpleName}")
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         when (icon) {
             is ImageVector -> {
-                Log.d(TAG, "Rendering ImageVector icon")
                 FloatingActionButton(
                     onClick = {
                         if (enabled) {
-                            Log.d(TAG, "ImageVector FAB clicked")
                             onClick()
                         }
                     },
                     modifier = modifier.size(40.dp),
-                    containerColor =  containerColor,
-
+                    containerColor = containerColor,
                 ) {
                     Icon(icon, contentDescription)
                 }
             }
             is LottieJsonGetterR_Raw_Icons -> {
-                Log.d(TAG, "Rendering LottieJsonGetterR_Raw_Icons")
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clickable(enabled = enabled) {
-                            Log.d(TAG, "LottieJson Box clicked")
                             onClick()
                         }
                         .background(
                             color = if (enabled) containerColor else Color.Gray,
                             shape = CircleShape
-                        )
-                        .also {
-                            Log.d(TAG, "Box modifiers applied successfully")
-                        },
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     AnimatedIconLottieJsonFile(
@@ -158,12 +143,10 @@ fun ControlButton(
             }
             is Int -> {
                 // Support for direct resource IDs like R.raw.categ
-                Log.d(TAG, "Rendering direct resource ID: $icon")
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clickable(enabled = enabled) {
-                            Log.d(TAG, "Resource ID Box clicked")
                             onClick()
                         }
                         .background(
@@ -179,11 +162,9 @@ fun ControlButton(
                 }
             }
             else -> {
-                Log.e(TAG, "Unsupported icon type: ${icon.javaClass.simpleName}")
                 throw IllegalArgumentException("Unsupported icon type")
             }
         }
-
 
         if (showLabels) {
             Text(
