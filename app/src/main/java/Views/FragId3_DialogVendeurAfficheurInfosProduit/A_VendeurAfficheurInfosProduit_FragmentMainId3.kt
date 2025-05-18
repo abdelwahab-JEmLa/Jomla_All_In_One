@@ -116,8 +116,6 @@ fun MainUi(
                 it.vid == parentCompose_1_3_BonAchatVid
             }?.clientAcheteurID
 
-
-
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(
@@ -236,10 +234,13 @@ fun MainUi(
                                 )
                             }
                             item {
-                                FragmentMain(
-                                    produitSelectioneDuAncienDataBase = stats,
-                                    selectedClientId = repository_1_3_TransactionCommercialclientAcheteurID!!
-                                )
+
+                                if (repository_1_3_TransactionCommercialclientAcheteurID != null) {
+                                    FragmentMain(
+                                        produitSelectioneDuAncienDataBase = stats,
+                                        selectedClientId = repository_1_3_TransactionCommercialclientAcheteurID
+                                    )
+                                }
                             }
                         }
                     }
