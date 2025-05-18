@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 
@@ -20,6 +21,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     val tarifications = mutableListOf<D_TarificationInfos>()
 
     val defaultModel = DataBasesInfosSql()
+
 
     val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
