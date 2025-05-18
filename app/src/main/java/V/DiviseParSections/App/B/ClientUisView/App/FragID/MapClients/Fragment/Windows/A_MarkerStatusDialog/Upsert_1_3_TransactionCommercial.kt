@@ -80,30 +80,27 @@ fun sectionSqlRepository(
     sqlRepository: InfosSqlDataBasesRepository
 ): Unit {
     val currentData = sqlRepository.modelListFlow.value.firstOrNull()
-        ?: return
 
-    // First, check if the client exists in the database
-    val existingClient = currentData.b_ClientInfosList.find {
-        it.id == relatedClients.id
-    }
+    // Convert B_ClientDataBase to B_ClientInfos
+    val b_ClientInfos = currentData!!
+        .b_ClientInfosList.find {
+            it.id == relatedClients.id
+        } ?: B_ClientInfos(
+        id = relatedClients.id,
+        nom = relatedClients.nom
+    )
 
-    // If client exists, use it; otherwise create a new one and add it to the database
-    val clientInfos = if (existingClient != null) {
-        existingClient
-    } else {
-        // Create new client with data from relatedClients
-        val newClient = B_ClientInfos(
-            id = relatedClients.id,
-            nom = relatedClients.nom
-        )
+    sqlRepository.addoneClientInfos(b_ClientInfos)
 
-        // Add the new client to the database
-        sqlRepository.addoneClientInfos(newClient)
+    // Create updated list with the target client set to open
+    val updatedClientList = currentData.b_ClientInfosList.map { cli ->
+        if (cli.id == b_ClientInfos.id) {
+            cli.copy(cLeDataOuvertDuParentList = true)
+        } else {
+            cli.copy(cLeDataOuvertDuParentList = false)
+        }
+    }.toMutableList()
 
-        // Return the newly created client
-        newClient
-    }
-
-    // Mark this client as the open/active client
-    sqlRepository.changeOuvertClient(clientInfos, sqlRepository)
+    // Update clients with the correct parameter
+    sqlRepository.updateMultiClientInfos(updatedClientList)
 }

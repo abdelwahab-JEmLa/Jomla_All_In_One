@@ -26,6 +26,8 @@ data class _1_3_TransactionCommercial(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
+    var cLeDataOuvertDuParentList: Boolean?=null,
+
     var cActive: Boolean = false,
 
     var cJustPourVoirPanie: Boolean = false,

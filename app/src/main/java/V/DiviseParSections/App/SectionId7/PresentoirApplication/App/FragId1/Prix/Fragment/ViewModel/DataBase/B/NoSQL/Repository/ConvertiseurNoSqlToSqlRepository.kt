@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,88 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
+    // In ConvertiseurNoSqlToSqlRepository.kt, modify the addClientInfos function
+// to ensure it properly handles the client data and correctly updates NoSQL data:
+
+    suspend fun addClientInfos(newData: B_ClientInfos): Boolean {
+        return mutex.withLock {
+            try {
+                Log.d(TAG, "Adding B_ClientInfos: ${newData.id}")
+                val currentData = sqlRepository.modelListFlow.value.firstOrNull()
+                if (currentData != null) {
+                    // Check if client already exists
+                    val existingClient = currentData.b_ClientInfosList.find { it.id == newData.id }
+                    if (existingClient != null) {
+                        Log.d(TAG, "Client ${newData.id} already exists, skipping addition")
+
+                        // Even though client exists, we should verify product connections exist
+                        verifyClientProductConnections(currentData, newData.id)
+                        return@withLock true
+                    }
+
+                    val updatedData = currentData.copy(
+                        b_ClientInfosList = currentData.b_ClientInfosList.toMutableList().apply {
+                            add(newData)
+                        }
+                    )
+
+                    sqlRepository.upsert(updatedData)
+
+                    // After adding client, verify product connections
+                    verifyClientProductConnections(updatedData, newData.id)
+
+                    // Explicitly refresh NoSQL data after client addition
+                    refreshNoSqlData()
+                    return@withLock true
+                } else {
+                    Log.e(TAG, "Failed to upsert B_ClientInfos: no current data available")
+                    return@withLock false
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error adding B_ClientInfos", e)
+                return@withLock false
+            }
+        }
+    }
+
+    // Add this helper method to verify client-product connections exist
+    private suspend fun verifyClientProductConnections(currentData: DataBasesInfosSql, clientId: Long) {
+        // Ensure that each product has a connection to this client with at least PRIX_BASE type
+        for (product in currentData.a_ProduitInfos) {
+            // Check if this product has any tarification for this client
+            val hasConnection = currentData.d_TarificationInfos.any {
+                it.idProduit == product.id && it.idClient == clientId
+            }
+
+            if (!hasConnection) {
+                Log.d(TAG, "Creating connection between product ${product.id} and client $clientId")
+
+                // Create default connection with PRIX_BASE
+                val newTarification = D_TarificationInfos(
+                    vidTimestamp = System.currentTimeMillis(),
+                    idProduit = product.id,
+                    idClient = clientId,
+                    idTypeTarification = 4L, // PRIX_BASE
+                    prixCurrency = 0.0,
+                    needUpdate = true
+                )
+
+                // Use direct approach to add to repository
+                val updatedTarifications = currentData.d_TarificationInfos.toMutableList().apply {
+                    add(newTarification)
+                }
+
+                val updatedData = currentData.copy(
+                    d_TarificationInfos = updatedTarifications
+                )
+
+                sqlRepository.upsert(updatedData)
+            }
+        }
+
+        // Force refresh to ensure NoSQL data is updated
+        refreshNoSqlData()
+    }
     // FIXED: Renamed the suspend function to avoid naming conflict
     suspend fun addTarificationInfos(newData: D_TarificationInfos): Boolean {
         return mutex.withLock {
@@ -145,38 +228,6 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
-    suspend fun addClientInfos(newData: B_ClientInfos): Boolean {
-        return mutex.withLock {
-            try {
-                Log.d(TAG, "Adding B_ClientInfos: ${newData.id}")
-                val currentData = sqlRepository.modelListFlow.value.firstOrNull()
-                if (currentData != null) {
-                    // Check if client already exists
-                    val existingClient = currentData.b_ClientInfosList.find { it.id == newData.id }
-                    if (existingClient != null) {
-                        Log.d(TAG, "Client ${newData.id} already exists, skipping addition")
-                        return@withLock true
-                    }
-
-                    val updatedData = currentData.copy(
-                        b_ClientInfosList = currentData.b_ClientInfosList.toMutableList().apply {
-                            add(newData)
-                        }
-                    )
-
-                    sqlRepository.upsert(updatedData)
-                    refreshNoSqlData()
-                    true
-                } else {
-                    Log.e(TAG, "Failed to upsert B_ClientInfos: no current data available")
-                    false
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error adding B_ClientInfos", e)
-                false
-            }
-        }
-    }
 
     // FIXED: Now calls the renamed suspend function
     fun copyAdd_B_ClientInfos(newData: B_ClientInfos): Unit {

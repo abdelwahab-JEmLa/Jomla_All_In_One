@@ -228,7 +228,6 @@ fun MainUi(
                                 repository_1_3_TransactionCommercialclientAcheteurID?.let {
                                     FragmentMain(
                                         produitSelectioneDuAncienDataBase = stats,
-                                        selectedClientId = it
                                     )
                                 }
                             }

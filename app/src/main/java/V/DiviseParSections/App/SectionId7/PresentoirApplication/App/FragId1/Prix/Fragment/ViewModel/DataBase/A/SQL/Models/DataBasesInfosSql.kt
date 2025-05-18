@@ -38,6 +38,7 @@ data class B_ClientInfos(
     val keyFireBase: String = getKeyFireBase(id, nom),
 
     var cLeDataOuvertDuParentList: Boolean = false,
+
     val idActiveTypeTarificationDataBase: Long = 0,
     val needUpdate: Boolean = true
 )

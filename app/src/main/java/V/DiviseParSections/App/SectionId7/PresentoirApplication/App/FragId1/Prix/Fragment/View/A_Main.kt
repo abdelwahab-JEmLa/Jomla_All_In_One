@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,23 +32,31 @@ import org.koin.androidx.compose.koinViewModel
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
     produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable,
-    selectedClientId: Long,
 ) {
     val uiState by viewModel.uiState
+    val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
+    val clientId = viewModel.ancienRepoOuverClientId
 
-    LaunchedEffect(produitSelectioneDuAncienDataBase) {
-        viewModel.uiState.value.selectedClientId = selectedClientId
-
-        viewModel.verifierAddNewDatasSiExistPas(
-            produitDuAncienDataBase = produitSelectioneDuAncienDataBase,
+    // Move verification operations to LaunchedEffect here
+    LaunchedEffect(productId, clientId) {
+        // Step 1: Add product info if not exists
+        viewModel.ajouteSiExistePas_A_ProduitInfos(
+            productId,
+            produitSelectioneDuAncienDataBase.nomArticleFinale
         )
+
+        // Step 2: Add client info if not exists
+        viewModel.ajouteSiExistePas_B_ClientsDataBase()
+
+        // Step 3: Refresh data
+        viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
     }
 
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
-        selectedProductId = produitSelectioneDuAncienDataBase.idArticle.toLong(),
-        selectedClientId = selectedClientId,
+        selectedProductId = productId,
+        selectedClientId = clientId ?: 0L,
     )
 }
 
@@ -66,6 +75,31 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
+    // Add this log to debug the issue
+    LaunchedEffect(selectedProduct, selectedClient) {
+        Log.d("FilterMainScreen", "Product found: ${selectedProduct != null}, Client found: ${selectedClient != null}")
+        Log.d("FilterMainScreen", "Looking for client ID: $selectedClientId in ${selectedProduct?.clientAchteurs?.map { "ID: ${it.infosId}" }}")
+
+        // If the client is missing, force a data refresh
+        if (selectedProduct != null && selectedClient == null) {
+            viewModel.ajouteSiExistePas_B_ClientsDataBase()
+            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+        }
+    }
+
+    // Move the verification for type tarifications here
+    LaunchedEffect(typeTarificationsList) {
+        if (typeTarificationsList.isNotEmpty()) {
+            // Add typeTarification info if not exists
+            viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+
+            // Add tarification data for each type
+            typeTarificationsList.forEach { typeTarification ->
+                viewModel.verifierAdd_D_TarificationInfos(typeTarification)
+            }
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {
@@ -74,20 +108,29 @@ fun FilterMainScreen(
                     produit = selectedProduct,
                     client = selectedClient
                 )
+
+                MainList(
+                    viewModel = viewModel,
+                    typeTarificationsList = typeTarificationsList,
+                    showOnlyLatestPrices = showOnlyLatestPrices,
+                    modifier = Modifier.weight(1f)
+                )
             } else if (selectedProduct != null) {
-                // Display product info only if client is missing
                 Text(
-                    text = "Product information available, but client data is missing",
+                    text = "Product information available, attempting to load client data...",
+                    modifier = Modifier.padding(16.dp)
+                )
+
+                // Add this to trigger client data loading
+                LaunchedEffect(Unit) {
+                    viewModel.ajouteSiExistePas_B_ClientsDataBase()
+                }
+            } else {
+                Text(
+                    text = "Product information not found. ID: $selectedProductId",
                     modifier = Modifier.padding(16.dp)
                 )
             }
-
-            MainList(
-                viewModel = viewModel,
-                typeTarificationsList = typeTarificationsList,
-                showOnlyLatestPrices = showOnlyLatestPrices,
-                modifier = Modifier.weight(1f)
-            )
         }
 
         Column(
@@ -118,12 +161,6 @@ fun MainList(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(typeTarificationsList) {
-        viewModel.verifierAddNew_C_TypeTarificationInfos(
-            typeTarificationsList
-        )
-    }
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
