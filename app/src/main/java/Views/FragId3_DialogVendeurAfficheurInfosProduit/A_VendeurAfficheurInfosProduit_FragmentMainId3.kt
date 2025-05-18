@@ -234,11 +234,10 @@ fun MainUi(
                                 )
                             }
                             item {
-
-                                if (repository_1_3_TransactionCommercialclientAcheteurID != null) {
+                                repository_1_3_TransactionCommercialclientAcheteurID?.let {
                                     FragmentMain(
                                         produitSelectioneDuAncienDataBase = stats,
-                                        selectedClientId = repository_1_3_TransactionCommercialclientAcheteurID
+                                        selectedClientId = it
                                     )
                                 }
                             }
