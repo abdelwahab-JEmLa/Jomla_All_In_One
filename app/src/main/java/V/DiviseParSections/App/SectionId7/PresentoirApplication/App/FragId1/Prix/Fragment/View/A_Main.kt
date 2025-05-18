@@ -72,24 +72,18 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    // LaunchedEffect for tarification setup, with dependencies on both lists and client ID
     LaunchedEffect(key1 = typeTarificationsList, key2 = selectedClientId) {
         if (typeTarificationsList.isNotEmpty()) {
-            // Step 1: First add the default type tarification info
             viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
 
-            // Refresh data explicitly
             viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
 
-            // Step 2: Now add individual tarifications with a delay to ensure type info exists
             typeTarificationsList.forEach { typeTarification ->
                 viewModel.verifierAdd_D_TarificationInfos(typeTarification)
             }
 
-            // Final refresh to make sure all data is updated
             viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
         } else if (selectedClientId > 0) {
-            // If we have a client but no tarifications, create the default ones
             viewModel.createDefaultTarificationIfNeeded(selectedClientId)
         }
     }
