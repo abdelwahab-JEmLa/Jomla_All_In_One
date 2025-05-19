@@ -32,7 +32,6 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
-
     LaunchedEffect(produitInfosList.size) {
         if (produitInfosList.isEmpty()) {
             delay(500)
