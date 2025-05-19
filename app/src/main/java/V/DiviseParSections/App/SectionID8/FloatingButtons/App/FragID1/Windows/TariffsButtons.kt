@@ -88,18 +88,18 @@ fun TariffsButtons(
             ) {
                 val couleurButton =
                     relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
-                    FloatingActionButton(
-                        onClick = { },
-                        modifier = Modifier.size(40.dp),
-                        containerColor = couleurButton
-                    ) {
-                        relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
-                            Icon(
-                                imageVector = iconVector,
-                                contentDescription = null
-                            )
-                        }
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = Modifier.size(40.dp),
+                    containerColor = couleurButton
+                ) {
+                    relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
+                        Icon(
+                            imageVector = iconVector,
+                            contentDescription = null
+                        )
                     }
+                }
                 if (showLabels) {
                     ElevatedCard {
 
