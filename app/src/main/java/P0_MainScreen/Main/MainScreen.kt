@@ -299,7 +299,7 @@ fun MainScreen(
                     )
                 }
                 if (isHostPhone && !hideAppScreen) {
-                    RecordAfficheurFAB()
+                  //  RecordAfficheurFAB()
                 }
 
                 // Show additional loading indicator if needed for other UI states
@@ -328,6 +328,8 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
+                RecordAfficheurFAB()
+
             }
         }
     }

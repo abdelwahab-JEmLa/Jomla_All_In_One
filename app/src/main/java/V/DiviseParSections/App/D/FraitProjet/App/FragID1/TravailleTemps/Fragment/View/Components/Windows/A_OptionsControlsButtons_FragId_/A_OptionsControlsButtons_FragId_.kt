@@ -35,8 +35,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun A_OptionsControlsButtons_FragId_(
-    tarificationViewModel: TarificationViewModel = koinViewModel(),
-    viewModel: Windows__ViewModel,
+    viewModel: Windows__ViewModel = koinViewModel(),
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
@@ -75,9 +74,6 @@ fun A_OptionsControlsButtons_FragId_(
 
                     FragID_0_Butt_3(viewModel, showLabels, "Mode Admin")
 
-                    TarriffesButtons(
-                        showLabels, tarificationViewModel
-                    )
 
                     LabelsButton(
                         showLabels = showLabels,
@@ -89,52 +85,6 @@ fun A_OptionsControlsButtons_FragId_(
                     showLabels = showLabels,
                     showMenu = showMenu,
                     onShowMenuChange = { showMenu = it }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun TarriffesButtons(showLabels: Boolean, tarificationViewModel: TarificationViewModel) {
-    val uiState = tarificationViewModel.uiState.value
-    val activeProduit = uiState.produitsNoSqlDataBase.produits.find { it.itsActiveOne }
-    val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
-    val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
-    val tariffsList = activeTypeTarification?.tariffsList ?: emptyList()
-
-    tariffsList.forEach { tariff ->
-        // Find the parent TypeTarification
-        val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
-        val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
-            parentTypeTarificationId
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            // Use the icon and color from the related TypeTarification
-            val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
-            FloatingActionButton(
-                onClick = { },
-                modifier = Modifier.size(40.dp),
-                containerColor = couleurButton
-            ) {
-                relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
-                    Icon(
-                        imageVector = iconVector,
-                        contentDescription = null
-                    )
-                }
-            }
-            if (showLabels) {
-                Text(
-                    "${tariff.valeur}",
-                    modifier = Modifier
-                        .background(couleurButton)
-                        .padding(4.dp),
-                    color = Color.White
                 )
             }
         }

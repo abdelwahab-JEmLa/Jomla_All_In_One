@@ -1,17 +1,24 @@
 package P0_MainScreen.Main.Windows
 
+import V.DiviseParSections.App.C_AtelieModbile.Fragment.ViewModel.TarificationViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -126,6 +133,58 @@ fun RecordAfficheurFAB(
                     labelText = displayTime,
                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
                     enabled = false
+                )
+                 TarriffesButtons(
+                    showLabels=showLabels,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TarriffesButtons(
+    showLabels: Boolean,
+    tarificationViewModel: TarificationViewModel = koinViewModel(),
+) {
+    val uiState = tarificationViewModel.uiState.value
+    val activeProduit = uiState.produitsNoSqlDataBase.produits.find { it.itsActiveOne }
+    val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
+    val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
+    val tariffsList = activeTypeTarification?.tariffsList ?: emptyList()
+
+    tariffsList.forEach { tariff ->
+        // Find the parent TypeTarification
+        val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
+        val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
+            parentTypeTarificationId
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Use the icon and color from the related TypeTarification
+            val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
+            FloatingActionButton(
+                onClick = { },
+                modifier = Modifier.size(40.dp),
+                containerColor = couleurButton
+            ) {
+                relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
+                    Icon(
+                        imageVector = iconVector,
+                        contentDescription = null
+                    )
+                }
+            }
+            if (showLabels) {
+                Text(
+                    "${tariff.valeur}",
+                    modifier = Modifier
+                        .background(couleurButton)
+                        .padding(4.dp),
+                    color = Color.White
                 )
             }
         }

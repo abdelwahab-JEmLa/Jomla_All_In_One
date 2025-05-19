@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.A_OptionsControlsButtons_FragId_
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_APP3FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: Windows__ViewModel = koinViewModel(),
-    fabsVisibility: Boolean=true,
+    fabsVisibility: Boolean = true,
 ) {
     // Collect recording state
     val isRecording by viewModel.isRecording.collectAsState()
@@ -67,10 +66,10 @@ fun A_APP3FragID1_MainScreen(
                 .padding(paddingValues),
         ) {
             MainList_Windows(viewModel = viewModel)
-
+                 /*
             if (fabsVisibility) {
                 A_OptionsControlsButtons_FragId_( viewModel = viewModel)
-            }
+            }     */
         }
     }
 }
