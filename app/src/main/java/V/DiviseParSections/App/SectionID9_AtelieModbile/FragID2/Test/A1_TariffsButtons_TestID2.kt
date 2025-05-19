@@ -24,14 +24,15 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
 ) {
+    val firstProductId = 1
+    val firstBonId = 1L
+
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tarificationList
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
-    val firstProductId = 1
-    val firstBonId = 1L
 
     LaunchedEffect(produitInfosList.size) {
         if (produitInfosList.isEmpty()) {
