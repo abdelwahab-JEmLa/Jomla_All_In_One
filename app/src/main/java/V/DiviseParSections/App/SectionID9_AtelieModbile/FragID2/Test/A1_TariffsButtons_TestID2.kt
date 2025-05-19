@@ -26,8 +26,6 @@ fun TariffsButtons_TestID2(
     firstProductId: Int = 1,
     firstBonId: Long = 1,
 ) {
-
-
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tarificationList
