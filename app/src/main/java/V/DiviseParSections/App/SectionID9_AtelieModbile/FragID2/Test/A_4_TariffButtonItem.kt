@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ fun TariffButtonItem(
     tariffs: List<D_TarificationInfosT2>,
     showLabels: Boolean
 ) {
-    // Get the most recent tariff
     val latestTariff = tariffs.maxByOrNull { it.vidTimestamp }
 
     if (latestTariff == null) return
@@ -38,7 +36,6 @@ fun TariffButtonItem(
 
         FloatingActionButton(
             onClick = {
-                // Show toast with the tariff value
                 val typeName = typeTarification.name
                 val message = "$typeName: ${latestTariff.prixCurrency}"
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -56,7 +53,6 @@ fun TariffButtonItem(
 
         if (showLabels) {
             ElevatedCard {
-                // Get the name of the tariff type
                 val typeName = typeTarification.name
 
                 Text(
@@ -65,12 +61,6 @@ fun TariffButtonItem(
                         .background(couleurButton)
                         .padding(4.dp),
                     color = Color.White
-                )
-
-                // Debug logging for this specific tariff
-                Log.d(
-                    "TariffDisplay",
-                    "Displaying tariff: type=$typeName, value=${latestTariff.prixCurrency}"
                 )
             }
         }
