@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Modules
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -211,7 +211,7 @@ class PanelsGroupeButtonHandler {
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        AnimatedIconLottieJsonFile(
+                        AnimatedIconLottieJsonFileFF(
                             ressourceXml = icon, onClick = if (enabled) onClick else ({})
                         )
                     }

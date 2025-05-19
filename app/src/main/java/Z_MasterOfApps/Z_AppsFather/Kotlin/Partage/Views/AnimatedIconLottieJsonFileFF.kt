@@ -22,7 +22,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
-fun AnimatedIconLottieJsonFile(
+fun AnimatedIconLottieJsonFileFF(
     ressourceXml: LottieJsonGetterR_Raw_Icons,
     onClick: () -> Unit ={}
 ) {

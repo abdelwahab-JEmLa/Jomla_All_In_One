@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepo
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -209,7 +209,7 @@ fun ControlButton(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    AnimatedIconLottieJsonFile(
+                    AnimatedIconLottieJsonFileFF(
                         ressourceXml = icon,
                         onClick = if (enabled) onClick else ({})
                     )

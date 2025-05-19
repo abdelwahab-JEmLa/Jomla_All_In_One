@@ -7,7 +7,7 @@ import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.Utils.LabelsButton
 import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.Utils.MenuButton
 import Z_MasterOfApps.Z.Android.Main.Screen.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -165,7 +165,7 @@ fun ControlButton(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    AnimatedIconLottieJsonFile(
+                    AnimatedIconLottieJsonFileFF(
                         ressourceXml = icon,
                         onClick = onClick
                     )

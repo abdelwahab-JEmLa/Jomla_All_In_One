@@ -7,7 +7,7 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.MoveProductsDialog
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.SearchDialog_F1
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.DialogInfosProduit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -86,7 +86,7 @@ fun B_ListMainFragment(
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    AnimatedIconLottieJsonFile(
+                    AnimatedIconLottieJsonFileFF(
                         LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl,
                         onClick = {
                             positionedProductsSorted.forEach { product ->
@@ -115,7 +115,7 @@ fun B_ListMainFragment(
                         )
                     }
 
-                    AnimatedIconLottieJsonFile(
+                    AnimatedIconLottieJsonFileFF(
                         LottieJsonGetterR_Raw_Icons.afficheFenetre,
                         onClick = {
                             selectedProduct = positionedProductsSorted.lastOrNull()
