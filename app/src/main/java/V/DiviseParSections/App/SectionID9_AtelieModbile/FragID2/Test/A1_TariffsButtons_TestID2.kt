@@ -23,8 +23,8 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtons_TestID2(
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
     showLabels: Boolean = true,
-    firstProductId: Int = 4,
-    firstBonId: Long = 1,
+    filterProductId: Int = 4,
+    filterBonId: Long = 1,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -71,8 +71,8 @@ fun TariffsButtons_TestID2(
                     tarificationList = tarificationList,
                     bonAchatList = bonAchatList,
                     showLabels = showLabels,
-                    filterProduitID = firstProductId,
-                    filterBonID = firstBonId
+                    filterProduitID = filterProductId,
+                    filterBonID = filterBonId
                 )
             }
         } else {
