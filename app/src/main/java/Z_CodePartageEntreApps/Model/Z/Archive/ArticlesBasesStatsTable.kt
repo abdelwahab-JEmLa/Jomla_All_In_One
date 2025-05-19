@@ -48,6 +48,9 @@ data class ArticlesBasesStatsTable(
     var monBeneficeUniter: Double = 0.0,
     //Stats
     var diponibilityState: String = "",  //StatsInIt: "Non Dispo"
+
+    var cLeDataOuvertDuParentList: Boolean = false,
+
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",

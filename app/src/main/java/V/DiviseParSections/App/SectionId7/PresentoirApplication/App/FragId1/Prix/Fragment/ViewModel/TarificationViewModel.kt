@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepository
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -30,6 +31,8 @@ data class UiState(
 )
 
 class TarificationViewModel(
+    val appDatabase: AppDatabase,
+
     val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository,
     private val ancienRepo: _0_0_HeadSQLRepositorys,
     private val ancienClientRepository: B_ClientDataBaseRepository,
@@ -47,6 +50,9 @@ class TarificationViewModel(
         _uiState.value = _uiState.value.copy(isLoading = true)
 
         viewModelScope.launch {
+
+            getarticlescLeDataOuvertDuParentList()
+
             convertiseurNoSqlToSqlRepository.noSqlDataFlow.collectLatest { noSqlData ->
                 if (_uiState.value.selectedProductId == null && noSqlData.produits.isNotEmpty()) {
                     _uiState.value = _uiState.value.copy(
@@ -60,6 +66,14 @@ class TarificationViewModel(
                 )
             }
         }
+    }
+
+    private suspend fun getarticlescLeDataOuvertDuParentList (): Unit {
+        val articlescLeDataOuvertDuParentList = appDatabase.articlesBasesStatsModelDao()
+            .getAll().find {
+            it.cLeDataOuvertDuParentList
+        }
+        _uiState.value.produitAncienDB  = articlescLeDataOuvertDuParentList
     }
 
     private suspend fun createDefaultTarificationIfNeeded(clientId: Long, productId: Long, typeTarificationId: Long) {
@@ -150,17 +164,16 @@ class TarificationViewModel(
         }
     }
 
-    fun ajouteSiExistePas_A_ProduitInfos(
-        id: Long,
-        produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable, ) {
-        val existingProduct = convertiseurNoSqlToSqlRepository.getProduitInfos(id)
+    fun ajouteSiExistePas_A_ProduitInfos() {
+        val id = uiState.value.produitAncienDB!!.idArticle.toLong()
 
-        _uiState.value.produitAncienDB = produitSelectioneDuAncienDataBase
+        val existingProduct = convertiseurNoSqlToSqlRepository
+            .getProduitInfos(id)
 
         if (existingProduct == null) {
             val newData = A_ProduitInfos(
                 id = id,
-                nom = produitSelectioneDuAncienDataBase.nomArticleFinale,
+                nom = uiState.value.produitAncienDB!!.nomArticleFinale,
                 needUpdate = true
             )
             convertiseurNoSqlToSqlRepository.copyAdd_A_ProduitInfos(newData)

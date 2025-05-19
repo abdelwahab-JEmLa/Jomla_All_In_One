@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,20 +29,16 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
-    produitSelectioneDuAncienDataBase: ArticlesBasesStatsTable,
 ) {
     val uiState by viewModel.uiState
-    val productId = produitSelectioneDuAncienDataBase.idArticle.toLong()
     val clientId = viewModel.ancienRepoOuvertClientId
+    val selectedProductId = uiState.produitAncienDB!!.idArticle.toLong()
 
     var initialSetupComplete by remember { mutableStateOf(false) }
 
-    LaunchedEffect(productId, clientId) {
+    LaunchedEffect(selectedProductId, clientId) {
         if (!initialSetupComplete) {
-            viewModel.ajouteSiExistePas_A_ProduitInfos(
-                productId,
-                produitSelectioneDuAncienDataBase,
-            )
+            viewModel.ajouteSiExistePas_A_ProduitInfos()
 
             viewModel.ajouteSiExistePas_B_ClientsDataBase()
 
@@ -56,7 +51,7 @@ fun FragmentMain(
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
-        selectedProductId = productId,
+        selectedProductId = selectedProductId,
         selectedClientId = clientId ?: 0L,
     )
 }

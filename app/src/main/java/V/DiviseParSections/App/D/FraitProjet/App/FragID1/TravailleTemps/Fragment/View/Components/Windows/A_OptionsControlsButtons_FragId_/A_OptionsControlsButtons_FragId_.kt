@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -47,6 +49,7 @@ fun A_OptionsControlsButtons_FragId_(
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
+    var _showDialogeControleFabs by remember { mutableStateOf(true) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -77,6 +80,7 @@ fun A_OptionsControlsButtons_FragId_(
 
                     FragID_0_Butt_3(viewModel, showLabels, "Mode Admin")
 
+                    TarriffesButtons(showLabels)
                     LabelsButton(
                         showLabels = showLabels,
                         onShowLabelsChange = { showLabels = it }
@@ -89,6 +93,34 @@ fun A_OptionsControlsButtons_FragId_(
                     onShowMenuChange = { showMenu = it }
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun TarriffesButtons(showLabels: Boolean) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val couleurButton2 = Color(0xFFF44336)
+        FloatingActionButton(
+            onClick = {
+
+            },
+            modifier = Modifier.size(40.dp), containerColor = couleurButton2
+        ) {
+            Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
+        }
+        if (showLabels) {
+            Text(
+                "ShowDialogControleFabs", modifier = Modifier
+                    .background(
+                        couleurButton2
+                    )
+                    .padding(4.dp), color = Color.White
+            )
         }
     }
 }
