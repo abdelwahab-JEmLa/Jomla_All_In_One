@@ -159,11 +159,9 @@ fun MainFilter(
     showLabels: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    // Fix TODO(1): Using filterBon = 1L instead of 2L since the first example in testBonAchatT2() has vid = 1
     val filterBonID = 1L
-    val filterProduiID = 1
+    val filterProduiID = 2
 
-    // Fix for TODO(FIXME): Using proper state handling to fix the delegate issue
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
     }
