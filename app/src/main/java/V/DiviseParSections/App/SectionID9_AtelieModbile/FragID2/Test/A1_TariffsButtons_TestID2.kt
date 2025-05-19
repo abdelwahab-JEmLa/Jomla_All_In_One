@@ -21,18 +21,19 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
-    val shouldShowLoading = uiState.isLoading && tarificationList.isEmpty()
+    val shouldShowLoading = uiState.loadingProgress < 1f && tarificationList.isEmpty()
+
 
     Box {
         if (shouldShowLoading) {
-            LoadingTariffItem(isLoading = true)
+            LoadingTariffItem(uiState.loadingProgress)
         } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
             Column {
 
                 MainFilter(
+                    produitInfosList = produitInfosList,
                     tarificationList = tarificationList,
                     bonAchatList = bonAchatList,
-                    produitInfosList = produitInfosList,
                     showLabels = showLabels,
                     filterProduiID = filterProduitID,
                     filterBonID = filterBonID

@@ -75,5 +75,5 @@ internal fun A_id1_GerantDefinirePosition(
 }
 
 private fun logLoadingState(isLoading: Boolean, progress: Float) {
-    Log.d(TAG, "Loading State: isLoading=$isLoading, progress=${progress * 100}%")
+    Log.d(TAG, "Loading State: loadingProgress=$isLoading, progress=${progress * 100}%")
 }

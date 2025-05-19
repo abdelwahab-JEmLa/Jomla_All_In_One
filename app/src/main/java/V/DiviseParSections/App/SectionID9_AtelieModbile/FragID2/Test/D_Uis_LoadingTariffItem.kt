@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingTariffItem(isLoading: Boolean = true) {
-    if (!isLoading) return
+fun LoadingTariffItem(loadingProgress: Float) {
+    if (loadingProgress >= 1f) return
 
     ElevatedCard {
         Row(
@@ -30,12 +31,16 @@ fun LoadingTariffItem(isLoading: Boolean = true) {
                 containerColor = Color.Gray
             ) {
                 CircularProgressIndicator(
+                    progress = {
+                        loadingProgress
+                    },
                     modifier = Modifier.size(24.dp),
-                    color = Color.White
+                    color = Color.White,
+                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                 )
             }
             Text(
-                "Loading...",
+                "Loading... ${(loadingProgress * 100).toInt()}%", // Add percentage display
                 modifier = Modifier
                     .background(Color.Gray)
                     .padding(4.dp),

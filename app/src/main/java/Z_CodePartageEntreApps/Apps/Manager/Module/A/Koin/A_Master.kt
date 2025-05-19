@@ -150,6 +150,7 @@ val viewModelModule = module {
     viewModel {
         TariffsButtonsViewModel_TestID2(
             get(),
+            get(),
         )
     }
 
