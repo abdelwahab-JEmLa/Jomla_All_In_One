@@ -30,15 +30,15 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
+    val firstProductId = 1
+    val firstBonId = 1L
+
     LaunchedEffect(produitInfosList.size) {
         if (produitInfosList.isEmpty()) {
             delay(500)
             viewModel.refreshTariffs()
         }
     }
-
-    val firstProductId = 1
-    val firstBonId = 1L
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
