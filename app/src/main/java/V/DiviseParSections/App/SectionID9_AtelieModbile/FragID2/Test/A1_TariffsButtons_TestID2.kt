@@ -72,7 +72,7 @@ fun TariffsButtons_TestID2(
                     tarificationList = tarificationList,
                     bonAchatList = bonAchatList,
                     showLabels = showLabels,
-                    filterProduiID = firstProductId,
+                    filterProduitID = firstProductId,
                     filterBonID = firstBonId
                 )
             }

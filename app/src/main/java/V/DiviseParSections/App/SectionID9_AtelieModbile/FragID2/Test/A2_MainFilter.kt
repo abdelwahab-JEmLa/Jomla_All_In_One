@@ -14,15 +14,15 @@ fun MainFilter(
     produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
-    filterProduiID: Int,
+    filterProduitID: Int,
     filterBonID: Long,
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
     }
 
-    val filteredProduit = remember(produitInfosList, filterProduiID) {
-        produitInfosList.find { it.vid.toInt() == filterProduiID } ?: _2_1_ProduitsDataBase()
+    val filteredProduit = remember(produitInfosList, filterProduitID) {
+        produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
     }
 
     val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
