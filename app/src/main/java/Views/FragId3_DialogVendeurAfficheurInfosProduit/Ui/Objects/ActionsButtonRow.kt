@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.View.FragmentMain
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.View.FragmentMain
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
