@@ -55,7 +55,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idProduit = idProduit,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-            prixCurrency = 25.50
+            prixCurrency = 200.50
         ),
         D_TarificationInfosT2(
             vidTimestamp = createTimestamp(
@@ -66,7 +66,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idProduit = idProduit,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 9.75
+            prixCurrency = 250.75
         ),
         D_TarificationInfosT2(
             vidTimestamp = createTimestamp(
