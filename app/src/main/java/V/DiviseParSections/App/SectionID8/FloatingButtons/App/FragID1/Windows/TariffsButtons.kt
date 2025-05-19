@@ -75,6 +75,12 @@ fun TariffsButtons(
     val shouldShowLoading = uiState.isLoading && typeTarifications.isEmpty()
     LoadingTariffItem(isLoading = shouldShowLoading)
 
+
+    Text("$typeTarifications",
+        Modifier.padding(top= 50.dp)
+    )
+
+
     if (typeTarifications.isNotEmpty()) {
         typeTarifications.forEach { typeTarification ->
             val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
