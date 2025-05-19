@@ -12,7 +12,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataB
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -41,10 +40,8 @@ class TarificationViewModel(
     val appDatabase: AppDatabase,
 
     private val convertiseurNoSqlToSqlRepositorys: ConvertiseurNoSqlToSqlRepositorys,
-    private val ancienRepo: _0_0_HeadSQLRepositorys,
     private val ancienClientRepository: B_ClientDataBaseRepository,
 ) : ViewModel() {
-
     private val _uiState = mutableStateOf(UiState())
     val uiState: State<UiState> = _uiState
 
