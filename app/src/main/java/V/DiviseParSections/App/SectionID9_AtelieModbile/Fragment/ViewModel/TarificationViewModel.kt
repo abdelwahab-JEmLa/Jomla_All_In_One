@@ -51,7 +51,6 @@ class TarificationViewModel(
 
     private val ancienRepoProduitPrixVent = uiState.value.produitAncienDB?.monPrixVent
 
-
     init {
         _uiState.value = _uiState.value.copy(isLoading = true)
         performInitialSetup()
@@ -62,7 +61,6 @@ class TarificationViewModel(
 
         viewModelScope.launch {
             // getarticlescLeDataOuvertDuParentList()
-
 
             convertiseurNoSqlToSqlRepositorys.noSqlDataFlow.collectLatest { noSqlData ->
                 // Create a mutable copy of the produits list
