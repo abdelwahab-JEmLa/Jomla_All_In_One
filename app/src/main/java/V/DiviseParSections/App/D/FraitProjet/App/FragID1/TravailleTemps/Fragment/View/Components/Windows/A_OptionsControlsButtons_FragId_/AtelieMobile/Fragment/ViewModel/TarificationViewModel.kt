@@ -49,10 +49,6 @@ class TarificationViewModel(
 
     private val ancienRepoProduitPrixVent = uiState.value.produitAncienDB?.monPrixVent
 
-    val ancienRepoOuvertClientId =
-            ancienRepo.repositorys_Model
-                .repository_1_3_TransactionCommercial.modelDatasSnapList
-                .find { it.cLeDataOuvertDuParentList == true }?.clientAcheteurID
 
     init {
         _uiState.value = _uiState.value.copy(isLoading = true)
@@ -256,7 +252,7 @@ class TarificationViewModel(
 
     fun verifierAdd_D_TarificationInfos(typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
-        val clientId = ancienRepoOuvertClientId ?: return
+        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB?.clientAcheteurID ?: return
 
         viewModelScope.launch {
             try {
@@ -374,14 +370,14 @@ class TarificationViewModel(
 
         convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
 
-        val clientId = ancienRepoOuvertClientId ?: return
+        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
         val productId = _uiState.value.selectedProductId ?: return
 
         createDefaultTarificationIfNeeded(clientId, productId, 4L)
     }
 
     fun ajouteSiExistePas_B_ClientsDataBase() {
-        val clientId = ancienRepoOuvertClientId ?: return
+        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID ?: return
         val existingClient = convertiseurNoSqlToSqlRepositorys.getB_ClientInfos(clientId)
 
         if (existingClient == null) {

@@ -43,7 +43,7 @@ fun FragmentMain(
         return
     }
 
-    val clientId = viewModel.ancienRepoOuvertClientId
+    val clientId = uiState._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
     val selectedProductId = uiState.selectedProductId
 
     // Perform initial setup in the ViewModel
