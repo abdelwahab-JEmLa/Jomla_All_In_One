@@ -71,21 +71,14 @@ fun TarriffesButtons(
     val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
     val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
 
-    // Utiliser remember avec mutableStateOf comme vous le souhaitiez
     val tariffsList by remember(activeTypeTarification) {
         mutableStateOf(activeTypeTarification?.tariffsList ?: emptyList())
     }
 
-    Text("Datas ${tariffsList.ifEmpty { "vide" }}")
-
-    // Fix: Only show loading indicator when actually loading AND we don't have tariffs yet
     LoadingTariffItem(isLoading = shouldShowLoading)
 
-    // Display tariffs when we have them, regardless of loading state
     if (tariffsList.isNotEmpty()) {
-        // Display all tariffs when data is loaded
         tariffsList.forEach { tariff ->
-            // Find the parent TypeTarification
             val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
             val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
                 parentTypeTarificationId
@@ -96,7 +89,6 @@ fun TarriffesButtons(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Use the icon and color from the related TypeTarification
                     val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
                     FloatingActionButton(
                         onClick = { },
