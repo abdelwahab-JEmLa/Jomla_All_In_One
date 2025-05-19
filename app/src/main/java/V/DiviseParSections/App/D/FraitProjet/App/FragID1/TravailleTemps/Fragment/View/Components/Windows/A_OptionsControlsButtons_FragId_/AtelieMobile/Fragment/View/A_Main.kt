@@ -129,10 +129,10 @@ fun FilterMainScreen(
 
 @Composable
 fun MainList(
+    modifier: Modifier = Modifier,
     viewModel: TarificationViewModel = koinViewModel(),
     typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>,
-    showOnlyLatestPrices: Boolean,
-    modifier: Modifier = Modifier
+    showOnlyLatestPrices: Boolean
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
