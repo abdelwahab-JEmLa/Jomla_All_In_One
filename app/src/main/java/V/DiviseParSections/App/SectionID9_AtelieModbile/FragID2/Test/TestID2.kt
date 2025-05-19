@@ -160,7 +160,7 @@ fun MainFilter(
     modifier: Modifier = Modifier,
 ) {
     val filterBonID = 1L
-    val filterProduiID = 2
+    val filterProduiID = 1
 
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
