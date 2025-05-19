@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID3.Test
 
-import Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import org.junit.Assert.assertEquals
 
 fun TypeTarifications(
