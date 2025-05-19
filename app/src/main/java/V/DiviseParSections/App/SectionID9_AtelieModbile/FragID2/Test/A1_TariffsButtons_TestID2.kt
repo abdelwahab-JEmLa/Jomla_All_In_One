@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,22 +30,15 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
-    // Add auto-refresh if no products are loaded but repository shows they exist
     LaunchedEffect(produitInfosList.size) {
         if (produitInfosList.isEmpty()) {
-            Log.d("TariffsButtons", "No products found, waiting 500ms before retry")
             delay(500)
             viewModel.refreshTariffs()
         }
     }
 
-    // Get first available product ID and bon ID from the data
-    val firstProductId = if (produitInfosList.isNotEmpty()) produitInfosList[0].vid.toInt() else 1
-    val firstBonId = if (bonAchatList.isNotEmpty()) bonAchatList[0].vid else 1L
-
-    // Add logging to help debug data availability
-    Log.d("TariffsButtons", "Product count: ${produitInfosList.size}, Bon count: ${bonAchatList.size}")
-    Log.d("TariffsButtons", "Using productID: $firstProductId, bonID: $firstBonId")
+    val firstProductId =  1
+    val firstBonId =  1L
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
@@ -69,14 +61,12 @@ fun TariffsButtons_TestID2(
             }
         } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Debug information
                 Text(
                     text = "Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Main filter component rendering
                 MainFilter(
                     produitInfosList = produitInfosList,
                     tarificationList = tarificationList,
@@ -87,18 +77,12 @@ fun TariffsButtons_TestID2(
                 )
             }
         } else {
-            // Show an informative message when data is not available
             Text(
                 text = "Waiting for data... Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(16.dp).align(Alignment.Center),
                 textAlign = TextAlign.Center
             )
-
-            // Log the error for debugging
-            Log.e("TariffsButtons", "No data available to display. bonAchatList: ${bonAchatList.size}, produitInfosList: ${produitInfosList.size}")
         }
     }
 }
-
-
