@@ -62,13 +62,13 @@ class TariffsButtonsViewModel_TestID2(
 
                 delay(100)
 
-                val produitsdatabaseRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
+                val produitsDatabaseRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
                     ._2_1_ProduitsDataBase_Repository
 
-                val repoSize = produitsdatabaseRepository.modelDatasSnapList.size
+                val repoSize = produitsDatabaseRepository.modelDatasSnapList.size
 
                 if (repoSize > 0) {
-                    val productsList = produitsdatabaseRepository.modelDatasSnapList.toList()
+                    val productsList = produitsDatabaseRepository.modelDatasSnapList.toList()
 
                     _uiState.update { currentState ->
                         currentState.produitInfosList.clear()
