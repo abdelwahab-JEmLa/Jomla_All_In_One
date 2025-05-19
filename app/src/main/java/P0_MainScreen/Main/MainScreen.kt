@@ -1,6 +1,6 @@
 package P0_MainScreen.Main
 
-import P0_MainScreen.Main.Windows.RecordAfficheurFAB
+import P0_MainScreen.Main.Windows.PressistatntMainActivityButtons
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App._0.Navigation.AppNavHost
@@ -299,7 +299,7 @@ fun MainScreen(
                     )
                 }
                 if (isHostPhone && !hideAppScreen) {
-                  //  RecordAfficheurFAB()
+                  //  PressistatntMainActivityButtons()
                 }
 
                 // Show additional loading indicator if needed for other UI states
@@ -328,8 +328,7 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
-                RecordAfficheurFAB()
-
+                PressistatntMainActivityButtons()
             }
         }
     }

@@ -44,7 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun RecordAfficheurFAB(
+fun PressistatntMainActivityButtons(
     viewModel: Windows__ViewModel = koinViewModel(),
 ) {
     var showLabels by remember { mutableStateOf(true) }
@@ -120,7 +120,6 @@ fun RecordAfficheurFAB(
                 modifier = Modifier.align(Alignment.BottomStart),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val abdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
                 val displayTime by viewModel.displayTime.collectAsState()
 
                 ControlButton(
