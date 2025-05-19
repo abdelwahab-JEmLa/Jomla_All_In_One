@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -65,20 +64,25 @@ fun TarriffesButtons(
     tarificationViewModel: TarificationViewModel = koinViewModel(),
 ) {
     val uiState = tarificationViewModel.uiState.value
+
+    val shouldShowLoading = uiState.isLoading
+
     val activeProduit = uiState.produitsNoSqlDataBase.produits.find { it.itsActiveOne }
     val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
     val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
 
-    // Initialize with null and update safely
-    var tariffsList by remember { mutableStateOf(activeTypeTarification?.tariffsList ?: emptyList()) }
+    // Utiliser remember avec mutableStateOf comme vous le souhaitiez
+    val tariffsList by remember(activeTypeTarification) {
+        mutableStateOf(activeTypeTarification?.tariffsList ?: emptyList())
+    }
 
     Text("Datas ${tariffsList.ifEmpty { "vide" }}")
 
-    // Show loading indicator based on uiState.isLoading
-    LoadingTariffItem(isLoading = uiState.isLoading || tariffsList.isEmpty())
+    // Fix: Only show loading indicator when actually loading AND we don't have tariffs yet
+    LoadingTariffItem(isLoading = shouldShowLoading)
 
-    // Only display tariffs when not loading
-    if (!uiState.isLoading && tariffsList.isNotEmpty()) {
+    // Display tariffs when we have them, regardless of loading state
+    if (tariffsList.isNotEmpty()) {
         // Display all tariffs when data is loaded
         tariffsList.forEach { tariff ->
             // Find the parent TypeTarification
