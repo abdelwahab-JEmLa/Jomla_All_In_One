@@ -32,6 +32,8 @@ fun testBonAchatT2(): List<BonAchatT2> {
 }
 
 fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
+    val idProduit: Long = 4
+
     return listOf(
         D_TarificationInfosT2(
             vidTimestamp = createTimestamp(
@@ -39,7 +41,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 hour = 12,
                 minute = 30
             ),
-            idProduit = 1,
+            idProduit = idProduit,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.ParBenifice,
             prixCurrency = 20.99
@@ -50,7 +52,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 hour = 13,
                 minute = 30
             ),
-            idProduit = 1,
+            idProduit = idProduit,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
             prixCurrency = 25.50
@@ -61,7 +63,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 hour = 14,
                 minute = 30
             ),
-            idProduit = 1,
+            idProduit = idProduit,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
             prixCurrency = 9.75
