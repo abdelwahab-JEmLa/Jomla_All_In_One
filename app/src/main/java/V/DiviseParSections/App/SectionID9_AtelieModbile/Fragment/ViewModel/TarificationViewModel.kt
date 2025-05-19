@@ -69,11 +69,6 @@ class TarificationViewModel(
                 // Find and update the first client in the active product - FIX: Safe calls throughout
                 if (activeProduct != null && activeProduct.clientAchteurs.isNotEmpty()) {
                     activeProduct.clientAchteurs[0].itsActiveOne = true
-
-                    // Find and update the first tarification type in the active client
-                    if (activeProduct.clientAchteurs[0].typeTarification.isNotEmpty()) {
-                        activeProduct.clientAchteurs[0].typeTarification[0].itsActiveOne = true
-                    }
                 }
 
                 // Create an updated copy of noSqlData with the modified produits list
@@ -88,14 +83,6 @@ class TarificationViewModel(
         }
     }
 
-    fun getActiveTarifications(): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff> {
-        return uiState.value.produitsNoSqlDataBase
-            .produits.find { it.itsActiveOne }
-            ?.clientAchteurs?.find { it.itsActiveOne }
-            ?.typeTarification?.find { it.itsActiveOne }
-            ?.tariffsList
-            ?: emptyList()
-    }
 
     fun gettypeActiveTarifications(produitsNoSqlDataBase: ProduitsNoSqlDataBase): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
         return uiState.value.produitsNoSqlDataBase

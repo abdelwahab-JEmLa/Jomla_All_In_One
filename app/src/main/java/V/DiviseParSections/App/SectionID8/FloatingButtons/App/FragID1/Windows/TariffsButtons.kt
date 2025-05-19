@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.TarificationViewModel
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -66,21 +68,21 @@ fun TariffsButtons(
     val uiState = tarificationViewModel.uiState.value
     val activeProduit = uiState.produitsNoSqlDataBase.produits.find { it.itsActiveOne }
     val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
-    val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
-
-    val tariffsList by remember(activeTypeTarification) {
-        mutableStateOf(activeTypeTarification?.tariffsList ?: emptyList())
+    val typeTarifications by remember(activeClient) {
+        mutableStateOf(activeClient?.typeTarification ?: emptyList())
     }
 
-    val shouldShowLoading = uiState.isLoading && tariffsList.isEmpty()
+    val shouldShowLoading = uiState.isLoading && typeTarifications.isEmpty()
     LoadingTariffItem(isLoading = shouldShowLoading)
 
-    if (tariffsList.isNotEmpty()) {
-        tariffsList.forEach { tariff ->
-            val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
+    if (typeTarifications.isNotEmpty()) {
+        typeTarifications.forEach { typeTarification ->
             val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
-                parentTypeTarificationId
+                typeTarification.infosId
             )
+
+            // Find the most recent tariff value
+            val latestTariff = typeTarification.tariffsList.maxByOrNull { it.vidTimestamp }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -88,8 +90,19 @@ fun TariffsButtons(
             ) {
                 val couleurButton =
                     relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
+
+                // Add LocalContext to show Toast messages
+                val context = LocalContext.current
+
                 FloatingActionButton(
-                    onClick = { },
+                    onClick = {
+                        // Show toast with the tariff value
+                        latestTariff?.let {
+                            val typeName = relatedTypeInfos?.nom ?: "Tarif"
+                            val message = "$typeName: ${it.valeur}"
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    },
                     modifier = Modifier.size(40.dp),
                     containerColor = couleurButton
                 ) {
@@ -100,11 +113,10 @@ fun TariffsButtons(
                         )
                     }
                 }
-                if (showLabels) {
+                if (showLabels && latestTariff != null) {
                     ElevatedCard {
-
                         Text(
-                            "${tariff.valeur}",
+                            "${latestTariff.valeur}",
                             modifier = Modifier
                                 .background(couleurButton)
                                 .padding(4.dp),
