@@ -127,6 +127,9 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
 ) {
+    val filterProduiID = 1
+    val filterBonID = 1L
+
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tarificationList
@@ -140,11 +143,14 @@ fun TariffsButtons_TestID2(
             LoadingTariffItem(isLoading = true)
         } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
             Column {
+
                 MainFilter(
                     tarificationList = tarificationList,
                     bonAchatList = bonAchatList,
                     produitInfosList = produitInfosList,
-                    showLabels = showLabels
+                    showLabels = showLabels,
+                    filterProduiID = filterProduiID,
+                    filterBonID = filterBonID
                 )
             }
         }
@@ -158,9 +164,9 @@ fun MainFilter(
     produitInfosList: List<ArticlesBasesStatsTable>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
+    filterProduiID: Int,
+    filterBonID: Long,
 ) {
-    val filterBonID = 1L
-    val filterProduiID = 1
 
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
