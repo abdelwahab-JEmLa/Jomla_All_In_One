@@ -1,8 +1,8 @@
 // Updated mapToFirebaseFormat.kt
-package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.Module.FireBase
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
+package Fragment.Module.FireBase
+import Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
+import Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
+import Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import kotlin.reflect.full.memberProperties
 
 fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {

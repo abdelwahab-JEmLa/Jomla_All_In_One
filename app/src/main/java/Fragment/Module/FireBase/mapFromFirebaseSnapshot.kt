@@ -1,13 +1,13 @@
 // Updated mapFromFirebaseSnapshot.kt
-package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.Module.FireBase
+package Fragment.Module.FireBase
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
+import Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
+import Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
+import Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 

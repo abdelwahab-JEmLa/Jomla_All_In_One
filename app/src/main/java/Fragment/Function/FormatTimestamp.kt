@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.Function
+package Fragment.Function
 
 import java.text.SimpleDateFormat
 import java.util.Date

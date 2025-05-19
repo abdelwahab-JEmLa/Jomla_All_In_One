@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.Module.SQl
+package Fragment.Module.SQl
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
