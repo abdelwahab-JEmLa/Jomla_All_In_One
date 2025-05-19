@@ -29,8 +29,9 @@ data class UiState(
         testDataArticlesBasesStatsTable(),
     var _1_3_TransactionCommercialAncienDB: _1_3_TransactionCommercial? =
         testData_1_3_TransactionCommercial(),
+    val selectedProductId: Long = testDataArticlesBasesStatsTable().idArticle.toLong(),
+
     val isLoading: Boolean = false,
-    val selectedProductId: Long = 849,
     val error: String? = null,
     val isInitialSetupComplete: Boolean = false,
     val isTarificationTypesProcessed: Boolean = false
@@ -57,15 +58,9 @@ class TarificationViewModel(
         _uiState.value = _uiState.value.copy(isLoading = true)
 
         viewModelScope.launch {
-            getarticlescLeDataOuvertDuParentList()
+          //  getarticlescLeDataOuvertDuParentList()
 
             convertiseurNoSqlToSqlRepositorys.noSqlDataFlow.collectLatest { noSqlData ->
-                if (_uiState.value.selectedProductId == null && noSqlData.produits.isNotEmpty()) {
-                    _uiState.value = _uiState.value.copy(
-                        selectedProductId = noSqlData.produits.first().infosId
-                    )
-                }
-
                 _uiState.value = _uiState.value.copy(
                     outputModel = noSqlData,
                     isLoading = false
