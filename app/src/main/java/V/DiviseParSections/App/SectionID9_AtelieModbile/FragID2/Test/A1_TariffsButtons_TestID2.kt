@@ -21,8 +21,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TariffsButtons_TestID2(
-    showLabels: Boolean = true,
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
+    showLabels: Boolean = true,
     firstProductId: Int = 1,
     firstBonId: Long = 1,
 ) {
