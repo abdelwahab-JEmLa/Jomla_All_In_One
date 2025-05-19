@@ -24,6 +24,7 @@ fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState
+
     val produitsNoSqlDataBase by remember {
         mutableStateOf(
             uiState.produitsNoSqlDataBase
