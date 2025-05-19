@@ -1,4 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.View.FragmentMain
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
@@ -69,19 +70,7 @@ fun ActionsButtonRow(
                 shape = MaterialTheme.shapes.large,
                 tonalElevation = 2.dp
             ) {
-                // Get the product stats from current sale to pass to FragmentMain
-                val produitStats = viewModel._uiState.value.articlesBasesStatTables.find {
-                    it.idArticle.toLong() == currentSale.idArticle
-                }
-
-                produitStats?.let {
-                    FragmentMain(
-                        produitSelectioneDuAncienDataBase = it
-                    )
-                } ?: Text(
-                    text = "Product information not available",
-                    modifier = Modifier.padding(16.dp)
-                )
+                FragmentMain()
             }
         }
     }

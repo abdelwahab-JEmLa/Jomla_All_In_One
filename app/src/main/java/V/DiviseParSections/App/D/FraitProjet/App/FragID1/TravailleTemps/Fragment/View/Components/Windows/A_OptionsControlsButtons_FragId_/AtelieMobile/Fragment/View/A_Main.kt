@@ -16,7 +16,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,19 +33,8 @@ fun FragmentMain(
     val clientId = viewModel.ancienRepoOuvertClientId
     val selectedProductId = uiState.produitAncienDB!!.idArticle.toLong()
 
-    var initialSetupComplete by remember { mutableStateOf(false) }
-
-    LaunchedEffect(selectedProductId, clientId) {
-        if (!initialSetupComplete) {
-            viewModel.ajouteSiExistePas_A_ProduitInfos()
-
-            viewModel.ajouteSiExistePas_B_ClientsDataBase()
-
-            viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-
-            initialSetupComplete = true
-        }
-    }
+    // Perform initial setup in the ViewModel
+    viewModel.performInitialSetup()
 
     FilterMainScreen(
         viewModel = viewModel,
@@ -71,43 +59,9 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    var tarificationTypesProcessed by remember { mutableStateOf(false) }
+    // Process tarification types in the ViewModel
+    viewModel.processTarificationTypes(selectedClientId, selectedProductId)
 
-    LaunchedEffect(key1 = selectedClientId, key2 = selectedProductId) {
-        if (!tarificationTypesProcessed) {
-            val sqlDataList = viewModel.convertiseurNoSqlToSqlRepository.sqlRepository.modelListFlow.value
-
-            val existingTarifications = if (sqlDataList.isNotEmpty()) {
-                val sqlData = sqlDataList.first()
-                sqlData.d_TarificationInfos.filter {
-                    it.idClient == selectedClientId && it.idProduit == selectedProductId
-                }
-            } else emptyList()
-
-            if (existingTarifications.isNotEmpty()) {
-                viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
-                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            }
-            else if (typeTarificationsList.isNotEmpty()) {
-                viewModel.verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
-                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-
-                typeTarificationsList.forEach { typeTarification ->
-                    viewModel.verifierAdd_D_TarificationInfos(typeTarification)
-                }
-
-                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            }
-            else if (selectedClientId > 0 && existingTarifications.isEmpty()) {
-                viewModel.createDefaultTarificationIfNeeded(selectedClientId)
-            } else if (selectedClientId <= 0) {
-            } else {
-                viewModel.convertiseurNoSqlToSqlRepository.refreshNoSqlData()
-            }
-
-            tarificationTypesProcessed = true
-        }
-    }
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (selectedProduct != null && selectedClient != null) {
@@ -129,12 +83,8 @@ fun FilterMainScreen(
                     modifier = Modifier.padding(16.dp)
                 )
 
-                LaunchedEffect(Unit) {
-                    if (!tarificationTypesProcessed) {
-                        viewModel.ajouteSiExistePas_B_ClientsDataBase()
-                        tarificationTypesProcessed = true
-                    }
-                }
+                // Try to add client data
+                viewModel.ajouteSiExistePas_B_ClientsDataBase()
             } else {
                 Text(
                     text = "Product information not found. ID: $selectedProductId",

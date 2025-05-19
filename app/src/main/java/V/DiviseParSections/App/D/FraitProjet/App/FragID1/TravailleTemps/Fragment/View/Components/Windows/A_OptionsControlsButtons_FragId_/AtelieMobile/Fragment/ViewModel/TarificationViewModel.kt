@@ -27,13 +27,15 @@ data class UiState(
     var produitAncienDB: ArticlesBasesStatsTable? = null,
     val isLoading: Boolean = false,
     val selectedProductId: Long? = null,
-    val error: String? = null
+    val error: String? = null,
+    val isInitialSetupComplete: Boolean = false,
+    val isTarificationTypesProcessed: Boolean = false
 )
 
 class TarificationViewModel(
     val appDatabase: AppDatabase,
 
-    val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository,
+    private val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository,
     private val ancienRepo: _0_0_HeadSQLRepositorys,
     private val ancienClientRepository: B_ClientDataBaseRepository,
 ) : ViewModel() {
@@ -42,15 +44,26 @@ class TarificationViewModel(
 
     private val ancienRepoProduitPrixVent = uiState.value.produitAncienDB?.monPrixVent
 
-    val ancienRepoOuvertClientId = ancienRepo.repositorys_Model
-        .repository_1_3_TransactionCommercial.modelDatasSnapList
-        .find { it.cLeDataOuvertDuParentList == true }?.clientAcheteurID
+    private val itsTest = true
+    val ancienRepoOuvertClientId =
+        if (itsTest) {
+            4L
+        } else {
+            ancienRepo.repositorys_Model
+                .repository_1_3_TransactionCommercial.modelDatasSnapList
+                .find { it.cLeDataOuvertDuParentList == true }?.clientAcheteurID
+        }
+    private val idProduitAncienRepoOuvert =
+        if (itsTest) {
+            849
+        } else {
+            0
+        }
 
     init {
         _uiState.value = _uiState.value.copy(isLoading = true)
 
         viewModelScope.launch {
-
             getarticlescLeDataOuvertDuParentList()
 
             convertiseurNoSqlToSqlRepository.noSqlDataFlow.collectLatest { noSqlData ->
@@ -68,17 +81,82 @@ class TarificationViewModel(
         }
     }
 
-    private suspend fun getarticlescLeDataOuvertDuParentList (): Unit {
+    private suspend fun getarticlescLeDataOuvertDuParentList(): Unit {
         val articlescLeDataOuvertDuParentList = appDatabase.articlesBasesStatsModelDao()
             .getAll().find {
-            it.cLeDataOuvertDuParentList
-        }
-        _uiState.value.produitAncienDB  = articlescLeDataOuvertDuParentList
+                it.idArticle == idProduitAncienRepoOuvert
+            }
+
+        _uiState.value = _uiState.value.copy(produitAncienDB = articlescLeDataOuvertDuParentList)
     }
 
-    private suspend fun createDefaultTarificationIfNeeded(clientId: Long, productId: Long, typeTarificationId: Long) {
+    fun performInitialSetup() {
+        if (!_uiState.value.isInitialSetupComplete) {
+            viewModelScope.launch {
+                ajouteSiExistePas_A_ProduitInfos()
+                ajouteSiExistePas_B_ClientsDataBase()
+                convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
+                _uiState.value = _uiState.value.copy(isInitialSetupComplete = true)
+            }
+        }
+    }
+
+    fun processTarificationTypes(selectedClientId: Long, selectedProductId: Long) {
+        if (!_uiState.value.isTarificationTypesProcessed) {
+            viewModelScope.launch {
+                val typeTarificationsList =
+                    getTypeTarificationsList(selectedClientId, selectedProductId)
+                val sqlDataList = convertiseurNoSqlToSqlRepository.sqlRepository.modelListFlow.value
+
+                val existingTarifications = if (sqlDataList.isNotEmpty()) {
+                    val sqlData = sqlDataList.first()
+                    sqlData.d_TarificationInfos.filter {
+                        it.idClient == selectedClientId && it.idProduit == selectedProductId
+                    }
+                } else emptyList()
+
+                if (existingTarifications.isNotEmpty()) {
+                    verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                } else if (typeTarificationsList.isNotEmpty()) {
+                    verifierAddNew_C_TypeTarificationInfos(typeTarificationsList)
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+
+                    typeTarificationsList.forEach { typeTarification ->
+                        verifierAdd_D_TarificationInfos(typeTarification)
+                    }
+
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                } else if (selectedClientId > 0 && existingTarifications.isEmpty()) {
+                    createDefaultTarificationIfNeeded(selectedClientId)
+                } else if (selectedClientId > 0) {
+                    convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+                }
+
+                _uiState.value = _uiState.value.copy(isTarificationTypesProcessed = true)
+            }
+        }
+    }
+
+    private fun getTypeTarificationsList(
+        clientId: Long,
+        productId: Long
+    ): List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+        val selectedProduct = _uiState.value.outputModel.produits.find { it.infosId == productId }
+        val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == clientId }
+        return selectedClient?.typeTarification ?: emptyList()
+    }
+
+
+    private suspend fun createDefaultTarificationIfNeeded(
+        clientId: Long,
+        productId: Long,
+        typeTarificationId: Long
+    ) {
         try {
-            val typeTarifExists = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(typeTarificationId)
+            val typeTarifExists =
+                convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(typeTarificationId)
 
             if (typeTarifExists == null) {
                 val enumType = TypeTarificationEnum.entries.find {
@@ -109,15 +187,16 @@ class TarificationViewModel(
                 }
 
                 if (existingTarification == null) {
-                    val defaultPrice = if (ancienRepoProduitPrixVent != null && ancienRepoProduitPrixVent > 0.0) {
-                        ancienRepoProduitPrixVent
-                    } else {
-                        val productPricing = sqlData.d_TarificationInfos
-                            .filter { it.idProduit == productId && it.prixCurrency > 0 }
-                            .maxByOrNull { it.vidTimestamp }?.prixCurrency
+                    val defaultPrice =
+                        if (ancienRepoProduitPrixVent != null && ancienRepoProduitPrixVent > 0.0) {
+                            ancienRepoProduitPrixVent
+                        } else {
+                            val productPricing = sqlData.d_TarificationInfos
+                                .filter { it.idProduit == productId && it.prixCurrency > 0 }
+                                .maxByOrNull { it.vidTimestamp }?.prixCurrency
 
-                        productPricing ?: 10.0
-                    }
+                            productPricing ?: 10.0
+                        }
 
                     val timestamp = System.currentTimeMillis()
 
@@ -130,15 +209,17 @@ class TarificationViewModel(
                         needUpdate = true
                     )
 
-                    val result = convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
+                    val result =
+                        convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
                     convertiseurNoSqlToSqlRepository.refreshNoSqlData()
                 } else {
                     if (existingTarification.prixCurrency == 0.0) {
-                        val updatedPrice = if (ancienRepoProduitPrixVent != null && ancienRepoProduitPrixVent > 0.0) {
-                            ancienRepoProduitPrixVent
-                        } else {
-                            10.0
-                        }
+                        val updatedPrice =
+                            if (ancienRepoProduitPrixVent != null && ancienRepoProduitPrixVent > 0.0) {
+                                ancienRepoProduitPrixVent
+                            } else {
+                                10.0
+                            }
 
                         val updatedTarification = existingTarification.copy(
                             prixCurrency = updatedPrice,
@@ -146,10 +227,11 @@ class TarificationViewModel(
                             needUpdate = true
                         )
 
-                        val updatedTarifications = sqlData.d_TarificationInfos.toMutableList().apply {
-                            remove(existingTarification)
-                            add(updatedTarification)
-                        }
+                        val updatedTarifications =
+                            sqlData.d_TarificationInfos.toMutableList().apply {
+                                remove(existingTarification)
+                                add(updatedTarification)
+                            }
 
                         val updatedData = sqlData.copy(
                             d_TarificationInfos = updatedTarifications
@@ -207,7 +289,8 @@ class TarificationViewModel(
                         needUpdate = true
                     )
 
-                    val result = convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
+                    val result =
+                        convertiseurNoSqlToSqlRepository.addTarificationInfos(newTarification)
                     convertiseurNoSqlToSqlRepository.refreshNoSqlData()
                 }
             } catch (e: Exception) {
@@ -224,7 +307,8 @@ class TarificationViewModel(
                 }
 
                 val id: Long = 4
-                val tarificationInfosHistorique = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
+                val tarificationInfosHistorique =
+                    convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(id)
 
                 if (tarificationInfosHistorique == null) {
                     val newData = C_TypeTarificationInfos(
@@ -236,7 +320,8 @@ class TarificationViewModel(
 
                     TypeTarificationEnum.values().forEach { enumType ->
                         val enumId = enumType.ordinal + 1L
-                        val existingType = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(enumId)
+                        val existingType =
+                            convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(enumId)
 
                         if (existingType == null) {
                             val typeData = C_TypeTarificationInfos(
@@ -246,7 +331,9 @@ class TarificationViewModel(
                                 keyFireBase = getKeyFireBase(enumId, enumType.name)
                             )
 
-                            convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(typeData)
+                            convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(
+                                typeData
+                            )
                         }
                     }
 
@@ -255,13 +342,17 @@ class TarificationViewModel(
                 }
 
                 typeTarificationsList.forEach { typeTarif ->
-                    val existingType = convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(typeTarif.infosId)
+                    val existingType =
+                        convertiseurNoSqlToSqlRepository.getTypeTarificationInfos(typeTarif.infosId)
                     if (existingType == null) {
                         val newType = C_TypeTarificationInfos(
                             id = typeTarif.infosId,
                             entityCorrespond = TypeTarificationEnum.ParBenifice,
                             nom = "Type ${typeTarif.infosId}",
-                            keyFireBase = getKeyFireBase(typeTarif.infosId, "Type ${typeTarif.infosId}")
+                            keyFireBase = getKeyFireBase(
+                                typeTarif.infosId,
+                                "Type ${typeTarif.infosId}"
+                            )
                         )
 
                         convertiseurNoSqlToSqlRepository.copyAdd_C_TypeTarificationInfos(newType)
@@ -382,6 +473,13 @@ class TarificationViewModel(
             idClient,
             idTypeTarification,
             ancienRepoProduitPrixVent
+        )
+    }
+
+    fun resetProcessFlags() {
+        _uiState.value = _uiState.value.copy(
+            isInitialSetupComplete = false,
+            isTarificationTypesProcessed = false
         )
     }
 }

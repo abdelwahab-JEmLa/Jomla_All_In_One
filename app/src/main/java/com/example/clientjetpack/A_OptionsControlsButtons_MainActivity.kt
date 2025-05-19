@@ -1,5 +1,7 @@
 package com.example.clientjetpack
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository.Companion.TAG
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -168,7 +170,7 @@ fun ControlButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
-    Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "ControlButton called with icon type: ${icon.javaClass.simpleName}")
+    Log.d(TAG, "ControlButton called with icon type: ${icon.javaClass.simpleName}")
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -176,11 +178,11 @@ fun ControlButton(
     ) {
         when (icon) {
             is ImageVector -> {
-                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering ImageVector icon")
+                Log.d(TAG, "Rendering ImageVector icon")
                 FloatingActionButton(
                     onClick = {
                         if (enabled) {
-                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "ImageVector FAB clicked")
+                            Log.d(TAG, "ImageVector FAB clicked")
                             onClick()
                         }
                     },
@@ -192,12 +194,12 @@ fun ControlButton(
                 }
             }
             is LottieJsonGetterR_Raw_Icons -> {
-                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering LottieJsonGetterR_Raw_Icons")
+                Log.d(TAG, "Rendering LottieJsonGetterR_Raw_Icons")
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clickable(enabled = enabled) {
-                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "LottieJson Box clicked")
+                            Log.d(TAG, "LottieJson Box clicked")
                             onClick()
                         }
                         .background(
@@ -205,7 +207,7 @@ fun ControlButton(
                             shape = CircleShape
                         )
                         .also {
-                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Box modifiers applied successfully")
+                            Log.d(TAG, "Box modifiers applied successfully")
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -217,12 +219,12 @@ fun ControlButton(
             }
             is Int -> {
                 // Support for direct resource IDs like R.raw.categ
-                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering direct resource ID: $icon")
+                Log.d(TAG, "Rendering direct resource ID: $icon")
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clickable(enabled = enabled) {
-                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Resource ID Box clicked")
+                            Log.d(TAG, "Resource ID Box clicked")
                             onClick()
                         }
                         .background(
@@ -231,14 +233,14 @@ fun ControlButton(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile(
+                    AnimatedIconLottieJsonFile(
                         resourceId = icon,
                         onClick = if (enabled) onClick else ({})
                     )
                 }
             }
             else -> {
-                Log.e(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Unsupported icon type: ${icon.javaClass.simpleName}")
+                Log.e(TAG, "Unsupported icon type: ${icon.javaClass.simpleName}")
                 throw IllegalArgumentException("Unsupported icon type")
             }
         }
