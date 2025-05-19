@@ -40,7 +40,7 @@ fun LoadingTariffItem(loadingProgress: Float) {
                 )
             }
             Text(
-                "Loading... ${(loadingProgress * 100).toInt()}%", // Add percentage display
+                "Loading... ${(loadingProgress * 100).toInt()}%",
                 modifier = Modifier
                     .background(Color.Gray)
                     .padding(4.dp),
