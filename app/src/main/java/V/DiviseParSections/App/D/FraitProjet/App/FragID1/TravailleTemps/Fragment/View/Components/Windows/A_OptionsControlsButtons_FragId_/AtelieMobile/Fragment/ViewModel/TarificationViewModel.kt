@@ -8,7 +8,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepositorys
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
@@ -24,18 +24,20 @@ import kotlinx.coroutines.launch
 private const val TAG = "TarificationViewModel"
 
 data class UiState(
-    val outputModel: ProduitNoSqlDataBase = ProduitNoSqlDataBase(emptyList()),
+    val produitsNoSqlDataBase: ProduitsNoSqlDataBase = ProduitsNoSqlDataBase(emptyList()),
     var produitAncienDB: ArticlesBasesStatsTable? =
         testDataArticlesBasesStatsTable(),
     var _1_3_TransactionCommercialAncienDB: _1_3_TransactionCommercial? =
         testData_1_3_TransactionCommercial(),
     val selectedProductId: Long = testDataArticlesBasesStatsTable().idArticle.toLong(),
 
+
     val isLoading: Boolean = false,
     val error: String? = null,
     val isInitialSetupComplete: Boolean = false,
     val isTarificationTypesProcessed: Boolean = false
 )
+
 
 class TarificationViewModel(
     val appDatabase: AppDatabase,
@@ -44,6 +46,7 @@ class TarificationViewModel(
     private val ancienRepo: _0_0_HeadSQLRepositorys,
     private val ancienClientRepository: B_ClientDataBaseRepository,
 ) : ViewModel() {
+
     private val _uiState = mutableStateOf(UiState())
     val uiState: State<UiState> = _uiState
 
@@ -59,17 +62,49 @@ class TarificationViewModel(
         )
 
         viewModelScope.launch {
-          //  getarticlescLeDataOuvertDuParentList()
+            // getarticlescLeDataOuvertDuParentList()
+
 
             convertiseurNoSqlToSqlRepositorys.noSqlDataFlow.collectLatest { noSqlData ->
+                // Create a mutable copy of the produits list
+                val updatedProduits = noSqlData.produits.toMutableList()
+
+                // Find the first product that should be active and update it
+                val activeProduct = updatedProduits.firstOrNull()
+                activeProduct?.itsActiveOne = true
+
+                // Find and update the first client in the active product
+                if (activeProduct?.clientAchteurs?.isNotEmpty() == true) {
+                    activeProduct.clientAchteurs[0].itsActiveOne = true
+                }
+
+                // Create an updated copy of noSqlData with the modified produits list
+                val updatedNoSqlData = noSqlData.copy(produits = updatedProduits)
+
+                // Update the UI state with the new data
                 _uiState.value = _uiState.value.copy(
-                    outputModel = noSqlData,
+                    produitsNoSqlDataBase = updatedNoSqlData,
                     isLoading = false
                 )
             }
         }
     }
 
+    fun gettypeTarifications(): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+        return uiState.value.produitsNoSqlDataBase
+            .produits.find { it.itsActiveOne }
+            ?.clientAchteurs?.find { it.itsActiveOne }
+            ?.typeTarification ?: emptyList()
+    }
+
+    fun getSqlProduitActive(): A_ProduitInfos? {
+        return convertiseurNoSqlToSqlRepositorys.getProduitInfos(
+            _uiState.value.produitsNoSqlDataBase
+                .produits.find {
+                    it.itsActiveOne }
+            !!.infosId
+        )
+    }
     private suspend fun getarticlescLeDataOuvertDuParentList(): Unit {
         val articlescLeDataOuvertDuParentList = appDatabase.articlesBasesStatsModelDao()
             .getAll().find {
@@ -133,8 +168,8 @@ class TarificationViewModel(
     private fun getTypeTarificationsList(
         clientId: Long,
         productId: Long
-    ): List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
-        val selectedProduct = _uiState.value.outputModel.produits.find { it.infosId == productId }
+    ): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+        val selectedProduct = _uiState.value.produitsNoSqlDataBase.produits.find { it.infosId == productId }
         val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == clientId }
         return selectedClient?.typeTarification ?: emptyList()
     }
@@ -255,7 +290,7 @@ class TarificationViewModel(
         }
     }
 
-    fun verifierAdd_D_TarificationInfos(typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
+    fun verifierAdd_D_TarificationInfos(typeTarification: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
         val clientId = _uiState.value._1_3_TransactionCommercialAncienDB?.clientAcheteurID ?: return
 
@@ -289,7 +324,7 @@ class TarificationViewModel(
         }
     }
 
-    fun verifierAddNew_C_TypeTarificationInfos(typeTarificationsList: List<ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification>) {
+    fun verifierAddNew_C_TypeTarificationInfos(typeTarificationsList: List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification>) {
         viewModelScope.launch {
             try {
                 if (typeTarificationsList.isEmpty()) {
@@ -443,12 +478,13 @@ class TarificationViewModel(
         }
     }
 
-    fun getSqlProduitParSonNoSql(noSqlData: ProduitNoSqlDataBase.Produit): A_ProduitInfos? {
+
+    fun getSqlProduitParSonNoSql(noSqlData: ProduitsNoSqlDataBase.Produit): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepositorys.getProduitInfos(noSqlData.infosId)
     }
 
     fun get_C_TypeTarificationInfos(
-        noSqlData: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification
+        noSqlData: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification
     ): C_TypeTarificationInfos? {
         return convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(noSqlData.infosId)
     }

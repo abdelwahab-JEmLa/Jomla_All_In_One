@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.View
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.Function.formatTimestamp
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,54 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProductClientInfoCard(
-    viewModel: TarificationViewModel,
-    produit: ProduitNoSqlDataBase.Produit,
-    client: ProduitNoSqlDataBase.Produit.ClientAchteur,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "produit.name > (Id=${produit.infosId})",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Client ID: ${client.infosId}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            val date = formatTimestamp(System.currentTimeMillis()).first
-            val time = formatTimestamp(System.currentTimeMillis()).second
-
-            Text(
-                text = "Date: $date $time",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-        }
-    }
-}
-
-@Composable
 fun TarificationTypeSection(
     modifier: Modifier = Modifier,
     viewModel: TarificationViewModel,
-    typeTarification: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
+    typeTarification: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
     showOnlyLatestPrices: Boolean = false
 ) {
     val composeDataMutable by remember { mutableStateOf(typeTarification) }
@@ -143,7 +99,7 @@ fun TarificationTypeSection(
 
 @Composable
 fun TarificationItem(
-    prix: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
+    prix: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(prix.vidTimestamp)

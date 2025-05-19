@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ID3.Test
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 
@@ -35,14 +35,14 @@ class TarificationViewModel(
 //    fun addRandomTarification() {
 //    }
 //
-//    fun getOutputModel(): ProduitNoSqlDataBase {
+//    fun getOutputModel(): ProduitsNoSqlDataBase {
 //    }
 
 }
 
 class UiState(
-    val outputModel: ProduitNoSqlDataBase =
-        ProduitNoSqlDataBase(emptyList()),
+    val outputModel: ProduitsNoSqlDataBase =
+        ProduitsNoSqlDataBase(emptyList()),
 
     val isLoading: Boolean = false,
     val error: String? = null

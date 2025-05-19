@@ -22,7 +22,7 @@ fun logHErartchiDataBase(
 
         println("\n-- Hierarchical Structure --")
 
-        // Create an ProduitNoSqlDataBase from the produitsList
+        // Create an ProduitsNoSqlDataBase from the produitsList
         val outputModel = OutputNoSqlModel(produits = produitsList)
 
         // Now pass the properly constructed model to logProduits

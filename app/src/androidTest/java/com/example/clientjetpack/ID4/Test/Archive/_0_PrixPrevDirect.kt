@@ -72,7 +72,7 @@ private fun FragmentMain(
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
-                    items(uiState.outputModel.produits) { produit ->
+                    items(uiState.produitsNoSqlDataBase.produits) { produit ->
                         val produitName =
                             viewModel.getSqlProduitParSonNoSql(produit)?.nom
                                 ?: "Produit ${produit.infosId}"

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -9,13 +9,13 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 
 suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
     onSuccess: () -> Unit = {}
-): ProduitNoSqlDataBase {
+): ProduitsNoSqlDataBase {
     return withContext(Dispatchers.IO) {
         try {
             val sqlDataList = sqlRepository.modelListFlow.first()
 
             if (sqlDataList.isEmpty()) {
-                return@withContext ProduitNoSqlDataBase(emptyList())
+                return@withContext ProduitsNoSqlDataBase(emptyList())
             }
 
             val sqlData = sqlDataList.first()
@@ -24,7 +24,7 @@ suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
                 val produitTarifications = sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
 
                 if (produitTarifications.isEmpty()) {
-                    ProduitNoSqlDataBase.Produit(
+                    ProduitsNoSqlDataBase.Produit(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = produit.id,
                         clientAchteurs = emptyList()
@@ -46,27 +46,27 @@ suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
                                 ?: C_TypeTarificationInfos(id = typeId)
 
                             val prixList = tarificationsForType.map { tarif ->
-                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                     vidTimestamp = tarif.vidTimestamp,
                                     valeur = tarif.prixCurrency
                                 )
                             }
 
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                            ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = typeInfo.id,
                                 PrixsCurrency = prixList
                             )
                         }
 
-                        ProduitNoSqlDataBase.Produit.ClientAchteur(
+                        ProduitsNoSqlDataBase.Produit.ClientAchteur(
                             vidTimestamp = System.currentTimeMillis(),
                             infosId = clientInfo.id,
                             typeTarification = typeTarifications
                         )
                     }
 
-                    ProduitNoSqlDataBase.Produit(
+                    ProduitsNoSqlDataBase.Produit(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = produit.id,
                         clientAchteurs = clientAcheteurs
@@ -74,12 +74,12 @@ suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
                 }
             }
 
-            val result = ProduitNoSqlDataBase(produitsList)
+            val result = ProduitsNoSqlDataBase(produitsList)
 
             onSuccess()
             result
         } catch (e: Exception) {
-            ProduitNoSqlDataBase(emptyList())
+            ProduitsNoSqlDataBase(emptyList())
         }
     }
 }

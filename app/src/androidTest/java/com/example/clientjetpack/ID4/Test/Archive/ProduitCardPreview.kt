@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID4.Test.Archive
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProduitCard(
-    produit: ProduitNoSqlDataBase.Produit,
+    produit: ProduitsNoSqlDataBase.Produit,
     produitName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -74,7 +74,7 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    clientAchteur: ProduitNoSqlDataBase.Produit.ClientAchteur,
+    clientAchteur: ProduitsNoSqlDataBase.Produit.ClientAchteur,
     modifier: Modifier = Modifier,
     tarificationViewModel: TarificationViewModel?
 ) {
@@ -116,7 +116,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
+    typeTarif: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = strDateEtTempFromVidTimestamp(typeTarif.vidTimestamp)

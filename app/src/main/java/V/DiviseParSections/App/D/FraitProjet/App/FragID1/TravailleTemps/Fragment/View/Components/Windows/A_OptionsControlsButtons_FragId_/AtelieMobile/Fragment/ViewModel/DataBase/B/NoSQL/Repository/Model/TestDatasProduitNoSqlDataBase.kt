@@ -2,23 +2,23 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.createTimestamp
 
-fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {   //<--
+fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
 //TODO(1): ici c a marche 
-    return ProduitNoSqlDataBase(
+    return ProduitsNoSqlDataBase(
         produits = listOf(
-            ProduitNoSqlDataBase.Produit(
+            ProduitsNoSqlDataBase.Produit(
                 vidTimestamp = System.currentTimeMillis(),
                 infosId = 1,
                 clientAchteurs = listOf(
-                    ProduitNoSqlDataBase.Produit.ClientAchteur(
+                    ProduitsNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                            ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
                                 PrixsCurrency = listOf(
-                                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 1,
                                             hour = 12,
@@ -26,7 +26,7 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {   //<--
                                         ),
                                         valeur = 20.99
                                     ),
-                                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 5,
                                             hour = 13,
@@ -38,15 +38,15 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {   //<--
                             )
                         )
                     ),
-                    ProduitNoSqlDataBase.Produit.ClientAchteur(
+                    ProduitsNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 2,
                         typeTarification = listOf(
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                            ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 2,
                                 PrixsCurrency = listOf(
-                                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 5,
                                             hour = 14,
@@ -60,19 +60,19 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {   //<--
                     )
                 )
             ),
-            ProduitNoSqlDataBase.Produit(
+            ProduitsNoSqlDataBase.Produit(
                 vidTimestamp = System.currentTimeMillis(),
                 infosId = 2,
                 clientAchteurs = listOf(
-                    ProduitNoSqlDataBase.Produit.ClientAchteur(
+                    ProduitsNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                            ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
                                 PrixsCurrency = listOf(
-                                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 6,
                                             hour = 3,
@@ -86,19 +86,19 @@ fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {   //<--
                     )
                 )
             ),
-            ProduitNoSqlDataBase.Produit(
+            ProduitsNoSqlDataBase.Produit(
                 vidTimestamp = System.currentTimeMillis(),
                 infosId = 3,
                 clientAchteurs = listOf(
-                    ProduitNoSqlDataBase.Produit.ClientAchteur(
+                    ProduitsNoSqlDataBase.Produit.ClientAchteur(
                         vidTimestamp = System.currentTimeMillis(),
                         infosId = 1,
                         typeTarification = listOf(
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                            ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 3,
                                 PrixsCurrency = listOf(
-                                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                                         vidTimestamp = createTimestamp(
                                             day = 6,
                                             hour = 4,
