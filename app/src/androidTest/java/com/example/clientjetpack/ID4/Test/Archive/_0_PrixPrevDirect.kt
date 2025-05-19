@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID4.Test.Archive
 
-import V.DiviseParSections.App.C_AtelieModbile.Fragment.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID3.Test
 
-import V.DiviseParSections.App.C_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import org.junit.Assert.assertEquals
 
 fun TypeTarifications(

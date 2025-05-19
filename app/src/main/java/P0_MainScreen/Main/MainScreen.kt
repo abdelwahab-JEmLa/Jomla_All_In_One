@@ -1,6 +1,6 @@
 package P0_MainScreen.Main
 
-import P0_MainScreen.Main.Windows.PressistatntMainActivityButtons
+import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App._0.Navigation.AppNavHost
