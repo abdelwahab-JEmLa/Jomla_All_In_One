@@ -127,7 +127,7 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
 ) {
-    val filterProduiID = 1
+    val filterProduitID = 1
     val filterBonID = 1L
 
     val uiState by viewModel.uiState.collectAsState()
@@ -149,7 +149,7 @@ fun TariffsButtons_TestID2(
                     bonAchatList = bonAchatList,
                     produitInfosList = produitInfosList,
                     showLabels = showLabels,
-                    filterProduiID = filterProduiID,
+                    filterProduiID = filterProduitID,
                     filterBonID = filterBonID
                 )
             }
