@@ -30,6 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
 ) {
+
     val uiState by viewModel.uiState
     val clientId = viewModel.ancienRepoOuvertClientId
     val selectedProductId = uiState.produitAncienDB!!.idArticle.toLong()
