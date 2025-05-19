@@ -88,7 +88,6 @@ fun TariffsButtons(
             ) {
                 val couleurButton =
                     relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
-                ElevatedCard {
                     FloatingActionButton(
                         onClick = { },
                         modifier = Modifier.size(40.dp),
@@ -101,7 +100,6 @@ fun TariffsButtons(
                             )
                         }
                     }
-                }
                 if (showLabels) {
                     ElevatedCard {
 
