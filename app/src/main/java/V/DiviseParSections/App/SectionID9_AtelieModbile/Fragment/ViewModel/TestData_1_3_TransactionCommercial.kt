@@ -6,7 +6,6 @@ import java.util.Date
 import java.util.Locale
 
 fun testData_1_3_TransactionCommercial(): _1_3_TransactionCommercial {
-    // Use values from the provided JSON data
     return _1_3_TransactionCommercial(
         vid = 1747588447974L, // Using timestamp from JSON
         clientAcheteurID = 4L, // Using client ID from JSON
