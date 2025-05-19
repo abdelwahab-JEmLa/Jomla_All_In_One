@@ -60,11 +60,11 @@ fun TariffsButtons_TestID2(
             }
         } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
+            /*    Text(
                     text = "Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(bottom = 8.dp)
-                )
+                )      */
 
                 MainFilter(
                     produitInfosList = produitInfosList,

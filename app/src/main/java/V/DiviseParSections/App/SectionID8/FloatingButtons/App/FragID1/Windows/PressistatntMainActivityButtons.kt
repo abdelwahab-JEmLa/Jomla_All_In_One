@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test.TariffsButtons_TestID2
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,6 +75,7 @@ fun PressistatntMainActivityButtons(
                         }
                     }
                 }
+
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
                         viewModel.onRecordingStopped()
@@ -81,7 +83,9 @@ fun PressistatntMainActivityButtons(
                     job?.cancel()
                     job = null
                 }
-                else -> { /* do nothing */ }
+
+                else -> { /* do nothing */
+                }
             }
         }
 
@@ -119,15 +123,15 @@ fun PressistatntMainActivityButtons(
                     onClick = {
                         viewModel.toggleRecording()
                     },
-                    icon = if (isRecording) Icons.Default. PlayArrow else Icons.Default.Stop,
+                    icon = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
                     contentDescription = if (isRecording) "Stop Recording" else "",
                     showLabels = showLabels,
                     labelText = displayTime,
                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
                     enabled = false
                 )
-                 TariffsButtons(
-                    showLabels=showLabels,
+                TariffsButtons_TestID2(
+                    showLabels = showLabels,
                 )
             }
         }

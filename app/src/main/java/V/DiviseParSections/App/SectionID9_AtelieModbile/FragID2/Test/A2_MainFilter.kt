@@ -2,13 +2,10 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainFilter(
@@ -34,11 +31,11 @@ fun MainFilter(
                     tariff.idParentBonAchat == filteredBonAchat.vid
         }
     }
-
+        /*
     Text(
-        "$filteredProduit",
+        filteredProduit.nom,
         Modifier.padding(50.dp)
-    )
+    )          */
 
     Column(modifier = modifier) {
         MainList(
