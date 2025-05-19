@@ -31,7 +31,6 @@ data class UiState(
         testData_1_3_TransactionCommercial(),
     val selectedProductId: Long = testDataArticlesBasesStatsTable().idArticle.toLong(),
 
-
     val isLoading: Boolean = false,
     val error: String? = null,
     val isInitialSetupComplete: Boolean = false,
