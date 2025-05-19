@@ -84,7 +84,7 @@ fun getKeyFireBase(
     }
 }
 
-enum class TypeTarificationEnum(val icon: ImageVector? = null, val couleur: Color = Color.White) {
+enum class TypeTarificationEnum(val iconVector: ImageVector? = null, val couleur: Color = Color.White) {
     ParBenifice(Icons.Filled.ShoppingCart, Color(0xFF4CAF50)),
     Historique(Icons.Filled.History, Color(0xFF2196F3)),
     LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800)),

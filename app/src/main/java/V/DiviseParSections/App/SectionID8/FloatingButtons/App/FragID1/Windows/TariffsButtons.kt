@@ -106,7 +106,7 @@ fun TariffsButtons(
                     modifier = Modifier.size(40.dp),
                     containerColor = couleurButton
                 ) {
-                    relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
+                    relatedTypeInfos?.entityCorrespond?.iconVector?.let { iconVector ->
                         Icon(
                             imageVector = iconVector,
                             contentDescription = null
