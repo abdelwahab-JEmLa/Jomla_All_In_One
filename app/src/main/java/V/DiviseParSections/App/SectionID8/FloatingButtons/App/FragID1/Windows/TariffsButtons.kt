@@ -25,7 +25,7 @@ import org.koin.androidx.compose.koinViewModel
 @Preview
 @Composable
 fun TarriffesButtonsP() {
-    TarriffesButtons()
+    TariffsButtons()
 }
 
 @Composable
@@ -59,7 +59,7 @@ private fun LoadingTariffItem(isLoading: Boolean = true) {
 }
 
 @Composable
-fun TarriffesButtons(
+fun TariffsButtons(
     showLabels: Boolean = true,
     tarificationViewModel: TarificationViewModel = koinViewModel(),
 ) {
