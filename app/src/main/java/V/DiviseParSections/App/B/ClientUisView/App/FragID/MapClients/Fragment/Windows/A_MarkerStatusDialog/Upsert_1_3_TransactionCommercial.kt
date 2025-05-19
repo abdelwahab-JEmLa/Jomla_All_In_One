@@ -14,7 +14,7 @@ fun upsert_1_3_TransactionCommercial(
     relatedClientID: Long,
     newEtate: _1_3_TransactionCommercial.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
-): Unit {
+) {
     val _0_0_HeadOfRepositorys_Repository = viewModel.repo_0_0_HeadSQLRepositorys
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
