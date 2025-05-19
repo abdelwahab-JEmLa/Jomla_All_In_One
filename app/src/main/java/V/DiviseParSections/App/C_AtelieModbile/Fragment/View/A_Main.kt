@@ -36,7 +36,7 @@ fun FragmentMain(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Loading product data...")
+            Text("Loading product data... ")
         }
     } else {
         FilterMainScreen(
