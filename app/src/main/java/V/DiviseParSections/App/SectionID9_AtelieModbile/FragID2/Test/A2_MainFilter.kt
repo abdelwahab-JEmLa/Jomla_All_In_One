@@ -36,7 +36,7 @@ fun MainFilter(
     }
 
     Text(
-        filteredProduit.nom,
+        "$filteredProduit",
         Modifier.padding(50.dp)
     )
 
