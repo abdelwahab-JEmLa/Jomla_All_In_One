@@ -72,11 +72,11 @@ fun TarificationTypeSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             val pricesToShow = if (showOnlyLatestPrices) {
-                typeTarification.PrixsCurrency
+                typeTarification.tariffsList
                     .maxByOrNull { it.vidTimestamp }
                     ?.let { listOf(it) } ?: emptyList()
             } else {
-                typeTarification.PrixsCurrency
+                typeTarification.tariffsList
                     .sortedByDescending { it.vidTimestamp }
             }
 
@@ -89,7 +89,7 @@ fun TarificationTypeSection(
                 )
             } else {
                 pricesToShow.forEach { prix ->
-                    TarificationItem(prix = prix)
+                    TarificationItem(tariff = prix)
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
@@ -99,10 +99,10 @@ fun TarificationTypeSection(
 
 @Composable
 fun TarificationItem(
-    prix: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix,
+    tariff: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff,
     modifier: Modifier = Modifier
 ) {
-    val (date, time) = formatTimestamp(prix.vidTimestamp)
+    val (date, time) = formatTimestamp(tariff.vidTimestamp)
 
     Row(
         modifier = modifier
@@ -113,7 +113,7 @@ fun TarificationItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Prix: ${prix.valeur}€",
+            text = "Tariff: ${tariff.valeur}€",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

@@ -20,9 +20,11 @@ data class ProduitsNoSqlDataBase(
             data class TypeTarification(
                 val vidTimestamp: Long,
                 val infosId: Long,
-                val PrixsCurrency: List<Prix>,
+                var itsActiveOne: Boolean=false,
+
+                val tariffsList: List<Tariff>,
             ) {
-                data class Prix(
+                data class Tariff(
                     val vidTimestamp: Long,
                     val valeur: Double,
                 )

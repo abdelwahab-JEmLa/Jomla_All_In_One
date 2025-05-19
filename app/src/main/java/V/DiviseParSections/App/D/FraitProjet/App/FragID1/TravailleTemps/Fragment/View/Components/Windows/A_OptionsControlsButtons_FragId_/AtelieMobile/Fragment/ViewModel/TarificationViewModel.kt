@@ -89,8 +89,16 @@ class TarificationViewModel(
             }
         }
     }
+    fun getActiveTarifications(): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff> {
+        return uiState.value.produitsNoSqlDataBase
+            .produits.find { it.itsActiveOne }
+            ?.clientAchteurs?.find { it.itsActiveOne }
+            ?.typeTarification?.find { it.itsActiveOne }
+            ?.tariffsList
+            ?: emptyList()
+    }
 
-    fun gettypeTarifications(): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
+    fun gettypeActiveTarifications(produitsNoSqlDataBase: ProduitsNoSqlDataBase): List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification> {
         return uiState.value.produitsNoSqlDataBase
             .produits.find { it.itsActiveOne }
             ?.clientAchteurs?.find { it.itsActiveOne }
@@ -481,6 +489,12 @@ class TarificationViewModel(
 
     fun getSqlProduitParSonNoSql(noSqlData: ProduitsNoSqlDataBase.Produit): A_ProduitInfos? {
         return convertiseurNoSqlToSqlRepositorys.getProduitInfos(noSqlData.infosId)
+    }
+
+    fun getByID_C_TypeTarificationInfos(
+        noSqlDatainfosId: Long
+    ): C_TypeTarificationInfos? {
+        return convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(noSqlDatainfosId)
     }
 
     fun get_C_TypeTarificationInfos(

@@ -155,7 +155,7 @@ private fun prepareTexteToPrint(
         append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
         append("<BR>")
         append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-        append("<SMALL><BOLD>    Quantité      Prix         <NORMAL>Sous-total<BR>")
+        append("<SMALL><BOLD>    Quantité      Tariff         <NORMAL>Sous-total<BR>")
         append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
     }
 

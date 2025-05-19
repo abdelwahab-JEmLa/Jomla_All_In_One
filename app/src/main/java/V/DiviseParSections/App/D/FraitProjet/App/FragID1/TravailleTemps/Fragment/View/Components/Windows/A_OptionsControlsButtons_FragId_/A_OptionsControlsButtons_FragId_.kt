@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.TarificationViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
@@ -14,7 +15,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Euro
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,13 +33,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
 fun A_OptionsControlsButtons_FragId_(
+    tarificationViewModel: TarificationViewModel = koinViewModel(),
     viewModel: Windows__ViewModel,
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
@@ -74,7 +82,10 @@ fun A_OptionsControlsButtons_FragId_(
 
                     FragID_0_Butt_3(viewModel, showLabels, "Mode Admin")
 
-                    TarriffesButtons(showLabels)
+                    TarriffesButtons(
+                        showLabels, tarificationViewModel
+                    )
+
                     LabelsButton(
                         showLabels = showLabels,
                         onShowLabelsChange = { showLabels = it }
@@ -92,30 +103,71 @@ fun A_OptionsControlsButtons_FragId_(
 }
 
 @Composable
-private fun TarriffesButtons(showLabels: Boolean) {
+private fun TarriffesButtons(showLabels: Boolean, tarificationViewModel: TarificationViewModel) {
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        val couleurButton2 = Color(0xFFF44336)
-        FloatingActionButton(
-            onClick = {
+    val tariffsList by remember {
+        mutableStateOf(
+            tarificationViewModel.uiState.value.produitsNoSqlDataBase
+                .produits.find { it.itsActiveOne }
+                ?.clientAchteurs?.find { it.itsActiveOne }
+                ?.typeTarification?.find { it.itsActiveOne }
+                ?.tariffsList
+                ?: emptyList()
+        )
+    }
 
-            },
-            modifier = Modifier.size(40.dp), containerColor = couleurButton2
-        ) {
-            Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
+    tariffsList.forEach { tariff ->
+        // Find the parent typeTarification by looking at the active product and client
+        val activeProduct = tarificationViewModel.uiState.value.produitsNoSqlDataBase
+            .produits.find { it.itsActiveOne }
+        val activeClient = activeProduct?.clientAchteurs?.find { it.itsActiveOne }
+        val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
+
+        // Get the TypeTarificationInfos entity from the view model
+        val relatedTypeInfosentityCorrespond = activeTypeTarification?.let { typeTarif ->
+            tarificationViewModel.getByID_C_TypeTarificationInfos(typeTarif.infosId)
         }
-        if (showLabels) {
-            Text(
-                "ShowDialogControleFabs", modifier = Modifier
-                    .background(
-                        couleurButton2
-                    )
-                    .padding(4.dp), color = Color.White
-            )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Determine button color based on the entity correspond value
+            val couleurButton2 = when (relatedTypeInfosentityCorrespond?.entityCorrespond?.name) {
+                "PRIX_BASE" -> Color(0xFF4CAF50) // Green for base price
+                "PRIX_INTERMEDIAIRE" -> Color(0xFF2196F3) // Blue for intermediate
+                "ParBenifice" -> Color(0xFFFFC107) // Yellow for profit-based
+                "PRIX_REMISE" -> Color(0xFF9C27B0) // Purple for discount
+                else -> Color(0xFFF44336) // Default red
+            }
+
+            FloatingActionButton(
+                onClick = {
+                    // Handle click
+                },
+                modifier = Modifier.size(40.dp), containerColor = couleurButton2
+            ) {
+                // Choose icon based on the entity type
+                val icon: ImageVector = when (relatedTypeInfosentityCorrespond?.entityCorrespond?.name) {
+                    "PRIX_BASE" -> Icons.Default.LocalOffer
+                    "PRIX_INTERMEDIAIRE" -> Icons.Default.Euro
+                    "ParBenifice" -> Icons.Default.Percent
+                    "PRIX_REMISE" -> Icons.Default.AttachMoney
+                    else -> Icons.Default.Face
+                }
+
+                Icon(icon, contentDescription = null)
+            }
+            if (showLabels) {
+                Text(
+                    "${tariff.valeur}",
+                    modifier = Modifier
+                        .background(
+                            couleurButton2
+                        )
+                        .padding(4.dp), color = Color.White
+                )
+            }
         }
     }
 }
-

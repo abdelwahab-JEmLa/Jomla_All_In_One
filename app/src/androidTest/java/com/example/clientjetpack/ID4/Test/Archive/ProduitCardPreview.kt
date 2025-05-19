@@ -140,7 +140,7 @@ fun TarificationTypeSection(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        typeTarif.PrixsCurrency.forEach { prix ->
+        typeTarif.tariffsList.forEach { prix ->
             val (prixDate, prixTime) = strDateEtTempFromVidTimestamp(prix.vidTimestamp)
             Row(
                 modifier = Modifier

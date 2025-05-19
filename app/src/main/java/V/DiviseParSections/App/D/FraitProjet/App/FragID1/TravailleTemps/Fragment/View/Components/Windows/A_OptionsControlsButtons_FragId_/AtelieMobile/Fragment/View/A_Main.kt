@@ -54,11 +54,8 @@ fun FilterMainScreen(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            ProductClientInfoCard(
-                produitsNoSqlDataBase=produitsNoSqlDataBase,
-            )
-
             MainList(
+                produitsNoSqlDataBase=produitsNoSqlDataBase,
                 viewModel = viewModel,
                 showOnlyLatestPrices = false,
                 modifier = Modifier.weight(1f)
@@ -72,10 +69,11 @@ fun MainList(
     modifier: Modifier = Modifier,
     viewModel: TarificationViewModel,
     showOnlyLatestPrices: Boolean,
+    produitsNoSqlDataBase: ProduitsNoSqlDataBase,
 ) {
     val typeTarificationList by remember {
         mutableStateOf(
-            viewModel.gettypeTarifications()
+            viewModel.gettypeActiveTarifications(produitsNoSqlDataBase)
         )
     }
 

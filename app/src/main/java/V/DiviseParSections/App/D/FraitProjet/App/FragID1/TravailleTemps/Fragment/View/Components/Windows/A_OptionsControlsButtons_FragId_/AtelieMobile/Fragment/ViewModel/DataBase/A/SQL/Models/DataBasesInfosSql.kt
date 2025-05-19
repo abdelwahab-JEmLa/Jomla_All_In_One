@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.getStrDateTime
+import androidx.compose.material.icons.Icons
+import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -70,17 +72,18 @@ fun getKeyFireBase(
     dataId: Long? = null,
     dataNom: String? = null
 ): String {
-     return if (dataId != null) {
-         "-<$dataId($dataNom)"
-     } else {
-         "-<$dataNom"
-     }
+    return if (dataId != null) {
+        "-<$dataId($dataNom)"
+    } else {
+        "-<$dataNom"
+    }
 }
 
-enum class TypeTarificationEnum {
-    ParBenifice,
-    Historique,
-    LeMaxPrixArrive,
-    PRIX_BASE
+enum class TypeTarificationEnum(icon: Icons.Filled? =null, couleur:Color = Color.White) {
+    ParBenifice(//<--
+        //TODO(1): ajou ici ),
+        Historique(),
+        LeMaxPrixArrive,
+        PRIX_BASE
 }
 

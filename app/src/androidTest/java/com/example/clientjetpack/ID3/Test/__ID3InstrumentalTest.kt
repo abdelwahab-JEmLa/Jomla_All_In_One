@@ -110,14 +110,14 @@ class __ID3InstrumentalTest : KoinTest {
                     // Compare prices list size
                     assertEquals(
                         "Prices list size should match for type tarification ID ${expectedType.infosId}",
-                        expectedType.PrixsCurrency.size,
-                        actualType.PrixsCurrency.size
+                        expectedType.tariffsList.size,
+                        actualType.tariffsList.size
                     )
 
                     // Compare each price
-                    expectedType.PrixsCurrency.forEach { expectedPrix ->
+                    expectedType.tariffsList.forEach { expectedPrix ->
                         val actualPrix =
-                            actualType.PrixsCurrency.find { it.vidTimestamp == expectedPrix.vidTimestamp }
+                            actualType.tariffsList.find { it.vidTimestamp == expectedPrix.vidTimestamp }
                                 ?: throw AssertionError("Price with timestamp ${expectedPrix.vidTimestamp} not found for type tarification ID ${expectedType.infosId}")
 
                         assertEquals(

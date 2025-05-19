@@ -45,8 +45,8 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
             C_TypeTarificationInfos(
                 id = 3,
                 entityCorrespond = TypeTarificationEnum.LeMaxPrixArrive,
-                nom = "Prix Maximum",
-                keyFireBase = getKeyFireBase(3, "Prix Maximum")
+                nom = "Tariff Maximum",
+                keyFireBase = getKeyFireBase(3, "Tariff Maximum")
             ),
             C_TypeTarificationInfos(
                 id = 4,

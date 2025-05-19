@@ -17,8 +17,8 @@ fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
                             ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
-                                PrixsCurrency = listOf(
-                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                tariffsList = listOf(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                         vidTimestamp = createTimestamp(
                                             day = 1,
                                             hour = 12,
@@ -26,7 +26,7 @@ fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
                                         ),
                                         valeur = 20.99
                                     ),
-                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                         vidTimestamp = createTimestamp(
                                             day = 5,
                                             hour = 13,
@@ -45,8 +45,8 @@ fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
                             ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 2,
-                                PrixsCurrency = listOf(
-                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                tariffsList = listOf(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                         vidTimestamp = createTimestamp(
                                             day = 5,
                                             hour = 14,
@@ -71,8 +71,8 @@ fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
                             ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 1,
-                                PrixsCurrency = listOf(
-                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                tariffsList = listOf(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                         vidTimestamp = createTimestamp(
                                             day = 6,
                                             hour = 3,
@@ -97,8 +97,8 @@ fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
                             ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = 3,
-                                PrixsCurrency = listOf(
-                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                tariffsList = listOf(
+                                    ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                         vidTimestamp = createTimestamp(
                                             day = 6,
                                             hour = 4,

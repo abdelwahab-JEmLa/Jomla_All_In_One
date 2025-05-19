@@ -45,8 +45,8 @@ suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
                             val typeInfo = sqlData.c_TypeTarificationInfos.find { it.id == typeId }
                                 ?: C_TypeTarificationInfos(id = typeId)
 
-                            val prixList = tarificationsForType.map { tarif ->
-                                ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                            val tariffList = tarificationsForType.map { tarif ->
+                                ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Tariff(
                                     vidTimestamp = tarif.vidTimestamp,
                                     valeur = tarif.prixCurrency
                                 )
@@ -55,7 +55,7 @@ suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
                             ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = System.currentTimeMillis(),
                                 infosId = typeInfo.id,
-                                PrixsCurrency = prixList
+                                tariffsList = tariffList
                             )
                         }
 
