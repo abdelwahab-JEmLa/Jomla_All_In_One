@@ -46,9 +46,6 @@ fun FragmentMain(
     val clientId = uiState._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
     val selectedProductId = uiState.selectedProductId
 
-    // Perform initial setup in the ViewModel
-    viewModel.performInitialSetup()
-
     FilterMainScreen(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
@@ -72,8 +69,6 @@ fun FilterMainScreen(
     val selectedClient = selectedProduct?.clientAchteurs?.find { it.infosId == selectedClientId }
     val typeTarificationsList = selectedClient?.typeTarification ?: emptyList()
 
-    // Process tarification types in the ViewModel
-    viewModel.processTarificationTypes(selectedClientId, selectedProductId)
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {

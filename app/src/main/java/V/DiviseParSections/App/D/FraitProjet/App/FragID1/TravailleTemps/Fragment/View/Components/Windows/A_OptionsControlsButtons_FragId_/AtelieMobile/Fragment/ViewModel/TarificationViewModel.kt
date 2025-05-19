@@ -52,6 +52,11 @@ class TarificationViewModel(
 
     init {
         _uiState.value = _uiState.value.copy(isLoading = true)
+        performInitialSetup()
+        processTarificationTypes(
+            uiState.value.selectedProductId,
+            uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
+        )
 
         viewModelScope.launch {
           //  getarticlescLeDataOuvertDuParentList()
