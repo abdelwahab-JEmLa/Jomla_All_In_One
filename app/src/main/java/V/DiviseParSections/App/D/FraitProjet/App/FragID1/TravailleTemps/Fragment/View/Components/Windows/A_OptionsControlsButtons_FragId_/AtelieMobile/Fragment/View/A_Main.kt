@@ -53,7 +53,7 @@ fun FragmentMain(
         viewModel = viewModel,
         noSqlData = uiState.outputModel,
         selectedProductId = selectedProductId,
-        selectedClientId = clientId ?: 0L,
+        selectedClientId = clientId,
     )
 }
 
