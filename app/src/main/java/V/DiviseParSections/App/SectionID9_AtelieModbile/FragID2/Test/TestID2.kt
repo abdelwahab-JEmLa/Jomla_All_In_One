@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,8 +74,8 @@ private fun LoadingTariffItem(isLoading: Boolean = true) {
 }
 
 data class UiState(
-    var bonAchat: BonAchatT2 =BonAchatT2(),
-    var produitInfos: ArticlesBasesStatsTable=ArticlesBasesStatsTable(),
+    var bonAchatList: List<BonAchatT2> = emptyList(),
+    var produitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     var tarificationList: List<D_TarificationInfosT2> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
@@ -98,16 +97,14 @@ class TariffsButtonsViewModel_TestID2(
             _uiState.update { it.copy(isLoading = true) }
 
             try {
-                // In a real implementation, this would load from the database
-                // For now, we're using test data
                 val tariffs = testD_TarificationInfosT2()
                 val produitInfos = testDataArticlesBasesStatsTable2()
                 val bonAchat = testBonAchatT2()
 
                 _uiState.update {
                     it.copy(
-                        bonAchat = bonAchat,
-                        produitInfos = produitInfos,
+                        bonAchatList = bonAchat,
+                        produitInfosList = produitInfos,
                         tarificationList = tariffs,
                         isLoading = false,
                         isInitialSetupComplete = true
@@ -133,20 +130,20 @@ fun TariffsButtons_TestID2(
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tarificationList
-    val bonAchat = uiState.bonAchat
-    val produitInfos = uiState.produitInfos
+    val bonAchatList = uiState.bonAchatList
+    val produitInfosList = uiState.produitInfosList
 
     val shouldShowLoading = uiState.isLoading && tarificationList.isEmpty()
 
     Box {
         if (shouldShowLoading) {
             LoadingTariffItem(isLoading = true)
-        } else {
+        } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
             Column {
                 MainFilter(
                     tarificationList = tarificationList,
-                    bonAchat = bonAchat!!,
-                    produitInfos = produitInfos!!,
+                    bonAchatList = bonAchatList,
+                    produitInfosList = produitInfosList,
                     showLabels = showLabels
                 )
             }
@@ -157,19 +154,29 @@ fun TariffsButtons_TestID2(
 @Composable
 fun MainFilter(
     tarificationList: List<D_TarificationInfosT2>,
-    bonAchat: BonAchatT2,
-    produitInfos: ArticlesBasesStatsTable,
+    bonAchatList: List<BonAchatT2>,
+    produitInfosList: List<ArticlesBasesStatsTable>,
     showLabels: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    // Filter tariffs by product ID and client ID
-    val filteredTariffs by remember(tarificationList, produitInfos, bonAchat) {
-        mutableStateOf(
-            tarificationList.filter { tariff ->
-                tariff.idProduit.toInt() == produitInfos.idArticle &&
-                        tariff.idParentBonAchat == bonAchat.vid
-            }
-        )
+    // Fix TODO(1): Using filterBon = 1L instead of 2L since the first example in testBonAchatT2() has vid = 1
+    val filterBonID = 1L
+    val filterProduiID = 1
+
+    // Fix for TODO(FIXME): Using proper state handling to fix the delegate issue
+    val filteredBonAchat = remember(bonAchatList, filterBonID) {
+        bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
+    }
+
+    val filteredProduit = remember(produitInfosList, filterProduiID) {
+        produitInfosList.find { it.idArticle == filterProduiID } ?: ArticlesBasesStatsTable()
+    }
+
+    val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
+        tarificationList.filter { tariff ->
+            tariff.idProduit.toInt() == filteredProduit.idArticle &&
+                    tariff.idParentBonAchat == filteredBonAchat.vid
+        }
     }
 
     Column(modifier = modifier) {
@@ -187,8 +194,8 @@ fun MainList(
     modifier: Modifier = Modifier
 ) {
     // Group tariffs by their type
-    val tariffsGroupedByType by remember(tariffs) {
-        mutableStateOf(tariffs.groupBy { it.typeTarificationEnumT2Correspond })
+    val tariffsGroupedByType = remember(tariffs) {
+        tariffs.groupBy { it.typeTarificationEnumT2Correspond }
     }
 
     Column(modifier = modifier) {

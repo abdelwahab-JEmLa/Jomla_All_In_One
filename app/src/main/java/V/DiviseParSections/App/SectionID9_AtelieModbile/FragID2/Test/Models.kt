@@ -1,13 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
-import Z_CodePartageEntreApps.Modules.DatesHandler
-import androidx.room.PrimaryKey
-import com.example.clientjetpack.R
-import com.google.firebase.database.IgnoreExtraProperties
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.getStrDateTime
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.AttachMoney
@@ -15,7 +9,13 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.room.PrimaryKey
+import com.example.clientjetpack.R
+import com.google.firebase.database.IgnoreExtraProperties
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 data class D_TarificationInfosT2(
     @PrimaryKey
@@ -71,7 +71,6 @@ data class BonAchatT2(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
-    var cLeDataOuvertDuParentList: Boolean?=null,
 
     var cActive: Boolean = false,
 
