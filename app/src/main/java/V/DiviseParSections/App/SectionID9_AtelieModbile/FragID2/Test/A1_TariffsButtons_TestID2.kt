@@ -37,8 +37,8 @@ fun TariffsButtons_TestID2(
         }
     }
 
-    val firstProductId =  1
-    val firstBonId =  1L
+    val firstProductId = 1
+    val firstBonId = 1L
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
