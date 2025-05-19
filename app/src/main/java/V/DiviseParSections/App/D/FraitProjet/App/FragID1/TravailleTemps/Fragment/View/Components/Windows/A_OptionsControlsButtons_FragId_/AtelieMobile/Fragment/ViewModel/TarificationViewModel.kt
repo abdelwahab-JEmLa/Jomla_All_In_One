@@ -17,7 +17,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Entity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,92 +36,6 @@ data class UiState(
     val isTarificationTypesProcessed: Boolean = false
 )
 
-fun testDataArticlesBasesStatsTable(): ArticlesBasesStatsTable{
-                                //<--
-                                //TODO(1): cree test data dpuit json    
-                                //
-                                @Entity
-                                public final data class ArticlesBasesStatsTable(
-                                    val idArticle: Int = 0,
-                                    val nomArticleFinale: String = "",
-                                    val classementCate: Double = 0.0,
-                                    val nomArab: String = "",
-                                    val autreNomDarticle: String? = null,
-                                    val nmbrCat: Int = 0,
-                                    val couleur1: String? = null,
-                                    val idcolor1: Long = 0,
-                                    val couleur2: String? = null,
-                                    val idcolor2: Long = 0,
-                                    val couleur3: String? = null,
-                                    val idcolor3: Long = 0,
-                                    val couleur4: String? = null,
-                                    val idcolor4: Long = 0,
-                                    val nomCategorie2: String? = null,
-                                    val nmbrUnite: Int = 0,
-                                    val nmbrCaron: Int = 0,
-                                    val affichageUniteState: Boolean = false,
-                                    val commmentSeVent: String? = null,
-                                    val afficheBoitSiUniter: String? = null,
-                                    val monPrixAchat: Double = 0.0,
-                                    val clienPrixVentUnite: Double = 0.0,
-                                    val minQuan: Int = 0,
-                                    val monBenfice: Double = 0.0,
-                                    val monPrixVent: Double = 0.0,
-                                    val neaon2: String = "",
-                                    val idCategorie: Double = 0.0,
-                                    val catalogeParentID: Long = 0,
-                                    val funChangeImagsDimention: Boolean = false,
-                                    val nomCategorie: String = "",
-                                    val neaon1: Double = 0.0,
-                                    val lastUpdateState: String = "",
-                                    val cartonState: String = "",
-                                    val dateCreationCategorie: String = "",
-                                    val prixDeVentTotaleChezClient: Double = 0.0,
-                                    val benficeTotaleEntreMoiEtClien: Double = 0.0,
-                                    val benificeTotaleEn2: Double = 0.0,
-                                    val monPrixAchatUniter: Double = 0.0,
-                                    val monPrixVentUniter: Double = 0.0,
-                                    val benificeClient: Double = 0.0,
-                                    val monBeneficeUniter: Double = 0.0,
-                                    val diponibilityState: String = "",
-                                    val cLeDataOuvertDuParentList: Boolean = false,
-                                    val articleHaveUniteImages: Boolean = false,
-                                    val itsNewArrivale: Boolean = false,
-                                    val imageDimention: String = "",
-                                    val idForSearchArticles: Long = 0
-                                )
-
-    Z_CodePartageEntreApps.Model.Z.Archive
-    ArticlesBasesStatsTable.kt
-
-}
-fun testData_1_3_TransactionCommercial(): _1_3_TransactionCommercial {
-    //<--
-    //TODO(1): cree test data dpuit json //<--
-    //TODO(1): 
-    @Entity
-    public final data class _1_3_TransactionCommercial(
-        val vid: Long = 0L,
-        val parentVID_1_4_PeriodeVent: Long = 0L,
-        val clientAcheteurID: Long = 0L,
-        val nomClientConcerned: String = "Non Defini",
-        val timestamps: Long = DatesHandler().getCurrentTimestamps(),
-        val heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
-        val heurFinInString: String = "Non Defini",
-        val cLeDataOuvertDuParentList: Boolean? = null,
-        val cActive: Boolean = false,
-        val cJustPourVoirPanie: Boolean = false,
-        val ouvert: Boolean = false,
-        val vocaleKeyID: String = "",
-        val sonVocaleEstEcoute: Boolean = false,
-        val sonEcoutementEstFaitAutimestamps: Long = 0,
-        val etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst = EtateActuellementEst.NON_DEFINI
-    )
-
-    V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL
-    _1_3_TransactionCommercial.kt
-
-}
 class TarificationViewModel(
     val appDatabase: AppDatabase,
 
