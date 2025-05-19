@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,6 +30,36 @@ fun TarriffesButtonsP() {
 }
 
 @Composable
+private fun LoadingTariffItem(isLoading: Boolean = true) {
+    if (!isLoading) return
+
+    ElevatedCard {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { },
+                modifier = Modifier.size(40.dp),
+                containerColor = Color.Gray
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White
+                )
+            }
+            Text(
+                "Loading...",
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .padding(4.dp),
+                color = Color.White
+            )
+        }
+    }
+}
+
+@Composable
 fun TarriffesButtons(
     showLabels: Boolean = true,
     tarificationViewModel: TarificationViewModel = koinViewModel(),
@@ -42,47 +74,48 @@ fun TarriffesButtons(
 
     Text("Datas ${tariffsList.ifEmpty { "vide" }}")
 
-    // Only update tariffs if there are any
-    if (tariffsList.isNotEmpty()) {
-        // Create a new list with modified values to trigger recomposition
-        tariffsList = tariffsList.map { tariff ->
-            tariff.copy(valeur = 200.00)
-        }
-    }
+    // Show loading indicator based on uiState.isLoading
+    LoadingTariffItem(isLoading = uiState.isLoading || tariffsList.isEmpty())
 
-    tariffsList.forEach { tariff ->
-        // Find the parent TypeTarification
-        val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
-        val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
-            parentTypeTarificationId
-        )
+    // Only display tariffs when not loading
+    if (!uiState.isLoading && tariffsList.isNotEmpty()) {
+        // Display all tariffs when data is loaded
+        tariffsList.forEach { tariff ->
+            // Find the parent TypeTarification
+            val parentTypeTarificationId = activeTypeTarification?.infosId ?: 0L
+            val relatedTypeInfos = tarificationViewModel.getByID_C_TypeTarificationInfos(
+                parentTypeTarificationId
+            )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            // Use the icon and color from the related TypeTarification
-            val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
-            FloatingActionButton(
-                onClick = { },
-                modifier = Modifier.size(40.dp),
-                containerColor = couleurButton
-            ) {
-                relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
-                    Icon(
-                        imageVector = iconVector,
-                        contentDescription = null
-                    )
+            ElevatedCard {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // Use the icon and color from the related TypeTarification
+                    val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
+                    FloatingActionButton(
+                        onClick = { },
+                        modifier = Modifier.size(40.dp),
+                        containerColor = couleurButton
+                    ) {
+                        relatedTypeInfos?.entityCorrespond?.icon?.let { iconVector ->
+                            Icon(
+                                imageVector = iconVector,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                    if (showLabels) {
+                        Text(
+                            "${tariff.valeur}",
+                            modifier = Modifier
+                                .background(couleurButton)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
                 }
-            }
-            if (showLabels) {
-                Text(
-                    "${tariff.valeur}",
-                    modifier = Modifier
-                        .background(couleurButton)
-                        .padding(4.dp),
-                    color = Color.White
-                )
             }
         }
     }
