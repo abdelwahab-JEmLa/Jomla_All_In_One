@@ -23,9 +23,10 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
+    firstProductId: Int = 1,
+    firstBonId: Long = 1,
 ) {
-    val firstProductId = 1
-    val firstBonId = 1L
+
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -81,7 +82,9 @@ fun TariffsButtons_TestID2(
             Text(
                 text = "Waiting for data... Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(16.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.Center),
                 textAlign = TextAlign.Center
             )
         }
