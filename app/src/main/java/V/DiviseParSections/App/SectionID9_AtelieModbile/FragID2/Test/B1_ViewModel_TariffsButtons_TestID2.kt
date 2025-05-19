@@ -42,10 +42,10 @@ class TariffsButtonsViewModel_TestID2(
 
             try {
                 val progressJob = launch {
-                    val produitsdatabaseRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
+                    val produitsDatabaseRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
                         ._2_1_ProduitsDataBase_Repository
 
-                    produitsdatabaseRepository.progressRepo.collect { progress ->
+                    produitsDatabaseRepository.progressRepo.collect { progress ->
                         _uiState.update { it.copy(loadingProgress = progress) }
                     }
                 }
