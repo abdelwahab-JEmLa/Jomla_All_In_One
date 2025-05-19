@@ -64,9 +64,6 @@ fun TariffsButtons(
     tarificationViewModel: TarificationViewModel = koinViewModel(),
 ) {
     val uiState = tarificationViewModel.uiState.value
-
-    val shouldShowLoading = uiState.isLoading
-
     val activeProduit = uiState.produitsNoSqlDataBase.produits.find { it.itsActiveOne }
     val activeClient = activeProduit?.clientAchteurs?.find { it.itsActiveOne }
     val activeTypeTarification = activeClient?.typeTarification?.find { it.itsActiveOne }
@@ -75,6 +72,7 @@ fun TariffsButtons(
         mutableStateOf(activeTypeTarification?.tariffsList ?: emptyList())
     }
 
+    val shouldShowLoading = uiState.isLoading && tariffsList.isEmpty()
     LoadingTariffItem(isLoading = shouldShowLoading)
 
     if (tariffsList.isNotEmpty()) {
