@@ -14,13 +14,11 @@ fun MainList(
     showLabels: Boolean,
     modifier: Modifier = Modifier
 ) {
-    // Group tariffs by their type
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }
     }
 
     Column(modifier = modifier) {
-        // Process each tarification type individually
         tariffsGroupedByType.forEach { (type, typeTariffs) ->
             TariffButtonItem(
                 typeTarification = type,
