@@ -229,9 +229,6 @@ class TarificationViewModel(
                         needUpdate = true
                     )
 
-                    val result =
-                        convertiseurNoSqlToSqlRepositorys.addTarificationInfos(newTarification)
-                    convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
                 } else {
                     if (existingTarification.prixCurrency == 0.0) {
                         val updatedPrice =
@@ -309,8 +306,7 @@ class TarificationViewModel(
                         needUpdate = true
                     )
 
-                    val result =
-                        convertiseurNoSqlToSqlRepositorys.addTarificationInfos(newTarification)
+                    convertiseurNoSqlToSqlRepositorys.addTarificationInfos(newTarification)
                     convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
                 }
             } catch (e: Exception) {
@@ -321,46 +317,43 @@ class TarificationViewModel(
     fun verifierAddNew_C_TypeTarificationInfos(typeTarificationsList: List<ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification>) {
         viewModelScope.launch {
             try {
-                if (typeTarificationsList.isEmpty()) {
-                    createDefaultTypeTarifications()
-                    return@launch
-                }
-
-                val id: Long = 4
-                val tarificationInfosHistorique =
-                    convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(id)
-
-                if (tarificationInfosHistorique == null) {
-                    val newData = C_TypeTarificationInfos(
+                // First, add the 4 default type tarifications if they don't exist yet
+                val defaultTypeTarifications = listOf(
+                    C_TypeTarificationInfos(
+                        id = 1,
+                        entityCorrespond = TypeTarificationEnum.ParBenifice,
+                        nom = "Par Bénifice",
+                        keyFireBase = getKeyFireBase(1, "Par Bénifice")
+                    ),
+                    C_TypeTarificationInfos(
+                        id = 2,
+                        entityCorrespond = TypeTarificationEnum.Historique,
+                        nom = "Historique",
+                        keyFireBase = getKeyFireBase(2, "Historique")
+                    ),
+                    C_TypeTarificationInfos(
+                        id = 3,
+                        entityCorrespond = TypeTarificationEnum.LeMaxPrixArrive,
+                        nom = "Tariff Maximum",
+                        keyFireBase = getKeyFireBase(3, "Tariff Maximum")
+                    ),
+                    C_TypeTarificationInfos(
                         id = 4,
                         entityCorrespond = TypeTarificationEnum.PRIX_BASE,
                         nom = TypeTarificationEnum.PRIX_BASE.name,
                         keyFireBase = getKeyFireBase(4, TypeTarificationEnum.PRIX_BASE.name)
                     )
+                )
 
-                    TypeTarificationEnum.values().forEach { enumType ->
-                        val enumId = enumType.ordinal + 1L
-                        val existingType =
-                            convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(enumId)
-
-                        if (existingType == null) {
-                            val typeData = C_TypeTarificationInfos(
-                                id = enumId,
-                                entityCorrespond = enumType,
-                                nom = enumType.name,
-                                keyFireBase = getKeyFireBase(enumId, enumType.name)
-                            )
-
-                            convertiseurNoSqlToSqlRepositorys.copyAdd_C_TypeTarificationInfos(
-                                typeData
-                            )
-                        }
+                // Add each default type if it doesn't exist yet
+                defaultTypeTarifications.forEach { typeTarif ->
+                    val existingType = convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(typeTarif.id)
+                    if (existingType == null) {
+                        convertiseurNoSqlToSqlRepositorys.copyAdd_C_TypeTarificationInfos(typeTarif)
                     }
-
-                    convertiseurNoSqlToSqlRepositorys.copyAdd_C_TypeTarificationInfos(newData)
-                    convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
                 }
 
+                // Process any additional type tarifications from the list
                 typeTarificationsList.forEach { typeTarif ->
                     val existingType =
                         convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(typeTarif.infosId)
@@ -385,30 +378,6 @@ class TarificationViewModel(
         }
     }
 
-    private suspend fun createDefaultTypeTarifications() {
-        TypeTarificationEnum.entries.forEach { enumType ->
-            val enumId = enumType.ordinal + 1L
-            val existingType = convertiseurNoSqlToSqlRepositorys.getTypeTarificationInfos(enumId)
-
-            if (existingType == null) {
-                val typeData = C_TypeTarificationInfos(
-                    id = enumId,
-                    entityCorrespond = enumType,
-                    nom = enumType.name,
-                    keyFireBase = getKeyFireBase(enumId, enumType.name)
-                )
-
-                convertiseurNoSqlToSqlRepositorys.copyAdd_C_TypeTarificationInfos(typeData)
-            }
-        }
-
-        convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
-
-        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
-        val productId = _uiState.value.selectedProductId ?: return
-
-        createDefaultTarificationIfNeeded(clientId, productId, 4L)
-    }
 
     fun ajouteSiExistePas_B_ClientsDataBase() {
         val clientId = _uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID ?: return
@@ -427,12 +396,9 @@ class TarificationViewModel(
                 viewModelScope.launch {
                     convertiseurNoSqlToSqlRepositorys.copyAdd_B_ClientInfos(new)
                     convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
-                    createDefaultTypeTarifications()
 
                     val productId = _uiState.value.selectedProductId
-                    if (productId != null) {
-                        createDefaultTarificationIfNeeded(clientId, productId, 4L)
-                    }
+                    createDefaultTarificationIfNeeded(clientId, productId, 4L)
                 }
             } else {
                 val fallbackClient = B_ClientInfos(
@@ -444,22 +410,16 @@ class TarificationViewModel(
                 viewModelScope.launch {
                     convertiseurNoSqlToSqlRepositorys.copyAdd_B_ClientInfos(fallbackClient)
                     convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
-                    createDefaultTypeTarifications()
 
                     val productId = _uiState.value.selectedProductId
-                    if (productId != null) {
-                        createDefaultTarificationIfNeeded(clientId, productId, 4L)
-                    }
+                    createDefaultTarificationIfNeeded(clientId, productId, 4L)
                 }
             }
         } else {
             viewModelScope.launch {
-                createDefaultTypeTarifications()
 
                 val productId = _uiState.value.selectedProductId
-                if (productId != null) {
-                    createDefaultTarificationIfNeeded(clientId, productId, 4L)
-                }
+                createDefaultTarificationIfNeeded(clientId, productId, 4L)
             }
         }
     }
