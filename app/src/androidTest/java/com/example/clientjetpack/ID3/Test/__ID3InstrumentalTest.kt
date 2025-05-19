@@ -3,7 +3,7 @@ package com.example.clientjetpack.ID3.Test
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.testDatasDataBasesInfosSql
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepository
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepositorys
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitNoSqlDataBase
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.AtelieMobile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.testDatasProduitNoSqlDataBase
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -44,7 +44,7 @@ class __ID3InstrumentalTest : KoinTest {
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
     private val infosSqlDataBasesRepository: InfosSqlDataBasesRepository by inject()
-    private val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository by inject()
+    private val convertiseurNoSqlToSqlRepositorys: ConvertiseurNoSqlToSqlRepositorys by inject()
 
     @Before
     fun setup() = runTest(testDispatcher) {
@@ -152,11 +152,11 @@ class __ID3InstrumentalTest : KoinTest {
         assertDataMatchesExpected(testDatasDataBasesInfosSql(), actualData)
 
         // Explicitly force the refresh of NoSQL data
-        convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+        convertiseurNoSqlToSqlRepositorys.refreshNoSqlData()
         testScheduler.advanceUntilIdle()
 
         // Collect and verify NoSQL data
-        val actualDatanoSqlDataFlow = convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
+        val actualDatanoSqlDataFlow = convertiseurNoSqlToSqlRepositorys.noSqlDataFlow.first()
         assertDataMatchesExpectedNoSql(testDatasProduitNoSqlDataBase(), actualDatanoSqlDataFlow)
     }
 
