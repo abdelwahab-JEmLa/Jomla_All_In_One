@@ -75,8 +75,8 @@ private fun LoadingTariffItem(isLoading: Boolean = true) {
 }
 
 data class UiState(
-    var bonAchat: BonAchatT2? = null,
-    var produitInfos: ArticlesBasesStatsTable? = null,
+    var bonAchat: BonAchatT2 =BonAchatT2(),
+    var produitInfos: ArticlesBasesStatsTable=ArticlesBasesStatsTable(),
     var tarificationList: List<D_TarificationInfosT2> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
