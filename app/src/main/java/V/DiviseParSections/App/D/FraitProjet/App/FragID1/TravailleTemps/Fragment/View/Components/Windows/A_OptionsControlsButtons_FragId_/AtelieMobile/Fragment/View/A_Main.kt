@@ -30,8 +30,21 @@ fun FragmentMain(
     viewModel: TarificationViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState
+
+    // Handle null cases safely
+    if (uiState.produitAncienDB == null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Loading product data...")
+        }
+        return
+    }
+
     val clientId = viewModel.ancienRepoOuvertClientId
-    val selectedProductId = uiState.produitAncienDB!!.idArticle.toLong()
+    val selectedProductId = uiState.selectedProductId
 
     // Perform initial setup in the ViewModel
     viewModel.performInitialSetup()

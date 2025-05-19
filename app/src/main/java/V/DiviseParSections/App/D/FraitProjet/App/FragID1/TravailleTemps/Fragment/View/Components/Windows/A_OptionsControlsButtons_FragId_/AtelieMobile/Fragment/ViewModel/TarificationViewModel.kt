@@ -26,7 +26,7 @@ data class UiState(
     val outputModel: ProduitNoSqlDataBase = ProduitNoSqlDataBase(emptyList()),
     var produitAncienDB: ArticlesBasesStatsTable? = null,
     val isLoading: Boolean = false,
-    val selectedProductId: Long? = null,
+    val selectedProductId: Long = 849,
     val error: String? = null,
     val isInitialSetupComplete: Boolean = false,
     val isTarificationTypesProcessed: Boolean = false
@@ -82,12 +82,15 @@ class TarificationViewModel(
     }
 
     private suspend fun getarticlescLeDataOuvertDuParentList(): Unit {
-        val articlescLeDataOuvertDuParentList = appDatabase.articlesBasesStatsModelDao()
+        val articlescLeDataOuvertDuParentList = appDatabase.articlesBasesStatsModelDao() //<--
+        //TODO(1): pk c null 
             .getAll().find {
                 it.idArticle == idProduitAncienRepoOuvert
             }
 
-        _uiState.value = _uiState.value.copy(produitAncienDB = articlescLeDataOuvertDuParentList)
+        _uiState.value = _uiState.value.copy(
+            produitAncienDB = articlescLeDataOuvertDuParentList
+        )
     }
 
     fun performInitialSetup() {
