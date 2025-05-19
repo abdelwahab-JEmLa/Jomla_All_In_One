@@ -82,12 +82,13 @@ fun TariffsButtons(
                 parentTypeTarificationId
             )
 
-            ElevatedCard {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val couleurButton = relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val couleurButton =
+                    relatedTypeInfos?.entityCorrespond?.couleur ?: Color(0xFFF44336)
+                ElevatedCard {
                     FloatingActionButton(
                         onClick = { },
                         modifier = Modifier.size(40.dp),
@@ -100,7 +101,10 @@ fun TariffsButtons(
                             )
                         }
                     }
-                    if (showLabels) {
+                }
+                if (showLabels) {
+                    ElevatedCard {
+
                         Text(
                             "${tariff.valeur}",
                             modifier = Modifier

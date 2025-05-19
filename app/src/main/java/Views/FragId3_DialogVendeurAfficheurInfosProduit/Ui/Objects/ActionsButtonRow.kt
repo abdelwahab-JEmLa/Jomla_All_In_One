@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -81,24 +80,7 @@ fun ActionsButtonRow(
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
     ) {
-        // New pricing history button
-        OutlinedButton(
-            onClick = { showPricingHistoryDialog = true },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
-            )
-        ) {
-            Icon(
-                Icons.Outlined.History,
-                contentDescription = "View pricing history",
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            Text("Pricing History")
-        }
 
-        // Delete/Cancel button
         OutlinedButton(
             onClick = {
                 updateState(
