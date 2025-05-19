@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.TarificationViewModel
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -80,6 +81,7 @@ fun TariffsButtons(
         Modifier.padding(top= 50.dp)
     )
 
+    Log.d("typeTarifications", "$typeTarifications")
 
     if (typeTarifications.isNotEmpty()) {
         typeTarifications.forEach { typeTarification ->
@@ -123,11 +125,14 @@ fun TariffsButtons(
                     ElevatedCard {
                         Text(
                             "${latestTariff.valeur}",
+
                             modifier = Modifier
                                 .background(couleurButton)
                                 .padding(4.dp),
                             color = Color.White
                         )
+
+                        Log.d("{latestTariff.valeur}", "$${latestTariff.valeur}")
                     }
                 }
             }
