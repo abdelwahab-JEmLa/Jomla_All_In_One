@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.Data
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.createTimestamp
 
 fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
-//TODO(1): ici c a marche 
     return ProduitsNoSqlDataBase(
         produits = listOf(
             ProduitsNoSqlDataBase.Produit(

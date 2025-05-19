@@ -59,19 +59,15 @@ class TarificationViewModel(
             // getarticlescLeDataOuvertDuParentList()
 
             convertiseurNoSqlToSqlRepositorys.noSqlDataFlow.collectLatest { noSqlData ->
-                // Create a mutable copy of the produits list
                 val updatedProduits = noSqlData.produits.toMutableList()
 
-                // Find the first product that should be active and update it
                 val activeProduct = updatedProduits.firstOrNull()
                 activeProduct?.itsActiveOne = true
 
-                // Find and update the first client in the active product - FIX: Safe calls throughout
                 if (activeProduct != null && activeProduct.clientAchteurs.isNotEmpty()) {
                     activeProduct.clientAchteurs[0].itsActiveOne = true
                 }
 
-                // Create an updated copy of noSqlData with the modified produits list
                 val updatedNoSqlData = noSqlData.copy(produits = updatedProduits)
 
                 // Update the UI state with the new data
