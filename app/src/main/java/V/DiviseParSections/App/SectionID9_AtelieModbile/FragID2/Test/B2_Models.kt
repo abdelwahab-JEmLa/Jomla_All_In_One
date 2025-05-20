@@ -20,8 +20,8 @@ import java.util.Locale
 
 data class D_TarificationInfosT2(
     @PrimaryKey
-    //Forging IDs
     val id: Long = 0L,
+    //Forging IDs
     val idParentProduit: Long = 0L,
     val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
     val idParentBonAchat: Long = 0L,
@@ -33,6 +33,7 @@ data class D_TarificationInfosT2(
 
     //keyFireBase
     val keyFireBase: String = getKeyFireBase(dataNom = nom),
+
     //Etates Mutable
     val needUpdate: Boolean = true
 )

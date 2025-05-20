@@ -33,10 +33,10 @@ fun testBonAchatT2(): List<BonAchatT2> {
 
 fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
     val idProduit: Long = 4
-
     return listOf(
         D_TarificationInfosT2(
-            id = createTimestamp(
+            id = 1,
+            timestamps = createTimestamp(
                 day = 1,
                 hour = 12,
                 minute = 30
@@ -47,7 +47,9 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 20.99
         ),
         D_TarificationInfosT2(
-            id = createTimestamp(
+            id = 2,
+
+            timestamps = createTimestamp(
                 day = 5,
                 hour = 13,
                 minute = 30
@@ -58,7 +60,9 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 200.50
         ),
         D_TarificationInfosT2(
-            id = createTimestamp(
+            id = 3,
+
+            timestamps = createTimestamp(
                 day = 5,
                 hour = 14,
                 minute = 30
@@ -69,7 +73,9 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 250.75
         ),
         D_TarificationInfosT2(
-            id = createTimestamp(
+            id = 4,
+
+            timestamps = createTimestamp(
                 day = 6,
                 hour = 3,
                 minute = 30
@@ -80,7 +86,9 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 15.25
         ),
         D_TarificationInfosT2(
-            id = createTimestamp(
+            id = 5,
+
+            timestamps = createTimestamp(
                 day = 6,
                 hour = 4,
                 minute = 30
