@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
@@ -61,49 +60,14 @@ fun TariffButtonItem(
                     )
                 }
 
-                // Only show price and adjustment buttons for types that aren't AU_GERANT
                 if (typeTarification != TypeTarificationEnumT2.AU_GERANT) {
-                    // Add '+' button for DEFINI type
                     if (typeTarification == TypeTarificationEnumT2.DEFINI) {
                         IconButton(
                             onClick = {
-                                // Add 5.0 to the price
-                                latestTariffLocalData = latestTariffLocalData.copy(
-                                    prixCurrency = latestTariffLocalData.prixCurrency + 5.0
-                                )
-                                Toast.makeText(context, "Prix augmenté: ${latestTariffLocalData.prixCurrency}", Toast.LENGTH_SHORT).show()
-                            },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Augmenter le prix",
-                                tint = couleurButton
-                            )
-                        }
-                    }
-
-                    // Price display for all non-AU_GERANT types
-                    ElevatedCard {
-                        Text(
-                            prixCurrency,
-                            modifier = Modifier
-                                .background(couleurButton)
-                                .padding(4.dp),
-                            color = Color.White
-                        )
-                    }
-
-                    // Add '-' button for DEFINI type
-                    if (typeTarification == TypeTarificationEnumT2.DEFINI) {
-                        IconButton(
-                            onClick = {
-                                // Subtract 5.0 from the price, but don't go below 0
                                 val newPrice = (latestTariffLocalData.prixCurrency - 5.0).coerceAtLeast(0.0)
                                 latestTariffLocalData = latestTariffLocalData.copy(
                                     prixCurrency = newPrice
                                 )
-                                Toast.makeText(context, "Prix diminué: ${latestTariffLocalData.prixCurrency}", Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier.size(24.dp)
                         ) {
@@ -114,6 +78,25 @@ fun TariffButtonItem(
                             )
                         }
                     }
+
+                    ElevatedCard(
+                        onClick = {
+                            if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                                latestTariffLocalData = latestTariffLocalData.copy(
+                                    prixCurrency = latestTariffLocalData.prixCurrency + 5.0
+                                )
+                            }
+                        }
+                    ) {
+                        Text(
+                            "$prixCurrency +",
+                            modifier = Modifier
+                                .background(couleurButton)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
+
                 }
             }
         }
