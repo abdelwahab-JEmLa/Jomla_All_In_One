@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -16,6 +17,7 @@ fun MainFilter(
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
+    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit,
 ) {
     val filteredProduit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
@@ -40,7 +42,8 @@ fun MainFilter(
     Column(modifier = modifier) {
         MainList(
             tariffs = filteredTariffs,
-            showLabels = showLabels
+            showLabels = showLabels,
+            onClickPrixButton = onClickPrixButton(),
         )
     }
 }

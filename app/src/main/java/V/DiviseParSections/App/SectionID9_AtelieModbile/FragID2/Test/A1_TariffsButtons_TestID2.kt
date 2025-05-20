@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,12 +69,23 @@ fun TariffsButtons_TestID2(
                 )      */
 
                 MainFilter(
-                    produitInfosList = produitInfosList,
                     tarificationList = tarificationList,
                     bonAchatList = bonAchatList,
+                    produitInfosList = produitInfosList,
                     showLabels = showLabels,
                     filterProduitID = filterProductId,
-                    filterBonID = filterBonId
+                    filterBonID = filterBonId,
+                    onClickPrixButton = {
+                        {
+                            { typeTarification, latestTariffLocalData, context ->
+                                {
+                                    val typeName = typeTarification.name
+                                    val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
                 )
             }
         } else {

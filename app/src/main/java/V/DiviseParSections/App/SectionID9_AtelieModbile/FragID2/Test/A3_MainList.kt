@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -12,7 +13,8 @@ import androidx.compose.ui.unit.dp
 fun MainList(
     tariffs: List<D_TarificationInfosT2>,
     showLabels: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit,
 ) {
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }
@@ -24,7 +26,8 @@ fun MainList(
             TariffButtonItem(
                 typeTarification = type,
                 tariffs = typeTariffs,
-                showLabels = showLabels
+                showLabels = showLabels,
+                onClickPrixButton = onClickPrixButton()
             )
             Spacer(modifier = Modifier.height(4.dp))
         }

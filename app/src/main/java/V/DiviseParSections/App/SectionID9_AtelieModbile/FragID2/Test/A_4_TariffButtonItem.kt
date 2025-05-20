@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
-import android.widget.Toast
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -28,7 +28,8 @@ import androidx.compose.ui.unit.dp
 fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
     tariffs: List<D_TarificationInfosT2>,
-    showLabels: Boolean
+    showLabels: Boolean,
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
@@ -88,8 +89,10 @@ fun TariffButtonItem(
                             }
                         }
                     ) {
+                        val pls =if (typeTarification == TypeTarificationEnumT2.DEFINI)
+                            " +" else ""
                         Text(
-                            "$prixCurrency +",
+                            "$prixCurrency$pls",
                             modifier = Modifier
                                 .background(couleurButton)
                                 .padding(4.dp),
@@ -102,11 +105,7 @@ fun TariffButtonItem(
         }
 
         FloatingActionButton(
-            onClick = {
-                val typeName = typeTarification.name
-                val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            },
+            onClick = onClickPrixButton(typeTarification, latestTariffLocalData, context),
             modifier = Modifier.size(40.dp),
             containerColor = couleurButton
         ) {
