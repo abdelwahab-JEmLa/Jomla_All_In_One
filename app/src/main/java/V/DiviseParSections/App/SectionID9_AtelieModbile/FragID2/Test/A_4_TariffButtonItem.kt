@@ -69,7 +69,7 @@ fun TariffButtonItem(
                                     prixCurrency = newPrice
                                 )
                             },
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(16.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Remove,
