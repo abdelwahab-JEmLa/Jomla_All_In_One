@@ -1,12 +1,14 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
+
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.Function.getStrDateTime
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.PrimaryKey
@@ -19,14 +21,19 @@ import java.util.Locale
 
 data class D_TarificationInfosT2(
     @PrimaryKey
+    //Forging IDs
     val vidTimestamp: Long = 0L,
-    val nom: String= getStrDateTime(vidTimestamp),
-    val keyFireBase: String = getKeyFireBase(dataNom=nom),
-    val idProduit: Long = 0L,
+    val idParentProduit: Long = 0L,
     val idParentBonAchat: Long = 0L,
-    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.ParBenifice,
-    val prixCurrency: Double = 0.0,
+    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
 
+    //Base Infos
+    val prixCurrency: Double = 0.0,
+    val nom: String = getStrDateTime(vidTimestamp),
+
+    //keyFireBase
+    val keyFireBase: String = getKeyFireBase(dataNom = nom),
+    //Etates Mutable
     val needUpdate: Boolean = true
 )
 
@@ -41,11 +48,16 @@ fun getKeyFireBase(
     }
 }
 
-enum class TypeTarificationEnumT2(val iconVector: ImageVector? = null, val couleur: Color = Color.White) {
-    ParBenifice(Icons.Filled.ShoppingCart, Color(0xFF4CAF50)),
-    Historique(Icons.Filled.History, Color(0xFF2196F3)),
-    LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800)),
-    PRIX_BASE(Icons.Filled.AttachMoney, Color(0xFFF44336))
+enum class TypeTarificationEnumT2(
+    val iconVector: ImageVector? = null,
+    val couleur: Color = Color.White,
+    val nomArabe: String ="",
+) {
+    LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800),"فائدة محققة مع لاضا كثير من الزيناء"),
+    AU_GERANT(Icons.Filled.Done, Color(0xFF4CAF50),"التقدير للمدير "),
+    DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
+    Historique(Icons.Filled.History, Color(0xFF2196F3),"السعر الذي وصلنا له"),
+    PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة ")
 }
 
 fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {

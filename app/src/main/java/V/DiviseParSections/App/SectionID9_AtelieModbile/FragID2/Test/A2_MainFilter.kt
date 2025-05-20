@@ -27,7 +27,7 @@ fun MainFilter(
 
     val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter { tariff ->
-            tariff.idProduit == filteredProduit.vid &&
+            tariff.idParentProduit == filteredProduit.vid &&
                     tariff.idParentBonAchat == filteredBonAchat.vid
         }
     }
