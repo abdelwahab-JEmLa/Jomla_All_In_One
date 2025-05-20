@@ -49,104 +49,6 @@ fun getKeyFireBase(
     }
 }
 
-fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
-    val idProduit1: Long = 4
-    val idProduit2: Long = 1
-    return listOf(
-        D_TarificationInfosT2(
-            id = 1,
-            timestamps = createTimestamp(
-                day = 1,
-                hour = 12,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-            prixCurrency = 185.99
-        ),
-        D_TarificationInfosT2(
-            id = 2,
-
-            timestamps = createTimestamp(
-                day = 5,
-                hour = 13,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 190.50
-        ),
-        D_TarificationInfosT2(
-            id = 3,
-
-            timestamps = createTimestamp(
-                day = 5,
-                hour = 14,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
-            prixCurrency = 195.75
-        ),
-        D_TarificationInfosT2(
-            id = 4,
-
-            timestamps = createTimestamp(
-                day = 6,
-                hour = 3,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
-            prixCurrency = 00.00
-        ),
-        D_TarificationInfosT2(
-            id = 5,
-
-            timestamps = createTimestamp(
-                day = 6,
-                hour = 4,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-            prixCurrency = 200.00
-        ),
-
-        D_TarificationInfosT2(
-            id = 6,
-
-            timestamps = createTimestamp(
-                day = 6,
-                hour = 4,
-                minute = 30
-            ),
-            idParentProduit = idProduit2,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-            prixCurrency = 14.80
-        )
-        ,
-        D_TarificationInfosT2(
-            id = 7,
-
-            timestamps = createTimestamp(
-                day = 6,
-                hour = 4,
-                minute = 30
-            ),
-            idParentProduit = idProduit2,
-            idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-            prixCurrency = 14.80
-        )
-    )
-}
 
 enum class TypeTarificationEnumT2(
     val iconVector: ImageVector? = null,
@@ -154,8 +56,8 @@ enum class TypeTarificationEnumT2(
     val nomArabe: String ="",
 ) {
     LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800),"فائدة محققة مع لاضا كثير من الزيناء"),
-    AU_GERANT(Icons.Filled.Done, Color(0xFF4CAF50),"التقدير للمدير "),
     DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
+    AU_GERANT(Icons.Filled.Done, Color(0xFF4CAF50),"التقدير للمدير "),
     Historique(Icons.Filled.History, Color(0xFF2196F3),"السعر الذي وصلنا له"),
     PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة ")
 }
