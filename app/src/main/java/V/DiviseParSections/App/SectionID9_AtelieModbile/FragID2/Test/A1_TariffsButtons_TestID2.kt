@@ -47,62 +47,65 @@ fun TariffsButtons_TestID2(
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        if (shouldShowLoading) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator(
-                    progress = { uiState.loadingProgress },
-                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                )
-                Text(
-                    text = "Loading tariffs... ${(uiState.loadingProgress * 100).toInt()}%",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+    if (afficheButtons) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            if (shouldShowLoading) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(
+                        progress = { uiState.loadingProgress },
+                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                    )
+                    Text(
+                        text = "Loading tariffs... ${(uiState.loadingProgress * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
 
-            /*    Text(
-                    text = "Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )      */
+                    /*    Text(
+                            text = "Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )      */
 
-                MainFilter(
-                    tarificationList = tarificationList,
-                    bonAchatList = bonAchatList,
-                    produitInfosList = produitInfosList,
-                    showLabels = showLabels,
-                    filterProduitID = filterProductId,
-                    filterBonID = filterBonId,
-                    onClickPrixButton = {
-                        {
-                            { typeTarification, latestTariffLocalData, context ->
-                                {
-                                    val typeName = typeTarification.name
-                                    val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
-                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                                    afficheButtons=false
+                    MainFilter(
+                        tarificationList = tarificationList,
+                        bonAchatList = bonAchatList,
+                        produitInfosList = produitInfosList,
+                        showLabels = showLabels,
+                        filterProduitID = filterProductId,
+                        filterBonID = filterBonId,
+                        onClickPrixButton = {
+                            {
+                                { typeTarification, latestTariffLocalData, context ->
+                                    {
+                                        val typeName = typeTarification.name
+                                        val message =
+                                            "$typeName: ${latestTariffLocalData.prixCurrency}"
+                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                        afficheButtons = false
+                                    }
                                 }
                             }
                         }
-                    }
+                    )
+                }
+            } else {
+                Text(
+                    text = "Waiting for data... Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.Center),
+                    textAlign = TextAlign.Center
                 )
             }
-        } else {
-            Text(
-                text = "Waiting for data... Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.Center),
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
