@@ -15,21 +15,21 @@ import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
 import com.google.firebase.database.IgnoreExtraProperties
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 data class D_TarificationInfosT2(
     @PrimaryKey
     //Forging IDs
-    val vidTimestamp: Long = 0L,
+    val id: Long = 0L,
     val idParentProduit: Long = 0L,
-    val idParentBonAchat: Long = 0L,
     val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
+    val idParentBonAchat: Long = 0L,
 
     //Base Infos
     val prixCurrency: Double = 0.0,
-    val nom: String = getStrDateTime(vidTimestamp),
+    val timestamps: Long = 0,
+    val nom: String = getStrDateTime(id),
 
     //keyFireBase
     val keyFireBase: String = getKeyFireBase(dataNom = nom),
@@ -58,13 +58,6 @@ enum class TypeTarificationEnumT2(
     DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
     Historique(Icons.Filled.History, Color(0xFF2196F3),"السعر الذي وصلنا له"),
     PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة ")
-}
-
-fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {
-    val calendar = Calendar.getInstance()
-    calendar.set(year, month - 1, day, hour, minute, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.timeInMillis
 }
 
 data class BonAchatT2(

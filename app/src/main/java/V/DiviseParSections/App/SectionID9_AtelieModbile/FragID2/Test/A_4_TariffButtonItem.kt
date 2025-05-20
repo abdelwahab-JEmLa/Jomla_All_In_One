@@ -23,7 +23,7 @@ fun TariffButtonItem(
     tariffs: List<D_TarificationInfosT2>,
     showLabels: Boolean
 ) {
-    val latestTariff = tariffs.maxByOrNull { it.vidTimestamp }
+    val latestTariff = tariffs.maxByOrNull { it.id }
 
     if (latestTariff == null) return
 
