@@ -34,6 +34,20 @@ fun TariffButtonItem(
         val context = LocalContext.current
         val couleurButton = typeTarification.couleur
 
+
+        if (showLabels) {
+            ElevatedCard {
+                val typeName = typeTarification.nomArabe
+
+                Text(
+                    "${latestTariff.prixCurrency} $typeName",
+                    modifier = Modifier
+                        .background(couleurButton)
+                        .padding(4.dp),
+                    color = Color.White
+                )
+            }
+        }
         FloatingActionButton(
             onClick = {
                 val typeName = typeTarification.name
@@ -51,18 +65,5 @@ fun TariffButtonItem(
             }
         }
 
-        if (showLabels) {
-            ElevatedCard {
-                val typeName = typeTarification.name
-
-                Text(
-                    "${latestTariff.prixCurrency} $typeName",
-                    modifier = Modifier
-                        .background(couleurButton)
-                        .padding(4.dp),
-                    color = Color.White
-                )
-            }
-        }
     }
 }
