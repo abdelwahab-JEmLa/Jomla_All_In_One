@@ -16,6 +16,7 @@ fun MainList(
 ) {
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }
+            .toSortedMap(compareBy { it.ordinal })
     }
 
     Column(modifier = modifier) {
