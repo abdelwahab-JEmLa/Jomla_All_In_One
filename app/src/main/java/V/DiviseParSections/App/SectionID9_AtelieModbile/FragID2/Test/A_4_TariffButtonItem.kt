@@ -11,6 +11,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,19 +27,21 @@ fun TariffButtonItem(
     showLabels: Boolean
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
-
     if (latestTariff == null) return
+
+    val typeTarificationCompos by remember { mutableStateOf(typeTarification) }
+    val latestTariffCompos by remember { mutableStateOf(latestTariff) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         val context = LocalContext.current
-        val couleurButton = typeTarification.couleur
+        val couleurButton = typeTarificationCompos.couleur
 
 
         if (showLabels) {
-            val typeName = typeTarification.nomArabe
+            val typeName = typeTarificationCompos.nomArabe
 
             val prixCurrency = "${latestTariff.prixCurrency} "
             Row {
@@ -49,7 +54,7 @@ fun TariffButtonItem(
                         color = Color.White
                     )
                 }
-                if (typeTarification!=TypeTarificationEnumT2.AU_GERANT ) {
+                if (typeTarificationCompos!=TypeTarificationEnumT2.AU_GERANT ) {
                     ElevatedCard {
                         Text(
                             prixCurrency,
@@ -64,14 +69,14 @@ fun TariffButtonItem(
         }
         FloatingActionButton(
             onClick = {
-                val typeName = typeTarification.name
+                val typeName = typeTarificationCompos.name
                 val message = "$typeName: ${latestTariff.prixCurrency}"
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.size(40.dp),
             containerColor = couleurButton
         ) {
-            typeTarification.iconVector?.let { iconVector ->
+            typeTarificationCompos.iconVector?.let { iconVector ->
                 Icon(
                     imageVector = iconVector,
                     contentDescription = null
