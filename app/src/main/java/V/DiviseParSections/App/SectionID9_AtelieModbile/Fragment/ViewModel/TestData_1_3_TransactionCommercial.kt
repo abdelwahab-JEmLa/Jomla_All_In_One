@@ -7,7 +7,7 @@ import java.util.Locale
 
 fun testData_1_3_TransactionCommercial(): _1_3_TransactionCommercial {
     return _1_3_TransactionCommercial(
-        vid = 1747588447974L, // Using timestamp from JSON
+        vid = 1747588447974L,
         clientAcheteurID = 4L, // Using client ID from JSON
         nomClientConcerned = "abdelhamid", // Using client name from JSON
         timestamps = System.currentTimeMillis(),
