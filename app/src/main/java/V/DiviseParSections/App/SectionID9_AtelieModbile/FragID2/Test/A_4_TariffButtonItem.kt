@@ -36,16 +36,28 @@ fun TariffButtonItem(
 
 
         if (showLabels) {
-            ElevatedCard {
-                val typeName = typeTarification.nomArabe
+            val typeName = typeTarification.nomArabe
 
-                Text(
-                    "${latestTariff.prixCurrency} $typeName",
-                    modifier = Modifier
-                        .background(couleurButton)
-                        .padding(4.dp),
-                    color = Color.White
-                )
+            val prixCurrency = "${latestTariff.prixCurrency} "
+            Row {
+                ElevatedCard {
+                    Text(
+                        typeName,
+                        modifier = Modifier
+                            .background(couleurButton)
+                            .padding(4.dp),
+                        color = Color.White
+                    )
+                }
+                ElevatedCard {
+                    Text(
+                        prixCurrency,
+                        modifier = Modifier
+                            .background(couleurButton)
+                            .padding(4.dp),
+                        color = Color.White
+                    )
+                }
             }
         }
         FloatingActionButton(
@@ -64,6 +76,5 @@ fun TariffButtonItem(
                 )
             }
         }
-
     }
 }
