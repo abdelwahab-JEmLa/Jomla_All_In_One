@@ -49,14 +49,16 @@ fun TariffButtonItem(
                         color = Color.White
                     )
                 }
-                ElevatedCard {
-                    Text(
-                        prixCurrency,
-                        modifier = Modifier
-                            .background(couleurButton)
-                            .padding(4.dp),
-                        color = Color.White
-                    )
+                if (typeTarification!=TypeTarificationEnumT2.AU_GERANT ) {
+                    ElevatedCard {
+                        Text(
+                            prixCurrency,
+                            modifier = Modifier
+                                .background(couleurButton)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
