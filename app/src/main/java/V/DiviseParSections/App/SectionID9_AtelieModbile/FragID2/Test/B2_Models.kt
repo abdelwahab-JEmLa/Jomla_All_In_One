@@ -63,7 +63,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idParentProduit = idProduit1,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-            prixCurrency = 20.99
+            prixCurrency = 185.99
         ),
         D_TarificationInfosT2(
             id = 2,
@@ -76,7 +76,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idParentProduit = idProduit1,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 200.50
+            prixCurrency = 190.50
         ),
         D_TarificationInfosT2(
             id = 3,
@@ -89,7 +89,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idParentProduit = idProduit1,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
-            prixCurrency = 250.75
+            prixCurrency = 195.75
         ),
         D_TarificationInfosT2(
             id = 4,
@@ -102,7 +102,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idParentProduit = idProduit1,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
-            prixCurrency = 15.25
+            prixCurrency = 00.00
         ),
         D_TarificationInfosT2(
             id = 5,
@@ -115,7 +115,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             idParentProduit = idProduit1,
             idParentBonAchat = testBonAchatT2()[0].vid,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-            prixCurrency = 14.80
+            prixCurrency = 200.00
         ),
 
         D_TarificationInfosT2(
@@ -128,7 +128,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             ),
             idParentProduit = idProduit2,
             idParentBonAchat = testBonAchatT2()[0].vid,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
             prixCurrency = 14.80
         )
         ,
