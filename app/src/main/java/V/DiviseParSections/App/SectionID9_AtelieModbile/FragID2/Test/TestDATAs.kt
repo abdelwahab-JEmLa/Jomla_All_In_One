@@ -10,7 +10,11 @@ fun testBonAchatT2(): List<BonAchatT2> {
             vid = 1,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
-            timestamps = System.currentTimeMillis(),
+            timestamps =  createTimestamp(
+                day = 4,
+                hour = 13,
+                minute = 30
+            ),
             heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
             heurFinInString = "Non Defini",
             cActive = true,
@@ -21,7 +25,11 @@ fun testBonAchatT2(): List<BonAchatT2> {
             vid = 2,
             clientAcheteurID = 5L,
             nomClientConcerned = "sara",
-            timestamps = System.currentTimeMillis() - 86400000, // Yesterday
+            timestamps =  createTimestamp(
+                day = 5,
+                hour = 13,
+                minute = 30
+            ),
             heurDebutInString = "14:30",
             heurFinInString = "Non Defini",
             cActive = true,
