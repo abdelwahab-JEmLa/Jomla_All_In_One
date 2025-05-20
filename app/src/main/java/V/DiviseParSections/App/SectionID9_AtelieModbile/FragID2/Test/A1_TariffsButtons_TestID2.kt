@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +30,8 @@ fun TariffsButtons_TestID2(
     filterProductId: Int = 4,
     filterBonId: Long = 1,
 ) {
+    var afficheButtons by remember { mutableStateOf(true) }
+
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tarificationList
@@ -82,6 +87,7 @@ fun TariffsButtons_TestID2(
                                     val typeName = typeTarification.name
                                     val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
                                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                    afficheButtons=false
                                 }
                             }
                         }

@@ -130,6 +130,7 @@ fun PressistatntMainActivityButtons(
                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
                     enabled = false
                 )
+
                 TariffsButtons_TestID2(
                     showLabels = showLabels,
                 )
