@@ -13,7 +13,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
-            // Log incoming data IDs
             Log.d("RoomOperationsHandler", "Incoming tarifications with IDs: ${data.map { it.id }}")
 
             val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(data)
