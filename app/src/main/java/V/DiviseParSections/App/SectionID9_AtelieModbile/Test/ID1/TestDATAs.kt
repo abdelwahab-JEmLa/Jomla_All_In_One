@@ -40,13 +40,13 @@ fun testBonAchatT2(): List<C3_BonAchate> {
     )
 }
 
-fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
+fun testD_TarificationInfosT2(): List<D1_Tariff> {
     val idProduit1: Long = 4
     val idProduit2: Long = 1
     val idParentBonAchat : Long= 1
 
     return listOf(
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 1,
             timestamps = createTimestamp(
                 day = 1,
@@ -58,7 +58,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
             prixCurrency = 185.99
         ),
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 2,
 
             timestamps = createTimestamp(
@@ -71,7 +71,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
             prixCurrency = 190.50
         ),
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 3,
 
             timestamps = createTimestamp(
@@ -84,7 +84,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
             prixCurrency = 195.75
         ),
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 4,
 
             timestamps = createTimestamp(
@@ -97,7 +97,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
             prixCurrency = 00.00
         ),
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 5,
 
             timestamps = createTimestamp(
@@ -111,7 +111,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 200.00
         ),
 
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 6,
 
             timestamps = createTimestamp(
@@ -125,7 +125,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
             prixCurrency = 14.80
         )
         ,
-        D_TarificationInfosT2(
+        D1_Tariff(
             id = 7,
 
             timestamps = createTimestamp(

@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
-    tariffs: List<D_TarificationInfosT2>,
+    tariffs: List<D1_Tariff>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit
+    onClickPrixButton: (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return

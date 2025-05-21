@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.PrimaryKey
 
-data class D_TarificationInfosT2(
+data class D1_Tariff(
     @PrimaryKey
     val id: Long = 0L,
     //Forging IDs
