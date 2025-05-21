@@ -42,6 +42,8 @@ fun testBonAchatT2(): List<BonAchatT2> {
 fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
     val idProduit1: Long = 4
     val idProduit2: Long = 1
+    val idParentBonAchat = testBonAchatT2()[0].vid
+
     return listOf(
         D_TarificationInfosT2(
             id = 1,
@@ -51,7 +53,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
             prixCurrency = 185.99
         ),
@@ -64,7 +66,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
             prixCurrency = 190.50
         ),
@@ -77,7 +79,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
             prixCurrency = 195.75
         ),
@@ -90,7 +92,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
             prixCurrency = 00.00
         ),
@@ -103,7 +105,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit1,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
             prixCurrency = 200.00
         ),
@@ -117,7 +119,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit2,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
             prixCurrency = 14.80
         )
@@ -131,7 +133,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
                 minute = 30
             ),
             idParentProduit = idProduit2,
-            idParentBonAchat = testBonAchatT2()[0].vid,
+            idParentBonAchat = idParentBonAchat,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
             prixCurrency = 14.80
         )
