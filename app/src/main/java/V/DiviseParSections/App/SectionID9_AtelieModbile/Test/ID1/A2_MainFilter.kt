@@ -11,14 +11,14 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
-    tarificationList: List<D1_Tariff>,
+    tarificationList: List<D_TarificationInfosT2>,
     bonAchatList: List<C3_BonAchate>,
     produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
-    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit,
+    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit,
 ) {
     val filteredProduit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()

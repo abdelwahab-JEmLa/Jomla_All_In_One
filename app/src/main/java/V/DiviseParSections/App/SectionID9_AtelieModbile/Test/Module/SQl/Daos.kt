@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D1_Tariff
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -84,27 +84,27 @@ interface C_TypeTarificationInfosDao {
 
 @Dao
 interface D_TarificationInfosDao {
-    @Query("SELECT * FROM D1_Tariff")
-    fun getAllTarifications(): Flow<List<D1_Tariff>>
+    @Query("SELECT * FROM D_TarificationInfos")
+    fun getAllTarifications(): Flow<List<D_TarificationInfos>>
 
-    @Query("SELECT * FROM D1_Tariff")
-    suspend fun getAllTarificationsSync(): List<D1_Tariff>
+    @Query("SELECT * FROM D_TarificationInfos")
+    suspend fun getAllTarificationsSync(): List<D_TarificationInfos>
 
-    @Query("SELECT * FROM D1_Tariff WHERE vidTimestamp = :id")
-    suspend fun getTarificationById(id: Long): D1_Tariff?
+    @Query("SELECT * FROM D_TarificationInfos WHERE vidTimestamp = :id")
+    suspend fun getTarificationById(id: Long): D_TarificationInfos?
 
-    @Query("SELECT * FROM D1_Tariff WHERE idProduit = :produitId AND idClient = :clientId")
-    suspend fun getTarificationsByProduitAndClient(produitId: Long, clientId: Long): List<D1_Tariff>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(tarification: D1_Tariff)
+    @Query("SELECT * FROM D_TarificationInfos WHERE idProduit = :produitId AND idClient = :clientId")
+    suspend fun getTarificationsByProduitAndClient(produitId: Long, clientId: Long): List<D_TarificationInfos>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(tarifications: List<D1_Tariff>)
+    suspend fun insert(tarification: D_TarificationInfos)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(tarifications: List<D_TarificationInfos>)
 
     @Update
-    suspend fun update(tarification: D1_Tariff)
+    suspend fun update(tarification: D_TarificationInfos)
 
-    @Query("DELETE FROM D1_Tariff")
+    @Query("DELETE FROM D_TarificationInfos")
     suspend fun deleteAll()
 }

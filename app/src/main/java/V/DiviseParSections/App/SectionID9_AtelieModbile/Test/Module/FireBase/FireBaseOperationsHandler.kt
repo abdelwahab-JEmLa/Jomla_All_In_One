@@ -60,8 +60,8 @@ class FireBaseOperationsHandler(
             updates[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] = firebaseData[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] as Any
         }
 
-        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseD_1Tariff)) {
-            updates[dataBasesInfosSql.refFireBaseD_1Tariff] = firebaseData[dataBasesInfosSql.refFireBaseD_1Tariff] as Any
+        if (firebaseData.containsKey(dataBasesInfosSql.refFireBaseD_TarificationInfos)) {
+            updates[dataBasesInfosSql.refFireBaseD_TarificationInfos] = firebaseData[dataBasesInfosSql.refFireBaseD_TarificationInfos] as Any
         }
 
         if (updates.isEmpty()) {

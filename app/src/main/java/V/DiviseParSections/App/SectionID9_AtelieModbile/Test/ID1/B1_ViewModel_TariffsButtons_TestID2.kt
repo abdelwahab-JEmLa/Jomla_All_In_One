@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
-    var tariffsList: List<D1_Tariff> = emptyList(),
+    var tariffsList: List<D_TarificationInfosT2> = emptyList(),
     val loadingProgress: Float = 0f,
     val error: String? = null,
 )

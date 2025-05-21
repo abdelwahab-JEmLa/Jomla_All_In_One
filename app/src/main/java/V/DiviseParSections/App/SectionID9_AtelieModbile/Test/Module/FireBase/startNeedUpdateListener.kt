@@ -71,7 +71,7 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
         }
     }
 
-    val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_1Tariff)
+    val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
     if (tarifsSnapshot.exists()) {
         for (tarifSnap in tarifsSnapshot.children) {
             val needUpdateSnapshot = tarifSnap.child("needUpdate")
