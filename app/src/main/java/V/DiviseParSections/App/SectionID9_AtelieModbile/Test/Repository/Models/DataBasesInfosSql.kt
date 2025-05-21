@@ -15,7 +15,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 data class DataBasesInfosSql(
-
     val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
     val refFireBaseD_TarificationInfos: String="D_TarificationInfos",
 
