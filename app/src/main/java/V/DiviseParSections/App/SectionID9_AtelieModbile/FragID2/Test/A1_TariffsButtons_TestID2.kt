@@ -47,7 +47,7 @@ fun TariffsButtons_TestID2(
     }
 
     val shouldShowLoading = uiState.loadingProgress < 1f
-   // Text("${uiState.bonAchatList.size}")
+
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
@@ -68,12 +68,6 @@ fun TariffsButtons_TestID2(
                 }
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-
-                    /*    Text(
-                            text = "Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )      */
 
                     MainFilter(
                         tarificationList = tarificationList,
