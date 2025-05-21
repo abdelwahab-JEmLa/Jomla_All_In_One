@@ -22,7 +22,6 @@ class InfosSqlDataBasesRepository(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
-
     private var modelList: List<DataBasesInfosSql>
         get() = _modelListFlow.value
         set(value) {
@@ -40,7 +39,9 @@ class InfosSqlDataBasesRepository(
                             it.ifEmpty {
                                 testD_TarificationInfosT2()
                             }
-                        }?.d_TarificationInfos ?: testD_TarificationInfosT2()
+                        }
+                            ?.d_TarificationInfos
+                            ?: testD_TarificationInfosT2()
 
                     upsertAllRoomEtFireBase(dataTestList) { mapData ->
                         Log.d(
