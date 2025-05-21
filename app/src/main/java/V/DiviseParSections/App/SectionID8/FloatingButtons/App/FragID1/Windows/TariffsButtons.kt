@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.TarificationViewModel
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background

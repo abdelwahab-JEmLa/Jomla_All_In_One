@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ID4.Test.Archive
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.TarificationViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

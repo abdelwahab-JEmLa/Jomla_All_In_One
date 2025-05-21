@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 // Add these imports at the top of your file
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.media.MediaPlayer

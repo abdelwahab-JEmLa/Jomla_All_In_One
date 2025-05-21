@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ID3.Test
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 

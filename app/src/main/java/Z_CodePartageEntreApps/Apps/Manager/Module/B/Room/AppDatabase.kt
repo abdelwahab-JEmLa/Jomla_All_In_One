@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
@@ -12,14 +12,14 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.MessageVocaleDao
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.SQl.A_ProduitInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.SQl.B_ClientInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.SQl.C_TypeTarificationInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.SQl.D_TarificationInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.A_ProduitInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.B_ClientInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.C_TypeTarificationInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.D_TarificationInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
