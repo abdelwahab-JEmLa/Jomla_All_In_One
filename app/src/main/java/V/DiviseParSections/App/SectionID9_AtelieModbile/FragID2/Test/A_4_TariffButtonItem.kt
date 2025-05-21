@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,55 +46,7 @@ fun TariffButtonItem(
     val context = LocalContext.current
 
     // Special layout for GERANT type
-    if (typeTarification == TypeTarificationEnumT2.AU_GERANT) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            // Vertical text for AU_GERANT
-            if (showLabels) {
-                ElevatedCard {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .background(typeTarification.couleur)
-                            .padding(vertical = 4.dp, horizontal = 4.dp)
-                            .height(185.dp)
-                            .width(30.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            // First text
-                            val fontSize = 12.sp
-                            Text(
-                                text = "للمدير",
-                                maxLines = 1,
-                                fontSize = fontSize,
-                                modifier = Modifier.rotate(90f),
-                                color = Color.White
-                            )
-
-                            // Small space between texts
-                            androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(15.dp))
-
-                            // Second text
-                            Text(
-                                text = "التقدير",
-                                maxLines = 1,
-                                fontSize = fontSize,
-                                modifier = Modifier.rotate(90f),
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        return
-    }
+    GerantButton(typeTarification, showLabels)
 
     // Regular layout for other types
     Row(
@@ -172,6 +125,61 @@ fun TariffButtonItem(
                     imageVector = iconVector,
                     contentDescription = null
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GerantButton(
+    typeTarification: TypeTarificationEnumT2,
+    showLabels: Boolean
+) {
+    if (typeTarification == TypeTarificationEnumT2.AU_GERANT) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Vertical text for AU_GERANT
+            if (showLabels) {
+                ElevatedCard {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .background(typeTarification.couleur)
+                            .padding(vertical = 4.dp, horizontal = 4.dp)
+                            .height(185.dp)
+                            .width(30.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxHeight(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // First text
+                            val fontSize = 12.sp
+                            Text(
+                                text = "للمدير",
+                                maxLines = 1,
+                                fontSize = fontSize,
+                                modifier = Modifier.rotate(90f),
+                                color = Color.White
+                            )
+
+                            // Small space between texts
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            // Second text
+                            Text(
+                                text = "التقدير",
+                                maxLines = 1,
+                                fontSize = fontSize,
+                                modifier = Modifier.rotate(90f),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }
