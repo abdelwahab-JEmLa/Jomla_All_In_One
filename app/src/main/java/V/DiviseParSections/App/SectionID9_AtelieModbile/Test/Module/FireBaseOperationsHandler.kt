@@ -31,7 +31,7 @@ class FireBaseOperationsHandler(
     var needUpdateListener: ValueEventListener? = null
 
 
-    suspend fun isDatabaseEmptyAsync(onDataEstEmpty: () -> Unit) =
+    suspend fun isDatabaseEmpty(onDataEstEmpty: () -> Unit) =
         suspendCancellableCoroutine { continuation ->
             Log.d("FireBaseOperationsHandler", "Checking if Firebase database is empty")
             isDatabaseEmpty { isEmpty ->

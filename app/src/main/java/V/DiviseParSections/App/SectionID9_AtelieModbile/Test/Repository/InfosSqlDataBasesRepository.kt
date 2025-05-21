@@ -7,7 +7,6 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,8 +16,8 @@ import kotlinx.coroutines.withContext
 
 class InfosSqlDataBasesRepository(
     val database: AppDatabase,
-    private val fireBaseOperationsHandler: FireBaseOperationsHandler,
-    private val roomOperationsHandler: RoomOperationsHandler
+    private val fireBase: FireBaseOperationsHandler,
+    private val room: RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -33,52 +32,53 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync {
+            fireBase.isDatabaseEmpty {
                 coroutineScope.launch {
-                    upsertAllAndReturnListIdToData(testD_TarificationInfosT2()) { mapData ->
-                        Log.d("Repository", "Added with keys: ${mapData.keys}")
+                    val dataTestList = testD_TarificationInfosT2()
+
+                    upsertAllRoomEtFireBase(dataTestList) { mapData ->
+                        Log.d(
+                            "Repository", "Added with keys: ${mapData.keys}"
+                        )
                     }
-                    delay(1000)
                 }
             }
 
-            if (!isEmpty) {
-                fireBaseOperationsHandler.getDataFromFirebase() { tarificationsList ->
-                    upsertAllAndReturnListIdToData(tarificationsList) { mapData ->
-                        // Log all IDs from the returned map
-                        val idsStr = mapData.keys.joinToString(", ")
+            fireBase.getDataFromFirebase { tarificationsList ->
+                upsertAllRoomEtFireBase(tarificationsList) { mapData ->
+                    // Log all IDs from the returned map
+                    val idsStr = mapData.keys.joinToString(", ")
+                    Log.d(
+                        "Repository",
+                        "Successfully processed tarification IDs from Firebase: $idsStr"
+                    )
+
+                    // If you need additional details about each tarification
+                    mapData.forEach { (id, tarif) ->
                         Log.d(
                             "Repository",
-                            "Successfully processed tarification IDs from Firebase: $idsStr"
+                            "Tarification $id: Name=${tarif.nom}, Price=${tarif.prixCurrency}, Type=${tarif.typeTarificationEnumT2Correspond}"
                         )
-
-                        // If you need additional details about each tarification
-                        mapData.forEach { (id, tarif) ->
-                            Log.d(
-                                "Repository",
-                                "Tarification $id: Name=${tarif.nom}, Price=${tarif.prixCurrency}, Type=${tarif.typeTarificationEnumT2Correspond}"
-                            )
-                        }
                     }
                 }
             }
 
             collectRoom()
-            fireBaseOperationsHandler.startNeedUpdateListener()
+            fireBase.startNeedUpdateListener()
         }
     }
 
-    private fun upsertAllAndReturnListIdToData(
+    private fun upsertAllRoomEtFireBase(
         dataList: List<D_TarificationInfos>,
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit = {}
     ) {
         try {
             coroutineScope.launch(Dispatchers.IO) {
                 try {
-                    roomOperationsHandler.upsertAllAndReturnListIdToData(dataList) { mapData ->
+                    room.upsertAllAndReturnListIdToData(dataList) { mapData ->
                         coroutineScope.launch {
                             try {
-                                fireBaseOperationsHandler.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
+                                fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
                                     Log.d(
                                         "Repository",
                                         "Firebase entries created with keys: ${firebaseMap.keys}"
@@ -100,11 +100,11 @@ class InfosSqlDataBasesRepository(
     }
 
     private fun deleteTarificationInfosNodeFromFirebase() {
-        fireBaseOperationsHandler.deleteTarificationInfosNode()
+        fireBase.deleteTarificationInfosNode()
     }
 
     fun cleanup() {
-        fireBaseOperationsHandler.stopNeedUpdateListener()
+        fireBase.stopNeedUpdateListener()
     }
 
     private fun collectRoom() {
@@ -137,7 +137,7 @@ class InfosSqlDataBasesRepository(
     ) {
         withContext(Dispatchers.IO) {
             try {
-                roomOperationsHandler.insertAll(data)
+                room.insertAll(data)
                 collectLatestData()
             } catch (e: Exception) {
                 Log.e("Repository", "Error in upsert: ${e.message}")
@@ -163,7 +163,7 @@ class InfosSqlDataBasesRepository(
         onSuccess: () -> Unit = {}
     ) {
         try {
-            val data = roomOperationsHandler.getAllData()
+            val data = room.getAllData()
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
@@ -174,7 +174,7 @@ class InfosSqlDataBasesRepository(
     suspend fun deleteAllRoom() {
         withContext(Dispatchers.IO) {
             try {
-                roomOperationsHandler.deleteAll()
+                room.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
                 Log.e("Repository", "Error in deleteAllRoom: ${e.message}")
