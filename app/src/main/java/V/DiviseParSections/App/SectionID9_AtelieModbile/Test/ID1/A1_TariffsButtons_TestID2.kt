@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
@@ -37,8 +36,8 @@ fun TariffsButtons_TestID2(
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList =
-      //  uiState.tariffsList
-       testD_TarificationInfosT2()
+        //  uiState.tariffsList
+        testD_TarificationInfosT2()
 
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
@@ -50,14 +49,21 @@ fun TariffsButtons_TestID2(
         }
     }
 
-
     val shouldShowLoading = uiState.loadingProgress < 1f
-          Column {
-   Text("${tarificationList.take(2)}")
-              HorizontalDivider(thickness=10.dp)
-   Text("${bonAchatList.take(2)}")
-              HorizontalDivider(thickness=10.dp)
-   Text("${produitInfosList.take(2)}")        }
+
+   /* Column {
+        val take =
+            tarificationList.map {
+                it.id
+            }
+                .take(2)
+        Text("$take")
+        HorizontalDivider(thickness = 10.dp)
+        Text("${bonAchatList.take(2)}")
+        HorizontalDivider(thickness = 10.dp)
+        Text("${produitInfosList.take(2)}")
+    }
+              */
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {

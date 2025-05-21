@@ -161,7 +161,8 @@ fun MainUi(
     }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
-    showConfirmDialog = ConfirmExitDialog(
+ 
+     showConfirmDialog = ConfirmExitDialog(
         viewModelInitApp,
         parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
         showConfirmDialog = showConfirmDialog,
