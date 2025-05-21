@@ -1,19 +1,8 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.getStrDateTime
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 data class DataBasesInfosSql(
     val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
@@ -32,41 +21,3 @@ data class DataBasesInfosSql(
     )
 
 
-fun getKeyFireBase(
-    dataId: Long? = null,
-    dataNom: String? = null
-): String {
-    return if (dataId != null) {
-        "-<$dataId($dataNom)"
-    } else {
-        "-<$dataNom"
-    }
-}
-
-enum class TypeTarificationEnum(val iconVector: ImageVector? = null, val couleur: Color = Color.White) {
-    ParBenifice(Icons.Filled.ShoppingCart, Color(0xFF4CAF50)),
-    Historique(Icons.Filled.History, Color(0xFF2196F3)),
-    LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800)),
-    PRIX_BASE(Icons.Filled.AttachMoney, Color(0xFFF44336))
-}
-
-@Entity
-data class D_TarificationInfos(
-    @PrimaryKey
-    val id: Long = 0L,
-    //Forging IDs
-    val idParentProduit: Long = 0L,
-    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
-    val idParentBonAchat: Long = 0L,
-
-    //Base Infos
-    val prixCurrency: Double = 0.0,
-    val timestamps: Long = 0,
-    val nom: String = getStrDateTime(id),
-
-    //keyFireBase
-    val keyFireBase: String = getKeyFireBase(dataNom = nom),
-
-    //Etates Mutable
-    val needUpdate: Boolean = true
-)
