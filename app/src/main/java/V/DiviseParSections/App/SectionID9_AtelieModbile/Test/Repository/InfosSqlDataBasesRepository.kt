@@ -19,14 +19,12 @@ class InfosSqlDataBasesRepository(
     private val room: RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
     private var modelList: List<DataBasesInfosSql>
         get() = _modelListFlow.value
         set(value) {
             _modelListFlow.value = value
         }
-
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
     init {
