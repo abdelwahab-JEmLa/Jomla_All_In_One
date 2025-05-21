@@ -46,7 +46,7 @@ fun TariffButtonItem(
     val context = LocalContext.current
 
     // Special layout for GERANT type
-    GerantButton(typeTarification, showLabels)
+    if (GerantButton(typeTarification, showLabels)) return
 
     // Regular layout for other types
     Row(
@@ -134,7 +134,7 @@ fun TariffButtonItem(
 private fun GerantButton(
     typeTarification: TypeTarificationEnumT2,
     showLabels: Boolean
-) {
+): Boolean {
     if (typeTarification == TypeTarificationEnumT2.AU_GERANT) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,31 +156,34 @@ private fun GerantButton(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // First text
                             val fontSize = 12.sp
-                            Text(
-                                text = "للمدير",
-                                maxLines = 1,
-                                fontSize = fontSize,
-                                modifier = Modifier.rotate(90f),
-                                color = Color.White
-                            )
 
-                            // Small space between texts
-                            Spacer(modifier = Modifier.height(15.dp))
-
-                            // Second text
                             Text(
                                 text = "التقدير",
                                 maxLines = 1,
                                 fontSize = fontSize,
-                                modifier = Modifier.rotate(90f),
+                                modifier = Modifier.rotate(-90f),
                                 color = Color.White
                             )
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(
+                                text = "للمدير",
+                                maxLines = 1,
+                                fontSize = fontSize,
+                                modifier = Modifier.rotate(-90f),
+                                color = Color.White
+                            )
+
+                            // Small space between texts
+
+
                         }
                     }
                 }
             }
         }
+        return true
     }
+    return false
 }
