@@ -19,7 +19,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.D_Tarifi
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D1_Tariff
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -90,7 +90,7 @@ import java.util.Date
         A_ProduitInfos::class,
         B_ClientInfos::class,
         C_TypeTarificationInfos::class,
-        D_TarificationInfos::class
+        D1_Tariff::class
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false

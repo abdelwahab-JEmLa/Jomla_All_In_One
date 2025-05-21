@@ -85,16 +85,16 @@ interface C_TypeTarificationInfosDao {
 
 @Dao
 interface D_TarificationInfosDao {
-    @Query("SELECT * FROM D_TarificationInfos")
+    @Query("SELECT * FROM D1_Tariff")
     fun getAllTarifications(): Flow<List<D_TarificationInfos>>
 
-    @Query("SELECT * FROM D_TarificationInfos")
+    @Query("SELECT * FROM D1_Tariff")
     suspend fun getAllTarificationsSync(): List<D_TarificationInfos>
 
-    @Query("SELECT * FROM D_TarificationInfos WHERE vidTimestamp = :id")
+    @Query("SELECT * FROM D1_Tariff WHERE vidTimestamp = :id")
     suspend fun getTarificationById(id: Long): D_TarificationInfos?
 
-    @Query("SELECT * FROM D_TarificationInfos WHERE idProduit = :produitId AND idClient = :clientId")
+    @Query("SELECT * FROM D1_Tariff WHERE idProduit = :produitId AND idClient = :clientId")
     suspend fun getTarificationsByProduitAndClient(produitId: Long, clientId: Long): List<D_TarificationInfos>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -106,6 +106,6 @@ interface D_TarificationInfosDao {
     @Update
     suspend fun update(tarification: D_TarificationInfos)
 
-    @Query("DELETE FROM D_TarificationInfos")
+    @Query("DELETE FROM D1_Tariff")
     suspend fun deleteAll()
 }

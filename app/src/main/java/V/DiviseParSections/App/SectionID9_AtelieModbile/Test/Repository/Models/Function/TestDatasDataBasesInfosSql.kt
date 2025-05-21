@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D1_Tariff
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
@@ -56,7 +56,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
             )
         ),
         d_TarificationInfos = mutableListOf(
-            D_TarificationInfos(
+            D1_Tariff(
                 vidTimestamp = createTimestamp(
                     day = 1,
                     hour = 12,
@@ -67,7 +67,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 idTypeTarification = 1,
                 prixCurrency = 20.99
             ),
-            D_TarificationInfos(
+            D1_Tariff(
                 vidTimestamp = createTimestamp(
                     day = 5,
                     hour = 13,
@@ -78,7 +78,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 idTypeTarification = 1,
                 prixCurrency = 25.50
             ),
-            D_TarificationInfos(
+            D1_Tariff(
                 vidTimestamp = createTimestamp(
                     day = 5,
                     hour = 14,
@@ -89,7 +89,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 idTypeTarification = 2,
                 prixCurrency = 9.75
             ),
-            D_TarificationInfos(
+            D1_Tariff(
                 vidTimestamp = createTimestamp(
                     day = 6,
                     hour = 3,
@@ -100,7 +100,7 @@ fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
                 idTypeTarification = 1,
                 prixCurrency = 15.25
             ),
-            D_TarificationInfos(
+            D1_Tariff(
                 vidTimestamp = createTimestamp(
                     day = 6,
                     hour = 4,

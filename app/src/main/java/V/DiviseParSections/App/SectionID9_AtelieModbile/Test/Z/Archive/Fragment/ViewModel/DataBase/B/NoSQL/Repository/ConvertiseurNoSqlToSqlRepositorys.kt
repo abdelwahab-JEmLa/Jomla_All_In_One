@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.InfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D1_Tariff
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +80,7 @@ class ConvertiseurNoSqlToSqlRepositorys(
             }
 
             if (!hasConnection) {
-                val newTarification = D_TarificationInfos(
+                val newTarification = D1_Tariff(
                     vidTimestamp = System.currentTimeMillis(),
                     idProduit = product.id,
                     idClient = clientId,
@@ -104,7 +104,7 @@ class ConvertiseurNoSqlToSqlRepositorys(
         refreshNoSqlData()
     }
 
-    suspend fun addTarificationInfos(newData: D_TarificationInfos): Boolean {
+    suspend fun addTarificationInfos(newData: D1_Tariff): Boolean {
         return mutex.withLock {
             try {
                 val currentData = sqlRepository.modelListFlow.value.firstOrNull()
@@ -252,7 +252,7 @@ class ConvertiseurNoSqlToSqlRepositorys(
         idClient: Long,
         idTypeTarification: Long,
         ancienRepoProduitPrixVent: Double?
-    ): List<D_TarificationInfos> {
+    ): List<D1_Tariff> {
         val sqlDataList = sqlRepository.modelListFlow.value
         if (sqlDataList.isEmpty()) return emptyList()
 

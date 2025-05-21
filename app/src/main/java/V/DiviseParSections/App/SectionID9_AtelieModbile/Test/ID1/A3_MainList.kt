@@ -14,10 +14,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    tariffs: List<D_TarificationInfosT2>,
+    tariffs: List<D1_Tariff>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
-    onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfosT2, Context) -> () -> Unit,
+    onClickPrixButton: () -> (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit,
 ) {
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }

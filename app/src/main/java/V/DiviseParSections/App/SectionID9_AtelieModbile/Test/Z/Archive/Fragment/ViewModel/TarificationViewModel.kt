@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D1_Tariff
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepositorys
@@ -216,7 +216,7 @@ class TarificationViewModel(
 
                     val timestamp = System.currentTimeMillis()
 
-                    val newTarification = D_TarificationInfos(
+                    val newTarification = D1_Tariff(
                         vidTimestamp = timestamp,
                         idProduit = productId,
                         idClient = clientId,
@@ -293,7 +293,7 @@ class TarificationViewModel(
                 if (existingTarifications.isEmpty()) {
                     val defaultPrice = ancienRepoProduitPrixVent ?: 0.0
 
-                    val newTarification = D_TarificationInfos(
+                    val newTarification = D1_Tariff(
                         vidTimestamp = System.currentTimeMillis(),
                         idProduit = productId,
                         idClient = clientId,
@@ -450,7 +450,7 @@ class TarificationViewModel(
         idClient: Long,
         idTypeTarification: Long,
         ancienRepoProduitPrixVent: Double?
-    ): List<D_TarificationInfos> {
+    ): List<D1_Tariff> {
         return convertiseurNoSqlToSqlRepositorys.getTarificationInfos(
             idProduit,
             idClient,

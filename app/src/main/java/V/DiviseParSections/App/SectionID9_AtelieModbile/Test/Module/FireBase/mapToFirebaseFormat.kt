@@ -76,7 +76,7 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         } catch (e: Exception) {}
     }
     if (tarifsMap.isNotEmpty()) {
-        data[dataBasesInfosSql.refFireBaseD_TarificationInfos] = tarifsMap
+        data[dataBasesInfosSql.refFireBaseD_1Tariff] = tarifsMap
     }
 
     return data

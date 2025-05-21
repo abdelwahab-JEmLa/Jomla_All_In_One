@@ -20,7 +20,7 @@ class FireBaseHandler() {
     private val produitRef = startFireBaseReference.child("A_ProduitInfos")
     private val clientRef = startFireBaseReference.child("B_ClientInfos")
     private val typeTarificationRef = startFireBaseReference.child("C_TypeTarificationInfos")
-    private val tarificationRef = startFireBaseReference.child("D_TarificationInfos")
+    private val tarificationRef = startFireBaseReference.child("D1_Tariff")
 
     // Getter methods for references to be used in repository implementations
     fun getProduitRef(): DatabaseReference = produitRef
