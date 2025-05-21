@@ -68,21 +68,14 @@ class InfosSqlDataBasesRepository(
                                     onAddSuccess(mapData)
                                 }
                             } catch (e: Exception) {
-                                // Error in Firebase upsert
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    // Error in Room upsert
                 }
             }
         } catch (e: Exception) {
-            // Error launching coroutine
         }
-    }
-
-    private fun deleteTarificationInfosNodeFromFirebase() {
-        fireBase.deleteTarificationInfosNode()
     }
 
     fun cleanup() {
@@ -136,7 +129,6 @@ class InfosSqlDataBasesRepository(
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
-                // Error in upsert with callback
             }
         }
     }
@@ -149,18 +141,6 @@ class InfosSqlDataBasesRepository(
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
-            // Error in collectLatestData
-        }
-    }
-
-    suspend fun deleteAllRoom() {
-        withContext(Dispatchers.IO) {
-            try {
-                room.deleteAll()
-                collectLatestData()
-            } catch (e: Exception) {
-                // Error in deleteAllRoom
-            }
         }
     }
 }
