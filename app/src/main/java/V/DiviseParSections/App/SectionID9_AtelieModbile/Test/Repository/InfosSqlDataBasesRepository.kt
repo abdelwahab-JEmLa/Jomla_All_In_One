@@ -43,11 +43,11 @@ class InfosSqlDataBasesRepository(
             val isFirebaseEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
 
             if (isFirebaseEmpty) {
-                val testData = addTestDataToFirebase()
+                addTestDataToFirebase()
                 delay(1000)
-                verifierRoomEstEmptyInsertAllEtUiApres()
+                initInsertAuRoomIfEmpty()
             } else {
-                verifierRoomEstEmptyInsertAllEtUiApres()
+                initInsertAuRoomIfEmpty()
             }
 
             collectRoom()
@@ -73,7 +73,7 @@ class InfosSqlDataBasesRepository(
         return testData
     }
 
-    private fun verifierRoomEstEmptyInsertAllEtUiApres() {
+    private fun initInsertAuRoomIfEmpty() {
         coroutineScope.launch {
             try {
                 val isEmpty = roomOperationsHandler.isDatabaseEmpty()
