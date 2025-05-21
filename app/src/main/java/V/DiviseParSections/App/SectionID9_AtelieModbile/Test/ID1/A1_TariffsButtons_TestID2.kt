@@ -31,7 +31,9 @@ fun TariffsButtons_TestID2(
     filterProductId: Int = 4,
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
-) {
+) {         //<--
+//TODO(1): enleve logs et commaintes pour essye de consise le code
+
     var afficheButtons by remember { mutableStateOf(true) }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -50,21 +52,11 @@ fun TariffsButtons_TestID2(
         }
     }
 
-    val shouldShowLoading = uiState.loadingProgress < 1f
+    // Fixed: Better loading condition that considers both progress and data syncing state
+    val shouldShowLoading = uiState.isDataSyncing ||
+            (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
+            (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
-   /* Column {
-        val take =
-            tarificationList.map {
-                it.id
-            }
-                .take(2)
-        Text("$take")
-        HorizontalDivider(thickness = 10.dp)
-        Text("${bonAchatList.take(2)}")
-        HorizontalDivider(thickness = 10.dp)
-        Text("${produitInfosList.take(2)}")
-    }
-              */
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
@@ -72,16 +64,45 @@ fun TariffsButtons_TestID2(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CircularProgressIndicator(
-                        progress = { uiState.loadingProgress },
-                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                    )
-                    Text(
-                        text = "Loading tariffs... ${(uiState.loadingProgress * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    // Show different progress indicators based on the current operation
+                    if (uiState.loadingProgress > 0f) {
+                        CircularProgressIndicator(
+                            progress = { uiState.loadingProgress },
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                        )
+
+                        // Enhanced progress text with detailed breakdown
+                        val progressPercentage = (uiState.loadingProgress * 100).toInt()
+                        val syncStatus = viewModel.getSyncStatus()
+
+                        Text(
+                            text = "$syncStatus $progressPercentage%",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 8.dp),
+                            textAlign = TextAlign.Center
+                        )
+
+                        // Show detailed progress breakdown if available
+                        if (uiState.sqlProgress > 0f || uiState.produitProgress > 0f || uiState.bonAchatProgress > 0f) {
+                            Text(
+                                text = "SQL: ${(uiState.sqlProgress * 100).toInt()}% | " +
+                                        "Products: ${(uiState.produitProgress * 100).toInt()}% | " +
+                                        "Orders: ${(uiState.bonAchatProgress * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 4.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else {
+                        // Show indeterminate progress when starting up
+                        CircularProgressIndicator()
+                        Text(
+                            text = "Initializing...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 8.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -110,8 +131,16 @@ fun TariffsButtons_TestID2(
                     )
                 }
             } else {
+                // Show waiting state with more detailed information
+                val dataStatus = when {
+                    produitInfosList.isEmpty() && bonAchatList.isEmpty() -> "Loading initial data..."
+                    produitInfosList.isEmpty() -> "Loading products..."
+                    bonAchatList.isEmpty() -> "Loading purchase orders..."
+                    else -> "Preparing data..."
+                }
+
                 Text(
-                    text = "Waiting for data... Products: ${produitInfosList.size}, Bons: ${bonAchatList.size}",
+                    text = "$dataStatus\nProducts: ${produitInfosList.size}, Orders: ${bonAchatList.size}",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(16.dp)

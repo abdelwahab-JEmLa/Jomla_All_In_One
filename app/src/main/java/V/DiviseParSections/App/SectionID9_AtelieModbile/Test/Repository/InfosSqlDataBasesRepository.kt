@@ -25,23 +25,48 @@ class InfosSqlDataBasesRepository(
         set(value) {
             _modelListFlow.value = value
         }
+
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
+
+    val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+
+    private val _roomProgress = MutableStateFlow(0f)
+    private val _firebaseProgress = MutableStateFlow(0f)
+    val roomProgress: StateFlow<Float> = _roomProgress.asStateFlow()
+    val firebaseProgress: StateFlow<Float> = _firebaseProgress.asStateFlow()
 
     init {
         coroutineScope.launch {
+            combine(roomProgress, firebaseProgress) { roomProg, firebaseProg ->
+                (roomProg + firebaseProg) / 2f
+            }.collect { combinedProgress ->
+                progressRepo.value = combinedProgress
+            }
+        }
+
+        coroutineScope.launch {
+            updateProgress(0f)
+
             fireBase.isDatabaseEmpty {
                 coroutineScope.launch {
+                    updateProgress(0.1f)
+
                     val dataTestList: List<D_TarificationInfos> =
                         fireBase.getDataFromFirebase {
+                            updateProgress(0.3f)
                             it.ifEmpty {
+                                updateProgress(0.4f)
                                 testD_TarificationInfosT2()
                             }
                         }
                             ?.d_TarificationInfos
-                            ?: testD_TarificationInfosT2()
+                            ?: run {
+                                updateProgress(0.4f)
+                                testD_TarificationInfosT2()
+                            }
 
                     upsertAllRoomEtFireBase(dataTestList) { mapData ->
-                        // Added data successfully
+                        updateProgress(1f)
                     }
                 }
             }
@@ -51,6 +76,18 @@ class InfosSqlDataBasesRepository(
         }
     }
 
+    private fun updateProgress(progress: Float) {
+        progressRepo.value = progress.coerceIn(0f, 1f)
+    }
+
+    private fun updateRoomProgress(progress: Float) {
+        _roomProgress.value = progress.coerceIn(0f, 1f)
+    }
+
+    private fun updateFirebaseProgress(progress: Float) {
+        _firebaseProgress.value = progress.coerceIn(0f, 1f)
+    }
+
     private fun upsertAllRoomEtFireBase(
         dataList: List<D_TarificationInfos>,
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit = {}
@@ -58,20 +95,35 @@ class InfosSqlDataBasesRepository(
         try {
             coroutineScope.launch(Dispatchers.IO) {
                 try {
+                    updateProgress(0.5f)
+                    updateRoomProgress(0f)
+
                     room.upsertAllAndReturnListIdToData(dataList) { mapData ->
+                        updateRoomProgress(1f)
+                        updateProgress(0.7f)
+
                         coroutineScope.launch {
                             try {
-                                fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
+                                updateFirebaseProgress(0f)
+
+                                fireBase.upsertAllAndReturnListIdToData(mapData) {
+                                    updateFirebaseProgress(1f)
+                                    updateProgress(1f)
                                     onAddSuccess(mapData)
                                 }
                             } catch (e: Exception) {
+                                updateFirebaseProgress(0f)
+                                updateProgress(0.7f)
                             }
                         }
                     }
                 } catch (e: Exception) {
+                    updateRoomProgress(0f)
+                    updateProgress(0.5f)
                 }
             }
         } catch (e: Exception) {
+            updateProgress(0f)
         }
     }
 
@@ -109,10 +161,19 @@ class InfosSqlDataBasesRepository(
     ) {
         withContext(Dispatchers.IO) {
             try {
+                updateProgress(0.3f)
+                updateRoomProgress(0.5f)
+
                 room.insertAll(data)
-                collectLatestData()
+
+                updateRoomProgress(1f)
+                updateProgress(0.8f)
+
+                collectLatestData {
+                    updateProgress(1f)
+                }
             } catch (e: Exception) {
-                // Error in upsert
+                updateProgress(0f)
             }
         }
     }
@@ -123,9 +184,11 @@ class InfosSqlDataBasesRepository(
     ) {
         coroutineScope.launch {
             try {
+                updateProgress(0f)
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
+                updateProgress(0f)
             }
         }
     }
@@ -134,10 +197,16 @@ class InfosSqlDataBasesRepository(
         onSuccess: () -> Unit = {}
     ) {
         try {
+            updateProgress(0.9f)
             val data = room.getAllData()
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
+            updateProgress(0.8f)
         }
     }
+
+    fun getProgressPercentage(): Int = (progressRepo.value * 100).toInt()
+
+    fun isOperationInProgress(): Boolean = progressRepo.value > 0f && progressRepo.value < 1f
 }
