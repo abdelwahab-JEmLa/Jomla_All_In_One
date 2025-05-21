@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.getStrDateTime
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Done
@@ -10,27 +8,6 @@ import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.History
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.room.PrimaryKey
-
-data class D1_Tariff(
-    @PrimaryKey
-    val id: Long = 0L,
-    //Forging IDs
-    val idParentProduit: Long = 0L,
-    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
-    val idParentBonAchat: Long = 0L,
-
-    //Base Infos
-    val prixCurrency: Double = 0.0,
-    val timestamps: Long = 0,
-    val nom: String = getStrDateTime(id),
-
-    //keyFireBase
-    val keyFireBase: String = getKeyFireBase(dataNom = nom),
-
-    //Etates Mutable
-    val needUpdate: Boolean = true
-)
 
 fun getKeyFireBase(
     dataId: Long? = null,

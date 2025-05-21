@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
-    var tariffsList: List<D1_Tariff> = emptyList(),
+    var tariffsList: List<D_TarificationInfos> = emptyList(),
     val loadingProgress: Float = 0f,
     val error: String? = null,
 )
@@ -70,7 +71,7 @@ class TariffsButtonsViewModel_TestID2(
                 }
 
                 // Variable pour stocker la liste des tarifs
-                var tariffsList = emptyList<D1_Tariff>()
+                var tariffsList = emptyList<D_TarificationInfos>()
 
                 // Collect tariffs from tariffsRepo.d_TarificationInfos
                 launch {

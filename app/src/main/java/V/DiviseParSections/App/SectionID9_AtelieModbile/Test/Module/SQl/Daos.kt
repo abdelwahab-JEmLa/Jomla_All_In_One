@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -90,11 +90,8 @@ interface D_TarificationInfosDao {
     @Query("SELECT * FROM D_TarificationInfos")
     suspend fun getAllTarificationsSync(): List<D_TarificationInfos>
 
-    @Query("SELECT * FROM D_TarificationInfos WHERE vidTimestamp = :id")
+    @Query("SELECT * FROM D_TarificationInfos WHERE id = :id")
     suspend fun getTarificationById(id: Long): D_TarificationInfos?
-
-    @Query("SELECT * FROM D_TarificationInfos WHERE idProduit = :produitId AND idClient = :clientId")
-    suspend fun getTarificationsByProduitAndClient(produitId: Long, clientId: Long): List<D_TarificationInfos>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(tarification: D_TarificationInfos)

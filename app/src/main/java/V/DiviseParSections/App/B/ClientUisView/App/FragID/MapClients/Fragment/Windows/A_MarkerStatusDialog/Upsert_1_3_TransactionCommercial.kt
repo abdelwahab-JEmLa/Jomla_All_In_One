@@ -1,10 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.InfosSqlDataBasesRepository
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -69,12 +66,12 @@ fun upsert_1_3_TransactionCommercial(
         }
 
     }
-    sectionSqlRepository(
+  /*  sectionSqlRepository(
         sqlRepository = viewModel.sqlRepository,
         relatedClients = relatedClients!!,
-    )
+    )       */
 }
-
+  /*
 fun sectionSqlRepository(
     relatedClients: B_ClientDataBase,
     sqlRepository: InfosSqlDataBasesRepository
@@ -104,3 +101,4 @@ fun sectionSqlRepository(
     // Update clients with the correct parameter
     sqlRepository.updateMultiClientInfos(updatedClientList)
 }
+            */

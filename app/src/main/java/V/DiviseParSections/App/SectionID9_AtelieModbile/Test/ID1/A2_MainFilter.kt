@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Column
@@ -11,14 +12,14 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
-    tarificationList: List<D1_Tariff>,
+    tarificationList: List<D_TarificationInfos>,
     bonAchatList: List<C3_BonAchate>,
     produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
-    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit,
+    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
 ) {
     val filteredProduit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()

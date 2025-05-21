@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    tariffs: List<D1_Tariff>,
+    tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
-    onClickPrixButton: () -> (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit,
+    onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
 ) {
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }

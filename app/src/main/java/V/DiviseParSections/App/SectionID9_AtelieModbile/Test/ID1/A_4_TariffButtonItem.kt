@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +36,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
-    tariffs: List<D1_Tariff>,
+    tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D1_Tariff, Context) -> () -> Unit
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.getStrDateTime
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
@@ -30,19 +31,6 @@ data class DataBasesInfosSql(
 
     )
 
-@Entity
-data class D_TarificationInfos(
-    @PrimaryKey
-    val vidTimestamp: Long = 0L,
-    val nom: String= getStrDateTime(vidTimestamp),
-    val keyFireBase: String = getKeyFireBase(dataNom=nom),
-    val idProduit: Long = 0L,
-    val idClient: Long = 0L,
-    val idTypeTarification: Long = 0L,
-    val prixCurrency: Double = 0.0,
-
-    val needUpdate: Boolean = true
-)
 
 fun getKeyFireBase(
     dataId: Long? = null,
@@ -61,3 +49,24 @@ enum class TypeTarificationEnum(val iconVector: ImageVector? = null, val couleur
     LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800)),
     PRIX_BASE(Icons.Filled.AttachMoney, Color(0xFFF44336))
 }
+
+@Entity
+data class D_TarificationInfos(
+    @PrimaryKey
+    val id: Long = 0L,
+    //Forging IDs
+    val idParentProduit: Long = 0L,
+    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 = TypeTarificationEnumT2.PRIX_BASE,
+    val idParentBonAchat: Long = 0L,
+
+    //Base Infos
+    val prixCurrency: Double = 0.0,
+    val timestamps: Long = 0,
+    val nom: String = getStrDateTime(id),
+
+    //keyFireBase
+    val keyFireBase: String = getKeyFireBase(dataNom = nom),
+
+    //Etates Mutable
+    val needUpdate: Boolean = true
+)

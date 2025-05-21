@@ -71,7 +71,7 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
             }
             // Always use keyFireBase as the key, or generate one if empty
             val key = tarif.keyFireBase.takeIf { it.isNotEmpty() }
-                ?: getKeyFireBase(tarif.vidTimestamp, tarif.nom)
+                ?: getKeyFireBase(tarif.id, tarif.nom)
             tarifsMap[key] = tarifMap
         } catch (e: Exception) {}
     }

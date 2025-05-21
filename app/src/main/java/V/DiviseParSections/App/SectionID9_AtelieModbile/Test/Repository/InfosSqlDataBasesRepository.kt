@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.sta
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.stopNeedUpdateListener
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.testDatasDataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +45,7 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    private fun verifieAddFireBaseEstVide() {
+   /* private fun verifieAddFireBaseEstVide() {
         coroutineScope.launch {
             try {
                 val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
@@ -57,7 +56,7 @@ class InfosSqlDataBasesRepository(
             } catch (e: Exception) {
             }
         }
-    }
+    }        */
 
     private fun verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener() {
         coroutineScope.launch {
