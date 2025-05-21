@@ -46,7 +46,7 @@ fun TariffButtonItem(
     val context = LocalContext.current
 
     // Special layout for GERANT type
-    if (GerantButton(typeTarification, showLabels)) return
+    if (gerantButton(typeTarification, showLabels)) return
 
     // Regular layout for other types
     Row(
@@ -131,7 +131,7 @@ fun TariffButtonItem(
 }
 
 @Composable
-private fun GerantButton(
+private fun gerantButton(
     typeTarification: TypeTarificationEnumT2,
     showLabels: Boolean
 ): Boolean {
@@ -165,6 +165,7 @@ private fun GerantButton(
                                 modifier = Modifier.rotate(-90f),
                                 color = Color.White
                             )
+
                             Spacer(modifier = Modifier.height(20.dp))
 
                             Text(
@@ -174,10 +175,6 @@ private fun GerantButton(
                                 modifier = Modifier.rotate(-90f),
                                 color = Color.White
                             )
-
-                            // Small space between texts
-
-
                         }
                     }
                 }
