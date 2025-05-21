@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.InfosSqlDataBasesRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
@@ -19,14 +20,16 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
-    var tarificationList: List<D_TarificationInfosT2> = emptyList(),
+    var tariffsList: List<D_TarificationInfosT2> = emptyList(),
     val loadingProgress: Float = 0f,
     val error: String? = null,
 )
 
 class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
-) : ViewModel() {
+    val sqlRepository: InfosSqlDataBasesRepository,
+
+    ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var loadingJob: Job? = null
@@ -44,6 +47,10 @@ class TariffsButtonsViewModel_TestID2(
             _uiState.update { it.copy(loadingProgress = 0f) }
 
             try {
+                val tariffsRepo = sqlRepository.modelListFlow
+                
+                
+                
                 val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
                     ._2_1_ProduitsDataBase_Repository
 
@@ -62,14 +69,15 @@ class TariffsButtonsViewModel_TestID2(
                     }
                 }
 
-                val tarificationList = testD_TarificationInfosT2()
+                val tariffsList = //<--
+                //TODO(1): fait que ca ce collecte depuit tariffsRepo.sq
 
                 bonAchatCollectorJob = launch {
                     val bonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
 
                     _uiState.update { currentState ->
                         currentState.copy(
-                            tarificationList = tarificationList,
+                            tariffsList = tariffsList,
                             bonAchatList = bonAchatList,
                         )
                     }

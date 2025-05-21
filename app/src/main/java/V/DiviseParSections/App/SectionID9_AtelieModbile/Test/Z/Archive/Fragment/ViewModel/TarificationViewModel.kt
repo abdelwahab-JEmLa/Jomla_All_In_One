@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.B_ClientInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase

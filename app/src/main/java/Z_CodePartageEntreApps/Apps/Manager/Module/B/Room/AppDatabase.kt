@@ -16,9 +16,9 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.A_Produi
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.B_ClientInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.C_TypeTarificationInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.D_TarificationInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.B_ClientInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao

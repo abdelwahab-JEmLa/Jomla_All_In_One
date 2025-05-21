@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.getStrDateTime
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.AttachMoney
@@ -27,39 +30,6 @@ data class DataBasesInfosSql(
     val refFireBaseC_TypeTarificationInfos: String="C_TypeTarificationInfos",
 
     )
-
-@Entity
-data class A_ProduitInfos(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val nom: String = "",
-    val keyFireBase: String = getKeyFireBase(id, nom),
-
-    val needUpdate: Boolean = true
-)
-
-@Entity
-data class B_ClientInfos(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val nom: String = "Non Difinie",
-    val keyFireBase: String = getKeyFireBase(id, nom),
-
-    var cLeDataOuvertDuParentList: Boolean = false,
-
-    val needUpdate: Boolean = true
-)
-
-@Entity
-data class C_TypeTarificationInfos(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val entityCorrespond: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
-    val nom: String= entityCorrespond.name,
-    val keyFireBase: String = getKeyFireBase(id, nom),
-
-    val needUpdate: Boolean = true
-)
 
 @Entity
 data class D_TarificationInfos(
