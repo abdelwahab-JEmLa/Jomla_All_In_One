@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.testD_TarificationInfosT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.getDataFromFirebase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.startNeedUpdateListener
@@ -37,7 +38,7 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            //  verifieFireBaseEstVide()
+            verifieAddFireBaseEstVide()
 
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
             collectRoom()
@@ -45,18 +46,36 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-   /* private fun verifieAddFireBaseEstVide() {
+    private fun verifieAddFireBaseEstVide() {
         coroutineScope.launch {
             try {
                 val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
                 if (isEmpty) {
-                    val testData = testDatasDataBasesInfosSql()
+                    // Create test data with all test tarification items
+                    val testData = DataBasesInfosSql(
+                        d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
+                    )
+
+                    // Add each tarification item individually to Firebase to avoid batch issues
+                    val tariffItems = testData.d_TarificationInfos.toList() // Make a copy to avoid concurrent modification
+                    tariffItems.forEach { tarif ->
+                        // Create a separate DataBasesInfosSql for each tarification item
+                        val singleTariffData = DataBasesInfosSql(
+                            d_TarificationInfos = mutableListOf(tarif)
+                        )
+
+                        // Use a direct Firebase write for each item to ensure it gets added
+                        fireBaseOperationsHandler.addSingleTariffToFirebase(tarif)
+                    }
+
+                    // After adding all items, perform a normal upsert for Room database
                     upsert(testData) {}
                 }
             } catch (e: Exception) {
+                // Handle exception
             }
         }
-    }        */
+    }
 
     private fun verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener() {
         coroutineScope.launch {
@@ -73,6 +92,7 @@ class InfosSqlDataBasesRepository(
                     }
                 }
             } catch (e: Exception) {
+                // Handle exception
             }
         }
     }
@@ -127,6 +147,7 @@ class InfosSqlDataBasesRepository(
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
+                // Handle exception
             }
         }
     }
@@ -139,6 +160,7 @@ class InfosSqlDataBasesRepository(
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
+            // Handle exception
         }
     }
 
@@ -148,6 +170,7 @@ class InfosSqlDataBasesRepository(
                 roomOperationsHandler.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
+                // Handle exception
             }
         }
     }
@@ -161,6 +184,7 @@ class InfosSqlDataBasesRepository(
                 onSuccess()
             }
         } catch (e: Exception) {
+            // Handle exception
         }
     }
 }

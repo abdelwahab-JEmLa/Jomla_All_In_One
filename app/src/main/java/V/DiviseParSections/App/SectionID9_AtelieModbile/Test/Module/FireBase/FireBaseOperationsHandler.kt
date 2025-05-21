@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,9 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.reflect.full.memberProperties
 
 class FireBaseOperationsHandler(
-     val roomOperationsHandler: RoomOperationsHandler
+    val roomOperationsHandler: RoomOperationsHandler
 ) {
     companion object {
         const val TAG = "FireBaseOperationsHandler"
@@ -41,6 +44,36 @@ class FireBaseOperationsHandler(
     suspend fun isDatabaseEmptyAsync(): Boolean = suspendCancellableCoroutine { continuation ->
         isDatabaseEmpty { isEmpty ->
             continuation.resume(isEmpty)
+        }
+    }
+
+    // Add a single tarification item directly to Firebase
+    fun addSingleTariffToFirebase(tariff: D_TarificationInfos) {
+        try {
+            val tarifMap = mutableMapOf<String, Any>()
+
+            // Convert all properties from the tariff object to a map
+            tariff::class.memberProperties.forEach { prop ->
+                val value = prop.getter.call(tariff)
+                if (value != null) {
+                    if (value::class.java.isEnum) {
+                        tarifMap[prop.name] = value.toString()
+                    } else {
+                        tarifMap[prop.name] = value
+                    }
+                } else {
+                    tarifMap[prop.name] = "null"
+                }
+            }
+
+            // Generate a unique key for this tariff
+            val key = tariff.keyFireBase.takeIf { it.isNotEmpty() }
+                ?: getKeyFireBase(tariff.id, tariff.nom)
+
+            // Direct write to Firebase for this specific tariff
+            ref.child("D_TarificationInfos").child(key).setValue(tarifMap)
+        } catch (e: Exception) {
+            // Log exception
         }
     }
 

@@ -48,7 +48,7 @@ class TariffsButtonsViewModel_TestID2(
             _uiState.update { it.copy(loadingProgress = 0f) }
 
             try {
-              //  val tariffsRepo = sqlRepository.modelListFlow
+                val tariffsRepo = sqlRepository.modelListFlow
 
                 val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
                     ._2_1_ProduitsDataBase_Repository
@@ -73,7 +73,7 @@ class TariffsButtonsViewModel_TestID2(
                 var tariffsList = emptyList<D_TarificationInfos>()
 
                 // Collect tariffs from tariffsRepo.d_TarificationInfos
-              /*  launch {
+                launch {
                     tariffsRepo.collect { dataBaseInfosList ->
                         val newTariffsList = if (dataBaseInfosList.isNotEmpty()) {
                             dataBaseInfosList.first().d_TarificationInfos.toList()
@@ -88,7 +88,7 @@ class TariffsButtonsViewModel_TestID2(
                             }
                         }
                     }
-                }      */
+                }
 
                 bonAchatCollectorJob = launch {
                     val bonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()

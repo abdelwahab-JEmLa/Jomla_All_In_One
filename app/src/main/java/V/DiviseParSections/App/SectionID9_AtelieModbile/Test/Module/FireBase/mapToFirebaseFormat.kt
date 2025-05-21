@@ -7,6 +7,8 @@ import kotlin.reflect.full.memberProperties
 
 fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {
     val data = mutableMapOf<String, Any>()
+
+    // Process A_ProduitInfos
     val productsMap = mutableMapOf<String, Any>()
     dataBasesInfosSql.a_ProduitInfos.forEach { produit ->
         try {
@@ -23,6 +25,7 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         data[dataBasesInfosSql.refFireBaseA_ProduitInfos] = productsMap
     }
 
+    // Process B_ClientInfos
     val clientsMap = mutableMapOf<String, Any>()
     dataBasesInfosSql.b_ClientInfosList.forEach { client ->
         try {
@@ -39,6 +42,7 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         data[dataBasesInfosSql.refFireBaseB_ClientInfos] = clientsMap
     }
 
+    // Process C_TypeTarificationInfos
     val typeTarifMap = mutableMapOf<String, Any>()
     dataBasesInfosSql.c_TypeTarificationInfos.forEach { typeTarif ->
         try {
@@ -63,18 +67,34 @@ fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> 
         data[dataBasesInfosSql.refFireBaseC_TypeTarificationInfos] = typeTarifMap
     }
 
+    // Process D_TarificationInfos - ensure each item gets a unique key
     val tarifsMap = mutableMapOf<String, Any>()
     dataBasesInfosSql.d_TarificationInfos.forEach { tarif ->
         try {
-            val tarifMap = tarif::class.memberProperties.associate {
-                it.name to (it.getter.call(tarif) ?: "null")
+            // Convert the tarif object to a map using reflection
+            val tarifMap = mutableMapOf<String, Any>()
+            tarif::class.memberProperties.forEach { prop ->
+                val value = prop.getter.call(tarif)
+                if (value != null) {
+                    // Handle enums by using their name
+                    if (value::class.java.isEnum) {
+                        tarifMap[prop.name] = value.toString()
+                    } else {
+                        tarifMap[prop.name] = value
+                    }
+                } else {
+                    tarifMap[prop.name] = "null"
+                }
             }
-            // Always use keyFireBase as the key, or generate one if empty
+
+            // Generate a unique key for this tarif
             val key = tarif.keyFireBase.takeIf { it.isNotEmpty() }
                 ?: getKeyFireBase(tarif.id, tarif.nom)
+
             tarifsMap[key] = tarifMap
         } catch (e: Exception) {}
     }
+
     if (tarifsMap.isNotEmpty()) {
         data[dataBasesInfosSql.refFireBaseD_TarificationInfos] = tarifsMap
     }
