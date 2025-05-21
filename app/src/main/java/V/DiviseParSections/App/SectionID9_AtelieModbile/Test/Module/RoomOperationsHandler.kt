@@ -13,24 +13,96 @@ class RoomOperationsHandler(private val database: AppDatabase) {
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
-            Log.d("RoomOperationsHandler", "Incoming tarifications with IDs: ${data.map { it.id }}")
-
-            val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(data)
-            Log.d("RoomOperationsHandler", "Room generated IDs: $ids")
-
-            val resultMap = mutableMapOf<Long, D_TarificationInfos>()
-            ids.forEachIndexed { index, id ->
-                if (index < data.size) {
-                    val updatedTariff = data[index].copy(id = id)
-                    resultMap[id] = updatedTariff
-                    Log.d("RoomOperationsHandler", "Mapped ID $id to tarif with name: ${updatedTariff.nom}")
-                }
+            Log.d("RoomOperationsHandler", "=== STARTING UPSERT OPERATION ===")
+            Log.d("RoomOperationsHandler", "Incoming ${data.size} tarifications")
+            data.forEachIndexed { index, tarif ->
+                Log.d("RoomOperationsHandler", "[$index] ID: ${tarif.id}, nom: '${tarif.nom}', timestamps: ${tarif.timestamps}")
             }
 
-            onAddSuccess(resultMap)
+            val resultMap = mutableMapOf<Long, D_TarificationInfos>()
+
+            // Let's try a completely different approach - insert one by one with detailed logging
+            data.forEachIndexed { index, tarif ->
+                Log.d("RoomOperationsHandler", "=== Processing item $index ===")
+                Log.d("RoomOperationsHandler", "Original tarif: id=${tarif.id}, nom='${tarif.nom}'")
+
+                try {
+                    // First, let's check current database state
+                    val currentCount = database.dTarificationInfosDao().getAllTarificationsSync().size
+                    Log.d("RoomOperationsHandler", "Current DB count before operation: $currentCount")
+
+                    // For new items (id = 0), always insert fresh
+                    val finalId = if (tarif.id == 0L) {
+                        Log.d("RoomOperationsHandler", "Inserting new item...")
+                        val newId = database.dTarificationInfosDao().insert(tarif)
+                        Log.d("RoomOperationsHandler", "Insert returned ID: $newId")
+                        newId
+                    } else {
+                        // For existing items, check if they exist
+                        Log.d("RoomOperationsHandler", "Checking existing item with ID: ${tarif.id}")
+                        val existing = database.dTarificationInfosDao().getTarificationById(tarif.id)
+                        if (existing != null) {
+                            Log.d("RoomOperationsHandler", "Item exists, updating...")
+                            database.dTarificationInfosDao().update(tarif)
+                            tarif.id
+                        } else {
+                            Log.d("RoomOperationsHandler", "Item doesn't exist, inserting...")
+                            val newId = database.dTarificationInfosDao().insert(tarif)
+                            Log.d("RoomOperationsHandler", "Insert returned ID: $newId")
+                            newId
+                        }
+                    }
+
+                    Log.d("RoomOperationsHandler", "Final ID determined: $finalId")
+
+                    // Verify the operation worked
+                    val newCount = database.dTarificationInfosDao().getAllTarificationsSync().size
+                    Log.d("RoomOperationsHandler", "DB count after operation: $newCount")
+
+                    if (finalId > 0L) {
+                        val updatedTariff = tarif.copy(id = finalId)
+                        resultMap[finalId] = updatedTariff
+                        Log.d("RoomOperationsHandler", "✓ Successfully added to result map: ID=$finalId, nom='${updatedTariff.nom}'")
+
+                        // Double-check by querying the inserted/updated item
+                        val verifyItem = database.dTarificationInfosDao().getTarificationById(finalId)
+                        if (verifyItem != null) {
+                            Log.d("RoomOperationsHandler", "✓ Verified item exists in DB: ${verifyItem.nom}")
+                        } else {
+                            Log.w("RoomOperationsHandler", "⚠ Warning: Item not found in DB after operation!")
+                        }
+                    } else {
+                        Log.w("RoomOperationsHandler", "✗ Invalid ID ($finalId) for tarif: ${tarif.nom}")
+                    }
+
+                } catch (itemException: Exception) {
+                    Log.e("RoomOperationsHandler", "✗ Error processing tarif '${tarif.nom}': ${itemException.message}")
+                    itemException.printStackTrace()
+                }
+
+                Log.d("RoomOperationsHandler", "=== End processing item $index ===")
+            }
+
+            // Final verification
+            val allItemsInDb = database.dTarificationInfosDao().getAllTarificationsSync()
+            Log.d("RoomOperationsHandler", "=== FINAL VERIFICATION ===")
+            Log.d("RoomOperationsHandler", "Total items in DB: ${allItemsInDb.size}")
+            Log.d("RoomOperationsHandler", "Result map size: ${resultMap.size}")
+            Log.d("RoomOperationsHandler", "Result map keys: ${resultMap.keys}")
+
+            allItemsInDb.forEach { item ->
+                Log.d("RoomOperationsHandler", "DB Item: ID=${item.id}, nom='${item.nom}'")
+            }
+
+            Log.d("RoomOperationsHandler", "Final result map contains ${resultMap.size} entries with keys: ${resultMap.keys}")
+
+            onAddSuccess(resultMap) //->
+            //TODO(FIXME):Fix erreur  size = 0 pk 
             true
         } catch (e: Exception) {
             Log.e("RoomOperationsHandler", "Error in upsertAllAndReturnListIdToData: ${e.message}")
+            e.printStackTrace()
+            onAddSuccess(emptyMap()) // Make sure callback is called even on error
             false
         }
     }
