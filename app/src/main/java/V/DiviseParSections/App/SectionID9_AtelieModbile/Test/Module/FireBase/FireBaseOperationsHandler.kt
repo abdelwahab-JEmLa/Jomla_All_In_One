@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

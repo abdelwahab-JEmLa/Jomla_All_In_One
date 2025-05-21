@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.C_TypeTarificationInfos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos as SqlClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.B_ClientInfos as SqlClientInfos
 
 suspend fun ConvertiseurNoSqlToSqlRepositorys.convertSqlToNoSql(
     onSuccess: () -> Unit = {}

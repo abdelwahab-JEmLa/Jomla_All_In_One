@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.Function.getStrDateTime
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.getStrDateTime
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.AttachMoney
@@ -12,6 +12,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 data class DataBasesInfosSql(
+
+    val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
+    val refFireBaseD_TarificationInfos: String="D_TarificationInfos",
+
+
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val refFireBaseA_ProduitInfos: String="A_ProduitInfos",
 
@@ -20,9 +25,6 @@ data class DataBasesInfosSql(
 
     val c_TypeTarificationInfos: MutableList<C_TypeTarificationInfos> = mutableListOf(),
     val refFireBaseC_TypeTarificationInfos: String="C_TypeTarificationInfos",
-
-    val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
-    val refFireBaseD_TarificationInfos: String="D_TarificationInfos",
 
     )
 

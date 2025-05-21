@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.Function
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function
 
 import android.annotation.SuppressLint
 import java.util.Calendar

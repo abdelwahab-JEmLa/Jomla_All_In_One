@@ -1,12 +1,12 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.Function
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.B_ClientInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
 
 fun testDatasDataBasesInfosSql(): DataBasesInfosSql {
     return DataBasesInfosSql(

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.Function.createTimestamp
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.createTimestamp
 
 fun testDatasProduitNoSqlDataBase(): ProduitsNoSqlDataBase {   //<--
     return ProduitsNoSqlDataBase(

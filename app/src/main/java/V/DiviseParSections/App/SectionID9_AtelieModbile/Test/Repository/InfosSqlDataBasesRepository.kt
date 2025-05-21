@@ -1,15 +1,13 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.getDataFromFirebase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.startNeedUpdateListener
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.stopNeedUpdateListener
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.DataBasesInfosSql
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.ViewModel.DataBase.A.SQL.Models.Function.testDatasDataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.Function.testDatasDataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class InfosSqlDataBasesRepository(
@@ -28,7 +25,7 @@ class InfosSqlDataBasesRepository(
 ) {
     private val TAG = "InfosSqlRepo"
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val mutex = Mutex() // For thread-safe operations
+    private val mutex = Mutex()
 
     private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
     private var modelList: List<DataBasesInfosSql>
@@ -41,14 +38,15 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
+            //  verifieFireBaseEstVide()
+
             verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
-          //  verifieFireBaseEstVide()
             collectRoom()
             fireBaseOperationsHandler.startNeedUpdateListener()
         }
     }
 
-    private fun verifieFireBaseEstVide() {
+    private fun verifieAddFireBaseEstVide() {
         coroutineScope.launch {
             try {
                 val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
@@ -68,9 +66,7 @@ class InfosSqlDataBasesRepository(
                 if (isEmpty) {
                     val firebaseData = fireBaseOperationsHandler.getDataFromFirebase()
                     if (firebaseData != null &&
-                        (firebaseData.a_ProduitInfos.isNotEmpty() ||
-                                firebaseData.b_ClientInfosList.isNotEmpty() ||
-                                firebaseData.c_TypeTarificationInfos.isNotEmpty() ||
+                        (
                                 firebaseData.d_TarificationInfos.isNotEmpty())
                     ) {
                         roomOperationsHandler.insertAll(firebaseData)
@@ -102,10 +98,7 @@ class InfosSqlDataBasesRepository(
             ) { produits, clients, typeTarifications, tarifications ->
                 listOf(
                     DataBasesInfosSql(
-                        a_ProduitInfos = produits.toMutableList(),
-                        b_ClientInfosList = clients.toMutableList(),
-                        c_TypeTarificationInfos = typeTarifications.toMutableList(),
-                        d_TarificationInfos = tarifications.toMutableList()
+                        c_TypeTarificationInfos = typeTarifications.toMutableList()
                     )
                 )
             }.collect { combinedData ->
@@ -124,68 +117,6 @@ class InfosSqlDataBasesRepository(
                 collectLatestData()
             } catch (_: Exception) {}
         }
-    }
-
-    fun addoneClientInfos(newData: B_ClientInfos): Boolean {
-        coroutineScope.launch {
-            mutex.withLock {
-                try {
-                    Log.d(TAG, "Adding B_ClientInfos: ${newData.id}")
-                    val currentData = modelListFlow.value.firstOrNull()
-                    if (currentData != null) {
-                        // Check if client already exists
-                        val existingClient = currentData.b_ClientInfosList.find { it.id == newData.id }
-                        if (existingClient != null) {
-                            Log.d(TAG, "Client ${newData.id} already exists, skipping addition")
-                            return@withLock
-                        }
-
-                        val updatedData = currentData.copy(
-                            b_ClientInfosList = currentData.b_ClientInfosList.toMutableList().apply {
-                                add(newData)
-                            }
-                        )
-
-                        upsert(updatedData)
-                    } else {
-                        Log.e(TAG, "Failed to upsert B_ClientInfos: no current data available")
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error adding B_ClientInfos", e)
-                }
-            }
-        }
-        return true
-    }
-
-    fun updateMultiClientInfos(updatedClients: MutableList<B_ClientInfos>): Boolean {
-        coroutineScope.launch {
-            mutex.withLock {
-                try {
-                    Log.d(TAG, "Updating multiple B_ClientInfos")
-                    val currentData = modelListFlow.value.firstOrNull()
-                    if (currentData != null) {
-                        // Create a new copy of the database with updated client list
-                        val updatedData = currentData.copy(
-                            b_ClientInfosList = updatedClients
-                        )
-
-                        upsert(updatedData)
-
-                        // Update state flow
-                        modelList = listOf(updatedData)
-                        return@withLock
-                    } else {
-                        Log.e(TAG, "Failed to update B_ClientInfos: no current data available")
-                        return@withLock
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error updating B_ClientInfos", e)
-                    return@withLock
-                }
-            }
-        }
-        return true
     }
 
     fun upsert(
