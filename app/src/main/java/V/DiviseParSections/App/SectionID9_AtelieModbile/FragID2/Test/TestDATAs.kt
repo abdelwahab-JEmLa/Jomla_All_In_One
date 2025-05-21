@@ -42,7 +42,7 @@ fun testBonAchatT2(): List<BonAchatT2> {
 fun testD_TarificationInfosT2(): List<D_TarificationInfosT2> {
     val idProduit1: Long = 4
     val idProduit2: Long = 1
-    val idParentBonAchat = testBonAchatT2()[0].vid
+    val idParentBonAchat : Long= 1
 
     return listOf(
         D_TarificationInfosT2(
