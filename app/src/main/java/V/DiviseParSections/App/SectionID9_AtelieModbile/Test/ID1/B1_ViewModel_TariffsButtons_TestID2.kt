@@ -48,9 +48,9 @@ class TariffsButtonsViewModel_TestID2(
 
             try {
                 val tariffsRepo = sqlRepository.modelListFlow
-                
-                
-                
+
+
+
                 val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
                     ._2_1_ProduitsDataBase_Repository
 
@@ -69,15 +69,32 @@ class TariffsButtonsViewModel_TestID2(
                     }
                 }
 
-                val tariffsList = //<--
-                //TODO(1): fait que ca ce collecte depuit tariffsRepo.sq
+                // Variable pour stocker la liste des tarifs
+                var tariffsList = emptyList<D1_Tariff>()
+
+                // Collect tariffs from tariffsRepo.d_TarificationInfos
+                launch {
+                    tariffsRepo.collect { dataBaseInfosList ->
+                        val newTariffsList = if (dataBaseInfosList.isNotEmpty()) {
+                            dataBaseInfosList.first().d_TarificationInfos.toList()
+                        } else {
+                            emptyList()
+                        }
+
+                        if (newTariffsList != tariffsList) {
+                            tariffsList = newTariffsList
+                            _uiState.update { currentState ->
+                                currentState.copy(tariffsList = tariffsList)
+                            }
+                        }
+                    }
+                }
 
                 bonAchatCollectorJob = launch {
                     val bonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
 
                     _uiState.update { currentState ->
                         currentState.copy(
-                            tariffsList = tariffsList,
                             bonAchatList = bonAchatList,
                         )
                     }

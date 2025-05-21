@@ -134,7 +134,7 @@ fun PressistatntMainActivityButtons(
 
                 TariffsButtons_TestID2(
                     showLabels = showLabels,
-                    fermDialoge = onPourFermeWindows,
+                    fermeDialog = onPourFermeWindows,
                 )
             }
         }

@@ -44,7 +44,6 @@ fun getKeyFireBase(
     }
 }
 
-
 enum class TypeTarificationEnumT2(
     val iconVector: ImageVector? = null,
     val couleur: Color = Color.White,

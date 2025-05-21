@@ -29,7 +29,7 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     filterProductId: Int = 4,
     filterBonId: Long = 1,
-    fermDialoge: () -> Unit,
+    fermeDialog: () -> Unit,
 ) {
     var afficheButtons by remember { mutableStateOf(true) }
 
@@ -48,6 +48,7 @@ fun TariffsButtons_TestID2(
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
+    Text("${tarificationList.size}")
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
@@ -85,7 +86,7 @@ fun TariffsButtons_TestID2(
                                             "$typeName: ${latestTariffLocalData.prixCurrency}"
                                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                                         afficheButtons = false
-                                        fermDialoge()
+                                        fermeDialog()
                                     }
                                 }
                             }
