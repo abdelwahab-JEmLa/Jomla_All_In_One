@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,24 +12,19 @@ class RoomOperationsHandler(private val database: AppDatabase) {
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
-            Log.d("RoomOperationsHandler", "Incoming tarifications with IDs: ${data.map { it.id }}")
-
             val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(data)
-            Log.d("RoomOperationsHandler", "Room generated IDs: $ids")
 
             val resultMap = mutableMapOf<Long, D_TarificationInfos>()
             ids.forEachIndexed { index, id ->
                 if (index < data.size) {
                     val updatedTariff = data[index].copy(id = id)
                     resultMap[id] = updatedTariff
-                    Log.d("RoomOperationsHandler", "Mapped ID $id to tarif with name: ${updatedTariff.nom}")
                 }
             }
 
             onAddSuccess(resultMap)
             true
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in upsertAllAndReturnListIdToData: ${e.message}")
             false
         }
     }
@@ -40,7 +34,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
             database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
             true
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in insertAll: ${e.message}")
             false
         }
     }
@@ -50,7 +43,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
             database.dTarificationInfosDao().deleteAll()
             true
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in deleteAll: ${e.message}")
             false
         }
     }
@@ -63,7 +55,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
             }
             true
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in updateData: ${e.message}")
             false
         }
     }
@@ -76,7 +67,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
                 d_TarificationInfos = tarifications.toMutableList()
             )
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in getAllData: ${e.message}")
             DataBasesInfosSql()
         }
     }
@@ -86,7 +76,6 @@ class RoomOperationsHandler(private val database: AppDatabase) {
             val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
             tarifications.isEmpty()
         } catch (e: Exception) {
-            Log.e("RoomOperationsHandler", "Error in isDatabaseEmpty: ${e.message}")
             true // Assume empty if there's an error
         }
     }

@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBaseOper
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,9 +44,7 @@ class InfosSqlDataBasesRepository(
                             ?: testD_TarificationInfosT2()
 
                     upsertAllRoomEtFireBase(dataTestList) { mapData ->
-                        Log.d(
-                            "Repository", "Added with keys: ${mapData.keys}"
-                        )
+                        // Added data successfully
                     }
                 }
             }
@@ -68,23 +65,19 @@ class InfosSqlDataBasesRepository(
                         coroutineScope.launch {
                             try {
                                 fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
-                                    Log.d(
-                                        "Repository",
-                                        "Firebase entries created with keys: ${firebaseMap.keys}"
-                                    )
                                     onAddSuccess(mapData)
                                 }
                             } catch (e: Exception) {
-                                Log.e("Repository", "Error in Firebase upsert: ${e.message}")
+                                // Error in Firebase upsert
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("Repository", "Error in Room upsert: ${e.message}")
+                    // Error in Room upsert
                 }
             }
         } catch (e: Exception) {
-            Log.e("Repository", "Error launching coroutine: ${e.message}")
+            // Error launching coroutine
         }
     }
 
@@ -129,7 +122,7 @@ class InfosSqlDataBasesRepository(
                 room.insertAll(data)
                 collectLatestData()
             } catch (e: Exception) {
-                Log.e("Repository", "Error in upsert: ${e.message}")
+                // Error in upsert
             }
         }
     }
@@ -143,7 +136,7 @@ class InfosSqlDataBasesRepository(
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
-                Log.e("Repository", "Error in upsert with callback: ${e.message}")
+                // Error in upsert with callback
             }
         }
     }
@@ -156,7 +149,7 @@ class InfosSqlDataBasesRepository(
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
-            Log.e("Repository", "Error in collectLatestData: ${e.message}")
+            // Error in collectLatestData
         }
     }
 
@@ -166,7 +159,7 @@ class InfosSqlDataBasesRepository(
                 room.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
-                Log.e("Repository", "Error in deleteAllRoom: ${e.message}")
+                // Error in deleteAllRoom
             }
         }
     }

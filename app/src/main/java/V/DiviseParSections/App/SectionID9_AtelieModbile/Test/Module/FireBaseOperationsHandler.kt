@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_Tarifi
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -33,7 +32,6 @@ class FireBaseOperationsHandler(
 
     suspend fun isDatabaseEmpty(onDataEstEmpty: () -> Unit) =
         suspendCancellableCoroutine { continuation ->
-            Log.d("FireBaseOperationsHandler", "Checking if Firebase database is empty")
             isDatabaseEmpty { isEmpty ->
                 continuation.resume(isEmpty)
                 onDataEstEmpty()
@@ -107,27 +105,19 @@ class FireBaseOperationsHandler(
                     tariffsMap[key] = tariffMap
                     resultMap[key] = tariff
                 } catch (e: Exception) {
-                    Log.e("FireBaseOperationsHandler", "Error processing tariff: ${e.message}")
+                    // Continue processing other tariffs
                 }
             }
 
             // Perform the batch update to Firebase
             if (tariffsMap.isNotEmpty()) {
                 childD_TarificationInfos.updateChildren(tariffsMap).await()
-                Log.d(
-                    "FireBaseOperationsHandler",
-                    "Successfully uploaded ${tariffsMap.size} tarifications to Firebase"
-                )
             }
 
             // Call the success callback with the result map
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
-            Log.e(
-                "FireBaseOperationsHandler",
-                "Error in upsertAllAndReturnListIdToData: ${e.message}"
-            )
             onAddSuccess(emptyMap()) // Return empty map on error
         }
     }
@@ -144,21 +134,18 @@ class FireBaseOperationsHandler(
 
 
     fun startNeedUpdateListener() {
-        Log.d("FireBaseOperationsHandler", "Starting Firebase update listener")
         needUpdateListener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.d("FireBaseOperationsHandler", "Firebase data changed, syncing with Room")
                 //  coroutineScope.startNeedUpdateListener(roomOperationsHandler, ref)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("FireBaseOperationsHandler", "Firebase listener cancelled: ${error.message}")
+                // Firebase listener cancelled
             }
         })
     }
 
     fun stopNeedUpdateListener() {
-        Log.d("FireBaseOperationsHandler", "Stopping Firebase update listener")
         needUpdateListener?.let {
             ref.removeEventListener(it)
             needUpdateListener = null
