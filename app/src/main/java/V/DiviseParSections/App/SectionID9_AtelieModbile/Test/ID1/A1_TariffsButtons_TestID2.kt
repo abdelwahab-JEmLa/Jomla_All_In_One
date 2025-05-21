@@ -35,9 +35,7 @@ fun TariffsButtons_TestID2(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    val tarificationList =
-        testD_TarificationInfosT2()
-    // uiState.tariffsList
+    val tarificationList = testD_TarificationInfosT2()
 
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
