@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 // Add these imports at the top of your file
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.media.MediaPlayer
@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun B_Item_TransactionItem(
-    transaction: _1_3_TransactionCommercial,
+    transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
     val datesHandler = DatesHandler()
@@ -87,7 +87,7 @@ fun B_Item_TransactionItem(
     }
 
     // Blinking effect using LaunchedEffect when not active and in ON_MODE_COMMEND_ACTUELLEMENT state
-    if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeTransactionId != transaction.vid
     ) {
         LaunchedEffect(key1 = Unit) {
@@ -158,7 +158,7 @@ fun B_Item_TransactionItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Shopping cart icon moved inside the Row
-                    if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                    if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(

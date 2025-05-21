@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -29,7 +29,7 @@ data class ArticleImpression(
 
 fun printReceipt(
     context: Context,
-    bonAchat: _1_3_TransactionCommercial?,
+    bonAchat: C3_BonAchate?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     database: AppDatabase,
     scope: CoroutineScope? = null

@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
-import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
@@ -50,6 +50,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     clickedCouleurIndex: Int,
+    onFermDialoge: () -> Unit,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -77,6 +78,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
             clickedCouleurIndex = clickedCouleurIndex,
+            onPourFermeWindows = onFermDialoge,
         )
     }
 }
@@ -98,7 +100,8 @@ fun MainUi(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
-    clickedCouleurIndex: Int
+    clickedCouleurIndex: Int,
+    onPourFermeWindows: () -> Unit,
 ) {
     // Fixed access to progress value
     val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
@@ -261,7 +264,7 @@ fun MainUi(
                     }
                 }
 
-                PressistatntMainActivityButtons()
+                PressistatntMainActivityButtons(onPourFermeWindows = onPourFermeWindows)
             }
         }
     }

@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.F
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,8 +26,8 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     val dateStringName = DatesHandler()
 
     // Filter transactions by client ID
-    val filteredGroupedTransactions = remember(uiState.transactionsDateToList_1_3_TransactionCommercial, idClient) {
-        uiState.transactionsDateToList_1_3_TransactionCommercial
+    val filteredGroupedTransactions = remember(uiState.transactionsDateToList_C_3_BonAchate, idClient) {
+        uiState.transactionsDateToList_C_3_BonAchate
             .map { (period, transactions) ->
                 val filteredTransactions = transactions.filter { it.clientAcheteurID == idClient }
                 Pair(period, filteredTransactions)
@@ -83,7 +82,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             } else {
                 // Show a message if no transactions are found
                 Text(
-                    text = if (uiState.transactionsDateToList_1_3_TransactionCommercial.isNotEmpty())
+                    text = if (uiState.transactionsDateToList_C_3_BonAchate.isNotEmpty())
                         "لا توجد معاملات للعميل $idClient"
                     else "جاري تحميل البيانات...",
                     modifier = Modifier

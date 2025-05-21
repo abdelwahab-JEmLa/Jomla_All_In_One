@@ -40,6 +40,7 @@ import kotlin.math.roundToInt
 @Composable
 fun PressistatntMainActivityButtons(
     viewModel: Windows__ViewModel = koinViewModel(),
+    onPourFermeWindows: () -> Unit,
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -133,6 +134,7 @@ fun PressistatntMainActivityButtons(
 
                 TariffsButtons_TestID2(
                     showLabels = showLabels,
+                    fermDialoge = onPourFermeWindows,
                 )
             }
         }

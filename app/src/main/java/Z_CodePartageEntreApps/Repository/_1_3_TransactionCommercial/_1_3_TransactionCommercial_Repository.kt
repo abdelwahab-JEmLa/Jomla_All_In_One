@@ -1,13 +1,13 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_3_TransactionCommercial_Repository {
-    var modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial>
+    var modelDatasSnapList: SnapshotStateList<C3_BonAchate>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
     val activeId: MutableStateFlow<Long>
@@ -15,7 +15,7 @@ interface _1_3_TransactionCommercial_Repository {
     suspend fun ensureDataIsInitialized()
 
     companion object {
-        const val TAG = "_1_3_TransactionCommercial"
+        const val TAG = "C3_BonAchate"
 
         val sonDataBaseRef: DatabaseReference =
             _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
@@ -30,5 +30,5 @@ interface _1_3_TransactionCommercial_Repository {
     }
 
 
-    fun getOuvert_1_3_TransactionCommercial(): _1_3_TransactionCommercial?
+    fun getOuvert_1_3_TransactionCommercial(): C3_BonAchate?
 }

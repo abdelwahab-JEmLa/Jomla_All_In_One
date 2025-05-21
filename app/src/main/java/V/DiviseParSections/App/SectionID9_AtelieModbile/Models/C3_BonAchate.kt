@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Models
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.Locale
 
 @Entity
-data class _1_3_TransactionCommercial(
+data class C3_BonAchate(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 

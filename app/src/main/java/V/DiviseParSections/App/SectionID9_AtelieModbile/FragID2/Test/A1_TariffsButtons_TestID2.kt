@@ -29,6 +29,7 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     filterProductId: Int = 4,
     filterBonId: Long = 1,
+    fermDialoge: () -> Unit,
 ) {
     var afficheButtons by remember { mutableStateOf(true) }
 
@@ -90,6 +91,7 @@ fun TariffsButtons_TestID2(
                                             "$typeName: ${latestTariffLocalData.prixCurrency}"
                                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                                         afficheButtons = false
+                                        fermDialoge()
                                     }
                                 }
                             }

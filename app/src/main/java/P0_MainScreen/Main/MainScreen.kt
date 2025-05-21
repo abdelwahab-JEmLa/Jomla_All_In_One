@@ -1,8 +1,8 @@
 package P0_MainScreen.Main
 
-import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -328,7 +328,7 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
-                PressistatntMainActivityButtons()
+                PressistatntMainActivityButtons(onPourFermeWindows = { { } })
             }
         }
     }

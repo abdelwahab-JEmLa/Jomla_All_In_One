@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
@@ -73,7 +73,7 @@ import java.util.Date
         A_Produit::class,
         _1_1_CouleurAcheteOperation::class,
         _1_2_ProduitAcheteOperation::class,
-        _1_3_TransactionCommercial::class,
+        C3_BonAchate::class,
         _1_4_PeriodeVent::class,
         _1_5_Vendeur::class,
 

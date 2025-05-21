@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.C_TypeTarificationInfos
@@ -9,6 +8,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataB
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.ConvertiseurNoSqlToSqlRepositorys
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.B.NoSQL.Repository.Model.ProduitsNoSqlDataBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
@@ -26,7 +26,7 @@ data class UiState(
     val produitsNoSqlDataBase: ProduitsNoSqlDataBase = ProduitsNoSqlDataBase(emptyList()),
     var produitAncienDB: ArticlesBasesStatsTable? =
         testDataArticlesBasesStatsTable(),
-    var _1_3_TransactionCommercialAncienDB: _1_3_TransactionCommercial? =
+    var _C_3_BonAchateAncienDB: C3_BonAchate? =
         testData_1_3_TransactionCommercial(),
     val selectedProductId: Long = testDataArticlesBasesStatsTable().idArticle.toLong(),
 
@@ -52,7 +52,7 @@ class TarificationViewModel(
         performInitialSetup()
         processTarificationTypes(
             uiState.value.selectedProductId,
-            uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID
+            uiState.value._C_3_BonAchateAncienDB!!.clientAcheteurID
         )
 
         viewModelScope.launch {
@@ -279,7 +279,7 @@ class TarificationViewModel(
 
     fun verifierAdd_D_TarificationInfos(typeTarification: ProduitsNoSqlDataBase.Produit.ClientAchteur.TypeTarification) {
         val productId = _uiState.value.selectedProductId ?: return
-        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB?.clientAcheteurID ?: return
+        val clientId = _uiState.value._C_3_BonAchateAncienDB?.clientAcheteurID ?: return
 
         viewModelScope.launch {
             try {
@@ -376,7 +376,7 @@ class TarificationViewModel(
 
 
     fun ajouteSiExistePas_B_ClientsDataBase() {
-        val clientId = _uiState.value._1_3_TransactionCommercialAncienDB!!.clientAcheteurID ?: return
+        val clientId = _uiState.value._C_3_BonAchateAncienDB!!.clientAcheteurID ?: return
         val existingClient = convertiseurNoSqlToSqlRepositorys.getB_ClientInfos(clientId)
 
         if (existingClient == null) {

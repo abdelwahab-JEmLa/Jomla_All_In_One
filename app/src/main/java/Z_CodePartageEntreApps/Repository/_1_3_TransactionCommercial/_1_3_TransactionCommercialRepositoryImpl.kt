@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -22,7 +22,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
 ) : _1_3_TransactionCommercial_Repository {
     private val TAG = _1_3_TransactionCommercial_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial> =
+    override var modelDatasSnapList: SnapshotStateList<C3_BonAchate> =
         mutableStateListOf()
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -48,11 +48,9 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
-    override fun getOuvert_1_3_TransactionCommercial(): _1_3_TransactionCommercial? {
+    override fun getOuvert_1_3_TransactionCommercial(): C3_BonAchate? {
         return modelDatasSnapList.find { it.ouvert }
     }
-
-
 
     override suspend fun ensureDataIsInitialized() {
         try {
@@ -159,9 +157,9 @@ class _1_3_TransactionCommercialRepositoryImpl(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<_1_3_TransactionCommercial>()
+                            val updatedList = mutableListOf<C3_BonAchate>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_1_3_TransactionCommercial::class.java)
+                                val data = dataSnapshot.getValue(C3_BonAchate::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -234,11 +232,11 @@ class _1_3_TransactionCommercialRepositoryImpl(
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<_1_3_TransactionCommercial>()
+                    val dataList = mutableListOf<C3_BonAchate>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(_1_3_TransactionCommercial::class.java)
+                            val data = dataSnapshot.getValue(C3_BonAchate::class.java)
                             data?.let {
                                 dataList.add(it)
                             }

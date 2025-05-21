@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import android.content.Context
@@ -29,7 +29,7 @@ fun AfficheurRegleOuvert(
     coroutineScope: CoroutineScope,
     context: Context,
 ) {
-    fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
+    fun getLatestTransactionForClient(clientId: Long): C3_BonAchate? {
         return repositorysModel
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .filter { it.clientAcheteurID == clientId }
@@ -38,7 +38,7 @@ fun AfficheurRegleOuvert(
 
     val latestTransaction = getLatestTransactionForClient(clientId)
     val hasOngoingTransaction = latestTransaction?.etateActuellementEst ==
-            _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     val ouvertTransaction = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.getOuvert_1_3_TransactionCommercial()
 
@@ -47,7 +47,7 @@ fun AfficheurRegleOuvert(
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .find {
                 it.clientAcheteurID == clientId &&
-                        it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             }
 
         Card(
@@ -84,14 +84,14 @@ fun AfficheurRegleOuvert(
                         text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                    C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
                         .Button(
                             coroutineScope = coroutineScope,
                             viewModel = viewModel,
                             clientId = clientId,
                             context = context
                         )
-                    _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                    C3_BonAchate.EtateActuellementEst.COMMANDE_LIVRAI
                         .Button(
                             coroutineScope = coroutineScope,
                             viewModel = viewModel,

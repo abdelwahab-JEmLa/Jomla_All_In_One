@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import android.util.Log
 
 class _1_3_TransactionCommercialRepositoryLogOperationsExtention(
@@ -28,12 +28,12 @@ class _1_3_TransactionCommercialRepositoryLogOperationsExtention(
     }
 
     // New method to log data additions
-    fun logDataAdd(data: _1_3_TransactionCommercial) {
+    fun logDataAdd(data: C3_BonAchate) {
         Log.d(TAG, "Data added to repository:")
         Log.d(TAG, "- ID (vid): ${data.vid}")
         Log.d(TAG, "- Timestamp: ${System.currentTimeMillis()}")
         // Log additional fields from the data model as needed
-        // For example, if your _1_3_TransactionCommercial class has fields like name, amount, etc.
+        // For example, if your C3_BonAchate class has fields like name, amount, etc.
         // You can log them here
     }
 }

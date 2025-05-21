@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,7 @@ open class ClientsMapFilterViewModel(
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->
-            if (transaction.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI) {
+            if (transaction.etateActuellementEst == C3_BonAchate.EtateActuellementEst.COMMANDE_LIVRAI) {
                 // Get transaction date
                 val transactionDate = Date(transaction.timestamps)
                 val cal = Calendar.getInstance()
@@ -173,7 +173,7 @@ open class ClientsMapFilterViewModel(
                 var key by mutableStateOf("")
                 var cActive by mutableStateOf(false)
 
-                var cesCommercialTransactions by mutableStateOf<List<_1_3_TransactionCommercial>>(emptyList())
+                var cesCommercialTransactions by mutableStateOf<List<C3_BonAchate>>(emptyList())
             }
         }
     }
@@ -191,7 +191,7 @@ open class ClientsMapFilterViewModel(
     )
 
     // Helper function to get filtered transactions based on current filter
-    open fun getFilteredTransactions(): List<_1_3_TransactionCommercial> {
+    open fun getFilteredTransactions(): List<C3_BonAchate> {
         return when (currentFilter) {
             FilterType.ALL -> allListrepo_0_0_HeadSQLRepositorys ?: emptyList()
             FilterType.DatesHistoriqueTransactions -> {
@@ -206,10 +206,10 @@ open class ClientsMapFilterViewModel(
             }
             FilterType.CIBLE -> {
                 allListrepo_0_0_HeadSQLRepositorys?.filter { transaction ->
-                    transaction.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.Cible ||
-                            transaction.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_2 ||
-                            transaction.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_3 ||
-                            transaction.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                    transaction.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible ||
+                            transaction.etateActuellementEst == C3_BonAchate.EtateActuellementEst.CIBLE_PRIORITE_2 ||
+                            transaction.etateActuellementEst == C3_BonAchate.EtateActuellementEst.CIBLE_PRIORITE_3 ||
+                            transaction.etateActuellementEst == C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
                 } ?: emptyList()
             }
         }

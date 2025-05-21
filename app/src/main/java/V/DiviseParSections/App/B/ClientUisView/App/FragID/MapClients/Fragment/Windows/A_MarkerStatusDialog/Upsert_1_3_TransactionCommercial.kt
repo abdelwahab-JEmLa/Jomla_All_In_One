@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.Models.B_ClientInfos
@@ -12,7 +12,7 @@ import java.util.Locale
 fun upsert_1_3_TransactionCommercial(
     viewModel: ViewModel_MapClients_App2FragID1,
     relatedClientID: Long,
-    newEtate: _1_3_TransactionCommercial.EtateActuellementEst,
+    newEtate: C3_BonAchate.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
 ) {
     val _0_0_HeadOfRepositorys_Repository = viewModel.repo_0_0_HeadSQLRepositorys
@@ -49,7 +49,7 @@ fun upsert_1_3_TransactionCommercial(
 
     } else {
         viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
-            _1_3_TransactionCommercial(
+            C3_BonAchate(
                 cJustPourVoirPanie = cJustPourVoirPanie,
                 clientAcheteurID = clientId,
                 nomClientConcerned = relatedClients?.nom!!,
@@ -61,8 +61,8 @@ fun upsert_1_3_TransactionCommercial(
                 ).format(Date())
             )
         ) { vid ->
-            if (newEtate == _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            if (newEtate == C3_BonAchate.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) repositorysModel.activeVId_1_3_TransactionCommercial.value = 0
             else
                 repositorysModel.activeVId_1_3_TransactionCommercial.value = vid

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -79,9 +79,9 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     // Check if the BonAchat is in COMMANDE_LENCE state
     val isOrderMode =
         relativeBonAchate?.etateActuellementEst ==
-                _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 ||       relativeBonAchate?.etateActuellementEst ==
-                _1_3_TransactionCommercial.EtateActuellementEst.PourVoirPanie
+                C3_BonAchate.EtateActuellementEst.PourVoirPanie
 
 
     Box(modifier = modifier.fillMaxSize()) {

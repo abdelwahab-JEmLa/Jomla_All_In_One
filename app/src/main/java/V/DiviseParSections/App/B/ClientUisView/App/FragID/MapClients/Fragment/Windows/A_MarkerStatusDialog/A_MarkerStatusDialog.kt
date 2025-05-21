@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.EnregestrementMessageVocaleEtLeMetreAuStorageGoogle
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -171,7 +171,7 @@ fun MarkerStatusDialog(
                             ) {
 
                                 item {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                                    C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -191,12 +191,12 @@ fun MarkerStatusDialog(
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
                                         context = context,
-                                        etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        etateActuellementEst1 = C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                     )
                                 }
 
                                 item {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.FERME
+                                    C3_BonAchate.EtateActuellementEst.FERME
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -205,7 +205,7 @@ fun MarkerStatusDialog(
                                         )
                                 }
                                 item {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                    C3_BonAchate.EtateActuellementEst.ACHETEUR_NON_DISPO
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -252,7 +252,7 @@ fun MarkerStatusDialog(
 
                                 if (ceTelephoneEstDeAbdelwahab) {
                                     item {
-                                        _1_3_TransactionCommercial.EtateActuellementEst.Cible
+                                        C3_BonAchate.EtateActuellementEst.Cible
                                             .Button(
                                                 coroutineScope = coroutineScope,
                                                 viewModel = viewModel,
@@ -261,7 +261,7 @@ fun MarkerStatusDialog(
                                             )
                                     }
                                     item {
-                                        _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                        C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
                                             .Button(
                                                 coroutineScope = coroutineScope,
                                                 viewModel = viewModel,

@@ -65,7 +65,7 @@ class InintializeViewModel_StartUpScreen {
                         uiStateFlow
                     )
                     uiStateFlow.value = uiStateFlow.value.copy(
-                        _1_3_TransactionCommercialList = _1_3_TransactionCommercial_Repository.modelDatasSnapList
+                        _C_3_BonAchateList = _1_3_TransactionCommercial_Repository.modelDatasSnapList
                     )
                     checkInitializationComplete()
                 }

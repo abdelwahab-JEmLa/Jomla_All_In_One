@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
@@ -107,7 +107,7 @@ class _0_0_Head_SQL_RepositorysImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is _1_3_TransactionCommercial -> processDeleteOperation(
+                        is C3_BonAchate -> processDeleteOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -191,7 +191,7 @@ class _0_0_Head_SQL_RepositorysImpl(
 
             // Delete from Room database
             when (databaseDao) {
-                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as _1_3_TransactionCommercial)
+                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as C3_BonAchate)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
                 is _1_4_PeriodeVentDao -> databaseDao.delete(data as _1_4_PeriodeVent)
                 is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
@@ -243,7 +243,7 @@ class _0_0_Head_SQL_RepositorysImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is _1_3_TransactionCommercial -> processUpsertOperation(
+                        is C3_BonAchate -> processUpsertOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -252,7 +252,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             onSuccess = { resultVid ->
                                 Log.d(
                                     TAG,
-                                    "Upsert completed for _1_3_TransactionCommercial with VID: $resultVid"
+                                    "Upsert completed for C3_BonAchate with VID: $resultVid"
                                 )
                                 if (resultVid <= 0) {
                                     Log.e(
@@ -314,7 +314,7 @@ class _0_0_Head_SQL_RepositorysImpl(
     ) where T : Any {
         // Create proper copy based on data type
         val dataToUpsert = when (data) {
-            is _1_3_TransactionCommercial -> data.copy() as T
+            is C3_BonAchate -> data.copy() as T
             is _1_2_ProduitAcheteOperation -> data.copy() as T
             else -> data // Fallback to original object if not a known data class
         }
@@ -336,8 +336,8 @@ class _0_0_Head_SQL_RepositorysImpl(
                 when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
-                        Log.d(TAG, "Update result for _1_3_TransactionCommercial: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_BonAchate)
+                        Log.d(TAG, "Update result for C3_BonAchate: $result")
                         result
                     }
 
@@ -386,8 +386,8 @@ class _0_0_Head_SQL_RepositorysImpl(
                 val newVid = when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
-                        Log.d(TAG, "New VID for _1_3_TransactionCommercial: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_BonAchate)
+                        Log.d(TAG, "New VID for C3_BonAchate: $result")
                         result
                     }
 

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -96,8 +96,8 @@ fun filterClientsBasedOnMode(
                 viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
                     .repository_1_3_TransactionCommercial.modelDatasSnapList
                     .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                || bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        bonAchat.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                || bonAchat.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.clientAcheteurID }
                     .distinct()

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
 
 @Composable
-fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
+fun C3_BonAchate.EtateActuellementEst.Button(
     coroutineScope: CoroutineScope,
     viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
@@ -93,7 +93,7 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
-    etateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
+    etateActuellementEst1: C3_BonAchate.EtateActuellementEst,
 ) {
 
     FilledTonalButton(

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
@@ -28,11 +28,11 @@ private const val TAG = "ViewModel_AffichageHistoriquesTransactionsDeCetteJourPa
 
 data class SecID5FragID2UiState(
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
-    val sl_1_3_TransactionCommercial: SnapshotStateList<_1_3_TransactionCommercial> = SnapshotStateList(),
+    val sl_C_3_BonAchate: SnapshotStateList<C3_BonAchate> = SnapshotStateList(),
     val sl_3_ClientsDataBase: SnapshotStateList<_3_ClientsDataBase> = SnapshotStateList(),
 
-    val transactionsDateToList_1_3_TransactionCommercial:
-    List<Pair<_1_4_PeriodeVent, List<_1_3_TransactionCommercial>>> = emptyList(),
+    val transactionsDateToList_C_3_BonAchate:
+    List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>> = emptyList(),
 )
 
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
@@ -115,7 +115,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     _uiState.update { currentState ->
                         currentState.copy(
                             sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
-                            sl_1_3_TransactionCommercial = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
+                            sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
                                 .repository_1_3_TransactionCommercial.modelDatasSnapList,
                             sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
                                 .repository_3_ClientsDataBase.modelDatasSnapList
@@ -145,7 +145,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
-                                    currentState.copy(sl_1_3_TransactionCommercial = repo.modelDatasSnapList)
+                                    currentState.copy(sl_C_3_BonAchate = repo.modelDatasSnapList)
                                 }
                             }
                             loadCollecttransactionsDateToList_1_3_TransactionCommercial()
@@ -175,7 +175,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val periods = _uiState.value.sl_1_4_PeriodeVent.toList()
-                val transactions = _uiState.value.sl_1_3_TransactionCommercial.toList()
+                val transactions = _uiState.value.sl_C_3_BonAchate.toList()
 
                 // Sort periods by date in descending order (newest first)
                 val sortedPeriods = periods.sortedByDescending { period ->
@@ -206,7 +206,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 withContext(Dispatchers.Main) {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            transactionsDateToList_1_3_TransactionCommercial = groupedTransactions
+                            transactionsDateToList_C_3_BonAchate = groupedTransactions
                         )
                     }
                 }

@@ -311,7 +311,6 @@ fun AppNavHost(
             // Product detail dialog
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
-                    modifier = Modifier.padding(horizontal = 3.dp),
                     uiState = uiState,
                     viewModel = headViewModel,
                     onDismiss = {
@@ -322,11 +321,15 @@ fun AppNavHost(
                         )
                     },
                     reloadTrigger = reloadTrigger,
+                    modifier = Modifier.padding(horizontal = 3.dp),
                     lockExpandedPrices = lockExpandedPrices,
                     onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                     viewModelInitApp = viewModelInitApp,
                     currentClient = currentClient,
                     clickedCouleurIndex = pendingIndexColor,
+                    onFermDialoge = {
+                        opnerSaleWindows=false
+                         },
                 )
             }
         }

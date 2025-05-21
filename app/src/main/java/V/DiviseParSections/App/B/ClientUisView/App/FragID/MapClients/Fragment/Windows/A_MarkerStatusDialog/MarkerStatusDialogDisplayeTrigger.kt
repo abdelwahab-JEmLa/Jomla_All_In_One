@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -18,7 +18,7 @@ suspend fun displayLatestTransactions(
         }
 
     latestTransactionsMap.forEach { (clientId, latestTransaction) ->
-        if (latestTransaction?.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+        if (latestTransaction?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
             latestTransaction?.ouvert == true
         ) {
             val marker = mapView.overlays.filterIsInstance<Marker>()
