@@ -27,7 +27,6 @@ data class UiState(
 class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var loadingJob: Job? = null
