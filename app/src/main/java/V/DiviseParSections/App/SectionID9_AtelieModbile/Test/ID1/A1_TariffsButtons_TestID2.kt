@@ -31,13 +31,13 @@ fun TariffsButtons_TestID2(
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
 ) {
-    var afficheButtons by remember { mutableStateOf(true) }
+    var afficheButtons by remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList =
-        uiState.tariffsList
-      //  testD_TarificationInfosT2()
+      //  uiState.tariffsList
+       testD_TarificationInfosT2()
 
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
@@ -51,7 +51,7 @@ fun TariffsButtons_TestID2(
 
     val shouldShowLoading = uiState.loadingProgress < 1f
 
-    Text("${tarificationList.size}")
+  //  Text("${tarificationList.size}")
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
