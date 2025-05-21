@@ -123,6 +123,7 @@ fun PressistatntMainActivityButtons(
                 ControlButton(
                     onClick = {
                         viewModel.toggleRecording()
+
                     },
                     icon = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
                     contentDescription = if (isRecording) "Stop Recording" else "",
