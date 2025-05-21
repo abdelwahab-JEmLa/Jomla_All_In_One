@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

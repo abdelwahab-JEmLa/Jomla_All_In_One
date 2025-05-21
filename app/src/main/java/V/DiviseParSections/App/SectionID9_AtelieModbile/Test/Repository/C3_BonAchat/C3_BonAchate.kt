@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.snapshots.SnapshotStateList
 

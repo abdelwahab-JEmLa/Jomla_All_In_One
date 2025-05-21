@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Models.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
