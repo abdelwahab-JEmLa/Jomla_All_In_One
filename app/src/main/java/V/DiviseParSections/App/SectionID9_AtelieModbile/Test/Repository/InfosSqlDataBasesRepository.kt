@@ -10,6 +10,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,6 @@ class InfosSqlDataBasesRepository(
     private val fireBaseOperationsHandler: FireBaseOperationsHandler,
     private val roomOperationsHandler: RoomOperationsHandler
 ) {
-    private val TAG = "InfosSqlRepo"
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
 
@@ -38,61 +38,62 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            verifieAddFireBaseEstVide()
+            deleteTarificationInfosNodeFromFirebase()
 
-            verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener()
+            val isFirebaseEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
+
+            if (isFirebaseEmpty) {
+                val testData = addTestDataToFirebase()
+                delay(1000)
+                verifierRoomEstEmptyInsertAllEtUiApres()
+            } else {
+                verifierRoomEstEmptyInsertAllEtUiApres()
+            }
+
             collectRoom()
             fireBaseOperationsHandler.startNeedUpdateListener()
         }
     }
 
-    private fun verifieAddFireBaseEstVide() {
-        coroutineScope.launch {
-            try {
-                val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
-                if (isEmpty) {
-                    // Create test data with all test tarification items
-                    val testData = DataBasesInfosSql(
-                        d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
-                    )
-
-                    // Add each tarification item individually to Firebase to avoid batch issues
-                    val tariffItems = testData.d_TarificationInfos.toList() // Make a copy to avoid concurrent modification
-                    tariffItems.forEach { tarif ->
-                        // Create a separate DataBasesInfosSql for each tarification item
-                        val singleTariffData = DataBasesInfosSql(
-                            d_TarificationInfos = mutableListOf(tarif)
-                        )
-
-                        // Use a direct Firebase write for each item to ensure it gets added
-                        fireBaseOperationsHandler.addSingleTariffToFirebase(tarif)
-                    }
-
-                    // After adding all items, perform a normal upsert for Room database
-                    upsert(testData) {}
-                }
-            } catch (e: Exception) {
-                // Handle exception
-            }
-        }
+    private fun deleteTarificationInfosNodeFromFirebase() {
+        fireBaseOperationsHandler.deleteTarificationInfosNode()
     }
 
-    private fun verifierRoomEstEmptyInsertAllEtUiAprestartNeedUpdateListener() {
+    private suspend fun addTestDataToFirebase(): DataBasesInfosSql {
+        val testData = DataBasesInfosSql(
+            d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
+        )
+
+        val tariffItems = testData.d_TarificationInfos.toList()
+        tariffItems.forEach { tarif ->
+            fireBaseOperationsHandler.addSingleTariffToFirebase(tarif)
+        }
+
+        upsert(testData)
+        return testData
+    }
+
+    private fun verifierRoomEstEmptyInsertAllEtUiApres() {
         coroutineScope.launch {
             try {
                 val isEmpty = roomOperationsHandler.isDatabaseEmpty()
+
                 if (isEmpty) {
                     val firebaseData = fireBaseOperationsHandler.getDataFromFirebase()
-                    if (firebaseData != null &&
-                        (
-                                firebaseData.d_TarificationInfos.isNotEmpty())
-                    ) {
+
+                    if (firebaseData != null && firebaseData.d_TarificationInfos.isNotEmpty()) {
                         roomOperationsHandler.insertAll(firebaseData)
+                        collectLatestData()
+                    } else {
+                        val testData = DataBasesInfosSql(
+                            d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
+                        )
+                        roomOperationsHandler.insertAll(testData)
                         collectLatestData()
                     }
                 }
             } catch (e: Exception) {
-                // Handle exception
+                // Exception handling left empty
             }
         }
     }
@@ -134,7 +135,9 @@ class InfosSqlDataBasesRepository(
                 roomOperationsHandler.insertAll(data)
                 setToFireBase(data)
                 collectLatestData()
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                // Exception handling left empty
+            }
         }
     }
 
@@ -147,7 +150,7 @@ class InfosSqlDataBasesRepository(
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
-                // Handle exception
+                // Exception handling left empty
             }
         }
     }
@@ -160,7 +163,7 @@ class InfosSqlDataBasesRepository(
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
-            // Handle exception
+            // Exception handling left empty
         }
     }
 
@@ -170,7 +173,7 @@ class InfosSqlDataBasesRepository(
                 roomOperationsHandler.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
-                // Handle exception
+                // Exception handling left empty
             }
         }
     }
@@ -184,7 +187,7 @@ class InfosSqlDataBasesRepository(
                 onSuccess()
             }
         } catch (e: Exception) {
-            // Handle exception
+            // Exception handling left empty
         }
     }
 }
