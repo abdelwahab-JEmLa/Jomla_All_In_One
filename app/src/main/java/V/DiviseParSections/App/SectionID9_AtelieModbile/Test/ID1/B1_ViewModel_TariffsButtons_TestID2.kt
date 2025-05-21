@@ -38,7 +38,7 @@ class TariffsButtonsViewModel_TestID2(
 
     private fun loadTariffs() {
         loadingJob?.cancel()
-        bonAchatCollectorJob?.cancel() // Annuler l'ancien collecteur si existant
+        bonAchatCollectorJob?.cancel()
 
         loadingJob = viewModelScope.launch {
             _uiState.update { it.copy(loadingProgress = 0f) }
@@ -51,13 +51,11 @@ class TariffsButtonsViewModel_TestID2(
                     .repositorys_Model
                     .repository_1_3_TransactionCommercial
 
-                // Combine progress from both repositories
                 val progressJob = launch {
                     combine(
                         produitRepository.progressRepo,
                         repoC3_BonAchat.progressRepo
                     ) { produitProgress, bonAchatProgress ->
-                        // Average the progress of both repositories
                         (produitProgress + bonAchatProgress) / 2f
                     }.collect { combinedProgress ->
                         _uiState.update { it.copy(loadingProgress = combinedProgress) }
@@ -66,9 +64,7 @@ class TariffsButtonsViewModel_TestID2(
 
                 val tarificationList = testD_TarificationInfosT2()
 
-                // Lancement d'un job pour collecter les BonAchat
                 bonAchatCollectorJob = launch {
-                    // Collecte des BonAchats en temps réel
                     val bonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
 
                     _uiState.update { currentState ->
@@ -78,9 +74,7 @@ class TariffsButtonsViewModel_TestID2(
                         )
                     }
 
-                    // Configurer un observateur pour les changements futurs
                     launch {
-                        // Réutiliser activeId comme déclencheur d'observation
                         repoC3_BonAchat.activeId.collect { _ ->
                             val updatedBonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
                             _uiState.update { it.copy(bonAchatList = updatedBonAchatList) }
