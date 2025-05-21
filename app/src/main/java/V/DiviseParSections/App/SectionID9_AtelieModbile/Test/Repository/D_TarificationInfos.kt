@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
 import android.annotation.SuppressLint
@@ -23,7 +23,7 @@ data class D_TarificationInfos(
     val nom: String = getStrDateTime(timestamps),
 
     //Etates Mutable
-    val needUpdate: Boolean = true ,
+    val needUpdate: Boolean = true,
 
     //keyFireBase
     val keyFireBase: String = getKeyFireBase(id, nom),

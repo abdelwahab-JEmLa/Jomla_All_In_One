@@ -1,13 +1,13 @@
 // Updated mapFromFirebaseSnapshot.kt
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 

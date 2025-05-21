@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.testD_TarificationInfosT2
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

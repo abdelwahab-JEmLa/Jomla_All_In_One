@@ -1,12 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.testD_TarificationInfosT2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.getDataFromFirebase
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.startNeedUpdateListener
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.stopNeedUpdateListener
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
@@ -38,18 +33,34 @@ class InfosSqlDataBasesRepository(
 
     init {
         coroutineScope.launch {
-            deleteTarificationInfosNodeFromFirebase()
-
-            val isFirebaseEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
-
-            if (isFirebaseEmpty) {
-                upsertAllAndReturnListIdToData(testD_TarificationInfosT2()) { mapData ->
-                    Log.d("Repository", "Added with keys: ${mapData.keys}")
+            val isEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync {
+                coroutineScope.launch {
+                    upsertAllAndReturnListIdToData(testD_TarificationInfosT2()) { mapData ->
+                        Log.d("Repository", "Added with keys: ${mapData.keys}")
+                    }
+                    delay(1000)
                 }
-                delay(1000)
-                initInsertAuRoomIfEmpty()
-            } else {
-                initInsertAuRoomIfEmpty()
+            }
+
+            if (!isEmpty) {
+                fireBaseOperationsHandler.getDataFromFirebase() { tarificationsList ->
+                    upsertAllAndReturnListIdToData(tarificationsList) { mapData ->
+                        // Log all IDs from the returned map
+                        val idsStr = mapData.keys.joinToString(", ")
+                        Log.d(
+                            "Repository",
+                            "Successfully processed tarification IDs from Firebase: $idsStr"
+                        )
+
+                        // If you need additional details about each tarification
+                        mapData.forEach { (id, tarif) ->
+                            Log.d(
+                                "Repository",
+                                "Tarification $id: Name=${tarif.nom}, Price=${tarif.prixCurrency}, Type=${tarif.typeTarificationEnumT2Correspond}"
+                            )
+                        }
+                    }
+                }
             }
 
             collectRoom()
@@ -59,7 +70,7 @@ class InfosSqlDataBasesRepository(
 
     private fun upsertAllAndReturnListIdToData(
         dataList: List<D_TarificationInfos>,
-        onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
+        onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit = {}
     ) {
         try {
             coroutineScope.launch(Dispatchers.IO) {
@@ -68,7 +79,10 @@ class InfosSqlDataBasesRepository(
                         coroutineScope.launch {
                             try {
                                 fireBaseOperationsHandler.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
-                                    Log.d("Repository", "Firebase entries created with keys: ${firebaseMap.keys}")
+                                    Log.d(
+                                        "Repository",
+                                        "Firebase entries created with keys: ${firebaseMap.keys}"
+                                    )
                                     onAddSuccess(mapData)
                                 }
                             } catch (e: Exception) {
@@ -87,31 +101,6 @@ class InfosSqlDataBasesRepository(
 
     private fun deleteTarificationInfosNodeFromFirebase() {
         fireBaseOperationsHandler.deleteTarificationInfosNode()
-    }
-
-    private fun initInsertAuRoomIfEmpty() {
-        coroutineScope.launch {
-            try {
-                val isEmpty = roomOperationsHandler.isDatabaseEmpty()
-
-                if (isEmpty) {
-                    val firebaseData = fireBaseOperationsHandler.getDataFromFirebase()
-
-                    if (firebaseData != null && firebaseData.d_TarificationInfos.isNotEmpty()) {
-                        roomOperationsHandler.insertAll(firebaseData)
-                        collectLatestData()
-                    } else {
-                        val testData = DataBasesInfosSql(
-                            d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
-                        )
-                        roomOperationsHandler.insertAll(testData)
-                        collectLatestData()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("Repository", "Error in initInsertAuRoomIfEmpty: ${e.message}")
-            }
-        }
     }
 
     fun cleanup() {
@@ -193,3 +182,4 @@ class InfosSqlDataBasesRepository(
         }
     }
 }
+

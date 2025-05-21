@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

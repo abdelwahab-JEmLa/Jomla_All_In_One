@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class RoomOperationsHandler(private val database: AppDatabase) {
-
     suspend fun upsertAllAndReturnListIdToData(
         data: List<D_TarificationInfos>,
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit

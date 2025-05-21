@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.mapFromFirebaseSnapshot
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
@@ -15,6 +16,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
 class FireBaseOperationsHandler(
@@ -23,11 +25,23 @@ class FireBaseOperationsHandler(
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
+    private val childD_TarificationInfos = ref.child("D_TarificationInfos")
+
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
+
+    suspend fun isDatabaseEmptyAsync(onDataEstEmpty: () -> Unit) =
+        suspendCancellableCoroutine { continuation ->
+            Log.d("FireBaseOperationsHandler", "Checking if Firebase database is empty")
+            isDatabaseEmpty { isEmpty ->
+                continuation.resume(isEmpty)
+                onDataEstEmpty()
+            }
+        }
+
     private fun isDatabaseEmpty(onResult: (Boolean) -> Unit) {
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+        childD_TarificationInfos.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val isEmpty = !snapshot.exists() || !snapshot.hasChildren()
                 onResult(isEmpty)
@@ -37,6 +51,31 @@ class FireBaseOperationsHandler(
                 onResult(false)
             }
         })
+    }
+
+    suspend fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit )
+    : DataBasesInfosSql? = withContext(Dispatchers.IO) {
+        suspendCancellableCoroutine { continuation ->
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        try {
+                            val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
+                            continuation.resume(infosSqlDataBases)
+                            onAddSuccess(infosSqlDataBases.d_TarificationInfos)
+                        } catch (e: Exception) {
+                            continuation.resumeWithException(e)
+                        }
+                    } else {
+                        continuation.resume(null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resumeWithException(Exception("Firebase data retrieval cancelled: ${error.message}"))
+                }
+            })
+        }
     }
 
     suspend fun upsertAllAndReturnListIdToData(
@@ -79,22 +118,22 @@ class FireBaseOperationsHandler(
 
             // Perform the batch update to Firebase
             if (tarifsMap.isNotEmpty()) {
-                ref.child("D_TarificationInfos").updateChildren(tarifsMap).await()
-                Log.d("FireBaseOperationsHandler", "Successfully uploaded ${tarifsMap.size} tarifications to Firebase")
+                childD_TarificationInfos.updateChildren(tarifsMap).await()
+                Log.d(
+                    "FireBaseOperationsHandler",
+                    "Successfully uploaded ${tarifsMap.size} tarifications to Firebase"
+                )
             }
 
             // Call the success callback with the result map
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
-            Log.e("FireBaseOperationsHandler", "Error in upsertAllAndReturnListIdToData: ${e.message}")
+            Log.e(
+                "FireBaseOperationsHandler",
+                "Error in upsertAllAndReturnListIdToData: ${e.message}"
+            )
             onAddSuccess(emptyMap()) // Return empty map on error
-        }
-    }
-
-    suspend fun isDatabaseEmptyAsync(): Boolean = suspendCancellableCoroutine { continuation ->
-        isDatabaseEmpty { isEmpty ->
-            continuation.resume(isEmpty)
         }
     }
 
@@ -108,30 +147,26 @@ class FireBaseOperationsHandler(
             }
     }
 
-    fun addSingleTariffToFirebase(tariff: D_TarificationInfos) {
-        try {
-            val tarifMap = mutableMapOf<String, Any>()
 
-            tariff::class.memberProperties.forEach { prop ->
-                val value = prop.getter.call(tariff)
-                if (value != null) {
-                    if (value::class.java.isEnum) {
-                        tarifMap[prop.name] = value.toString()
-                    } else {
-                        tarifMap[prop.name] = value
-                    }
-                } else {
-                    tarifMap[prop.name] = "null"
-                }
+    fun startNeedUpdateListener() {
+        Log.d("FireBaseOperationsHandler", "Starting Firebase update listener")
+        needUpdateListener = ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("FireBaseOperationsHandler", "Firebase data changed, syncing with Room")
+                //  coroutineScope.startNeedUpdateListener(roomOperationsHandler, ref)
             }
 
-            val key = tariff.keyFireBase.takeIf { it.isNotEmpty() }
-                ?: getKeyFireBase(tariff.id, tariff.nom)
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FireBaseOperationsHandler", "Firebase listener cancelled: ${error.message}")
+            }
+        })
+    }
 
-            ref.child("D_TarificationInfos").child(key).setValue(tarifMap)
-            Log.d("FireBaseOperationsHandler", "Successfully added single tariff to Firebase with key: $key")
-        } catch (e: Exception) {
-            Log.e("FireBaseOperationsHandler", "Error adding single tariff to Firebase: ${e.message}")
+    fun stopNeedUpdateListener() {
+        Log.d("FireBaseOperationsHandler", "Stopping Firebase update listener")
+        needUpdateListener?.let {
+            ref.removeEventListener(it)
+            needUpdateListener = null
         }
     }
 }
