@@ -34,30 +34,16 @@ class InfosSqlDataBasesRepository(
         coroutineScope.launch {
             fireBase.isDatabaseEmpty {
                 coroutineScope.launch {
-                    val dataTestList = testD_TarificationInfosT2()
+                    val dataTestList: List<D_TarificationInfos> =
+                        fireBase.getDataFromFirebase {
+                            it.ifEmpty {
+                                testD_TarificationInfosT2()
+                            }
+                        }?.d_TarificationInfos ?: testD_TarificationInfosT2()
 
                     upsertAllRoomEtFireBase(dataTestList) { mapData ->
                         Log.d(
                             "Repository", "Added with keys: ${mapData.keys}"
-                        )
-                    }
-                }
-            }
-
-            fireBase.getDataFromFirebase { tarificationsList ->
-                upsertAllRoomEtFireBase(tarificationsList) { mapData ->
-                    // Log all IDs from the returned map
-                    val idsStr = mapData.keys.joinToString(", ")
-                    Log.d(
-                        "Repository",
-                        "Successfully processed tarification IDs from Firebase: $idsStr"
-                    )
-
-                    // If you need additional details about each tarification
-                    mapData.forEach { (id, tarif) ->
-                        Log.d(
-                            "Repository",
-                            "Tarification $id: Name=${tarif.nom}, Price=${tarif.prixCurrency}, Type=${tarif.typeTarificationEnumT2Correspond}"
                         )
                     }
                 }
@@ -182,4 +168,3 @@ class InfosSqlDataBasesRepository(
         }
     }
 }
-

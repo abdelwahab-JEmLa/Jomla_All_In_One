@@ -53,9 +53,8 @@ class FireBaseOperationsHandler(
         })
     }
 
-    suspend fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit )
-    : DataBasesInfosSql? = withContext(Dispatchers.IO) {
-        suspendCancellableCoroutine { continuation ->
+    suspend fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit): DataBasesInfosSql? {
+        return suspendCancellableCoroutine { continuation ->
             ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
