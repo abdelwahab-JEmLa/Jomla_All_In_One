@@ -47,6 +47,7 @@ fun TariffsButtons_TestID2(
     }
 
     val shouldShowLoading = uiState.loadingProgress < 1f
+
    // Text("${uiState.bonAchatList.size}")
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
