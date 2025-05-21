@@ -31,17 +31,10 @@ fun TariffsButtons_TestID2(
     filterProductId: Int = 4,
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
-) {         //<--
-//TODO(1): enleve logs et commaintes pour essye de consise le code
-
+) {
     var afficheButtons by remember { mutableStateOf(true) }
-
     val uiState by viewModel.uiState.collectAsState()
-
-    val tarificationList =
-        //  uiState.tariffsList
-        testD_TarificationInfosT2()
-
+    val tarificationList = testD_TarificationInfosT2()
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
@@ -52,7 +45,6 @@ fun TariffsButtons_TestID2(
         }
     }
 
-    // Fixed: Better loading condition that considers both progress and data syncing state
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
             (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
@@ -64,14 +56,12 @@ fun TariffsButtons_TestID2(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Show different progress indicators based on the current operation
                     if (uiState.loadingProgress > 0f) {
                         CircularProgressIndicator(
                             progress = { uiState.loadingProgress },
                             trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         )
 
-                        // Enhanced progress text with detailed breakdown
                         val progressPercentage = (uiState.loadingProgress * 100).toInt()
                         val syncStatus = viewModel.getSyncStatus()
 
@@ -82,7 +72,6 @@ fun TariffsButtons_TestID2(
                             textAlign = TextAlign.Center
                         )
 
-                        // Show detailed progress breakdown if available
                         if (uiState.sqlProgress > 0f || uiState.produitProgress > 0f || uiState.bonAchatProgress > 0f) {
                             Text(
                                 text = "SQL: ${(uiState.sqlProgress * 100).toInt()}% | " +
@@ -94,7 +83,6 @@ fun TariffsButtons_TestID2(
                             )
                         }
                     } else {
-                        // Show indeterminate progress when starting up
                         CircularProgressIndicator()
                         Text(
                             text = "Initializing...",
@@ -106,7 +94,6 @@ fun TariffsButtons_TestID2(
                 }
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-
                     MainFilter(
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
@@ -119,8 +106,7 @@ fun TariffsButtons_TestID2(
                                 { typeTarification, latestTariffLocalData, context ->
                                     {
                                         val typeName = typeTarification.name
-                                        val message =
-                                            "$typeName: ${latestTariffLocalData.prixCurrency}"
+                                        val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
                                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                                         afficheButtons = false
                                         fermeDialog()
@@ -131,7 +117,6 @@ fun TariffsButtons_TestID2(
                     )
                 }
             } else {
-                // Show waiting state with more detailed information
                 val dataStatus = when {
                     produitInfosList.isEmpty() && bonAchatList.isEmpty() -> "Loading initial data..."
                     produitInfosList.isEmpty() -> "Loading products..."
