@@ -30,7 +30,6 @@ class InfosSqlDataBasesRepository(
 
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
-
     init {
         coroutineScope.launch {
             fireBase.isDatabaseEmpty {
@@ -44,15 +43,7 @@ class InfosSqlDataBasesRepository(
                             ?.d_TarificationInfos
                             ?: testD_TarificationInfosT2()
 
-                    Log.d("Repository", "Initial data list size: ${dataTestList.size}")
-
-                    // Make sure all items have ID = 0 to force Room to generate new IDs
-                    val preparedData = dataTestList.map {
-                        it.copy(id = 0L, keyFireBase = "") // Reset keyFireBase to let it be generated from new ID
-                    }
-                    Log.d("Repository", "Prepared data with reset IDs for insertion: ${preparedData.size} items")
-
-                    upsertAllRoomEtFireBase(preparedData) { mapData ->
+                    upsertAllRoomEtFireBase(dataTestList) { mapData ->
                         Log.d(
                             "Repository", "Added with keys: ${mapData.keys}"
                         )
