@@ -9,7 +9,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID2.TariffsButtonsViewModel_TestID2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test.TariffsButtonsViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.FireBase.FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.Module.SQl.RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Fragment.ViewModel.DataBase.A.SQL.InfosSqlDataBasesRepository
