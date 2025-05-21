@@ -32,7 +32,7 @@ fun TariffsButtons_TestID2(
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
 ) {
-    var afficheButtons by remember { mutableStateOf(true) }
+    var afficheButtons by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     val tarificationList = testD_TarificationInfosT2()
     val bonAchatList = uiState.bonAchatList
