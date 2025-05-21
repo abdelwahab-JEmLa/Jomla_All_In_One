@@ -12,9 +12,9 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.MessageVocaleDao
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.A_ProduitInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.B_ClientInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.C_TypeTarificationInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfosDao
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.D_TarificationInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos

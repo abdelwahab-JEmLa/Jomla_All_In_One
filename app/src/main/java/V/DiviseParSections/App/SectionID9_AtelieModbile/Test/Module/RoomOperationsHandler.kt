@@ -13,13 +13,18 @@ class RoomOperationsHandler(private val database: AppDatabase) {
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
+            // Log incoming data IDs
+            Log.d("RoomOperationsHandler", "Incoming tarifications with IDs: ${data.map { it.id }}")
+
             val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(data)
+            Log.d("RoomOperationsHandler", "Room generated IDs: $ids")
 
             val resultMap = mutableMapOf<Long, D_TarificationInfos>()
             ids.forEachIndexed { index, id ->
                 if (index < data.size) {
-                    val updatedTarif = data[index].copy(id = id)
-                    resultMap[id] = updatedTarif
+                    val updatedTariff = data[index].copy(id = id)
+                    resultMap[id] = updatedTariff
+                    Log.d("RoomOperationsHandler", "Mapped ID $id to tarif with name: ${updatedTariff.nom}")
                 }
             }
 
