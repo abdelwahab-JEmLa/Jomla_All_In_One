@@ -8,7 +8,7 @@ import java.util.Calendar
 
 @Entity
 data class D_TarificationInfos(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     //Forging IDs
     val idParentProduit: Long = 0L,
@@ -27,18 +27,19 @@ data class D_TarificationInfos(
 
     //keyFireBase
     val keyFireBase: String = getKeyFireBase(id, nom),
-    )
+)
 
 fun getKeyFireBase(
     dataId: Long? = null,
     dataNom: String? = null
 ): String {
-    return if (dataId != null) {
+    return if (dataId != null && dataId != 0L) {
         "-<$dataId($dataNom)"
     } else {
         "-<$dataNom"
     }
 }
+
 @SuppressLint("DefaultLocale")
 fun getStrDateTime(vidTimestamp: Long): String {
     val calendar = Calendar.getInstance()
