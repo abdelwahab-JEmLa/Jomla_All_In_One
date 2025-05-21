@@ -6,7 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface _1_3_TransactionCommercial_Repository {
+interface C3_BonAchate_Repository {
     var modelDatasSnapList: SnapshotStateList<C3_BonAchate>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)

@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun testBonAchatT2(): List<BonAchatT2> {
+fun testBonAchatT2(): List<C3_BonAchate> {
     return listOf(
-        BonAchatT2(
+        C3_BonAchate(
             vid = 1,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
@@ -21,7 +22,7 @@ fun testBonAchatT2(): List<BonAchatT2> {
             cJustPourVoirPanie = false,
             ouvert = true
         ),
-        BonAchatT2(
+        C3_BonAchate(
             vid = 2,
             clientAcheteurID = 5L,
             nomClientConcerned = "sara",

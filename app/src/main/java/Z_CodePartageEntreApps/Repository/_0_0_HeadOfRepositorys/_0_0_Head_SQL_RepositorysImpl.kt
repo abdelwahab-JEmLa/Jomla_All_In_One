@@ -9,7 +9,7 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
@@ -41,7 +41,7 @@ class _0_0_Head_SQL_RepositorysImpl(
 
     private val repo_1_1_CouleurAcheteOperation: _1_1_CouleurAcheteOperation_Repository,
     private val repo_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
-    private val repo_1_3_TransactionCommercial: _1_3_TransactionCommercial_Repository,
+    private val repo_1_3_TransactionCommercial: C3_BonAchate_Repository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
@@ -111,7 +111,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = _1_3_TransactionCommercial_Repository.sonDataBaseRef,
+                            databaseRef = C3_BonAchate_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = onSuccess,
                             onError = onError
@@ -247,7 +247,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = _1_3_TransactionCommercial_Repository.sonDataBaseRef,
+                            databaseRef = C3_BonAchate_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = { resultVid ->
                                 Log.d(

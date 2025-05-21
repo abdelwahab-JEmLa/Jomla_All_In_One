@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.FragID2.Test
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Models.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MainFilter(
     tarificationList: List<D_TarificationInfosT2>,
-    bonAchatList: List<BonAchatT2>,
+    bonAchatList: List<C3_BonAchate>,
     produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
@@ -24,7 +25,7 @@ fun MainFilter(
     }
 
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID } ?: BonAchatT2()
+        bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
     }
 
     val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {

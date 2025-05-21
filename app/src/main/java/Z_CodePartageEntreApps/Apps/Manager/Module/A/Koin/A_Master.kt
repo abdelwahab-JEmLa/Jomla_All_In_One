@@ -45,8 +45,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercialRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_RepositoryImp
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
@@ -120,7 +120,7 @@ val commonRepositoriesModule = module {
 
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
-    single<_1_3_TransactionCommercial_Repository> { _1_3_TransactionCommercialRepositoryImpl(get()) }
+    single<C3_BonAchate_Repository> { C3_BonAchate_RepositoryImp(get()) }
     single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
     single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
 
@@ -149,7 +149,6 @@ val navigationModule = module {
 val viewModelModule = module {
     viewModel {
         TariffsButtonsViewModel_TestID2(
-            get(),
             get(),
         )
     }

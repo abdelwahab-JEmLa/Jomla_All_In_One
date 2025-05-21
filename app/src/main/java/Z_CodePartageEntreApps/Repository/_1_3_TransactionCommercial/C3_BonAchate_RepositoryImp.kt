@@ -17,10 +17,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _1_3_TransactionCommercialRepositoryImpl(
+class C3_BonAchate_RepositoryImp(
     val appDatabase: AppDatabase
-) : _1_3_TransactionCommercial_Repository {
-    private val TAG = _1_3_TransactionCommercial_Repository.TAG
+) : C3_BonAchate_Repository {
+    private val TAG = C3_BonAchate_Repository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<C3_BonAchate> =
         mutableStateListOf()
@@ -40,7 +40,6 @@ class _1_3_TransactionCommercialRepositoryImpl(
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val logOperations = _1_3_TransactionCommercialRepositoryLogOperationsExtention(this)
 
     init {
         repositoryScope.launch {
@@ -75,9 +74,6 @@ class _1_3_TransactionCommercialRepositoryImpl(
             loadDepuitRoom()
             checkDataConsistency()
 
-            if (TAG.isNotEmpty()) {
-                log()
-            }
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
@@ -122,7 +118,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _1_3_TransactionCommercial_Repository.sonDataBaseRef.get()
+                    val task = C3_BonAchate_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -193,7 +189,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
                     }
                 }
 
-                _1_3_TransactionCommercial_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                C3_BonAchate_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -203,7 +199,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    C3_BonAchate_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -223,7 +219,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _1_3_TransactionCommercial_Repository.sonDataBaseRef.get()
+                    val task = C3_BonAchate_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
@@ -274,7 +270,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    C3_BonAchate_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
@@ -299,14 +295,4 @@ class _1_3_TransactionCommercialRepositoryImpl(
         cleanup()
     }
 
-    fun log() {
-        logOperations.log(
-            modelDatasSnapList.size,
-            initialDataLoaded,
-            progressRepo.value,
-            lastUpdateTimestamp,
-            isListenerActive.get(),
-            isFlowListenerActive.get()
-        )
-    }
 }

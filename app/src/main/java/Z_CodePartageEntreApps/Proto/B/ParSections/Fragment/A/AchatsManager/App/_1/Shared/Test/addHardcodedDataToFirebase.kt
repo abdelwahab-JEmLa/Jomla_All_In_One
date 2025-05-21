@@ -2,13 +2,13 @@ package Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App.
 
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 
 suspend fun addHardcodedDataToFirebase(
     _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-    _1_3_TransactionCommercial_Repository: _1_3_TransactionCommercial_Repository,
+    C3_BonAchate_Repository: C3_BonAchate_Repository,
     _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     active: Boolean = false
 ) {     /*
@@ -270,7 +270,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListBonAchat = mutableStateListOf<C3_BonAchate>()
                 snapListBonAchat.addAll(bonAchatTestData)
-                _1_3_TransactionCommercial_Repository.updateMultiDatas(snapListBonAchat)
+                C3_BonAchate_Repository.updateMultiDatas(snapListBonAchat)
                 Log.d(
                     TAG,
                     "Added ${bonAchatTestData.size} hardcoded BonAchat items to repository"
