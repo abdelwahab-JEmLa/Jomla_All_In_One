@@ -82,45 +82,41 @@ class FireBaseOperationsHandler(
         onAddSuccess: (Map<String, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
-            // Create a batch update for Firebase
-            val tarifsMap = mutableMapOf<String, Any>()
+            val tariffsMap = mutableMapOf<String, Any>()
             val resultMap = mutableMapOf<String, D_TarificationInfos>()
 
-            // Process each tarification object and prepare it for Firebase
-            mapData.values.forEach { tarif ->
+            mapData.values.forEach { tariff ->
                 try {
-                    val tarifMap = mutableMapOf<String, Any>()
-                    tarif::class.memberProperties.forEach { prop ->
-                        val value = prop.getter.call(tarif)
+                    val tariffMap = mutableMapOf<String, Any>()
+                    tariff::class.memberProperties.forEach { prop ->
+                        val value = prop.getter.call(tariff)
                         if (value != null) {
-                            // Handle enums by using their name
                             if (value::class.java.isEnum) {
-                                tarifMap[prop.name] = value.toString()
+                                tariffMap[prop.name] = value.toString()
                             } else {
-                                tarifMap[prop.name] = value
+                                tariffMap[prop.name] = value
                             }
                         } else {
-                            tarifMap[prop.name] = "null"
+                            tariffMap[prop.name] = "null"
                         }
                     }
 
-                    // Generate or use existing Firebase key
-                    val key = tarif.keyFireBase.takeIf { it.isNotEmpty() }
-                        ?: getKeyFireBase(tarif.id, tarif.nom)
+                    val key = tariff.keyFireBase.takeIf { it.isNotEmpty() }
+                        ?: getKeyFireBase(tariff.id, tariff.nom)
 
-                    tarifsMap[key] = tarifMap
-                    resultMap[key] = tarif
+                    tariffsMap[key] = tariffMap
+                    resultMap[key] = tariff
                 } catch (e: Exception) {
-                    Log.e("FireBaseOperationsHandler", "Error processing tarif: ${e.message}")
+                    Log.e("FireBaseOperationsHandler", "Error processing tariff: ${e.message}")
                 }
             }
 
             // Perform the batch update to Firebase
-            if (tarifsMap.isNotEmpty()) {
-                childD_TarificationInfos.updateChildren(tarifsMap).await()
+            if (tariffsMap.isNotEmpty()) {
+                childD_TarificationInfos.updateChildren(tariffsMap).await()
                 Log.d(
                     "FireBaseOperationsHandler",
-                    "Successfully uploaded ${tarifsMap.size} tarifications to Firebase"
+                    "Successfully uploaded ${tariffsMap.size} tarifications to Firebase"
                 )
             }
 
