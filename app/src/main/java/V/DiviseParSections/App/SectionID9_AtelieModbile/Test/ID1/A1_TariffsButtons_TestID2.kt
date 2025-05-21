@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
@@ -31,7 +32,7 @@ fun TariffsButtons_TestID2(
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
 ) {
-    var afficheButtons by remember { mutableStateOf(false) }
+    var afficheButtons by remember { mutableStateOf(true) }
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -49,9 +50,14 @@ fun TariffsButtons_TestID2(
         }
     }
 
-    val shouldShowLoading = uiState.loadingProgress < 1f
 
-  //  Text("${tarificationList.size}")
+    val shouldShowLoading = uiState.loadingProgress < 1f
+          Column {
+   Text("${tarificationList.take(2)}")
+              HorizontalDivider(thickness=10.dp)
+   Text("${bonAchatList.take(2)}")
+              HorizontalDivider(thickness=10.dp)
+   Text("${produitInfosList.take(2)}")        }
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
