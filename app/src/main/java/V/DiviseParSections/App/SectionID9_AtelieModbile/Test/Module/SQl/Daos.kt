@@ -94,6 +94,9 @@ interface D_TarificationInfosDao {
     suspend fun getTarificationById(id: Long): D_TarificationInfos?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAllAndReturnIDs(items: List<D_TarificationInfos>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(tarification: D_TarificationInfos)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

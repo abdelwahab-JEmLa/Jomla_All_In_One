@@ -6,8 +6,10 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.get
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.startNeedUpdateListener
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.stopNeedUpdateListener
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.SQl.RoomOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
 class InfosSqlDataBasesRepository(
@@ -25,7 +26,6 @@ class InfosSqlDataBasesRepository(
     private val roomOperationsHandler: RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val mutex = Mutex()
 
     private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
     private var modelList: List<DataBasesInfosSql>
@@ -43,7 +43,9 @@ class InfosSqlDataBasesRepository(
             val isFirebaseEmpty = fireBaseOperationsHandler.isDatabaseEmptyAsync()
 
             if (isFirebaseEmpty) {
-                addTestDataToFirebase()
+                upsertAllAndReturnListIdToData(testD_TarificationInfosT2()) { mapData ->
+                    Log.d("Repository", "Added with keys: ${mapData.keys}")
+                }
                 delay(1000)
                 initInsertAuRoomIfEmpty()
             } else {
@@ -55,22 +57,36 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    private fun deleteTarificationInfosNodeFromFirebase() {
-        fireBaseOperationsHandler.deleteTarificationInfosNode()
+    private fun upsertAllAndReturnListIdToData(
+        dataList: List<D_TarificationInfos>,
+        onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
+    ) {
+        try {
+            coroutineScope.launch(Dispatchers.IO) {
+                try {
+                    roomOperationsHandler.upsertAllAndReturnListIdToData(dataList) { mapData ->
+                        coroutineScope.launch {
+                            try {
+                                fireBaseOperationsHandler.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
+                                    Log.d("Repository", "Firebase entries created with keys: ${firebaseMap.keys}")
+                                    onAddSuccess(mapData)
+                                }
+                            } catch (e: Exception) {
+                                Log.e("Repository", "Error in Firebase upsert: ${e.message}")
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("Repository", "Error in Room upsert: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Repository", "Error launching coroutine: ${e.message}")
+        }
     }
 
-    private suspend fun addTestDataToFirebase(): DataBasesInfosSql {
-        val testData = DataBasesInfosSql(
-            d_TarificationInfos = testD_TarificationInfosT2().toMutableList()
-        )
-
-        val tariffItems = testData.d_TarificationInfos.toList()
-        tariffItems.forEach { tarif ->
-            fireBaseOperationsHandler.addSingleTariffToFirebase(tarif)
-        }
-
-        upsert(testData)
-        return testData
+    private fun deleteTarificationInfosNodeFromFirebase() {
+        fireBaseOperationsHandler.deleteTarificationInfosNode()
     }
 
     private fun initInsertAuRoomIfEmpty() {
@@ -93,7 +109,7 @@ class InfosSqlDataBasesRepository(
                     }
                 }
             } catch (e: Exception) {
-                // Exception handling left empty
+                Log.e("Repository", "Error in initInsertAuRoomIfEmpty: ${e.message}")
             }
         }
     }
@@ -133,10 +149,9 @@ class InfosSqlDataBasesRepository(
         withContext(Dispatchers.IO) {
             try {
                 roomOperationsHandler.insertAll(data)
-                setToFireBase(data)
                 collectLatestData()
             } catch (e: Exception) {
-                // Exception handling left empty
+                Log.e("Repository", "Error in upsert: ${e.message}")
             }
         }
     }
@@ -150,7 +165,7 @@ class InfosSqlDataBasesRepository(
                 upsert(data)
                 onSuccess()
             } catch (e: Exception) {
-                // Exception handling left empty
+                Log.e("Repository", "Error in upsert with callback: ${e.message}")
             }
         }
     }
@@ -163,7 +178,7 @@ class InfosSqlDataBasesRepository(
             modelList = listOf(data)
             onSuccess()
         } catch (e: Exception) {
-            // Exception handling left empty
+            Log.e("Repository", "Error in collectLatestData: ${e.message}")
         }
     }
 
@@ -173,21 +188,8 @@ class InfosSqlDataBasesRepository(
                 roomOperationsHandler.deleteAll()
                 collectLatestData()
             } catch (e: Exception) {
-                // Exception handling left empty
+                Log.e("Repository", "Error in deleteAllRoom: ${e.message}")
             }
-        }
-    }
-
-    private fun setToFireBase(
-        dataBasesInfosSql: DataBasesInfosSql,
-        onSuccess: () -> Unit = {}
-    ) {
-        try {
-            fireBaseOperationsHandler.addToFirebaseAsync(dataBasesInfosSql) {
-                onSuccess()
-            }
-        } catch (e: Exception) {
-            // Exception handling left empty
         }
     }
 }

@@ -9,7 +9,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
 
     return listOf(
         D_TarificationInfos(
-            id = 1,
             timestamps = createTimestamp(
                 day = 1,
                 hour = 12,
@@ -21,8 +20,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             prixCurrency = 185.99
         ),
         D_TarificationInfos(
-            id = 2,
-
             timestamps = createTimestamp(
                 day = 5,
                 hour = 13,
@@ -34,8 +31,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             prixCurrency = 190.50
         ),
         D_TarificationInfos(
-            id = 3,
-
             timestamps = createTimestamp(
                 day = 5,
                 hour = 14,
@@ -47,8 +42,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             prixCurrency = 195.75
         ),
         D_TarificationInfos(
-            id = 4,
-
             timestamps = createTimestamp(
                 day = 6,
                 hour = 3,
@@ -60,8 +53,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             prixCurrency = 00.00
         ),
         D_TarificationInfos(
-            id = 5,
-
             timestamps = createTimestamp(
                 day = 6,
                 hour = 4,
@@ -74,8 +65,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
         ),
 
         D_TarificationInfos(
-            id = 6,
-
             timestamps = createTimestamp(
                 day = 6,
                 hour = 4,
@@ -88,8 +77,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
         )
         ,
         D_TarificationInfos(
-            id = 7,
-
             timestamps = createTimestamp(
                 day = 6,
                 hour = 4,
