@@ -25,22 +25,9 @@ class E_InfosSqlDataBasesRepository(
 
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
-    val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-
-    private val _roomProgress = MutableStateFlow(0f)
-    private val _firebaseProgress = MutableStateFlow(0f)
-    val roomProgress: StateFlow<Float> = _roomProgress.asStateFlow()
-    val firebaseProgress: StateFlow<Float> = _firebaseProgress.asStateFlow()
+    val mainProgressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     init {
-        coroutineScope.launch {
-            combine(roomProgress, firebaseProgress) { roomProg, firebaseProg ->
-                (roomProg + firebaseProg) / 2f
-            }.collect { combinedProgress ->
-                progressRepo.value = combinedProgress
-            }
-        }
-
         coroutineScope.launch {
             updateProgress(0f)
             fireBase.getDataFromFirebase { dataList ->
@@ -51,8 +38,7 @@ class E_InfosSqlDataBasesRepository(
                         room.checkDataBaseIsEmpty { roomHandler ->
                             coroutineScope.launch {
                                 roomHandler.insertAllAndReturnListIdToData(dataList) {
-                                    updateRoomProgress(1f)
-                                    updateProgress(0.7f)
+                                    updateProgress(1f)
                                 }
                             }
                         }
@@ -68,15 +54,7 @@ class E_InfosSqlDataBasesRepository(
     }
 
     private fun updateProgress(progress: Float) {
-        progressRepo.value = progress.coerceIn(0f, 1f)
-    }
-
-    private fun updateRoomProgress(progress: Float) {
-        _roomProgress.value = progress.coerceIn(0f, 1f)
-    }
-
-    private fun updateFirebaseProgress(progress: Float) {
-        _firebaseProgress.value = progress.coerceIn(0f, 1f)
+        mainProgressRepo.value = progress.coerceIn(0f, 1f)
     }
 
     private fun upsertAllRoomEtFireBase(
@@ -87,37 +65,30 @@ class E_InfosSqlDataBasesRepository(
             coroutineScope.launch(Dispatchers.IO) {
                 try {
                     updateProgress(0.5f)
-                    updateRoomProgress(0f)
 
                     room.insertAllAndReturnListIdToData(dataList) { mapData ->
                         coroutineScope.launch {
-                            updateRoomProgress(1f)
                             updateProgress(0.7f)
 
                             try {
-                                updateFirebaseProgress(0f)
-
                                 fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
                                     coroutineScope.launch {
-                                        updateFirebaseProgress(1f)
                                         updateProgress(1f)
                                         onAddSuccess(mapData)
                                     }
                                 }
                             } catch (e: Exception) {
-                                updateFirebaseProgress(0f)
-                                updateProgress(0.7f)
                                 onAddSuccess(mapData)
+                                updateProgress(1f)
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    updateRoomProgress(0f)
-                    updateProgress(0.5f)
+                    updateProgress(1f)
                 }
             }
         } catch (e: Exception) {
-            updateProgress(0f)
+            updateProgress(1f)
         }
     }
 

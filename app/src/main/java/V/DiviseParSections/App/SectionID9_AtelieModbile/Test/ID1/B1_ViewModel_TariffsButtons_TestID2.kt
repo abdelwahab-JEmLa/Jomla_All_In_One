@@ -23,9 +23,6 @@ data class UiState(
 
     val loadingProgress: Float = 0f,
     val error: String? = null,
-    val sqlProgress: Float = 0f,
-    val produitProgress: Float = 0f,
-    val bonAchatProgress: Float = 0f,
     val isDataSyncing: Boolean = false,
     val isInitializing: Boolean = true,
     val hasStartedLoading: Boolean = false
@@ -35,6 +32,7 @@ class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     private val sqlRepository: E_InfosSqlDataBasesRepository,
 ) : ViewModel() {
+
     private val tariffsRepo = sqlRepository.modelListFlow
 
     private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
@@ -84,7 +82,7 @@ class TariffsButtonsViewModel_TestID2(
                     combine(
                         produitRepository.progressRepo,
                         repoC3_BonAchat.progressRepo,
-                        sqlRepository.progressRepo
+                        sqlRepository.mainProgressRepo
                     ) { produitProgress, bonAchatProgress, sqlProgress ->
 
                         val validProduitProgress = produitProgress.coerceIn(0f, 1f)
@@ -96,9 +94,6 @@ class TariffsButtonsViewModel_TestID2(
                         _uiState.update { currentState ->
                             currentState.copy(
                                 loadingProgress = totalProgress.coerceIn(0f, 1f),
-                                sqlProgress = validSqlProgress,
-                                produitProgress = validProduitProgress,
-                                bonAchatProgress = validBonAchatProgress,
                                 isDataSyncing = totalProgress < 1f,
                                 hasStartedLoading = true
                             )
@@ -237,19 +232,11 @@ class TariffsButtonsViewModel_TestID2(
             state.isInitializing -> "Initializing..."
             !state.hasStartedLoading -> "Preparing to load..."
             state.error != null -> "Error: ${state.error}"
-            state.isDataSyncing -> {
-                when {
-                    state.sqlProgress > 0f && state.sqlProgress < 1f -> "Syncing database..."
-                    state.produitProgress > 0f && state.produitProgress < 1f -> "Loading products..."
-                    state.bonAchatProgress > 0f && state.bonAchatProgress < 1f -> "Loading purchase orders..."
-                    else -> "Synchronizing data..."
-                }
-            }
+            state.isDataSyncing -> "Synchronizing data..."
             state.loadingProgress >= 1f -> "Loading completed"
             else -> "Ready"
         }
     }
-
 
     override fun onCleared() {
         super.onCleared()

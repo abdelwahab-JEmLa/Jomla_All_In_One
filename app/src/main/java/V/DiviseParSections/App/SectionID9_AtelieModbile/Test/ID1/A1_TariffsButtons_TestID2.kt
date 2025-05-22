@@ -33,7 +33,7 @@ fun TariffsButtons_TestID2(
     filterProductId: Long = 0,
     filterBonId: Long = 0,
     fermeDialog: () -> Unit,
-    cLenceDepuitDialogeAchate: Boolean =false,
+    cLenceDepuitDialogeAchate: Boolean = false,
 ) {
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
@@ -43,11 +43,6 @@ fun TariffsButtons_TestID2(
     val produitInfosList = uiState.produitInfosList
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
-   /*
-    Text("${produitInfosList.size}" +
-            "bonAchatList= ${bonAchatList.size}" +
-            "tarificationList= ${tarificationList.size}"
-    )     */
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
@@ -75,17 +70,6 @@ fun TariffsButtons_TestID2(
                             modifier = Modifier.padding(top = 8.dp),
                             textAlign = TextAlign.Center
                         )
-
-                        if (uiState.sqlProgress > 0f || uiState.produitProgress > 0f || uiState.bonAchatProgress > 0f) {
-                            Text(
-                                text = "SQL: ${(uiState.sqlProgress * 100).toInt()}% | " +
-                                        "Products: ${(uiState.produitProgress * 100).toInt()}% | " +
-                                        "Orders: ${(uiState.bonAchatProgress * 100).toInt()}%",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(top = 4.dp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
                     } else {
                         CircularProgressIndicator()
                         Text(
