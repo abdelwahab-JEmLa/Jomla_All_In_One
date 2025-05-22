@@ -45,10 +45,8 @@ fun TariffButtonItem(
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
     val context = LocalContext.current
 
-    // Special layout for GERANT type
     if (gerantButton(typeTarification, showLabels)) return
 
-    // Regular layout for other types
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
