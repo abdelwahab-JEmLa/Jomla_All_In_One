@@ -7,7 +7,8 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun Test2Prev() {
     TariffsButtons_TestID2(
-        fermeDialog = { {} },
+        cLenceDepuitDialogeAchate=true,
+        fermeDialog = { },
     )
 }
 
