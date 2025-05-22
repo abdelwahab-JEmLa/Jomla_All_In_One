@@ -35,6 +35,7 @@ fun TariffsButtons_TestID2(
     var afficheButtons by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
     val tarificationList = testD_TarificationInfosT2()
+
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
