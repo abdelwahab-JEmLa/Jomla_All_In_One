@@ -39,6 +39,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PressistatntMainActivityButtons(
+    cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: Windows__ViewModel = koinViewModel(),
     onPourFermeWindows: () -> Unit,
 ) {
@@ -132,11 +133,12 @@ fun PressistatntMainActivityButtons(
                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
                     enabled = false
                 )
-
-                TariffsButtons_TestID2(
-                    showLabels = showLabels,
-                    fermeDialog = onPourFermeWindows,
-                )
+                if (cLenceDepuitDialogeAchate) {
+                    TariffsButtons_TestID2(
+                        showLabels = showLabels,
+                        fermeDialog = onPourFermeWindows,
+                    )
+                }
             }
         }
     }

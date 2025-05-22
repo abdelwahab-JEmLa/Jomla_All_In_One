@@ -265,7 +265,10 @@ fun MainUi(
                     }
                 }
 
-                PressistatntMainActivityButtons(onPourFermeWindows = onPourFermeWindows)
+                PressistatntMainActivityButtons(
+                     true,
+                    onPourFermeWindows = onPourFermeWindows
+                )
             }
         }
     }

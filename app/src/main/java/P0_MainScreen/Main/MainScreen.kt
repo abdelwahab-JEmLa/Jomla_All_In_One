@@ -328,7 +328,8 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
-                PressistatntMainActivityButtons(onPourFermeWindows = { { } })
+                PressistatntMainActivityButtons(
+                    onPourFermeWindows = { { } })
             }
         }
     }
