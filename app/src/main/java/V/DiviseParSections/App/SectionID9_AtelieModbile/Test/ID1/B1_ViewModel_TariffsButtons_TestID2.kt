@@ -22,6 +22,7 @@ data class UiState(
     var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
+
     val loadingProgress: Float = 0f,
     val error: String? = null,
     val sqlProgress: Float = 0f,
