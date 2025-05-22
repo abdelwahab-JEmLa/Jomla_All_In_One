@@ -45,6 +45,8 @@ fun TariffsButtons_TestID2(
         }
     }
 
+    Text("${tarificationList.size}")
+
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
             (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
@@ -106,7 +108,8 @@ fun TariffsButtons_TestID2(
                                 { typeTarification, latestTariffLocalData, context ->
                                     {
                                         val typeName = typeTarification.name
-                                        val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
+                                        val message =
+                                            "$typeName: ${latestTariffLocalData.prixCurrency}"
                                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                                         afficheButtons = false
                                         fermeDialog()
