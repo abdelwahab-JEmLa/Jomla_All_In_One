@@ -33,8 +33,9 @@ fun TariffsButtons_TestID2(
     filterProductId: Long = 4,
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
+    cLenceDepuitDialogeAchate: Boolean =false,
 ) {
-    var afficheButtons by remember { mutableStateOf(true) }
+    var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
 
     val tarificationList = uiState.tariffsList

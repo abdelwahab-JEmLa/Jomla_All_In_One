@@ -43,7 +43,7 @@ fun PressistatntMainActivityButtons(
     viewModel: Windows__ViewModel = koinViewModel(),
     onPourFermeWindows: () -> Unit,
     idProduitActuelle: Long = 0,
-    parentCompose_1_3_BonAchatVid: Long=0,
+    parentCompose_1_3_BonAchatVid: Long = 0,
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -135,14 +135,15 @@ fun PressistatntMainActivityButtons(
                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
                     enabled = false
                 )
-                if (cLenceDepuitDialogeAchate) {
-                    TariffsButtons_TestID2(
-                        filterProductId = idProduitActuelle,
-                        filterBonId = parentCompose_1_3_BonAchatVid,
-                        showLabels = showLabels,
-                        fermeDialog = onPourFermeWindows,
-                    )
-                }
+
+                TariffsButtons_TestID2(
+                    cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
+                    filterProductId = idProduitActuelle,
+                    filterBonId = parentCompose_1_3_BonAchatVid,
+                    showLabels = showLabels,
+                    fermeDialog = onPourFermeWindows,
+                )
+
             }
         }
     }
