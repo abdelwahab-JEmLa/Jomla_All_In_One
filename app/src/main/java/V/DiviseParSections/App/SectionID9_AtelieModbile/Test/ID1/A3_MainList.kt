@@ -26,14 +26,11 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-    // Fix: Using Map.entries.find() instead of Map.find()
     val gerantButtonEntry = tariffsGroupedByType.entries.find {
         it.key == TypeTarificationEnumT2.AU_GERANT
     }
 
-    // Safely accessing value from the entry
     val gerantButtonTariffs = gerantButtonEntry?.value ?: emptyList()
-    val gerantButtonType = gerantButtonEntry?.key
 
     val autres = tariffsGroupedByType.filter {
         it.key != TypeTarificationEnumT2.AU_GERANT
@@ -53,6 +50,21 @@ fun MainList(
 
     val finalGerantType = TypeTarificationEnumT2.AU_GERANT
 
+    // Calculate dynamic height based on the count of elements in each group
+    // Each element contributes 20dp to the height
+    val gerantButtonHeight = remember(autres) {
+        val maxElementsInGroup = if (autres.isNotEmpty()) {
+            autres.maxOf { it.value.size }
+        } else {
+            1 // Minimum height for at least one element
+        }
+
+        // Base height + (number of elements * 20dp)
+        // Adding some base height (40dp) for padding and minimum size
+        val calculatedHeight = 45 + (maxElementsInGroup * 40)
+        calculatedHeight.dp
+    }
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
@@ -65,7 +77,7 @@ fun MainList(
                     tariffs = typeTariffs,
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton(),
-                    gerantButtonHeight = 185.dp
+                    gerantButtonHeight = gerantButtonHeight
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -77,7 +89,7 @@ fun MainList(
             tariffs = finalGerantTariffs,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),
-            gerantButtonHeight = 185.dp
+            gerantButtonHeight = gerantButtonHeight
         )
     }
 }
