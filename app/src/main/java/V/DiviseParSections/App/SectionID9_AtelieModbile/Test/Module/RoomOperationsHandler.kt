@@ -25,13 +25,10 @@ class RoomOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            // Prepare data with proper defaults
             val preparedData = data.map { item ->
                 if (item.id == 0L) {
-                    // New item - ensure proper defaults and clear ID for auto-increment
                     item.withProperDefaults().copy(id = 0L)
                 } else {
-                    // Existing item - keep the ID
                     item.withProperDefaults()
                 }
             }
@@ -40,7 +37,6 @@ class RoomOperationsHandler(
 
             onProgressUpdate(0.7f)
 
-            // Create result map with proper mapping
             val resultMap = mutableMapOf<Long, D_TarificationInfos>()
             ids.forEachIndexed { index, generatedId ->
                 if (index < preparedData.size) {
@@ -74,7 +70,6 @@ class RoomOperationsHandler(
 
             onProgressUpdate(0.6f)
 
-            // Prepare data with proper defaults
             val preparedData = data.d_TarificationInfos.map { it.withProperDefaults() }
             database.dTarificationInfosDao().insertAll(preparedData)
 

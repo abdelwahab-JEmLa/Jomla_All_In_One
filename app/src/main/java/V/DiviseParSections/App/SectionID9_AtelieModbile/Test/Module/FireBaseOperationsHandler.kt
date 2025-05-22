@@ -94,10 +94,8 @@ class FireBaseOperationsHandler(
     ) = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
-            println("DEBUG: Starting Firebase upsert with ${mapData.size} items")
 
             if (mapData.isEmpty()) {
-                println("DEBUG: No data to upsert, returning empty map")
                 onProgressUpdate(1f)
                 onAddSuccess(emptyMap())
                 return@withContext
@@ -109,13 +107,11 @@ class FireBaseOperationsHandler(
 
             var processedCount = 0
             val totalCount = mapData.size
-            println("DEBUG: Processing $totalCount items for Firebase")
 
             mapData.values.forEach { tariff ->
                 try {
                     val tariffMap = mutableMapOf<String, Any>()
 
-                    // Use reflection to convert tariff to map, but with better error handling
                     tariff::class.memberProperties.forEach { prop ->
                         try {
                             val value = prop.getter.call(tariff)
@@ -125,19 +121,16 @@ class FireBaseOperationsHandler(
                                 else -> tariffMap[prop.name] = value
                             }
                         } catch (e: Exception) {
-                            println("DEBUG: Error processing property ${prop.name}: ${e.message}")
                             tariffMap[prop.name] = "null"
                         }
                     }
 
-                    // Generate proper Firebase key
                     val key = if (tariff.keyFireBase.isNotEmpty()) {
                         tariff.keyFireBase
                     } else {
                         getKeyFireBase(tariff.id, tariff.nom)
                     }
 
-                    println("DEBUG: Adding tariff with key: $key")
                     tariffsMap[key] = tariffMap
                     resultMap[key] = tariff
 
@@ -146,29 +139,20 @@ class FireBaseOperationsHandler(
                     onProgressUpdate(progress)
 
                 } catch (e: Exception) {
-                    println("DEBUG: Error processing tariff ${tariff.id}: ${e.message}")
-                    e.printStackTrace()
                     onProgressUpdate(0.5f)
                 }
             }
 
-            println("DEBUG: Prepared ${tariffsMap.size} items for Firebase update")
-
             if (tariffsMap.isNotEmpty()) {
                 try {
                     onProgressUpdate(0.8f)
-                    println("DEBUG: Starting Firebase updateChildren operation")
 
-                    // Use suspendCancellableCoroutine for better control
                     suspendCancellableCoroutine<Unit> { continuation ->
                         childD_TarificationInfos.updateChildren(tariffsMap)
                             .addOnSuccessListener {
-                                println("DEBUG: Firebase updateChildren completed successfully")
                                 continuation.resume(Unit)
                             }
                             .addOnFailureListener { exception ->
-                                println("DEBUG: Firebase update failed: ${exception.message}")
-                                exception.printStackTrace()
                                 continuation.resumeWithException(exception)
                             }
                     }
@@ -176,22 +160,15 @@ class FireBaseOperationsHandler(
                     onProgressUpdate(1f)
 
                 } catch (firebaseException: Exception) {
-                    println("DEBUG: Firebase update failed with exception: ${firebaseException.message}")
-                    firebaseException.printStackTrace()
-                    onProgressUpdate(0.8f) // Partial progress since processing was done
-                    // Don't return here - still call onAddSuccess with what we processed
+                    onProgressUpdate(0.8f)
                 }
             } else {
-                println("DEBUG: No valid tariffs to upload to Firebase")
                 onProgressUpdate(1f)
             }
 
-            println("DEBUG: Calling onAddSuccess with ${resultMap.size} items")
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
-            println("DEBUG: Overall operation failed: ${e.message}")
-            e.printStackTrace()
             onProgressUpdate(0f)
             onAddSuccess(emptyMap())
         }
@@ -206,7 +183,6 @@ class FireBaseOperationsHandler(
                 onComplete(true)
             }
             .addOnFailureListener { exception ->
-                println("DEBUG: Firebase delete failed: ${exception.message}")
                 onProgressUpdate(0f)
                 onComplete(false)
             }
@@ -221,7 +197,6 @@ class FireBaseOperationsHandler(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("DEBUG: Firebase listener cancelled: ${error.message}")
                 onProgressUpdate(0f)
             }
         })

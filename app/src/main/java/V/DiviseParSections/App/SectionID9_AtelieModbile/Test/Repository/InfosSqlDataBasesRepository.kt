@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class InfosSqlDataBasesRepository(
     val database: AppDatabase,
@@ -150,7 +149,7 @@ class InfosSqlDataBasesRepository(
                     DataBasesInfosSql(
                         a_ProduitInfos = produits.toMutableList(),
                         c_TypeTarificationInfos = typeTarifications.toMutableList(),
-                        d_TarificationInfos = tarifications.toMutableList() // FIX: Include all data, not just typeTarifications
+                        d_TarificationInfos = tarifications.toMutableList()
                     )
                 )
             }.collect { combinedData ->
@@ -158,58 +157,4 @@ class InfosSqlDataBasesRepository(
             }
         }
     }
-
-    suspend fun upsert(
-        data: DataBasesInfosSql
-    ) {
-        withContext(Dispatchers.IO) {
-            try {
-                updateProgress(0.3f)
-                updateRoomProgress(0.5f)
-
-                room.insertAll(data)
-
-                updateRoomProgress(1f)
-                updateProgress(0.8f)
-
-                collectLatestData {
-                    updateProgress(1f)
-                }
-            } catch (e: Exception) {
-                updateProgress(0f)
-            }
-        }
-    }
-
-    fun upsert(
-        data: DataBasesInfosSql,
-        onSuccess: () -> Unit = {}
-    ) {
-        coroutineScope.launch {
-            try {
-                updateProgress(0f)
-                upsert(data)
-                onSuccess()
-            } catch (e: Exception) {
-                updateProgress(0f)
-            }
-        }
-    }
-
-    private suspend fun collectLatestData(
-        onSuccess: () -> Unit = {}
-    ) {
-        try {
-            updateProgress(0.9f)
-            val data = room.getAllData()
-            modelList = listOf(data)
-            onSuccess()
-        } catch (e: Exception) {
-            updateProgress(0.8f)
-        }
-    }
-
-    fun getProgressPercentage(): Int = (progressRepo.value * 100).toInt()
-
-    fun isOperationInProgress(): Boolean = progressRepo.value > 0f && progressRepo.value < 1f
 }
