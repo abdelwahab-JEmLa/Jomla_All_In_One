@@ -34,6 +34,7 @@ fun MainFilter(
                     tariff.idParentBonAchat == filteredBonAchat.vid
         }
     }
+
 /*    Text(
         filteredProduit.nom,
     )
