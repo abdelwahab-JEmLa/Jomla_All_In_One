@@ -37,7 +37,6 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
 
     val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
     if (tarifsSnapshot.exists()) {
-        // Fixed: Use specialized mapping for D_TarificationInfos
         tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
     }
 
@@ -59,20 +58,8 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
             val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
             val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
             val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
-
-            // Handle other potential fields that D_TarificationInfos might have
-            val description = childSnap.child("description").getValue(String::class.java) ?: ""
-            val prix = childSnap.child("prix").getValue(Double::class.java) ?: 0.0
-            val quantite = childSnap.child("quantite").getValue(Long::class.java) ?: 0L
-            val dateCreation = childSnap.child("dateCreation").getValue(String::class.java) ?: ""
-            val dateModification = childSnap.child("dateModification").getValue(String::class.java) ?: ""
-
-            // Generate or use existing keyFireBase
             val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
-
-            // Create instance using the constructor (adjust parameters based on actual D_TarificationInfos constructor)
-            // You may need to adjust this based on the actual constructor parameters of D_TarificationInfos
-            val instance = D_TarificationInfos(
+val instance = D_TarificationInfos(
                 id = id,
                 nom = nom,
                 needUpdate = needUpdate,

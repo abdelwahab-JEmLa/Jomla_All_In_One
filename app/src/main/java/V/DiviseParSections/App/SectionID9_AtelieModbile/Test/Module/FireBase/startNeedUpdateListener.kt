@@ -19,14 +19,14 @@ fun FireBaseOperationsHandler.startNeedUpdateListener() {
                     val needsUpdate = checkIfNeedsUpdate(snapshot)
                     if (needsUpdate) {
                         val firebaseData = mapFromFirebaseSnapshot(snapshot)
-                        roomOperationsHandler.updateData(firebaseData)
                         resetNeedUpdateFlags(firebaseData)
                     }
-                } catch (e: Exception) { }
+                } catch (e: Exception) {
+                }
             }
         }
 
-        override fun onCancelled(error: DatabaseError) { }
+        override fun onCancelled(error: DatabaseError) {}
     }
 
     ref.addValueEventListener(needUpdateListener!!)
