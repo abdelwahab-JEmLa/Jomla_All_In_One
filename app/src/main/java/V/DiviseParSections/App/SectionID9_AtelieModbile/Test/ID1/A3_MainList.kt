@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ fun MainList(
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    filteredProduit: _2_1_ProduitsDataBase,
 ) {
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }
@@ -37,30 +39,45 @@ fun MainList(
         it.key != TypeTarificationEnumT2.AU_GERANT
     }
 
+    val finalGerantTariffs = gerantButtonTariffs.ifEmpty {
+        listOf(
+            D_TarificationInfos(
+                idParentProduit = filteredProduit.vid,
+                idParentBonAchat = tariffs.firstOrNull()?.idParentBonAchat ?: 0L,
+                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
+                prixCurrency = filteredProduit.monPrixVent,
+                timestamps = System.currentTimeMillis()
+            )
+        )
+    }
+
+    val finalGerantType = TypeTarificationEnumT2.AU_GERANT
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
         Column(modifier = modifier) {
+            // Display other tariff types (excluding AU_GERANT)
             autres.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,
-                    onClickPrixButton = onClickPrixButton()
+                    onClickPrixButton = onClickPrixButton(),
+                    gerantButtonHeight = 185.dp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
 
-        // Only render gerant button if the type is found
-        if (gerantButtonType != null) {
-            TariffButtonItem(
-                typeTarification = gerantButtonType,
-                tariffs = gerantButtonTariffs,
-                showLabels = showLabels,
-                onClickPrixButton = onClickPrixButton()
-            )
-        }
+        // Always display AU_GERANT button (either existing or created)
+        TariffButtonItem(
+            typeTarification = finalGerantType,
+            tariffs = finalGerantTariffs,
+            showLabels = showLabels,
+            onClickPrixButton = onClickPrixButton(),
+            gerantButtonHeight = 185.dp
+        )
     }
 }

@@ -1,8 +1,5 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos

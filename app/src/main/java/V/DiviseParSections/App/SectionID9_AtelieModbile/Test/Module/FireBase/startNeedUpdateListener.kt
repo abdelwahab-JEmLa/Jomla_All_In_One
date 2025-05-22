@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F_FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.mapFromFirebaseSnapshot
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -37,7 +38,8 @@ fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
     tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    gerantButtonHeight: Dp
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
@@ -45,7 +47,7 @@ fun TariffButtonItem(
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
     val context = LocalContext.current
 
-    if (gerantButton(typeTarification, showLabels)) return
+    if (gerantButton(typeTarification, showLabels, gerantButtonHeight)) return
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -101,11 +103,18 @@ fun TariffButtonItem(
                     ) {
                         val pls = if (typeTarification == TypeTarificationEnumT2.DEFINI)
                             " +" else ""
+
+                        // TODO(1) FIXED: Change background color to black when type is DEFINI
+                        val backgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                            Color.Black
+                        } else {
+                            couleurButton
+                        }
+
                         Text(
                             "$prixCurrency$pls",
                             modifier = Modifier
-                                .background(couleurButton)  //<--
-                                //TODO(1): fait que si TypeTarificationEnumT2.DEFINI de chanage la couleur au noire
+                                .background(backgroundColor)
                                 .padding(4.dp),
                             color = Color.White
                         )
@@ -132,7 +141,8 @@ fun TariffButtonItem(
 @Composable
 private fun gerantButton(
     typeTarification: TypeTarificationEnumT2,
-    showLabels: Boolean
+    showLabels: Boolean,
+    gerantButtonheight: Dp
 ): Boolean {
     if (typeTarification == TypeTarificationEnumT2.AU_GERANT) {
         Column(
@@ -147,7 +157,7 @@ private fun gerantButton(
                         modifier = Modifier
                             .background(typeTarification.couleur)
                             .padding(vertical = 4.dp, horizontal = 4.dp)
-                            .height(185.dp)
+                            .height(gerantButtonheight)
                             .width(30.dp)
                     ) {
                         Column(
@@ -183,3 +193,4 @@ private fun gerantButton(
     }
     return false
 }
+
