@@ -59,7 +59,7 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
             val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
             val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
             val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
-val instance = D_TarificationInfos(
+            val instance = D_TarificationInfos(
                 id = id,
                 nom = nom,
                 needUpdate = needUpdate,
@@ -87,7 +87,9 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
             val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
             val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
 
-            val typeTarifString = childSnap.child("typeTarificationEnum").getValue(String::class.java) ?: "ParBenifice"
+            val typeTarifString =
+                childSnap.child("typeTarificationEnum").getValue(String::class.java)
+                    ?: "ParBenifice"
             val typeTarifEnum = try {
                 java.lang.Enum.valueOf(TypeTarificationEnum::class.java, typeTarifString)
             } catch (e: Exception) {
@@ -114,7 +116,10 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
     return results
 }
 
-private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot, kClass: KClass<T>): List<T> {
+private inline fun <reified T : Any> mapSnapshotToObjects(
+    snapshot: DataSnapshot,
+    kClass: KClass<T>
+): List<T> {
     val results = mutableListOf<T>()
 
     for (childSnap in snapshot.children) {
@@ -150,22 +155,35 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
                     "id" -> {
                         paramValues[paramName] = id
                     }
+
                     "nom" -> {
                         paramValues[paramName] = nom
                     }
+
                     "keyFireBase" -> {
                         // Now we can safely generate keyFireBase with id and nom
                         paramValues[paramName] = childSnap.key ?: getKeyFireBase(id, nom)
                     }
+
                     else -> {
                         val childValue = childSnap.child(paramName)
                         if (childValue.exists()) {
                             when (param.type.classifier) {
-                                Long::class -> paramValues[paramName] = childValue.getValue(Long::class.java)
-                                String::class -> paramValues[paramName] = childValue.getValue(String::class.java)
-                                Boolean::class -> paramValues[paramName] = childValue.getValue(Boolean::class.java)
-                                Double::class -> paramValues[paramName] = childValue.getValue(Double::class.java)
-                                Int::class -> paramValues[paramName] = childValue.getValue(Int::class.java)?.toLong()
+                                Long::class -> paramValues[paramName] =
+                                    childValue.getValue(Long::class.java)
+
+                                String::class -> paramValues[paramName] =
+                                    childValue.getValue(String::class.java)
+
+                                Boolean::class -> paramValues[paramName] =
+                                    childValue.getValue(Boolean::class.java)
+
+                                Double::class -> paramValues[paramName] =
+                                    childValue.getValue(Double::class.java)
+
+                                Int::class -> paramValues[paramName] =
+                                    childValue.getValue(Int::class.java)?.toLong()
+
                                 else -> paramValues[paramName] = null
                             }
                         } else {
