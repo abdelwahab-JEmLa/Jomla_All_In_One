@@ -48,15 +48,18 @@ class E_InfosSqlDataBasesRepository(
                     upsertAllRoomEtFireBase(testD_TarificationInfosT2())
                 } else {
                     coroutineScope.launch {
-                        room.insertAllAndReturnListIdToData(dataList) {
+                        room.checkDataBaseIsEmpty { roomHandler ->
                             coroutineScope.launch {
-                                updateRoomProgress(1f)
-                                updateProgress(0.7f)
+                                roomHandler.insertAllAndReturnListIdToData(dataList) {
+                                    updateRoomProgress(1f)
+                                    updateProgress(0.7f)
+                                }
                             }
                         }
                     }
                 }
             }
+
             collectRoom()
             fireBase.startNeedUpdateListener()
 

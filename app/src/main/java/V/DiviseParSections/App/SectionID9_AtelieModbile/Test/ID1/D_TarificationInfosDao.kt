@@ -8,8 +8,7 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface D_TarificationInfosDao
-{
+interface D_TarificationInfosDao {
     @Query("SELECT * FROM D_TarificationInfos")
     fun getAllTarifications(): Flow<List<D_TarificationInfos>>
 
@@ -29,11 +28,9 @@ interface D_TarificationInfosDao
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(tarification: D_TarificationInfos): Long
 
-    // Alternative insert method that forces a new ID
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun forceInsert(tarification: D_TarificationInfos): Long
+    @Update
+    suspend fun updateAll(tarifications: List<D_TarificationInfos>)
 
-    // Method to check if an item exists
-    @Query("SELECT COUNT(*) FROM D_TarificationInfos WHERE id = :id")
-    suspend fun existsById(id: Long): Int
+    @Query("SELECT COUNT(*) FROM D_TarificationInfos")
+    suspend fun getCount(): Int
 }

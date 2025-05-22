@@ -8,6 +8,27 @@ class F_RoomOperationsHandler(
     private val database: AppDatabase,
     private val onProgressUpdate: (Float) -> Unit = { }
 ) {
+    suspend fun checkDataBaseIsEmpty(
+        onCheckIsTrue: (F_RoomOperationsHandler) -> Unit
+    ) = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.2f)
+
+            val count = database.dTarificationInfosDao().getCount()
+
+            onProgressUpdate(0.8f)
+
+            if (count == 0) {
+                onProgressUpdate(1f)
+                onCheckIsTrue(this@F_RoomOperationsHandler)
+            } else {
+                onProgressUpdate(1f)
+            }
+        } catch (e: Exception) {
+            onProgressUpdate(0f)
+        }
+    }
+
     suspend fun insertAllAndReturnListIdToData(
         data: List<D_TarificationInfos>,
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit

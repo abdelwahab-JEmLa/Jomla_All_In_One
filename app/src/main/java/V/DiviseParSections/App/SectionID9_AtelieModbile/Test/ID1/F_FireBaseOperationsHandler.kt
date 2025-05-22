@@ -25,6 +25,7 @@ class F_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
+
     fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit) {
         onProgressUpdate(0.1f)
 

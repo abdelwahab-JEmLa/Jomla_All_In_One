@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
@@ -47,7 +48,6 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         d_TarificationInfos = tarifications
     )
 }
-
 private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInfos> {
     val results = mutableListOf<D_TarificationInfos>()
 
@@ -57,11 +57,31 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
             val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
             val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
             val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
+
+            // Map all the missing fields from Firebase JSON
+            val idParentBonAchat = childSnap.child("idParentBonAchat").getValue(Long::class.java) ?: 0L
+            val idParentProduit = childSnap.child("idParentProduit").getValue(Long::class.java) ?: 0L
+            val prixCurrency = childSnap.child("prixCurrency").getValue(Double::class.java) ?: 0.0
+            val timestamps = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
+
+            // Map the enum field
+            val typeTarificationEnumString = childSnap.child("typeTarificationEnumT2Correspond").getValue(String::class.java) ?: "PRIX_BASE"
+            val typeTarificationEnum = try {
+                TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
+            } catch (e: Exception) {
+                TypeTarificationEnumT2.PRIX_BASE // Default fallback
+            }
+
             val instance = D_TarificationInfos(
                 id = id,
                 nom = nom,
                 needUpdate = needUpdate,
-                keyFireBase = keyFireBase
+                keyFireBase = keyFireBase,
+                idParentBonAchat = idParentBonAchat,
+                idParentProduit = idParentProduit,
+                prixCurrency = prixCurrency,
+                timestamps = timestamps,
+                typeTarificationEnumT2Correspond = typeTarificationEnum
             )
 
             results.add(instance)
