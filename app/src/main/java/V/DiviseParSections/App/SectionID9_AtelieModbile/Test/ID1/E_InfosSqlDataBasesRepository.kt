@@ -47,7 +47,6 @@ class E_InfosSqlDataBasesRepository(
             }
 
             collectRoom()
-            fireBase.startNeedUpdateListener()
 
             updateProgress(1f)
         }
