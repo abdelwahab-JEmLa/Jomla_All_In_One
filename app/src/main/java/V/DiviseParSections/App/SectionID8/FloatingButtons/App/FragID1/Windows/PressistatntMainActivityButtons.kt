@@ -39,11 +39,11 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PressistatntMainActivityButtons(
-    cLenceDepuitDialogeAchate: Boolean = false,
+    cLenceDepuitDialogeAchate: Boolean = true,
     viewModel: Windows__ViewModel = koinViewModel(),
     onPourFermeWindows: () -> Unit,
-    idProduitActuelle: Long = 0,
-    parentCompose_1_3_BonAchatVid: Long = 0,
+    idProduitActuelle: Long = 849,
+    parentCompose_1_3_BonAchatVid: Long = 1,
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }

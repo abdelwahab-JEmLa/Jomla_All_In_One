@@ -30,8 +30,8 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtons_TestID2(
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
     showLabels: Boolean = true,
-    filterProductId: Long = 4,
-    filterBonId: Long = 1,
+    filterProductId: Long = 0,
+    filterBonId: Long = 0,
     fermeDialog: () -> Unit,
     cLenceDepuitDialogeAchate: Boolean =false,
 ) {
@@ -44,7 +44,7 @@ fun TariffsButtons_TestID2(
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
-  //  Text("${tarificationList}")
+ //   Text("${tarificationList}")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||

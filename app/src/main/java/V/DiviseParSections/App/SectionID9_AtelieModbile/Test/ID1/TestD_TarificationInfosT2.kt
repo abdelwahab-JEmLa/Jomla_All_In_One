@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
-    val idProduit1: Long = 4
+    val idProduit1: Long = 849
     val idProduit2: Long = 1
     val idParentBonAchat : Long= 1
 
