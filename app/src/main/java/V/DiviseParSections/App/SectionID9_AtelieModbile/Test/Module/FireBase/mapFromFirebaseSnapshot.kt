@@ -48,13 +48,11 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
     )
 }
 
-// Specialized mapping function for D_TarificationInfos to handle complex mapping logic
 private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInfos> {
     val results = mutableListOf<D_TarificationInfos>()
 
     for (childSnap in snapshot.children) {
         try {
-            // Extract all required values first
             val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
             val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
             val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
@@ -64,14 +62,11 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
                 nom = nom,
                 needUpdate = needUpdate,
                 keyFireBase = keyFireBase
-                // Add other parameters as needed based on your D_TarificationInfos class
             )
 
             results.add(instance)
         } catch (e: Exception) {
-            // Log the exception for debugging
             println("Error mapping D_TarificationInfos: ${e.message}")
-            // Consider logging the childSnap.key for debugging
             println("Failed to map child with key: ${childSnap.key}")
         }
     }
