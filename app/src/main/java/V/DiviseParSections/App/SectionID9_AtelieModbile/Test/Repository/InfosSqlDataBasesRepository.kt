@@ -65,14 +65,14 @@ class InfosSqlDataBasesRepository(
                                 testD_TarificationInfosT2()
                             }
 
-                    upsertAllRoomEtFireBase(dataTestList) { mapData ->
+                    upsertAllRoomEtFireBase(dataTestList) {
+                        collectRoom()
+                        fireBase.startNeedUpdateListener()
+
                         updateProgress(1f)
                     }
                 }
             }
-
-            collectRoom()
-            fireBase.startNeedUpdateListener()
         }
     }
 
@@ -106,7 +106,7 @@ class InfosSqlDataBasesRepository(
                             try {
                                 updateFirebaseProgress(0f)
 
-                                fireBase.upsertAllAndReturnListIdToData(mapData) {
+                                fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
                                     updateFirebaseProgress(1f)
                                     updateProgress(1f)
                                     onAddSuccess(mapData)
@@ -114,6 +114,7 @@ class InfosSqlDataBasesRepository(
                             } catch (e: Exception) {
                                 updateFirebaseProgress(0f)
                                 updateProgress(0.7f)
+                                onAddSuccess(mapData)
                             }
                         }
                     }
@@ -147,7 +148,9 @@ class InfosSqlDataBasesRepository(
             ) { produits, clients, typeTarifications, tarifications ->
                 listOf(
                     DataBasesInfosSql(
-                        c_TypeTarificationInfos = typeTarifications.toMutableList()
+                        a_ProduitInfos = produits.toMutableList(),
+                        c_TypeTarificationInfos = typeTarifications.toMutableList(),
+                        d_TarificationInfos = tarifications.toMutableList() // FIX: Include all data, not just typeTarifications
                     )
                 )
             }.collect { combinedData ->

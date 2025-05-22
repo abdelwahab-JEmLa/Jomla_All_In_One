@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,14 +41,9 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
 
-    LaunchedEffect(produitInfosList.size) {
-        if (produitInfosList.isEmpty()) {
-            delay(500)
-            viewModel.refreshTariffs()
-        }
-    }
+    LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
-    Text("${tarificationList.size}")
+    Text("${tarificationList}")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
@@ -137,5 +135,16 @@ fun TariffsButtons_TestID2(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun suspendFunction1(
+    produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
+    viewModel: TariffsButtonsViewModel_TestID2
+): suspend CoroutineScope.() -> Unit = {
+    if (produitInfosList.isEmpty()) {
+        delay(500)
+        viewModel.refreshTariffs()
     }
 }

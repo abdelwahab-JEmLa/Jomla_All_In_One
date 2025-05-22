@@ -9,7 +9,8 @@ import java.util.Calendar
 @Entity
 data class D_TarificationInfos(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val id: Long = 0L, // 0L ensures auto-increment works properly
+
     //Forging IDs
     val idParentProduit: Long = 0L,
     val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 =
@@ -19,15 +20,38 @@ data class D_TarificationInfos(
 
     //Base Infos
     val prixCurrency: Double = 0.0,
-    val timestamps: Long = 0,
-    val nom: String = getStrDateTime(timestamps),
+    val timestamps: Long = System.currentTimeMillis(), // Use current time as default
+    val nom: String = "", // Empty default, will be set properly
 
     //Etates Mutable
     val needUpdate: Boolean = true,
 
-    //keyFireBase
-    val keyFireBase: String = getKeyFireBase(id, nom),
-)
+    //keyFireBase - computed property, not stored in constructor
+    val keyFireBase: String = "",
+) {
+    // Computed property for keyFireBase
+    fun computeKeyFireBase(): String {
+        return if (id != 0L) {
+            "-<$id($nom)"
+        } else {
+            "-<$nom"
+        }
+    }
+
+    // Helper function to create a copy with proper keyFireBase
+    fun withComputedKeyFireBase(): D_TarificationInfos {
+        return this.copy(keyFireBase = computeKeyFireBase())
+    }
+
+    // Helper function to create with proper nom if empty
+    fun withProperDefaults(): D_TarificationInfos {
+        val properNom = if (nom.isEmpty()) getStrDateTime(timestamps) else nom
+        return this.copy(
+            nom = properNom,
+            keyFireBase = getKeyFireBase(id, properNom)
+        )
+    }
+}
 
 fun getKeyFireBase(
     dataId: Long? = null,
@@ -43,7 +67,7 @@ fun getKeyFireBase(
 @SuppressLint("DefaultLocale")
 fun getStrDateTime(vidTimestamp: Long): String {
     val calendar = Calendar.getInstance()
-    calendar.timeInMillis = vidTimestamp  // Use the provided timestamp
+    calendar.timeInMillis = vidTimestamp
 
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1

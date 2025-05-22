@@ -20,9 +20,32 @@ interface D_TarificationInfosDao
     @Query("SELECT * FROM D_TarificationInfos WHERE id = :id")
     suspend fun getTarificationById(id: Long): D_TarificationInfos?
 
-    // For batch operations - use IGNORE to prevent overwriting existing IDs
+    // Fixed: Proper batch upsert that handles new items correctly
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun upsertAllAndReturnIDs(items: List<D_TarificationInfos>): List<Long>
+    suspend fun insertAllIgnoreConflicts(items: List<D_TarificationInfos>): List<Long>
+
+    // This is the corrected method for upsert with proper ID handling
+    suspend fun upsertAllAndReturnIDs(items: List<D_TarificationInfos>): List<Long> {
+        val result = mutableListOf<Long>()
+
+        for (item in items) {
+            val id = if (item.id == 0L) {
+                // New item - let auto-increment handle it
+                insert(item.copy(id = 0L))
+            } else {
+                // Existing item - check if it exists and update or insert
+                if (existsById(item.id) > 0) {
+                    update(item)
+                    item.id
+                } else {
+                    forceInsert(item)
+                }
+            }
+            result.add(id)
+        }
+
+        return result
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tarifications: List<D_TarificationInfos>)

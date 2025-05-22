@@ -32,13 +32,6 @@ fun FireBaseOperationsHandler.startNeedUpdateListener() {
     ref.addValueEventListener(needUpdateListener!!)
 }
 
-fun FireBaseOperationsHandler.stopNeedUpdateListener() {
-    needUpdateListener?.let {
-        ref.removeEventListener(it)
-        needUpdateListener = null
-    }
-}
-
 private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
     val defaultModel = DataBasesInfosSql()
 

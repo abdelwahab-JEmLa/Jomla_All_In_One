@@ -24,14 +24,32 @@ class RoomOperationsHandler(
             }
 
             onProgressUpdate(0.3f)
-            val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(data)
+
+            // Prepare data with proper defaults
+            val preparedData = data.map { item ->
+                if (item.id == 0L) {
+                    // New item - ensure proper defaults and clear ID for auto-increment
+                    item.withProperDefaults().copy(id = 0L)
+                } else {
+                    // Existing item - keep the ID
+                    item.withProperDefaults()
+                }
+            }
+
+            val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(preparedData)
 
             onProgressUpdate(0.7f)
+
+            // Create result map with proper mapping
             val resultMap = mutableMapOf<Long, D_TarificationInfos>()
-            ids.forEachIndexed { index, id ->
-                if (index < data.size) {
-                    val updatedTariff = data[index].copy(id = id)
-                    resultMap[id] = updatedTariff
+            ids.forEachIndexed { index, generatedId ->
+                if (index < preparedData.size) {
+                    val originalItem = preparedData[index]
+                    val updatedTariff = originalItem.copy(
+                        id = generatedId,
+                        keyFireBase = originalItem.computeKeyFireBase()
+                    )
+                    resultMap[generatedId] = updatedTariff
                 }
             }
 
@@ -55,7 +73,10 @@ class RoomOperationsHandler(
             }
 
             onProgressUpdate(0.6f)
-            database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
+
+            // Prepare data with proper defaults
+            val preparedData = data.d_TarificationInfos.map { it.withProperDefaults() }
+            database.dTarificationInfosDao().insertAll(preparedData)
 
             onProgressUpdate(1f)
             true
@@ -86,7 +107,8 @@ class RoomOperationsHandler(
                 database.dTarificationInfosDao().deleteAll()
 
                 onProgressUpdate(0.7f)
-                database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
+                val preparedData = data.d_TarificationInfos.map { it.withProperDefaults() }
+                database.dTarificationInfosDao().insertAll(preparedData)
             }
 
             onProgressUpdate(1f)

@@ -1,4 +1,3 @@
-// Updated mapFromFirebaseSnapshot.kt
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
@@ -21,7 +20,6 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
 
     val defaultModel = DataBasesInfosSql()
 
-
     val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
         products.addAll(mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class))
@@ -39,7 +37,8 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
 
     val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
     if (tarifsSnapshot.exists()) {
-        tarifications.addAll(mapSnapshotToObjects(tarifsSnapshot, D_TarificationInfos::class))
+        // Fixed: Use specialized mapping for D_TarificationInfos
+        tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
     }
 
     return DataBasesInfosSql(
@@ -48,6 +47,49 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         c_TypeTarificationInfos = typeTarifications,
         d_TarificationInfos = tarifications
     )
+}
+
+// Specialized mapping function for D_TarificationInfos to handle complex mapping logic
+private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInfos> {
+    val results = mutableListOf<D_TarificationInfos>()
+
+    for (childSnap in snapshot.children) {
+        try {
+            // Extract all required values first
+            val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
+            val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
+            val needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: false
+
+            // Handle other potential fields that D_TarificationInfos might have
+            val description = childSnap.child("description").getValue(String::class.java) ?: ""
+            val prix = childSnap.child("prix").getValue(Double::class.java) ?: 0.0
+            val quantite = childSnap.child("quantite").getValue(Long::class.java) ?: 0L
+            val dateCreation = childSnap.child("dateCreation").getValue(String::class.java) ?: ""
+            val dateModification = childSnap.child("dateModification").getValue(String::class.java) ?: ""
+
+            // Generate or use existing keyFireBase
+            val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
+
+            // Create instance using the constructor (adjust parameters based on actual D_TarificationInfos constructor)
+            // You may need to adjust this based on the actual constructor parameters of D_TarificationInfos
+            val instance = D_TarificationInfos(
+                id = id,
+                nom = nom,
+                needUpdate = needUpdate,
+                keyFireBase = keyFireBase
+                // Add other parameters as needed based on your D_TarificationInfos class
+            )
+
+            results.add(instance)
+        } catch (e: Exception) {
+            // Log the exception for debugging
+            println("Error mapping D_TarificationInfos: ${e.message}")
+            // Consider logging the childSnap.key for debugging
+            println("Failed to map child with key: ${childSnap.key}")
+        }
+    }
+
+    return results
 }
 
 private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_TypeTarificationInfos> {
@@ -78,6 +120,7 @@ private fun mapTypeTarificationsWithReflection(snapshot: DataSnapshot): List<C_T
             results.add(instance)
         } catch (e: Exception) {
             // Consider logging the exception here
+            println("Error mapping C_TypeTarificationInfos: ${e.message}")
         }
     }
 
@@ -95,41 +138,65 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
             // Create a map to hold parameter values
             val paramValues = mutableMapOf<String, Any?>()
 
-            // Get id and name for keyFireBase generation
+            // Get id and nom for keyFireBase generation - collect these first
             var id: Long = 0
             var nom: String = ""
 
-            // First pass: collect all values from the snapshot
+            // First pass: collect id and nom
             for (param in constructor.parameters) {
                 val paramName = param.name ?: continue
 
                 if (paramName == "id") {
                     val idValue = childSnap.child(paramName).getValue(Long::class.java) ?: 0L
-                    paramValues[paramName] = idValue
                     id = idValue
                 } else if (paramName == "nom") {
                     val nomValue = childSnap.child(paramName).getValue(String::class.java) ?: ""
-                    paramValues[paramName] = nomValue
                     nom = nomValue
-                } else if (paramName == "keyFireBase") {
-                    // For keyFireBase, use the Firebase key directly or generate one
-                    paramValues[paramName] = childSnap.key ?: getKeyFireBase(id, nom)
-                } else {
-                    val childValue = childSnap.child(paramName)
-                    if (childValue.exists()) {
-                        when (param.type.classifier) {
-                            Long::class -> paramValues[paramName] = childValue.getValue(Long::class.java)
-                            String::class -> paramValues[paramName] = childValue.getValue(String::class.java)
-                            Boolean::class -> paramValues[paramName] = childValue.getValue(Boolean::class.java)
-                            Double::class -> paramValues[paramName] = childValue.getValue(Double::class.java)
-                            Int::class -> paramValues[paramName] = childValue.getValue(Int::class.java)?.toLong()
-                            else -> paramValues[paramName] = null
+                }
+            }
+
+            // Second pass: collect all values including keyFireBase
+            for (param in constructor.parameters) {
+                val paramName = param.name ?: continue
+
+                when (paramName) {
+                    "id" -> {
+                        paramValues[paramName] = id
+                    }
+                    "nom" -> {
+                        paramValues[paramName] = nom
+                    }
+                    "keyFireBase" -> {
+                        // Now we can safely generate keyFireBase with id and nom
+                        paramValues[paramName] = childSnap.key ?: getKeyFireBase(id, nom)
+                    }
+                    else -> {
+                        val childValue = childSnap.child(paramName)
+                        if (childValue.exists()) {
+                            when (param.type.classifier) {
+                                Long::class -> paramValues[paramName] = childValue.getValue(Long::class.java)
+                                String::class -> paramValues[paramName] = childValue.getValue(String::class.java)
+                                Boolean::class -> paramValues[paramName] = childValue.getValue(Boolean::class.java)
+                                Double::class -> paramValues[paramName] = childValue.getValue(Double::class.java)
+                                Int::class -> paramValues[paramName] = childValue.getValue(Int::class.java)?.toLong()
+                                else -> paramValues[paramName] = null
+                            }
+                        } else {
+                            // Provide default values for missing parameters
+                            when (param.type.classifier) {
+                                Long::class -> paramValues[paramName] = 0L
+                                String::class -> paramValues[paramName] = ""
+                                Boolean::class -> paramValues[paramName] = false
+                                Double::class -> paramValues[paramName] = 0.0
+                                Int::class -> paramValues[paramName] = 0
+                                else -> paramValues[paramName] = null
+                            }
                         }
                     }
                 }
             }
 
-            // Second pass: map the values to constructor parameters
+            // Map the values to constructor parameters
             val parameters = constructor.parameters.associateWith { param ->
                 val paramName = param.name ?: ""
                 paramValues[paramName]
@@ -138,7 +205,10 @@ private inline fun <reified T : Any> mapSnapshotToObjects(snapshot: DataSnapshot
             val instance = constructor.callBy(parameters)
             results.add(instance)
         } catch (e: Exception) {
-            // Consider logging the exception here
+            // Enhanced error logging
+            println("Error mapping ${kClass.simpleName}: ${e.message}")
+            println("Failed to map child with key: ${childSnap.key}")
+            e.printStackTrace()
         }
     }
 
