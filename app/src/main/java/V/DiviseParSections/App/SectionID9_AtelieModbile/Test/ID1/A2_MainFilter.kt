@@ -45,7 +45,7 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
-            produitPrixBase=filteredProduit.monPrixVent,
+            filteredProduit=filteredProduit,
             tariffs = filteredTariffs,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),

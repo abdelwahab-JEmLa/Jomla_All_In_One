@@ -42,17 +42,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
         D_TarificationInfos(
             timestamps = createTimestamp(
                 day = 6,
-                hour = 3,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = idParentBonAchat,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
-            prixCurrency = 00.00
-        ),
-        D_TarificationInfos(
-            timestamps = createTimestamp(
-                day = 6,
                 hour = 4,
                 minute = 30
             ),

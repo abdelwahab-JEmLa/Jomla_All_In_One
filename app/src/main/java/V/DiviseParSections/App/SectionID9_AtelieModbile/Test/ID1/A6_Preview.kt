@@ -6,8 +6,10 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 fun Test2Prev() {
+    val idProduitChahrazed = 849
+    val idTP2 = 859
     TariffsButtons_TestID2(
-        filterProductId = 859,
+        filterProductId = idProduitChahrazed.toLong(),
         filterBonId = 1,
         cLenceDepuitDialogeAchate = true,
         fermeDialog = { },

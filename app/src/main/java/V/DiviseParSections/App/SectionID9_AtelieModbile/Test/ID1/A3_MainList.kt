@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -26,31 +28,22 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-    val gerantButtonEntry = tariffsGroupedByType.entries.find {
-        it.key == TypeTarificationEnumT2.AU_GERANT
-    }
+    val context = LocalContext.current
 
-    val gerantButtonTariffs = gerantButtonEntry?.value ?: emptyList()
-
-    val autres = tariffsGroupedByType.filter {
-        it.key != TypeTarificationEnumT2.AU_GERANT
-    }
-
-    val finalGerantTariffs = gerantButtonTariffs.ifEmpty {
+    val PRIX_BASETariffe =
         listOf(
             D_TarificationInfos(
                 idParentProduit = filteredProduit.vid,
                 idParentBonAchat = tariffs.firstOrNull()?.idParentBonAchat ?: 0L,
-                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.AU_GERANT,
+                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
                 prixCurrency = filteredProduit.monPrixVent,
                 timestamps = System.currentTimeMillis()
             )
         )
-    }
 
-    val finalGerantType = TypeTarificationEnumT2.AU_GERANT
+    Text("${filteredProduit.monPrixVent}")
 
-    val gerantButtonHeight = remember(autres) {
+    val gerantButtonHeight = remember(tariffsGroupedByType) {
         val calculatedHeight = 5 + (tariffsGroupedByType.size * 40)
         calculatedHeight.dp
     }
@@ -60,24 +53,29 @@ fun MainList(
         verticalAlignment = Alignment.Top
     ) {
         Column(modifier = modifier) {
-            autres.forEach { (type, typeTariffs) ->
+            tariffsGroupedByType.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton(),
-                    gerantButtonHeight = gerantButtonHeight
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
+            TariffButtonItem(
+                typeTarification = TypeTarificationEnumT2.PRIX_BASE,
+                tariffs = PRIX_BASETariffe,
+                showLabels = showLabels,
+                onClickPrixButton = onClickPrixButton(),
+            )
         }
 
-        TariffButtonItem(
-            typeTarification = finalGerantType,
-            tariffs = finalGerantTariffs,
+        GerantButton(
+            latestTariffLocalData = PRIX_BASETariffe.first(),
             showLabels = showLabels,
+            gerantButtonHeight = gerantButtonHeight,
             onClickPrixButton = onClickPrixButton(),
-            gerantButtonHeight = gerantButtonHeight
+            context = context
         )
     }
 }
