@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.mapFromFirebaseSnapshot
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
@@ -18,7 +17,6 @@ import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
 class FireBaseOperationsHandler(
-    val roomOperationsHandler: RoomOperationsHandler,
     private val onProgressUpdate: (Float) -> Unit = { }
 ) {
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
@@ -29,64 +27,38 @@ class FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    suspend fun isDatabaseEmpty(onDataEstEmpty: () -> Unit) =
-        suspendCancellableCoroutine { continuation ->
-            onProgressUpdate(0.1f)
-            isDatabaseEmpty { isEmpty ->
-                onProgressUpdate(0.8f)
-                continuation.resume(isEmpty)
-                onDataEstEmpty()
-            }
-        }
+    fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit) {
+        onProgressUpdate(0.1f)
 
-    private fun isDatabaseEmpty(onResult: (Boolean) -> Unit) {
-        childD_TarificationInfos.addListenerForSingleValueEvent(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val isEmpty = !snapshot.exists() || !snapshot.hasChildren()
-                onProgressUpdate(1f)
-                onResult(isEmpty)
+                if (snapshot.exists()) {
+                    try {
+                        onProgressUpdate(0.5f)
+                        val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
+
+                        onProgressUpdate(0.9f)
+                        onAddSuccess(infosSqlDataBases.d_TarificationInfos)
+
+                        onProgressUpdate(1f)
+                    } catch (e: Exception) {
+                        onProgressUpdate(0f)
+                        // Handle error case - you might want to pass empty list or handle differently
+                        onAddSuccess(emptyList())
+                    }
+                } else {
+                    onProgressUpdate(1f)
+                    // No data found - pass empty list
+                    onAddSuccess(emptyList())
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 onProgressUpdate(0f)
-                onResult(false)
+                // Handle cancellation - pass empty list
+                onAddSuccess(emptyList())
             }
         })
-    }
-
-    suspend fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit): DataBasesInfosSql? {
-        return suspendCancellableCoroutine { continuation ->   //<--
-        //TODO(1): pk ca terturen ici 
-            onProgressUpdate(0.1f)
-
-            ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        try {
-                            onProgressUpdate(0.5f)
-                            val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
-
-                            onProgressUpdate(0.9f)
-                            continuation.resume(infosSqlDataBases)
-                            onAddSuccess(infosSqlDataBases.d_TarificationInfos)
-
-                            onProgressUpdate(1f)
-                        } catch (e: Exception) {
-                            onProgressUpdate(0f)
-                            continuation.resumeWithException(e)
-                        }
-                    } else {
-                        onProgressUpdate(1f)
-                        continuation.resume(null)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    onProgressUpdate(0f)
-                    continuation.resumeWithException(Exception("Firebase data retrieval cancelled: ${error.message}"))
-                }
-            })
-        }
     }
 
     suspend fun upsertAllAndReturnListIdToData(

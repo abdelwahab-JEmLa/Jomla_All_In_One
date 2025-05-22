@@ -76,9 +76,7 @@ val commonRepositoriesModule = module {
     }
 
     single {
-        FireBaseOperationsHandler(
-            get(),
-        )
+        FireBaseOperationsHandler()
     }
 
     single {
