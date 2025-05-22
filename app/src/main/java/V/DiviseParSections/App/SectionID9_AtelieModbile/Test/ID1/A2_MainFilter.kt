@@ -34,11 +34,12 @@ fun MainFilter(
                     tariff.idParentBonAchat == filteredBonAchat.vid
         }
     }
-        /*
-    Text(
+/*    Text(
         filteredProduit.nom,
-        Modifier.padding(50.dp)
-    )          */
+    )
+    Text(
+        filteredBonAchat.clientAcheteurID.toString(),
+    )     */
 
     Column(modifier = modifier) {
         MainList(

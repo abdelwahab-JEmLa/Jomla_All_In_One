@@ -204,7 +204,9 @@ fun MainUi(
                             .padding(bottom = 80.dp)
                     ) {
                         articlesBaseStats?.let { stats ->
+
                             item {
+                            //    Text(parentCompose_1_3_BonAchatVid.toString())
                                 ProductNameSection3(
                                     stats, onToggleLockExpandedPricex
                                 )
