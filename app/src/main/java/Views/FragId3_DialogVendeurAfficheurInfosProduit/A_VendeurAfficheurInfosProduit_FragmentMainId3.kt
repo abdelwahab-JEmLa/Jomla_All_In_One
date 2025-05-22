@@ -105,6 +105,9 @@ fun MainUi(
 ) {
     val idProduitActuelle = currentSale.idArticle
     val idClientActuelle = currentSale.idArticle
+    // Get the active BonAchat ID from the repository
+    val parentCompose_1_3_BonAchatVid by
+    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     // Fixed access to progress value
     val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
@@ -112,9 +115,6 @@ fun MainUi(
 
     val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
 
-    // Get the active BonAchat ID from the repository
-    val parentCompose_1_3_BonAchatVid by
-    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     val find = repositorysModel.repository_1_3_TransactionCommercial
         .modelDatasSnapList.find {
@@ -269,8 +269,8 @@ fun MainUi(
                 }
 
                 PressistatntMainActivityButtons(
-                    idClientActuelle=  idClientActuelle,
-                    idProduitActuelle= idProduitActuelle,
+                    idProduitActuelle = idProduitActuelle,
+                    parentCompose_1_3_BonAchatVid= parentCompose_1_3_BonAchatVid,
                     cLenceDepuitDialogeAchate=  true,
                     onPourFermeWindows = onPourFermeWindows
                 )

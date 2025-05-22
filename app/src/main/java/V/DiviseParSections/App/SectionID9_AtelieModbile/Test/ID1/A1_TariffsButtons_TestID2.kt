@@ -30,7 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtons_TestID2(
     viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
     showLabels: Boolean = true,
-    filterProductId: Int = 4,
+    filterProductId: Long = 4,
     filterBonId: Long = 1,
     fermeDialog: () -> Unit,
 ) {
@@ -99,7 +99,7 @@ fun TariffsButtons_TestID2(
                         bonAchatList = bonAchatList,
                         produitInfosList = produitInfosList,
                         showLabels = showLabels,
-                        filterProduitID = filterProductId,
+                        filterProduitID = filterProductId.toInt(),
                         filterBonID = filterBonId,
                         onClickPrixButton = {
                             {

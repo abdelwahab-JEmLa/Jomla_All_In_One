@@ -330,8 +330,6 @@ fun MainScreen(
                 }
                 PressistatntMainActivityButtons(
                     onPourFermeWindows = {  },
-                    idClientActuelle = idClientActuelle,
-                    idProduitActuelle = idProduitActuelle
                 )
             }
         }
