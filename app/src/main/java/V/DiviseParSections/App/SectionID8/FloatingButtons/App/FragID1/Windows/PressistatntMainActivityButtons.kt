@@ -42,6 +42,8 @@ fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: Windows__ViewModel = koinViewModel(),
     onPourFermeWindows: () -> Unit,
+    idClientActuelle: Long,
+    idProduitActuelle: Long,
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -135,6 +137,8 @@ fun PressistatntMainActivityButtons(
                 )
                 if (cLenceDepuitDialogeAchate) {
                     TariffsButtons_TestID2(
+                        filterProductId = idClientActuelle,
+                        fi = idClientActuelle,
                         showLabels = showLabels,
                         fermeDialog = onPourFermeWindows,
                     )

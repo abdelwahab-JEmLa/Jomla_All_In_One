@@ -85,11 +85,12 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
 @Composable
 fun MainUi(
+    currentSale: SoldArticlesTabelle,
+    currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
-    currentSale: SoldArticlesTabelle,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
@@ -97,12 +98,14 @@ fun MainUi(
     uiState: UiState,
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
     clickedCouleurIndex: Int,
     onPourFermeWindows: () -> Unit,
 ) {
+    val idProduitActuelle = currentSale.idArticle
+    val idClientActuelle = currentSale.idArticle
+
     // Fixed access to progress value
     val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
     val isLoading = progressValue < 1.0f
@@ -266,7 +269,9 @@ fun MainUi(
                 }
 
                 PressistatntMainActivityButtons(
-                     true,
+                    idClientActuelle=  idClientActuelle,
+                    idProduitActuelle= idProduitActuelle,
+                    cLenceDepuitDialogeAchate=  true,
                     onPourFermeWindows = onPourFermeWindows
                 )
             }

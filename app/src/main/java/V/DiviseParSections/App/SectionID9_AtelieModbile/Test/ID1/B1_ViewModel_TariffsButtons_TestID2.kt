@@ -35,6 +35,15 @@ class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     private val sqlRepository: E_InfosSqlDataBasesRepository,
 ) : ViewModel() {
+    private val tariffsRepo = sqlRepository.modelListFlow
+
+    private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
+        ._2_1_ProduitsDataBase_Repository
+
+    private val repoC3_BonAchat = repo_0_0_HeadSQLRepositorys
+        .repositorys_Model
+        .repository_1_3_TransactionCommercial
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var loadingJob: Job? = null
@@ -70,12 +79,6 @@ class TariffsButtonsViewModel_TestID2(
             }
 
             try {
-                val tariffsRepo = sqlRepository.modelListFlow
-                val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
-                    ._2_1_ProduitsDataBase_Repository
-                val repoC3_BonAchat = repo_0_0_HeadSQLRepositorys
-                    .repositorys_Model
-                    .repository_1_3_TransactionCommercial
 
                 progressJob = launch {
                     combine(

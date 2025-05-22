@@ -329,7 +329,10 @@ fun MainScreen(
                     }
                 }
                 PressistatntMainActivityButtons(
-                    onPourFermeWindows = {  })
+                    onPourFermeWindows = {  },
+                    idClientActuelle = idClientActuelle,
+                    idProduitActuelle = idProduitActuelle
+                )
             }
         }
     }
