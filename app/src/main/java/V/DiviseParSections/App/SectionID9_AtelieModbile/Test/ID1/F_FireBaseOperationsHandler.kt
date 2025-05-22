@@ -1,8 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase.mapFromFirebaseSnapshot
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.getKeyFireBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,7 +14,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
-class FireBaseOperationsHandler(
+class F_FireBaseOperationsHandler(
     private val onProgressUpdate: (Float) -> Unit = { }
 ) {
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
@@ -98,9 +96,7 @@ class FireBaseOperationsHandler(
                         }
                     }
 
-                    val key = if (tariff.keyFireBase.isNotEmpty()) {
-                        tariff.keyFireBase
-                    } else {
+                    val key = tariff.keyFireBase.ifEmpty {
                         getKeyFireBase(tariff.id, tariff.nom)
                     }
 

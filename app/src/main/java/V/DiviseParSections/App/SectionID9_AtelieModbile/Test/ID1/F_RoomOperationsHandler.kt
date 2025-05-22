@@ -1,15 +1,14 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RoomOperationsHandler(
+class F_RoomOperationsHandler(
     private val database: AppDatabase,
     private val onProgressUpdate: (Float) -> Unit = { }
 ) {
-    suspend fun upsertAllAndReturnListIdToData(
+    suspend fun insertAllAndReturnListIdToData(
         data: List<D_TarificationInfos>,
         onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
@@ -24,27 +23,18 @@ class RoomOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            val preparedData = data.map { item ->
-                if (item.id == 0L) {
-                    item.withProperDefaults().copy(id = 0L)
-                } else {
-                    item.withProperDefaults()
-                }
-            }
-
-            val ids = database.dTarificationInfosDao().upsertAllAndReturnIDs(preparedData)
+            val ids = database.dTarificationInfosDao()
+                .insertAllReturnIDs(data)
 
             onProgressUpdate(0.7f)
 
             val resultMap = mutableMapOf<Long, D_TarificationInfos>()
             ids.forEachIndexed { index, generatedId ->
-                if (index < preparedData.size) {
-                    val originalItem = preparedData[index]
-                    val updatedTariff = originalItem.copy(
-                        id = generatedId,
-                        keyFireBase = originalItem.computeKeyFireBase()
-                    )
-                    resultMap[generatedId] = updatedTariff
+                if (index < data.size) {
+                    val originalItem = data[index]
+                    val itemWithGeneratedId = originalItem.copy(id = generatedId)
+                    val itemWithDefaults = itemWithGeneratedId.withProperDefaults()
+                    resultMap[generatedId] = itemWithDefaults
                 }
             }
 

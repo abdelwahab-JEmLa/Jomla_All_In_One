@@ -74,7 +74,7 @@ fun upsert_1_3_TransactionCommercial(
   /*
 fun sectionSqlRepository(
     relatedClients: B_ClientDataBase,
-    sqlRepository: InfosSqlDataBasesRepository
+    sqlRepository: E_InfosSqlDataBasesRepository
 ): Unit {
     val currentData = sqlRepository.modelListFlow.value.firstOrNull()
 

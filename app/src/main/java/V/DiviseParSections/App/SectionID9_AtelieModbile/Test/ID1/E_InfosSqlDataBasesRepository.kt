@@ -1,7 +1,5 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -12,10 +10,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class InfosSqlDataBasesRepository(
+class E_InfosSqlDataBasesRepository(
     val database: AppDatabase,
-    private val fireBase: FireBaseOperationsHandler,
-    private val room: RoomOperationsHandler
+    private val fireBase: F_FireBaseOperationsHandler,
+    private val room: F_RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
@@ -50,7 +48,7 @@ class InfosSqlDataBasesRepository(
                     upsertAllRoomEtFireBase(testD_TarificationInfosT2())
                 } else {
                     coroutineScope.launch {
-                        room.upsertAllAndReturnListIdToData(dataList) {
+                        room.insertAllAndReturnListIdToData(dataList) {
                             coroutineScope.launch {
                                 updateRoomProgress(1f)
                                 updateProgress(0.7f)
@@ -88,7 +86,7 @@ class InfosSqlDataBasesRepository(
                     updateProgress(0.5f)
                     updateRoomProgress(0f)
 
-                    room.upsertAllAndReturnListIdToData(dataList) { mapData ->
+                    room.insertAllAndReturnListIdToData(dataList) { mapData ->
                         coroutineScope.launch {
                             updateRoomProgress(1f)
                             updateProgress(0.7f)

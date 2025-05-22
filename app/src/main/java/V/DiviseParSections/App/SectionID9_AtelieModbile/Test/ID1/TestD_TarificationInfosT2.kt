@@ -1,7 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
-
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TypeTarificationEnumT2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.createTimestamp
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
     val idProduit1: Long = 4

@@ -1,8 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.InfosSqlDataBasesRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
@@ -35,7 +33,7 @@ data class UiState(
 
 class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
-    private val sqlRepository: InfosSqlDataBasesRepository,
+    private val sqlRepository: E_InfosSqlDataBasesRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

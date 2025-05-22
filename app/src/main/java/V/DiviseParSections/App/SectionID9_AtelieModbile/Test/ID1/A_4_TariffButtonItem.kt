@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.D_TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
