@@ -45,33 +45,24 @@ class InfosSqlDataBasesRepository(
 
         coroutineScope.launch {
             updateProgress(0f)
-
-            fireBase.isDatabaseEmpty {
-                coroutineScope.launch {
-                    updateProgress(0.1f)
-
-                    val dataTestList: List<D_TarificationInfos> =
-                        fireBase.getDataFromFirebase {
-                            updateProgress(0.3f)
-                            it.ifEmpty {
-                                updateProgress(0.4f)
-                                testD_TarificationInfosT2()
+            fireBase.getDataFromFirebase { dataList ->
+                if (dataList.isEmpty()) {
+                    upsertAllRoomEtFireBase(testD_TarificationInfosT2())
+                } else {
+                    coroutineScope.launch {
+                        room.upsertAllAndReturnListIdToData(dataList) {
+                            coroutineScope.launch {
+                                updateRoomProgress(1f)
+                                updateProgress(0.7f)
                             }
                         }
-                            ?.d_TarificationInfos
-                            ?: run {
-                                updateProgress(0.4f)
-                                testD_TarificationInfosT2()
-                            }
-
-                    upsertAllRoomEtFireBase(dataTestList) {
-                        collectRoom()
-                        fireBase.startNeedUpdateListener()
-
-                        updateProgress(1f)
                     }
                 }
             }
+            collectRoom()
+            fireBase.startNeedUpdateListener()
+
+            updateProgress(1f)
         }
     }
 
@@ -98,17 +89,19 @@ class InfosSqlDataBasesRepository(
                     updateRoomProgress(0f)
 
                     room.upsertAllAndReturnListIdToData(dataList) { mapData ->
-                        updateRoomProgress(1f)
-                        updateProgress(0.7f)
-
                         coroutineScope.launch {
+                            updateRoomProgress(1f)
+                            updateProgress(0.7f)
+
                             try {
                                 updateFirebaseProgress(0f)
 
                                 fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
-                                    updateFirebaseProgress(1f)
-                                    updateProgress(1f)
-                                    onAddSuccess(mapData)
+                                    coroutineScope.launch {
+                                        updateFirebaseProgress(1f)
+                                        updateProgress(1f)
+                                        onAddSuccess(mapData)
+                                    }
                                 }
                             } catch (e: Exception) {
                                 updateFirebaseProgress(0f)

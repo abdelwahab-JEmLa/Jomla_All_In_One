@@ -55,7 +55,8 @@ class FireBaseOperationsHandler(
     }
 
     suspend fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit): DataBasesInfosSql? {
-        return suspendCancellableCoroutine { continuation ->
+        return suspendCancellableCoroutine { continuation ->   //<--
+        //TODO(1): pk ca terturen ici 
             onProgressUpdate(0.1f)
 
             ref.addListenerForSingleValueEvent(object : ValueEventListener {
