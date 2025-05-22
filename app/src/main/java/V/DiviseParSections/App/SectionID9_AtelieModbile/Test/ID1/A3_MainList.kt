@@ -51,16 +51,7 @@ fun MainList(
 
     val finalGerantType = TypeTarificationEnumT2.AU_GERANT
 
-    // Calculate dynamic height based on the count of elements in each group
-    // Each element contributes 20dp to the height
-    val maxElementsInGroup = if (autres.isNotEmpty()) {
-        autres.maxOf { it.value.size }
-    } else {
-        1 // Minimum height for at least one element
-    }
     val gerantButtonHeight = remember(autres) {
-        // Base height + (number of elements * 20dp)
-        // Adding some base height (40dp) for padding and minimum size
         val calculatedHeight = 5 + (tariffsGroupedByType.size * 40)
         calculatedHeight.dp
     }
@@ -72,7 +63,6 @@ fun MainList(
         verticalAlignment = Alignment.Top
     ) {
         Column(modifier = modifier) {
-            // Display other tariff types (excluding AU_GERANT)
             autres.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
                     typeTarification = type,
@@ -85,7 +75,6 @@ fun MainList(
             }
         }
 
-        // Always display AU_GERANT button (either existing or created)
         TariffButtonItem(
             typeTarification = finalGerantType,
             tariffs = finalGerantTariffs,
