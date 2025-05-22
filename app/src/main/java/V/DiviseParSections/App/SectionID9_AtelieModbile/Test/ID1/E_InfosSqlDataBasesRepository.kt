@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+
 class E_InfosSqlDataBasesRepository(
     val database: AppDatabase,
     private val fireBase: F_FireBaseOperationsHandler,
