@@ -104,7 +104,6 @@ fun TariffButtonItem(
                         val pls = if (typeTarification == TypeTarificationEnumT2.DEFINI)
                             " +" else ""
 
-                        // TODO(1) FIXED: Change background color to black when type is DEFINI
                         val backgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
                             Color.Black
                         } else {
