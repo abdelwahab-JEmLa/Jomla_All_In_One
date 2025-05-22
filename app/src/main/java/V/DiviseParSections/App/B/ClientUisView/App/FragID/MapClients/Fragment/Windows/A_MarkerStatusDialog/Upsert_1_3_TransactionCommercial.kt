@@ -66,39 +66,4 @@ fun upsert_1_3_TransactionCommercial(
         }
 
     }
-  /*  sectionSqlRepository(
-        sqlRepository = viewModel.sqlRepository,
-        relatedClients = relatedClients!!,
-    )       */
 }
-  /*
-fun sectionSqlRepository(
-    relatedClients: B_ClientDataBase,
-    sqlRepository: E_InfosSqlDataBasesRepository
-): Unit {
-    val currentData = sqlRepository.modelListFlow.value.firstOrNull()
-
-    // Convert B_ClientDataBase to B_ClientInfos
-    val b_ClientInfos = currentData!!
-        .b_ClientInfosList.find {
-            it.id == relatedClients.id
-        } ?: B_ClientInfos(
-        id = relatedClients.id,
-        nom = relatedClients.nom
-    )
-
-    sqlRepository.addoneClientInfos(b_ClientInfos)
-
-    // Create updated list with the target client set to open
-    val updatedClientList = currentData.b_ClientInfosList.map { cli ->
-        if (cli.id == b_ClientInfos.id) {
-            cli.copy(cLeDataOuvertDuParentList = true)
-        } else {
-            cli.copy(cLeDataOuvertDuParentList = false)
-        }
-    }.toMutableList()
-
-    // Update clients with the correct parameter
-    sqlRepository.updateMultiClientInfos(updatedClientList)
-}
-            */
