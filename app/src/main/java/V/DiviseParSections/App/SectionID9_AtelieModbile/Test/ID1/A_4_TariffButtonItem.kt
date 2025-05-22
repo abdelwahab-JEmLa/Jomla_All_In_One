@@ -104,7 +104,8 @@ fun TariffButtonItem(
                         Text(
                             "$prixCurrency$pls",
                             modifier = Modifier
-                                .background(couleurButton)
+                                .background(couleurButton)  //<--
+                                //TODO(1): fait que si TypeTarificationEnumT2.DEFINI de chanage la couleur au noire
                                 .padding(4.dp),
                             color = Color.White
                         )
