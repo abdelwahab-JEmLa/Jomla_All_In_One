@@ -45,8 +45,7 @@ fun TariffsButtons_TestID2(
         }
     }
 
-    Text("${tarificationList.size}")     //<--
-    //TODO(1): pk == 0 
+    Text("${tarificationList.size}")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
