@@ -51,7 +51,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             idParentProduit = idProduit2,
             parentIdClient = parentIdClient,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 14.80
+            prixCurrency = 290.80
         ),
         D_TarificationInfos(
             timestamps = createTimestamp(
