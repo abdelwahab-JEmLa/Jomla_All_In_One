@@ -60,7 +60,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     var isDetailsVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { isDetailsVisible = true }
 
-
     currentSale?.let {
         MainUi(
             viewModelInitApp = viewModelInitApp,
@@ -154,6 +153,7 @@ fun MainUi(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
                     parentIdClient=idClientActuelleDepui1_3?:0,
+                    provisoireMonPrix =articlesBaseStats?.monPrixVent ?:0.0,
                     parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
                     repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(
