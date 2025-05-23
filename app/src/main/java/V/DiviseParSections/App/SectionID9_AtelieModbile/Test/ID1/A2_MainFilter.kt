@@ -21,6 +21,7 @@ fun MainFilter(
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
+    onClickAnulationButton: (() -> Unit)? = null // Added cancellation callback parameter
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
@@ -62,10 +63,7 @@ fun MainFilter(
                 ?.provisoireMonPrix ?: 0.0
         }
 
-
-
     Column(modifier = modifier) {
-
         MainList(
             maxPrixArriveDuProduit = maxPrixArriveDuProduit,
             clientDefiniTariffs = clientDefiniTariffs,
@@ -73,6 +71,7 @@ fun MainFilter(
             filteredProduit = filteredProduit,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton,
+            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
         )
     }
 }

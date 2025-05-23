@@ -22,7 +22,8 @@ fun MainList(
     filteredProduit: _2_1_ProduitsDataBase,
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
-    clientDefiniTariffs: List<D_TarificationInfos>
+    clientDefiniTariffs: List<D_TarificationInfos>,
+    onClickAnulationButton: (() -> Unit)? = null // Added cancellation callback parameter
 ) {
     val context = LocalContext.current
 
@@ -105,7 +106,8 @@ fun MainList(
                         context
                     )
                 }
-            }
+            },
+            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
         )
     }
 }

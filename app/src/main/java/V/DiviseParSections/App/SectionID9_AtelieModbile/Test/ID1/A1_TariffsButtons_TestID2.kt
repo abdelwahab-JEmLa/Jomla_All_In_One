@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -34,8 +35,10 @@ fun TariffsButtons_TestID2(
     filterProductId: Long = 0,
     filterBonId: Long = 0,
     fermeDialog: () -> Unit,
+    onClickAnulationButton: () -> Unit,
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
+    val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
 
@@ -54,6 +57,13 @@ fun TariffsButtons_TestID2(
         val typeName = typeTarification.name
         val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        afficheButtons = false
+        fermeDialog()
+    }
+
+    // Cancellation callback
+    val onClickAnulationButton: () -> Unit = {
+        Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
         afficheButtons = false
         fermeDialog()
     }
@@ -95,12 +105,13 @@ fun TariffsButtons_TestID2(
                     MainFilter(
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
-                        produitAcheteOperationList=produitAcheteOperationList,
+                        produitAcheteOperationList = produitAcheteOperationList,
                         produitInfosList = produitInfosList,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
                         filterBonID = filterBonId,
-                        onClickPrixButton = onClickPrixButton
+                        onClickPrixButton = onClickPrixButton,
+                        onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
                     )
                 }
             } else {

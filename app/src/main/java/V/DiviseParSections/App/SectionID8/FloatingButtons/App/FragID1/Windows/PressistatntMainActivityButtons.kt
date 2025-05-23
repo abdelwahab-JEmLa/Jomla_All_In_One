@@ -44,6 +44,7 @@ fun PressistatntMainActivityButtons(
     onPourFermeWindows: () -> Unit,
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
+    onClickAnulationButton: () -> Unit,
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -137,11 +138,12 @@ fun PressistatntMainActivityButtons(
                 )
 
                 TariffsButtons_TestID2(
-                    cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
+                    showLabels = showLabels,
                     filterProductId = idProduitActuelle,
                     filterBonId = parentCompose_1_3_BonAchatVid,
-                    showLabels = showLabels,
                     fermeDialog = onPourFermeWindows,
+                    cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
+                    onClickAnulationButton = onClickAnulationButton
                 )
 
             }

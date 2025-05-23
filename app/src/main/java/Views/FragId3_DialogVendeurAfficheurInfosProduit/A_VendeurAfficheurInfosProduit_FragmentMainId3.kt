@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.Pr
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ConfirmExitDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
@@ -16,7 +15,6 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -249,32 +247,9 @@ fun MainUi(
                         }
                     }
 
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 3.dp
-                    ) {
-                        ActionsButtonRow(
-                            parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                            modifier = Modifier.padding(8.dp),
-                            currentSale = currentSale,
-                            currentClient = currentClient,
-                            onConfirm = {
-
-
-                            },
-                            onDismiss = onDismiss,
-                            viewModel = viewModel,
-                            viewModelInitApp = viewModelInitApp
-                        )
-                    }
                 }
 
                 PressistatntMainActivityButtons(
-                    idProduitActuelle = idProduitActuelle,
-                    parentCompose_1_3_BonAchatVid= parentCompose_1_3_BonAchatVid,
                     cLenceDepuitDialogeAchate=  true,
                     onPourFermeWindows = {
                         updateState(
@@ -287,6 +262,15 @@ fun MainUi(
                         onDismiss()
 
                         onPourFermeWindows()
+                    },
+                    idProduitActuelle = idProduitActuelle,
+                    parentCompose_1_3_BonAchatVid= parentCompose_1_3_BonAchatVid,
+                    onClickAnulationButton = {
+                        updateState(
+                            viewModelInitApp,
+                            parentCompose_1_2_ProduitAcheteOperationVid,
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                        )
                     }
                 )
             }
