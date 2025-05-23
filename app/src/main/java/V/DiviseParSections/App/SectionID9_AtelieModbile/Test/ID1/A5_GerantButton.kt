@@ -58,7 +58,8 @@ fun GerantButton(
     ) {
         // Cancellation button at the top
         if (onClickAnulationButton != null) {
-            FloatingActionButton(
+            FloatingActionButton(        //<--
+            //TODO(1): fait que ca soit under  button
                 onClick = onClickAnulationButton,
                 modifier = Modifier.size(32.dp),
                 containerColor = cancelColor

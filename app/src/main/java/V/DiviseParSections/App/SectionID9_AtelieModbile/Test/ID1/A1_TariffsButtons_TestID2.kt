@@ -35,7 +35,7 @@ fun TariffsButtons_TestID2(
     filterProductId: Long = 0,
     filterBonId: Long = 0,
     fermeDialog: () -> Unit,
-    onClickAnulationButton: () -> Unit,
+    onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
     val context = LocalContext.current
@@ -66,6 +66,7 @@ fun TariffsButtons_TestID2(
         Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
         afficheButtons = false
         fermeDialog()
+        onFermDialogeAvecAnllation()
     }
 
     if (afficheButtons) {

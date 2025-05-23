@@ -44,7 +44,7 @@ fun PressistatntMainActivityButtons(
     onPourFermeWindows: () -> Unit,
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
-    onClickAnulationButton: () -> Unit,
+    onClickAnulationButton: () -> Unit={},
 ) {
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -143,7 +143,7 @@ fun PressistatntMainActivityButtons(
                     filterBonId = parentCompose_1_3_BonAchatVid,
                     fermeDialog = onPourFermeWindows,
                     cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
-                    onClickAnulationButton = onClickAnulationButton
+                    onFermDialogeAvecAnllation = onClickAnulationButton
                 )
 
             }

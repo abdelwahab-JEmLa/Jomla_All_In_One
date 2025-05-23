@@ -190,7 +190,6 @@ fun MainUi(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Show loading indicator when data is still loading
                 if (isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -201,10 +200,8 @@ fun MainUi(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 80.dp)
                     ) {
                         articlesBaseStats?.let { stats ->
-
                             item {
                             //    Text(parentCompose_1_3_BonAchatVid.toString())
                                 ProductNameSection3(

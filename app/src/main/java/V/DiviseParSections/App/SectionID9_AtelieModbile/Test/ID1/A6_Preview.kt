@@ -11,7 +11,7 @@ fun Test2Prev() {
     TariffsButtons_TestID2(
         filterProductId = idProduitChahrazed,
         filterBonId = 1,
-        fermeDialog = { },,
+        fermeDialog = { },
         cLenceDepuitDialogeAchate = true,
     )
 }

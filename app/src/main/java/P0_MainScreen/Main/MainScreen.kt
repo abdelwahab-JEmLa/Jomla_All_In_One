@@ -329,7 +329,7 @@ fun MainScreen(
                     }
                 }
                 PressistatntMainActivityButtons(
-                    onPourFermeWindows = {  },,
+                    onPourFermeWindows = {  },
                 )
             }
         }
