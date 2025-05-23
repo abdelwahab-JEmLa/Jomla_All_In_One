@@ -6,12 +6,10 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 fun Test2Prev() {
-    val idProduitChahrazed = 849L  //<--
-    //TODO(2.C Relative Au Todo(1): 
-            //...pour ce client meme si normalement le max soit 77.5
+    val idProduitChahrazed = 849L
     val idTP2 = 859L
     TariffsButtons_TestID2(
-        filterProductId = idProduitChahrazed,
+        filterProductId = idTP2,
         filterBonId = 1,
         cLenceDepuitDialogeAchate = true,
         fermeDialog = { },

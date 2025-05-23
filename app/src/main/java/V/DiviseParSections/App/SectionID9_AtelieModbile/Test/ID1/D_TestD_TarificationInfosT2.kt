@@ -62,8 +62,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             idParentProduit = idProduit1,
             parentIdClient = parentIdClient2,
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 77.50          //<--
-            //TODO(1): pk le max prix ne s affiche pas pour 
+            prixCurrency = 77.50
         ),
         )
 }
