@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity

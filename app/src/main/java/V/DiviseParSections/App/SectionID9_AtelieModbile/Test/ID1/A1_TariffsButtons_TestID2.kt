@@ -43,7 +43,9 @@ fun TariffsButtons_TestID2(
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
-    Text("${produitAcheteOperationList.size}")
+
+
+
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
     val shouldShowLoading = uiState.isDataSyncing ||
@@ -93,6 +95,7 @@ fun TariffsButtons_TestID2(
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     MainFilter(
+                        produitAcheteOperationList=produitAcheteOperationList,
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
                         produitInfosList = produitInfosList,

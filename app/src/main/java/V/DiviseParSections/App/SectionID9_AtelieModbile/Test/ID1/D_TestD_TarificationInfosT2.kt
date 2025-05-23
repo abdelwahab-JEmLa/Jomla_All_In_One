@@ -18,51 +18,5 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
             prixCurrency = 65.75
         ),
-        D_TarificationInfos(
-            timestamps = createTimestamp(
-                day = 1,
-                hour = 13,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            parentIdClient = parentIdClient,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 70.50
-        ),
-
-        D_TarificationInfos(
-            timestamps = createTimestamp(
-                day = 5,
-                hour = 13,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            parentIdClient = parentIdClient,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 72.50
-        ),
-
-        D_TarificationInfos(
-            timestamps = createTimestamp(
-                day = 6,
-                hour = 4,
-                minute = 30
-            ),
-            idParentProduit = idProduit2,
-            parentIdClient = parentIdClient,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 290.80
-        ),
-        D_TarificationInfos(
-            timestamps = createTimestamp(
-                day = 7,
-                hour = 13,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            parentIdClient = parentIdClient2,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
-            prixCurrency = 77.50
-        ),
         )
 }
