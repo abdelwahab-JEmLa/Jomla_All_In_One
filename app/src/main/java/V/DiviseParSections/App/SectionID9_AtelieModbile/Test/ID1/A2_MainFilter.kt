@@ -16,13 +16,13 @@ import androidx.wear.compose.material.Text
 fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
     bonAchatList: List<C3_BonAchate>,
+    produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
     produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
-    produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
@@ -47,7 +47,7 @@ fun MainFilter(
     }
 
     Card {
-        Text("clientDefiniTariffs$tarificationList")
+        Text("produitAcheteOperationList$produitAcheteOperationList")
     }
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->

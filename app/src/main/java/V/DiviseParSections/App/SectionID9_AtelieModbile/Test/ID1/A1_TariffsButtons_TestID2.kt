@@ -93,9 +93,9 @@ fun TariffsButtons_TestID2(
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     MainFilter(
-                        produitAcheteOperationList=produitAcheteOperationList,
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
+                        produitAcheteOperationList=produitAcheteOperationList,
                         produitInfosList = produitInfosList,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
