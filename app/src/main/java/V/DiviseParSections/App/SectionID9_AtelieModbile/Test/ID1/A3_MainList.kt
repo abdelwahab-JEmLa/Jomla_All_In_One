@@ -23,7 +23,7 @@ fun MainList(
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<D_TarificationInfos>,
-    onClickAnulationButton: (() -> Unit)? = null // Added cancellation callback parameter
+    onClickAnulationButton: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
 
