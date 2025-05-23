@@ -41,22 +41,26 @@ fun MainFilter(
     }
 
     val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
-        tarificationList.filter { it.parentIdClient == idClientFiltruer }
+        tarificationList.filter {
+            it.idParentProduit == filteredProduit.vid &&
+                    it.parentIdClient == idClientFiltruer
+        }
     }
 
-  /*  Card {
-        Text("produitAcheteOperationList$produitAcheteOperationList")
-    }       */
+    /*  Card {
+          Text("produitAcheteOperationList$produitAcheteOperationList")
+      }       */
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
         operation.produitAcheterID == filteredProduit.vid &&
                 operation.parentIdClient == idClientFiltruer
     }
 
-    val clientLastHistoricalPrice = remember(produitAcheteOperationList, filteredProduit, idClientFiltruer) {
-        lastOrNull_produitAcheteOperationList
-            ?.provisoireMonPrix ?: 0.0
-    }
+    val clientLastHistoricalPrice =
+        remember(produitAcheteOperationList, filteredProduit, idClientFiltruer) {
+            lastOrNull_produitAcheteOperationList
+                ?.provisoireMonPrix ?: 0.0
+        }
 
 
 
