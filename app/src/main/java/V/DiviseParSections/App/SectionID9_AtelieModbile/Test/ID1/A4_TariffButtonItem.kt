@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -30,12 +29,12 @@ fun TariffButtonItem(
     tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    context: Context,
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
-
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

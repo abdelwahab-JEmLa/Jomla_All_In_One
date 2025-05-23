@@ -38,10 +38,10 @@
       <SelectionState runConfigName="Test2Prev">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Test2Prev (1)">
+      <SelectionState runConfigName="Test2Prev (2)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Test2Prev (2)">
+      <SelectionState runConfigName="Test2Prev (3)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -59,6 +59,7 @@ fun MainList(
                     tariffs = typeTariffs,
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton(),
+                    context = context,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -67,6 +68,7 @@ fun MainList(
                 tariffs = PRIX_BASETariffe,
                 showLabels = showLabels,
                 onClickPrixButton = onClickPrixButton(),
+                context = context,
             )
         }
 
