@@ -8,17 +8,6 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
     return listOf(
         D_TarificationInfos(
             timestamps = createTimestamp(
-                day = 1,
-                hour = 12,
-                minute = 30
-            ),
-            idParentProduit = idProduit1,
-            idParentBonAchat = idParentBonAchat,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-            prixCurrency = 185.99
-        ),
-        D_TarificationInfos(
-            timestamps = createTimestamp(
                 day = 5,
                 hour = 13,
                 minute = 30
@@ -59,10 +48,9 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             ),
             idParentProduit = idProduit2,
             idParentBonAchat = idParentBonAchat,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
             prixCurrency = 14.80
-        )
-        ,
+        ),
         D_TarificationInfos(
             timestamps = createTimestamp(
                 day = 6,
