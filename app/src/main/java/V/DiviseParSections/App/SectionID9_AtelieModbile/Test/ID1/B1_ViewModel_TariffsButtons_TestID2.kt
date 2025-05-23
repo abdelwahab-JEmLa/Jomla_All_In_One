@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
@@ -88,7 +88,7 @@ class TariffsButtonsViewModel_TestID2(
                     combine(
                         produitRepository.progressRepo,
                         repoC3_BonVent.progressRepo,
-                        repositoryC2_ProduitAcheteOperation.progressRepo, // Added this line
+                        repositoryC2_ProduitAcheteOperation.progressRepo,
                         sqlRepository.mainProgressRepo
                     ) { produitProgress, bonAchatProgress, produitAcheteProgress, sqlProgress ->
 
@@ -107,7 +107,6 @@ class TariffsButtonsViewModel_TestID2(
                             )
                         }
 
-                        // Return all four progress values
                         Pair(Pair(validProduitProgress, validBonAchatProgress), Pair(validProduitAcheteProgress, validSqlProgress))
                     }.collect { (firstPair, secondPair) ->
                         val (produitProg, bonAchatProg) = firstPair
@@ -170,11 +169,9 @@ class TariffsButtonsViewModel_TestID2(
                         }
 
                     } catch (e: Exception) {
-                        // Handle error silently
                     }
                 }
 
-                // Added this entire block for C2 repository collection
                 produitAcheteOperationCollectorJob = launch {
                     try {
                         val initialProduitAcheteList = repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
@@ -194,10 +191,6 @@ class TariffsButtonsViewModel_TestID2(
                                 }
                             }
                         }
-
-                        // Note: C2 repository doesn't have activeId like C3, so we skip that part
-                        // If you need to track changes in the modelDatasSnapList, you might need to implement
-                        // a similar mechanism or use a different approach
 
                     } catch (e: Exception) {
                         // Handle error silently
