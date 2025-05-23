@@ -115,19 +115,19 @@ fun MainUi(
 
     val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
 
-
     val find = repositorysModel.repository_1_3_TransactionCommercial
         .modelDatasSnapList.find {
             it.vid == parentCompose_1_3_BonAchatVid
         }
 
-    val repository_1_3_TransactionCommercialclientAcheteurID =
+    val idClientActuelleDepui1_3 =
         find?.clientAcheteurID
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(
-        key1 = currentSale.idArticle
+        key1 = currentSale.idArticle,
+        idClientActuelleDepui1_3
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
@@ -153,7 +153,7 @@ fun MainUi(
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentIdClient=repository_1_3_TransactionCommercialclientAcheteurID?:0,
+                    parentIdClient=idClientActuelleDepui1_3?:0,
                     parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
                     repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(
