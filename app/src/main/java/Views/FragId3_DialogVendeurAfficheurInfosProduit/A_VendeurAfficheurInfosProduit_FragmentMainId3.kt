@@ -102,8 +102,6 @@ fun MainUi(
     onPourFermeWindows: () -> Unit,
 ) {
     val idProduitActuelle = currentSale.idArticle
-    val idClientActuelle = currentClient?.id ?:0
-    // Get the active BonAchat ID from the repository
     val parentCompose_1_3_BonAchatVid by
     _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 

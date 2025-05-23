@@ -56,70 +56,76 @@ fun GerantButton(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Cancellation button at the top
-        if (onClickAnulationButton != null) {
-            FloatingActionButton(        //<--
-            //TODO(1): fait que ca soit under  button
-                onClick = onClickAnulationButton,
-                modifier = Modifier.size(32.dp),
-                containerColor = cancelColor
+        Box {
+
+            // Main manager button
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "إلغاء",
-                    tint = Color.White,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-
-        // Main manager button
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            if (showLabels) {
-                ElevatedCard(
-                    Modifier.clickable {
-                        onClickPrixButton()
-                    }
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .background(color)
-                            .padding(vertical = 4.dp, horizontal = 4.dp)
-                            .height(gerantButtonHeight)
-                            .width(30.dp)
+                if (showLabels) {
+                    ElevatedCard(
+                        Modifier.clickable {
+                            onClickPrixButton()
+                        }
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .background(color)
+                                .padding(vertical = 4.dp, horizontal = 4.dp)
+                                .height(gerantButtonHeight)
+                                .width(30.dp)
                         ) {
-                            val fontSize = 12.sp
+                            Column(
+                                modifier = Modifier.fillMaxHeight(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                val fontSize = 12.sp
 
-                            Text(
-                                text = "التقدير",
-                                maxLines = 1,
-                                fontSize = fontSize,
-                                modifier = Modifier.rotate(-90f),
-                                color = Color.White
-                            )
+                                Text(
+                                    text = "التقدير",
+                                    maxLines = 1,
+                                    fontSize = fontSize,
+                                    modifier = Modifier.rotate(-90f),
+                                    color = Color.White
+                                )
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(20.dp))
 
-                            Text(
-                                text = "للمدير",
-                                maxLines = 1,
-                                fontSize = fontSize,
-                                modifier = Modifier.rotate(-90f),
-                                color = Color.White
-                            )
+                                Text(
+                                    text = "للمدير",
+                                    maxLines = 1,
+                                    fontSize = fontSize,
+                                    modifier = Modifier.rotate(-90f),
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
             }
+
+            // Cancellation button positioned at top-right with proper padding
+            if (onClickAnulationButton != null) {
+                FloatingActionButton(
+                    onClick = onClickAnulationButton,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(top = 4.dp, end = 4.dp),
+                    containerColor = cancelColor
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "إلغاء",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
         }
     }
 }
