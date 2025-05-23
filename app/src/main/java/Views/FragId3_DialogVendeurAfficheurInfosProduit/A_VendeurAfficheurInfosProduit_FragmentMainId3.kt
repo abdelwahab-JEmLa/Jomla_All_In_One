@@ -153,7 +153,7 @@ fun MainUi(
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentIdClient=idClientActuelle,
+                    parentIdClient=repository_1_3_TransactionCommercialclientAcheteurID?:0,
                     parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
                     repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(
