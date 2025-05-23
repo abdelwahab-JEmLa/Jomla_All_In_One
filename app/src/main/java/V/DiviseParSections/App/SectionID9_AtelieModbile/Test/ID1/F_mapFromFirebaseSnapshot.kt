@@ -56,7 +56,7 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
             val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
 
             // Map all the missing fields from Firebase JSON
-            val idParentBonAchat = childSnap.child("idParentBonAchat").getValue(Long::class.java) ?: 0L
+            val parentIdClient = childSnap.child("parentIdClient").getValue(Long::class.java) ?: 0L
             val idParentProduit = childSnap.child("idParentProduit").getValue(Long::class.java) ?: 0L
             val prixCurrency = childSnap.child("prixCurrency").getValue(Double::class.java) ?: 0.0
             val timestamps = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
@@ -74,7 +74,7 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
                 nom = nom,
                 needUpdate = needUpdate,
                 keyFireBase = keyFireBase,
-                parentIdClient = idParentBonAchat,
+                parentIdClient = parentIdClient,
                 idParentProduit = idParentProduit,
                 prixCurrency = prixCurrency,
                 timestamps = timestamps,

@@ -5,10 +5,12 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_Pro
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.wear.compose.material.Text
 
 @Composable
 fun MainFilter(
@@ -44,17 +46,24 @@ fun MainFilter(
         tarificationList.filter { it.parentIdClient == idClientFiltruer }
     }
 
+    Card {
+        Text("clientDefiniTariffs$tarificationList")
+    }
+
+    val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
+        operation.produitAcheterID == filteredProduit.vid &&
+                operation.parentIdClient == idClientFiltruer
+    }
+
     val clientLastHistoricalPrice = remember(produitAcheteOperationList, filteredProduit, idClientFiltruer) {
-        produitAcheteOperationList
-            .filter { operation ->
-                operation.produitAcheterID == filteredProduit.vid &&
-                        operation.parentIdClient == idClientFiltruer
-            }
-            .lastOrNull()
+        lastOrNull_produitAcheteOperationList
             ?.provisoireMonPrix ?: 0.0
     }
 
+
+
     Column(modifier = modifier) {
+
         MainList(
             maxPrixArriveDuProduit = maxPrixArriveDuProduit,
             clientDefiniTariffs = clientDefiniTariffs,
