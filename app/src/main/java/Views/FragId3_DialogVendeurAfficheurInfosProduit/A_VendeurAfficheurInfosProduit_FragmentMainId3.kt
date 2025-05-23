@@ -60,6 +60,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     var isDetailsVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { isDetailsVisible = true }
 
+
     currentSale?.let {
         MainUi(
             viewModelInitApp = viewModelInitApp,
