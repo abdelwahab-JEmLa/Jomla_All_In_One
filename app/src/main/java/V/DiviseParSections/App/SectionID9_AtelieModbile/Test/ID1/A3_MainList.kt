@@ -24,17 +24,23 @@ fun MainList(
 ) {
     val context = LocalContext.current
 
-    val hasHistoricalTariffs = remember(produitTariffs) {
-        produitTariffs.any { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+    val historicalTariffs = remember(produitTariffs) {
+        produitTariffs.filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
     }
 
-    val maxHistoricalPrice = remember(produitTariffs) {
-        produitTariffs
-            .filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
-            .maxOfOrNull { it.prixCurrency } ?: 0.0
+    val hasHistoricalTariffs = remember(historicalTariffs) {
+        historicalTariffs.isNotEmpty()
     }
 
-    val standardTariffs = remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice) {
+    val maxHistoricalPrice = remember(historicalTariffs) {
+        historicalTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
+    }
+
+    val lastHistoricalPrice = remember(historicalTariffs) {
+        historicalTariffs.maxByOrNull { it.timestamps }?.prixCurrency ?: 0.0
+    }
+
+    val standardTariffs = remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice, lastHistoricalPrice) {
         buildList {
             add(
                 D_TarificationInfos(
@@ -45,7 +51,8 @@ fun MainList(
                 )
             )
 
-            if (hasHistoricalTariffs && maxHistoricalPrice > 0.0) {
+            // Only add max price if it exists, is greater than 0, and is different from the last historical price
+            if (hasHistoricalTariffs && maxHistoricalPrice > 0.0 && maxHistoricalPrice != lastHistoricalPrice) {
                 add(
                     D_TarificationInfos(
                         idParentProduit = filteredProduit.vid,

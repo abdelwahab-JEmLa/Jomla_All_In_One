@@ -26,7 +26,8 @@ import java.util.SortedMap
 fun GerantButton(
     showLabels: Boolean,
     tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>
-) {
+) {            //<--
+//TODO(1): enleve commentaires
     val color = Color(0xFF4CAF50)
 
     // Dynamic height calculation based on actual layout structure
