@@ -16,47 +16,40 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    produitTariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
     filteredProduit: _2_1_ProduitsDataBase,
+    produitHistoriquesTariffs: List<D_TarificationInfos>,
+    produitTariffs: List<D_TarificationInfos>,
+    clientProduitTariffs: List<D_TarificationInfos>,
 ) {
     val context = LocalContext.current
 
-    val historicalTariffs = remember(produitTariffs) {
-        produitTariffs.filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+    val hasHistoricalTariffs = remember(produitHistoriquesTariffs) {
+        produitHistoriquesTariffs.isNotEmpty()
     }
 
-    val hasHistoricalTariffs = remember(historicalTariffs) {
-        historicalTariffs.isNotEmpty()
+    val maxHistoricalPrice = remember(produitHistoriquesTariffs) {
+        produitHistoriquesTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
     }
 
-    val maxHistoricalPrice = remember(historicalTariffs) {
-        historicalTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
-    }
-
-    val lastHistoricalPrice = remember(historicalTariffs) {
-        historicalTariffs.maxByOrNull { it.timestamps }?.prixCurrency ?: 0.0
+    val lastHistoricalPrice = remember(produitHistoriquesTariffs) {
+        produitHistoriquesTariffs.maxByOrNull { it.timestamps }?.prixCurrency ?: 0.0
     }
 
     val standardTariffs = remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice, lastHistoricalPrice) {
         buildList {
             add(
                 D_TarificationInfos(
-                    idParentProduit = filteredProduit.vid,
-                    parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
                     typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
                     prixCurrency = filteredProduit.monPrixVent,
                 )
             )
 
-            // Only add max price if it exists, is greater than 0, and is different from the last historical price
-            if (hasHistoricalTariffs && maxHistoricalPrice > 0.0 && maxHistoricalPrice != lastHistoricalPrice) {
+            if ( maxHistoricalPrice != lastHistoricalPrice) {
                 add(
                     D_TarificationInfos(
-                        idParentProduit = filteredProduit.vid,
-                        parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
                         typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
                         prixCurrency = maxHistoricalPrice,
                     )
@@ -65,8 +58,8 @@ fun MainList(
         }
     }
 
-    val allTariffsGroupedAndSorted = remember(produitTariffs, standardTariffs) {
-        val combinedTariffs = produitTariffs + standardTariffs
+    val allTariffsGroupedAndSorted = remember(clientProduitTariffs, standardTariffs) {
+        val combinedTariffs = clientProduitTariffs + standardTariffs
 
         combinedTariffs
             .groupBy { it.typeTarificationEnumT2Correspond }

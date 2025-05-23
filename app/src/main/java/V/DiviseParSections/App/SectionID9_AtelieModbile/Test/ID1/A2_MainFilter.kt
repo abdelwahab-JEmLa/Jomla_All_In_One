@@ -28,12 +28,23 @@ fun MainFilter(
         bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
     }
 
-    val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
+    val produitTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter { tariff ->
-            tariff.idParentProduit == filteredProduit.vid &&
+            tariff.idParentProduit == filteredProduit.vid
+        }
+    }
+
+    val clientProduitTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
+        produitTariffs.filter { tariff ->
                     tariff.parentIdClient == filteredBonAchat.clientAcheteurID
         }
     }
+
+    val produitHistoriquesTariffs = remember(produitTariffs) {
+        produitTariffs.filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+    }
+
+
   /*  Text(
         filteredProduit.nom,
     )
@@ -43,8 +54,10 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
+            clientProduitTariffs=clientProduitTariffs,
+            produitTariffs=produitTariffs,
+            produitHistoriquesTariffs=produitHistoriquesTariffs,
             filteredProduit=filteredProduit,
-            produitTariffs = filteredTariffs,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),
         )
