@@ -41,10 +41,10 @@ fun MainList(
             )
         )
 
-    Text("${filteredProduit.monPrixVent}")
+    Text("tariffsGroupedByType.size==${tariffsGroupedByType.size}")
 
     val gerantButtonHeight = remember(tariffsGroupedByType) {
-        val calculatedHeight = 5 + (tariffsGroupedByType.size * 40)
+        val calculatedHeight = ((tariffsGroupedByType.size + 1) * (40+5))
         calculatedHeight.dp
     }
 
