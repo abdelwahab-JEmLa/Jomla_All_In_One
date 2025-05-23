@@ -18,7 +18,7 @@ fun MainFilter(
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
-    onClickPrixButton: () -> () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
 ) {
     val filteredProduit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
@@ -56,7 +56,7 @@ fun MainFilter(
             clientHistoriquesTariffs = clientHistoriquesTariffs,
             filteredProduit = filteredProduit,
             showLabels = showLabels,
-            onClickPrixButton = onClickPrixButton(),
+            onClickPrixButton = onClickPrixButton,
         )
     }
 }

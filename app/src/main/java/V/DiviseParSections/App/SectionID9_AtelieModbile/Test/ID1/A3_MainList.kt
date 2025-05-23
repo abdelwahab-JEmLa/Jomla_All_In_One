@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 fun MainList(
     showLabels: Boolean,
     modifier: Modifier = Modifier,
-    onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     filteredProduit: _2_1_ProduitsDataBase,
     produitHistoriquesTariffs: List<D_TarificationInfos>,
     produitTariffs: List<D_TarificationInfos>,
@@ -91,7 +91,7 @@ fun MainList(
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,
-                    onClickPrixButton = onClickPrixButton(),
+                    onClickPrixButton = onClickPrixButton,
                     context = context,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -100,7 +100,17 @@ fun MainList(
 
         GerantButton(
             showLabels = showLabels,
-            tariffsGroupedByType = allTariffsGroupedAndSorted
+            tariffsGroupedByType = allTariffsGroupedAndSorted,
+            onClickPrixButton = {
+                onClickPrixButton(
+                    TypeTarificationEnumT2.LeMaxPrixArrive,
+                    D_TarificationInfos(
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                        prixCurrency = maxHistoricalPrice,
+                    ),
+                    context
+                )
+            }
         )
     }
 }

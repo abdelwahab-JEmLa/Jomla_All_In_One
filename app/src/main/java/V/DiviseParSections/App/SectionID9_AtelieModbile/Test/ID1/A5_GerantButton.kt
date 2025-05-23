@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,8 @@ import java.util.SortedMap
 @Composable
 fun GerantButton(
     showLabels: Boolean,
-    tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>
+    tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>,
+    onClickPrixButton: () -> Unit,
 ) {
     val color = Color(0xFF4CAF50)
 
@@ -48,7 +50,11 @@ fun GerantButton(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (showLabels) {
-            ElevatedCard {
+            ElevatedCard(
+                Modifier.clickable {
+                    onClickPrixButton()
+                }
+            ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier

@@ -28,7 +28,7 @@ fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
     tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     context: Context,
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
@@ -85,9 +85,7 @@ fun TariffButtonItem(
                         Icon(
                             imageVector = Icons.Filled.Remove,
                             contentDescription = "Diminuer le prix",
-                            tint =
-                                Color.Black
-
+                            tint = Color.Black
                         )
                     }
                 }
@@ -134,7 +132,9 @@ fun TariffButtonItem(
         }
 
         FloatingActionButton(
-            onClick = onClickPrixButton(typeTarification, latestTariffLocalData, context),
+            onClick = {
+                onClickPrixButton(typeTarification, latestTariffLocalData, context)
+            },
             modifier = Modifier.size(40.dp),
             containerColor = buttonBackgroundColor
         ) {

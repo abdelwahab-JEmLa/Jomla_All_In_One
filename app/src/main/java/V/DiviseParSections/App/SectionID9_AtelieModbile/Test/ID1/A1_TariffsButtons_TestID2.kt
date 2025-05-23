@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,14 @@ fun TariffsButtons_TestID2(
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
             (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
+    val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit = { typeTarification, latestTariffLocalData, context ->
+        val typeName = typeTarification.name
+        val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        afficheButtons = false
+        fermeDialog()
+    }
+
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
@@ -89,20 +98,7 @@ fun TariffsButtons_TestID2(
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
                         filterBonID = filterBonId,
-                        onClickPrixButton = {
-                            {
-                                { typeTarification, latestTariffLocalData, context ->
-                                    {
-                                        val typeName = typeTarification.name
-                                        val message =
-                                            "$typeName: ${latestTariffLocalData.prixCurrency}"
-                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                                        afficheButtons = false
-                                        fermeDialog()
-                                    }
-                                }
-                            }
-                        }
+                        onClickPrixButton = onClickPrixButton
                     )
                 }
             } else {
