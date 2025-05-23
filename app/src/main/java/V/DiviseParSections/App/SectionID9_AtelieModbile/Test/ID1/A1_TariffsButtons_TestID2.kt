@@ -34,7 +34,7 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     filterProductId: Long = 0,
     filterBonId: Long = 0,
-    fermeDialog: () -> Unit,
+    fermeDialog: (D_TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
@@ -58,14 +58,13 @@ fun TariffsButtons_TestID2(
         val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         afficheButtons = false
-        fermeDialog()
+        fermeDialog(latestTariffLocalData)
     }
 
     // Cancellation callback
     val onClickAnulationButton: () -> Unit = {
         Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
         afficheButtons = false
-        fermeDialog()
         onFermDialogeAvecAnllation()
     }
 

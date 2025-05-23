@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.Pr
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ConfirmExitDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
@@ -12,7 +11,6 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -161,22 +159,8 @@ fun MainUi(
             }
     }
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
- 
-     showConfirmDialog = ConfirmExitDialog(
-        viewModelInitApp,
-        parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-        showConfirmDialog = showConfirmDialog,
-        viewModel = viewModel,
-    ) {
-        onDismiss()
-        _DisplayeProductInfosToSeller(viewModelInitApp).onClickOnMain(
-            viewModelInitApp, currentSale, currentClient
-        )
-    }
-
     Dialog(
-        onDismissRequest = { showConfirmDialog = true }, properties = DialogProperties(
+        onDismissRequest = {  onDismiss() }, properties = DialogProperties(
             usePlatformDefaultWidth = false, decorFitsSystemWindows = true
         )
     ) {
@@ -250,7 +234,8 @@ fun MainUi(
                         updateState(
                             viewModelInitApp,
                             parentCompose_1_2_ProduitAcheteOperationVid,
-                            _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME,
+                            newProvisoirePrix =it.prixCurrency
                         )
 
                         viewModel.saveSaleTransactionToSoldAriclesList()
@@ -264,7 +249,7 @@ fun MainUi(
                         updateState(
                             viewModelInitApp,
                             parentCompose_1_2_ProduitAcheteOperationVid,
-                            _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK,
                         )
                     }
                 )
@@ -277,11 +262,13 @@ fun updateState(
     viewModelInitApp: ViewModelInitApp,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     neveauEtateActuellementEst: _1_2_ProduitAcheteOperation.EtateActuellementEst,
+    newProvisoirePrix: Double=0.0,
 ) {
     val rep = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
     rep.modelDatasSnapList.find {
         it.vid == parentCompose_1_2_ProduitAcheteOperationVid
     }?.apply {
         etateActuellementEst = neveauEtateActuellementEst
+        provisoireMonPrix=newProvisoirePrix
     }?.let { rep.updateUnSeulData(it) }
 }

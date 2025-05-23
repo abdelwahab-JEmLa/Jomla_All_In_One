@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TariffsButtons_TestID2
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,7 @@ import kotlin.math.roundToInt
 fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: Windows__ViewModel = koinViewModel(),
-    onPourFermeWindows: () -> Unit,
+    onPourFermeWindows: (D_TarificationInfos) -> Unit,
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
     onClickAnulationButton: () -> Unit={},

@@ -94,18 +94,25 @@ fun MainList(
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {
-                maxPrixArriveDuProduit?.let {
-                    D_TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                        prixCurrency = it,
-                    )
-                }?.let {
-                    onClickPrixButton(
-                        TypeTarificationEnumT2.LeMaxPrixArrive,
-                        it,
-                        context
-                    )
+                // Fixed: Use maxPrixArriveDuProduit if available and valid, otherwise use base price
+                val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
+                    maxPrixArriveDuProduit
+                } else {
+                    filteredProduit.monPrixVent
                 }
+
+                val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
+                    TypeTarificationEnumT2.LeMaxPrixArrive
+                } else {
+                    TypeTarificationEnumT2.PRIX_BASE
+                }
+
+                val tarificationInfo = D_TarificationInfos(
+                    typeTarificationEnumT2Correspond = typeToUse,
+                    prixCurrency = priceToUse,
+                )
+
+                onClickPrixButton(typeToUse, tarificationInfo, context)
             },
             onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
         )

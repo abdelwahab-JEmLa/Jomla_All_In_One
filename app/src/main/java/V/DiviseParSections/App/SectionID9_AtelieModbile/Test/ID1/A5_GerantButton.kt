@@ -33,7 +33,7 @@ fun GerantButton(
     showLabels: Boolean,
     tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>,
     onClickPrixButton: () -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null, // Added cancellation callback
+    onClickAnulationButton: (() -> Unit)? = null,
 ) {
     val color = Color(0xFF4CAF50)
     val cancelColor = Color(0xFFFF5722)
