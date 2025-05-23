@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,12 +40,6 @@ fun MainList(
             )
         )
 
-    Text("tariffsGroupedByType.size==${tariffsGroupedByType.size}")
-
-    val gerantButtonHeight = remember(tariffsGroupedByType) {
-        val calculatedHeight = ((tariffsGroupedByType.size + 1) * (40+5))
-        calculatedHeight.dp
-    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,9 +66,9 @@ fun MainList(
         }
 
         GerantButton(
+            tariffsGroupedByType=tariffsGroupedByType,
             latestTariffLocalData = PRIX_BASETariffe.first(),
             showLabels = showLabels,
-            gerantButtonHeight = gerantButtonHeight,
             onClickPrixButton = onClickPrixButton(),
             context = context
         )

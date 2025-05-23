@@ -19,23 +19,31 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.SortedMap
 
 @Composable
 fun GerantButton(
     latestTariffLocalData: D_TarificationInfos,
     showLabels: Boolean,
-    gerantButtonHeight: Dp,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
-    context: Context
+    context: Context,
+    tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>
 ) {
     val color = Color(0xFF4CAF50)
+
+ //   Text("tariffsGroupedByType.size==${tariffsGroupedByType.size}")
+
+    val gerantButtonHeight = remember(tariffsGroupedByType) {
+        val calculatedHeight = ((tariffsGroupedByType.size + 1) * (40+5))
+        calculatedHeight.dp
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
