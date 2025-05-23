@@ -44,8 +44,6 @@ fun TariffsButtons_TestID2(
     val produitInfosList = uiState.produitInfosList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
 
-
-
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
     val shouldShowLoading = uiState.isDataSyncing ||

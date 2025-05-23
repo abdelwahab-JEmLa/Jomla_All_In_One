@@ -22,49 +22,46 @@ fun MainFilter(
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
 ) {
-    // Filtrage du produit sélectionné
-    val filteredProduit = remember(produitInfosList, filterProduitID) {
-        produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
-    }
-
-    // Filtrage du bon d'achat sélectionné
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
     }
 
-    // Tarifications pour le produit filtré
-    val produitTariffs = remember(tarificationList, filteredProduit) {
-        tarificationList.filter { it.idParentProduit == filteredProduit.vid }
+    val filteredProduit = remember(produitInfosList, filterProduitID) {
+        produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
     }
 
-    // Tarifications pour le client et produit spécifiques
-    val clientProduitTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
-        produitTariffs.filter { it.parentIdClient == filteredBonAchat.clientAcheteurID }
+    val idClientFiltruer = remember(bonAchatList, filterBonID) {
+        bonAchatList.find { it.vid == filterBonID }?.clientAcheteurID ?: 0L
     }
 
-    // Dernier prix historique du client pour ce produit
-    val clientLastHistoricalPrice = remember(produitAcheteOperationList, filteredProduit, filteredBonAchat) {
+    val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {
+        produitAcheteOperationList
+            .filter { it.produitAcheterID == filteredProduit.vid }
+            .maxOfOrNull { it.provisoireMonPrix }
+    }
+
+    val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
+        tarificationList.filter { it.parentIdClient == idClientFiltruer }
+    }
+
+    val clientLastHistoricalPrice = remember(produitAcheteOperationList, filteredProduit, idClientFiltruer) {
         produitAcheteOperationList
             .filter { operation ->
                 operation.produitAcheterID == filteredProduit.vid &&
-                        bonAchatList.any { bon ->
-                            bon.vid == operation.parent_1_3_TransactionCommercial &&
-                                    bon.clientAcheteurID == filteredBonAchat.clientAcheteurID
-                        }
+                        operation.parentIdClient == idClientFiltruer
             }
-            .maxOfOrNull { it.provisoireMonPrix } ?: 0.0
+            .lastOrNull()
+            ?.provisoireMonPrix ?: 0.0
     }
 
     Column(modifier = modifier) {
         MainList(
+            maxPrixArriveDuProduit = maxPrixArriveDuProduit,
+            clientDefiniTariffs = clientDefiniTariffs,
             clientLastHistoricalPrice = clientLastHistoricalPrice,
-            clientProduitTariffs = clientProduitTariffs,
-            produitTariffs = produitTariffs,
             filteredProduit = filteredProduit,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton,
-            produitHistoriquesTariffs = tarificationList
-                .filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
         )
     }
 }

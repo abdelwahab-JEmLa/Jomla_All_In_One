@@ -20,26 +20,19 @@ fun MainList(
     modifier: Modifier = Modifier,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     filteredProduit: _2_1_ProduitsDataBase,
-    produitHistoriquesTariffs: List<D_TarificationInfos>,
-    produitTariffs: List<D_TarificationInfos>,
-    clientProduitTariffs: List<D_TarificationInfos>,
-    clientLastHistoricalPrice: Double
+    clientLastHistoricalPrice: Double,
+    maxPrixArriveDuProduit: Double?,
+    clientDefiniTariffs: List<D_TarificationInfos>
 ) {
     val context = LocalContext.current
 
-    val maxHistoricalPrice = remember(produitHistoriquesTariffs) {
-        produitHistoriquesTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
-    }
-
     val standardTariffs = remember(
         filteredProduit,
-        produitTariffs,
-        maxHistoricalPrice,
+        maxPrixArriveDuProduit,
         clientLastHistoricalPrice,
-        clientProduitTariffs
+        clientDefiniTariffs
     ) {
         buildList {
-            // Prix de base du produit
             add(
                 D_TarificationInfos(
                     typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
@@ -47,7 +40,6 @@ fun MainList(
                 )
             )
 
-            // Ajout du prix historique seulement si différent de 0
             if (clientLastHistoricalPrice != 0.0) {
                 add(
                     D_TarificationInfos(
@@ -57,23 +49,23 @@ fun MainList(
                 )
             }
 
-            // Ajout du prix max si nécessaire
-            if (clientProduitTariffs.isNotEmpty() && maxHistoricalPrice != 0.0) {
-                val clientMaxPrice = clientProduitTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
-                if (maxHistoricalPrice > clientMaxPrice) {
-                    add(
-                        D_TarificationInfos(
-                            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                            prixCurrency = maxHistoricalPrice,
+            if (maxPrixArriveDuProduit != 0.0) {
+                if (maxPrixArriveDuProduit != null) {
+                    if (maxPrixArriveDuProduit > clientLastHistoricalPrice) {
+                        add(
+                            D_TarificationInfos(
+                                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                                prixCurrency = maxPrixArriveDuProduit,
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     }
 
-    val allTariffsGroupedAndSorted = remember(clientProduitTariffs, standardTariffs) {
-        (clientProduitTariffs + standardTariffs)
+    val allTariffsGroupedAndSorted = remember(clientDefiniTariffs, standardTariffs) {
+        (clientDefiniTariffs + standardTariffs)
             .groupBy { it.typeTarificationEnumT2Correspond }
             .toSortedMap(compareBy { it.ordinal })
     }
@@ -99,14 +91,18 @@ fun MainList(
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {
-                onClickPrixButton(
-                    TypeTarificationEnumT2.LeMaxPrixArrive,
+                maxPrixArriveDuProduit?.let {
                     D_TarificationInfos(
                         typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                        prixCurrency = maxHistoricalPrice,
-                    ),
-                    context
-                )
+                        prixCurrency = it,
+                    )
+                }?.let {
+                    onClickPrixButton(
+                        TypeTarificationEnumT2.LeMaxPrixArrive,
+                        it,
+                        context
+                    )
+                }
             }
         )
     }

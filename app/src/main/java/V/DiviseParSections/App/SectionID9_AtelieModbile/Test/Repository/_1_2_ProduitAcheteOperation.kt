@@ -11,6 +11,7 @@ data class _1_2_ProduitAcheteOperation(
     var produitAcheterID: Long = 0L,
     var nomProduitConcerned: Long = 0L,
     // Section Related Parents Foreign Key IDs
+    var parentIdClient: Long = 0L,
     var parent_1_3_TransactionCommercial: Long = 0L,
     var nomParentMainValue: String = "Non Defini",
 
