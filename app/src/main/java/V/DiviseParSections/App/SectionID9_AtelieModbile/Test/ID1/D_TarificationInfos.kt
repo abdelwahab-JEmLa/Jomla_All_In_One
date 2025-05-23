@@ -22,7 +22,7 @@ data class D_TarificationInfos(
     val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 =
         TypeTarificationEnumT2.PRIX_BASE,
 
-    val idParentBonAchat: Long = 0L,
+    val parentIdClient: Long = 0L,
 
     //Base Infos
     val prixCurrency: Double = 0.0,

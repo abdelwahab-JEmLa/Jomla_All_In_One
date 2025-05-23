@@ -101,6 +101,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     // Pour tester les ViewModel et LiveData
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

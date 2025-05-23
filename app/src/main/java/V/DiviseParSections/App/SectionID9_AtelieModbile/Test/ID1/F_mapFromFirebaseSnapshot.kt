@@ -74,7 +74,7 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
                 nom = nom,
                 needUpdate = needUpdate,
                 keyFireBase = keyFireBase,
-                idParentBonAchat = idParentBonAchat,
+                parentIdClient = idParentBonAchat,
                 idParentProduit = idParentProduit,
                 prixCurrency = prixCurrency,
                 timestamps = timestamps,

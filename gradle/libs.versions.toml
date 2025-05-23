@@ -41,6 +41,7 @@ material = "1.12.0"
 osmdroidAndroid = "6.1.18"
 osmdroidWms = "6.1.16"
 osmdroidMapsforge = "6.1.16"
+junitJupiter = "5.8.1"
 
 [libraries]
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons-extended" }
@@ -91,6 +92,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 osmdroid-mapsforge = { module = "org.osmdroid:osmdroid-mapsforge", version.ref = "osmdroidMapsforge" }
 osmdroid-wms = { module = "org.osmdroid:osmdroid-wms", version.ref = "osmdroidWms" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

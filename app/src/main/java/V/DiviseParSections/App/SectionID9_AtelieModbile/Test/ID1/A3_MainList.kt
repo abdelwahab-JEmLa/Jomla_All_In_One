@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    tariffs: List<D_TarificationInfos>,
+    produitTariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
@@ -24,21 +24,45 @@ fun MainList(
 ) {
     val context = LocalContext.current
 
-    val tariffsGroupedByType = remember(tariffs) {
-        tariffs.groupBy { it.typeTarificationEnumT2Correspond }
+    val tariffsGroupedByType = remember(produitTariffs) {
+        produitTariffs.groupBy { it.typeTarificationEnumT2Correspond }
             .toSortedMap(compareBy { it.ordinal })
     }
+    val hasHistoricalTariffs = remember(produitTariffs) {
+        produitTariffs.any { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+    }
 
-    val PRIX_BASETariffe =
-        listOf(
-            D_TarificationInfos(
-                idParentProduit = filteredProduit.vid,
-                idParentBonAchat = tariffs.firstOrNull()?.idParentBonAchat ?: 0L,
-                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                prixCurrency = filteredProduit.monPrixVent,
-                timestamps = System.currentTimeMillis()
-            )
-        )
+    val maxHistoricalPrice = remember(produitTariffs) {
+        produitTariffs
+            .filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+            .maxOfOrNull { it.prixCurrency } ?: 0.0
+    }
+
+    val standartTariffs =
+        remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice) {
+            buildList {
+                add(
+                    D_TarificationInfos(
+                        idParentProduit = filteredProduit.vid,
+                        parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+                        prixCurrency = filteredProduit.monPrixVent,
+                    )
+                )
+
+                if (hasHistoricalTariffs && maxHistoricalPrice > 0.0) {   //<--
+                //TODO(1): pk ca est don le base du classement normalement le sort st par ordine enume id 
+                    add(
+                        D_TarificationInfos(
+                            idParentProduit = filteredProduit.vid,
+                            parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
+                            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                            prixCurrency = maxHistoricalPrice,
+                        )
+                    )
+                }
+            }
+        }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -55,18 +79,22 @@ fun MainList(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
-            TariffButtonItem(
-                typeTarification = TypeTarificationEnumT2.PRIX_BASE,
-                tariffs = PRIX_BASETariffe,
-                showLabels = showLabels,
-                onClickPrixButton = onClickPrixButton(),
-                context = context,
-            )
+
+            standartTariffs.forEach { tariff ->
+                TariffButtonItem(
+                    typeTarification = tariff.typeTarificationEnumT2Correspond,
+                    tariffs = listOf(tariff),
+                    showLabels = showLabels,
+                    onClickPrixButton = onClickPrixButton(),
+                    context = context,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
         }
 
         GerantButton(
-            tariffsGroupedByType=tariffsGroupedByType,
-            latestTariffLocalData = PRIX_BASETariffe.first(),
+            tariffsGroupedByType = tariffsGroupedByType,
+            latestTariffLocalData = standartTariffs.first(),
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),
             context = context

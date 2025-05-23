@@ -31,21 +31,20 @@ fun MainFilter(
     val filteredTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter { tariff ->
             tariff.idParentProduit == filteredProduit.vid &&
-                    tariff.idParentBonAchat == filteredBonAchat.vid
+                    tariff.parentIdClient == filteredBonAchat.clientAcheteurID
         }
     }
-
-   /* Text(
+  /*  Text(
         filteredProduit.nom,
     )
     Text(
         filteredBonAchat.clientAcheteurID.toString(),
-    )
-            */
+    )   */
+
     Column(modifier = modifier) {
         MainList(
             filteredProduit=filteredProduit,
-            tariffs = filteredTariffs,
+            produitTariffs = filteredTariffs,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),
         )
