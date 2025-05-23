@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAc
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -36,13 +35,13 @@ fun MainFilter(
         }
     }
 
-    Text(
+   /* Text(
         filteredProduit.nom,
     )
     Text(
         filteredBonAchat.clientAcheteurID.toString(),
     )
-
+            */
     Column(modifier = modifier) {
         MainList(
             filteredProduit=filteredProduit,

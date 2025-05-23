@@ -22,12 +22,12 @@ fun MainList(
     onClickPrixButton: () -> (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
     filteredProduit: _2_1_ProduitsDataBase,
 ) {
+    val context = LocalContext.current
+
     val tariffsGroupedByType = remember(tariffs) {
         tariffs.groupBy { it.typeTarificationEnumT2Correspond }
             .toSortedMap(compareBy { it.ordinal })
     }
-
-    val context = LocalContext.current
 
     val PRIX_BASETariffe =
         listOf(
@@ -39,7 +39,6 @@ fun MainList(
                 timestamps = System.currentTimeMillis()
             )
         )
-
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -51,12 +51,24 @@ fun TariffButtonItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ElevatedCard {
+                    val labelBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                        Color.Yellow
+                    } else {
+                        couleurButton
+                    }
+
+                    val labelTextColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                        Color.Black
+                    } else {
+                        Color.White
+                    }
+
                     Text(
                         typeName,
                         modifier = Modifier
-                            .background(couleurButton)
+                            .background(labelBackgroundColor)
                             .padding(4.dp),
-                        color = Color.White
+                        color = labelTextColor
                     )
                 }
 
@@ -73,7 +85,9 @@ fun TariffButtonItem(
                         Icon(
                             imageVector = Icons.Filled.Remove,
                             contentDescription = "Diminuer le prix",
-                            tint = couleurButton
+                            tint =
+                                Color.Black
+
                         )
                     }
                 }
@@ -90,32 +104,51 @@ fun TariffButtonItem(
                     val pls = if (typeTarification == TypeTarificationEnumT2.DEFINI)
                         " +" else ""
 
-                    val backgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
-                        Color.Black
+                    val priceBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                        Color.Yellow
                     } else {
                         couleurButton
+                    }
+
+                    val priceTextColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                        Color.Black
+                    } else {
+                        Color.White
                     }
 
                     Text(
                         "$prixCurrency$pls",
                         modifier = Modifier
-                            .background(backgroundColor)
+                            .background(priceBackgroundColor)
                             .padding(4.dp),
-                        color = Color.White
+                        color = priceTextColor
                     )
                 }
             }
         }
 
+        val buttonBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+            Color.Yellow
+        } else {
+            couleurButton
+        }
+
         FloatingActionButton(
             onClick = onClickPrixButton(typeTarification, latestTariffLocalData, context),
             modifier = Modifier.size(40.dp),
-            containerColor = couleurButton
+            containerColor = buttonBackgroundColor
         ) {
             typeTarification.iconVector?.let { iconVector ->
+                val iconColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                    Color.Black
+                } else {
+                    Color.White
+                }
+
                 Icon(
                     imageVector = iconVector,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = iconColor
                 )
             }
         }

@@ -10,13 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -89,21 +84,5 @@ fun GerantButton(
             }
         }
 
-        // Floating action button for AU_GERANT
-        FloatingActionButton(
-            onClick = onClickPrixButton(
-                latestTariffLocalData.typeTarificationEnumT2Correspond
-                , latestTariffLocalData
-                , context),
-            modifier = Modifier.size(40.dp),
-            containerColor = color
-        ) {
-            Icons.Filled.Done.let { iconVector ->
-                Icon(
-                    imageVector = iconVector,
-                    contentDescription = null
-                )
-            }
-        }
     }
 }
