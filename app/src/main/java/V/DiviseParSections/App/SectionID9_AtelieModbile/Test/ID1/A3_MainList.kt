@@ -33,14 +33,22 @@ fun MainList(
         clientDefiniTariffs
     ) {
         buildList {
-            add(
-                D_TarificationInfos(
-                    typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                    prixCurrency = filteredProduit.monPrixVent,
-                )
-            )
+            if (maxPrixArriveDuProduit != null &&
+                maxPrixArriveDuProduit != 0.0 &&
+                maxPrixArriveDuProduit != filteredProduit.monPrixVent &&
+                maxPrixArriveDuProduit > clientLastHistoricalPrice) {
 
-            if (clientLastHistoricalPrice != 0.0) {
+                add(
+                    D_TarificationInfos(
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                        prixCurrency = maxPrixArriveDuProduit,
+                    )
+                )
+            }
+
+            if (clientLastHistoricalPrice != 0.0 &&
+                clientLastHistoricalPrice != filteredProduit.monPrixVent) {
+
                 add(
                     D_TarificationInfos(
                         typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
@@ -49,18 +57,12 @@ fun MainList(
                 )
             }
 
-            if (maxPrixArriveDuProduit != 0.0) {
-                if (maxPrixArriveDuProduit != null) {
-                    if (maxPrixArriveDuProduit > clientLastHistoricalPrice) {
-                        add(
-                            D_TarificationInfos(
-                                typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                                prixCurrency = maxPrixArriveDuProduit,
-                            )
-                        )
-                    }
-                }
-            }
+            add(
+                D_TarificationInfos(
+                    typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+                    prixCurrency = filteredProduit.monPrixVent,
+                )
+            )
         }
     }
 
