@@ -262,8 +262,8 @@ fun MainUi(
                             currentSale = currentSale,
                             currentClient = currentClient,
                             onConfirm = {
-                                viewModel.saveSaleTransactionToSoldAriclesList()
-                                onDismiss()
+
+
                             },
                             onDismiss = onDismiss,
                             viewModel = viewModel,
@@ -276,7 +276,18 @@ fun MainUi(
                     idProduitActuelle = idProduitActuelle,
                     parentCompose_1_3_BonAchatVid= parentCompose_1_3_BonAchatVid,
                     cLenceDepuitDialogeAchate=  true,
-                    onPourFermeWindows = onPourFermeWindows
+                    onPourFermeWindows = {
+                        updateState(
+                            viewModelInitApp,
+                            parentCompose_1_2_ProduitAcheteOperationVid,
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                        )
+
+                        viewModel.saveSaleTransactionToSoldAriclesList()
+                        onDismiss()
+
+                        onPourFermeWindows()
+                    }
                 )
             }
         }

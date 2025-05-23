@@ -42,8 +42,6 @@ fun ActionsButtonRow(
     parentCompose_1_2_ProduitAcheteOperationVid: Long
 ) {
 
-
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -85,13 +83,7 @@ fun ActionsButtonRow(
         // Confirm purchase button
         FilledTonalButton(
             onClick = {
-                updateState(
-                    viewModelInitApp,
-                    parentCompose_1_2_ProduitAcheteOperationVid,
-                    _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
-                )
 
-                onConfirm()
             },
             modifier = Modifier.weight(1f)
         ) {
