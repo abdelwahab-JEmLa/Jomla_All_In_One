@@ -24,10 +24,6 @@ fun MainList(
 ) {
     val context = LocalContext.current
 
-    val tariffsGroupedByType = remember(produitTariffs) {
-        produitTariffs.groupBy { it.typeTarificationEnumT2Correspond }
-            .toSortedMap(compareBy { it.ordinal })
-    }
     val hasHistoricalTariffs = remember(produitTariffs) {
         produitTariffs.any { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
     }
@@ -38,38 +34,44 @@ fun MainList(
             .maxOfOrNull { it.prixCurrency } ?: 0.0
     }
 
-    val standartTariffs =
-        remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice) {
-            buildList {
+    val standardTariffs = remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice) {
+        buildList {
+            add(
+                D_TarificationInfos(
+                    idParentProduit = filteredProduit.vid,
+                    parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
+                    typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+                    prixCurrency = filteredProduit.monPrixVent,
+                )
+            )
+
+            if (hasHistoricalTariffs && maxHistoricalPrice > 0.0) {
                 add(
                     D_TarificationInfos(
                         idParentProduit = filteredProduit.vid,
                         parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                        prixCurrency = filteredProduit.monPrixVent,
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                        prixCurrency = maxHistoricalPrice,
                     )
                 )
-
-                if (hasHistoricalTariffs && maxHistoricalPrice > 0.0) {   //<--
-                //TODO(1): pk ca est don le base du classement normalement le sort st par ordine enume id 
-                    add(
-                        D_TarificationInfos(
-                            idParentProduit = filteredProduit.vid,
-                            parentIdClient = produitTariffs.firstOrNull()?.parentIdClient ?: 0L,
-                            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                            prixCurrency = maxHistoricalPrice,
-                        )
-                    )
-                }
             }
         }
+    }
+
+    val allTariffsGroupedAndSorted = remember(produitTariffs, standardTariffs) {
+        val combinedTariffs = produitTariffs + standardTariffs
+
+        combinedTariffs
+            .groupBy { it.typeTarificationEnumT2Correspond }
+            .toSortedMap(compareBy { it.ordinal })
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
         Column(modifier = modifier) {
-            tariffsGroupedByType.forEach { (type, typeTariffs) ->
+            allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
                     typeTarification = type,
                     tariffs = typeTariffs,
@@ -79,25 +81,11 @@ fun MainList(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
-
-            standartTariffs.forEach { tariff ->
-                TariffButtonItem(
-                    typeTarification = tariff.typeTarificationEnumT2Correspond,
-                    tariffs = listOf(tariff),
-                    showLabels = showLabels,
-                    onClickPrixButton = onClickPrixButton(),
-                    context = context,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-            }
         }
 
         GerantButton(
-            tariffsGroupedByType = tariffsGroupedByType,
-            latestTariffLocalData = standartTariffs.first(),
             showLabels = showLabels,
-            onClickPrixButton = onClickPrixButton(),
-            context = context
+            tariffsGroupedByType = allTariffsGroupedAndSorted
         )
     }
 }

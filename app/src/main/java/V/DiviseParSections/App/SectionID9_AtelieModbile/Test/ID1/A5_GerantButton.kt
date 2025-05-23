@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,19 +24,34 @@ import java.util.SortedMap
 
 @Composable
 fun GerantButton(
-    latestTariffLocalData: D_TarificationInfos,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> () -> Unit,
-    context: Context,
     tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>
 ) {
     val color = Color(0xFF4CAF50)
 
- //   Text("tariffsGroupedByType.size==${tariffsGroupedByType.size}")
-
+    // Dynamic height calculation based on actual layout structure
     val gerantButtonHeight = remember(tariffsGroupedByType) {
-        val calculatedHeight = ((tariffsGroupedByType.size + 1) * (40+5))
-        calculatedHeight.dp
+        // Constants from the actual layout structure in MainList.kt and TariffButtonItem.kt
+        val fabButtonSize = 40 // FloatingActionButton size from TariffButtonItem
+        val spacerBetweenItems = 4 // Spacer height between items in MainList
+
+        // Calculate total height based on actual number of tariff types
+        val numberOfTariffTypes = tariffsGroupedByType.size
+
+        // Each tariff item contributes: FAB button + spacer (except last item)
+        val totalItemsHeight = numberOfTariffTypes * fabButtonSize
+        val totalSpacersHeight = if (numberOfTariffTypes > 1) {
+            (numberOfTariffTypes - 1) * spacerBetweenItems
+        } else 0
+
+        // Add some extra padding for visual balance and container margins
+        val extraPadding = 16
+
+        val calculatedHeight = totalItemsHeight + totalSpacersHeight + extraPadding
+
+        // Ensure minimum height for visual consistency
+        val minHeight = 60
+        maxOf(calculatedHeight, minHeight).dp
     }
 
     Row(
@@ -83,6 +97,5 @@ fun GerantButton(
                 }
             }
         }
-
     }
 }
