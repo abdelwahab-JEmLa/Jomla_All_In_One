@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
+    var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(), // Added this
     var tariffsList: List<D_TarificationInfos> = emptyList(),
 
     val loadingProgress: Float = 0f,
@@ -32,20 +34,24 @@ class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     private val sqlRepository: E_InfosSqlDataBasesRepository,
 ) : ViewModel() {
-
     private val tariffsRepo = sqlRepository.modelListFlow
 
     private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
         ._2_1_ProduitsDataBase_Repository
 
-    private val repoC3_BonAchat = repo_0_0_HeadSQLRepositorys
+    private val repoC3_BonVent = repo_0_0_HeadSQLRepositorys
         .repositorys_Model
         .repository_1_3_TransactionCommercial
+
+    private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
+        .repositorys_Model
+        .repositoryC2_ProduitAcheteOperation
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var loadingJob: Job? = null
     private var bonAchatCollectorJob: Job? = null
+    private var produitAcheteOperationCollectorJob: Job? = null // Added this
     private var progressJob: Job? = null
 
     init {
@@ -63,6 +69,7 @@ class TariffsButtonsViewModel_TestID2(
     private fun loadTariffs() {
         loadingJob?.cancel()
         bonAchatCollectorJob?.cancel()
+        produitAcheteOperationCollectorJob?.cancel() // Added this
         progressJob?.cancel()
 
         loadingJob = viewModelScope.launch {
@@ -77,19 +84,20 @@ class TariffsButtonsViewModel_TestID2(
             }
 
             try {
-
                 progressJob = launch {
                     combine(
                         produitRepository.progressRepo,
-                        repoC3_BonAchat.progressRepo,
+                        repoC3_BonVent.progressRepo,
+                        repositoryC2_ProduitAcheteOperation.progressRepo, // Added this line
                         sqlRepository.mainProgressRepo
-                    ) { produitProgress, bonAchatProgress, sqlProgress ->
+                    ) { produitProgress, bonAchatProgress, produitAcheteProgress, sqlProgress ->
 
                         val validProduitProgress = produitProgress.coerceIn(0f, 1f)
                         val validBonAchatProgress = bonAchatProgress.coerceIn(0f, 1f)
+                        val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f) // Added this
                         val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
 
-                        val totalProgress = (validProduitProgress + validBonAchatProgress + validSqlProgress) / 3f
+                        val totalProgress = (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f // Changed from /3f to /4f
 
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -99,9 +107,13 @@ class TariffsButtonsViewModel_TestID2(
                             )
                         }
 
-                        Triple(validProduitProgress, validBonAchatProgress, validSqlProgress)
-                    }.collect { (produitProg, bonAchatProg, sqlProg) ->
-                        if (produitProg >= 1f && bonAchatProg >= 1f && sqlProg >= 1f) {
+                        // Return all four progress values
+                        Pair(Pair(validProduitProgress, validBonAchatProgress), Pair(validProduitAcheteProgress, validSqlProgress))
+                    }.collect { (firstPair, secondPair) ->
+                        val (produitProg, bonAchatProg) = firstPair
+                        val (produitAcheteProg, sqlProg) = secondPair
+
+                        if (produitProg >= 1f && bonAchatProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) { // Added produitAcheteProg check
                             _uiState.update {
                                 it.copy(
                                     isDataSyncing = false,
@@ -132,17 +144,17 @@ class TariffsButtonsViewModel_TestID2(
 
                 bonAchatCollectorJob = launch {
                     try {
-                        val initialBonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
+                        val initialBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
 
                         _uiState.update { currentState ->
                             currentState.copy(bonAchatList = initialBonAchatList)
                         }
 
                         launch {
-                            repoC3_BonAchat.progressRepo.collect { progress ->
+                            repoC3_BonVent.progressRepo.collect { progress ->
                                 if (progress >= 1f) {
                                     delay(100)
-                                    val updatedBonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
+                                    val updatedBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
                                     _uiState.update {
                                         it.copy(bonAchatList = updatedBonAchatList)
                                     }
@@ -151,11 +163,41 @@ class TariffsButtonsViewModel_TestID2(
                         }
 
                         launch {
-                            repoC3_BonAchat.activeId.collect { activeId ->
-                                val updatedBonAchatList = repoC3_BonAchat.modelDatasSnapList.toList()
+                            repoC3_BonVent.activeId.collect { activeId ->
+                                val updatedBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
                                 _uiState.update { it.copy(bonAchatList = updatedBonAchatList) }
                             }
                         }
+
+                    } catch (e: Exception) {
+                        // Handle error silently
+                    }
+                }
+
+                // Added this entire block for C2 repository collection
+                produitAcheteOperationCollectorJob = launch {
+                    try {
+                        val initialProduitAcheteList = repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
+
+                        _uiState.update { currentState ->
+                            currentState.copy(produitAcheteOperationList = initialProduitAcheteList)
+                        }
+
+                        launch {
+                            repositoryC2_ProduitAcheteOperation.progressRepo.collect { progress ->
+                                if (progress >= 1f) {
+                                    delay(100)
+                                    val updatedProduitAcheteList = repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
+                                    _uiState.update {
+                                        it.copy(produitAcheteOperationList = updatedProduitAcheteList)
+                                    }
+                                }
+                            }
+                        }
+
+                        // Note: C2 repository doesn't have activeId like C3, so we skip that part
+                        // If you need to track changes in the modelDatasSnapList, you might need to implement
+                        // a similar mechanism or use a different approach
 
                     } catch (e: Exception) {
                         // Handle error silently
@@ -217,6 +259,7 @@ class TariffsButtonsViewModel_TestID2(
                 hasStartedLoading = false,
                 error = null,
                 bonAchatList = emptyList(),
+                produitAcheteOperationList = emptyList(), // Added this
                 tariffsList = emptyList()
             )
         }
@@ -242,6 +285,7 @@ class TariffsButtonsViewModel_TestID2(
         super.onCleared()
         loadingJob?.cancel()
         bonAchatCollectorJob?.cancel()
+        produitAcheteOperationCollectorJob?.cancel() // Added this
         progressJob?.cancel()
     }
 }

@@ -9,7 +9,7 @@ fun Test2Prev() {
     val idProduitChahrazed = 849L
     val idTP2 = 859L
     TariffsButtons_TestID2(
-        filterProductId = idTP2,
+        filterProductId = idProduitChahrazed,
         filterBonId = 1,
         cLenceDepuitDialogeAchate = true,
         fermeDialog = { },

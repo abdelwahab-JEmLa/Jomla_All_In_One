@@ -705,7 +705,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                 // Create a repository head with all repositories
                 repositorys_Model = _0_0_HeadOfRepositorys_Model(
                     _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
-                    repository_1_2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
+                    repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
                     repository_1_3_TransactionCommercial = repo_1_3_TransactionCommercial,
                     activeVId_1_3_TransactionCommercial = activeId_1_3_BonAchat,
                     repository_1_4_PeriodeVent = _1_4_Repository,

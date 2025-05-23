@@ -57,7 +57,7 @@ fun B_MainList_APP2_ID_2(
                             provisoireMonPrix = price
                         )
                         _0_HeadOfRepositorys_Repository_Model
-                            .repository_1_2_ProduitAcheteOperation
+                            .repositoryC2_ProduitAcheteOperation
                             .updateUnSeulData(updatedProduct)
 
 
@@ -75,7 +75,7 @@ private fun produitsBonAchatIDs(
     composeKeyVID: Long?,
     validColorOperations: List<_1_1_CouleurAcheteOperation>,
 ) = _0_HeadOfRepositorys_Repository_Model
-    .repository_1_2_ProduitAcheteOperation
+    .repositoryC2_ProduitAcheteOperation
     .modelDatasSnapList
     .filter { produitOpe ->
         val condition1 = produitOpe.parent_1_3_TransactionCommercial == composeKeyVID

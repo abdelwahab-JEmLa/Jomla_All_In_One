@@ -108,7 +108,7 @@ fun ColumnScope.BonAchatInfos(
                                 )
 
                                 // Add the product operation and get its ID
-                                repositorysModel.repository_1_2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
+                                repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
                                     // Finally upsert a color operation with quantity 1
                                     val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,

@@ -131,13 +131,13 @@ fun MainUi(
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
-            repositorysModel.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.find {
+            repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.find {
                 it.produitAcheterID == produitActuelle
                         && it.parent_1_3_TransactionCommercial == parentCompose_1_3_BonAchatVid
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
-                repositorysModel.repository_1_2_ProduitAcheteOperation.updateUnSeulData(
+                repositorysModel.repositoryC2_ProduitAcheteOperation.updateUnSeulData(
                     existing_1_2_ProduitAcheteOperation.apply {
                         etateActuellementEst =
                             _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
@@ -146,7 +146,7 @@ fun MainUi(
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
-                    repositorysModel.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.maxOfOrNull { it.vid }
+                    repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
 
                 // No need for null check since we're using 'by' to unwrap the State
@@ -155,7 +155,7 @@ fun MainUi(
                     produitAcheterID = produitActuelle,
                     parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
-                    repositorysModel.repository_1_2_ProduitAcheteOperation.addDataAndReturneItVID(
+                    repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(
                         it
                     )
                 }

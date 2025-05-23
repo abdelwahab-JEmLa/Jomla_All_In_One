@@ -49,8 +49,8 @@ fun A_APP1FragID3_MainScreen(
     }
 
     // Add specific logging for product with vid == 127
-    LaunchedEffect(models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList) {
-        val product127 = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.find { it.vid == 127L }
+    LaunchedEffect(models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList) {
+        val product127 = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.find { it.vid == 127L }
         if (product127 != null) {
             Log.d(TAG, "Product 127 found: status=${product127.etateActuellementEst}, produitAcheterID=${product127.produitAcheterID}")
 
@@ -78,7 +78,7 @@ fun A_APP1FragID3_MainScreen(
 
     // Move heavy computation to LaunchedEffect with Dispatchers.Default
     LaunchedEffect(
-        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList,
+        models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList,
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList,
         models.repository_1_3_TransactionCommercial.modelDatasSnapList,
         periodFilter
@@ -97,7 +97,7 @@ fun A_APP1FragID3_MainScreen(
             Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 
             // First pass: find all products that meet the criteria
-            val confirmedProducts = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+            val confirmedProducts = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .filter { product ->
                     // Add specific logging for product 127 in the filtering process
                     val isProduct127 = product.vid == 127L
@@ -144,7 +144,7 @@ fun A_APP1FragID3_MainScreen(
                         }
 
                         // Check if ANY associated BonAchats match the period filter (fixed logic)
-                        val allBonAchats = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+                        val allBonAchats = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                             .filter { it.produitAcheterID == product.produitAcheterID }
                             .map { it.parent_1_3_TransactionCommercial }
                             .distinct()

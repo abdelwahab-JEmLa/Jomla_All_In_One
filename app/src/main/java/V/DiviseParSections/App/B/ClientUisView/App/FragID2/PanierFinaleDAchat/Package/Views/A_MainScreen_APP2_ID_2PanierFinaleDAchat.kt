@@ -44,7 +44,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
         //TODO(1): cree log pk c -1 
 
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
-        .repository_1_2_ProduitAcheteOperation
+        .repositoryC2_ProduitAcheteOperation
         .modelDatasSnapList
         .filter { produitOpe ->
             produitOpe.parent_1_3_TransactionCommercial == composeKeyVID

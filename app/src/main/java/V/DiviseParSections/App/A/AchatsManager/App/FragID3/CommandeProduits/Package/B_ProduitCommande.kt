@@ -43,7 +43,7 @@ fun B_ProduitCommande(
 
     // Find all product instances with the same produitAcheterID (same base product)
     val allProductInstances = remember(Produit.produitAcheterID) {
-        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+        models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
             .filter {
                 it.produitAcheterID == Produit.produitAcheterID &&
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME

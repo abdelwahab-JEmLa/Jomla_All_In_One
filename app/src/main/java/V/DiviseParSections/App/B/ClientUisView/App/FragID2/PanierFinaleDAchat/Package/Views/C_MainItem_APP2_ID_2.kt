@@ -53,7 +53,7 @@ fun C_MainItem_APP2_ID_2(
     headRepository: _0_0_HeadSQLRepositorys= koinInject()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
-        .repository_1_2_ProduitAcheteOperation
+        .repositoryC2_ProduitAcheteOperation
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     val relative_2_1_ProduitsDataBase =
@@ -255,7 +255,7 @@ fun C_MainItem_APP2_ID_2(
                                                     onDoneupdatePrice(priceText)
 
                                                     // Fixed: Properly notify data changes
-                                                    _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
+                                                    _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
                                                 }
                                             ),
                                             singleLine = true,
@@ -355,7 +355,7 @@ fun C_MainItem_APP2_ID_2(
                                             onDoneupdatePrice(priceText)
 
                                             // Fixed: Properly notify data changes
-                                            _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
+                                            _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
                                         }
                                     ),
                                     singleLine = true,
@@ -430,7 +430,7 @@ fun C_MainItem_APP2_ID_2(
                                     _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                                     relative_2_1_ProduitsDataBase_vid = relative_2_1_ProduitsDataBase?.vid,
                                     onQuantitySelected = { _ ->
-                                        _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
+                                        _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
                                     },
                                 )
                             }
@@ -456,7 +456,7 @@ private fun updatePrice(
             provisoireMonPrix = newPrice
         )
         repositoryModel
-            .repository_1_2_ProduitAcheteOperation
+            .repositoryC2_ProduitAcheteOperation
             .updateUnSeulData(updatedProduct)
     }
 }

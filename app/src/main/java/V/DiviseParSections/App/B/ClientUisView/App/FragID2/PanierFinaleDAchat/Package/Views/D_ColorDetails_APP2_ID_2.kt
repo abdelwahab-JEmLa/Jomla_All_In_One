@@ -55,7 +55,7 @@ fun D_ColorDetails_APP2_ID_2(
     var showQuantityDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(composeKeyVID) {
-        _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation
+        _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation
             .repositoryScope
             .launch {
                 articlesBasesStatsModel = database.articlesBasesStatsModelDao().getAll()
@@ -70,7 +70,7 @@ fun D_ColorDetails_APP2_ID_2(
     // Find the parent product operation
     val parentProduitAcheteOperation = relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID?.let { parentId ->
         _0_HeadOfRepositorys_Repository_Model
-            .repository_1_2_ProduitAcheteOperation
+            .repositoryC2_ProduitAcheteOperation
             .modelDatasSnapList
             .find { it.vid == parentId }
     }

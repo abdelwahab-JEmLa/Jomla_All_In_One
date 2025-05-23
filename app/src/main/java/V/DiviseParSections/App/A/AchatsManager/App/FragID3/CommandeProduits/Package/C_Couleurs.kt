@@ -62,7 +62,7 @@ fun Couleurs(
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
 
     LaunchedEffect(Produit.vid) {
-        models.repository_1_2_ProduitAcheteOperation
+        models.repositoryC2_ProduitAcheteOperation
             .repositoryScope
             .launch {
                 articlesBasesStatsModel = database.articlesBasesStatsModelDao().getAll()
@@ -105,7 +105,7 @@ fun Couleurs(
             if (periodFilter == null) return@filter true
 
             // If period filter is set, check if this color belongs to a product in the specified period
-            val parentProduct = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+            val parentProduct = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
             val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
@@ -162,7 +162,7 @@ fun Couleurs(
                         if (periodFilter == null) return@filter true
 
                         // If period filter exists, check if this color belongs to the filtered period
-                        val parentProduct = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+                        val parentProduct = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                             .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
                         val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
@@ -183,7 +183,7 @@ fun Couleurs(
                 individualQuantities.forEach { colorEntry ->
                     // Find the parent product
                     val parentProduct =
-                        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
+                        models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                             .firstOrNull { it.vid == colorEntry.parentProduitAchateOperationVID }
 
                     // Find the bonAchat

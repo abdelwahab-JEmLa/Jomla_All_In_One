@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class _0_0_HeadOfRepositorys_Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
-    val repository_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
+    val repositoryC2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
 
     val repository_1_3_TransactionCommercial: C3_BonAchate_Repository,
     var activeVId_1_3_TransactionCommercial: MutableStateFlow<Long>,

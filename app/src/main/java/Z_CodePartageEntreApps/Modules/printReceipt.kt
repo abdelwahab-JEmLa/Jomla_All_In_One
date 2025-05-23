@@ -46,7 +46,7 @@ fun printReceipt(
             .format(Date())
 
         // Get all confirmed products in this receipt
-        val products = repositorysModel.repository_1_2_ProduitAcheteOperation
+        val products = repositorysModel.repositoryC2_ProduitAcheteOperation
             .modelDatasSnapList
             .filter {
                 it.parent_1_3_TransactionCommercial == bonAchat.vid &&

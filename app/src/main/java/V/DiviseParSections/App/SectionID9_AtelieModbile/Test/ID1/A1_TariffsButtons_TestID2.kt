@@ -42,7 +42,8 @@ fun TariffsButtons_TestID2(
     val tarificationList = uiState.tariffsList
     val bonAchatList = uiState.bonAchatList
     val produitInfosList = uiState.produitInfosList
-
+    val produitAcheteOperationList = uiState.produitAcheteOperationList
+    Text("${produitAcheteOperationList.size}")
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
     val shouldShowLoading = uiState.isDataSyncing ||
