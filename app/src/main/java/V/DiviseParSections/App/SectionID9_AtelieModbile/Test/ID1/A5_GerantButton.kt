@@ -26,31 +26,19 @@ import java.util.SortedMap
 fun GerantButton(
     showLabels: Boolean,
     tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>
-) {            //<--
-//TODO(1): enleve commentaires
+) {
     val color = Color(0xFF4CAF50)
 
-    // Dynamic height calculation based on actual layout structure
     val gerantButtonHeight = remember(tariffsGroupedByType) {
-        // Constants from the actual layout structure in MainList.kt and TariffButtonItem.kt
-        val fabButtonSize = 40 // FloatingActionButton size from TariffButtonItem
-        val spacerBetweenItems = 4 // Spacer height between items in MainList
-
-        // Calculate total height based on actual number of tariff types
+        val fabButtonSize = 40
+        val spacerBetweenItems = 4
         val numberOfTariffTypes = tariffsGroupedByType.size
-
-        // Each tariff item contributes: FAB button + spacer (except last item)
         val totalItemsHeight = numberOfTariffTypes * fabButtonSize
         val totalSpacersHeight = if (numberOfTariffTypes > 1) {
             (numberOfTariffTypes - 1) * spacerBetweenItems
         } else 0
-
-        // Add some extra padding for visual balance and container margins
         val extraPadding = 16
-
         val calculatedHeight = totalItemsHeight + totalSpacersHeight + extraPadding
-
-        // Ensure minimum height for visual consistency
         val minHeight = 60
         maxOf(calculatedHeight, minHeight).dp
     }
@@ -59,7 +47,6 @@ fun GerantButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Vertical text label for AU_GERANT
         if (showLabels) {
             ElevatedCard {
                 Box(
