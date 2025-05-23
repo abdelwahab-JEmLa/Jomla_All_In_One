@@ -36,7 +36,7 @@ fun MainFilter(
 
     val clientProduitTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         produitTariffs.filter { tariff ->
-                    tariff.parentIdClient == filteredBonAchat.clientAcheteurID
+            tariff.parentIdClient == filteredBonAchat.clientAcheteurID
         }
     }
 
@@ -44,20 +44,17 @@ fun MainFilter(
         produitTariffs.filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
     }
 
-
-  /*  Text(
-        filteredProduit.nom,
-    )
-    Text(
-        filteredBonAchat.clientAcheteurID.toString(),
-    )   */
+    val clientHistoriquesTariffs = remember(clientProduitTariffs) {
+        clientProduitTariffs.filter { it.typeTarificationEnumT2Correspond == TypeTarificationEnumT2.Historique }
+    }
 
     Column(modifier = modifier) {
         MainList(
-            clientProduitTariffs=clientProduitTariffs,
-            produitTariffs=produitTariffs,
-            produitHistoriquesTariffs=produitHistoriquesTariffs,
-            filteredProduit=filteredProduit,
+            clientProduitTariffs = clientProduitTariffs,
+            produitTariffs = produitTariffs,
+            produitHistoriquesTariffs = produitHistoriquesTariffs,
+            clientHistoriquesTariffs = clientHistoriquesTariffs,
+            filteredProduit = filteredProduit,
             showLabels = showLabels,
             onClickPrixButton = onClickPrixButton(),
         )

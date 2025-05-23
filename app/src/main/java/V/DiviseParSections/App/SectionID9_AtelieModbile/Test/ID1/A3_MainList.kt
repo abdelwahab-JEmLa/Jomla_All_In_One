@@ -23,6 +23,7 @@ fun MainList(
     produitHistoriquesTariffs: List<D_TarificationInfos>,
     produitTariffs: List<D_TarificationInfos>,
     clientProduitTariffs: List<D_TarificationInfos>,
+    clientHistoriquesTariffs: List<D_TarificationInfos>,
 ) {
     val context = LocalContext.current
 
@@ -34,11 +35,21 @@ fun MainList(
         produitHistoriquesTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
     }
 
-    val lastHistoricalPrice = remember(produitHistoriquesTariffs) {
-        produitHistoriquesTariffs.maxByOrNull { it.timestamps }?.prixCurrency ?: 0.0
+    val lastHistoricalPrice = remember(clientHistoriquesTariffs, produitHistoriquesTariffs) {
+        val clientLastPrice = clientHistoriquesTariffs.maxByOrNull { it.timestamps }?.prixCurrency
+        val allLastPrice = produitHistoriquesTariffs.maxByOrNull { it.timestamps }?.prixCurrency ?: 0.0
+
+        clientLastPrice ?: allLastPrice
     }
 
-    val standardTariffs = remember(filteredProduit, produitTariffs, hasHistoricalTariffs, maxHistoricalPrice, lastHistoricalPrice) {
+    val standardTariffs = remember(
+        filteredProduit,
+        produitTariffs,
+        hasHistoricalTariffs,
+        maxHistoricalPrice,
+        lastHistoricalPrice,
+        clientHistoriquesTariffs
+    ) {
         buildList {
             add(
                 D_TarificationInfos(
@@ -47,13 +58,17 @@ fun MainList(
                 )
             )
 
-            if ( maxHistoricalPrice != lastHistoricalPrice) {
-                add(
-                    D_TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
-                        prixCurrency = maxHistoricalPrice,
+            if (hasHistoricalTariffs && maxHistoricalPrice != lastHistoricalPrice) {
+                val clientMaxPrice = clientHistoriquesTariffs.maxOfOrNull { it.prixCurrency } ?: 0.0
+
+                if (maxHistoricalPrice > clientMaxPrice || clientHistoriquesTariffs.isEmpty()) {
+                    add(
+                        D_TarificationInfos(
+                            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                            prixCurrency = maxHistoricalPrice,
+                        )
                     )
-                )
+                }
             }
         }
     }
