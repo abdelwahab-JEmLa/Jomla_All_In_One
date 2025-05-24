@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,6 +32,7 @@ fun TariffButtonItem(
     tariffs: List<D_TarificationInfos>,
     showLabels: Boolean,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
+    nombreUnite: Int= 10,
     context: Context,
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
@@ -119,13 +121,29 @@ fun TariffButtonItem(
                         Color.White
                     }
 
-                    Text(
-                        "$prixCurrency$pls",
-                        modifier = Modifier
-                            .background(priceBackgroundColor)
-                            .padding(4.dp),
-                        color = priceTextColor
-                    )
+                    Column {
+                        Text(
+                            "$prixCurrency$pls",
+                            modifier = Modifier
+                                .background(priceBackgroundColor)
+                                .padding(4.dp),
+                            color = priceTextColor
+                        )
+
+                        // Unit price card
+                        ElevatedCard {
+                            val unitPrice = latestTariffLocalData.prixCurrency / nombreUnite
+                            Text(
+                                "سعر الوحدة: ${String.format("%.2f", unitPrice)}",
+                                modifier = Modifier
+                                    .background(priceBackgroundColor.copy(alpha = 0.8f))
+                                    .padding(2.dp),
+                                color = priceTextColor,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+
                 }
             }
         }
