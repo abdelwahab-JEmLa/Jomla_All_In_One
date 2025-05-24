@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F2
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
@@ -20,7 +21,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class UiState(
-    var produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
+    var produitInfosListDepuitAncienDataBase: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
+    var produitInfosList: SnapshotStateList<A_ProduitInfos> = mutableStateListOf(),
     var bonAchatList: List<C3_BonAchate> = emptyList(),
     var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
@@ -34,9 +36,9 @@ data class UiState(
 
 class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
-    private val sqlRepository: E_GroupedDataBasesRepository,
+    private val groupedDataBasesRepository: E_GroupedDataBasesRepository,
 ) : ViewModel() {
-    private val tariffsRepo = sqlRepository.modelListFlow
+    private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
     private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
         ._2_1_ProduitsDataBase_Repository
@@ -53,7 +55,7 @@ class TariffsButtonsViewModel_TestID2(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var loadingJob: Job? = null
     private var bonAchatCollectorJob: Job? = null
-    private var produitAcheteOperationCollectorJob: Job? = null // Added this
+    private var produitAcheteOperationCollectorJob: Job? = null
     private var progressJob: Job? = null
 
     init {
@@ -71,7 +73,7 @@ class TariffsButtonsViewModel_TestID2(
     private fun loadTariffs() {
         loadingJob?.cancel()
         bonAchatCollectorJob?.cancel()
-        produitAcheteOperationCollectorJob?.cancel() // Added this
+        produitAcheteOperationCollectorJob?.cancel()
         progressJob?.cancel()
 
         loadingJob = viewModelScope.launch {
@@ -91,15 +93,15 @@ class TariffsButtonsViewModel_TestID2(
                         produitRepository.progressRepo,
                         repoC3_BonVent.progressRepo,
                         repositoryC2_ProduitAcheteOperation.progressRepo,
-                        sqlRepository.mainProgressRepo
+                        groupedDataBasesRepository.mainProgressRepo
                     ) { produitProgress, bonAchatProgress, produitAcheteProgress, sqlProgress ->
 
                         val validProduitProgress = produitProgress.coerceIn(0f, 1f)
                         val validBonAchatProgress = bonAchatProgress.coerceIn(0f, 1f)
-                        val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f) // Added this
+                        val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f)
                         val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
 
-                        val totalProgress = (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f // Changed from /3f to /4f
+                        val totalProgress = (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f
 
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -114,7 +116,7 @@ class TariffsButtonsViewModel_TestID2(
                         val (produitProg, bonAchatProg) = firstPair
                         val (produitAcheteProg, sqlProg) = secondPair
 
-                        if (produitProg >= 1f && bonAchatProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) { // Added produitAcheteProg check
+                        if (produitProg >= 1f && bonAchatProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) {
                             _uiState.update {
                                 it.copy(
                                     isDataSyncing = false,
@@ -125,19 +127,39 @@ class TariffsButtonsViewModel_TestID2(
                     }
                 }
 
+                // FIXED TODO(1): Added collector for A_ProduitInfos from groupedDataBases
                 var tariffsList = emptyList<D_TarificationInfos>()
+                var a_produitList = emptyList<A_ProduitInfos>()
+
                 launch {
-                    tariffsRepo.collect { dataBaseInfosList ->
+                    groupedDataBases_modelListFlow.collect { dataBaseInfosList ->
                         val newTariffsList = if (dataBaseInfosList.isNotEmpty()) {
                             dataBaseInfosList.first().d_TarificationInfos.toList()
                         } else {
                             emptyList()
                         }
 
+                        val newProduitInfosList = if (dataBaseInfosList.isNotEmpty()) {
+                            dataBaseInfosList.first().a_ProduitInfos.toList()
+                        } else {
+                            emptyList()
+                        }
+
+                        // Update tariffs list if changed
                         if (newTariffsList != tariffsList) {
                             tariffsList = newTariffsList
                             _uiState.update { currentState ->
                                 currentState.copy(tariffsList = tariffsList)
+                            }
+                        }
+
+                        // Update produit infos list if changed
+                        if (newProduitInfosList != a_produitList) {
+                            a_produitList = newProduitInfosList
+                            _uiState.update { currentState ->
+                                currentState.produitInfosList.clear()
+                                currentState.produitInfosList.addAll(a_produitList)
+                                currentState
                             }
                         }
                     }
@@ -171,6 +193,7 @@ class TariffsButtonsViewModel_TestID2(
                         }
 
                     } catch (e: Exception) {
+                        // Handle error silently
                     }
                 }
 
@@ -209,8 +232,8 @@ class TariffsButtonsViewModel_TestID2(
                             val productsList = produitRepository.modelDatasSnapList.toList()
 
                             _uiState.update { currentState ->
-                                currentState.produitInfosList.clear()
-                                currentState.produitInfosList.addAll(productsList)
+                                currentState.produitInfosListDepuitAncienDataBase.clear()
+                                currentState.produitInfosListDepuitAncienDataBase.addAll(productsList)
                                 currentState
                             }
                         }
@@ -220,8 +243,8 @@ class TariffsButtonsViewModel_TestID2(
                                 val updatedProductsList = produitRepository.modelDatasSnapList.toList()
                                 if (updatedProductsList.isNotEmpty()) {
                                     _uiState.update { currentState ->
-                                        currentState.produitInfosList.clear()
-                                        currentState.produitInfosList.addAll(updatedProductsList)
+                                        currentState.produitInfosListDepuitAncienDataBase.clear()
+                                        currentState.produitInfosListDepuitAncienDataBase.addAll(updatedProductsList)
                                         currentState
                                     }
                                 }
@@ -254,12 +277,13 @@ class TariffsButtonsViewModel_TestID2(
                 hasStartedLoading = false,
                 error = null,
                 bonAchatList = emptyList(),
-                produitAcheteOperationList = emptyList(), // Added this
+                produitAcheteOperationList = emptyList(),
                 tariffsList = emptyList()
             )
         }
 
-        _uiState.value.produitInfosList.clear()
+        _uiState.value.produitInfosListDepuitAncienDataBase.clear()
+        _uiState.value.produitInfosList.clear() // Also clear the new produit infos list
 
         loadTariffs()
     }
@@ -280,7 +304,7 @@ class TariffsButtonsViewModel_TestID2(
         super.onCleared()
         loadingJob?.cancel()
         bonAchatCollectorJob?.cancel()
-        produitAcheteOperationCollectorJob?.cancel() // Added this
+        produitAcheteOperationCollectorJob?.cancel()
         progressJob?.cancel()
     }
 }
