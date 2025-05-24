@@ -1,7 +1,5 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.mapFromFirebaseSnapshot
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,26 +38,6 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
     if (produitsSnapshot.exists()) {
         for (productSnap in produitsSnapshot.children) {
             val needUpdateSnapshot = productSnap.child("needUpdate")
-            if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                return true
-            }
-        }
-    }
-
-    val clientsSnapshot = snapshot.child(defaultModel.refFireBaseB_ClientInfos)
-    if (clientsSnapshot.exists()) {
-        for (clientSnap in clientsSnapshot.children) {
-            val needUpdateSnapshot = clientSnap.child("needUpdate")
-            if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
-                return true
-            }
-        }
-    }
-
-    val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
-    if (typeTarifsSnapshot.exists()) {
-        for (typeSnap in typeTarifsSnapshot.children) {
-            val needUpdateSnapshot = typeSnap.child("needUpdate")
             if (needUpdateSnapshot.exists() && needUpdateSnapshot.getValue(Boolean::class.java) == true) {
                 return true
             }
