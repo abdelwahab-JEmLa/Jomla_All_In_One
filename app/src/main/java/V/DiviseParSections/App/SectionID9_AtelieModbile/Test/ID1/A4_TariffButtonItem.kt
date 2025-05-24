@@ -130,18 +130,15 @@ fun TariffButtonItem(
                             color = priceTextColor
                         )
 
-                        // Unit price card
-                        ElevatedCard {
                             val unitPrice = latestTariffLocalData.prixCurrency / nombreUnite
                             Text(
-                                "سعر الوحدة: ${String.format("%.2f", unitPrice)}",
+                                "س.و: ${String.format("%.2f", unitPrice)}",
                                 modifier = Modifier
-                                    .background(priceBackgroundColor.copy(alpha = 0.8f))
+                                    .background(priceBackgroundColor.copy(alpha = 0.6f))
                                     .padding(2.dp),
                                 color = priceTextColor,
                                 fontSize = 10.sp
                             )
-                        }
                     }
 
                 }
