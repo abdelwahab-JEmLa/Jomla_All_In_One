@@ -27,4 +27,6 @@ interface A_ProduitDao{
     @Query("SELECT COUNT(*) FROM A_Produit")
     fun getCount(): Int
 
+
+
 }

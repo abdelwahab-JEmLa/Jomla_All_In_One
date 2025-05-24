@@ -51,20 +51,32 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    private  fun initializeTarificationInfos() {
+    private fun initializeTarificationInfos() {
         updateProgress(0f)
 
-        fireBase.getDataFromFirebase { dataList,produItinfos ->
+        fireBase.getDataFromFirebase { tariffDataList, produitInfoList ->
             repoCoroutineScope.launch {
-                if (dataList.isEmpty()) {
+                if (tariffDataList.isEmpty()) {
                     upsertAllRoomEtFireBase(testD_TarificationInfosT2())
                 } else {
                     room.checkDataBaseIsEmpty { roomHandler ->
                         repoCoroutineScope.launch {
-                            roomHandler.insertAllAndReturnListIdToData(dataList) {
+                            roomHandler.insertAllAndReturnListIdToData(tariffDataList) {
                                 updateProgress(1f)
                             }
                         }
+                    }
+                }
+
+                // Fixed: Use the corrected inline function with proper suspend context
+                if (room.inlineCheckDataBaseIsEmpty<A_ProduitInfos>()) {
+                    val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
+                    updateProgress(1f)
+
+                    println("Insert Result for A_ProduitInfos:")
+                    println("Total items inserted: ${insertResult.size}")
+                    insertResult.forEach { (id, produit) ->
+                        println("ID: $id, Produit: ${produit.nom}, KeyFireBase: ${produit.keyFireBase}")
                     }
                 }
             }
@@ -73,7 +85,7 @@ class E_GroupedDataBasesRepository(
         collectRoom()
     }
 
-    private  fun initializeProduitInfos() {
+    private fun initializeProduitInfos() {
         updateProgress(0f)
         collectRoom()
         updateProgress(1f)
@@ -104,7 +116,6 @@ class E_GroupedDataBasesRepository(
             }
         }
     }
-
 
     private fun collectRoom() {
         repoCoroutineScope.launch {
