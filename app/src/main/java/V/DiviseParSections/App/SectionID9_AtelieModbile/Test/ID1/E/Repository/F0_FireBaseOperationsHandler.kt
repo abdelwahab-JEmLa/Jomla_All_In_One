@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
@@ -15,6 +14,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 class F0_FireBaseOperationsHandler(
@@ -35,90 +35,70 @@ class F0_FireBaseOperationsHandler(
             List<A_ProduitInfos>,
         ) -> Unit
     ) {
-        val products = mutableListOf<A_ProduitInfos>()
-        val defaultModel = A0_DataBasesGroup()
-
         onProgressUpdate(0.1f)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     try {
-                        onProgressUpdate(0.5f)
+                        onProgressUpdate(0.3f)
 
-                        val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
-
-                        try {
-                            val productsSnapshot = snapshot.child("A_ProduitInfos")
-
-                            val mappedProducts =
-                                mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class)
-
-                            products.addAll(mappedProducts)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                        onProgressUpdate(0.9f)
-                        onAddSuccess(
-                            infosSqlDataBases.d_TarificationInfos,
-                            products
+                        // Process D_TarificationInfos
+                        val tarificationsSnapshot = snapshot.child("D_TarificationInfos")
+                        val mappedTarifications = mapSnapshotToObjects(
+                            tarificationsSnapshot,
+                            D_TarificationInfos::class
                         )
 
+                        onProgressUpdate(0.6f)
+
+                        // Process A_ProduitInfos
+                        val productsSnapshot = snapshot.child("A_ProduitInfos")
+                        val mappedProducts = mapSnapshotToObjects(
+                            productsSnapshot,
+                            A_ProduitInfos::class
+                        )
+
+                        onProgressUpdate(0.9f)
+
+                        // Debug logging
+                        println("Firebase Data Retrieved:")
+                        println("Tarifications count: ${mappedTarifications.size}")
+                        println("Products count: ${mappedProducts.size}")
+
+                        onAddSuccess(mappedTarifications, mappedProducts)
                         onProgressUpdate(1f)
 
                     } catch (e: Exception) {
+                        println("Error in getDataFromFirebase: ${e.message}")
                         e.printStackTrace()
                         onProgressUpdate(0f)
                         onAddSuccess(emptyList(), emptyList())
                     }
                 } else {
+                    println("Firebase snapshot does not exist")
                     onProgressUpdate(1f)
                     onAddSuccess(emptyList(), emptyList())
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                println("Firebase read cancelled: ${error.message}")
                 onProgressUpdate(0f)
                 onAddSuccess(emptyList(), emptyList())
             }
         })
     }
 
-    private fun findProductsInSnapshot(snapshot: DataSnapshot): List<A_ProduitInfos>? {
-        fun searchRecursively(current: DataSnapshot): DataSnapshot? {
-            if (current.hasChildren()) {
-                val children = current.children.toList()
-                if (children.isNotEmpty()) {
-                    val firstChild = children.first()
-                    if (firstChild.hasChildren()) {
-                        val childKeys = firstChild.children.map { it.key }.toSet()
-                        val productKeys = setOf("id", "nom", "keyFireBase", "timestamps")
+    inline fun <reified T : Any> mapSnapshotToObjects(
+        snapshot: DataSnapshot,
+        kClass: KClass<T>
+    ): List<T> {
+        val results = mutableListOf<T>()
 
-                        if (productKeys.intersect(childKeys).size >= 3) {
-                            return current
-                        }
-                    }
-                }
+        getDatas<T>(snapshot, kClass, results)
 
-                for (child in current.children) {
-                    val result = searchRecursively(child)
-                    if (result != null) return result
-                }
-            }
-            return null
-        }
-
-        val productSnapshot = searchRecursively(snapshot)
-        return if (productSnapshot != null) {
-            try {
-                mapSnapshotToObjects(productSnapshot, A_ProduitInfos::class)
-            } catch (e: Exception) {
-                null
-            }
-        } else {
-            null
-        }
+        return results
     }
 
     suspend fun upsertAllAndReturnListIdToData(

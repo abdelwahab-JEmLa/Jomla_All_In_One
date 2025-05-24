@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.Z.Daos
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import androidx.room.Dao
