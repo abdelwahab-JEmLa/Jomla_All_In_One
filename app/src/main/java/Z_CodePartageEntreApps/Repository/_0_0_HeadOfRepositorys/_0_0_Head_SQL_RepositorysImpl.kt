@@ -1,15 +1,15 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
@@ -235,8 +235,8 @@ class _0_0_Head_SQL_RepositorysImpl(
         }
     }
 
-    override fun <T> upsertUneDataEtReturnVID(
-        data: T,
+    override fun <DataBase> upsertUneDataEtReturnVID(
+        data: DataBase,
         onSuccess: (Long) -> Unit,
     ): Unit {
         try {
@@ -304,18 +304,18 @@ class _0_0_Head_SQL_RepositorysImpl(
         }
     }
 
-    private suspend inline fun <reified T> processUpsertOperation(
-        data: T,
+    private suspend inline fun <reified DataBase> processUpsertOperation(
+        data: DataBase,
         databaseDao: Any,
-        snapshotList: MutableList<T>,
+        snapshotList: MutableList<DataBase>,
         databaseRef: DatabaseReference,
-        crossinline getFirebaseKey: (T) -> String,
+        crossinline getFirebaseKey: (DataBase) -> String,
         onSuccess: (Long) -> Unit,
-    ) where T : Any {
+    ) where DataBase : Any {
         // Create proper copy based on data type
         val dataToUpsert = when (data) {
-            is C3_BonAchate -> data.copy() as T
-            is _1_2_ProduitAcheteOperation -> data.copy() as T
+            is C3_BonAchate -> data.copy() as DataBase
+            is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
             else -> data // Fallback to original object if not a known data class
         }
 

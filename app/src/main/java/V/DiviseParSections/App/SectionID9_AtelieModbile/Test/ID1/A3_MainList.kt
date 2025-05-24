@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
+    filteredProduit: _2_1_ProduitsDataBase,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
-    filteredProduit: _2_1_ProduitsDataBase,
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<D_TarificationInfos>,
@@ -85,6 +85,7 @@ fun MainList(
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
+                    nombreUnite = 10
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
