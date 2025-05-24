@@ -24,7 +24,6 @@ class F0_FireBaseOperationsHandler(
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
     private val childD_TarificationInfos = ref.child("D_TarificationInfos")
-    private val childA_ProduitInfos = ref.child("A_ProduitInfos")
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
