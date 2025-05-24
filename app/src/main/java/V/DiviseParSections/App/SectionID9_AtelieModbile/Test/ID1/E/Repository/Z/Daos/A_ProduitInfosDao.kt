@@ -13,7 +13,7 @@ interface A_ProduitInfosDao {
     @Query("SELECT * FROM A_ProduitInfos")
     fun getAllProduits(): Flow<List<A_ProduitInfos>>
 
-    @Query("SELECT * FROM A_ProduitInfos WHERE id = :id")
+    @Query("SELECT * FROM A_ProduitInfos WHERE idArticle = :id")
     suspend fun getProduitById(id: Long): A_ProduitInfos?
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
@@ -35,7 +35,7 @@ interface A_ProduitInfosDao {
     @Query("SELECT COUNT(*) FROM A_ProduitInfos")
     suspend fun getCount(): Int
 
-    @Query("SELECT * FROM A_ProduitInfos WHERE nom LIKE :searchQuery")
+    @Query("SELECT * FROM A_ProduitInfos WHERE nomArticleFinale LIKE :searchQuery")
     suspend fun searchProduitsByNom(searchQuery: String): List<A_ProduitInfos>
 
     @Query("SELECT * FROM A_ProduitInfos WHERE needUpdate = 1")

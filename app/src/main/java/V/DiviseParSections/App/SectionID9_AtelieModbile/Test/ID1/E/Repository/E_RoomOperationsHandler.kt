@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -42,7 +43,7 @@ class G_RoomOperationsHandler(
             ids.forEachIndexed { index, generatedId ->
                 if (index < data.size) {
                     val itemWithGeneratedId = when (val originalItem = data[index]) {
-                        is A_ProduitInfos -> originalItem.copy(id = generatedId) as DataBase
+                        is A_ProduitInfos -> originalItem.copy(idArticle = generatedId) as DataBase
                         is D_TarificationInfos -> originalItem.copy(id = generatedId) as DataBase
                         else -> throw IllegalArgumentException("Unsupported item type")
                     }
@@ -139,5 +140,9 @@ class G_RoomOperationsHandler(
             onAddSuccess(emptyMap())
             false
         }
+    }
+
+    suspend fun getAncienProditDB() : List<ArticlesBasesStatsTable> = withContext(Dispatchers.IO) {
+        return@withContext database.articlesBasesStatsModelDao().getAll()
     }
 }

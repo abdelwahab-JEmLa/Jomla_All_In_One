@@ -3,15 +3,18 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -26,7 +29,7 @@ class F0_FireBaseOperationsHandler(
 
     // FIXED: Made these properties public to fix the inline function access issue
     val childD_TarificationInfos = ref.child("D_TarificationInfos")
-    val childA_ProduitInfos = ref.child("A_ProduitInfos")
+    private val childA_ProduitInfos = ref.child("A_ProduitInfos")
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
@@ -102,31 +105,99 @@ class F0_FireBaseOperationsHandler(
     }
 
     // FIXED: Changed this function to return the Map<String, A_ProduitInfos> synchronously using a suspend function
-    suspend fun changeKeysFireBase(): Map<String, A_ProduitInfos> = withContext(Dispatchers.IO) {
+    suspend fun getAncienDB_changeKeysFireBase(): Map<String, A_ProduitInfos> = withContext(Dispatchers.IO) {
         return@withContext suspendCancellableCoroutine { continuation ->
-            getDataFromFirebase { _, products ->
-                coroutineScope.launch {
-                    try {
-                        // Remove keyFireBase from existing data to regenerate them
-                        val productsWithoutKeys = products.map { product ->
-                            product.copy(keyFireBase = "")
-                        }
+            coroutineScope.launch {
+                try {
+                    childA_ProduitInfos.removeValue()
 
-                        // Update products with new keys
-                        val resultMap = setDataInlineFun(productsWithoutKeys)
-                        continuation.resume(resultMap)
-                    } catch (e: Exception) {
-                        println("Failed to update products keys: ${e.message}")
-                        continuation.resume(emptyMap())
+                     val firebaseDatabase = FirebaseDatabase.getInstance()
+
+                     val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
+
+                    val articlesSnapshot = refDBJetPackExport.get().await()
+                    val articles = articlesSnapshot.children.mapNotNull { snapshot ->
+                        snapshot.getValue(ArticlesBasesStatsTable::class.java)
                     }
+
+                    val productsWithoutKeys = articles.map { product ->
+                        product.copy(keyFireBase = "")
+                    }
+
+                    val a_ProduitInfosList = convertArticlesBasesToProduitInfos(productsWithoutKeys)
+
+                    // Update products with new keys
+                    val resultMap = setDataInlineFun(a_ProduitInfosList)
+
+                    continuation.resume(resultMap)
+                } catch (e: Exception) {
+                    println("Failed to update products keys: ${e.message}")
+                    continuation.resume(emptyMap())
                 }
             }
         }
     }
 
+    private fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
+        return anciennesListe.map { ancien ->
+            A_ProduitInfos(
+                idArticle = ancien.idArticle.toLong(),
+                nomArticleFinale = ancien.nomArticleFinale,
+                classementCate = ancien.classementCate,
+                nomArab = ancien.nomArab,
+                autreNomDarticle = ancien.autreNomDarticle,
+                nmbrCat = ancien.nmbrCat,
+                couleur1 = ancien.couleur1,
+                idcolor1 = ancien.idcolor1,
+                couleur2 = ancien.couleur2,
+                idcolor2 = ancien.idcolor2,
+                couleur3 = ancien.couleur3,
+                idcolor3 = ancien.idcolor3,
+                couleur4 = ancien.couleur4,
+                idcolor4 = ancien.idcolor4,
+                nomCategorie2 = ancien.nomCategorie2,
+                nmbrUnite = ancien.nmbrUnite,
+                nmbrCaron = ancien.nmbrCaron,
+                affichageUniteState = ancien.affichageUniteState,
+                commmentSeVent = ancien.commmentSeVent,
+                afficheBoitSiUniter = ancien.afficheBoitSiUniter,
+                monPrixAchat = ancien.monPrixAchat,
+                clienPrixVentUnite = ancien.clienPrixVentUnite,
+                minQuan = ancien.minQuan,
+                monBenfice = ancien.monBenfice,
+                monPrixVent = ancien.monPrixVent,
+                neaon2 = ancien.neaon2,
+                idCategorie = ancien.idCategorie,
+                catalogeParentID = ancien.catalogeParentID,
+                funChangeImagsDimention = ancien.funChangeImagsDimention,
+                nomCategorie = ancien.nomCategorie,
+                neaon1 = ancien.neaon1,
+                lastUpdateState = ancien.lastUpdateState,
+                cartonState = ancien.cartonState,
+                dateCreationCategorie = ancien.dateCreationCategorie,
+                prixDeVentTotaleChezClient = ancien.prixDeVentTotaleChezClient,
+                benficeTotaleEntreMoiEtClien = ancien.benficeTotaleEntreMoiEtClien,
+                benificeTotaleEn2 = ancien.benificeTotaleEn2,
+                monPrixAchatUniter = ancien.monPrixAchatUniter,
+                monPrixVentUniter = ancien.monPrixVentUniter,
+                benificeClient = ancien.benificeClient,
+                monBeneficeUniter = ancien.monBeneficeUniter,
+                diponibilityState = ancien.diponibilityState,
+                cLeDataOuvertDuParentList = ancien.cLeDataOuvertDuParentList,
+                articleHaveUniteImages = ancien.articleHaveUniteImages,
+                itsNewArrivale = ancien.itsNewArrivale,
+                imageDimention = ancien.imageDimention,
+                idForSearchArticles = ancien.idForSearchArticles,
+                keyFireBase = ancien.keyFireBase, // This will be empty and regenerated
+                timestamps = System.currentTimeMillis(), // Set current timestamp for migration
+                needUpdate = true // Mark as needing update since it's a migration
+            )
+        }
+    }
+
     // FIXED: Removed the onComplete callback and made it return the Map directly
     private suspend inline fun <reified DataBase : Any> setDataInlineFun(
-        datas: List<DataBase>
+        datas: List<DataBase> = emptyList()
     ): Map<String, DataBase> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
@@ -179,7 +250,7 @@ class F0_FireBaseOperationsHandler(
                                 data
                             }
                             updatedData.keyFireBase.ifEmpty {
-                                getKeyFireBase(updatedData.id, updatedData.nom)
+                                getKeyFireBase(updatedData.idArticle, updatedData.nomArticleFinale)
                             }
                         }
                         else -> {

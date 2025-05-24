@@ -6,9 +6,59 @@ import androidx.room.PrimaryKey
 @Entity
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
-    val nom: String = "",
-    // FIXED: Removed circular dependency - keyFireBase is now calculated after construction
+    var idArticle: Long = 0,
+
+    var nomArticleFinale: String = "",
+    var classementCate: Double = 0.0,
+    var nomArab: String = "",
+    var autreNomDarticle: String? = null,
+    var nmbrCat: Int = 0,
+    var couleur1: String? = null,
+    var idcolor1: Long = 0,
+    var couleur2: String? = null,
+    var idcolor2: Long = 0,
+    var couleur3: String? = null,
+    var idcolor3: Long = 0,
+    var couleur4: String? = null,
+    var idcolor4: Long = 0,
+    var nomCategorie2: String? = null,
+    var nmbrUnite: Int = 0,
+    var nmbrCaron: Int = 0,
+    var affichageUniteState: Boolean = false,
+    var commmentSeVent: String? = null,
+    var afficheBoitSiUniter: String? = null,
+    var monPrixAchat: Double = 0.0,
+    var clienPrixVentUnite: Double = 0.0,
+    var minQuan: Int = 0,
+    var monBenfice: Double = 0.0,
+    var monPrixVent: Double = 0.0,
+    var neaon2: String = "",
+    var idCategorie: Double = 0.0,
+    var catalogeParentID: Long = 0,
+    var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
+    var nomCategorie: String = "",
+    var neaon1: Double = 0.0,
+    var lastUpdateState: String = "",
+    var cartonState: String = "",
+    var dateCreationCategorie: String = "",
+    var prixDeVentTotaleChezClient: Double = 0.0,
+    var benficeTotaleEntreMoiEtClien: Double = 0.0,
+    var benificeTotaleEn2: Double = 0.0,
+    var monPrixAchatUniter: Double = 0.0,
+    var monPrixVentUniter: Double = 0.0,
+    var benificeClient: Double = 0.0,
+    var monBeneficeUniter: Double = 0.0,
+
+    //Stats
+    var diponibilityState: String = "",  //StatsInIt: "Non Dispo"
+
+    var cLeDataOuvertDuParentList: Boolean = false,
+
+    var articleHaveUniteImages: Boolean = false,
+    var itsNewArrivale: Boolean = false,
+    var imageDimention: String = "",
+    var idForSearchArticles: Long = 0,
+
     val keyFireBase: String = "",
     val timestamps: Long = System.currentTimeMillis(),
     val needUpdate: Boolean = true
@@ -16,27 +66,10 @@ data class A_ProduitInfos(
     // FIXED: Added a method to create a proper instance with keyFireBase
     fun withProperKeyFireBase(): A_ProduitInfos {
         return if (keyFireBase.isEmpty()) {
-            this.copy(keyFireBase = getKeyFireBase(id, nom))
+            this.copy(keyFireBase = getKeyFireBase(idArticle, nomArticleFinale))
         } else {
             this
         }
     }
 
-    companion object {
-        // FIXED: Moved the creation logic to companion object to avoid circular dependency
-        fun create(
-            id: Long = 0L,
-            nom: String = "",
-            timestamps: Long = System.currentTimeMillis(),
-            needUpdate: Boolean = true
-        ): A_ProduitInfos {
-            return A_ProduitInfos(
-                id = id,
-                nom = nom,
-                keyFireBase = getKeyFireBase(id, nom),
-                timestamps = timestamps,
-                needUpdate = needUpdate
-            )
-        }
-    }
 }

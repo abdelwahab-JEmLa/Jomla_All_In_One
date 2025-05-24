@@ -71,7 +71,8 @@ class E_GroupedDataBasesRepository(
                 }
                 val lence = true
                 if (lence) {
-                    fireBase.changeKeysFireBase()
+                    val ancDB =room.getAncienProditDB()
+                    fireBase.getAncienDB_changeKeysFireBase()
                 }
 
                 if (room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()) {
@@ -90,14 +91,6 @@ class E_GroupedDataBasesRepository(
         updateProgress(0f)
         collectRoom()
         updateProgress(1f)
-    }
-
-    private fun createDefaultProducts(): List<A_ProduitInfos> {
-        return listOf(
-            A_ProduitInfos.create(nom = "Produit par défaut 1"),
-            A_ProduitInfos.create(nom = "Produit par défaut 2"),
-            A_ProduitInfos.create(nom = "Produit par défaut 3")
-        )
     }
 
     private fun updateProgress(progress: Float) {

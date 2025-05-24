@@ -56,6 +56,7 @@ data class ArticlesBasesStatsTable(
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 
+    var keyFireBase: String = "",
     ) {
     // No-argument constructor for Firebase
     constructor() : this(0)
