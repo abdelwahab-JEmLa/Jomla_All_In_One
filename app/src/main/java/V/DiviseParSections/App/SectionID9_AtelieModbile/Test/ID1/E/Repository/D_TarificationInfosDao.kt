@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

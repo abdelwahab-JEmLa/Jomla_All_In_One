@@ -1,6 +1,8 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.DataBasesSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test.testD_TarificationInfosT2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,20 +12,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class E_InfosSqlDataBasesRepository(
+class E_GroupedDataBasesRepository(
     val database: AppDatabase,
     private val fireBase: F_FireBaseOperationsHandler,
     private val room: F_RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
-    private var modelList: List<DataBasesInfosSql>
+    private val _modelListFlow = MutableStateFlow<List<DataBasesSql>>(emptyList())
+    private var modelList: List<DataBasesSql>
         get() = _modelListFlow.value
         set(value) {
             _modelListFlow.value = value
         }
 
-    val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
+    val modelListFlow: StateFlow<List<DataBasesSql>> = _modelListFlow.asStateFlow()
 
     val mainProgressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -110,7 +112,7 @@ class E_InfosSqlDataBasesRepository(
                 tarificationsFlow
             ) { produits, clients, typeTarifications, tarifications ->
                 listOf(
-                    DataBasesInfosSql(
+                    DataBasesSql(
                         a_ProduitInfos = produits.toMutableList(),
                         c_TypeTarificationInfos = typeTarifications.toMutableList(),
                         d_TarificationInfos = tarifications.toMutableList()

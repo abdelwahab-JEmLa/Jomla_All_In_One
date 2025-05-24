@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

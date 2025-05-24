@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -32,7 +34,7 @@ data class UiState(
 
 class TariffsButtonsViewModel_TestID2(
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
-    private val sqlRepository: E_InfosSqlDataBasesRepository,
+    private val sqlRepository: E_GroupedDataBasesRepository,
 ) : ViewModel() {
     private val tariffsRepo = sqlRepository.modelListFlow
 

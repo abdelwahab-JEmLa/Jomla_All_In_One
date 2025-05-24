@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E_InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -60,7 +60,7 @@ class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
     val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
-    val sqlRepository: E_InfosSqlDataBasesRepository,
+    val sqlRepository: E_GroupedDataBasesRepository,
 
     ) : ViewModel() {
     private val _uiState = MutableStateFlow(MapClientsUiState())

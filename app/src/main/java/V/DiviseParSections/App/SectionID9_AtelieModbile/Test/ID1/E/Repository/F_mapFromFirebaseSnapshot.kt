@@ -1,22 +1,25 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.DataBasesInfosSql
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.DataBasesSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.TypeTarificationEnum
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 
 private const val TAG = "FirebaseMapping"
 
-fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
+fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesSql {
     val products = mutableListOf<A_ProduitInfos>()
     val clients = mutableListOf<B_ClientInfos>()
     val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
     val tarifications = mutableListOf<D_TarificationInfos>()
 
-    val defaultModel = DataBasesInfosSql()
+    val defaultModel = DataBasesSql()
 
     val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
@@ -38,7 +41,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
     }
 
-    return DataBasesInfosSql(
+    return DataBasesSql(
         a_ProduitInfos = products,
         b_ClientInfosList = clients,
         c_TypeTarificationInfos = typeTarifications,

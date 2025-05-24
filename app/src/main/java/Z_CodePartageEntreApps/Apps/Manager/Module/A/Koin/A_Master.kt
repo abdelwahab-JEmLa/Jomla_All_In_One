@@ -10,9 +10,9 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.F
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TariffsButtonsViewModel_TestID2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F_FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F_RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E_InfosSqlDataBasesRepository
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_RoomOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
@@ -68,7 +68,7 @@ val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
     single {
-        E_InfosSqlDataBasesRepository(
+        E_GroupedDataBasesRepository(
             get(),
             get(),
             get(),

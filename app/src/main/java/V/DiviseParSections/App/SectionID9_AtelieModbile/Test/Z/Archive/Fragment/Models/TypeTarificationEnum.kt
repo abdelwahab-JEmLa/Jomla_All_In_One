@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.Models
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward

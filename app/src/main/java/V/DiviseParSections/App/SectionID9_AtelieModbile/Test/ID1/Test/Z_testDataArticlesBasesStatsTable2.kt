@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test
 
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 
