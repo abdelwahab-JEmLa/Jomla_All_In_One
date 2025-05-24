@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class E_GroupedDataBasesRepository(
     val database: AppDatabase,
     private val fireBase: F_FireBaseOperationsHandler,
-    private val room: F_RoomOperationsHandler
+    private val room: G_RoomOperationsHandler
 ) {
 
     private val repoCoroutineScope = CoroutineScope(Dispatchers.IO)
@@ -54,14 +54,14 @@ class E_GroupedDataBasesRepository(
     private  fun initializeTarificationInfos() {
         updateProgress(0f)
 
-        fireBase.getDataFromFirebase { dataList ->
+        fireBase.getDataFromFirebase { dataList,produItinfos ->
             repoCoroutineScope.launch {
                 if (dataList.isEmpty()) {
                     upsertAllRoomEtFireBase(testD_TarificationInfosT2())
                 } else {
                     room.checkDataBaseIsEmpty { roomHandler ->
                         repoCoroutineScope.launch {
-                            roomHandler.insertAllAndReturnListIdToData(dataList) { resultMap ->
+                            roomHandler.insertAllAndReturnListIdToData(dataList) {
                                 updateProgress(1f)
                             }
                         }

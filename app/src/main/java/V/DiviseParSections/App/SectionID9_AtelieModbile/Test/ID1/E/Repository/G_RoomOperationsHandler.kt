@@ -5,12 +5,12 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class F_RoomOperationsHandler(
+class G_RoomOperationsHandler(
     private val database: AppDatabase,
     private val onProgressUpdate: (Float) -> Unit = { }
 ) {
     suspend fun checkDataBaseIsEmpty(
-        onCheckIsTrue: (F_RoomOperationsHandler) -> Unit
+        onCheckIsTrue: (G_RoomOperationsHandler) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.2f)
@@ -21,7 +21,7 @@ class F_RoomOperationsHandler(
 
             if (count == 0) {
                 onProgressUpdate(1f)
-                onCheckIsTrue(this@F_RoomOperationsHandler)
+                onCheckIsTrue(this@G_RoomOperationsHandler)
             } else {
                 onProgressUpdate(1f)
             }

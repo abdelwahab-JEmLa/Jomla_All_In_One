@@ -11,7 +11,7 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F2.TariffsButtonsViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_RoomOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.G_RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
@@ -80,7 +80,7 @@ val commonRepositoriesModule = module {
     }
 
     single {
-        F_RoomOperationsHandler(
+        G_RoomOperationsHandler(
             get(),
         )
     }

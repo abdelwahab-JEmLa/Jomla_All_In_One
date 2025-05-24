@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -27,7 +29,15 @@ class F_FireBaseOperationsHandler(
     var needUpdateListener: ValueEventListener? = null
 
 
-    fun getDataFromFirebase(onAddSuccess: (List<D_TarificationInfos>) -> Unit) {
+    fun getDataFromFirebase(onAddSuccess: (
+        List<D_TarificationInfos>,
+        List<A_ProduitInfos>,
+
+        ) -> Unit) {
+        val products = mutableListOf<A_ProduitInfos>()
+        val defaultModel = A0_DataBasesGroup()
+
+
         onProgressUpdate(0.1f)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -37,24 +47,28 @@ class F_FireBaseOperationsHandler(
                         onProgressUpdate(0.5f)
                         val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
 
+                        val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
+                        if (productsSnapshot.exists()) {
+                            products.addAll(mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class))
+                        }
+
                         onProgressUpdate(0.9f)
-                        onAddSuccess(infosSqlDataBases.d_TarificationInfos)
+                        onAddSuccess(
+                            infosSqlDataBases.d_TarificationInfos,
+                            products
+                        )
 
                         onProgressUpdate(1f)
                     } catch (e: Exception) {
                         onProgressUpdate(0f)
-                        onAddSuccess(emptyList())
                     }
                 } else {
                     onProgressUpdate(1f)
-                    onAddSuccess(emptyList())
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 onProgressUpdate(0f)
-                // Handle cancellation - pass empty list
-                onAddSuccess(emptyList())
             }
         })
     }
