@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
@@ -26,16 +26,6 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
         products.addAll(mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class))
     }
 
-    val clientsSnapshot = snapshot.child(defaultModel.refFireBaseB_ClientInfos)
-    if (clientsSnapshot.exists()) {
-        clients.addAll(mapSnapshotToObjects(clientsSnapshot, B_ClientInfos::class))
-    }
-
-    val typeTarifsSnapshot = snapshot.child(defaultModel.refFireBaseC_TypeTarificationInfos)
-    if (typeTarifsSnapshot.exists()) {
-        typeTarifications.addAll(mapTypeTarificationsWithReflection(typeTarifsSnapshot))
-    }
-
     val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
     if (tarifsSnapshot.exists()) {
         tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
@@ -43,8 +33,6 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
 
     return A0_DataBasesGroup(
         a_ProduitInfos = products,
-        b_ClientInfosList = clients,
-        c_TypeTarificationInfos = typeTarifications,
         d_TarificationInfos = tarifications
     )
 }
