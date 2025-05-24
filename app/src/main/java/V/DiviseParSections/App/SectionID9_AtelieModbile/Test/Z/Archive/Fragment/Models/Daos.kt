@@ -10,28 +10,6 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface A_ProduitInfosDao {
-    @Query("SELECT * FROM A_ProduitInfos")
-    fun getAllProduits(): Flow<List<A_ProduitInfos>>
-
-    @Query("SELECT * FROM A_ProduitInfos")
-    suspend fun getAllProduitsSync(): List<A_ProduitInfos>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(produits: List<A_ProduitInfos>)
-
-    @Delete
-    suspend fun delete(produit: A_ProduitInfos)
-
-    @Query("DELETE FROM A_ProduitInfos")
-    suspend fun deleteAll()
-
-    // Add this method to support product verification
-    @Query("SELECT * FROM A_ProduitInfos WHERE id = :productId LIMIT 1")
-    suspend fun getProductById(productId: Long): A_ProduitInfos?
-}
-
-@Dao
 interface B_ClientInfosDao {
     @Query("SELECT * FROM B_ClientInfos")
     fun getAllClients(): Flow<List<B_ClientInfos>>
