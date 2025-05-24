@@ -4,14 +4,14 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 
-data class DataBasesSql(
+data class A0_DataBasesGroup(
     val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
     val refFireBaseD_TarificationInfos: String="D_TarificationInfos",
 
-
-
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val refFireBaseA_ProduitInfos: String="A_ProduitInfos",
+
+
 
     val b_ClientInfosList: MutableList<B_ClientInfos> = mutableListOf(),
     val refFireBaseB_ClientInfos: String="B_ClientInfos",

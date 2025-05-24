@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.DataBasesSql
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test.testD_TarificationInfosT2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -18,14 +18,14 @@ class E_GroupedDataBasesRepository(
     private val room: F_RoomOperationsHandler
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val _modelListFlow = MutableStateFlow<List<DataBasesSql>>(emptyList())
-    private var modelList: List<DataBasesSql>
+    private val _modelListFlow = MutableStateFlow<List<A0_DataBasesGroup>>(emptyList())
+    private var modelList: List<A0_DataBasesGroup>
         get() = _modelListFlow.value
         set(value) {
             _modelListFlow.value = value
         }
 
-    val modelListFlow: StateFlow<List<DataBasesSql>> = _modelListFlow.asStateFlow()
+    val modelListFlow: StateFlow<List<A0_DataBasesGroup>> = _modelListFlow.asStateFlow()
 
     val mainProgressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -112,7 +112,7 @@ class E_GroupedDataBasesRepository(
                 tarificationsFlow
             ) { produits, clients, typeTarifications, tarifications ->
                 listOf(
-                    DataBasesSql(
+                    A0_DataBasesGroup(
                         a_ProduitInfos = produits.toMutableList(),
                         c_TypeTarificationInfos = typeTarifications.toMutableList(),
                         d_TarificationInfos = tarifications.toMutableList()

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F_FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.mapFromFirebaseSnapshot
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.DataBasesSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -34,7 +34,7 @@ fun F_FireBaseOperationsHandler.startNeedUpdateListener() {
 }
 
 private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
-    val defaultModel = DataBasesSql()
+    val defaultModel = A0_DataBasesGroup()
 
     val produitsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (produitsSnapshot.exists()) {
@@ -79,5 +79,5 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
     return false
 }
 
-fun F_FireBaseOperationsHandler.resetNeedUpdateFlags(data: DataBasesSql) {
+fun F_FireBaseOperationsHandler.resetNeedUpdateFlags(data: A0_DataBasesGroup) {
 }

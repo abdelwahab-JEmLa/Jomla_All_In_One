@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.DataBasesSql
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
@@ -13,13 +13,13 @@ import kotlin.reflect.KClass
 
 private const val TAG = "FirebaseMapping"
 
-fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesSql {
+fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
     val products = mutableListOf<A_ProduitInfos>()
     val clients = mutableListOf<B_ClientInfos>()
     val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
     val tarifications = mutableListOf<D_TarificationInfos>()
 
-    val defaultModel = DataBasesSql()
+    val defaultModel = A0_DataBasesGroup()
 
     val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
     if (productsSnapshot.exists()) {
@@ -41,7 +41,7 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesSql {
         tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
     }
 
-    return DataBasesSql(
+    return A0_DataBasesGroup(
         a_ProduitInfos = products,
         b_ClientInfosList = clients,
         c_TypeTarificationInfos = typeTarifications,
