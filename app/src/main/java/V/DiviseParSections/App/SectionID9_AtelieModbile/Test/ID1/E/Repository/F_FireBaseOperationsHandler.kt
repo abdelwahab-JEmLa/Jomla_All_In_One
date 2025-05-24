@@ -43,12 +43,10 @@ class F_FireBaseOperationsHandler(
                         onProgressUpdate(1f)
                     } catch (e: Exception) {
                         onProgressUpdate(0f)
-                        // Handle error case - you might want to pass empty list or handle differently
                         onAddSuccess(emptyList())
                     }
                 } else {
                     onProgressUpdate(1f)
-                    // No data found - pass empty list
                     onAddSuccess(emptyList())
                 }
             }
