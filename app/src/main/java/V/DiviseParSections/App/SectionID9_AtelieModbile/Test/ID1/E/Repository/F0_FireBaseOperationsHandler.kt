@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
@@ -18,17 +19,17 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
 class F0_FireBaseOperationsHandler(
-    private val onProgressUpdate: (Float) -> Unit = { }
+    val onProgressUpdate: (Float) -> Unit = { }
 ) {
     val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
-    private val childD_TarificationInfos = ref.child("D_TarificationInfos")
+    // FIXED: Made these properties public to fix the inline function access issue
+    val childD_TarificationInfos = ref.child("D_TarificationInfos")
+    val childA_ProduitInfos = ref.child("A_ProduitInfos")
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
-
-
 
     fun getDataFromFirebase(
         onAddSuccess: (
@@ -96,10 +97,148 @@ class F0_FireBaseOperationsHandler(
         kClass: KClass<T>
     ): List<T> {
         val results = mutableListOf<T>()
-
         getDatas<T>(snapshot, kClass, results)
-
         return results
+    }
+
+    // FIXED: Changed this function to return the Map<String, A_ProduitInfos> synchronously using a suspend function
+    suspend fun changeKeysFireBase(): Map<String, A_ProduitInfos> = withContext(Dispatchers.IO) {
+        return@withContext suspendCancellableCoroutine { continuation ->
+            getDataFromFirebase { _, products ->
+                coroutineScope.launch {
+                    try {
+                        // Remove keyFireBase from existing data to regenerate them
+                        val productsWithoutKeys = products.map { product ->
+                            product.copy(keyFireBase = "")
+                        }
+
+                        // Update products with new keys
+                        val resultMap = setDataInlineFun(productsWithoutKeys)
+                        continuation.resume(resultMap)
+                    } catch (e: Exception) {
+                        println("Failed to update products keys: ${e.message}")
+                        continuation.resume(emptyMap())
+                    }
+                }
+            }
+        }
+    }
+
+    // FIXED: Removed the onComplete callback and made it return the Map directly
+    private suspend inline fun <reified DataBase : Any> setDataInlineFun(
+        datas: List<DataBase>
+    ): Map<String, DataBase> = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.1f)
+
+            if (datas.isEmpty()) {
+                onProgressUpdate(1f)
+                return@withContext emptyMap()
+            }
+
+            onProgressUpdate(0.3f)
+            val dataMap = mutableMapOf<String, Any>()
+            val resultMap = mutableMapOf<String, DataBase>()
+            var processedCount = 0
+            val totalCount = datas.size
+
+            datas.forEach { data ->
+                try {
+                    val itemMap = mutableMapOf<String, Any>()
+
+                    // Use reflection to get all properties
+                    data::class.memberProperties.forEach { prop ->
+                        try {
+                            val value = prop.getter.call(data)
+                            when {
+                                value == null -> itemMap[prop.name] = "null"
+                                value::class.java.isEnum -> itemMap[prop.name] = value.toString()
+                                else -> itemMap[prop.name] = value
+                            }
+                        } catch (e: Exception) {
+                            itemMap[prop.name] = "null"
+                        }
+                    }
+
+                    // Generate key based on data type
+                    val key = when (data) {
+                        is D_TarificationInfos -> {
+                            val updatedData = if (data.keyFireBase.isEmpty()) {
+                                data.withProperDefaults()
+                            } else {
+                                data
+                            }
+                            updatedData.keyFireBase.ifEmpty {
+                                getKeyFireBase(updatedData.id, updatedData.nom)
+                            }
+                        }
+                        is A_ProduitInfos -> {
+                            val updatedData = if (data.keyFireBase.isEmpty()) {
+                                data.withProperKeyFireBase()
+                            } else {
+                                data
+                            }
+                            updatedData.keyFireBase.ifEmpty {
+                                getKeyFireBase(updatedData.id, updatedData.nom)
+                            }
+                        }
+                        else -> {
+                            // Fallback for unknown types
+                            "unknown_${System.currentTimeMillis()}_$processedCount"
+                        }
+                    }
+
+                    dataMap[key] = itemMap
+                    resultMap[key] = data
+                    processedCount++
+
+                    val progress = 0.3f + (processedCount.toFloat() / totalCount) * 0.4f
+                    onProgressUpdate(progress)
+
+                } catch (e: Exception) {
+                    println("Error processing data item: ${e.message}")
+                    processedCount++
+                }
+            }
+
+            if (dataMap.isNotEmpty()) {
+                try {
+                    onProgressUpdate(0.8f)
+
+                    // Determine which child reference to use based on data type
+                    val childRef = when (DataBase::class) {
+                        D_TarificationInfos::class -> childD_TarificationInfos
+                        A_ProduitInfos::class -> childA_ProduitInfos
+                        else -> throw IllegalArgumentException("Unsupported data type: ${DataBase::class.simpleName}")
+                    }
+
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        childRef.updateChildren(dataMap)
+                            .addOnSuccessListener {
+                                continuation.resume(Unit)
+                            }
+                            .addOnFailureListener { exception ->
+                                continuation.resumeWithException(exception)
+                            }
+                    }
+
+                    onProgressUpdate(1f)
+
+                } catch (firebaseException: Exception) {
+                    println("Firebase update failed: ${firebaseException.message}")
+                    onProgressUpdate(0.8f)
+                }
+            } else {
+                onProgressUpdate(1f)
+            }
+
+            return@withContext resultMap
+
+        } catch (e: Exception) {
+            println("Error in setDataInlineFun: ${e.message}")
+            onProgressUpdate(0f)
+            return@withContext emptyMap()
+        }
     }
 
     suspend fun upsertAllAndReturnListIdToData(

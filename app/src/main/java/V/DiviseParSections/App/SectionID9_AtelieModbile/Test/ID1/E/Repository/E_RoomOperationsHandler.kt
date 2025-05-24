@@ -8,7 +8,6 @@ import kotlinx.coroutines.withContext
 
 class G_RoomOperationsHandler(
     val database: AppDatabase,
-    // Made public to allow access from inline functions
     val onProgressUpdate: (Float) -> Unit = { }
 ) {
     suspend inline fun <reified DataBase : Any> insertAllAndReturnListIdToDataInline(
@@ -68,14 +67,14 @@ class G_RoomOperationsHandler(
     }
 
     // Made this function suspend to handle database calls properly
-    suspend inline fun <reified DataBase : Any> inlineCheckDataBaseIsEmpty(): Boolean =
+    suspend inline fun <reified DataBase : Any> inlineCheckDataBaseIsNotEmpty(): Boolean =
         withContext(Dispatchers.IO) {
             when (DataBase::class) {
                 A_ProduitInfos::class -> {
-                    database.a_ProduitInfosDao().getCount() == 0
+                    database.a_ProduitInfosDao().getCount() > 0
                 }
                 D_TarificationInfos::class -> {
-                    database.dTarificationInfosDao().getCount() == 0
+                    database.dTarificationInfosDao().getCount() > 0
                 }
                 else -> false
             }

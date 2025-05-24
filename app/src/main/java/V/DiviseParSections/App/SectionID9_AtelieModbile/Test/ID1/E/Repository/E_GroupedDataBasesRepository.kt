@@ -41,9 +41,11 @@ class E_GroupedDataBasesRepository(
                 D_TarificationInfos::class -> {
                     initializeTarificationInfos()
                 }
+
                 A_ProduitInfos::class -> {
                     initializeProduitInfos()
                 }
+
                 else -> {
                     updateProgress(1f)
                 }
@@ -67,17 +69,16 @@ class E_GroupedDataBasesRepository(
                         }
                     }
                 }
+                val lence = true
+                if (lence) {
+                    fireBase.changeKeysFireBase()
+                }
 
-                // Fixed: Use the corrected inline function with proper suspend context
-                if (room.inlineCheckDataBaseIsEmpty<A_ProduitInfos>()) {
-                    val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
+                if (room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()) {
+                    val insertResult =
+                        room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
                     updateProgress(1f)
-
-                    println("Insert Result for A_ProduitInfos:")
                     println("Total items inserted: ${insertResult.size}")
-                    insertResult.forEach { (id, produit) ->
-                        println("ID: $id, Produit: ${produit.nom}, KeyFireBase: ${produit.keyFireBase}")
-                    }
                 }
             }
         }
@@ -89,6 +90,14 @@ class E_GroupedDataBasesRepository(
         updateProgress(0f)
         collectRoom()
         updateProgress(1f)
+    }
+
+    private fun createDefaultProducts(): List<A_ProduitInfos> {
+        return listOf(
+            A_ProduitInfos.create(nom = "Produit par défaut 1"),
+            A_ProduitInfos.create(nom = "Produit par défaut 2"),
+            A_ProduitInfos.create(nom = "Produit par défaut 3")
+        )
     }
 
     private fun updateProgress(progress: Float) {
