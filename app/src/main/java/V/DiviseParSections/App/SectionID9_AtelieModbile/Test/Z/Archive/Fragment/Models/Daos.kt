@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
