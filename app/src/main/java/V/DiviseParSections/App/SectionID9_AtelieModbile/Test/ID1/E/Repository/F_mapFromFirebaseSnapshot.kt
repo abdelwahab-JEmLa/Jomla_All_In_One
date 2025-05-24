@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_Tari
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.TypeTarificationEnum
 import com.google.firebase.database.DataSnapshot
@@ -15,8 +14,6 @@ private const val TAG = "FirebaseMapping"
 
 fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
     val products = mutableListOf<A_ProduitInfos>()
-    val clients = mutableListOf<B_ClientInfos>()
-    val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
     val tarifications = mutableListOf<D_TarificationInfos>()
 
     val defaultModel = A0_DataBasesGroup()
