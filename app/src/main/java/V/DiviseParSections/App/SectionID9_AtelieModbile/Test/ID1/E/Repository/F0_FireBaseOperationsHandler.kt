@@ -29,10 +29,12 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    fun getDataFromFirebase(onAddSuccess: (
-        List<D_TarificationInfos>,
-        List<A_ProduitInfos>,
-    ) -> Unit) {
+    fun getDataFromFirebase(
+        onAddSuccess: (
+            List<D_TarificationInfos>,
+            List<A_ProduitInfos>,
+        ) -> Unit
+    ) {
         val products = mutableListOf<A_ProduitInfos>()
         val defaultModel = A0_DataBasesGroup()
 
@@ -49,14 +51,10 @@ class F0_FireBaseOperationsHandler(
                         try {
                             val productsSnapshot = snapshot.child("A_ProduitInfos")
 
-                            if (productsSnapshot.exists() && productsSnapshot.hasChildren()) {
-                                val mappedProducts = mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class)
-                                products.addAll(mappedProducts)
-                            } else {
-                                findProductsInSnapshot(snapshot)?.let { foundProducts ->
-                                    products.addAll(foundProducts)
-                                }
-                            }
+                            val mappedProducts =
+                                mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class)
+
+                            products.addAll(mappedProducts)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
