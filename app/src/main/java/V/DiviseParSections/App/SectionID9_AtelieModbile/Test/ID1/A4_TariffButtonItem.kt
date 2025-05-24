@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ElevatedCard
@@ -67,10 +68,11 @@ fun TariffButtonItem(
                     Text(
                         typeName,
                         modifier = Modifier
+                            .width(100.dp)
                             .background(labelBackgroundColor)
                             .padding(4.dp),
                         color = labelTextColor,
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         maxLines = 2
                     )
                 }
