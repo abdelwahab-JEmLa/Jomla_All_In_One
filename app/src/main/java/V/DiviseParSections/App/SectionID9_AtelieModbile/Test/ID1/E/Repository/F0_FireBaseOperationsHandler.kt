@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -47,7 +47,9 @@ class F0_FireBaseOperationsHandler(
                         onProgressUpdate(0.5f)
                         val infosSqlDataBases = mapFromFirebaseSnapshot(snapshot)
 
-                        val productsSnapshot = snapshot.child(defaultModel.refFireBaseA_ProduitInfos)
+                        val productsSnapshot = snapshot
+                            .child(defaultModel.refFireBaseA_ProduitInfos)
+
                         if (productsSnapshot.exists()) {
                             products.addAll(mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class))
                         }
