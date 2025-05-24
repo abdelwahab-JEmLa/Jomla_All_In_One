@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class E_GroupedDataBasesRepository(
     val database: AppDatabase,
-    private val fireBase: F_FireBaseOperationsHandler,
+    private val fireBase: F0_FireBaseOperationsHandler,
     private val room: G_RoomOperationsHandler
 ) {
 

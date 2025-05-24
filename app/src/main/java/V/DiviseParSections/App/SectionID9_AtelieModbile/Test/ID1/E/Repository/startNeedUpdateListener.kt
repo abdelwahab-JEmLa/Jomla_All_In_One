@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 
-fun F_FireBaseOperationsHandler.startNeedUpdateListener() {
+fun F0_FireBaseOperationsHandler.startNeedUpdateListener() {
     if (needUpdateListener != null) return
 
     needUpdateListener = object : ValueEventListener {
@@ -57,5 +57,5 @@ private fun checkIfNeedsUpdate(snapshot: DataSnapshot): Boolean {
     return false
 }
 
-fun F_FireBaseOperationsHandler.resetNeedUpdateFlags(data: A0_DataBasesGroup) {
+fun F0_FireBaseOperationsHandler.resetNeedUpdateFlags(data: A0_DataBasesGroup) {
 }
