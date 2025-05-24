@@ -71,7 +71,7 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    private suspend fun initializeTarificationInfos() {
+    private  fun initializeTarificationInfos() {
         updateProgress(0f)
 
         fireBase.getDataFromFirebase { dataList ->
