@@ -30,6 +30,10 @@ class E_GroupedDataBasesRepository(
     val mainProgressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     init {
+        init()
+    }
+
+    private fun init() {
         coroutineScope.launch {
             updateProgress(0f)
             fireBase.getDataFromFirebase { dataList ->
