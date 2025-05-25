@@ -34,6 +34,27 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
+    // Logger function for Firebase operations
+    private fun logFirebaseError(operation: String, error: Exception) {
+        val timestamp = System.currentTimeMillis()
+        val errorMessage = """
+            |Firebase Operation Error:
+            |Timestamp: $timestamp
+            |Operation: $operation
+            |Error Type: ${error::class.simpleName}
+            |Error Message: ${error.message}
+            |Stack Trace: ${error.stackTrace.joinToString("\n")}
+        """.trimMargin()
+
+        println(errorMessage)
+
+        // You can also log to Firebase Crashlytics if available:
+        // FirebaseCrashlytics.getInstance().recordException(error)
+
+        // Or save to local storage/file if needed for debugging
+        // saveErrorToLocalLog(errorMessage)
+    }
+
     fun getDataFromFirebase(
         onAddSuccess: (
             List<D_TarificationInfos>,
@@ -75,8 +96,7 @@ class F0_FireBaseOperationsHandler(
                         onProgressUpdate(1f)
 
                     } catch (e: Exception) {
-                        println("Error in getDataFromFirebase: ${e.message}")
-                        e.printStackTrace()
+                        logFirebaseError("getDataFromFirebase - data processing", e)
                         onProgressUpdate(0f)
                         onAddSuccess(emptyList(), emptyList())
                     }
@@ -88,7 +108,7 @@ class F0_FireBaseOperationsHandler(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Firebase read cancelled: ${error.message}")
+                logFirebaseError("getDataFromFirebase - read cancelled", Exception(error.message))
                 onProgressUpdate(0f)
                 onAddSuccess(emptyList(), emptyList())
             }
@@ -109,11 +129,9 @@ class F0_FireBaseOperationsHandler(
         return@withContext suspendCancellableCoroutine { continuation ->
             coroutineScope.launch {
                 try {
-                    childA_ProduitInfos.removeValue()
-
-                     val firebaseDatabase = FirebaseDatabase.getInstance()
-
-                     val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
+                    val firebaseDatabase = FirebaseDatabase.getInstance()
+                     s
+                    val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
 
                     val articlesSnapshot = refDBJetPackExport.get().await()
                     val articles = articlesSnapshot.children.mapNotNull { snapshot ->
@@ -127,11 +145,11 @@ class F0_FireBaseOperationsHandler(
                     val a_ProduitInfosList = convertArticlesBasesToProduitInfos(productsWithoutKeys)
 
                     // Update products with new keys
-                    val resultMap = setDataInlineFun(a_ProduitInfosList)
+                    val resultMap = setDataInlineFun<A_ProduitInfos>(a_ProduitInfosList)
 
                     continuation.resume(resultMap)
                 } catch (e: Exception) {
-                    println("Failed to update products keys: ${e.message}")
+                    logFirebaseError("getAncienDB_changeKeysFireBase", e)
                     continuation.resume(emptyMap())
                 }
             }
@@ -267,7 +285,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(progress)
 
                 } catch (e: Exception) {
-                    println("Error processing data item: ${e.message}")
+                    logFirebaseError("setDataInlineFun - processing data item", e)
                     processedCount++
                 }
             }
@@ -282,13 +300,16 @@ class F0_FireBaseOperationsHandler(
                         A_ProduitInfos::class -> childA_ProduitInfos
                         else -> throw IllegalArgumentException("Unsupported data type: ${DataBase::class.simpleName}")
                     }
-
+                                                               //<--
+                                                               //TODO(1): pk ca ne s insert pas
                     suspendCancellableCoroutine<Unit> { continuation ->
                         childRef.updateChildren(dataMap)
                             .addOnSuccessListener {
                                 continuation.resume(Unit)
                             }
                             .addOnFailureListener { exception ->
+                                // FIXED: Added proper error logging for Firebase update failure
+                                logFirebaseError("setDataInlineFun - Firebase updateChildren", exception)
                                 continuation.resumeWithException(exception)
                             }
                     }
@@ -296,7 +317,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(1f)
 
                 } catch (firebaseException: Exception) {
-                    println("Firebase update failed: ${firebaseException.message}")
+                    logFirebaseError("setDataInlineFun - Firebase operation", firebaseException)
                     onProgressUpdate(0.8f)
                 }
             } else {
@@ -306,7 +327,7 @@ class F0_FireBaseOperationsHandler(
             return@withContext resultMap
 
         } catch (e: Exception) {
-            println("Error in setDataInlineFun: ${e.message}")
+            logFirebaseError("setDataInlineFun - general error", e)
             onProgressUpdate(0f)
             return@withContext emptyMap()
         }
@@ -361,6 +382,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(progress)
 
                 } catch (e: Exception) {
+                    logFirebaseError("upsertAllAndReturnListIdToData - processing tariff", e)
                     onProgressUpdate(0.5f)
                 }
             }
@@ -375,6 +397,7 @@ class F0_FireBaseOperationsHandler(
                                 continuation.resume(Unit)
                             }
                             .addOnFailureListener { exception ->
+                                logFirebaseError("upsertAllAndReturnListIdToData - Firebase updateChildren", exception)
                                 continuation.resumeWithException(exception)
                             }
                     }
@@ -382,6 +405,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(1f)
 
                 } catch (firebaseException: Exception) {
+                    logFirebaseError("upsertAllAndReturnListIdToData - Firebase operation", firebaseException)
                     onProgressUpdate(0.8f)
                 }
             } else {
@@ -391,6 +415,7 @@ class F0_FireBaseOperationsHandler(
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
+            logFirebaseError("upsertAllAndReturnListIdToData - general error", e)
             onProgressUpdate(0f)
             onAddSuccess(emptyMap())
         }
@@ -405,6 +430,7 @@ class F0_FireBaseOperationsHandler(
                 onComplete(true)
             }
             .addOnFailureListener { exception ->
+                logFirebaseError("deleteTarificationInfosNode", exception)
                 onProgressUpdate(0f)
                 onComplete(false)
             }
@@ -419,6 +445,7 @@ class F0_FireBaseOperationsHandler(
             }
 
             override fun onCancelled(error: DatabaseError) {
+                logFirebaseError("startNeedUpdateListener - listener cancelled", Exception(error.message))
                 onProgressUpdate(0f)
             }
         })
