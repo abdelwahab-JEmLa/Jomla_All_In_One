@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
 
 @Preview
 @Composable
-fun Test2Prev() {
+fun TariffsButtonsPrev() {
     // Simulate dialog state
     var showDialog by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }

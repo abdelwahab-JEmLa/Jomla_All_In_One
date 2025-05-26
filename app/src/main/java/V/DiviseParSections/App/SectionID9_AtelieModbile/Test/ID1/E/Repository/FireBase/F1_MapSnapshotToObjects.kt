@@ -18,7 +18,6 @@ import kotlin.reflect.full.valueParameters
 
 inline fun <reified T : Any> getDatasFixed(
     snapshot: DataSnapshot,
-    kClass: KClass<T>,
     results: MutableList<T>
 ) {
     for (childSnap in snapshot.children) {
@@ -179,7 +178,7 @@ fun mapToProduitInfosDynamic(childSnap: DataSnapshot): A_ProduitInfos? {
         }
 
         // Special handling for computed fields
-        val id = args["id"] as? Long ?: 0L
+        val id = args["idArticle"] as? Long ?: 0L
         val nomArticleFinale = args["nomArticleFinale"] as? String ?: ""
         val keyFireBase = childSnap.key ?: getKeyFireBase(id, nomArticleFinale)
 

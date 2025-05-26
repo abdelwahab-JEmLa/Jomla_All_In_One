@@ -51,14 +51,14 @@ fun TariffsButtons_TestID2(
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
-    Text("${produitInfosList.map { it.nomArticleFinale } }")
+    Text("${produitInfosList.size}")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
             (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
     val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
-        { typeTarification, latestTariffLocalData, context ->
+        { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

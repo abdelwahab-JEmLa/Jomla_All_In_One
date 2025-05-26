@@ -115,7 +115,7 @@ class F0_FireBaseOperationsHandler(
         return try {
             val results = mutableListOf<T>()
             // FIXED: Using the correct function name from F1_MapSnapshotToObjects.kt
-            getDatasFixed<T>(snapshot, kClass, results)
+            getDatasFixed<T>(snapshot, results)
             results
         } catch (e: Exception) {
             e.printStackTrace()

@@ -41,6 +41,9 @@
       <SelectionState runConfigName="Test2Prev (3)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="TariffsButtonsPrev">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

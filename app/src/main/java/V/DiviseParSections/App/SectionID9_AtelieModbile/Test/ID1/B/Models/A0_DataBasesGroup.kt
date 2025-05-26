@@ -24,8 +24,6 @@ fun getKeyFireBase(
 
     return when {
         id != 0L && cleanedNom.isNotEmpty() -> "${id}(${cleanedNom})"
-        id != 0L -> "${id}(${System.currentTimeMillis()})"
-        cleanedNom.isNotEmpty() -> "PROD_${cleanedNom}_${System.currentTimeMillis()}"
-        else -> ""
+        else -> null!!
     }
 }
