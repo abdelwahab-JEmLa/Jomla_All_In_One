@@ -6,116 +6,219 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTa
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.valueParameters
 
-inline fun <reified T : Any> getDatas(
+
+/**
+ * Dynamic Firebase snapshot mapper that automatically handles all property types
+ * without hard-coded values. Fixes the TODO from F1_MapSnapshotToObjects.kt
+ */
+
+inline fun <reified T : Any> getDatasFixed(
     snapshot: DataSnapshot,
     kClass: KClass<T>,
     results: MutableList<T>
 ) {
     for (childSnap in snapshot.children) {
         try {
-            when (T::class) {
-                A_ProduitInfos::class -> {
-                    mapToProduitInfos(childSnap)?.let { results.add(it as T) }
-                }
-                D_TarificationInfos::class -> {
-                    mapToTarificationInfos(childSnap)?.let { results.add(it as T) }
-                }
-            }
+            val mappedObject = mapSnapshotToDynamicObject<T>(childSnap)
+            mappedObject?.let { results.add(it) }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 }
 
-fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
+inline fun <reified T : Any> mapSnapshotToDynamicObject(childSnap: DataSnapshot): T? {
     return try {
-        val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
-        val nomArticleFinale = childSnap.child("nomArticleFinale").getValue(String::class.java) ?: ""
-        val keyFireBase = childSnap.key ?: getKeyFireBase(id, nomArticleFinale)
-
-        A_ProduitInfos(
-            id = id,
-            nomArticleFinale = nomArticleFinale,
-            classementCate = childSnap.child("classementCate").getValue(Double::class.java) ?: 0.0,
-            nomArab = childSnap.child("nomArab").getValue(String::class.java) ?: "",
-            autreNomDarticle = childSnap.child("autreNomDarticle").getValue(String::class.java),
-            nmbrCat = childSnap.child("nmbrCat").getValue(Int::class.java) ?: 0,
-            couleur1 = childSnap.child("couleur1").getValue(String::class.java),
-            idcolor1 = childSnap.child("idcolor1").getValue(Long::class.java) ?: 0L,
-            couleur2 = childSnap.child("couleur2").getValue(String::class.java),
-            idcolor2 = childSnap.child("idcolor2").getValue(Long::class.java) ?: 0L,
-            couleur3 = childSnap.child("couleur3").getValue(String::class.java),
-            idcolor3 = childSnap.child("idcolor3").getValue(Long::class.java) ?: 0L,
-            couleur4 = childSnap.child("couleur4").getValue(String::class.java),
-            idcolor4 = childSnap.child("idcolor4").getValue(Long::class.java) ?: 0L,
-            nomCategorie2 = childSnap.child("nomCategorie2").getValue(String::class.java),
-            nmbrUnite = childSnap.child("nmbrUnite").getValue(Int::class.java) ?: 0,
-            nmbrCaron = childSnap.child("nmbrCaron").getValue(Int::class.java) ?: 0,
-            affichageUniteState = childSnap.child("affichageUniteState").getValue(Boolean::class.java) ?: false,
-            commmentSeVent = childSnap.child("commmentSeVent").getValue(String::class.java),
-            afficheBoitSiUniter = childSnap.child("afficheBoitSiUniter").getValue(String::class.java),
-            monPrixAchat = childSnap.child("monPrixAchat").getValue(Double::class.java) ?: 0.0,
-            clienPrixVentUnite = childSnap.child("clienPrixVentUnite").getValue(Double::class.java) ?: 0.0,
-            minQuan = childSnap.child("minQuan").getValue(Int::class.java) ?: 0,
-            monBenfice = childSnap.child("monBenfice").getValue(Double::class.java) ?: 0.0,
-            monPrixVent = childSnap.child("monPrixVent").getValue(Double::class.java) ?: 0.0,
-            neaon2 = childSnap.child("neaon2").getValue(String::class.java) ?: "",
-            idCategorie = childSnap.child("idCategorie").getValue(Double::class.java) ?: 0.0,
-            catalogeParentID = childSnap.child("catalogeParentID").getValue(Long::class.java) ?: 0L,
-            funChangeImagsDimention = childSnap.child("funChangeImagsDimention").getValue(Boolean::class.java) ?: false,
-            nomCategorie = childSnap.child("nomCategorie").getValue(String::class.java) ?: "",
-            neaon1 = childSnap.child("neaon1").getValue(Double::class.java) ?: 0.0,
-            lastUpdateState = childSnap.child("lastUpdateState").getValue(String::class.java) ?: "",
-            cartonState = childSnap.child("cartonState").getValue(String::class.java) ?: "",
-            dateCreationCategorie = childSnap.child("dateCreationCategorie").getValue(String::class.java) ?: "",
-            prixDeVentTotaleChezClient = childSnap.child("prixDeVentTotaleChezClient").getValue(Double::class.java) ?: 0.0,
-            benficeTotaleEntreMoiEtClien = childSnap.child("benficeTotaleEntreMoiEtClien").getValue(Double::class.java) ?: 0.0,
-            benificeTotaleEn2 = childSnap.child("benificeTotaleEn2").getValue(Double::class.java) ?: 0.0,
-            monPrixAchatUniter = childSnap.child("monPrixAchatUniter").getValue(Double::class.java) ?: 0.0,
-            monPrixVentUniter = childSnap.child("monPrixVentUniter").getValue(Double::class.java) ?: 0.0,
-            benificeClient = childSnap.child("benificeClient").getValue(Double::class.java) ?: 0.0,
-            monBeneficeUniter = childSnap.child("monBeneficeUniter").getValue(Double::class.java) ?: 0.0,
-            diponibilityState = childSnap.child("diponibilityState").getValue(String::class.java) ?: "",
-            cLeDataOuvertDuParentList = childSnap.child("cLeDataOuvertDuParentList").getValue(Boolean::class.java) ?: false,
-            articleHaveUniteImages = childSnap.child("articleHaveUniteImages").getValue(Boolean::class.java) ?: false,
-            itsNewArrivale = childSnap.child("itsNewArrivale").getValue(Boolean::class.java) ?: false,
-            imageDimention = childSnap.child("imageDimention").getValue(String::class.java) ?: "",
-            idForSearchArticles = childSnap.child("idForSearchArticles").getValue(Long::class.java) ?: 0L,
-            keyFireBase = keyFireBase,
-            timestamps = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis(),
-            needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
-        )
+        when (T::class) {
+            A_ProduitInfos::class -> mapToProduitInfosDynamic(childSnap) as? T
+            D_TarificationInfos::class -> mapToTarificationInfosDynamic(childSnap) as? T
+            else -> mapToGenericObject<T>(childSnap)
+        }
     } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 }
 
-fun mapToTarificationInfos(childSnap: DataSnapshot): D_TarificationInfos? {
+/**
+ * Dynamic mapping for D_TarificationInfos using reflection
+ * FIXED: Proper handling of parameter names using valueParameters instead of direct property access
+ */
+fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos? {
     return try {
-        val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
-        val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
-        val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
+        val constructor = D_TarificationInfos::class.primaryConstructor ?: return null
+        val args = mutableMapOf<String, Any?>()
 
-        val typeTarificationEnumString = childSnap.child("typeTarificationEnumT2Correspond").getValue(String::class.java) ?: "PRIX_BASE"
-        val typeTarificationEnum = try {
-            TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
-        } catch (e: IllegalArgumentException) {
-            TypeTarificationEnumT2.PRIX_BASE
+        constructor.valueParameters.forEach { param ->
+            val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
+            val value = when (paramName) {
+                "typeTarificationEnumT2Correspond" -> {
+                    val enumString = childSnap.child(paramName).getValue(String::class.java) ?: "PRIX_BASE"
+                    // FIXED: Using paramName variable instead of param.name property
+                    try {
+                        TypeTarificationEnumT2.valueOf(enumString)
+                    } catch (e: IllegalArgumentException) {
+                        TypeTarificationEnumT2.PRIX_BASE
+                    }
+                }
+                else -> getValueWithDefault(childSnap, paramName, param.type)
+            }
+            args[paramName] = value
         }
 
-        D_TarificationInfos(
-            id = id,
-            idParentProduit = childSnap.child("idParentProduit").getValue(Long::class.java) ?: 0L,
-            typeTarificationEnumT2Correspond = typeTarificationEnum,
-            parentIdClient = childSnap.child("parentIdClient").getValue(Long::class.java) ?: 0L,
-            prixCurrency = childSnap.child("prixCurrency").getValue(Double::class.java) ?: 0.0,
-            timestamps = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis(),
-            nom = nom,
-            needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true,
-            keyFireBase = keyFireBase
+        // Special handling for computed fields
+        val id = args["id"] as? Long ?: 0L
+        val nom = args["nom"] as? String ?: ""
+        val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
+
+        args["keyFireBase"] = keyFireBase
+        args["timestamps"] = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
+        args["needUpdate"] = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
+
+        createInstanceFromMap<D_TarificationInfos>(constructor, args)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+/**
+ * Generic object mapper for any data class using reflection
+ * FIXED: Proper type handling for parameter names and map keys
+ */
+inline fun <reified T : Any> mapToGenericObject(childSnap: DataSnapshot): T? {
+    return try {
+        val constructor = T::class.primaryConstructor ?: return null
+        val args = mutableMapOf<String, Any?>()
+
+        constructor.valueParameters.forEach { param ->
+            val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
+            val value = getValueWithDefault(childSnap, paramName, param.type)
+            // FIXED: Using paramName (String) instead of param.name (String?) for map key
+            args[paramName] = value
+        }
+
+        createInstanceFromMap<T>(constructor, args)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+
+/**
+ * Get appropriate default value based on type
+ */
+fun getDefaultValue(classifier: KClass<*>?, isNullable: Boolean): Any? {
+    if (isNullable) return null
+
+    return when (classifier) {
+        String::class -> ""
+        Long::class -> 0L
+        Int::class -> 0
+        Double::class -> 0.0
+        Boolean::class -> false
+        Float::class -> 0.0f
+        else -> {
+            if (classifier?.java?.isEnum == true) {
+                // Return first enum value as default
+                classifier.java.enumConstants?.firstOrNull()
+            } else {
+                null
+            }
+        }
+    }
+}
+
+/**
+ * Create instance from constructor and argument map
+ */
+inline fun <reified T : Any> createInstanceFromMap(
+    constructor: kotlin.reflect.KFunction<T>,
+    args: Map<String, Any?>
+): T {
+    val orderedArgs = constructor.valueParameters.map { param ->
+        args[param.name] ?: getDefaultValue(
+            param.type.classifier as? KClass<*>,
+            param.type.isMarkedNullable
         )
+    }.toTypedArray()
+
+    return constructor.call(*orderedArgs)
+}
+
+
+fun getValueWithDefault(childSnap: DataSnapshot, fieldName: String, type: KType): Any? {
+    return try {
+        val classifier = type.classifier as? KClass<*>
+        val isNullable = type.isMarkedNullable
+
+        val value = when (classifier) {
+            String::class -> childSnap.child(fieldName).getValue(String::class.java)
+            Long::class -> childSnap.child(fieldName).getValue(Long::class.java)
+            Int::class -> childSnap.child(fieldName).getValue(Int::class.java)
+            Double::class -> childSnap.child(fieldName).getValue(Double::class.java)
+            Boolean::class -> childSnap.child(fieldName).getValue(Boolean::class.java)
+            Float::class -> childSnap.child(fieldName).getValue(Float::class.java)
+            else -> {
+                // Handle enums and other custom types
+                if (classifier?.java?.isEnum == true) {
+                    val enumString = childSnap.child(fieldName).getValue(String::class.java)
+                    if (enumString != null) {
+                        try {
+                            // FIXED: Proper enum casting
+                            val enumClass = classifier.java as Class<out Enum<*>>
+                            enumClass.enumConstants?.find { it.name == enumString }
+                        } catch (e: Exception) {
+                            getDefaultValue(classifier, isNullable)
+                        }
+                    } else {
+                        getDefaultValue(classifier, isNullable)
+                    }
+                } else {
+                    childSnap.child(fieldName).value
+                }
+            }
+        }
+
+        // Return value or default if null and not nullable
+        if (value == null && !isNullable) {
+            getDefaultValue(classifier, false)
+        } else {
+            value
+        }
+    } catch (e: Exception) {
+        val classifier = type.classifier as? KClass<*>
+        getDefaultValue(classifier, type.isMarkedNullable)
+    }
+}
+
+fun mapToProduitInfosDynamic(childSnap: DataSnapshot): A_ProduitInfos? {
+    return try {
+        val constructor = A_ProduitInfos::class.primaryConstructor ?: return null
+        val args = mutableMapOf<String, Any?>()
+
+        constructor.valueParameters.forEach { param ->
+            val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
+            val value = getValueWithDefault(childSnap, paramName, param.type)
+            args[paramName] = value
+        }
+
+        // Special handling for computed fields
+        val id = args["id"] as? Long ?: 0L
+        val nomArticleFinale = args["nomArticleFinale"] as? String ?: ""
+        val keyFireBase = childSnap.key ?: getKeyFireBase(id, nomArticleFinale)
+
+        args["keyFireBase"] = keyFireBase
+        args["timestamps"] = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
+        args["needUpdate"] = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
+
+        // Create instance using named arguments
+        createInstanceFromMap<A_ProduitInfos>(constructor, args)
     } catch (e: Exception) {
         e.printStackTrace()
         null

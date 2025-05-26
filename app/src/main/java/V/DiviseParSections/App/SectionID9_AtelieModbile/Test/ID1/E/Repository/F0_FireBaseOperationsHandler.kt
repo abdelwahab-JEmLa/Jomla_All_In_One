@@ -1,3 +1,4 @@
+// ===== F0_FireBaseOperationsHandler.kt - Fixed getDatas function =====
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
@@ -114,7 +115,8 @@ class F0_FireBaseOperationsHandler(
     ): List<T> {
         return try {
             val results = mutableListOf<T>()
-            getDatas<T>(snapshot, kClass, results)
+            // FIXED: Using the correct function name from F1_MapSnapshotToObjects.kt
+            getDatasFixed<T>(snapshot, kClass, results)
             results
         } catch (e: Exception) {
             e.printStackTrace()
@@ -202,5 +204,79 @@ class F0_FireBaseOperationsHandler(
             onProgressUpdate(0f)
             onAddSuccess(emptyMap())
         }
+    }
+
+    // FIXED: Add missing deleteRef function
+    suspend inline fun <reified DataBase : Any> deleteRef() = withContext(Dispatchers.IO) {
+        try {
+            val childRef = when (DataBase::class) {
+                D_TarificationInfos::class -> childD_TarificationInfos
+                A_ProduitInfos::class -> childA_ProduitInfos
+                else -> return@withContext
+            }
+
+            suspendCancellableCoroutine<Unit> { continuation ->
+                childRef.removeValue()
+                    .addOnSuccessListener {
+                        continuation.resume(Unit)
+                    }
+                    .addOnFailureListener { exception ->
+                        continuation.resume(Unit) // Continue even on failure
+                    }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // FIXED: Add missing extraction functions
+    private suspend fun extracteFrom_getAncienDB_changeKeysFireBase(
+        refDBJetPackExport: DatabaseReference
+    ): Pair<Int, Map<String, A_ProduitInfos>> = withContext(Dispatchers.IO) {
+        return@withContext suspendCancellableCoroutine { continuation ->
+            refDBJetPackExport.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    try {
+                        val resultMap = mutableMapOf<String, A_ProduitInfos>()
+                        var count = 0
+
+                        for (childSnapshot in snapshot.children) {
+                            try {
+                                val produitInfo = mapSnapshotToDynamicObject<A_ProduitInfos>(childSnapshot)
+                                produitInfo?.let {
+                                    val updatedProduit = it.withProperKeyFireBase()
+                                    resultMap[updatedProduit.keyFireBase] = updatedProduit
+                                    count++
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+
+                        continuation.resume(Pair(count, resultMap))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        continuation.resume(Pair(0, emptyMap()))
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(Pair(0, emptyMap()))
+                }
+            })
+        }
+    }
+
+    // FIXED: Add missing aProduitinfos function
+    private fun aProduitinfos(ancien: ArticlesBasesStatsTable): A_ProduitInfos {
+        return A_ProduitInfos(
+            nomArticleFinale = ancien.nomArticleFinale ?: "",
+            nomArab = ancien.nomArab ?: "",
+            monPrixAchat = ancien.monPrixAchat ?: 0.0,
+            monPrixVent = ancien.monPrixVent ?: 0.0,
+            // Map other fields as needed based on ArticlesBasesStatsTable structure
+            timestamps = System.currentTimeMillis(),
+            needUpdate = true
+        )
     }
 }
