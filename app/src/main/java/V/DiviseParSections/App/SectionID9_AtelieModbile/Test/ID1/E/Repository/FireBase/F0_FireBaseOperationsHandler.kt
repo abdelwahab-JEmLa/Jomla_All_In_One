@@ -29,9 +29,88 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    init {
-        verifyFirebaseConnectivity()
+    fun insertInFB() {
+        //<--
+        //TODO(1): regle cette fun avec setDataInlineFun()
     }
+
+    suspend inline fun <reified DataBase : Any> setDataInlineFun(
+        datas: List<DataBase> = emptyList()
+    ): Map<String, DataBase> = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.1f)
+
+            if (datas.isEmpty()) {
+                onProgressUpdate(1f)
+                return@withContext emptyMap()
+            }
+
+            onProgressUpdate(0.3f)
+            val dataMap = mutableMapOf<String, Any>()
+            val resultMap = mutableMapOf<String, DataBase>()
+            val processedCount = 0
+            val totalCount = datas.size
+
+            extractedFrom_setDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
+
+            return@withContext resultMap
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onProgressUpdate(0f)
+            return@withContext emptyMap()
+        }
+    }
+
+
+
+    inline fun <reified T : Any> mapSnapshotToObjects(
+        snapshot: DataSnapshot,
+        kClass: KClass<T>
+    ): List<T> {
+        return try {
+            val results = mutableListOf<T>()
+            // FIXED: Using the correct function name from F1_MapSnapshotToObjects.kt
+            getDatasFixed<T>(snapshot, results)
+            results
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+
+    fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
+        return anciennesListe.map { ancien ->
+            aProduitinfos(ancien)
+        }
+    }
+
+    // FIXED: Add missing deleteRef function
+    suspend inline fun <reified DataBase : Any> deleteRef() = withContext(Dispatchers.IO) {
+        try {
+            val childRef = when (DataBase::class) {
+                D_TarificationInfos::class -> childD_TarificationInfos
+                A_ProduitInfos::class -> childA_ProduitInfos
+                else -> return@withContext
+            }
+
+            suspendCancellableCoroutine<Unit> { continuation ->
+                childRef.removeValue()
+                    .addOnSuccessListener {
+                        continuation.resume(Unit)
+                    }
+                    .addOnFailureListener { exception ->
+                        continuation.resume(Unit) // Continue even on failure
+                    }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+
 
     private fun verifyFirebaseConnectivity() {
         coroutineScope.launch {
@@ -108,19 +187,8 @@ class F0_FireBaseOperationsHandler(
         })
     }
 
-    inline fun <reified T : Any> mapSnapshotToObjects(
-        snapshot: DataSnapshot,
-        kClass: KClass<T>
-    ): List<T> {
-        return try {
-            val results = mutableListOf<T>()
-            // FIXED: Using the correct function name from F1_MapSnapshotToObjects.kt
-            getDatasFixed<T>(snapshot, results)
-            results
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
-        }
+    init {
+        verifyFirebaseConnectivity()
     }
 
     suspend fun getAncienDB_changeKeysFireBase(): Pair<Int, Map<String, A_ProduitInfos>> = withContext(Dispatchers.IO) {
@@ -141,40 +209,7 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
-        return anciennesListe.map { ancien ->
-            aProduitinfos(ancien)
-        }
-    }
-
-    suspend inline fun <reified DataBase : Any> setDataInlineFun(
-        datas: List<DataBase> = emptyList()
-    ): Map<String, DataBase> = withContext(Dispatchers.IO) {
-        try {
-            onProgressUpdate(0.1f)
-
-            if (datas.isEmpty()) {
-                onProgressUpdate(1f)
-                return@withContext emptyMap()
-            }
-
-            onProgressUpdate(0.3f)
-            val dataMap = mutableMapOf<String, Any>()
-            val resultMap = mutableMapOf<String, DataBase>()
-            val processedCount = 0
-            val totalCount = datas.size
-
-            extractedFrom_setDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
-
-            return@withContext resultMap
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onProgressUpdate(0f)
-            return@withContext emptyMap()
-        }
-    }
-
+   //-------------------------------------------------------------------------------------
     suspend fun upsertAllAndReturnListIdToData(
         mapData: Map<Long, D_TarificationInfos>,
         onAddSuccess: (Map<String, D_TarificationInfos>) -> Unit
@@ -204,30 +239,4 @@ class F0_FireBaseOperationsHandler(
             onAddSuccess(emptyMap())
         }
     }
-
-    // FIXED: Add missing deleteRef function
-    suspend inline fun <reified DataBase : Any> deleteRef() = withContext(Dispatchers.IO) {
-        try {
-            val childRef = when (DataBase::class) {
-                D_TarificationInfos::class -> childD_TarificationInfos
-                A_ProduitInfos::class -> childA_ProduitInfos
-                else -> return@withContext
-            }
-
-            suspendCancellableCoroutine<Unit> { continuation ->
-                childRef.removeValue()
-                    .addOnSuccessListener {
-                        continuation.resume(Unit)
-                    }
-                    .addOnFailureListener { exception ->
-                        continuation.resume(Unit) // Continue even on failure
-                    }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-
-
 }

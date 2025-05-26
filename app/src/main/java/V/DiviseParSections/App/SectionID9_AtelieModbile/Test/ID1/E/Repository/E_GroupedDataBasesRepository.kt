@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 class E_GroupedDataBasesRepository(
     val database: AppDatabase,
     private val fireBase: F0_FireBaseOperationsHandler,
     private val room: G_RoomOperationsHandler
 ) {
-
     private val repoCoroutineScope = CoroutineScope(Dispatchers.IO)
     private val _modelListFlow = MutableStateFlow<List<A0_DataBasesGroup>>(emptyList())
     private var modelList: List<A0_DataBasesGroup>
@@ -31,99 +31,32 @@ class E_GroupedDataBasesRepository(
     val modelListFlow: StateFlow<List<A0_DataBasesGroup>> = _modelListFlow.asStateFlow()
     val mainProgressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
-    init {
-        initializeDatabase<D_TarificationInfos>()
+    private fun getDataType(data: Any): KClass<*> {
+        return when (data::class) {
+            D_TarificationInfos::class -> {
+                D_TarificationInfos::class
+            }
+            A_ProduitInfos::class -> {
+                A_ProduitInfos::class
+            }
+            else -> {
+                throw IllegalArgumentException("Unsupported data type: ${data::class.simpleName}")
+            }
+        }
     }
 
-    private inline fun <reified DataBase : Any> initializeDatabase() {
-        repoCoroutineScope.launch(Dispatchers.IO) {
+    fun insert(data: Any, onSuccess: (Long) -> Unit = {}, onError: (Exception) -> Unit = {}) {
+        repoCoroutineScope.launch {
             try {
-                when (DataBase::class) {
-                    D_TarificationInfos::class -> {
-                        initializeTarificationInfos()
-                    }
-                    A_ProduitInfos::class -> {
-                        initializeProduitInfos()
-                    }
-                    else -> {
-                        updateProgress(1f)
-                    }
-                }
+                val dataType = getDataType(data)
+                val insertedId = room.insert(data, dataType)
+                 fireBase.insertInFB()
+
+                onSuccess(insertedId)
             } catch (e: Exception) {
-                updateProgress(0f)
+                onError(e)
             }
         }
-    }
-
-    private fun initializeTarificationInfos() {
-        updateProgress(0f)
-
-        fireBase.getDataFromFirebase { tariffDataList, produitInfoList ->
-            repoCoroutineScope.launch {
-                try {
-                    if (tariffDataList.isEmpty()) {
-                        val testData = testD_TarificationInfosT2()
-                        upsertAllRoomEtFireBase(testData)
-                    } else {
-                        room.checkDataBaseIsEmpty { roomHandler ->
-                            repoCoroutineScope.launch {
-                                roomHandler.insertAllAndReturnListIdToData(tariffDataList) {
-                                    updateProgress(0.5f)
-                                }
-                            }
-                        }
-                    }
-
-                    migreOldDatas(activeFun =false)
-
-                    val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
-                    val hasFirebaseProducts = produitInfoList.isNotEmpty()
-
-                    if (isRoomEmpty && hasFirebaseProducts) {
-                        room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
-                        updateProgress(0.8f)
-                    } else {
-                        updateProgress(0.8f)
-                    }
-
-                    initializeDatabase<A_ProduitInfos>()
-
-                } catch (e: Exception) {
-                    updateProgress(0f)
-                }
-            }
-        }
-
-        collectRoom()
-    }
-
-    private suspend fun migreOldDatas(activeFun: Boolean) {
-        if (activeFun) {
-            try {
-                fireBase.deleteRef<A_ProduitInfos>()
-                val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
-
-                // Convert the Map values to List for setDataInlineFun
-                val newDataList = resultMap.values.toList()
-
-                fireBase.setDataInlineFun<A_ProduitInfos>(newDataList)
-
-            } catch (migrationError: Exception) {
-                // Handle migration error silently or log it
-                migrationError.printStackTrace()
-            }
-        }
-    }
-
-    private fun initializeProduitInfos() {
-        updateProgress(0.9f)
-        collectRoom()
-        updateProgress(1f)
-    }
-
-    private fun updateProgress(progress: Float) {
-        val clampedProgress = progress.coerceIn(0f, 1f)
-        mainProgressRepo.value = clampedProgress
     }
 
     private fun upsertAllRoomEtFireBase(
@@ -180,5 +113,100 @@ class E_GroupedDataBasesRepository(
             } catch (e: Exception) {
             }
         }
+    }
+
+    init {
+        initializeDatabase<D_TarificationInfos>()
+    }
+
+    private inline fun <reified DataBase : Any> initializeDatabase() {
+        repoCoroutineScope.launch(Dispatchers.IO) {
+            try {
+                when (DataBase::class) {
+                    D_TarificationInfos::class -> {
+                        initializeTarificationInfos()
+                    }
+                    A_ProduitInfos::class -> {
+                        initializeProduitInfos()
+                    }
+                    else -> {
+                        updateProgress(1f)
+                    }
+                }
+            } catch (e: Exception) {
+                updateProgress(0f)
+            }
+        }
+    }
+
+    private fun initializeTarificationInfos() {
+        updateProgress(0f)
+
+        fireBase.getDataFromFirebase { tariffDataList, produitInfoList ->
+            repoCoroutineScope.launch {
+                try {
+                    if (tariffDataList.isEmpty()) {
+                        val testData = testD_TarificationInfosT2()
+                        upsertAllRoomEtFireBase(testData)
+                    } else {
+                        room.checkDataBaseIsEmpty { roomHandler ->
+                            repoCoroutineScope.launch {
+                                roomHandler.insertAllAndReturnListIdToData(tariffDataList) {
+                                    updateProgress(0.5f)
+                                }
+                            }
+                        }
+                    }
+
+                    migreOldDatas(activeFun = false)
+
+                    val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
+                    val hasFirebaseProducts = produitInfoList.isNotEmpty()
+
+                    if (isRoomEmpty && hasFirebaseProducts) {
+                        room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
+                        updateProgress(0.8f)
+                    } else {
+                        updateProgress(0.8f)
+                    }
+
+                    initializeDatabase<A_ProduitInfos>()
+
+                } catch (e: Exception) {
+                    updateProgress(0f)
+                }
+            }
+        }
+
+        collectRoom()
+    }
+
+    private suspend fun migreOldDatas(activeFun: Boolean) {
+        if (activeFun) {
+            try {
+                fireBase.deleteRef<A_ProduitInfos>()
+                val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
+
+                // Convert the Map values to List for setDataInlineFun
+                val newDataList = resultMap.values.toList()
+
+                fireBase.setDataInlineFun<A_ProduitInfos>(newDataList)
+
+            } catch (migrationError: Exception) {
+                // Handle migration error silently or log it
+                migrationError.printStackTrace()
+            }
+        }
+    }
+
+    private fun initializeProduitInfos() {
+        updateProgress(0.9f)
+        collectRoom()
+        updateProgress(1f)
+    }
+
+    private fun updateProgress(progress: Float) {
+        val clampedProgress = progress.coerceIn(0f, 1f)
+        mainProgressRepo.value = clampedProgress
     }
 }

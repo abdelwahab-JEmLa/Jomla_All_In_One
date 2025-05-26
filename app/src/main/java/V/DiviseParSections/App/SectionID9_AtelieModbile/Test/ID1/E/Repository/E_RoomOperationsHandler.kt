@@ -138,4 +138,34 @@ class G_RoomOperationsHandler(
             false
         }
     }
+
+    suspend fun insert(data: Any, dataType: kotlin.reflect.KClass<*>): Long,data 
+    //<--
+    //TODO(1): fait returne aussi le dat a
+    = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.2f)
+
+            val insertedId = when (dataType) {
+                A_ProduitInfos::class -> {
+                    val produitData = data as A_ProduitInfos
+                    val dataWithDefaults = produitData.withProperKeyFireBase()
+                    database.a_ProduitInfosDao().insert(dataWithDefaults)
+                }
+                D_TarificationInfos::class -> {
+                    val tarificationData = data as D_TarificationInfos
+                    val dataWithDefaults = tarificationData.withProperDefaults()
+                    database.dTarificationInfosDao().insert(dataWithDefaults)
+                }
+                else -> throw IllegalArgumentException("Unsupported data type: ${dataType.simpleName}")
+            }
+
+            onProgressUpdate(1f)
+            insertedId
+
+        } catch (e: Exception) {
+            onProgressUpdate(0f)
+            throw e
+        }
+    }
 }

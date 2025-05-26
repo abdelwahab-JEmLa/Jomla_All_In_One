@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -79,6 +79,8 @@ fun C_MainItem_APP2_ID_2(
     val useProvisionalPrice = provisionalPrice > 0.0
 
     // State for price editing
+    var updateChangePrixDeBase by remember { mutableStateOf(false) }
+
     var isEditingPrice by remember { mutableStateOf(false) }
     var priceText by remember { mutableStateOf("") } // Start with empty text
     val focusRequester = remember { FocusRequester() }
@@ -240,6 +242,10 @@ fun C_MainItem_APP2_ID_2(
                                                 keyboardType = KeyboardType.Number,
                                                 imeAction = ImeAction.Done
                                             ),
+                                            trailingIcon={
+                                                //<--
+                                                //TODO(1): fait que ce soit ntoggle button qui toggle updateChangePrixDeBase
+                                            } ,
                                             keyboardActions = KeyboardActions(
                                                 onDone = {
                                                     // Update the price when Done is pressed
@@ -442,7 +448,6 @@ fun C_MainItem_APP2_ID_2(
     }
 }
 
-// Helper function to upsert_1_3_TransactionCommercial the price
 private fun updatePrice(
     priceText: String,
     defaultPrice: Double,
@@ -459,4 +464,11 @@ private fun updatePrice(
             .repositoryC2_ProduitAcheteOperation
             .updateUnSeulData(updatedProduct)
     }
+
+       //<--
+       //TODO(1): fait que si updateChangePrixDeBase de lence updateChangePrixDeBase(newPrice)
+}
+fun updateChangePrixDeBase(newPrice: Double): Unit {
+                  //<--
+                  //TODO(1): ici fait
 }
