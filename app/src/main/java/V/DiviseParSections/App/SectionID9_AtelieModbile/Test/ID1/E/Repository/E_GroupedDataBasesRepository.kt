@@ -69,17 +69,17 @@ class E_GroupedDataBasesRepository(
                         }
                     }
                 }
+
                 val lence = true
                 if (lence) {
-                    val ancDB =room.getAncienProditDB()
-                    fireBase.getAncienDB_changeKeysFireBase()
+                    val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
                 }
 
-                if (room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()) {
-                    val insertResult =
-                        room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
+                if (!room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>() && produitInfoList.isNotEmpty()) {
+                    val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
                     updateProgress(1f)
-                    println("Total items inserted: ${insertResult.size}")
+                } else if (room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()) {
+                    updateProgress(1f)
                 }
             }
         }
@@ -136,6 +136,30 @@ class E_GroupedDataBasesRepository(
                 )
             }.collect { combinedData ->
                 modelList = combinedData
+            }
+        }
+    }
+
+    fun debugDatabaseStructure() {
+        fireBase.verifyDatabaseStructure { structure ->
+        }
+    }
+
+    fun triggerDataMigration() {
+        repoCoroutineScope.launch {
+            try {
+                updateProgress(0.1f)
+                val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
+
+                if (processedMap.isNotEmpty()) {
+                    val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(
+                        processedMap.values.toList()
+                    )
+                }
+
+                updateProgress(1f)
+            } catch (e: Exception) {
+                updateProgress(0f)
             }
         }
     }

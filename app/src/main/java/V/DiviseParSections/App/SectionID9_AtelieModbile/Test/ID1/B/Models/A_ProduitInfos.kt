@@ -63,13 +63,14 @@ data class A_ProduitInfos(
     val timestamps: Long = System.currentTimeMillis(),
     val needUpdate: Boolean = true
 ) {
-    // FIXED: Added a method to create a proper instance with keyFireBase
     fun withProperKeyFireBase(): A_ProduitInfos {
-        return if (keyFireBase.isEmpty()) {
-            this.copy(keyFireBase = getKeyFireBase(idArticle, nomArticleFinale))
-        } else {
-            this
+        val safeKey = keyFireBase.ifEmpty {
+            getKeyFireBaseSafe(idArticle, nomArticleFinale)
         }
+        return this.copy(
+            keyFireBase = safeKey,
+            needUpdate = true
+        )
     }
 
 }

@@ -1,0 +1,58 @@
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
+
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+
+fun aProduitinfos(ancien: ArticlesBasesStatsTable) =
+        A_ProduitInfos(
+            idArticle = ancien.idArticle.toLong(),
+            nomArticleFinale = ancien.nomArticleFinale,
+            classementCate = ancien.classementCate,
+            nomArab = ancien.nomArab,
+            autreNomDarticle = ancien.autreNomDarticle,
+            nmbrCat = ancien.nmbrCat,
+            couleur1 = ancien.couleur1,
+            idcolor1 = ancien.idcolor1,
+            couleur2 = ancien.couleur2,
+            idcolor2 = ancien.idcolor2,
+            couleur3 = ancien.couleur3,
+            idcolor3 = ancien.idcolor3,
+            couleur4 = ancien.couleur4,
+            idcolor4 = ancien.idcolor4,
+            nomCategorie2 = ancien.nomCategorie2,
+            nmbrUnite = ancien.nmbrUnite,
+            nmbrCaron = ancien.nmbrCaron,
+            affichageUniteState = ancien.affichageUniteState,
+            commmentSeVent = ancien.commmentSeVent,
+            afficheBoitSiUniter = ancien.afficheBoitSiUniter,
+            monPrixAchat = ancien.monPrixAchat,
+            clienPrixVentUnite = ancien.clienPrixVentUnite,
+            minQuan = ancien.minQuan,
+            monBenfice = ancien.monBenfice,
+            monPrixVent = ancien.monPrixVent,
+            neaon2 = ancien.neaon2,
+            idCategorie = ancien.idCategorie,
+            catalogeParentID = ancien.catalogeParentID,
+            funChangeImagsDimention = ancien.funChangeImagsDimention,
+            nomCategorie = ancien.nomCategorie,
+            neaon1 = ancien.neaon1,
+            lastUpdateState = ancien.lastUpdateState,
+            cartonState = ancien.cartonState,
+            dateCreationCategorie = ancien.dateCreationCategorie,
+            prixDeVentTotaleChezClient = ancien.prixDeVentTotaleChezClient,
+            benficeTotaleEntreMoiEtClien = ancien.benficeTotaleEntreMoiEtClien,
+            benificeTotaleEn2 = ancien.benificeTotaleEn2,
+            monPrixAchatUniter = ancien.monPrixAchatUniter,
+            monPrixVentUniter = ancien.monPrixVentUniter,
+            benificeClient = ancien.benificeClient,
+            monBeneficeUniter = ancien.monBeneficeUniter,
+            diponibilityState = ancien.diponibilityState,
+            cLeDataOuvertDuParentList = ancien.cLeDataOuvertDuParentList,
+            articleHaveUniteImages = ancien.articleHaveUniteImages,
+            itsNewArrivale = ancien.itsNewArrivale,
+            imageDimention = ancien.imageDimention,
+            idForSearchArticles = ancien.idForSearchArticles,
+            keyFireBase = "", // This will be regenerated
+            timestamps = System.currentTimeMillis(),
+            needUpdate = true
+        )

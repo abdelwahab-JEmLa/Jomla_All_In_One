@@ -24,7 +24,6 @@ class G_RoomOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            // Handle different data types properly
             val ids = when (DataBase::class) {
                 A_ProduitInfos::class -> {
                     @Suppress("UNCHECKED_CAST")
@@ -49,8 +48,8 @@ class G_RoomOperationsHandler(
                     }
 
                     val itemWithDefaults = when (itemWithGeneratedId) {
-                        is A_ProduitInfos -> itemWithGeneratedId.withProperKeyFireBase() as DataBase
-                        is D_TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase
+                        is A_ProduitInfos -> itemWithGeneratedId.withProperKeyFireBase() as DataBase  // NEW
+                        is D_TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase  // NEW
                         else -> itemWithGeneratedId
                     }
 
@@ -67,7 +66,6 @@ class G_RoomOperationsHandler(
         }
     }
 
-    // Made this function suspend to handle database calls properly
     suspend inline fun <reified DataBase : Any> inlineCheckDataBaseIsNotEmpty(): Boolean =
         withContext(Dispatchers.IO) {
             when (DataBase::class) {

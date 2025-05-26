@@ -10,3 +10,30 @@ data class A0_DataBasesGroup(
     )
 
 
+fun getKeyFireBase(
+    dataId: Long? = null,
+    dataNom: String? = null
+): String {
+    return if (dataId != null) {
+        "-<$dataId($dataNom)"
+    } else {
+        "-<$dataNom"
+    }
+}
+
+fun getKeyFireBaseSafe(
+    dataId: Long? = null,
+    dataNom: String? = null
+): String {
+    val cleanedNom = dataNom?.let { nom ->
+        nom.replace(Regex("[®™©\\[\\]{}\"'`~!@#$%^&*()+=|\\\\:;\"'<>?/]"), "")
+            .replace(" ", "_")
+            .take(50)
+    } ?: ""
+
+    return if (dataId != null && dataId != 0L) {
+        "-<${dataId}(${cleanedNom})"
+    } else {
+        "-<${cleanedNom}_${System.currentTimeMillis()}"
+    }
+}

@@ -37,12 +37,15 @@ data class D_TarificationInfos(
 ) {
     fun withProperDefaults(): D_TarificationInfos {
         val properNom = nom.ifEmpty { getStrDateTime(timestamps) }
+        val safeKey = keyFireBase.ifEmpty {
+            getKeyFireBaseSafe(id, properNom)
+        }
         return this.copy(
             nom = properNom,
-            keyFireBase = getKeyFireBase(id, properNom)
+            keyFireBase = safeKey,
+            needUpdate = true
         )
     }
-
     fun getKeyFireBase(
         dataId: Long? = null,
         dataNom: String? = null
@@ -70,16 +73,6 @@ data class D_TarificationInfos(
         return String.format("%04d-%02d-%02d -< %02d:%02d:%02d", year, month, day, hour, minute, second)
     }
 
-}
-fun getKeyFireBase(
-    dataId: Long? = null,
-    dataNom: String? = null
-): String {
-    return if (dataId != null) {
-        "-<$dataId($dataNom)"
-    } else {
-        "-<$dataNom"
-    }
 }
 
 enum class TypeTarificationEnumT2(

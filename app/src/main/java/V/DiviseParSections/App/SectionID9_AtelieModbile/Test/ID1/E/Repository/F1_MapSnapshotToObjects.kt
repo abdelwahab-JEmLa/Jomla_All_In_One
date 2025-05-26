@@ -3,17 +3,14 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
+
 inline fun <reified T : Any> getDatas(
     snapshot: DataSnapshot,
     kClass: KClass<T>,
     results: MutableList<T>
 ) {
-    println("Processing ${kClass.simpleName} - Children count: ${snapshot.childrenCount}")
-
     for (childSnap in snapshot.children) {
         try {
-            println("Processing child with key: ${childSnap.key}")
-
             val constructor = kClass.constructors.firstOrNull()
                 ?: throw Exception("No constructor found for ${kClass.simpleName}")
 
@@ -21,7 +18,6 @@ inline fun <reified T : Any> getDatas(
             var id: Long = 0
             var nom: String = ""
 
-            // First pass: collect id and nom
             for (param in constructor.parameters) {
                 val paramName = param.name ?: continue
 
@@ -29,17 +25,14 @@ inline fun <reified T : Any> getDatas(
                     "id" -> {
                         val idValue = childSnap.child(paramName).getValue(Long::class.java) ?: 0L
                         id = idValue
-                        println("Found id: $id")
                     }
                     "nom" -> {
                         val nomValue = childSnap.child(paramName).getValue(String::class.java) ?: ""
                         nom = nomValue
-                        println("Found nom: $nom")
                     }
                 }
             }
 
-            // Second pass: collect all values
             for (param in constructor.parameters) {
                 val paramName = param.name ?: continue
 
@@ -50,12 +43,11 @@ inline fun <reified T : Any> getDatas(
                         paramValues[paramName] = childSnap.key ?: getKeyFireBase(id, nom)
                     }
                     "needUpdate" -> {
-                        // Handle missing needUpdate field in Firebase
                         val childValue = childSnap.child(paramName)
                         paramValues[paramName] = if (childValue.exists()) {
                             childValue.getValue(Boolean::class.java) ?: true
                         } else {
-                            true // Default value for missing field
+                            true
                         }
                     }
                     else -> {
@@ -75,7 +67,6 @@ inline fun <reified T : Any> getDatas(
                                 else -> paramValues[paramName] = null
                             }
                         } else {
-                            // Provide default values for missing parameters
                             when (param.type.classifier) {
                                 Long::class -> paramValues[paramName] = 0L
                                 String::class -> paramValues[paramName] = ""
@@ -89,7 +80,6 @@ inline fun <reified T : Any> getDatas(
                 }
             }
 
-            // Map the values to constructor parameters
             val parameters = constructor.parameters.associateWith { param ->
                 val paramName = param.name ?: ""
                 paramValues[paramName]
@@ -97,15 +87,9 @@ inline fun <reified T : Any> getDatas(
 
             val instance = constructor.callBy(parameters)
             results.add(instance)
-            println("Successfully created ${kClass.simpleName} instance: $instance")
 
         } catch (e: Exception) {
-            println("Error mapping ${kClass.simpleName}: ${e.message}")
-            println("Failed to map child with key: ${childSnap.key}")
-            println("Child data: ${childSnap.value}")
-            e.printStackTrace()
+            // Silently continue processing other items
         }
     }
-
-    println("Final results count for ${kClass.simpleName}: ${results.size}")
 }
