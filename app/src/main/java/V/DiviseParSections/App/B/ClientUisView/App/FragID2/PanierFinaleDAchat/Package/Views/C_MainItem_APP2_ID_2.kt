@@ -5,6 +5,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepo
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -220,24 +220,20 @@ fun C_MainItem_APP2_ID_2(
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Total quantity text
                                     Text(
                                         text = "$totalQuantity",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.primary
                                     )
 
-                                    // Added spacing between texts
                                     Spacer(
                                         modifier = Modifier.padding(horizontal = 4.dp)
                                     )
 
-                                    // Show either the editable text field or clickable price text
                                     if (isEditingPrice) {
                                         OutlinedTextField(
                                             value = priceText,
                                             onValueChange = { newValue ->
-                                                // Only allow numeric input with optional decimal point
                                                 if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                                                     priceText = newValue
                                                 }
@@ -264,30 +260,28 @@ fun C_MainItem_APP2_ID_2(
                                                         MaterialTheme.colorScheme.onSurfaceVariant,
                                                     modifier = Modifier
                                                         .clickable(
-                                                            indication = null, // Remove ripple effect if needed
+                                                            indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
                                                             updateChangePrixDeBase = !updateChangePrixDeBase
                                                         }
-                                                        .padding(8.dp) // Add some padding for better touch target
+                                                        .padding(8.dp)
                                                 )
                                             },
                                             keyboardActions = KeyboardActions(
                                                 onDone = {
-                                                    // Update the price when Done is pressed, passing the toggle state
                                                     viewModel.updatePrice(
                                                         priceText,
                                                         defaultPrice,
                                                         relative_1_2_ProduitAcheteOperation,
                                                         _0_HeadOfRepositorys_Repository_Model,
-                                                        updateChangePrixDeBase // Pass the toggle state
+                                                        updateChangePrixDeBase
                                                     )
                                                     focusManager.clearFocus()
                                                     keyboardController?.hide()
                                                     isEditingPrice = false
                                                     onDoneupdatePrice(priceText)
 
-                                                    // Fixed: Properly notify data changes
                                                     _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
                                                 }
                                             ),
