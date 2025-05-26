@@ -2,12 +2,13 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.ReflectionUtils.isSyntheticPropertyName
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
-suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdToData(
+suspend fun F0_FireBaseOperationsHandler.extractedFrome_upsertAllAndReturnListIdToData(
     mapData: Map<Long, D_TarificationInfos>,
     tariffsMap: MutableMap<String, Any>,
     resultMap: MutableMap<String, D_TarificationInfos>,
@@ -19,23 +20,15 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
         try {
             val tariffMap = mutableMapOf<String, Any>()
 
+            // FIXED: Use consistent property filtering
             tariff::class.memberProperties.forEach { prop ->
-                try {
-                    val value = prop.getter.call(tariff)
-                    when {
-                        value == null -> tariffMap[prop.name] = ""
-                        value::class.java.isEnum -> tariffMap[prop.name] = value.toString()
-                        value is String && value.isEmpty() -> tariffMap[prop.name] = ""
-                        else -> tariffMap[prop.name] = value
-                    }
-                } catch (e: Exception) {
-                    tariffMap[prop.name] = when (prop.returnType.classifier) {
-                        String::class -> ""
-                        Long::class -> 0L
-                        Int::class -> 0
-                        Double::class -> 0.0
-                        Boolean::class -> false
-                        else -> ""
+                if (!isSyntheticPropertyName(prop.name)) {
+                    try {
+                        val value = prop.getter.call(tariff)
+                        tariffMap[prop.name] =
+                            sanitizePropertyValue(value, prop.returnType.classifier)
+                    } catch (e: Exception) {
+                        tariffMap[prop.name] = getDefaultValueForType(prop.returnType.classifier)
                     }
                 }
             }
@@ -43,14 +36,12 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
             val updatedTariff = tariff.withProperDefaults()
             val key = getKeyFireBase(updatedTariff.id, updatedTariff.nom)
 
-            if (isValidFirebaseKey(key)) {
-                tariffMap["keyFireBase"] = key
-                tariffMap["nom"] = updatedTariff.nom
-                tariffMap["needUpdate"] = true
+            tariffMap["keyFireBase"] = key
+            tariffMap["nom"] = updatedTariff.nom
+            tariffMap["needUpdate"] = true
 
-                tariffsMap[key] = tariffMap
-                resultMap[key] = updatedTariff
-            }
+            tariffsMap[key] = tariffMap
+            resultMap[key] = updatedTariff
 
             processedCount11++
             val progress = 0.3f + (processedCount11.toFloat() / totalCount) * 0.4f

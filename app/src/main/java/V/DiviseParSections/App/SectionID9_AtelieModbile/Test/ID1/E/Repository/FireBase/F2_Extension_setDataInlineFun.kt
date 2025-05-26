@@ -3,13 +3,14 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.ReflectionUtils.isSyntheticPropertyName
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
-suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
-    .extractedFrom_setDataInlineFunFixed(
+
+suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extractedFrom_setDataInlineFunFixed(
     datas: List<DataBase>,
     processedCount: Int,
     dataMap: MutableMap<String, Any>,
@@ -31,22 +32,13 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
             val itemMap = mutableMapOf<String, Any>()
 
             data::class.memberProperties.forEach { prop ->
-                try {
-                    val value = prop.getter.call(data)
-                    when {
-                        value == null -> itemMap[prop.name] = ""
-                        value::class.java.isEnum -> itemMap[prop.name] = value.toString()
-                        value is String && value.isEmpty() -> itemMap[prop.name] = ""
-                        else -> itemMap[prop.name] = value
-                    }
-                } catch (e: Exception) {
-                    itemMap[prop.name] = when (prop.returnType.classifier) {
-                        String::class -> ""
-                        Long::class -> 0L
-                        Int::class -> 0
-                        Double::class -> 0.0
-                        Boolean::class -> false
-                        else -> ""
+                if (!isSyntheticPropertyName(prop.name)) {
+                    try {
+                        val value = prop.getter.call(data)
+                        itemMap[prop.name] =
+                            sanitizePropertyValue(value, prop.returnType.classifier)
+                    } catch (e: Exception) {
+                        itemMap[prop.name] = getDefaultValueForType(prop.returnType.classifier)
                     }
                 }
             }
@@ -79,18 +71,8 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
                     Pair(fallbackKey, data)
                 }
             }
-
-            if (isValidFirebaseKey(safeKey)) {
-                dataMap[safeKey] = itemMap
-                resultMap[safeKey] = updatedData
-            } else {
-                val fallbackKey = "ITEM_${System.currentTimeMillis()}_${currentProcessedCount}"
-                if (isValidFirebaseKey(fallbackKey)) {
-                    itemMap["keyFireBase"] = fallbackKey
-                    dataMap[fallbackKey] = itemMap
-                    resultMap[fallbackKey] = updatedData
-                }
-            }
+            dataMap[safeKey] = itemMap
+            resultMap[safeKey] = updatedData
 
             currentProcessedCount++
             val progress = 0.3f + (currentProcessedCount.toFloat() / totalCount) * 0.4f
@@ -106,7 +88,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
         try {
             onProgressUpdate(0.8f)
 
-            val invalidKeys = dataMap.keys.filter { !isValidFirebaseKey(it) }
+            val invalidKeys = dataMap.keys
             if (invalidKeys.isNotEmpty()) {
                 invalidKeys.forEach { dataMap.remove(it) }
             }
@@ -135,17 +117,25 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
     }
 }
 
-fun isValidFirebaseKey(key: String): Boolean {
+
+
+fun sanitizePropertyValue(value: Any?, classifier: kotlin.reflect.KClassifier?): Any {
     return when {
-        key.isEmpty() -> false
-        key.length > 768 -> false
-        key.contains('.') -> false
-        key.contains('#') -> false
-        key.contains('$') -> false
-        key.contains('[') -> false
-        key.contains(']') -> false
-        key.contains('/') -> false
-        key.any { it.code < 32 || it.code == 127 } -> false
-        else -> true
+        value == null -> ""
+        value::class.java.isEnum -> value.toString()
+        value is String && value.isEmpty() -> ""
+        else -> value
+    }
+}
+
+fun getDefaultValueForType(classifier: kotlin.reflect.KClassifier?): Any {
+    return when (classifier) {
+        String::class -> ""
+        Long::class -> 0L
+        Int::class -> 0
+        Double::class -> 0.0
+        Boolean::class -> false
+        Float::class -> 0.0f
+        else -> ""
     }
 }

@@ -56,13 +56,13 @@ class E_GroupedDataBasesRepository(
                 val dataType = getDataType(data)
                 val (insertedId, updatedData) = room.update(data, dataType)
 
-                // Insert into Firebase using the new insertInFB function
+                // Insert into Firebase using the new updateInFB function
                 when (updatedData) {
                     is D_TarificationInfos -> {
-                        fireBase.insertInFB<D_TarificationInfos>(updatedData)
+                        fireBase.updateInFB<D_TarificationInfos>(updatedData)
                     }
                     is A_ProduitInfos -> {
-                        fireBase.insertInFB<A_ProduitInfos>(updatedData)
+                        fireBase.updateInFB<A_ProduitInfos>(updatedData)
                     }
                 }
 
@@ -129,28 +129,16 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    init {
-        initializeDatabase<D_TarificationInfos>()
+
+    private fun initializeProduitInfos() {
+        updateProgress(0.9f)
+        collectRoom()
+        updateProgress(1f)
     }
 
-    private inline fun <reified DataBase : Any> initializeDatabase() {
-        repoCoroutineScope.launch(Dispatchers.IO) {
-            try {
-                when (DataBase::class) {
-                    D_TarificationInfos::class -> {
-                        initializeTarificationInfos()
-                    }
-                    A_ProduitInfos::class -> {
-                        initializeProduitInfos()
-                    }
-                    else -> {
-                        updateProgress(1f)
-                    }
-                }
-            } catch (e: Exception) {
-                updateProgress(0f)
-            }
-        }
+    private fun updateProgress(progress: Float) {
+        val clampedProgress = progress.coerceIn(0f, 1f)
+        mainProgressRepo.value = clampedProgress
     }
 
     private fun initializeTarificationInfos() {
@@ -195,6 +183,30 @@ class E_GroupedDataBasesRepository(
         collectRoom()
     }
 
+    private inline fun <reified DataBase : Any> initializeDatabase() {
+        repoCoroutineScope.launch(Dispatchers.IO) {
+            try {
+                when (DataBase::class) {
+                    D_TarificationInfos::class -> {
+                        initializeTarificationInfos()
+                    }
+                    A_ProduitInfos::class -> {
+                        initializeProduitInfos()
+                    }
+                    else -> {
+                        updateProgress(1f)
+                    }
+                }
+            } catch (e: Exception) {
+                updateProgress(0f)
+            }
+        }
+    }
+
+    init {
+        initializeDatabase<D_TarificationInfos>()
+    }
+
     private suspend fun migreOldDatas(activeFun: Boolean) {
         if (activeFun) {
             try {
@@ -213,14 +225,4 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    private fun initializeProduitInfos() {
-        updateProgress(0.9f)
-        collectRoom()
-        updateProgress(1f)
-    }
-
-    private fun updateProgress(progress: Float) {
-        val clampedProgress = progress.coerceIn(0f, 1f)
-        mainProgressRepo.value = clampedProgress
-    }
 }

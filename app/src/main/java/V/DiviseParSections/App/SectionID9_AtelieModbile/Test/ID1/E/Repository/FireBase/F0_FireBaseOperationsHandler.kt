@@ -16,6 +16,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.reflect.KClass
+import kotlin.reflect.full.memberProperties
 
 class F0_FireBaseOperationsHandler(
     val onProgressUpdate: (Float) -> Unit = { }
@@ -29,23 +30,7 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    // Extension function for isValidFirebaseKey if not already defined elsewhere
-    fun isValidFirebaseKey(key: String): Boolean {
-        return when {
-            key.isEmpty() -> false
-            key.length > 768 -> false
-            key.contains('.') -> false
-            key.contains('#') -> false
-            key.contains('$') -> false
-            key.contains('[') -> false
-            key.contains(']') -> false
-            key.contains('/') -> false
-            key.any { it.code < 32 || it.code == 127 } -> false
-            else -> true
-        }
-    }
 
-    // FIXED: Changed to proper update functionality with non-inline function
     suspend fun <DataBase : Any> updateInFB(
         data: DataBase
     ): String? = withContext(Dispatchers.IO) {
@@ -58,7 +43,6 @@ class F0_FireBaseOperationsHandler(
                 else -> return@withContext null
             }
 
-            // Get the key for the data
             val key = when (data) {
                 is D_TarificationInfos -> {
                     data.keyFireBase.ifEmpty { data.withProperDefaults().keyFireBase }
@@ -67,24 +51,6 @@ class F0_FireBaseOperationsHandler(
                     data.keyFireBase.ifEmpty { data.withProperKeyFireBase().keyFireBase }
                 }
                 else -> return@withContext null
-            }
-
-            if (key.isEmpty() || !isValidFirebaseKey(key)) {
-                return@withContext null
-            }
-
-            onProgressUpdate(0.3f)
-
-            // Check if the item exists first
-            val existsResult = suspendCancellableCoroutine<Boolean> { continuation ->
-                childRef.child(key).get()
-                    .addOnSuccessListener { snapshot ->
-                        continuation.resume(snapshot.exists())
-                    }
-                    .addOnFailureListener { exception ->
-                        exception.printStackTrace()
-                        continuation.resume(false)
-                    }
             }
 
             onProgressUpdate(0.6f)
@@ -113,30 +79,20 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    // FIXED: Renamed from insertInFB to maintain backward compatibility but with proper update logic
-    suspend inline fun <reified DataBase : Any> insertInFB(
-        data: DataBase
-    ): String? = updateInFB(data)
-
-    // FIXED: Changed from private to internal to allow access from inline functions
     private fun createUpdateMap(data: Any): Map<String, Any> {
         val updateMap = mutableMapOf<String, Any>()
 
         when (data) {
             is D_TarificationInfos -> {
                 val updated = data.withProperDefaults()
-                updated::class.members.forEach { member ->
-                    if (member.name != "class") {
+                updated::class.memberProperties.forEach { prop ->
+                    if (!isSyntheticProperty(prop.name)) {
                         try {
-                            val value = member.call(updated)
-                            when {
-                                value == null -> updateMap[member.name] = ""
-                                value::class.java.isEnum -> updateMap[member.name] = value.toString()
-                                value is String && value.isEmpty() -> updateMap[member.name] = ""
-                                else -> updateMap[member.name] = value
-                            }
+                            val value = prop.getter.call(updated)
+                            updateMap[prop.name] = sanitizeValue(value)
                         } catch (e: Exception) {
                             // Skip problematic properties
+                            e.printStackTrace()
                         }
                     }
                 }
@@ -145,18 +101,13 @@ class F0_FireBaseOperationsHandler(
             }
             is A_ProduitInfos -> {
                 val updated = data.withProperKeyFireBase()
-                updated::class.members.forEach { member ->
-                    if (member.name != "class") {
+                updated::class.memberProperties.forEach { prop ->
+                    if (!isSyntheticProperty(prop.name)) {
                         try {
-                            val value = member.call(updated)
-                            when {
-                                value == null -> updateMap[member.name] = ""
-                                value::class.java.isEnum -> updateMap[member.name] = value.toString()
-                                value is String && value.isEmpty() -> updateMap[member.name] = ""
-                                else -> updateMap[member.name] = value
-                            }
+                            val value = prop.getter.call(updated)
+                            updateMap[prop.name] = sanitizeValue(value)
                         } catch (e: Exception) {
-                            // Skip problematic properties
+                            e.printStackTrace()
                         }
                     }
                 }
@@ -167,6 +118,26 @@ class F0_FireBaseOperationsHandler(
 
         return updateMap
     }
+
+    private fun isSyntheticProperty(propertyName: String): Boolean {
+        return propertyName.startsWith("component") ||
+                propertyName == "class" ||
+                propertyName.startsWith("copy") ||
+                propertyName.startsWith("equals") ||
+                propertyName.startsWith("hashCode") ||
+                propertyName.startsWith("toString") ||
+                propertyName.startsWith("withProper")
+    }
+
+    private fun sanitizeValue(value: Any?): Any {
+        return when {
+            value == null -> ""
+            value::class.java.isEnum -> value.toString()
+            value is String && value.isEmpty() -> ""
+            else -> value
+        }
+    }
+
 
     suspend inline fun <reified DataBase : Any> setDataInlineFun(
         datas: List<DataBase> = emptyList()
@@ -202,7 +173,6 @@ class F0_FireBaseOperationsHandler(
     ): List<T> {
         return try {
             val results = mutableListOf<T>()
-            // FIXED: Using the correct function name from F1_MapSnapshotToObjects.kt
             getDatasFixed<T>(snapshot, results)
             results
         } catch (e: Exception) {
@@ -211,8 +181,8 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
-        return anciennesListe.map { ancien ->
+    fun convertArticlesBasesToProduitInfos(ancientsListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
+        return ancientsListe.map { ancien ->
             aProduitinfos(ancien)
         }
     }
@@ -303,7 +273,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(0.1f)
                     val firebaseDatabase = FirebaseDatabase.getInstance()
                     val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
-                    val (originalCount, resultMap) = extracteFrom_getAncienDB_changeKeysFireBase(refDBJetPackExport)
+                    val (originalCount, resultMap) = extractedFrom_getAncienDB_changeKeysFireBase(refDBJetPackExport)
                     continuation.resume(Pair(originalCount, resultMap))
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -332,10 +302,10 @@ class F0_FireBaseOperationsHandler(
             val tariffsMap = mutableMapOf<String, Any>()
             val resultMap = mutableMapOf<String, D_TarificationInfos>()
 
-            var processedCount1 = 0
+            val processedCount1 = 0
             val totalCount = mapData.size
 
-            extractedFromeupsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount1, totalCount)
+            extractedFrome_upsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount1, totalCount)
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {

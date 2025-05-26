@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 
-suspend fun F0_FireBaseOperationsHandler.extracteFrom_getAncienDB_changeKeysFireBase(
+suspend fun F0_FireBaseOperationsHandler.extractedFrom_getAncienDB_changeKeysFireBase(
         refDBJetPackExport: DatabaseReference
     ): Pair<Int, Map<String, A_ProduitInfos>> {
         onProgressUpdate(0.3f)

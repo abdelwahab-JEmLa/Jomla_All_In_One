@@ -13,9 +13,9 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
 
     val defaultModel = A0_DataBasesGroup()
 
-    val tarifsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
-    if (tarifsSnapshot.exists()) {
-        tarifications.addAll(mapTarificationInfos(tarifsSnapshot))
+    val tariffsSnapshot = snapshot.child(defaultModel.refFireBaseD_TarificationInfos)
+    if (tariffsSnapshot.exists()) {
+        tarifications.addAll(mapTarificationInfos(tariffsSnapshot))
     }
 
     return A0_DataBasesGroup(
