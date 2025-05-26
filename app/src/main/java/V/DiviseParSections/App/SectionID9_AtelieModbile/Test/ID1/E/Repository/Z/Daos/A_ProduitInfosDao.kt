@@ -19,15 +19,26 @@ interface A_ProduitInfosDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAllReturnIDs(produits: List<A_ProduitInfos>): List<Long>
 
-    @Update
-    suspend fun update(produit: A_ProduitInfos)
-
     @Query("DELETE FROM A_ProduitInfos")
     suspend fun deleteAll()
 
-    // For single insert - use IGNORE to let auto-increment work properly
+    // For single update - use IGNORE to let auto-increment work properly
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(produit: A_ProduitInfos): Long
+    @Query("SELECT EXISTS(SELECT 1 FROM A_ProduitInfos WHERE id = :id)")
+    suspend fun exists(id: Long): Boolean
+
+    @Update
+    suspend fun update(produitInfos: A_ProduitInfos)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(produitInfos: A_ProduitInfos): Long
+
+    @Query("UPDATE A_ProduitInfos SET monPrixVent = :newPrice, needUpdate = 1 WHERE id = :id")
+    suspend fun updatePrice(id: Long, newPrice: Double)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertReturnID(produit: A_ProduitInfos): Long
 
     @Update
     suspend fun updateAll(produits: List<A_ProduitInfos>)

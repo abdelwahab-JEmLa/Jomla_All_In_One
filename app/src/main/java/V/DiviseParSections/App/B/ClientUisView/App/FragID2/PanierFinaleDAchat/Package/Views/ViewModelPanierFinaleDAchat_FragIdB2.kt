@@ -46,7 +46,7 @@ class ViewModelPanierFinaleDAchat_FragIdB2(
             )
 
             // Insert the updated data
-            groupedDataBasesRepository.insert(
+            groupedDataBasesRepository.update(
                 data = updatedProduitInfo,
             )
         }

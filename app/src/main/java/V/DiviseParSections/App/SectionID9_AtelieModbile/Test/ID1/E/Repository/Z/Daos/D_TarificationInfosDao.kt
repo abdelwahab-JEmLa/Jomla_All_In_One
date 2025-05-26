@@ -10,6 +10,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface D_TarificationInfosDao {
+
+    // REQUIRED: Add these methods to support the fixed update functionality
+    @Query("SELECT EXISTS(SELECT 1 FROM D_TarificationInfos WHERE id = :id)")
+    suspend fun exists(id: Long): Boolean
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(tarificationInfos: D_TarificationInfos): Long
+
     @Query("SELECT * FROM D_TarificationInfos")
     fun getAllTarifications(): Flow<List<D_TarificationInfos>>
 
@@ -25,7 +33,7 @@ interface D_TarificationInfosDao {
     @Query("DELETE FROM D_TarificationInfos")
     suspend fun deleteAll()
 
-    // For single insert - use IGNORE to let auto-increment work properly
+    // For single update - use IGNORE to let auto-increment work properly
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(tarification: D_TarificationInfos): Long
 

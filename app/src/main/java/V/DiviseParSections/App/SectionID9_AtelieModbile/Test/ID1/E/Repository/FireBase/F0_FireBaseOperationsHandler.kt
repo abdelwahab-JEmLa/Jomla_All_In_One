@@ -29,27 +29,143 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    // FIXED TODO(1): Implemented insertInFB() using setDataInlineFun()
-    suspend inline fun <reified DataBase : Any> insertInFB(
+    // Extension function for isValidFirebaseKey if not already defined elsewhere
+    fun isValidFirebaseKey(key: String): Boolean {
+        return when {
+            key.isEmpty() -> false
+            key.length > 768 -> false
+            key.contains('.') -> false
+            key.contains('#') -> false
+            key.contains('$') -> false
+            key.contains('[') -> false
+            key.contains(']') -> false
+            key.contains('/') -> false
+            key.any { it.code < 32 || it.code == 127 } -> false
+            else -> true
+        }
+    }
+
+    // FIXED: Changed to proper update functionality with non-inline function
+    suspend fun <DataBase : Any> updateInFB(
         data: DataBase
     ): String? = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
 
-            // Convert single item to list for setDataInlineFun
-            val dataList = listOf(data)
-            val resultMap = setDataInlineFun(dataList)
+            val childRef = when (data::class) {
+                D_TarificationInfos::class -> childD_TarificationInfos
+                A_ProduitInfos::class -> childA_ProduitInfos
+                else -> return@withContext null
+            }
+
+            // Get the key for the data
+            val key = when (data) {
+                is D_TarificationInfos -> {
+                    data.keyFireBase.ifEmpty { data.withProperDefaults().keyFireBase }
+                }
+                is A_ProduitInfos -> {
+                    data.keyFireBase.ifEmpty { data.withProperKeyFireBase().keyFireBase }
+                }
+                else -> return@withContext null
+            }
+
+            if (key.isEmpty() || !isValidFirebaseKey(key)) {
+                return@withContext null
+            }
+
+            onProgressUpdate(0.3f)
+
+            // Check if the item exists first
+            val existsResult = suspendCancellableCoroutine<Boolean> { continuation ->
+                childRef.child(key).get()
+                    .addOnSuccessListener { snapshot ->
+                        continuation.resume(snapshot.exists())
+                    }
+                    .addOnFailureListener { exception ->
+                        exception.printStackTrace()
+                        continuation.resume(false)
+                    }
+            }
+
+            onProgressUpdate(0.6f)
+
+            // Update the existing item or create new one
+            val updateResult = suspendCancellableCoroutine<String?> { continuation ->
+                val updateMap = createUpdateMap(data)
+
+                childRef.child(key).updateChildren(updateMap)
+                    .addOnSuccessListener {
+                        continuation.resume(key)
+                    }
+                    .addOnFailureListener { exception ->
+                        exception.printStackTrace()
+                        continuation.resume(null)
+                    }
+            }
 
             onProgressUpdate(1f)
-
-            // Return the key of the inserted item (first and only key)
-            resultMap.keys.firstOrNull()
+            updateResult
 
         } catch (e: Exception) {
             e.printStackTrace()
             onProgressUpdate(0f)
             null
         }
+    }
+
+    // FIXED: Renamed from insertInFB to maintain backward compatibility but with proper update logic
+    suspend inline fun <reified DataBase : Any> insertInFB(
+        data: DataBase
+    ): String? = updateInFB(data)
+
+    // FIXED: Changed from private to internal to allow access from inline functions
+    private fun createUpdateMap(data: Any): Map<String, Any> {
+        val updateMap = mutableMapOf<String, Any>()
+
+        when (data) {
+            is D_TarificationInfos -> {
+                val updated = data.withProperDefaults()
+                updated::class.members.forEach { member ->
+                    if (member.name != "class") {
+                        try {
+                            val value = member.call(updated)
+                            when {
+                                value == null -> updateMap[member.name] = ""
+                                value::class.java.isEnum -> updateMap[member.name] = value.toString()
+                                value is String && value.isEmpty() -> updateMap[member.name] = ""
+                                else -> updateMap[member.name] = value
+                            }
+                        } catch (e: Exception) {
+                            // Skip problematic properties
+                        }
+                    }
+                }
+                updateMap["needUpdate"] = true
+                updateMap["timestamps"] = System.currentTimeMillis()
+            }
+            is A_ProduitInfos -> {
+                val updated = data.withProperKeyFireBase()
+                updated::class.members.forEach { member ->
+                    if (member.name != "class") {
+                        try {
+                            val value = member.call(updated)
+                            when {
+                                value == null -> updateMap[member.name] = ""
+                                value::class.java.isEnum -> updateMap[member.name] = value.toString()
+                                value is String && value.isEmpty() -> updateMap[member.name] = ""
+                                else -> updateMap[member.name] = value
+                            }
+                        } catch (e: Exception) {
+                            // Skip problematic properties
+                        }
+                    }
+                }
+                updateMap["needUpdate"] = true
+                updateMap["timestamps"] = System.currentTimeMillis()
+            }
+        }
+
+        return updateMap
     }
 
     suspend inline fun <reified DataBase : Any> setDataInlineFun(

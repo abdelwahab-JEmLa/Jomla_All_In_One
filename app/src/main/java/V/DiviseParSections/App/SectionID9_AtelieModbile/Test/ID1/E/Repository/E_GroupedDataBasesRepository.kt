@@ -46,7 +46,7 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    fun insert(
+    fun update(
         data: Any,
         onSuccess: (Long, Any) -> Unit = { _, _ -> },
         onError: (Exception) -> Unit = {}
@@ -54,7 +54,7 @@ class E_GroupedDataBasesRepository(
         repoCoroutineScope.launch {
             try {
                 val dataType = getDataType(data)
-                val (insertedId, updatedData) = room.insert(data, dataType)
+                val (insertedId, updatedData) = room.update(data, dataType)
 
                 // Insert into Firebase using the new insertInFB function
                 when (updatedData) {

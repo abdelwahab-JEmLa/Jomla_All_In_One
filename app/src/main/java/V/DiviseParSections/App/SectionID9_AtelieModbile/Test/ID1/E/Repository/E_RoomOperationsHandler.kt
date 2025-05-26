@@ -48,8 +48,8 @@ class G_RoomOperationsHandler(
                     }
 
                     val itemWithDefaults = when (itemWithGeneratedId) {
-                        is A_ProduitInfos -> itemWithGeneratedId.withProperKeyFireBase() as DataBase  // NEW
-                        is D_TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase  // NEW
+                        is A_ProduitInfos -> itemWithGeneratedId.withProperKeyFireBase() as DataBase
+                        is D_TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase
                         else -> itemWithGeneratedId
                     }
 
@@ -140,22 +140,81 @@ class G_RoomOperationsHandler(
         }
     }
 
-    suspend fun insert(data: Any, dataType: KClass<*>): Pair<Long, Any> = withContext(Dispatchers.IO) {
+    // FIXED: Changed from insert to proper update logic
+    suspend fun update(data: Any, dataType: KClass<*>): Pair<Long, Any> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.2f)
 
-            val (insertedId, updatedData) = when (dataType) {
+            val (updatedId, updatedData) = when (dataType) {
                 A_ProduitInfos::class -> {
                     val produitData = data as A_ProduitInfos
                     val dataWithDefaults = produitData.withProperKeyFireBase()
-                    val id = database.a_ProduitInfosDao().insert(dataWithDefaults)
+
+                    // FIXED: Check if item exists first, then update or insert accordingly
+                    val existingId = dataWithDefaults.id
+                    val finalId = if (existingId > 0 && database.a_ProduitInfosDao().exists(existingId)) {
+                        // Update existing record
+                        database.a_ProduitInfosDao().update(dataWithDefaults)
+                        existingId
+                    } else {
+                        // Insert new record
+                        database.a_ProduitInfosDao().insertReturnID(dataWithDefaults)
+                    }
+
+                    val finalData = dataWithDefaults.copy(id = finalId)
+                    Pair(finalId, finalData)
+                }
+                D_TarificationInfos::class -> {
+                    val tarificationData = data as D_TarificationInfos
+                    val dataWithDefaults = tarificationData.withProperDefaults()
+
+                    // FIXED: Check if item exists first, then update or insert accordingly
+                    val existingId = dataWithDefaults.id
+                    val finalId = if (existingId > 0 && database.dTarificationInfosDao().exists(existingId)) {
+                        // Update existing record
+                        database.dTarificationInfosDao().update(dataWithDefaults)
+                        existingId
+                    } else {
+                        // Insert new record
+                        database.dTarificationInfosDao().insert(dataWithDefaults)
+                    }
+
+                    val finalData = dataWithDefaults.copy(id = finalId)
+                    Pair(finalId, finalData)
+                }
+                else -> throw IllegalArgumentException("Unsupported data type: ${dataType.simpleName}")
+            }
+
+            onProgressUpdate(1f)
+            Pair(updatedId, updatedData)
+
+        } catch (e: Exception) {
+            onProgressUpdate(0f)
+            throw e
+        }
+    }
+
+    // FIXED: Added proper upsert functionality
+    suspend fun upsert(data: Any, dataType: KClass<*>): Pair<Long, Any> = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.2f)
+
+            val (upsertedId, upsertedData) = when (dataType) {
+                A_ProduitInfos::class -> {
+                    val produitData = data as A_ProduitInfos
+                    val dataWithDefaults = produitData.withProperKeyFireBase()
+
+                    // Use upsert (insert or replace)
+                    val id = database.a_ProduitInfosDao().upsert(dataWithDefaults)
                     val finalData = dataWithDefaults.copy(id = id)
                     Pair(id, finalData)
                 }
                 D_TarificationInfos::class -> {
                     val tarificationData = data as D_TarificationInfos
                     val dataWithDefaults = tarificationData.withProperDefaults()
-                    val id = database.dTarificationInfosDao().insert(dataWithDefaults)
+
+                    // Use upsert (insert or replace)
+                    val id = database.dTarificationInfosDao().upsert(dataWithDefaults)
                     val finalData = dataWithDefaults.copy(id = id)
                     Pair(id, finalData)
                 }
@@ -163,7 +222,7 @@ class G_RoomOperationsHandler(
             }
 
             onProgressUpdate(1f)
-            Pair(insertedId, updatedData)
+            Pair(upsertedId, upsertedData)
 
         } catch (e: Exception) {
             onProgressUpdate(0f)
