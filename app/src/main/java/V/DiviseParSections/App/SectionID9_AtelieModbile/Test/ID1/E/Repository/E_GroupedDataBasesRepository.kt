@@ -73,13 +73,13 @@ class E_GroupedDataBasesRepository(
                         }
                     }
 
-                    migreOldDatas(true)
+                    migreOldDatas(false)
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
                     val hasFirebaseProducts = produitInfoList.isNotEmpty()
 
                     if (isRoomEmpty && hasFirebaseProducts) {
-                        val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
+                        room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
                         updateProgress(0.8f)
                     } else {
                         updateProgress(0.8f)
