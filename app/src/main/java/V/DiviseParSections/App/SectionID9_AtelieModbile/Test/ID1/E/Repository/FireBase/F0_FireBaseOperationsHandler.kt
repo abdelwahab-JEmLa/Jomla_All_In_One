@@ -162,10 +162,12 @@ class F0_FireBaseOperationsHandler(
                 }
             }
 
-            val totalItems = datas.size
-            var processedItems = 0
+            onProgressUpdate(0.3f)
 
-            // Process each data item - just set by keyFireBase
+            // Create batch update map for all items
+            val batchUpdateMap = mutableMapOf<String, Any>()
+
+            // Process each data item and add to batch
             for (data in datas) {
                 try {
                     // Generate proper key for Firebase
@@ -200,29 +202,27 @@ class F0_FireBaseOperationsHandler(
                         }
                     }
 
-                    // Just set data in Firebase by keyFireBase - no return needed
-                    suspendCancellableCoroutine<Unit> { continuation ->
-                        childRef.child(keyFireBase).setValue(data)       //<--
-                        //TODO(1): utilise ici le batch set 
-                            .addOnSuccessListener {
-                                continuation.resume(Unit)
-                            }
-                            .addOnFailureListener { exception ->
-                                exception.printStackTrace()
-                                continuation.resume(Unit)
-                            }
-                    }
-
-                    processedItems++
-
-                    // Update progress
-                    val progress = 0.1f + (0.8f * processedItems / totalItems)
-                    onProgressUpdate(progress)
+                    // Add to batch update map
+                    batchUpdateMap[keyFireBase] = data
 
                 } catch (e: Exception) {
                     e.printStackTrace()
                     // Continue processing other items even if one fails
                 }
+            }
+
+            onProgressUpdate(0.7f)
+
+            // Perform batch update using updateChildren
+            suspendCancellableCoroutine<Unit> { continuation ->
+                childRef.updateChildren(batchUpdateMap)
+                    .addOnSuccessListener {
+                        continuation.resume(Unit)
+                    }
+                    .addOnFailureListener { exception ->
+                        exception.printStackTrace()
+                        continuation.resume(Unit)
+                    }
             }
 
             onProgressUpdate(1f)
