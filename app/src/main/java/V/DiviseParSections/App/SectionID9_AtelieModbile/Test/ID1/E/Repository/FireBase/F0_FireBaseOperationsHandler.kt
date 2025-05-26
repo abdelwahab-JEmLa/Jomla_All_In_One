@@ -29,9 +29,27 @@ class F0_FireBaseOperationsHandler(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     var needUpdateListener: ValueEventListener? = null
 
-    fun insertInFB() {
-        //<--
-        //TODO(1): regle cette fun avec setDataInlineFun()
+    // FIXED TODO(1): Implemented insertInFB() using setDataInlineFun()
+    suspend inline fun <reified DataBase : Any> insertInFB(
+        data: DataBase
+    ): String? = withContext(Dispatchers.IO) {
+        try {
+            onProgressUpdate(0.1f)
+
+            // Convert single item to list for setDataInlineFun
+            val dataList = listOf(data)
+            val resultMap = setDataInlineFun(dataList)
+
+            onProgressUpdate(1f)
+
+            // Return the key of the inserted item (first and only key)
+            resultMap.keys.firstOrNull()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onProgressUpdate(0f)
+            null
+        }
     }
 
     suspend inline fun <reified DataBase : Any> setDataInlineFun(
@@ -62,8 +80,6 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-
-
     inline fun <reified T : Any> mapSnapshotToObjects(
         snapshot: DataSnapshot,
         kClass: KClass<T>
@@ -79,38 +95,11 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-
     fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
         return anciennesListe.map { ancien ->
             aProduitinfos(ancien)
         }
     }
-
-    // FIXED: Add missing deleteRef function
-    suspend inline fun <reified DataBase : Any> deleteRef() = withContext(Dispatchers.IO) {
-        try {
-            val childRef = when (DataBase::class) {
-                D_TarificationInfos::class -> childD_TarificationInfos
-                A_ProduitInfos::class -> childA_ProduitInfos
-                else -> return@withContext
-            }
-
-            suspendCancellableCoroutine<Unit> { continuation ->
-                childRef.removeValue()
-                    .addOnSuccessListener {
-                        continuation.resume(Unit)
-                    }
-                    .addOnFailureListener { exception ->
-                        continuation.resume(Unit) // Continue even on failure
-                    }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-
-
 
     private fun verifyFirebaseConnectivity() {
         coroutineScope.launch {
@@ -209,7 +198,7 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-   //-------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------
     suspend fun upsertAllAndReturnListIdToData(
         mapData: Map<Long, D_TarificationInfos>,
         onAddSuccess: (Map<String, D_TarificationInfos>) -> Unit

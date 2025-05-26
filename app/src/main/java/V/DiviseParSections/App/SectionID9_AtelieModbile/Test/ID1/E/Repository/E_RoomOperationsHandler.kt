@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_Tari
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.reflect.KClass
 
 class G_RoomOperationsHandler(
     val database: AppDatabase,
@@ -139,29 +140,30 @@ class G_RoomOperationsHandler(
         }
     }
 
-    suspend fun insert(data: Any, dataType: kotlin.reflect.KClass<*>): Long,data 
-    //<--
-    //TODO(1): fait returne aussi le dat a
-    = withContext(Dispatchers.IO) {
+    suspend fun insert(data: Any, dataType: KClass<*>): Pair<Long, Any> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.2f)
 
-            val insertedId = when (dataType) {
+            val (insertedId, updatedData) = when (dataType) {
                 A_ProduitInfos::class -> {
                     val produitData = data as A_ProduitInfos
                     val dataWithDefaults = produitData.withProperKeyFireBase()
-                    database.a_ProduitInfosDao().insert(dataWithDefaults)
+                    val id = database.a_ProduitInfosDao().insert(dataWithDefaults)
+                    val finalData = dataWithDefaults.copy(id = id)
+                    Pair(id, finalData)
                 }
                 D_TarificationInfos::class -> {
                     val tarificationData = data as D_TarificationInfos
                     val dataWithDefaults = tarificationData.withProperDefaults()
-                    database.dTarificationInfosDao().insert(dataWithDefaults)
+                    val id = database.dTarificationInfosDao().insert(dataWithDefaults)
+                    val finalData = dataWithDefaults.copy(id = id)
+                    Pair(id, finalData)
                 }
                 else -> throw IllegalArgumentException("Unsupported data type: ${dataType.simpleName}")
             }
 
             onProgressUpdate(1f)
-            insertedId
+            Pair(insertedId, updatedData)
 
         } catch (e: Exception) {
             onProgressUpdate(0f)

@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_Dat
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.F0_FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.deleteRef
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test.testD_TarificationInfosT2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -45,14 +46,28 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    fun insert(data: Any, onSuccess: (Long) -> Unit = {}, onError: (Exception) -> Unit = {}) {
+    // UPDATED: Now uses the fixed insert function that returns both ID and data
+    fun insert(
+        data: Any,
+        onSuccess: (Long, Any) -> Unit = { _, _ -> },
+        onError: (Exception) -> Unit = {}
+    ) {
         repoCoroutineScope.launch {
             try {
                 val dataType = getDataType(data)
-                val insertedId = room.insert(data, dataType)
-                 fireBase.insertInFB()
+                val (insertedId, updatedData) = room.insert(data, dataType)
 
-                onSuccess(insertedId)
+                // Insert into Firebase using the new insertInFB function
+                when (updatedData) {
+                    is D_TarificationInfos -> {
+                        fireBase.insertInFB<D_TarificationInfos>(updatedData)
+                    }
+                    is A_ProduitInfos -> {
+                        fireBase.insertInFB<A_ProduitInfos>(updatedData)
+                    }
+                }
+
+                onSuccess(insertedId, updatedData)
             } catch (e: Exception) {
                 onError(e)
             }
