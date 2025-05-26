@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.F.Functions.createTimestamp
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test.Functions.createTimestamp
 
 fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
     val idProduit1: Long = 849

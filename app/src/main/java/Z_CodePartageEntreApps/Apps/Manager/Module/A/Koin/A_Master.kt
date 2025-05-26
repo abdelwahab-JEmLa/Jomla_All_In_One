@@ -9,8 +9,8 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.TariffsButtonsViewModel_TestID2
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F0_FireBaseOperationsHandler
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.F0_FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.G_RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase

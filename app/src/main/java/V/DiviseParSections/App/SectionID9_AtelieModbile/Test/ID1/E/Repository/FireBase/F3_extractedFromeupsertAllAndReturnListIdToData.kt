@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
@@ -106,10 +106,10 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
             onProgressUpdate(1f)
         }
 
-        F6_FirebaseDebugUtils.logFirebaseOperation(
-            "upsertAllAndReturnListIdToData_COMPLETE",
-            childD_TarificationInfos,
-            resultMap.size,
-            true
-        )
+    F6_FirebaseDebugUtils.logFirebaseOperation(
+        "upsertAllAndReturnListIdToData_COMPLETE",
+        childD_TarificationInfos,
+        resultMap.size,
+        true
+    )
     }

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement

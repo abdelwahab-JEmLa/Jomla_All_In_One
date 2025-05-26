@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
