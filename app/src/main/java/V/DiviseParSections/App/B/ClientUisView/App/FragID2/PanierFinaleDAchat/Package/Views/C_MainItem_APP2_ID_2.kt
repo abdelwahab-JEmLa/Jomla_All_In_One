@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -125,12 +127,14 @@ fun C_MainItem_APP2_ID_2(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Product info row
+                    // Product info section with proper layout
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
                         ) {
                             // Added state to track if we're editing the product name
                             var isEditingProductName by remember { mutableStateOf(false) }
@@ -140,7 +144,7 @@ fun C_MainItem_APP2_ID_2(
                             // Get the current product name for reference
                             val currentProductName = relative_2_1_ProduitsDataBase?.nom ?: "N/A"
 
-                            // Show either editable text field or clickable product name text
+                            // Product name section (at the top)
                             if (isEditingProductName && relative_2_1_ProduitsDataBase != null) {
                                 OutlinedTextField(
                                     value = productNameText,
@@ -149,7 +153,6 @@ fun C_MainItem_APP2_ID_2(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(8.dp)
                                         .focusRequester(productNameFocusRequester),
                                     keyboardOptions = KeyboardOptions(
                                         imeAction = ImeAction.Done
@@ -197,7 +200,6 @@ fun C_MainItem_APP2_ID_2(
                                     color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(8.dp)
                                         .clickable {
                                             // Start with empty text field
                                             productNameText = ""
@@ -206,223 +208,145 @@ fun C_MainItem_APP2_ID_2(
                                 )
                             }
 
-                            // Box for both total quantity and price (remains the same)
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            // Spacer to separate product name from price/quantity row
+                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                            // Row for quantity, price, and FAB
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Row to contain both texts side by side
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                // Quantity in a background box
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
                                         text = "$totalQuantity",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.primary
                                     )
+                                }
 
-                                    Spacer(
-                                        modifier = Modifier.padding(horizontal = 4.dp)
+                                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                                // Price section
+                                if (isEditingPrice) {
+                                    OutlinedTextField(
+                                        value = priceText,
+                                        onValueChange = { newValue ->
+                                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                                priceText = newValue
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .focusRequester(focusRequester),
+                                        keyboardOptions = KeyboardOptions(
+                                            keyboardType = KeyboardType.Number,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                viewModel.updatePrice(
+                                                    priceText,
+                                                    defaultPrice,
+                                                    relative_1_2_ProduitAcheteOperation,
+                                                    _0_HeadOfRepositorys_Repository_Model,
+                                                    updateChangePrixDeBase
+                                                )
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+                                                isEditingPrice = false
+                                                onDoneupdatePrice(priceText)
+
+                                                _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
+                                            }
+                                        ),
+                                        singleLine = true,
+                                        label = {
+                                            Text(
+                                                if (useProvisionalPrice)
+                                                    formatter.format(provisionalPrice)
+                                                        .replace("€", "دج")
+                                                else
+                                                    formatter.format(defaultPrice).replace("€", "دج")
+                                            )
+                                        }
                                     )
 
-                                    if (isEditingPrice) {
-                                        OutlinedTextField(
-                                            value = priceText,
-                                            onValueChange = { newValue ->
-                                                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
-                                                    priceText = newValue
-                                                }
-                                            },
-                                            modifier = Modifier
-                                                .focusRequester(focusRequester),
-                                            keyboardOptions = KeyboardOptions(
-                                                keyboardType = KeyboardType.Number,
-                                                imeAction = ImeAction.Done
-                                            ),
-                                            trailingIcon = {
-                                                Icon(
-                                                    imageVector = if (updateChangePrixDeBase)
-                                                        Icons.Filled.SwapVert
-                                                    else
-                                                        Icons.Filled.SwapHoriz,
-                                                    contentDescription = if (updateChangePrixDeBase)
-                                                        "Update base price enabled"
-                                                    else
-                                                        "Update base price disabled",
-                                                    tint = if (updateChangePrixDeBase)
-                                                        MaterialTheme.colorScheme.primary
-                                                    else
-                                                        MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    modifier = Modifier
-                                                        .clickable(
-                                                            indication = null,
-                                                            interactionSource = remember { MutableInteractionSource() }
-                                                        ) {
-                                                            updateChangePrixDeBase = !updateChangePrixDeBase
-                                                        }
-                                                        .padding(8.dp)
-                                                )
-                                            },
-                                            keyboardActions = KeyboardActions(
-                                                onDone = {
-                                                    viewModel.updatePrice(
-                                                        priceText,
-                                                        defaultPrice,
-                                                        relative_1_2_ProduitAcheteOperation,
-                                                        _0_HeadOfRepositorys_Repository_Model,
-                                                        updateChangePrixDeBase
-                                                    )
-                                                    focusManager.clearFocus()
-                                                    keyboardController?.hide()
-                                                    isEditingPrice = false
-                                                    onDoneupdatePrice(priceText)
-
-                                                    _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
-                                                }
-                                            ),
-                                            singleLine = true,
-                                            label = {
-                                                Text(
-                                                    if (useProvisionalPrice)
-                                                        formatter.format(provisionalPrice)
-                                                            .replace("€", "دج")
-                                                    else
-                                                        formatter.format(defaultPrice).replace("€", "دج")
-                                                )
-                                            }
-                                        )
-
-                                        // Request focus when the text field is shown
-                                        LaunchedEffect(Unit) {
-                                            try {
-                                                focusRequester.requestFocus()
-                                                keyboardController?.show()
-                                            } catch (e: Exception) {
-                                                // Silently handle focus request exceptions
-                                            }
+                                    // Request focus when the text field is shown
+                                    LaunchedEffect(Unit) {
+                                        try {
+                                            focusRequester.requestFocus()
+                                            keyboardController?.show()
+                                        } catch (e: Exception) {
+                                            // Silently handle focus request exceptions
                                         }
-                                    } else {
-                                        // Price text with clickable functionality
-                                        Text(
-                                            text = "× $formattedPrice",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = if (useProvisionalPrice)
-                                                MaterialTheme.colorScheme.tertiary
-                                            else
-                                                MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier.clickable {
+                                    }
+                                } else {
+                                    // Price text with clickable functionality
+                                    Text(
+                                        text = "× $formattedPrice",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if (useProvisionalPrice)
+                                            MaterialTheme.colorScheme.tertiary
+                                        else
+                                            MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable {
                                                 priceText = "" // Reset to empty when starting to edit
                                                 isEditingPrice = true
                                             }
-                                        )
-                                    }
+                                    )
                                 }
-                            }
-                        }
-                    }
-                    // Box for both total quantity and price
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        // Row to contain both texts side by side
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Total quantity text
-                            Text(
-                                text = "$totalQuantity",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
 
-                            // Added spacing between texts
-                            Spacer(
-                                modifier = Modifier.padding(horizontal = 4.dp)
-                            )
+                                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                            // Show either the editable text field or clickable price text
-                            if (isEditingPrice) {
-                                OutlinedTextField(
-                                    value = priceText,
-                                    onValueChange = { newValue ->
-                                        // Only allow numeric input with optional decimal point
-                                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
-                                            priceText = newValue
-                                        }
-                                    },
+                                // Floating Action Button for toggling updateChangePrixDeBase
+                                Box(
                                     modifier = Modifier
-                                        .focusRequester(focusRequester),
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            // Update the price when Done is pressed
-                                            viewModel.updatePrice(
-                                                priceText,
-                                                defaultPrice,
-                                                relative_1_2_ProduitAcheteOperation,
-                                                _0_HeadOfRepositorys_Repository_Model
-                                            )
-                                            focusManager.clearFocus()
-                                            keyboardController?.hide()
-                                            isEditingPrice = false
-                                            onDoneupdatePrice(priceText)
-
-                                            // Fixed: Properly notify data changes
-                                            _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
-                                        }
-                                    ),
-                                    singleLine = true,
-                                    label = {
-                                        Text(
-                                            if (useProvisionalPrice)
-                                                formatter.format(provisionalPrice)
-                                                    .replace("€", "دج")
+                                        .size(32.dp)
+                                        .background(
+                                            color = if (updateChangePrixDeBase)
+                                                MaterialTheme.colorScheme.primary
                                             else
-                                                formatter.format(defaultPrice).replace("€", "دج")
+                                                MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = CircleShape
                                         )
-                                    }
-                                )
-
-                                // Request focus when the text field is shown
-                                LaunchedEffect(Unit) {
-                                    try {
-                                        focusRequester.requestFocus()
-                                        keyboardController?.show()
-                                    } catch (e: Exception) {
-                                        // Silently handle focus request exceptions
-                                    }
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            updateChangePrixDeBase = !updateChangePrixDeBase
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = if (updateChangePrixDeBase)
+                                            Icons.Filled.SwapVert
+                                        else
+                                            Icons.Filled.SwapHoriz,
+                                        contentDescription = if (updateChangePrixDeBase)
+                                            "Update base price enabled"
+                                        else
+                                            "Update base price disabled",
+                                        tint = if (updateChangePrixDeBase)
+                                            MaterialTheme.colorScheme.onPrimary
+                                        else
+                                            MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
-                            } else {
-                                // Price text with clickable functionality
-                                Text(
-                                    text = "× $formattedPrice",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = if (useProvisionalPrice)
-                                        MaterialTheme.colorScheme.tertiary
-                                    else
-                                        MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.clickable {
-                                        priceText = "" // Reset to empty when starting to edit
-                                        isEditingPrice = true
-                                    }
-                                )
                             }
                         }
                     }
+
                 }
             }
 
@@ -468,4 +392,3 @@ fun C_MainItem_APP2_ID_2(
         }
     }
 }
-
