@@ -60,8 +60,6 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
 
             results.add(instance)
         } catch (e: Exception) {
-            println("Error mapping D_TarificationInfos: ${e.message}")
-            println("Failed to map child with key: ${childSnap.key}")
         }
     }
 

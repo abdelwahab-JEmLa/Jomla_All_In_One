@@ -12,50 +12,23 @@ inline fun <reified T : Any> getDatas(
     kClass: KClass<T>,
     results: MutableList<T>
 ) {
-    println("=== getDatas Debug ===")
-    println("Snapshot key: ${snapshot.key}")
-    println("Snapshot exists: ${snapshot.exists()}")
-    println("Children count: ${snapshot.childrenCount}")
-    println("Target class: ${kClass.simpleName}")
-
     for (childSnap in snapshot.children) {
         try {
-            println("--- Processing child: ${childSnap.key} ---")
-
             when (T::class) {
                 A_ProduitInfos::class -> {
-                    val produit = mapToProduitInfos(childSnap)
-                    if (produit != null) {
-                        results.add(produit as T)
-                        println("Successfully mapped A_ProduitInfos: ${produit.nomArticleFinale}")
-                    }
+                    mapToProduitInfos(childSnap)?.let { results.add(it as T) }
                 }
                 D_TarificationInfos::class -> {
-                    val tarification = mapToTarificationInfos(childSnap)
-                    if (tarification != null) {
-                        results.add(tarification as T)
-                        println("Successfully mapped D_TarificationInfos: ${tarification.nom}")
-                    }
+                    mapToTarificationInfos(childSnap)?.let { results.add(it as T) }
                 }
                 else -> {
-                    // Fallback to reflection-based mapping
-                    val instance = mapUsingReflection<T>(childSnap, kClass)
-                    if (instance != null) {
-                        results.add(instance)
-                        println("Successfully mapped using reflection: ${kClass.simpleName}")
-                    }
+                    mapUsingReflection<T>(childSnap, kClass)?.let { results.add(it) }
                 }
             }
         } catch (e: Exception) {
-            println("Error mapping child ${childSnap.key}: ${e.message}")
             e.printStackTrace()
-            // Continue processing other items
         }
     }
-
-    println("=== Final Results ===")
-    println("Total mapped items: ${results.size}")
-    println("====================")
 }
 
 fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
@@ -63,8 +36,6 @@ fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
         val idArticle = childSnap.child("idArticle").getValue(Long::class.java) ?: 0L
         val nomArticleFinale = childSnap.child("nomArticleFinale").getValue(String::class.java) ?: ""
         val keyFireBase = childSnap.key ?: getKeyFireBase(idArticle, nomArticleFinale)
-
-        println("Mapping A_ProduitInfos - ID: $idArticle, Name: $nomArticleFinale, Key: $keyFireBase")
 
         A_ProduitInfos(
             idArticle = idArticle,
@@ -119,7 +90,6 @@ fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
             needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
         )
     } catch (e: Exception) {
-        println("Error in mapToProduitInfos: ${e.message}")
         e.printStackTrace()
         null
     }
@@ -131,14 +101,10 @@ fun mapToTarificationInfos(childSnap: DataSnapshot): D_TarificationInfos? {
         val nom = childSnap.child("nom").getValue(String::class.java) ?: ""
         val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
 
-        println("Mapping D_TarificationInfos - ID: $id, Name: $nom, Key: $keyFireBase")
-
-        // Map the enum field safely
         val typeTarificationEnumString = childSnap.child("typeTarificationEnumT2Correspond").getValue(String::class.java) ?: "PRIX_BASE"
         val typeTarificationEnum = try {
             TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
         } catch (e: IllegalArgumentException) {
-            println("Warning: Unknown enum value '$typeTarificationEnumString', using default PRIX_BASE")
             TypeTarificationEnumT2.PRIX_BASE
         }
 
@@ -154,24 +120,18 @@ fun mapToTarificationInfos(childSnap: DataSnapshot): D_TarificationInfos? {
             keyFireBase = keyFireBase
         )
     } catch (e: Exception) {
-        println("Error in mapToTarificationInfos: ${e.message}")
         e.printStackTrace()
         null
     }
 }
 
-// Public inline function for reflection-based mapping
 inline fun <reified T : Any> mapUsingReflection(
     childSnap: DataSnapshot,
     kClass: KClass<T>
 ): T? {
     return try {
-        // This would be implemented based on your specific reflection needs
-        // For now, returning null as a safe fallback
-        println("Reflection-based mapping not implemented for ${kClass.simpleName}")
         null
     } catch (e: Exception) {
-        println("Error in reflection mapping: ${e.message}")
         e.printStackTrace()
         null
     }
