@@ -23,8 +23,8 @@ fun getKeyFireBase(
     val id = dataId ?: 0
 
     return when {
-        id != 0L && cleanedNom.isNotEmpty() -> "-<${id}_${cleanedNom}"
-        id != 0L -> "-<${id}_${System.currentTimeMillis()}"
+        id != 0L && cleanedNom.isNotEmpty() -> "${id}(${cleanedNom})"
+        id != 0L -> "${id}(${System.currentTimeMillis()})"
         cleanedNom.isNotEmpty() -> "PROD_${cleanedNom}_${System.currentTimeMillis()}"
         else -> ""
     }
