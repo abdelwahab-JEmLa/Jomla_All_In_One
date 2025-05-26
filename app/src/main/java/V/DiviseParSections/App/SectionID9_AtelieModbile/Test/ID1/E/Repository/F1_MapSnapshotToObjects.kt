@@ -38,7 +38,7 @@ fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
         val keyFireBase = childSnap.key ?: getKeyFireBase(idArticle, nomArticleFinale)
 
         A_ProduitInfos(
-            idArticle = idArticle,
+            id = idArticle,
             nomArticleFinale = nomArticleFinale,
             classementCate = childSnap.child("classementCate").getValue(Double::class.java) ?: 0.0,
             nomArab = childSnap.child("nomArab").getValue(String::class.java) ?: "",

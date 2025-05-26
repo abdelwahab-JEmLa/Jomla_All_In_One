@@ -13,7 +13,7 @@ interface A_ProduitInfosDao {
     @Query("SELECT * FROM A_ProduitInfos")
     fun getAllProduits(): Flow<List<A_ProduitInfos>>
 
-    @Query("SELECT * FROM A_ProduitInfos WHERE idArticle = :id")
+    @Query("SELECT * FROM A_ProduitInfos WHERE id = :id")
     suspend fun getProduitById(id: Long): A_ProduitInfos?
 
     @Insert(onConflict = OnConflictStrategy.ABORT)

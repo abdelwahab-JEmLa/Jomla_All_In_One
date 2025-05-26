@@ -73,14 +73,7 @@ class E_GroupedDataBasesRepository(
                         }
                     }
 
-                    val migrateOldData = false
-                    if (migrateOldData) {
-                        try {
-                            fireBase.deleteRef<A_ProduitInfos>()
-                            val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
-                        } catch (migrationError: Exception) {
-                        }
-                    }
+                    migreOldDatas(true)
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
                     val hasFirebaseProducts = produitInfoList.isNotEmpty()
@@ -101,6 +94,16 @@ class E_GroupedDataBasesRepository(
         }
 
         collectRoom()
+    }
+
+    private suspend fun migreOldDatas(migrateOldData: Boolean) {
+        if (migrateOldData) {
+            try {
+                fireBase.deleteRef<A_ProduitInfos>()
+                val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
+            } catch (migrationError: Exception) {
+            }
+        }
     }
 
     private fun initializeProduitInfos() {

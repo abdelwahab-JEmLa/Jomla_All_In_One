@@ -41,7 +41,7 @@ class G_RoomOperationsHandler(
             ids.forEachIndexed { index, generatedId ->
                 if (index < data.size) {
                     val itemWithGeneratedId = when (val originalItem = data[index]) {
-                        is A_ProduitInfos -> originalItem.copy(idArticle = generatedId) as DataBase
+                        is A_ProduitInfos -> originalItem.copy(id = generatedId) as DataBase
                         is D_TarificationInfos -> originalItem.copy(id = generatedId) as DataBase
                         else -> throw IllegalArgumentException("Unsupported item type")
                     }

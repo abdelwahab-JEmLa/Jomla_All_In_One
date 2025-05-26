@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 
 fun aProduitinfos(ancien: ArticlesBasesStatsTable) =
         A_ProduitInfos(
-            idArticle = ancien.idArticle.toLong(),
+            id = ancien.idArticle.toLong(),
             nomArticleFinale = ancien.nomArticleFinale,
             classementCate = ancien.classementCate,
             nomArab = ancien.nomArab,

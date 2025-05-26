@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
-import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -46,15 +46,14 @@ fun TariffsButtons_TestID2(
 
     val tarificationList = uiState.tariffsList
     val bonAchatList = uiState.bonAchatList
-    val produitInfosListDepuitAncienDataBase = uiState.produitInfosListDepuitAncienDataBase
     val produitInfosList = uiState.produitInfosList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
 
-    LaunchedEffect(produitInfosListDepuitAncienDataBase.size, suspendFunction1(produitInfosListDepuitAncienDataBase, viewModel))
+    LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
-            (bonAchatList.isEmpty() && produitInfosListDepuitAncienDataBase.isEmpty() && uiState.loadingProgress == 0f)
+            (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
     val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit = { typeTarification, latestTariffLocalData, context ->
         val typeName = typeTarification.name
@@ -71,7 +70,6 @@ fun TariffsButtons_TestID2(
         onFermDialogeAvecAnllation()
     }
 
-    Text("${produitInfosList.size}")
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             if (shouldShowLoading) {
@@ -104,13 +102,13 @@ fun TariffsButtons_TestID2(
                         )
                     }
                 }
-            } else if (bonAchatList.isNotEmpty() && produitInfosListDepuitAncienDataBase.isNotEmpty()) {
+            } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     MainFilter(
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
                         produitAcheteOperationList = produitAcheteOperationList,
-                        produitInfosList = produitInfosListDepuitAncienDataBase,
+                        produitInfosList = produitInfosList,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
                         filterBonID = filterBonId,
@@ -120,14 +118,14 @@ fun TariffsButtons_TestID2(
                 }
             } else {
                 val dataStatus = when {
-                    produitInfosListDepuitAncienDataBase.isEmpty() && bonAchatList.isEmpty() -> "Loading initial data..."
-                    produitInfosListDepuitAncienDataBase.isEmpty() -> "Loading products..."
+                    produitInfosList.isEmpty() && bonAchatList.isEmpty() -> "Loading initial data..."
+                    produitInfosList.isEmpty() -> "Loading products..."
                     bonAchatList.isEmpty() -> "Loading purchase orders..."
                     else -> "Preparing data..."
                 }
 
                 Text(
-                    text = "$dataStatus\nProducts: ${produitInfosListDepuitAncienDataBase.size}, Orders: ${bonAchatList.size}",
+                    text = "$dataStatus\nProducts: ${produitInfosList.size}, Orders: ${bonAchatList.size}",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(16.dp)
@@ -141,7 +139,7 @@ fun TariffsButtons_TestID2(
 
 @Composable
 private fun suspendFunction1(
-    produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
+    produitInfosList: SnapshotStateList<A_ProduitInfos>,
     viewModel: TariffsButtonsViewModel_TestID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {

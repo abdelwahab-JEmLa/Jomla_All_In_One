@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository.C3_BonAchat.C3_BonAchate
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -17,20 +17,20 @@ fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
     bonAchatList: List<C3_BonAchate>,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
-    produitInfosList: SnapshotStateList<_2_1_ProduitsDataBase>,
+    produitInfosList: SnapshotStateList<A_ProduitInfos>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null // Added cancellation callback parameter
+    onClickAnulationButton: (() -> Unit)? = null 
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
     }
 
     val filteredProduit = remember(produitInfosList, filterProduitID) {
-        produitInfosList.find { it.vid.toInt() == filterProduitID } ?: _2_1_ProduitsDataBase()
+        produitInfosList.find { it.id.toInt() == filterProduitID } ?: A_ProduitInfos()
     }
 
     val idClientFiltruer = remember(bonAchatList, filterBonID) {
@@ -39,13 +39,13 @@ fun MainFilter(
 
     val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {
         produitAcheteOperationList
-            .filter { it.produitAcheterID == filteredProduit.vid }
+            .filter { it.produitAcheterID == filteredProduit.id }
             .maxOfOrNull { it.provisoireMonPrix }
     }
 
     val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter {
-            it.idParentProduit == filteredProduit.vid &&
+            it.idParentProduit == filteredProduit.id &&
                     it.parentIdClient == idClientFiltruer
         }
     }
@@ -55,7 +55,7 @@ fun MainFilter(
       }       */
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
-        operation.produitAcheterID == filteredProduit.vid &&
+        operation.produitAcheterID == filteredProduit.id &&
                 operation.parentIdClient == idClientFiltruer
     }
 

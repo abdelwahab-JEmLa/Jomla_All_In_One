@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
-    var idArticle: Long = 0,
+    var id: Long = 0,
 
     var nomArticleFinale: String = "",
     var classementCate: Double = 0.0,
@@ -65,7 +65,7 @@ data class A_ProduitInfos(
 ) {
     fun withProperKeyFireBase(): A_ProduitInfos {
         val safeKey = keyFireBase.ifEmpty {
-            getKeyFireBase(idArticle, nomArticleFinale)
+            getKeyFireBase(id, nomArticleFinale)
         }
         return this.copy(
             keyFireBase = safeKey,
