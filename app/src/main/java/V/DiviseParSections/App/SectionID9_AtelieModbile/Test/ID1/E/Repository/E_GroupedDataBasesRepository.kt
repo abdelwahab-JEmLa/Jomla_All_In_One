@@ -60,10 +60,10 @@ class E_GroupedDataBasesRepository(
                 // Insert into Firebase using the new updateInFB function
                 when (updatedData) {
                     is D_TarificationInfos -> {
-                        fireBase.updateInFB<D_TarificationInfos>(updatedData)
+                        fireBase.updateInFB(updatedData)
                     }
                     is A_ProduitInfos -> {
-                        fireBase.updateInFB<A_ProduitInfos>(updatedData)
+                        fireBase.updateInFB(updatedData)
                     }
                 }
 
@@ -87,11 +87,12 @@ class E_GroupedDataBasesRepository(
                         updateProgress(0.5f)
 
                         if (mapData.isNotEmpty()) {
-                            fireBase.upsertAllAndReturnListIdToData(mapData) { firebaseMap ->
-                                repoCoroutineScope.launch {
-                                    updateProgress(1f)
-                                    onAddSuccess(mapData)
-                                }
+                            val dataListForFirebase = mapData.values.toList()
+                            fireBase.setListDataInlineFun<D_TarificationInfos>(dataListForFirebase)
+
+                            repoCoroutineScope.launch {
+                                updateProgress(1f)
+                                onAddSuccess(mapData)
                             }
                         } else {
                             updateProgress(1f)

@@ -4,6 +4,8 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_Prod
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.parseDepuitOldAuNew
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.ReflectionUtils.isSyntheticProperty
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.ReflectionUtils.sanitizeValue
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
@@ -104,7 +106,7 @@ class F0_FireBaseOperationsHandler(
             is A_ProduitInfos -> {
                 val updated = data.withProperKeyFireBase()
                 updated::class.memberProperties.forEach { prop ->
-                    if (!isSyntheticProperty(prop.name)) {
+                    if (!ReflectionUtils.isSyntheticProperty(prop.name)) {
                         try {
                             val value = prop.getter.call(updated)
                             updateMap[prop.name] = sanitizeValue(value)
@@ -120,26 +122,6 @@ class F0_FireBaseOperationsHandler(
 
         return updateMap
     }
-
-    private fun isSyntheticProperty(propertyName: String): Boolean {
-        return propertyName.startsWith("component") ||
-                propertyName == "class" ||
-                propertyName.startsWith("copy") ||
-                propertyName.startsWith("equals") ||
-                propertyName.startsWith("hashCode") ||
-                propertyName.startsWith("toString") ||
-                propertyName.startsWith("withProper")
-    }
-
-    private fun sanitizeValue(value: Any?): Any {
-        return when {
-            value == null -> ""
-            value::class.java.isEnum -> value.toString()
-            value is String && value.isEmpty() -> ""
-            else -> value
-        }
-    }
-
 
     suspend inline fun <reified DataBase : Any> setListDataInlineFun(
         datas: List<DataBase> = emptyList()
@@ -352,34 +334,5 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    //-------------------------------------------------------------------------------------
-    suspend fun upsertAllAndReturnListIdToData(
-        mapData: Map<Long, D_TarificationInfos>,
-        onAddSuccess: (Map<String, D_TarificationInfos>) -> Unit
-    ) = withContext(Dispatchers.IO) {
-        try {
-            onProgressUpdate(0.1f)
 
-            if (mapData.isEmpty()) {
-                onProgressUpdate(1f)
-                onAddSuccess(emptyMap())
-                return@withContext
-            }
-
-            onProgressUpdate(0.3f)
-            val tariffsMap = mutableMapOf<String, Any>()
-            val resultMap = mutableMapOf<String, D_TarificationInfos>()
-
-            val processedCount1 = 0
-            val totalCount = mapData.size
-
-            extractedFrome_upsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount1, totalCount)
-            onAddSuccess(resultMap)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onProgressUpdate(0f)
-            onAddSuccess(emptyMap())
-        }
-    }
 }

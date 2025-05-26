@@ -18,18 +18,7 @@ object ReflectionUtils {
                propertyName.startsWith("withProper")
     }
     
-    /**
-     * Sanitizes a property value for Firebase storage
-     */
-    fun sanitizeValue(value: Any?): Any {
-        return when {
-            value == null -> ""
-            value::class.java.isEnum -> value.toString()
-            value is String && value.isEmpty() -> ""
-            else -> value
-        }
-    }
-    
+
     /**
      * Gets appropriate default value for a given type
      */
@@ -64,4 +53,23 @@ object ReflectionUtils {
         
         return propertyMap
     }
+    fun isSyntheticProperty(propertyName: String): Boolean {
+        return propertyName.startsWith("component") ||
+                propertyName == "class" ||
+                propertyName.startsWith("copy") ||
+                propertyName.startsWith("equals") ||
+                propertyName.startsWith("hashCode") ||
+                propertyName.startsWith("toString") ||
+                propertyName.startsWith("withProper")
+    }
+
+     fun sanitizeValue(value: Any?): Any {
+        return when {
+            value == null -> ""
+            value::class.java.isEnum -> value.toString()
+            value is String && value.isEmpty() -> ""
+            else -> value
+        }
+    }
+
 }
