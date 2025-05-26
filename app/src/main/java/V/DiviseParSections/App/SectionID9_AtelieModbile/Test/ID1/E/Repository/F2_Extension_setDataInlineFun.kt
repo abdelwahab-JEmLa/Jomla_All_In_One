@@ -2,34 +2,11 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
-
-fun generateSafeFirebaseKey(
-    prefix: String,
-    id: Long? = null,
-    name: String? = null
-): String {
-    val safeName = name?.let {
-        it.replace(Regex("[.#$\\[\\]/]"), "")
-            .replace(Regex("[^a-zA-Z0-9_-]"), "_")
-            .take(30)
-            .trim('_')
-    } ?: ""
-
-    return when {
-        id != null && id != 0L && safeName.isNotEmpty() ->
-            "${prefix}_${id}_${safeName}"
-        id != null && id != 0L ->
-            "${prefix}_${id}_${System.currentTimeMillis()}"
-        safeName.isNotEmpty() ->
-            "${prefix}_${safeName}_${System.currentTimeMillis()}"
-        else ->
-            "${prefix}_${System.currentTimeMillis()}_${(1000..9999).random()}"
-    }
-}
 
 suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extractedsetDataInlineFunFixed(
     datas: List<DataBase>,
@@ -76,7 +53,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extract
             val (safeKey, updatedData) = when (data) {
                 is D_TarificationInfos -> {
                     val updated = data.withProperDefaults()
-                    val key = generateSafeFirebaseKey("TARIF", updated.id, updated.nom)
+                    val key = getKeyFireBase(updated.id, updated.nom)
 
                     itemMap["keyFireBase"] = key
                     itemMap["nom"] = updated.nom
@@ -87,7 +64,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extract
 
                 is A_ProduitInfos -> {
                     val updated = data.withProperKeyFireBase()
-                    val key = generateSafeFirebaseKey("PROD", updated.idArticle, updated.nomArticleFinale)
+                    val key = getKeyFireBase(updated.idArticle, updated.nomArticleFinale)
 
                     itemMap["keyFireBase"] = key
                     itemMap["needUpdate"] = true
@@ -96,7 +73,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extract
                 }
 
                 else -> {
-                    val fallbackKey = generateSafeFirebaseKey("UNKNOWN", null, null)
+                    val fallbackKey = getKeyFireBase(null, null)
                     itemMap["keyFireBase"] = fallbackKey
                     Pair(fallbackKey, data)
                 }

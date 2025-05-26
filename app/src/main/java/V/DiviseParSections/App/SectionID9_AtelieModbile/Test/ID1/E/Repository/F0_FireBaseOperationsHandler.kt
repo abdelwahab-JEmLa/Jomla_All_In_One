@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
@@ -16,7 +17,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.reflect.KClass
+import kotlin.reflect.full.memberProperties
 
 class F0_FireBaseOperationsHandler(
     val onProgressUpdate: (Float) -> Unit = { }
@@ -207,8 +210,60 @@ class F0_FireBaseOperationsHandler(
             val processedCount = 0
             val totalCount = mapData.size
 
-            extension_upsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount, totalCount)
+            var processedCount1 = processedCount
+            mapData.values.forEach { tariff ->
+                try {
+                    val tariffMap = mutableMapOf<String, Any>()
 
+                    tariff::class.memberProperties.forEach { prop ->
+                        try {
+                            val value = prop.getter.call(tariff)
+                            when {
+                                value == null -> tariffMap[prop.name] = "null"
+                                value::class.java.isEnum -> tariffMap[prop.name] = value.toString()
+                                else -> tariffMap[prop.name] = value
+                            }
+                        } catch (e: Exception) {
+                            tariffMap[prop.name] = "null"
+                        }
+                    }
+
+                    val key = getKeyFireBase(tariff.id, tariff.nom)
+
+                    tariffsMap[key] = tariffMap
+                    resultMap[key] = tariff
+
+                    processedCount1++
+                    val progress = 0.3f + (processedCount1.toFloat() / totalCount) * 0.4f
+                    onProgressUpdate(progress)
+
+                } catch (e: Exception) {
+                    onProgressUpdate(0.5f)
+                }
+            }
+
+            if (tariffsMap.isNotEmpty()) {
+                try {
+                    onProgressUpdate(0.8f)
+
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        childD_TarificationInfos.updateChildren(tariffsMap)
+                            .addOnSuccessListener {
+                                continuation.resume(Unit)
+                            }
+                            .addOnFailureListener { exception ->
+                                continuation.resumeWithException(exception)
+                            }
+                    }
+
+                    onProgressUpdate(1f)
+
+                } catch (firebaseException: Exception) {
+                    onProgressUpdate(0.8f)
+                }
+            } else {
+                onProgressUpdate(1f)
+            }
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
@@ -216,7 +271,55 @@ class F0_FireBaseOperationsHandler(
             onAddSuccess(emptyMap())
         }
     }
+    // Add this function to F0_FireBaseOperationsHandler class
 
+    suspend inline fun <reified DataBase : Any> deleteRef(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext suspendCancellableCoroutine { continuation ->
+            try {
+                onProgressUpdate(0.1f)
+
+                val childRef = when (DataBase::class) {
+                    D_TarificationInfos::class -> childD_TarificationInfos
+                    A_ProduitInfos::class -> childA_ProduitInfos
+                    else -> {
+                        onProgressUpdate(0f)
+                        continuation.resume(false)
+                        return@suspendCancellableCoroutine
+                    }
+                }
+
+                onProgressUpdate(0.5f)
+
+                childRef.removeValue()
+                    .addOnSuccessListener {
+                        onProgressUpdate(1f)
+                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                            "deleteRef",
+                            childRef,
+                            0,
+                            true
+                        )
+                        continuation.resume(true)
+                    }
+                    .addOnFailureListener { exception ->
+                        onProgressUpdate(0f)
+                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                            "deleteRef",
+                            childRef,
+                            0,
+                            false,
+                            exception
+                        )
+                        continuation.resume(false)
+                    }
+
+            } catch (e: Exception) {
+                onProgressUpdate(0f)
+                e.printStackTrace()
+                continuation.resume(false)
+            }
+        }
+    }
     fun verifyDatabaseStructure(onResult: (String) -> Unit) {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
