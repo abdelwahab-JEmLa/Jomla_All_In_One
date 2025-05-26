@@ -87,7 +87,7 @@ fun MainList(
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
-                    nombreUnite = 10
+                    nombreUnite = filteredProduit.nmbrUnite
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -97,7 +97,6 @@ fun MainList(
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {
-                // Fixed: Use maxPrixArriveDuProduit if available and valid, otherwise use base price
                 val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
                     maxPrixArriveDuProduit
                 } else {
