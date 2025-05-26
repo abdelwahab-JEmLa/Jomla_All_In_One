@@ -29,15 +29,15 @@ class ViewModelPanierFinaleDAchat_FragIdB2(
 
         // Only call updateChangePrixDeBase if the flag is true
         if (updateChangePrixDeBase) {
-            updateChangePrixDeBase(newPrice, produitAcheteOperation?.vid ?: 0L)
+            updateChangePrixDeBase(newPrice, produitAcheteOperation?.produitAcheterID ?: 0L)
         }
     }
 
-    private fun updateChangePrixDeBase(newPrice: Double, vid: Long) {
+    private fun updateChangePrixDeBase(newPrice: Double, produitAcheterID: Long) {
         val currentData = groupedDataBasesRepository.modelListFlow.value
             .firstOrNull()
             ?.a_ProduitInfos
-            ?.find { it.id == vid }
+            ?.find { it.id == produitAcheterID }
 
         currentData?.let { produitInfo ->
             val updatedProduitInfo = produitInfo.copy(
