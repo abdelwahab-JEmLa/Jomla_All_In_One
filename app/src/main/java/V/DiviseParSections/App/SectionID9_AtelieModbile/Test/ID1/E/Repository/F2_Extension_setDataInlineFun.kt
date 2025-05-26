@@ -8,7 +8,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
-suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extractedsetDataInlineFunFixed(
+suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler
+    .extractedFrom_setDataInlineFunFixed(
     datas: List<DataBase>,
     processedCount: Int,
     dataMap: MutableMap<String, Any>,
@@ -144,7 +145,7 @@ fun isValidFirebaseKey(key: String): Boolean {
         key.contains('[') -> false
         key.contains(']') -> false
         key.contains('/') -> false
-        key.any { it.toInt() < 32 || it.toInt() == 127 } -> false
+        key.any { it.code < 32 || it.code == 127 } -> false
         else -> true
     }
 }

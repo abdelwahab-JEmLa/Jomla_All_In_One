@@ -129,7 +129,7 @@ class F0_FireBaseOperationsHandler(
                     onProgressUpdate(0.1f)
                     val firebaseDatabase = FirebaseDatabase.getInstance()
                     val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
-                    val (originalCount, resultMap) = pairgetAncienDB_changeKeysFireBase(refDBJetPackExport)
+                    val (originalCount, resultMap) = extracteFrom_getAncienDB_changeKeysFireBase(refDBJetPackExport)
                     continuation.resume(Pair(originalCount, resultMap))
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -163,7 +163,7 @@ class F0_FireBaseOperationsHandler(
             val processedCount = 0
             val totalCount = datas.size
 
-            extractedsetDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
+            extractedFrom_setDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
 
             return@withContext resultMap
 
