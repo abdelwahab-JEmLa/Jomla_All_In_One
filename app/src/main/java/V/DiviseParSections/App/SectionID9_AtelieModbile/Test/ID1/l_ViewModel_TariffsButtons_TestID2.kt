@@ -127,7 +127,6 @@ class TariffsButtonsViewModel_TestID2(
                     }
                 }
 
-                // FIXED TODO(1): Added collector for A_ProduitInfos from groupedDataBases
                 var tariffsList = emptyList<D_TarificationInfos>()
                 var a_produitList = emptyList<A_ProduitInfos>()
 

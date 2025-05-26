@@ -320,28 +320,5 @@ class F0_FireBaseOperationsHandler(
             }
         }
     }
-    fun verifyDatabaseStructure(onResult: (String) -> Unit) {
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val structure = StringBuilder()
-                structure.append("Database structure at ${ref.toString()}:\n")
-
-                if (snapshot.exists()) {
-                    structure.append("Root exists: true\n")
-                    snapshot.children.forEach { child ->
-                        structure.append("- ${child.key}: ${child.childrenCount} items\n")
-                    }
-                } else {
-                    structure.append("Root exists: false\n")
-                }
-
-                onResult(structure.toString())
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                onResult("Error verifying structure: ${error.message}")
-            }
-        })
-    }
 
 }

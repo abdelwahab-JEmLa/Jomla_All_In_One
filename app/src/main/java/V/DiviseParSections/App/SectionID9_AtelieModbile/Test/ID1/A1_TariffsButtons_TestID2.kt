@@ -70,6 +70,7 @@ fun TariffsButtons_TestID2(
         afficheButtons = false
         onFermDialogeAvecAnllation()
     }
+
     Text("$produitInfosList")
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {

@@ -58,11 +58,6 @@ class E_GroupedDataBasesRepository(
     private fun initializeTarificationInfos() {
         updateProgress(0f)
 
-        fireBase.verifyDatabaseStructure { structure ->
-            // Log the database structure for debugging purposes
-            println("Database Structure Verification: $structure")
-        }
-
         fireBase.getDataFromFirebase { tariffDataList, produitInfoList ->
             repoCoroutineScope.launch {
                 try {
@@ -79,15 +74,15 @@ class E_GroupedDataBasesRepository(
                         }
                     }
 
-                    val migrateOldData = true
+                    val migrateOldData = false
                     if (migrateOldData) {
                         try {
                             fireBase.deleteRef<A_ProduitInfos>()
 
                             val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
-                            println("Migration completed: $originalCount original items, ${processedMap.size} processed items")
+                            println("Migration completed: $originalCount original items, ${processedMap.size} processed items")   //<--
+                            //TODO(1): change les on log d
 
-                            // Use processedMap for further processing if needed
                             if (processedMap.isNotEmpty()) {
                                 println("Successfully migrated products with Firebase keys:")
                                 processedMap.forEach { (key, product) ->
@@ -98,16 +93,16 @@ class E_GroupedDataBasesRepository(
                             migrationError.printStackTrace()
                         }
                     }
+
                     if (!room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>() && produitInfoList.isNotEmpty()) {
                         val insertResult = room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
 
                         // Use insertResult to log or handle insertion results
-                        println("Product insertion completed: ${insertResult.size} products inserted")
+                        println("Product insertion completed: ${insertResult.size} products inserted")     //<--
+                        //TODO(1): change les on log d
                         if (insertResult.isNotEmpty()) {
-                            println("Successfully inserted products:")
-                            insertResult.forEach { (id, product) ->
-                                println("ID: $id, Product: ${product.nomArticleFinale}")
-                            }
+                            println("Successfully inserted products:")    //<--
+                            //TODO(1): change les on log d
                         }
 
                         updateProgress(0.8f)
