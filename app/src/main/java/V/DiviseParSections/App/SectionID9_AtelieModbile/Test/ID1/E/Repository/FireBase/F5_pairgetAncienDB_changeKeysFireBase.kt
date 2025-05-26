@@ -30,7 +30,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFrom_getAncienDB_changeKeysFir
 
 
         onProgressUpdate(0.7f)
-        val resultMap = setDataInlineFun<A_ProduitInfos>(a_ProduitInfosList)
+        val resultMap = setListDataInlineFun<A_ProduitInfos>(a_ProduitInfosList)
 
         onProgressUpdate(1f)
 

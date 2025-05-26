@@ -214,10 +214,10 @@ class E_GroupedDataBasesRepository(
                 fireBase.deleteRef<A_ProduitInfos>()
                 val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
 
-                // Convert the Map values to List for setDataInlineFun
+                // Convert the Map values to List for setListDataInlineFun
                 val newDataList = resultMap.values.toList()
 
-                fireBase.setDataInlineFun<A_ProduitInfos>(newDataList)
+                fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
 
             } catch (migrationError: Exception) {
                 // Handle migration error silently or log it

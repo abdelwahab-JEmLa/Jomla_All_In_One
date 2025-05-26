@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.parseDepuitOldAuNew
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
@@ -140,7 +141,7 @@ class F0_FireBaseOperationsHandler(
     }
 
 
-    suspend inline fun <reified DataBase : Any> setDataInlineFun(
+    suspend inline fun <reified DataBase : Any> setListDataInlineFun(
         datas: List<DataBase> = emptyList()
     ): Map<String, DataBase> = withContext(Dispatchers.IO) {
         try {
@@ -151,15 +152,81 @@ class F0_FireBaseOperationsHandler(
                 return@withContext emptyMap()
             }
 
-            onProgressUpdate(0.3f)
-            val dataMap = mutableMapOf<String, Any>()
-            val resultMap = mutableMapOf<String, DataBase>()
-            val processedCount = 0
-            val totalCount = datas.size
+            // Determine which child reference to use based on data type
+            val childRef = when (DataBase::class) {
+                D_TarificationInfos::class -> childD_TarificationInfos
+                A_ProduitInfos::class -> childA_ProduitInfos
+                else -> {
+                    onProgressUpdate(0f)
+                    return@withContext emptyMap()
+                }
+            }
 
-            extractedFrom_setDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
+            val totalItems = datas.size
+            var processedItems = 0
 
-            return@withContext resultMap
+            // Process each data item - just set by keyFireBase
+            for (data in datas) {
+                try {
+                    // Generate proper key for Firebase
+                    val keyFireBase = when (data) {
+                        is D_TarificationInfos -> {
+                            val updated = data.withProperDefaults()
+                            updated.keyFireBase
+                        }
+                        is A_ProduitInfos -> {
+                            val updated = data.withProperKeyFireBase()
+                            updated.keyFireBase
+                        }
+                        else -> {
+                            // Fallback key generation
+                            val id = try {
+                                val idField = data::class.java.getDeclaredField("id")
+                                idField.isAccessible = true
+                                idField.getLong(data)
+                            } catch (e: Exception) {
+                                0L
+                            }
+
+                            val nom = try {
+                                val nomField = data::class.java.getDeclaredField("nom")
+                                nomField.isAccessible = true
+                                nomField.get(data) as? String ?: ""
+                            } catch (e: Exception) {
+                                ""
+                            }
+
+                            getKeyFireBase(id, nom)
+                        }
+                    }
+
+                    // Just set data in Firebase by keyFireBase - no return needed
+                    suspendCancellableCoroutine<Unit> { continuation ->
+                        childRef.child(keyFireBase).setValue(data)       //<--
+                        //TODO(1): utilise ici le batch set 
+                            .addOnSuccessListener {
+                                continuation.resume(Unit)
+                            }
+                            .addOnFailureListener { exception ->
+                                exception.printStackTrace()
+                                continuation.resume(Unit)
+                            }
+                    }
+
+                    processedItems++
+
+                    // Update progress
+                    val progress = 0.1f + (0.8f * processedItems / totalItems)
+                    onProgressUpdate(progress)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // Continue processing other items even if one fails
+                }
+            }
+
+            onProgressUpdate(1f)
+            return@withContext emptyMap()
 
         } catch (e: Exception) {
             e.printStackTrace()

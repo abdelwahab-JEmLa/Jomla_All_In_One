@@ -86,7 +86,7 @@ data class A_ProduitInfos(
 }
 
 fun getActiveMigration(): Boolean {
-    return true
+    return false
 }
 
 fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =

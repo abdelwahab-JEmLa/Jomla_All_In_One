@@ -49,10 +49,11 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos?
         val args = mutableMapOf<String, Any?>()
 
         constructor.valueParameters.forEach { param ->
-            val paramName = param.name ?: return@forEach
+            val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
             val value = when (paramName) {
                 "typeTarificationEnumT2Correspond" -> {
                     val enumString = childSnap.child(paramName).getValue(String::class.java) ?: "PRIX_BASE"
+                    // FIXED: Using paramName variable instead of param.name property
                     try {
                         TypeTarificationEnumT2.valueOf(enumString)
                     } catch (e: IllegalArgumentException) {
@@ -64,6 +65,7 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos?
             args[paramName] = value
         }
 
+        // Special handling for computed fields
         val id = args["id"] as? Long ?: 0L
         val nom = args["nom"] as? String ?: ""
         val keyFireBase = childSnap.key ?: getKeyFireBase(id, nom)
