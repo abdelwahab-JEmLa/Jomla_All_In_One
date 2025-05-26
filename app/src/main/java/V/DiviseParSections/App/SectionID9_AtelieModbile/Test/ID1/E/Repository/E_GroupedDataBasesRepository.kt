@@ -46,7 +46,6 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-    // UPDATED: Now uses the fixed insert function that returns both ID and data
     fun insert(
         data: Any,
         onSuccess: (Long, Any) -> Unit = { _, _ -> },

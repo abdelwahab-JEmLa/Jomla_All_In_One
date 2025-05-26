@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -17,8 +16,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,6 +41,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
@@ -50,7 +55,8 @@ fun C_MainItem_APP2_ID_2(
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (String) -> Unit,
-    headRepository: _0_0_HeadSQLRepositorys= koinInject()
+    headRepository: _0_0_HeadSQLRepositorys= koinInject() ,
+    viewModel: ViewModelPanierFinaleDAchat_FragIdB2 = koinViewModel()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         .repositoryC2_ProduitAcheteOperation
@@ -242,18 +248,39 @@ fun C_MainItem_APP2_ID_2(
                                                 keyboardType = KeyboardType.Number,
                                                 imeAction = ImeAction.Done
                                             ),
-                                            trailingIcon={
-                                                //<--
-                                                //TODO(1): fait que ce soit ntoggle button qui toggle updateChangePrixDeBase
-                                            } ,
+                                            trailingIcon = {
+                                                Icon(
+                                                    imageVector = if (updateChangePrixDeBase)
+                                                        Icons.Filled.SwapVert
+                                                    else
+                                                        Icons.Filled.SwapHoriz,
+                                                    contentDescription = if (updateChangePrixDeBase)
+                                                        "Update base price enabled"
+                                                    else
+                                                        "Update base price disabled",
+                                                    tint = if (updateChangePrixDeBase)
+                                                        MaterialTheme.colorScheme.primary
+                                                    else
+                                                        MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier
+                                                        .clickable(
+                                                            indication = null, // Remove ripple effect if needed
+                                                            interactionSource = remember { MutableInteractionSource() }
+                                                        ) {
+                                                            updateChangePrixDeBase = !updateChangePrixDeBase
+                                                        }
+                                                        .padding(8.dp) // Add some padding for better touch target
+                                                )
+                                            },
                                             keyboardActions = KeyboardActions(
                                                 onDone = {
-                                                    // Update the price when Done is pressed
-                                                    updatePrice(
+                                                    // Update the price when Done is pressed, passing the toggle state
+                                                    viewModel.updatePrice(
                                                         priceText,
                                                         defaultPrice,
                                                         relative_1_2_ProduitAcheteOperation,
-                                                        _0_HeadOfRepositorys_Repository_Model
+                                                        _0_HeadOfRepositorys_Repository_Model,
+                                                        updateChangePrixDeBase // Pass the toggle state
                                                     )
                                                     focusManager.clearFocus()
                                                     keyboardController?.hide()
@@ -349,7 +376,7 @@ fun C_MainItem_APP2_ID_2(
                                     keyboardActions = KeyboardActions(
                                         onDone = {
                                             // Update the price when Done is pressed
-                                            updatePrice(
+                                            viewModel.updatePrice(
                                                 priceText,
                                                 defaultPrice,
                                                 relative_1_2_ProduitAcheteOperation,
@@ -448,27 +475,3 @@ fun C_MainItem_APP2_ID_2(
     }
 }
 
-private fun updatePrice(
-    priceText: String,
-    defaultPrice: Double,
-    produitAcheteOperation: _1_2_ProduitAcheteOperation?,
-    repositoryModel:_0_0_HeadOfRepositorys_Model,
-) {
-    val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
-
-    produitAcheteOperation?.let { product ->
-        val updatedProduct = product.copy(
-            provisoireMonPrix = newPrice
-        )
-        repositoryModel
-            .repositoryC2_ProduitAcheteOperation
-            .updateUnSeulData(updatedProduct)
-    }
-
-       //<--
-       //TODO(1): fait que si updateChangePrixDeBase de lence updateChangePrixDeBase(newPrice)
-}
-fun updateChangePrixDeBase(newPrice: Double): Unit {
-                  //<--
-                  //TODO(1): ici fait
-}

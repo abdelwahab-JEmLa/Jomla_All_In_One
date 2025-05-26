@@ -25,13 +25,11 @@ import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
 
-
 @Composable
 fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     modifier: Modifier = Modifier,
     onConfirmOrder: () -> Unit,
     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
-
 ) {
     val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadSQLRepositorys
@@ -42,8 +40,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
         .repository_1_3_TransactionCommercial
-        .modelDatasSnapList.find { it.vid == composeKeyVID } //<--
-        //TODO(1): cree log pk c -1 
+        .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         .repositoryC2_ProduitAcheteOperation
@@ -144,6 +141,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
         }
     }
 }
+
 private fun calcule_totalPrice(
     produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
