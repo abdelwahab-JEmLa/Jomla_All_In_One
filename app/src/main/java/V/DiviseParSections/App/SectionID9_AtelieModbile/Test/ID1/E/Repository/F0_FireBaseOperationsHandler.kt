@@ -1,4 +1,3 @@
-// ===== F0_FireBaseOperationsHandler.kt - Fixed getDatas function =====
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
