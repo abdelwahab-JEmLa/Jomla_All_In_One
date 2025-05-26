@@ -100,7 +100,7 @@ class E_GroupedDataBasesRepository(
         if (migrateOldData) {
             try {
                 fireBase.deleteRef<A_ProduitInfos>()
-                val (originalCount, processedMap) = fireBase.getAncienDB_changeKeysFireBase()
+                fireBase.getAncienDB_changeKeysFireBase()
             } catch (migrationError: Exception) {
             }
         }
