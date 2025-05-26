@@ -174,7 +174,7 @@ class F0_FireBaseOperationsHandler(
             onProgressUpdate(0.3f)
             val dataMap = mutableMapOf<String, Any>()
             val resultMap = mutableMapOf<String, DataBase>()
-            var processedCount = 0
+            val processedCount = 0
             val totalCount = datas.size
 
             extractedsetDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
@@ -204,7 +204,7 @@ class F0_FireBaseOperationsHandler(
             val tariffsMap = mutableMapOf<String, Any>()
             val resultMap = mutableMapOf<String, D_TarificationInfos>()
 
-            var processedCount = 0
+            val processedCount = 0
             val totalCount = mapData.size
 
             extractedupsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount, totalCount)
