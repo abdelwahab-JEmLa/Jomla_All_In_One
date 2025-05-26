@@ -36,7 +36,6 @@ fun TariffsButtons_TestID2(
     showLabels: Boolean = true,
     filterProductId: Long = 0,
     filterBonId: Long = 0,
-
     fermeDialog: (D_TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitDialogeAchate: Boolean = false,
