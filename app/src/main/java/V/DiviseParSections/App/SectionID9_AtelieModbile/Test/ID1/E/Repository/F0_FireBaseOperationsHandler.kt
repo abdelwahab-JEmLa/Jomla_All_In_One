@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
@@ -14,12 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
 
 class F0_FireBaseOperationsHandler(
     val onProgressUpdate: (Float) -> Unit = { }
@@ -41,7 +37,20 @@ class F0_FireBaseOperationsHandler(
         coroutineScope.launch {
             try {
                 val isConnected = F6_FirebaseDebugUtils.verifyFirebaseReference(ref)
+                F6_FirebaseDebugUtils.logFirebaseOperation(
+                    "verifyFirebaseConnectivity",
+                    ref,
+                    0,
+                    isConnected
+                )
             } catch (e: Exception) {
+                F6_FirebaseDebugUtils.logFirebaseOperation(
+                    "verifyFirebaseConnectivity",
+                    ref,
+                    0,
+                    false,
+                    e
+                )
                 e.printStackTrace()
             }
         }
@@ -53,16 +62,37 @@ class F0_FireBaseOperationsHandler(
             List<A_ProduitInfos>,
         ) -> Unit
     ) {
-        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref)
+        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase_START", ref)
         onProgressUpdate(0.1f)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
+                    F6_FirebaseDebugUtils.logFirebaseOperation(
+                        "getDataFromFirebase_SNAPSHOT_EXISTS",
+                        ref,
+                        0,
+                        snapshot.exists()
+                    )
+
                     if (snapshot.exists()) {
                         onProgressUpdate(0.3f)
 
+                        // Debug: Log all available children
+                        println("=== Available Firebase Children ===")
+                        snapshot.children.forEach { child ->
+                            println("Child key: ${child.key}, exists: ${child.exists()}, childrenCount: ${child.childrenCount}")
+                        }
+                        println("===================================")
+
                         val tarificationsSnapshot = snapshot.child("D_TarificationInfos")
+                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                            "TARIFICATION_SNAPSHOT",
+                            childD_TarificationInfos,
+                            tarificationsSnapshot.childrenCount.toInt(),
+                            tarificationsSnapshot.exists()
+                        )
+
                         val mappedTarifications = if (tarificationsSnapshot.exists()) {
                             mapSnapshotToObjects(tarificationsSnapshot, D_TarificationInfos::class)
                         } else {
@@ -72,6 +102,32 @@ class F0_FireBaseOperationsHandler(
                         onProgressUpdate(0.6f)
 
                         val productsSnapshot = snapshot.child("A_ProduitInfos")
+                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                            "PRODUCTS_SNAPSHOT",
+                            childA_ProduitInfos,
+                            productsSnapshot.childrenCount.toInt(),
+                            productsSnapshot.exists()
+                        )
+
+                        // Debug: Log sample product data
+                        if (productsSnapshot.exists()) {
+                            println("=== Sample Product Data ===")
+                            productsSnapshot.children.take(3).forEach { child ->
+                                println("Product key: ${child.key}")
+                                println("Product data sample:")
+                                child.children.take(5).forEach { field ->
+                                    println("  ${field.key}: ${field.value}")
+                                }
+                                println("---")
+                            }
+                            println("==========================")
+                        } else {
+                            println("=== No Products Found ===")
+                            println("Products snapshot path: ${productsSnapshot.ref}")
+                            println("Products snapshot exists: ${productsSnapshot.exists()}")
+                            println("========================")
+                        }
+
                         val mappedProducts = if (productsSnapshot.exists()) {
                             mapSnapshotToObjects(productsSnapshot, A_ProduitInfos::class)
                         } else {
@@ -80,26 +136,36 @@ class F0_FireBaseOperationsHandler(
 
                         onProgressUpdate(0.9f)
 
-                        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, mappedTarifications.size + mappedProducts.size, true)
+                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                            "getDataFromFirebase_SUCCESS",
+                            ref,
+                            mappedTarifications.size + mappedProducts.size,
+                            true
+                        )
+
+                        println("=== Final Results ===")
+                        println("Tarifications count: ${mappedTarifications.size}")
+                        println("Products count: ${mappedProducts.size}")
+                        println("====================")
 
                         onAddSuccess(mappedTarifications, mappedProducts)
                         onProgressUpdate(1f)
 
                     } else {
-                        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, true)
+                        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase_EMPTY", ref, 0, true)
                         onProgressUpdate(1f)
                         onAddSuccess(emptyList(), emptyList())
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, e)
+                    F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase_ERROR", ref, 0, false, e)
                     onProgressUpdate(0f)
                     onAddSuccess(emptyList(), emptyList())
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, Exception(error.message))
+                F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase_CANCELLED", ref, 0, false, Exception(error.message))
                 onProgressUpdate(0f)
                 onAddSuccess(emptyList(), emptyList())
             }
@@ -112,10 +178,32 @@ class F0_FireBaseOperationsHandler(
     ): List<T> {
         return try {
             val results = mutableListOf<T>()
+            F6_FirebaseDebugUtils.logFirebaseOperation(
+                "mapSnapshotToObjects_START",
+                snapshot.ref,
+                snapshot.childrenCount.toInt(),
+                snapshot.exists()
+            )
+
             getDatas<T>(snapshot, kClass, results)
+
+            F6_FirebaseDebugUtils.logFirebaseOperation(
+                "mapSnapshotToObjects_SUCCESS",
+                snapshot.ref,
+                results.size,
+                true
+            )
+
             results
         } catch (e: Exception) {
             e.printStackTrace()
+            F6_FirebaseDebugUtils.logFirebaseOperation(
+                "mapSnapshotToObjects_ERROR",
+                snapshot.ref,
+                0,
+                false,
+                e
+            )
             emptyList()
         }
     }
@@ -125,31 +213,18 @@ class F0_FireBaseOperationsHandler(
             coroutineScope.launch {
                 try {
                     onProgressUpdate(0.1f)
+                    F6_FirebaseDebugUtils.logFirebaseOperation("getAncienDB_START", ref)
+
                     val firebaseDatabase = FirebaseDatabase.getInstance()
                     val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
 
-                    onProgressUpdate(0.3f)
-                    val articlesSnapshot = refDBJetPackExport.get().await()
-                    val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                        snapshot.getValue(ArticlesBasesStatsTable::class.java)
-                    }
-
-                    onProgressUpdate(0.5f)
-                    val productsWithoutKeys = articles.map { product ->
-                        product.copy(keyFireBase = "")
-                    }
-
-                    val a_ProduitInfosList = convertArticlesBasesToProduitInfos(productsWithoutKeys)
-                    val originalCount = a_ProduitInfosList.size
-
-                    onProgressUpdate(0.7f)
-                    val resultMap = setDataInlineFun<A_ProduitInfos>(a_ProduitInfosList)
-
-                    onProgressUpdate(1f)
+                    val (originalCount, resultMap) = pairgetAncienDB_changeKeysFireBase(refDBJetPackExport)
 
                     continuation.resume(Pair(originalCount, resultMap))
 
                 } catch (e: Exception) {
+                    e.printStackTrace()
+                    F6_FirebaseDebugUtils.logFirebaseOperation("getAncienDB_ERROR", ref, 0, false, e)
                     onProgressUpdate(0f)
                     continuation.resume(Pair(0, emptyMap()))
                 }
@@ -157,17 +232,20 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    private fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
+
+
+    fun convertArticlesBasesToProduitInfos(anciennesListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
         return anciennesListe.map { ancien ->
             aProduitinfos(ancien)
         }
     }
 
-    private suspend inline fun <reified DataBase : Any> setDataInlineFun(
+    suspend inline fun <reified DataBase : Any> setDataInlineFun(
         datas: List<DataBase> = emptyList()
     ): Map<String, DataBase> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
+            F6_FirebaseDebugUtils.logFirebaseOperation("setDataInlineFun_START", ref, datas.size, true)
 
             if (datas.isEmpty()) {
                 onProgressUpdate(1f)
@@ -182,9 +260,18 @@ class F0_FireBaseOperationsHandler(
 
             extractedsetDataInlineFunFixed<DataBase>(datas, processedCount, dataMap, resultMap, totalCount)
 
+            F6_FirebaseDebugUtils.logFirebaseOperation(
+                "setDataInlineFun_SUCCESS",
+                ref,
+                resultMap.size,
+                true
+            )
+
             return@withContext resultMap
 
         } catch (e: Exception) {
+            e.printStackTrace()
+            F6_FirebaseDebugUtils.logFirebaseOperation("setDataInlineFun_ERROR", ref, 0, false, e)
             onProgressUpdate(0f)
             return@withContext emptyMap()
         }
@@ -196,6 +283,7 @@ class F0_FireBaseOperationsHandler(
     ) = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
+            F6_FirebaseDebugUtils.logFirebaseOperation("upsertAllAndReturnListIdToData_START", childD_TarificationInfos, mapData.size, true)
 
             if (mapData.isEmpty()) {
                 onProgressUpdate(1f)
@@ -207,118 +295,20 @@ class F0_FireBaseOperationsHandler(
             val tariffsMap = mutableMapOf<String, Any>()
             val resultMap = mutableMapOf<String, D_TarificationInfos>()
 
-            val processedCount = 0
+            var processedCount1 = 0
             val totalCount = mapData.size
 
-            var processedCount1 = processedCount
-            mapData.values.forEach { tariff ->
-                try {
-                    val tariffMap = mutableMapOf<String, Any>()
-
-                    tariff::class.memberProperties.forEach { prop ->
-                        try {
-                            val value = prop.getter.call(tariff)
-                            when {
-                                value == null -> tariffMap[prop.name] = "null"
-                                value::class.java.isEnum -> tariffMap[prop.name] = value.toString()
-                                else -> tariffMap[prop.name] = value
-                            }
-                        } catch (e: Exception) {
-                            tariffMap[prop.name] = "null"
-                        }
-                    }
-
-                    val key = getKeyFireBase(tariff.id, tariff.nom)
-
-                    tariffsMap[key] = tariffMap
-                    resultMap[key] = tariff
-
-                    processedCount1++
-                    val progress = 0.3f + (processedCount1.toFloat() / totalCount) * 0.4f
-                    onProgressUpdate(progress)
-
-                } catch (e: Exception) {
-                    onProgressUpdate(0.5f)
-                }
-            }
-
-            if (tariffsMap.isNotEmpty()) {
-                try {
-                    onProgressUpdate(0.8f)
-
-                    suspendCancellableCoroutine<Unit> { continuation ->
-                        childD_TarificationInfos.updateChildren(tariffsMap)
-                            .addOnSuccessListener {
-                                continuation.resume(Unit)
-                            }
-                            .addOnFailureListener { exception ->
-                                continuation.resumeWithException(exception)
-                            }
-                    }
-
-                    onProgressUpdate(1f)
-
-                } catch (firebaseException: Exception) {
-                    onProgressUpdate(0.8f)
-                }
-            } else {
-                onProgressUpdate(1f)
-            }
+            extractedFromeupsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount1, totalCount)
             onAddSuccess(resultMap)
 
         } catch (e: Exception) {
+            e.printStackTrace()
+            F6_FirebaseDebugUtils.logFirebaseOperation("upsertAllAndReturnListIdToData_ERROR", childD_TarificationInfos, 0, false, e)
             onProgressUpdate(0f)
             onAddSuccess(emptyMap())
         }
     }
-    // Add this function to F0_FireBaseOperationsHandler class
 
-    suspend inline fun <reified DataBase : Any> deleteRef(): Boolean = withContext(Dispatchers.IO) {
-        return@withContext suspendCancellableCoroutine { continuation ->
-            try {
-                onProgressUpdate(0.1f)
 
-                val childRef = when (DataBase::class) {
-                    D_TarificationInfos::class -> childD_TarificationInfos
-                    A_ProduitInfos::class -> childA_ProduitInfos
-                    else -> {
-                        onProgressUpdate(0f)
-                        continuation.resume(false)
-                        return@suspendCancellableCoroutine
-                    }
-                }
-
-                onProgressUpdate(0.5f)
-
-                childRef.removeValue()
-                    .addOnSuccessListener {
-                        onProgressUpdate(1f)
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
-                            "deleteRef",
-                            childRef,
-                            0,
-                            true
-                        )
-                        continuation.resume(true)
-                    }
-                    .addOnFailureListener { exception ->
-                        onProgressUpdate(0f)
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
-                            "deleteRef",
-                            childRef,
-                            0,
-                            false,
-                            exception
-                        )
-                        continuation.resume(false)
-                    }
-
-            } catch (e: Exception) {
-                onProgressUpdate(0f)
-                e.printStackTrace()
-                continuation.resume(false)
-            }
-        }
-    }
 
 }
