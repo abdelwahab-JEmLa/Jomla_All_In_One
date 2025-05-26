@@ -65,32 +65,12 @@ data class A_ProduitInfos(
 ) {
     fun withProperKeyFireBase(): A_ProduitInfos {
         val safeKey = keyFireBase.ifEmpty {
-            getKeyFireBaseSafe(idArticle, nomArticleFinale)
+            getKeyFireBase(idArticle, nomArticleFinale)
         }
         return this.copy(
             keyFireBase = safeKey,
             needUpdate = true
         )
-    }
-    // Updated version for A_ProduitInfos
-    private fun A_ProduitInfos.getKeyFireBaseSafe(
-        dataId: Long? = null,
-        dataNom: String? = null
-    ): String {
-        val cleanedNom = (dataNom ?: nomArticleFinale).replace(Regex("[.#$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?]"), "")
-            .replace(" ", "_")
-            .replace("-", "_")
-            .take(50)
-            .trim()
-
-        val id = dataId ?: this.idArticle
-
-        return when {
-            id != 0L && cleanedNom.isNotEmpty() -> "PROD_${id}_${cleanedNom}"
-            id != 0L -> "PROD_${id}_${System.currentTimeMillis()}"
-            cleanedNom.isNotEmpty() -> "PROD_${cleanedNom}_${System.currentTimeMillis()}"
-            else -> ""
-        }
     }
 
 }

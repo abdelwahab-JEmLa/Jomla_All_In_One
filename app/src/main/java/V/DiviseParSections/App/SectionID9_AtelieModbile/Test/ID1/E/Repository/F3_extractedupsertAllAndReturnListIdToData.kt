@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBaseSafe
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getKeyFireBase
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.full.memberProperties
 
-suspend fun F0_FireBaseOperationsHandler.extractedupsertAllAndReturnListIdToData(
+suspend fun F0_FireBaseOperationsHandler.extension_upsertAllAndReturnListIdToData(
     mapData: Map<Long, D_TarificationInfos>,
     tariffsMap: MutableMap<String, Any>,
     resultMap: MutableMap<String, D_TarificationInfos>,
@@ -32,7 +32,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedupsertAllAndReturnListIdToData
                 }
             }
 
-            val key = getKeyFireBaseSafe(tariff.id, tariff.nom)
+            val key = getKeyFireBase(tariff.id, tariff.nom)
 
             tariffsMap[key] = tariffMap
             resultMap[key] = tariff

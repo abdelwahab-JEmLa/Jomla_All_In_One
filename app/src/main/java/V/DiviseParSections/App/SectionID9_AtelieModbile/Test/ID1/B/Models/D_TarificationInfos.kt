@@ -38,7 +38,7 @@ data class D_TarificationInfos(
     fun withProperDefaults(): D_TarificationInfos {
         val properNom = nom.ifEmpty { getStrDateTime(timestamps) }
         val safeKey = keyFireBase.ifEmpty {
-            getKeyFireBaseSafe(id, properNom)
+            getKeyFireBase(id, properNom)
         }
         return this.copy(
             nom = properNom,
@@ -46,16 +46,7 @@ data class D_TarificationInfos(
             needUpdate = true
         )
     }
-    fun getKeyFireBase(
-        dataId: Long? = null,
-        dataNom: String? = null
-    ): String {
-        return if (dataId != null && dataId != 0L) {
-            "-<$dataId($dataNom)"
-        } else {
-            "-<$dataNom"
-        }
-    }
+
 
     @SuppressLint("DefaultLocale")
     fun getStrDateTime(vidTimestamp: Long): String {

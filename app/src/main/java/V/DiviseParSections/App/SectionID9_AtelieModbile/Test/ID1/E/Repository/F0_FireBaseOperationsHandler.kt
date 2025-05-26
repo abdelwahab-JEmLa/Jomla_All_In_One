@@ -37,7 +37,7 @@ class F0_FireBaseOperationsHandler(
     private fun verifyFirebaseConnectivity() {
         coroutineScope.launch {
             try {
-                val isConnected = FirebaseDebugUtils.verifyFirebaseReference(ref)
+                val isConnected = F6_FirebaseDebugUtils.verifyFirebaseReference(ref)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -50,7 +50,7 @@ class F0_FireBaseOperationsHandler(
             List<A_ProduitInfos>,
         ) -> Unit
     ) {
-        FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref)
+        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref)
         onProgressUpdate(0.1f)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -77,26 +77,26 @@ class F0_FireBaseOperationsHandler(
 
                         onProgressUpdate(0.9f)
 
-                        FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, mappedTarifications.size + mappedProducts.size, true)
+                        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, mappedTarifications.size + mappedProducts.size, true)
 
                         onAddSuccess(mappedTarifications, mappedProducts)
                         onProgressUpdate(1f)
 
                     } else {
-                        FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, true)
+                        F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, true)
                         onProgressUpdate(1f)
                         onAddSuccess(emptyList(), emptyList())
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, e)
+                    F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, e)
                     onProgressUpdate(0f)
                     onAddSuccess(emptyList(), emptyList())
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, Exception(error.message))
+                F6_FirebaseDebugUtils.logFirebaseOperation("getDataFromFirebase", ref, 0, false, Exception(error.message))
                 onProgressUpdate(0f)
                 onAddSuccess(emptyList(), emptyList())
             }
@@ -207,7 +207,7 @@ class F0_FireBaseOperationsHandler(
             val processedCount = 0
             val totalCount = mapData.size
 
-            extractedupsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount, totalCount)
+            extension_upsertAllAndReturnListIdToData(mapData, tariffsMap, resultMap, processedCount, totalCount)
 
             onAddSuccess(resultMap)
 
