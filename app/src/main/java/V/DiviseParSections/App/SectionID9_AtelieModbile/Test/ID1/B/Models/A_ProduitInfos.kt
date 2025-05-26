@@ -72,5 +72,36 @@ data class A_ProduitInfos(
             needUpdate = true
         )
     }
+    // Updated version for A_ProduitInfos
+    fun A_ProduitInfos.getKeyFireBaseSafe(
+        dataId: Long? = null,
+        dataNom: String? = null
+    ): String {
+        val cleanedNom = (dataNom ?: nomArticleFinale).let { nom ->
+            nom.replace(Regex("[.#$\\[\\]/®™©\\[\\]{}\"'`~!@#$%^&*()+=|\\\\:;\"'<>?/]"), "")
+                .replace(" ", "_")
+                .replace("-", "_")
+                .take(50)
+                .trim()
+        }
 
+        val id = dataId ?: this.idArticle
+
+        return when {
+            id != 0L && cleanedNom.isNotEmpty() -> "PROD_${id}_${cleanedNom}"
+            id != 0L -> "PROD_${id}_${System.currentTimeMillis()}"
+            cleanedNom.isNotEmpty() -> "PROD_${cleanedNom}_${System.currentTimeMillis()}"
+            else -> "PROD_${getFirebasePushKey()}"
+        }
+    }
+
+}
+
+// Alternative safer approach using push() method
+fun getFirebasePushKey(): String {
+    // This mimics Firebase's push() key generation
+    val chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    val timestamp = System.currentTimeMillis()
+    val random = (0..11).map { chars.random() }.joinToString("")
+    return "${timestamp}_${random}"
 }

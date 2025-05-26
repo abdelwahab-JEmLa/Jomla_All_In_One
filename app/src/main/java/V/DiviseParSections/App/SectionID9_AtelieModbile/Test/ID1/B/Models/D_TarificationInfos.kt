@@ -15,7 +15,7 @@ import java.util.Calendar
 @Entity
 data class D_TarificationInfos(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L, // 0L ensures auto-increment works properly
+    val id: Long = 0L,
 
     //Forging IDs
     val idParentProduit: Long = 0L,

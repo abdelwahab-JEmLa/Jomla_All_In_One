@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -138,9 +137,5 @@ class G_RoomOperationsHandler(
             onAddSuccess(emptyMap())
             false
         }
-    }
-
-    suspend fun getAncienProditDB() : List<ArticlesBasesStatsTable> = withContext(Dispatchers.IO) {
-        return@withContext database.articlesBasesStatsModelDao().getAll()
     }
 }
