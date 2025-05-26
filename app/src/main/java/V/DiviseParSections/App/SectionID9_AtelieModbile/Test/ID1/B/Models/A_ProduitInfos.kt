@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models
 
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,8 +8,21 @@ import androidx.room.PrimaryKey
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
+    // Section InfosDeBase
+    var nom: String = "",
 
-    var nomArticleFinale: String = "",
+    // Section Etates Mutable
+    val timestamps: Long = System.currentTimeMillis(),
+    val needUpdate: Boolean = true ,
+
+    // Section sonCategory
+    // Section InfosCoutes
+    var prixVent: Double = 0.0,
+
+    // Section keyFireBase
+    val keyFireBase: String = "",
+
+
     var classementCate: Double = 0.0,
     var nomArab: String = "",
     var autreNomDarticle: String? = null,
@@ -31,7 +45,6 @@ data class A_ProduitInfos(
     var clienPrixVentUnite: Double = 0.0,
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
-    var monPrixVent: Double = 0.0,
     var neaon2: String = "",
     var idCategorie: Double = 0.0,
     var catalogeParentID: Long = 0,
@@ -59,13 +72,10 @@ data class A_ProduitInfos(
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 
-    val keyFireBase: String = "",
-    val timestamps: Long = System.currentTimeMillis(),
-    val needUpdate: Boolean = true
 ) {
     fun withProperKeyFireBase(): A_ProduitInfos {
         val safeKey = keyFireBase.ifEmpty {
-            getKeyFireBase(id, nomArticleFinale)
+            getKeyFireBase(id, nom)
         }
         return this.copy(
             keyFireBase = safeKey,
@@ -74,4 +84,65 @@ data class A_ProduitInfos(
     }
 
 }
+
+fun getActiveMigration(): Boolean {
+    return true
+}
+
+fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
+    A_ProduitInfos(
+        id = ancien.idArticle.toLong(),
+        nom = ancien.nomArticleFinale,
+        keyFireBase = "",
+        timestamps = System.currentTimeMillis(),
+        needUpdate = true,
+        prixVent = ancien.monPrixVent,
+
+
+        classementCate = ancien.classementCate,
+        nomArab = ancien.nomArab,
+        autreNomDarticle = ancien.autreNomDarticle,
+        nmbrCat = ancien.nmbrCat,
+        couleur1 = ancien.couleur1,
+        idcolor1 = ancien.idcolor1,
+        couleur2 = ancien.couleur2,
+        idcolor2 = ancien.idcolor2,
+        couleur3 = ancien.couleur3,
+        idcolor3 = ancien.idcolor3,
+        couleur4 = ancien.couleur4,
+        idcolor4 = ancien.idcolor4,
+        nomCategorie2 = ancien.nomCategorie2,
+        nmbrUnite = ancien.nmbrUnite,
+        nmbrCaron = ancien.nmbrCaron,
+        affichageUniteState = ancien.affichageUniteState,
+        commmentSeVent = ancien.commmentSeVent,
+        afficheBoitSiUniter = ancien.afficheBoitSiUniter,
+        monPrixAchat = ancien.monPrixAchat,
+        clienPrixVentUnite = ancien.clienPrixVentUnite,
+        minQuan = ancien.minQuan,
+        monBenfice = ancien.monBenfice,
+        neaon2 = ancien.neaon2,
+        idCategorie = ancien.idCategorie,
+        catalogeParentID = ancien.catalogeParentID,
+        funChangeImagsDimention = ancien.funChangeImagsDimention,
+        nomCategorie = ancien.nomCategorie,
+        neaon1 = ancien.neaon1,
+        lastUpdateState = ancien.lastUpdateState,
+        cartonState = ancien.cartonState,
+        dateCreationCategorie = ancien.dateCreationCategorie,
+        prixDeVentTotaleChezClient = ancien.prixDeVentTotaleChezClient,
+        benficeTotaleEntreMoiEtClien = ancien.benficeTotaleEntreMoiEtClien,
+        benificeTotaleEn2 = ancien.benificeTotaleEn2,
+        monPrixAchatUniter = ancien.monPrixAchatUniter,
+        monPrixVentUniter = ancien.monPrixVentUniter,
+        benificeClient = ancien.benificeClient,
+        monBeneficeUniter = ancien.monBeneficeUniter,
+        diponibilityState = ancien.diponibilityState,
+        cLeDataOuvertDuParentList = ancien.cLeDataOuvertDuParentList,
+        articleHaveUniteImages = ancien.articleHaveUniteImages,
+        itsNewArrivale = ancien.itsNewArrivale,
+        imageDimention = ancien.imageDimention,
+        idForSearchArticles = ancien.idForSearchArticles,
+
+        )
 

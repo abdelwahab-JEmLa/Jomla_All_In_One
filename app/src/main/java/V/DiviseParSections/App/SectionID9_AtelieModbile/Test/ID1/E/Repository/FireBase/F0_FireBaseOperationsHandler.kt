@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.F
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.parseDepuitOldAuNew
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
@@ -183,7 +184,7 @@ class F0_FireBaseOperationsHandler(
 
     fun convertArticlesBasesToProduitInfos(ancientsListe: List<ArticlesBasesStatsTable>): List<A_ProduitInfos> {
         return ancientsListe.map { ancien ->
-            aProduitinfos(ancien)
+            parseDepuitOldAuNew(ancien)
         }
     }
 

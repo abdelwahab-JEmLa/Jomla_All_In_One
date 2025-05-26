@@ -34,7 +34,7 @@ interface A_ProduitInfosDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(produitInfos: A_ProduitInfos): Long
 
-    @Query("UPDATE A_ProduitInfos SET monPrixVent = :newPrice, needUpdate = 1 WHERE id = :id")
+    @Query("UPDATE A_ProduitInfos SET prixVent = :newPrice, needUpdate = 1 WHERE id = :id")
     suspend fun updatePrice(id: Long, newPrice: Double)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -46,7 +46,7 @@ interface A_ProduitInfosDao {
     @Query("SELECT COUNT(*) FROM A_ProduitInfos")
     suspend fun getCount(): Int
 
-    @Query("SELECT * FROM A_ProduitInfos WHERE nomArticleFinale LIKE :searchQuery")
+    @Query("SELECT * FROM A_ProduitInfos WHERE nom LIKE :searchQuery")
     suspend fun searchProduitsByNom(searchQuery: String): List<A_ProduitInfos>
 
     @Query("SELECT * FROM A_ProduitInfos WHERE needUpdate = 1")

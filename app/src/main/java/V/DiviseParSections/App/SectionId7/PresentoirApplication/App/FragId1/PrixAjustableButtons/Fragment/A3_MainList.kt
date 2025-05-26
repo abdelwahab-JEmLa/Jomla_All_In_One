@@ -38,7 +38,7 @@ fun MainList(
         buildList {
             if (maxPrixArriveDuProduit != null &&
                 maxPrixArriveDuProduit != 0.0 &&
-                maxPrixArriveDuProduit != filteredProduit.monPrixVent &&
+                maxPrixArriveDuProduit != filteredProduit.prixVent &&
                 maxPrixArriveDuProduit > clientLastHistoricalPrice) {
 
                 add(
@@ -50,7 +50,7 @@ fun MainList(
             }
 
             if (clientLastHistoricalPrice != 0.0 &&
-                clientLastHistoricalPrice != filteredProduit.monPrixVent) {
+                clientLastHistoricalPrice != filteredProduit.prixVent) {
 
                 add(
                     D_TarificationInfos(
@@ -63,7 +63,7 @@ fun MainList(
             add(
                 D_TarificationInfos(
                     typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                    prixCurrency = filteredProduit.monPrixVent,
+                    prixCurrency = filteredProduit.prixVent,
                 )
             )
         }
@@ -100,7 +100,7 @@ fun MainList(
                 val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
                     maxPrixArriveDuProduit
                 } else {
-                    filteredProduit.monPrixVent
+                    filteredProduit.prixVent
                 }
 
                 val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {

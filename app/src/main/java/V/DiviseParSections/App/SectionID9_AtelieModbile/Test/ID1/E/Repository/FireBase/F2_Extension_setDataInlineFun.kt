@@ -57,7 +57,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.extract
 
                 is A_ProduitInfos -> {
                     val updated = data.withProperKeyFireBase()
-                    val key = getKeyFireBase(updated.id, updated.nomArticleFinale)
+                    val key = getKeyFireBase(updated.id, updated.nom)
 
                     itemMap["keyFireBase"] = key
                     itemMap["needUpdate"] = true

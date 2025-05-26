@@ -41,7 +41,7 @@ class ViewModelPanierFinaleDAchat_FragIdB2(
 
         currentData?.let { produitInfo ->
             val updatedProduitInfo = produitInfo.copy(
-                monPrixVent = newPrice,
+                prixVent = newPrice,
                 needUpdate = true
             )
 
