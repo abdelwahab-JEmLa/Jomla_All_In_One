@@ -51,7 +51,7 @@ fun TariffsButtons_TestID2(
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
-    Text("${produitInfosList.map { it.nomArticleFinale } }")
+//Text("${produitInfosList.map { it.nomArticleFinale } }")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||

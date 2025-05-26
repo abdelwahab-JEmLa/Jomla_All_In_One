@@ -74,7 +74,7 @@ class E_GroupedDataBasesRepository(
                         }
                     }
 
-                    migreOldDatas(true)
+                    migreOldDatas(activeFun =false)
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
                     val hasFirebaseProducts = produitInfoList.isNotEmpty()
@@ -97,8 +97,8 @@ class E_GroupedDataBasesRepository(
         collectRoom()
     }
 
-    private suspend fun migreOldDatas(migrateOldData: Boolean) {
-        if (migrateOldData) {
+    private suspend fun migreOldDatas(activeFun: Boolean) {
+        if (activeFun) {
             try {
                 fireBase.deleteRef<A_ProduitInfos>()
                 val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
