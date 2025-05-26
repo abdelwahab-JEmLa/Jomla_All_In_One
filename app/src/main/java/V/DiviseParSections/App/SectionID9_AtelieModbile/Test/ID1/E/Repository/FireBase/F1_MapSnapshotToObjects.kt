@@ -36,7 +36,7 @@ inline fun <reified T : Any> mapSnapshotToDynamicObject(childSnap: DataSnapshot)
         when (T::class) {
             A_ProduitInfos::class -> mapToProduitInfosDynamic(childSnap) as? T
             D_TarificationInfos::class -> mapToTarificationInfosDynamic(childSnap) as? T
-            else -> mapToGenericObject<T>(childSnap)
+            else -> null
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -86,33 +86,6 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos?
     }
 }
 
-/**
- * Generic object mapper for any data class using reflection
- * FIXED: Proper type handling for parameter names and map keys
- */
-inline fun <reified T : Any> mapToGenericObject(childSnap: DataSnapshot): T? {
-    return try {
-        val constructor = T::class.primaryConstructor ?: return null
-        val args = mutableMapOf<String, Any?>()
-
-        constructor.valueParameters.forEach { param ->
-            val paramName = param.name ?: return@forEach // FIXED: Safe handling of nullable parameter name
-            val value = getValueWithDefault(childSnap, paramName, param.type)
-            // FIXED: Using paramName (String) instead of param.name (String?) for map key
-            args[paramName] = value
-        }
-
-        createInstanceFromMap<T>(constructor, args)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
-
-/**
- * Get appropriate default value based on type
- */
 fun getDefaultValue(classifier: KClass<*>?, isNullable: Boolean): Any? {
     if (isNullable) return null
 
@@ -134,9 +107,6 @@ fun getDefaultValue(classifier: KClass<*>?, isNullable: Boolean): Any? {
     }
 }
 
-/**
- * Create instance from constructor and argument map
- */
 inline fun <reified T : Any> createInstanceFromMap(
     constructor: kotlin.reflect.KFunction<T>,
     args: Map<String, Any?>
@@ -217,7 +187,6 @@ fun mapToProduitInfosDynamic(childSnap: DataSnapshot): A_ProduitInfos? {
         args["timestamps"] = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
         args["needUpdate"] = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
 
-        // Create instance using named arguments
         createInstanceFromMap<A_ProduitInfos>(constructor, args)
     } catch (e: Exception) {
         e.printStackTrace()

@@ -266,16 +266,4 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    // FIXED: Add missing aProduitinfos function
-    private fun aProduitinfos(ancien: ArticlesBasesStatsTable): A_ProduitInfos {
-        return A_ProduitInfos(
-            nomArticleFinale = ancien.nomArticleFinale ?: "",
-            nomArab = ancien.nomArab ?: "",
-            monPrixAchat = ancien.monPrixAchat ?: 0.0,
-            monPrixVent = ancien.monPrixVent ?: 0.0,
-            // Map other fields as needed based on ArticlesBasesStatsTable structure
-            timestamps = System.currentTimeMillis(),
-            needUpdate = true
-        )
-    }
 }

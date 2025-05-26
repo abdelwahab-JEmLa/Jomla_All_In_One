@@ -46,22 +46,25 @@ fun TariffsButtons_TestID2(
 
     val tarificationList = uiState.tariffsList
     val bonAchatList = uiState.bonAchatList
-    val produitInfosList = uiState.produitInfosList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
+    val produitInfosList = uiState.produitInfosList
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
+
+    Text("${produitInfosList.map { it.nomArticleFinale } }")
 
     val shouldShowLoading = uiState.isDataSyncing ||
             (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
             (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
-    val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit = { typeTarification, latestTariffLocalData, context ->
-        val typeName = typeTarification.name
-        val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        afficheButtons = false
-        fermeDialog(latestTariffLocalData)
-    }
+    val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
+        { typeTarification, latestTariffLocalData, context ->
+            val typeName = typeTarification.name
+            val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            afficheButtons = false
+            fermeDialog(latestTariffLocalData)
+        }
 
     // Cancellation callback
     val onClickAnulationButton: () -> Unit = {
