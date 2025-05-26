@@ -21,9 +21,6 @@ inline fun <reified T : Any> getDatas(
                 D_TarificationInfos::class -> {
                     mapToTarificationInfos(childSnap)?.let { results.add(it as T) }
                 }
-                else -> {
-                    mapUsingReflection<T>(childSnap, kClass)?.let { results.add(it) }
-                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -33,12 +30,12 @@ inline fun <reified T : Any> getDatas(
 
 fun mapToProduitInfos(childSnap: DataSnapshot): A_ProduitInfos? {
     return try {
-        val idArticle = childSnap.child("idArticle").getValue(Long::class.java) ?: 0L
+        val id = childSnap.child("id").getValue(Long::class.java) ?: 0L
         val nomArticleFinale = childSnap.child("nomArticleFinale").getValue(String::class.java) ?: ""
-        val keyFireBase = childSnap.key ?: getKeyFireBase(idArticle, nomArticleFinale)
+        val keyFireBase = childSnap.key ?: getKeyFireBase(id, nomArticleFinale)
 
         A_ProduitInfos(
-            id = idArticle,
+            id = id,
             nomArticleFinale = nomArticleFinale,
             classementCate = childSnap.child("classementCate").getValue(Double::class.java) ?: 0.0,
             nomArab = childSnap.child("nomArab").getValue(String::class.java) ?: "",
@@ -119,18 +116,6 @@ fun mapToTarificationInfos(childSnap: DataSnapshot): D_TarificationInfos? {
             needUpdate = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true,
             keyFireBase = keyFireBase
         )
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
-inline fun <reified T : Any> mapUsingReflection(
-    childSnap: DataSnapshot,
-    kClass: KClass<T>
-): T? {
-    return try {
-        null
     } catch (e: Exception) {
         e.printStackTrace()
         null
