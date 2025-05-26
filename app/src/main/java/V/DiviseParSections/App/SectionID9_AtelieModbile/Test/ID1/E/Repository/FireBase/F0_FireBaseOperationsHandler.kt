@@ -36,15 +36,15 @@ class F0_FireBaseOperationsHandler(
     private fun verifyFirebaseConnectivity() {
         coroutineScope.launch {
             try {
-                val isConnected = F6_FirebaseDebugUtils.verifyFirebaseReference(ref)
-                F6_FirebaseDebugUtils.logFirebaseOperation(
+                val isConnected = F9_FirebaseDebugUtils.verifyFirebaseReference(ref)
+                F9_FirebaseDebugUtils.logFirebaseOperation(
                     "verifyFirebaseConnectivity",
                     ref,
                     0,
                     isConnected
                 )
             } catch (e: Exception) {
-                F6_FirebaseDebugUtils.logFirebaseOperation(
+                F9_FirebaseDebugUtils.logFirebaseOperation(
                     "verifyFirebaseConnectivity",
                     ref,
                     0,
@@ -228,42 +228,6 @@ class F0_FireBaseOperationsHandler(
         }
     }
 
-    // FIXED: Add missing extraction functions
-    private suspend fun extracteFrom_getAncienDB_changeKeysFireBase(
-        refDBJetPackExport: DatabaseReference
-    ): Pair<Int, Map<String, A_ProduitInfos>> = withContext(Dispatchers.IO) {
-        return@withContext suspendCancellableCoroutine { continuation ->
-            refDBJetPackExport.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    try {
-                        val resultMap = mutableMapOf<String, A_ProduitInfos>()
-                        var count = 0
 
-                        for (childSnapshot in snapshot.children) {
-                            try {
-                                val produitInfo = mapSnapshotToDynamicObject<A_ProduitInfos>(childSnapshot)
-                                produitInfo?.let {
-                                    val updatedProduit = it.withProperKeyFireBase()
-                                    resultMap[updatedProduit.keyFireBase] = updatedProduit
-                                    count++
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-
-                        continuation.resume(Pair(count, resultMap))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        continuation.resume(Pair(0, emptyMap()))
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    continuation.resume(Pair(0, emptyMap()))
-                }
-            })
-        }
-    }
 
 }

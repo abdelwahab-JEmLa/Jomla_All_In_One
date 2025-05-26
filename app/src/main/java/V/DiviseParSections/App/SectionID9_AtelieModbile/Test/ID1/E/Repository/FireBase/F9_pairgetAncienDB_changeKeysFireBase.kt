@@ -10,12 +10,6 @@ suspend fun F0_FireBaseOperationsHandler.extracteFrom_getAncienDB_changeKeysFire
     ): Pair<Int, Map<String, A_ProduitInfos>> {
         onProgressUpdate(0.3f)
         val articlesSnapshot = refDBJetPackExport.get().await()
-    F6_FirebaseDebugUtils.logFirebaseOperation(
-        "getAncienDB_ARTICLES_FETCH",
-        refDBJetPackExport,
-        articlesSnapshot.childrenCount.toInt(),
-        articlesSnapshot.exists()
-    )
 
         val articles = articlesSnapshot.children.mapNotNull { snapshot ->
             try {
@@ -34,22 +28,11 @@ suspend fun F0_FireBaseOperationsHandler.extracteFrom_getAncienDB_changeKeysFire
         val a_ProduitInfosList = convertArticlesBasesToProduitInfos(productsWithoutKeys)
         val originalCount = a_ProduitInfosList.size
 
-    F6_FirebaseDebugUtils.logFirebaseOperation(
-        "getAncienDB_CONVERSION",
-        ref,
-        originalCount,
-        true
-    )
 
         onProgressUpdate(0.7f)
         val resultMap = setDataInlineFun<A_ProduitInfos>(a_ProduitInfosList)
 
         onProgressUpdate(1f)
-    F6_FirebaseDebugUtils.logFirebaseOperation(
-        "getAncienDB_SUCCESS",
-        ref,
-        resultMap.size,
-        true
-    )
+
         return Pair(originalCount, resultMap)
     }

@@ -69,7 +69,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
             suspendCancellableCoroutine<Unit> { continuation ->
                 childD_TarificationInfos.updateChildren(tariffsMap)
                     .addOnSuccessListener {
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                        F9_FirebaseDebugUtils.logFirebaseOperation(
                             "upsertAllAndReturnListIdToData_FIREBASE_SUCCESS",
                             childD_TarificationInfos,
                             tariffsMap.size,
@@ -78,7 +78,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
                         continuation.resume(Unit)
                     }
                     .addOnFailureListener { exception ->
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                        F9_FirebaseDebugUtils.logFirebaseOperation(
                             "upsertAllAndReturnListIdToData_FIREBASE_ERROR",
                             childD_TarificationInfos,
                             tariffsMap.size,
@@ -93,7 +93,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
 
         } catch (firebaseException: Exception) {
             firebaseException.printStackTrace()
-            F6_FirebaseDebugUtils.logFirebaseOperation(
+            F9_FirebaseDebugUtils.logFirebaseOperation(
                 "upsertAllAndReturnListIdToData_FIREBASE_EXCEPTION",
                 childD_TarificationInfos,
                 0,
@@ -106,7 +106,7 @@ suspend fun F0_FireBaseOperationsHandler.extractedFromeupsertAllAndReturnListIdT
         onProgressUpdate(1f)
     }
 
-    F6_FirebaseDebugUtils.logFirebaseOperation(
+    F9_FirebaseDebugUtils.logFirebaseOperation(
         "upsertAllAndReturnListIdToData_COMPLETE",
         childD_TarificationInfos,
         resultMap.size,

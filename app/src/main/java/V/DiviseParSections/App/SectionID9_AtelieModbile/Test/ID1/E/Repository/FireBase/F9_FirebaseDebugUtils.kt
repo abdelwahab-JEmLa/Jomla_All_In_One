@@ -5,7 +5,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 // Firebase Debug and Validation Utilities
-object F6_FirebaseDebugUtils {
+object F9_FirebaseDebugUtils {
     fun logFirebaseOperation(
         operation: String,
         reference: DatabaseReference,

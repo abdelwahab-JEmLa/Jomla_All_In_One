@@ -17,7 +17,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.deleteR
                     A_ProduitInfos::class -> childA_ProduitInfos
                     else -> {
                         onProgressUpdate(0f)
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                        F9_FirebaseDebugUtils.logFirebaseOperation(
                             "deleteRef_INVALID_TYPE",
                             ref,
                             0,
@@ -34,7 +34,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.deleteR
                 childRef.removeValue()
                     .addOnSuccessListener {
                         onProgressUpdate(1f)
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                        F9_FirebaseDebugUtils.logFirebaseOperation(
                             "deleteRef_SUCCESS",
                             childRef,
                             0,
@@ -44,7 +44,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.deleteR
                     }
                     .addOnFailureListener { exception ->
                         onProgressUpdate(0f)
-                        F6_FirebaseDebugUtils.logFirebaseOperation(
+                        F9_FirebaseDebugUtils.logFirebaseOperation(
                             "deleteRef_ERROR",
                             childRef,
                             0,
@@ -56,7 +56,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.deleteR
 
             } catch (e: Exception) {
                 onProgressUpdate(0f)
-                F6_FirebaseDebugUtils.logFirebaseOperation("deleteRef_EXCEPTION", ref, 0, false, e)
+                F9_FirebaseDebugUtils.logFirebaseOperation("deleteRef_EXCEPTION", ref, 0, false, e)
                 e.printStackTrace()
                 continuation.resume(false)
             }
