@@ -107,7 +107,8 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
         ),
 
         // Product 6: TIZANA KBIR - Completed from JSON data
-        A_ProduitInfosTest(
+        A_ProduitInfosTest(    //<--
+        //TODO(1): pk ca n affiche pas le arrow que il ya 
             id = 3832,
             nom = "#TIZANA KBIR",
             nomArab = "",
