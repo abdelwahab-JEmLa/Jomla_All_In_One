@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +26,9 @@ import androidx.compose.ui.unit.dp
 @SuppressLint("DefaultLocale")
 @Composable
 fun ProductItem(
+    modifier: Modifier = Modifier,
     produitInit: A_ProduitInfosTest,
-    onPrixUpdate: (A_ProduitInfosTest) -> Unit = {},
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+    onPrixUpdate: (A_ProduitInfosTest) -> Unit = {}
 ) {
     var produit by remember { mutableStateOf(produitInit) }
 
@@ -44,127 +46,167 @@ fun ProductItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                ColumnInfosBase(produit)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        A_GlideDisplayImageByKeyId_Proto_5(
+                            produitVID = produit.id,
+                            couleurVID = produit.idcolor1,
+                            size = 80.dp,
+                            onImageNeExistePas = {
+                                Card(
+                                    modifier = Modifier.size(80.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                    )
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(4.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = "📦",
+                                            style = MaterialTheme.typography.headlineMedium
+                                        )
+                                        Text(
+                                            text = "Pas d'image",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            })
 
-                Column(horizontalAlignment = Alignment.End) {
-                    PriceEditor(
-                        currentPrice = produit.prixVent,
-                        label = "Vente",
-                        onPriceUpdate = { newPrix ->
-                            val updatedProduct = produit.copy(prixVent = newPrix)
-                            produit = updatedProduct
-                            onPrixUpdate(updatedProduct)
-                        },
-                        showOnlyWhenPositive = false,
-                        textColor = MaterialTheme.colorScheme.primary
-                    )
-
-                    UnitEditor(
-                        currentUnits = produit.nombreUniteInt,
-                        label = "Unités",
-                        onUnitsUpdate = { newUnits ->
-                            val updatedProduct = produit.copy(nombreUniteInt = newUnits)
-                            produit = updatedProduct
-                            onPrixUpdate(updatedProduct)
-                        }
-                    )
-
-                    val prixUnitaire = if (produit.nombreUniteInt > 0) {
-                        kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
-                    } else {
-                        0.0
+                        ColumnInfosBase(produit)
                     }
 
-                    if (produit.nombreUniteInt > 0) {
+                    Column(horizontalAlignment = Alignment.End) {
                         PriceEditor(
-                            currentPrice = prixUnitaire,
-                            label = "Prix/unité",
-                            onPriceUpdate = { newPrixUnitaire ->
-                                val newPrixVent = newPrixUnitaire * produit.nombreUniteInt
-                                val updatedProduct = produit.copy(prixVent = newPrixVent)
+                            currentPrice = produit.prixVent,
+                            label = "Vente",
+                            onPriceUpdate = { newPrix ->
+                                val updatedProduct = produit.copy(prixVent = newPrix)
                                 produit = updatedProduct
                                 onPrixUpdate(updatedProduct)
                             },
                             showOnlyWhenPositive = false,
-                            textColor = MaterialTheme.colorScheme.secondary
+                            textColor = MaterialTheme.colorScheme.primary
                         )
-                    }
 
-                    PriceEditor(
-                        currentPrice = produit.clientPrixVentUnite,
-                        label = "Prix client/unité",
-                        onPriceUpdate = { newClientPrixUnite ->
-                            val updatedProduct = produit.copy(clientPrixVentUnite = newClientPrixUnite)
-                            produit = updatedProduct
-                            onPrixUpdate(updatedProduct)
-                        },
-                        showOnlyWhenPositive = false,
-                        textColor = MaterialTheme.colorScheme.inversePrimary,
-                        additionalInfo = {
-                            val totalClientPrice = if (produit.nombreUniteInt > 0) {
-                                produit.clientPrixVentUnite * produit.nombreUniteInt
-                            } else {
-                                0.0
-                            }
-
-                            if (produit.nombreUniteInt > 0) {
-                                Text(
-                                    text = "Total client: $totalClientPrice DA",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    )
-
-                    val prixAchatUnitaire = if (produit.nombreUniteInt > 0) {
-                        kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
-                    } else {
-                        0.0
-                    }
-
-                    if (produit.nombreUniteInt > 0) {
-                        PriceEditor(
-                            currentPrice = prixAchatUnitaire,
-                            label = "Achat/unité",
-                            onPriceUpdate = { newPrixAchatUnitaire ->
-                                val newPrixAchat = newPrixAchatUnitaire * produit.nombreUniteInt
-                                val updatedProduct = produit.copy(prixAchat = newPrixAchat)
+                        UnitEditor(
+                            currentUnits = produit.nombreUniteInt,
+                            label = "Unités",
+                            onUnitsUpdate = { newUnits ->
+                                val updatedProduct = produit.copy(nombreUniteInt = newUnits)
                                 produit = updatedProduct
                                 onPrixUpdate(updatedProduct)
-                            },
-                            showOnlyWhenPositive = true,
-                            textColor = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                    PriceEditor(
-                        currentPrice = produit.prixAchat,
-                        label = "Achat",
-                        onPriceUpdate = { newPrix ->
-                            val updatedProduct = produit.copy(prixAchat = newPrix)
-                            produit = updatedProduct
-                            onPrixUpdate(updatedProduct)
-                        },
-                        showOnlyWhenPositive = true,
-                        additionalInfo = {
-                            val benefice = produit.prixVent - produit.prixAchat
+                            })
 
+                        val prixUnitaire = if (produit.nombreUniteInt > 0) {
+                            kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+                        } else {
+                            0.0
+                        }
+
+                        if (produit.nombreUniteInt > 0) {
                             PriceEditor(
-                                currentPrice = benefice,
-                                label = "Bénéfice",
-                                onPriceUpdate = { newBenefice ->
-                                    val newPrixVent = produit.prixAchat + newBenefice
+                                currentPrice = prixUnitaire,
+                                label = "Prix/unité",
+                                onPriceUpdate = { newPrixUnitaire ->
+                                    val newPrixVent = newPrixUnitaire * produit.nombreUniteInt
                                     val updatedProduct = produit.copy(prixVent = newPrixVent)
                                     produit = updatedProduct
                                     onPrixUpdate(updatedProduct)
                                 },
-                                showOnlyWhenPositive = false, // Allow negative benefits (losses)
-                                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.error
+                                showOnlyWhenPositive = false,
+                                textColor = MaterialTheme.colorScheme.secondary
                             )
                         }
-                    )
+
+                        PriceEditor(
+                            currentPrice = produit.clientPrixVentUnite,
+                            label = "Prix client/unité",
+                            onPriceUpdate = { newClientPrixUnite ->
+                                val updatedProduct =
+                                    produit.copy(clientPrixVentUnite = newClientPrixUnite)
+                                produit = updatedProduct
+                                onPrixUpdate(updatedProduct)
+                            },
+                            showOnlyWhenPositive = false,
+                            textColor = MaterialTheme.colorScheme.inversePrimary,
+                            additionalInfo = {
+                                val totalClientPrice = if (produit.nombreUniteInt > 0) {
+                                    produit.clientPrixVentUnite * produit.nombreUniteInt
+                                } else {
+                                    0.0
+                                }
+
+                                if (produit.nombreUniteInt > 0) {
+                                    Text(
+                                        text = "Total client: $totalClientPrice DA",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            })
+
+                        val prixAchatUnitaire = if (produit.nombreUniteInt > 0) {
+                            kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
+                        } else {
+                            0.0
+                        }
+
+                        if (produit.nombreUniteInt > 0) {
+                            PriceEditor(
+                                currentPrice = prixAchatUnitaire,
+                                label = "Achat/unité",
+                                onPriceUpdate = { newPrixAchatUnitaire ->
+                                    val newPrixAchat = newPrixAchatUnitaire * produit.nombreUniteInt
+                                    val updatedProduct = produit.copy(prixAchat = newPrixAchat)
+                                    produit = updatedProduct
+                                    onPrixUpdate(updatedProduct)
+                                },
+                                showOnlyWhenPositive = true,
+                                textColor = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        PriceEditor(
+                            currentPrice = produit.prixAchat,
+                            label = "Achat",
+                            onPriceUpdate = { newPrix ->
+                                val updatedProduct = produit.copy(prixAchat = newPrix)
+                                produit = updatedProduct
+                                onPrixUpdate(updatedProduct)
+                            },
+                            showOnlyWhenPositive = true,
+                            additionalInfo = {
+                                val benefice = produit.prixVent - produit.prixAchat
+
+                                PriceEditor(
+                                    currentPrice = benefice,
+                                    label = "Bénéfice",
+                                    onPriceUpdate = { newBenefice ->
+                                        val newPrixVent = produit.prixAchat + newBenefice
+                                        val updatedProduct = produit.copy(prixVent = newPrixVent)
+                                        produit = updatedProduct
+                                        onPrixUpdate(updatedProduct)
+                                    },
+                                    showOnlyWhenPositive = false, // Allow negative benefits (losses)
+                                    textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.error
+                                )
+                            })
+                    }
                 }
             }
         }
@@ -172,7 +214,7 @@ fun ProductItem(
 }
 
 @Composable
-private fun ColumnInfosBase(produit: A_ProduitInfosTest) {
+fun ColumnInfosBase(produit: A_ProduitInfosTest) {
     Column() {
         Text(
             text = produit.nom,
