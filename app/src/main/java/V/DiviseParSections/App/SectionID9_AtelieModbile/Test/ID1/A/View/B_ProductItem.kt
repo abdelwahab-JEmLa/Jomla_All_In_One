@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -83,8 +84,10 @@ fun ProductItem(
                     )
 
                     // Prix unitaire - editable and updates sale price
+                    // FIX: Calculate directly as Double and round to 2 decimal places
                     val prixUnitaire = if (produit.nombreUniteInt > 0) {
-                        String.format("%.2f", produit.prixVent / produit.nombreUniteInt).toDouble()
+                        // Round to 2 decimal places: multiply by 100, round, then divide by 100
+                        kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
                     } else {
                         0.0
                     }
@@ -117,8 +120,10 @@ fun ProductItem(
                         showOnlyWhenPositive = true,
                         additionalInfo = {
                             val benefice = produit.prixVent - produit.prixAchat
+                            // FIX: Use Locale.US to ensure consistent formatting
+                            val beneficeFormatted = String.format(Locale.US, "%.2f", benefice)
                             Text(
-                                text = "Bénéfice: $benefice DA",
+                                text = "Bénéfice: $beneficeFormatted DA",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (benefice > 0) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.error
