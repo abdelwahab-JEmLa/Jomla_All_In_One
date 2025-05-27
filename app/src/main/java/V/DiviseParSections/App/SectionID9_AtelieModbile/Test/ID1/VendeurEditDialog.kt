@@ -38,11 +38,6 @@ private fun VP() {
         _1_5_Vendeur(
         ),
         onConfirm = { vendeur ->
-            Toast.makeText(
-                context,
-                "Base de données mise à jour: ${vendeur.nom} (ID: ${vendeur.vid})",
-                Toast.LENGTH_SHORT
-            ).show()
         }
     )
 }
