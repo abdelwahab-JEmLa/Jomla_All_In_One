@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ProductItem(
     produitInit: A_ProduitInfosTest,
