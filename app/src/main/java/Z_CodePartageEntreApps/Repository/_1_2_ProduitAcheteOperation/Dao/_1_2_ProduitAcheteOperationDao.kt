@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.TypeTarificationEnumT2
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box

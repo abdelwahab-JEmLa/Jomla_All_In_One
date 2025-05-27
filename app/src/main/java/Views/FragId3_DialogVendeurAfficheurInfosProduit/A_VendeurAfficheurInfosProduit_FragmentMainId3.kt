@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Repository._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
