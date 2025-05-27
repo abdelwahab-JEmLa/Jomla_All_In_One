@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel_TestID2
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.createTestProduct
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

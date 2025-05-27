@@ -43,8 +43,19 @@ fun PriceEditor(
         }
     }
 
+    // Helper function to parse double with both comma and dot as decimal separators
+    fun parseDoubleLocalized(text: String): Double? {
+        return try {
+            // Replace comma with dot for parsing
+            val normalizedText = text.replace(',', '.')
+            normalizedText.toDoubleOrNull()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun savePrix() {
-        val newPrix = tempPrixText.toDoubleOrNull() ?: currentPrice
+        val newPrix = parseDoubleLocalized(tempPrixText) ?: currentPrice
         onPriceUpdate(newPrix)
         isEditing = false
         tempPrixText = "" // Reset to empty after saving
@@ -55,7 +66,20 @@ fun PriceEditor(
         if (isEditing) {
             OutlinedTextField(
                 value = tempPrixText,
-                onValueChange = { tempPrixText = it },
+                onValueChange = { newValue ->
+                    // Allow digits, one dot, and one comma (but not both)
+                    val filteredValue = newValue.filter { char ->
+                        char.isDigit() || char == '.' || char == ','
+                    }
+
+                    // Ensure only one decimal separator
+                    val dotCount = filteredValue.count { it == '.' }
+                    val commaCount = filteredValue.count { it == ',' }
+
+                    if (dotCount <= 1 && commaCount <= 1 && (dotCount + commaCount) <= 1) {
+                        tempPrixText = filteredValue
+                    }
+                },
                 label = { Text("Ancien: $currentPrice DA") },
                 placeholder = { Text("Nouveau prix") },
                 suffix = { Text("DA") },
