@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import android.widget.Toast

@@ -1,9 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.VendeurEditDialog
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.VendeursUiState
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.VendeursViewModel
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -282,7 +279,8 @@ fun VendeurItem(
         )
     }
 
-    // Edit Dialog
+    // Ed
+    // it Dialog
     if (showEditDialog) {
         VendeurEditDialog(
             vendeur = vendeur,
