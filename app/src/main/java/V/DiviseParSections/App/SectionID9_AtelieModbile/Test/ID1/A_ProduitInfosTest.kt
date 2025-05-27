@@ -18,8 +18,10 @@ data class A_ProduitInfosTest(
     // Section sonCategory
     // Section InfosCoutes
     var prixVent: Double = 0.0,
-    var prixAchat: Double = 0.0,    //edited
-    var nombreUniteInt: Int = 0,           //edited
+    //edited
+    var prixAchat: Double = 0.0,
+    var nombreUniteInt: Int = 0,
+    var clientPrixVentUnite: Double = 0.0,
 
     // Section keyFireBase
     val keyFireBase: String = "",
@@ -42,7 +44,6 @@ data class A_ProduitInfosTest(
     var affichageUniteState: Boolean = false,
     var commmentSeVent: String? = null,
     var afficheBoitSiUniter: String? = null,
-    var clienPrixVentUnite: Double = 0.0,
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
     var neaon2: String = "",

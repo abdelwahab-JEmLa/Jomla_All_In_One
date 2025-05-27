@@ -107,6 +107,37 @@ fun ProductItem(
                         )
                     }
 
+                    // CLIENT PRICING SECTION - NEW FEATURE
+                    // Prix de vente unitaire chez client - editable
+                    PriceEditor(
+                        currentPrice = produit.clientPrixVentUnite,
+                        label = "Prix client/unité",
+                        onPriceUpdate = { newClientPrixUnite ->
+                            val updatedProduct = produit.copy(clientPrixVentUnite = newClientPrixUnite)
+                            produit = updatedProduct
+                            onPrixUpdate(updatedProduct)
+                        },
+                        showOnlyWhenPositive = false,
+                        textColor = MaterialTheme.colorScheme.inversePrimary,
+                        additionalInfo = {
+                            // Total prix de vente chez client - non-editable (calculated)
+                            val totalClientPrice = if (produit.nombreUniteInt > 0) {
+                                produit.clientPrixVentUnite * produit.nombreUniteInt
+                            } else {
+                                0.0
+                            }
+
+                            if (produit.nombreUniteInt > 0) {
+                                Text(
+                                    text = "Total client: $totalClientPrice DA",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    )
+
                     // Prix d'achat unitaire - editable and updates purchase price
                     val prixAchatUnitaire = if (produit.nombreUniteInt > 0) {
                         // Round to 2 decimal places

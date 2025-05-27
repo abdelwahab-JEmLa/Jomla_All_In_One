@@ -14,7 +14,7 @@ fun createTestProduct(): A_ProduitInfosTest {
         couleur1 = "🔴 Rouge 🔴",
         nombreUniteInt = (10..200).random(),
         nmbrCaron = 1,
-        clienPrixVentUnite = (5..20).random().toDouble(),
+        clientPrixVentUnite = (5..20).random().toDouble(),
         commmentSeVent = "U",
         diponibilityState = "",
         articleHaveUniteImages = false,
