@@ -11,7 +11,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             prixAchat = 470.0,
             cartonState = "",
             nomCategorie = "حلوى طرية 5 دج",
-            couleur1 = "?? Multi Couleur 🎨",
+            couleur1 = "🌈 Multi Couleur 🎨",
             nombreUniteInt = 220,
             nmbrCaron = 1,
             clientPrixVentUnite = 5.0,
@@ -42,7 +42,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             needUpdate = true
         ),
 
-        // Product 3: golden sachet
+        // Product 3: golden sachet - This demonstrates the color text fallback feature
         A_ProduitInfosTest(
             id = 565,
             nom = "golden sachet®",
@@ -103,6 +103,59 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             articleHaveUniteImages = true,
             timestamps = System.currentTimeMillis(),
             needUpdate = true
+        ),
+
+        // Product 6: TIZANA KBIR - Completed from JSON data
+        A_ProduitInfosTest(
+            id = 3832,
+            nom = "#TIZANA KBIR",
+            nomArab = "",
+            prixVent = 150.0,
+            prixAchat = 150.0,
+            cartonState = "",
+            nomCategorie = "ataye emballé",
+            couleur1 = "Couleur 1",
+            couleur2 = "Couleur_2",
+            couleur3 = "Couleur_3",
+            nombreUniteInt = 0,
+            nmbrCaron = 0,
+            clientPrixVentUnite = 0.0,
+            commmentSeVent = "",
+            diponibilityState = "",
+            articleHaveUniteImages = false,
+            imageDimention = "",
+            itsNewArrivale = false,
+            timestamps = 1748355111768,
+            needUpdate = true,
+            affichageUniteState = false,
+            benficeTotaleEntreMoiEtClien = -150.0,
+            benificeClient = -150.0,
+            benificeTotaleEn2 = -75.0,
+            classementCate = -156.0,
+            dateCreationCategorie = "1740564102869",
+            funChangeImagsDimention = true,
+            idCategorie = 0.0,
+            catalogeParentID = 0,
+            lastUpdateState = "",
+            neaon1 = 0.0,
+            neaon2 = "",
+            minQuan = 0,
+            monBenfice = 0.0,
+            afficheBoitSiUniter = null,
+            autreNomDarticle = null,
+            cLeDataOuvertDuParentList = false,
+            idForSearchArticles = 0,
+            idcolor1 = 0,
+            idcolor2 = 0,
+            idcolor3 = 0,
+            idcolor4 = 0,
+            couleur4 = null,
+            nomCategorie2 = null,
+            prixDeVentTotaleChezClient = 0.0,
+            monPrixAchatUniter = 0.0,
+            monPrixVentUniter = 0.0,
+            monBeneficeUniter = 0.0,
+            keyFireBase = ""
         )
     )
 }
