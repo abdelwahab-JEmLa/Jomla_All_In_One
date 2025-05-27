@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBas
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.G_RoomOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Test.testD_TarificationInfosT2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +20,21 @@ import kotlin.reflect.KClass
 
 class E_GroupedDataBasesRepository(
     val database: AppDatabase,
+    val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     private val fireBase: F0_FireBaseOperationsHandler,
     private val room: G_RoomOperationsHandler
 ) {
+    val repositorysModel = repo_0_0_HeadSQLRepositorys.repositorys_Model
+
+    private val idComptActivePourCeTelep = repositorysModel.activeIdDe_1_5_Vendeur
+
+    val repository15Vendeur = repositorysModel.repository_1_5_Vendeur
+
+    private val findComptActive = repository15Vendeur
+        .modelDatasSnapList.find { it.vid == idComptActivePourCeTelep }
+
+    private val comptActuelle_migreSonDataBaseAuStart = findComptActive?.migreSonDataBaseAuStart ?: false
+
     private val repoCoroutineScope = CoroutineScope(Dispatchers.IO)
     private val _modelListFlow = MutableStateFlow<List<A0_DataBasesGroup>>(emptyList())
     private var modelList: List<A0_DataBasesGroup>
@@ -165,9 +178,7 @@ class E_GroupedDataBasesRepository(
                     }
                     val hasFirebaseProducts = produitInfoList.isNotEmpty()
 
-                    if (!hasFirebaseProducts) {
-                        migreOldDatas()
-                    }
+                    migreOldDatas(comptActuelle_migreSonDataBaseAuStart)
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
 
@@ -215,17 +226,25 @@ class E_GroupedDataBasesRepository(
         initializeDatabase<D_TarificationInfos>()
     }
 
-    private suspend fun migreOldDatas() {
-        try {
-            fireBase.deleteRef<A_ProduitInfos>()
-            val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
+    private suspend fun migreOldDatas(comptActuelle_migreSonDataBaseAuStart: Boolean) {
+        if (comptActuelle_migreSonDataBaseAuStart) {
+            try {
+                fireBase.deleteRef<A_ProduitInfos>()
+                val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
 
-            val newDataList = resultMap.values.toList()
+                val newDataList = resultMap.values.toList()
 
-            fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
+                fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList) {
+                    if (findComptActive != null) {
+                        repository15Vendeur.addDataAndReturneItVID(
+                            findComptActive.copy(migreSonDataBaseAuStart = false)
+                        )
+                    }
+                }
 
-        } catch (migrationError: Exception) {
-            migrationError.printStackTrace()
+            } catch (migrationError: Exception) {
+                migrationError.printStackTrace()
+            }
         }
     }
 
