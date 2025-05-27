@@ -5,10 +5,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -51,43 +49,12 @@ fun ProductItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        A_GlideDisplayImageByKeyId_Proto_5(
-                            produitVID = produit.id,
-                            couleurVID = produit.idcolor1,
-                            size = 80.dp,
-                            onImageNeExistePas = {
-                                Card(
-                                    modifier = Modifier.size(80.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                                ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(4.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
-                                    ) {
-                                        Text(
-                                            text = "📦",
-                                            style = MaterialTheme.typography.headlineMedium
-                                        )
-                                        Text(
-                                            text = "Pas d'image",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                            })
 
-                        ColumnInfosBase(produit)
-                    }
+                    A_GlideDisplayImageByKeyId_Proto_5(
+                        produitVID = produit.id,
+                        size = 80.dp,
+                    )
+                    ColumnInfosBase(produit)
 
                     Column(horizontalAlignment = Alignment.End) {
                         PriceEditor(
