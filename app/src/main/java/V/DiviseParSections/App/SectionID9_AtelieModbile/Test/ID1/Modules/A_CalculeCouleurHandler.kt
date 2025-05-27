@@ -29,7 +29,6 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
 
     init {
         updateProductImageInfoList()
-        // Observe changes in the ViewModel's UI state
         scope.launch {
             viewModel.uiState.collect {
                 updateProductImageInfoList()
@@ -39,27 +38,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
 
     fun updateProductImageInfoList() {
         _productImageInfoFlowList.value = viewModel.uiState.value.produitInfosList.flatMap { product ->
-            (1..4).mapNotNull { couleurId ->
-                val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
-
-                if (colorName == null) return@mapNotNull null
-
-                val keyImageId = "${product.id}_${couleurId}"
-                val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
-
-                val imageFile = listOf("jpg", "jpeg", "png", "webp")
-                    .map { ext -> File("$basePath.$ext") }
-                    .find { it.exists() && it.length() > 0 }
-
-                ProductImageInfo(
-                    file = imageFile ?: File(""),
-                    couleurId = couleurId,
-                    exists = imageFile != null,
-                    colorName = colorName,
-                    shouldShowColorText = imageFile == null,
-                    productName = product.nom
-                )
-            }
+            getAllDefinedColorsForProduct(product)
         }
     }
 
@@ -80,20 +59,11 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                 val targetProduct = product ?: produitVID?.let { findProductById(it) }
 
                 if (targetProduct != null) {
-                    // Get all color definitions for this product
                     val allDefinedColors = getAllDefinedColorsForProduct(targetProduct)
 
-                    // DEBUG: Log the colors found
-                    println("DEBUG: Product ${targetProduct.nom} (ID: ${targetProduct.id}) has ${allDefinedColors.size} colors:")
-                    allDefinedColors.forEachIndexed { index, color ->
-                        println("  Color ${index + 1}: ${color.colorName} (exists: ${color.exists})")
-                    }
-
                     if (allDefinedColors.isNotEmpty()) {
-                        // Always return ALL defined colors (both with images and color text fallbacks)
                         allDefinedColors
                     } else {
-                        // No colors defined, return default
                         listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: targetProduct.nom))
                     }
                 } else {
@@ -108,28 +78,29 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         }
     }
 
-    // FIXED: Get all defined colors for a product (both with and without images)
     private fun getAllDefinedColorsForProduct(product: A_ProduitInfosTest): List<ProductImageInfo> {
         return (1..4).mapNotNull { couleurId ->
             val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
-            if (colorName != null) {
-                // Check if image exists for this color
-                val keyImageId = "${product.id}_${couleurId}"
-                val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
 
-                val imageFile = listOf("jpg", "jpeg", "png", "webp")
-                    .map { ext -> File("$basePath.$ext") }
-                    .find { it.exists() && it.length() > 0 }
+            val keyImageId = "${product.id}_${couleurId}"
+            val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
 
+            val imageFile = listOf("jpg", "jpeg", "png", "webp")
+                .map { ext -> File("$basePath.$ext") }
+                .find { it.exists() && it.length() > 0 }
+
+            if (colorName != null || imageFile != null) {
                 ProductImageInfo(
                     file = imageFile ?: File(""),
                     couleurId = couleurId,
                     exists = imageFile != null,
-                    colorName = colorName,
-                    shouldShowColorText = imageFile == null, // Show text if no image
+                    colorName = colorName ?: "",
+                    shouldShowColorText = imageFile == null && colorName != null,
                     productName = product.nom
                 )
-            } else null
+            } else {
+                null
+            }
         }
     }
 

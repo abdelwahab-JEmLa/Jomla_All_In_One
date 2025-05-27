@@ -114,10 +114,6 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             prixAchat = 150.0,
             cartonState = "",
             nomCategorie = "ataye emballé",
-            // Fixed: Made colors more descriptive and distinct to ensure proper display
-            couleur1 = "🔴 Rouge Classique 🔴",
-            couleur2 = "🟢 Vert Menthe 🟢",
-            couleur3 = "🔵 Bleu Royal 🔵",
             nombreUniteInt = 0,
             nmbrCaron = 0,
             clientPrixVentUnite = 0.0,
