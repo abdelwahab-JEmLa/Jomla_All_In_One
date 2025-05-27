@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.width

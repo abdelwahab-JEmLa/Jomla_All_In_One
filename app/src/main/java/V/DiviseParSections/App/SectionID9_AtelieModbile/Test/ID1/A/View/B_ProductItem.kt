@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.A_GlideDisplayImageByKeyId_Proto_5
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

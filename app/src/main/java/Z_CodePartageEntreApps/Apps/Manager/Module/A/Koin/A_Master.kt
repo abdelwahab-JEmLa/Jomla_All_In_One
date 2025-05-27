@@ -10,7 +10,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CalculeCouleurHandler
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide.CalculeCouleurHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.F0_FireBaseOperationsHandler

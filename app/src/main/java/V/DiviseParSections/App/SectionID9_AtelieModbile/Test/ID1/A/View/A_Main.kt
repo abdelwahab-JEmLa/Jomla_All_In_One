@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CameraHandler.B_1_CameraFAB
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.createTestProduct
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,10 +55,10 @@ fun FragmentMain(
             .padding(16.dp)
     ) {
         AppBar(
-            onAddTestProduct = {
+            onAddNewProductAndCapture = {
                 val newTestProduct = createTestProduct()
-                // TODO(1) FIXED: Add the new product to produitListLocal
                 produitListLocal = produitListLocal + newTestProduct
+                newTestProduct // Return the new product for camera use
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -87,9 +87,10 @@ fun FragmentMain(
         )
     }
 }
+
 @Composable
 fun AppBar(
-    onAddTestProduct: () -> Unit,
+    onAddNewProductAndCapture: () -> A_ProduitInfosTest,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -105,11 +106,10 @@ fun AppBar(
             fontWeight = FontWeight.Bold
         )
 
-        Button(
-            onClick = onAddTestProduct
-        ) {
-            Text(text = "Ajouter Test")
-        }
+        // Camera FAB that creates a new product when clicked
+        B_1_CameraFAB(
+            onCreateProductForCapture = onAddNewProductAndCapture
+        )
     }
 }
 
@@ -131,4 +131,3 @@ fun MainList(
         }
     }
 }
-
