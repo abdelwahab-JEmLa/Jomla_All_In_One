@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A0_DataBasesGroup
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.A_ProduitInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.B.Models.getActiveMigration
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.F0_FireBaseOperationsHandler
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.E.Repository.FireBase.deleteRef
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Test.testD_TarificationInfosT2
@@ -38,9 +37,11 @@ class E_GroupedDataBasesRepository(
             D_TarificationInfos::class -> {
                 D_TarificationInfos::class
             }
+
             A_ProduitInfos::class -> {
                 A_ProduitInfos::class
             }
+
             else -> {
                 throw IllegalArgumentException("Unsupported data type: ${data::class.simpleName}")
             }
@@ -62,6 +63,7 @@ class E_GroupedDataBasesRepository(
                     is D_TarificationInfos -> {
                         fireBase.updateInFB(updatedData)
                     }
+
                     is A_ProduitInfos -> {
                         fireBase.updateInFB(updatedData)
                     }
@@ -131,7 +133,6 @@ class E_GroupedDataBasesRepository(
         }
     }
 
-
     private fun initializeProduitInfos() {
         updateProgress(0.9f)
         collectRoom()
@@ -161,11 +162,13 @@ class E_GroupedDataBasesRepository(
                             }
                         }
                     }
+                    val hasFirebaseProducts = produitInfoList.isNotEmpty()
 
-                    migreOldDatas(activeFun = getActiveMigration() )
+                    if (!hasFirebaseProducts) {
+                        migreOldDatas()
+                    }
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
-                    val hasFirebaseProducts = produitInfoList.isNotEmpty()
 
                     if (isRoomEmpty && hasFirebaseProducts) {
                         room.insertAllAndReturnListIdToDataInline<A_ProduitInfos>(produitInfoList)
@@ -192,9 +195,11 @@ class E_GroupedDataBasesRepository(
                     D_TarificationInfos::class -> {
                         initializeTarificationInfos()
                     }
+
                     A_ProduitInfos::class -> {
                         initializeProduitInfos()
                     }
+
                     else -> {
                         updateProgress(1f)
                     }
@@ -209,21 +214,17 @@ class E_GroupedDataBasesRepository(
         initializeDatabase<D_TarificationInfos>()
     }
 
-    private suspend fun migreOldDatas(activeFun: Boolean) {
-        if (activeFun) {
-            try {
-                fireBase.deleteRef<A_ProduitInfos>()
-                val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
+    private suspend fun migreOldDatas() {
+        try {
+            fireBase.deleteRef<A_ProduitInfos>()
+            val (originalCount, resultMap) = fireBase.getAncienDB_changeKeysFireBase()
 
-                // Convert the Map values to List for setListDataInlineFun
-                val newDataList = resultMap.values.toList()
+            val newDataList = resultMap.values.toList()
 
-                fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
+            fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
 
-            } catch (migrationError: Exception) {
-                // Handle migration error silently or log it
-                migrationError.printStackTrace()
-            }
+        } catch (migrationError: Exception) {
+            migrationError.printStackTrace()
         }
     }
 
