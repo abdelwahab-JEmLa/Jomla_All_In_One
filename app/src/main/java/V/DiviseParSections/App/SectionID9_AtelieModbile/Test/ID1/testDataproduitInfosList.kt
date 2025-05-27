@@ -52,7 +52,8 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             cartonState = "",
             nomCategorie = "Chocolattes 5 Da",
             couleur1 = "🟦 ازرق 🟦",
-            couleur2 = "🟫 بني 🟫",
+            couleur2 = "🟫 بني 🟫",            //<--
+            //TODO(1): pk comme ca a 2 couleur avec nom mais la 2 eme ne s affiche pas 
             nombreUniteInt = 200,
             nmbrCaron = 1,
             clientPrixVentUnite = 5.0,

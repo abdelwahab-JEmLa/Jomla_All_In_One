@@ -28,7 +28,10 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
     fun updateProductImageInfoList() {
         _productImageInfoFlowList.value = viewModel.uiState.value.produitInfosList.flatMap { product ->
             (1..4).mapNotNull { couleurId ->
-                val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
+
+                if (colorName == null) return@mapNotNull null
+
                 val keyImageId = "${product.id}_${couleurId}"
                 val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
 
@@ -58,11 +61,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         }
     }
 
-    /**
-     * Gets image files for display, handling default image fallback
-     * This centralizes the logic that was previously in the Composable's LaunchedEffect
-     */
-    suspend fun getImageFilesForDisplay(
+     fun getImageFilesForDisplay(
         produitVID: Long? = null,
         product: A_ProduitInfosTest? = null,
         produitNom: String? = null
@@ -82,7 +81,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                     }
 
                     productSpecificImages.ifEmpty {
-                        listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: targetProduct.nom))
+                        createColorTextFallbacks(targetProduct)
                     }
                 } else {
                     listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: ""))
@@ -96,6 +95,22 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         }
     }
 
+    private fun createColorTextFallbacks(product: A_ProduitInfosTest): List<ProductImageInfo> {
+        return (1..4).mapNotNull { couleurId ->
+            val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
+            if (colorName != null) {
+                ProductImageInfo(
+                    file = File(""), // Empty file since we're showing text
+                    couleurId = couleurId,
+                    exists = false,
+                    colorName = colorName,
+                    shouldShowColorText = true,
+                    productName = product.nom
+                )
+            } else null
+        }
+    }
+
     fun getColorNameById(product: A_ProduitInfosTest?, colorId: Int): String {
         val colorName = when (colorId) {
             1 -> product?.couleur1
@@ -104,9 +119,8 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
             4 -> product?.couleur4
             else -> null
         }
-        return colorName?.trim() ?: ""
+        return colorName?.trim()?.takeIf { it.isNotEmpty() } ?: ""
     }
-
 
     private fun extractProductIdFromImagePath(path: String): Long? {
         return try {
@@ -119,5 +133,4 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
             null
         }
     }
-
 }
