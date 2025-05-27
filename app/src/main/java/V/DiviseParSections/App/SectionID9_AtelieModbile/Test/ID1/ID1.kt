@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,18 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -41,12 +42,28 @@ fun FragmentMain(
     viewModel: ViewModel_TestID2 = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var produitListLocal by remember { mutableStateOf(uiState.produitInfosList.toList()) }
+
+    // Update local state when ViewModel state changes
+    LaunchedEffect(uiState.produitInfosList.size) {
+        produitListLocal = uiState.produitInfosList.toList()
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        AppBar(
+            onAddTestProduct = {
+                val newTestProduct = createTestProduct()
+                viewModel.addProduct(newTestProduct)
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Liste des Produits",
             style = MaterialTheme.typography.headlineMedium,
@@ -55,22 +72,48 @@ fun FragmentMain(
         )
 
         MainList(
-            produits = uiState.produitInfosList,
+            produitList = produitListLocal,
             modifier = Modifier.fillMaxSize()
         )
     }
 }
 
 @Composable
+fun AppBar(
+    onAddTestProduct: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Gestion Produits",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Button(
+            onClick = onAddTestProduct
+        ) {
+            Text(text = "Ajouter Test")
+        }
+    }
+}
+
+@Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    produits: List<A_ProduitInfosTest> = emptyList()
+    produitList: List<A_ProduitInfosTest> = emptyList()
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(produits) { produit ->
+        items(produitList) { produit ->
             ProductItem(produit = produit)
         }
     }
@@ -132,38 +175,29 @@ private fun ProductItem(
                 }
             }
 
-            if (produit.cartonState.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "État: ${produit.cartonState}",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.secondaryContainer,
-                                MaterialTheme.shapes.small
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-
-                    if (produit.articleHaveUniteImages) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Images disponibles",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.shapes.small
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-            }
         }
     }
+}
+
+// Helper function to create a test product
+private fun createTestProduct(): A_ProduitInfosTest {
+    val randomId = (1000..9999).random().toLong()
+    return A_ProduitInfosTest(
+        id = randomId,
+        nom = "Test Product $randomId",
+        nomArab = "منتج تجريبي $randomId",
+        prixVent = (100..1000).random().toDouble(),
+        monPrixAchat = (50..800).random().toDouble(),
+        cartonState = "Test",
+        nomCategorie = "Test Category",
+        couleur1 = "🔴 Rouge 🔴",
+        nmbrUnite = (10..200).random(),
+        nmbrCaron = 1,
+        clienPrixVentUnite = (5..20).random().toDouble(),
+        commmentSeVent = "U",
+        diponibilityState = "",
+        articleHaveUniteImages = false,
+        timestamps = System.currentTimeMillis(),
+        needUpdate = true
+    )
 }
