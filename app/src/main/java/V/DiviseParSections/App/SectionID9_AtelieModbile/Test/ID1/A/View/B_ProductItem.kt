@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 fun ProductItem(
     produitInit: A_ProduitInfosTest,
     onPrixUpdate: (A_ProduitInfosTest) -> Unit = {},
-    modifier: Modifier = Modifier
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
     var produit by remember { mutableStateOf(produitInit) }
 
@@ -44,21 +44,9 @@ fun ProductItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = produit.nom,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "ID: ${produit.id}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                ColumnInfosBase(produit)
 
                 Column(horizontalAlignment = Alignment.End) {
-                    // Prix de vente - editable using PriceEditor
                     PriceEditor(
                         currentPrice = produit.prixVent,
                         label = "Vente",
@@ -71,7 +59,6 @@ fun ProductItem(
                         textColor = MaterialTheme.colorScheme.primary
                     )
 
-                    // Nombre d'unités - editable using UnitEditor
                     UnitEditor(
                         currentUnits = produit.nombreUniteInt,
                         label = "Unités",
@@ -82,10 +69,7 @@ fun ProductItem(
                         }
                     )
 
-                    // Prix unitaire - editable and updates sale price
-                    // FIX: Calculate directly as Double and round to 2 decimal places
                     val prixUnitaire = if (produit.nombreUniteInt > 0) {
-                        // Round to 2 decimal places: multiply by 100, round, then divide by 100
                         kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
                     } else {
                         0.0
@@ -96,7 +80,6 @@ fun ProductItem(
                             currentPrice = prixUnitaire,
                             label = "Prix/unité",
                             onPriceUpdate = { newPrixUnitaire ->
-                                // Calculate new sale price based on unit price
                                 val newPrixVent = newPrixUnitaire * produit.nombreUniteInt
                                 val updatedProduct = produit.copy(prixVent = newPrixVent)
                                 produit = updatedProduct
@@ -107,8 +90,6 @@ fun ProductItem(
                         )
                     }
 
-                    // CLIENT PRICING SECTION - NEW FEATURE
-                    // Prix de vente unitaire chez client - editable
                     PriceEditor(
                         currentPrice = produit.clientPrixVentUnite,
                         label = "Prix client/unité",
@@ -120,7 +101,6 @@ fun ProductItem(
                         showOnlyWhenPositive = false,
                         textColor = MaterialTheme.colorScheme.inversePrimary,
                         additionalInfo = {
-                            // Total prix de vente chez client - non-editable (calculated)
                             val totalClientPrice = if (produit.nombreUniteInt > 0) {
                                 produit.clientPrixVentUnite * produit.nombreUniteInt
                             } else {
@@ -138,9 +118,7 @@ fun ProductItem(
                         }
                     )
 
-                    // Prix d'achat unitaire - editable and updates purchase price
                     val prixAchatUnitaire = if (produit.nombreUniteInt > 0) {
-                        // Round to 2 decimal places
                         kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
                     } else {
                         0.0
@@ -151,7 +129,6 @@ fun ProductItem(
                             currentPrice = prixAchatUnitaire,
                             label = "Achat/unité",
                             onPriceUpdate = { newPrixAchatUnitaire ->
-                                // Calculate new purchase price based on unit price
                                 val newPrixAchat = newPrixAchatUnitaire * produit.nombreUniteInt
                                 val updatedProduct = produit.copy(prixAchat = newPrixAchat)
                                 produit = updatedProduct
@@ -161,8 +138,6 @@ fun ProductItem(
                             textColor = MaterialTheme.colorScheme.tertiary
                         )
                     }
-
-                    // Prix d'achat - editable using PriceEditor with benefit calculation
                     PriceEditor(
                         currentPrice = produit.prixAchat,
                         label = "Achat",
@@ -175,12 +150,10 @@ fun ProductItem(
                         additionalInfo = {
                             val benefice = produit.prixVent - produit.prixAchat
 
-                            // Editable benefit using PriceEditor
                             PriceEditor(
                                 currentPrice = benefice,
                                 label = "Bénéfice",
                                 onPriceUpdate = { newBenefice ->
-                                    // Calculate new sale price based on desired benefit
                                     val newPrixVent = produit.prixAchat + newBenefice
                                     val updatedProduct = produit.copy(prixVent = newPrixVent)
                                     produit = updatedProduct
@@ -195,5 +168,21 @@ fun ProductItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ColumnInfosBase(produit: A_ProduitInfosTest) {
+    Column() {
+        Text(
+            text = produit.nom,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "ID: ${produit.id}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
