@@ -18,7 +18,8 @@ data class ProductImageInfo(
     val exists: Boolean = true,
     val colorName: String = "",
     val shouldShowColorText: Boolean = false,
-    val productName: String = ""
+    val productName: String = "",
+    val actualiseSonImage: Int = 0 // FIXED: Now properly tracked
 )
 
 class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
@@ -51,6 +52,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         product: A_ProduitInfosTest? = null,
         produitNom: String? = null
     ): List<ProductImageInfo> {
+        // FIXED: Now properly uses actualiseSonImage from the product
         return try {
             val defaultFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
             val shouldUseDefaultImage = produitVID == null && product == null
@@ -64,17 +66,49 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                     if (allDefinedColors.isNotEmpty()) {
                         allDefinedColors
                     } else {
-                        listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: targetProduct.nom))
+                        listOf(
+                            ProductImageInfo(
+                                file = defaultFile,
+                                couleurId = 0,
+                                exists = false,
+                                productName = produitNom ?: targetProduct.nom,
+                                actualiseSonImage = targetProduct.actualiseSonImage // FIXED: Pass the actual value
+                            )
+                        )
                     }
                 } else {
-                    listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: ""))
+                    listOf(
+                        ProductImageInfo(
+                            file = defaultFile,
+                            couleurId = 0,
+                            exists = false,
+                            productName = produitNom ?: "",
+                            actualiseSonImage = 0
+                        )
+                    )
                 }
             } else {
-                listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: ""))
+                listOf(
+                    ProductImageInfo(
+                        file = defaultFile,
+                        couleurId = 0,
+                        exists = false,
+                        productName = produitNom ?: "",
+                        actualiseSonImage = 0
+                    )
+                )
             }
         } catch (e: Exception) {
             val defaultFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
-            listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: ""))
+            listOf(
+                ProductImageInfo(
+                    file = defaultFile,
+                    couleurId = 0,
+                    exists = false,
+                    productName = produitNom ?: "",
+                    actualiseSonImage = 0
+                )
+            )
         }
     }
 
@@ -96,7 +130,8 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                     exists = imageFile != null,
                     colorName = colorName ?: "",
                     shouldShowColorText = imageFile == null && colorName != null,
-                    productName = product.nom
+                    productName = product.nom,
+                    actualiseSonImage = product.actualiseSonImage // FIXED: Now includes the actual value
                 )
             } else {
                 null

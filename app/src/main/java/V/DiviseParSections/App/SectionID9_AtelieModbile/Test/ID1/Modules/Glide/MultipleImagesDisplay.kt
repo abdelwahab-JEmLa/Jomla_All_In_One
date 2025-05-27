@@ -1,34 +1,54 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 @Composable
 fun MultipleImagesDisplay(
     imageFiles: List<ProductImageInfo>,
     size: Dp?,
     qualityImage: Int,
-    onLoadComplete: () -> Unit
+    onLoadComplete: () -> Unit,
+    actualiseSonImage: Int = 0 // FIXED: Added parameter to force refresh
 ) {
-    val imageSize = size ?: 80.dp
+    val pagerState = rememberPagerState(pageCount = { imageFiles.size })
 
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.width(imageSize * imageFiles.size.coerceAtMost(3) + 12.dp)
+    // Auto-scroll effect
+    LaunchedEffect(pagerState, imageFiles.size) {
+        if (imageFiles.size > 1) {
+            while (true) {
+                delay(3000) // 3 seconds delay
+                val nextPage = (pagerState.currentPage + 1) % imageFiles.size
+                pagerState.animateScrollToPage(nextPage)
+            }
+        }
+    }
+
+    Box(
+        modifier = size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        items(imageFiles) { imageInfo ->
-            SingleImageItem(
-                imageInfo = imageInfo,
-                size = imageSize,
-                qualityImage = qualityImage,
-                onLoadComplete = onLoadComplete
-            )
+        HorizontalPager(state = pagerState) { page ->
+            val imageInfo = imageFiles.getOrNull(page)
+            if (imageInfo != null) {
+                SingleImageDisplay(
+                    imageInfo = imageInfo,
+                    qualityImage = qualityImage,
+                    onLoadComplete = if (page == 0) onLoadComplete else { {} },
+                    actualiseSonImage = actualiseSonImage // FIXED: Pass to SingleImageDisplay
+                )
+            } else {
+                OnImageExistPas()
+            }
         }
     }
 }

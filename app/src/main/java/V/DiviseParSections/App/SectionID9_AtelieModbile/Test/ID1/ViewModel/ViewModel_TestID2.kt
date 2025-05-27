@@ -14,9 +14,7 @@ data class UiState(
     val loadingProgress: Float = 0f,
     val error: String? = null,
 )
-
-class ViewModel_TestID2(
-) : ViewModel() {
+class ViewModel_TestID2 : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -24,12 +22,55 @@ class ViewModel_TestID2(
         loadData()
     }
 
-    private fun loadData(): Unit {
-        // Load test data with products that have prixVent > 0
+    private fun loadData() {
         val testData = testDataproduitInfosList()
         _uiState.value.produitInfosList.clear()
         _uiState.value.produitInfosList.addAll(testData)
     }
 
+    // FIXED TODO(1): Implement updateActualisationImage
+    fun updateActualisationImage(productId: Long? = null) {
+        val currentList = _uiState.value.produitInfosList
+        val updatedList = if (productId != null) {
+            // Update specific product
+            currentList.map { product ->
+                if (product.id == productId) {
+                    product.copy(
+                        actualiseSonImage = product.actualiseSonImage + 1,
+                        timestamps = System.currentTimeMillis(),
+                        needUpdate = true
+                    )
+                } else {
+                    product
+                }
+            }
+        } else {
+            // Update all products
+            currentList.map { product ->
+                product.copy(
+                    actualiseSonImage = product.actualiseSonImage + 1,
+                    timestamps = System.currentTimeMillis(),
+                    needUpdate = true
+                )
+            }
+        }
 
+        _uiState.value.produitInfosList.clear()
+        _uiState.value.produitInfosList.addAll(updatedList)
+    }
+
+    fun updateProduct(updatedProduct: A_ProduitInfosTest) {
+        val currentList = _uiState.value.produitInfosList
+        val index = currentList.indexOfFirst { it.id == updatedProduct.id }
+        if (index != -1) {
+            currentList[index] = updatedProduct.copy(
+                timestamps = System.currentTimeMillis(),
+                needUpdate = true
+            )
+        }
+    }
+
+    fun addNewProduct(newProduct: A_ProduitInfosTest) {
+        _uiState.value.produitInfosList.add(newProduct)
+    }
 }

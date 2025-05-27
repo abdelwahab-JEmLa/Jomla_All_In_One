@@ -37,18 +37,25 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
     product: A_ProduitInfosTest? = null,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject()
 ) {
+    // FIXED: Now properly tracks image updates
     var imageFiles by remember { mutableStateOf<List<ProductImageInfo>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var currentActualiseSonImage by remember { mutableStateOf(0) }
 
     val allProductImages by calculeCouleurHandler.productImageInfoFlowList.collectAsState()
 
-    LaunchedEffect(produitVID, product, allProductImages) {
+    // FIXED: Now includes actualiseSonImage in LaunchedEffect dependencies
+    LaunchedEffect(produitVID, product, allProductImages, product?.actualiseSonImage) {
         withContext(Dispatchers.IO) {
             imageFiles = calculeCouleurHandler.getImageFilesForDisplay(
                 produitVID = produitVID,
                 product = product,
                 produitNom = produitNom
             )
+
+            // Update the tracked actualiseSonImage value
+            currentActualiseSonImage = product?.actualiseSonImage ?: 0
+
             isLoading = false
         }
     }
@@ -67,7 +74,8 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                         imageFiles = imageFiles,
                         size = size,
                         qualityImage = qualityImage,
-                        onLoadComplete = onLoadComplete
+                        onLoadComplete = onLoadComplete,
+                        actualiseSonImage = currentActualiseSonImage // FIXED: Pass to force refresh
                     )
 
                     Box(
@@ -94,7 +102,8 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                 SingleImageDisplay(
                     imageInfo = imageFiles.first(),
                     qualityImage = qualityImage,
-                    onLoadComplete = onLoadComplete
+                    onLoadComplete = onLoadComplete,
+                    actualiseSonImage = currentActualiseSonImage // FIXED: Pass to force refresh
                 )
             }
         }

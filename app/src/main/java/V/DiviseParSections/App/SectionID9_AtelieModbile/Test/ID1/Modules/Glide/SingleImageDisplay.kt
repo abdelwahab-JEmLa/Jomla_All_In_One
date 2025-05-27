@@ -1,9 +1,11 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
+// Additional utility class for Glide signature
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,23 +18,38 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.Key
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.signature.ObjectKey
+import java.security.MessageDigest
+
+class ObjectKey(private val obj: Any) : Key {
+    override fun updateDiskCacheKey(messageDigest: MessageDigest) {
+        messageDigest.update(obj.toString().toByteArray())
+    }
+}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SingleImageDisplay(
     imageInfo: ProductImageInfo,
     qualityImage: Int,
-    onLoadComplete: () -> Unit
+    onLoadComplete: () -> Unit,
+    actualiseSonImage: Int = 0 // FIXED: Now properly used
 ) {
     var isImageLoading by remember { mutableStateOf(true) }
 
+    var imageRefreshKey by remember { mutableStateOf(0) }
+
+    LaunchedEffect(actualiseSonImage) {
+        imageRefreshKey = actualiseSonImage
+    }
+
     if (imageInfo.shouldShowColorText) {
-        // Show color text instead of image
         ColorTextDisplay(
             colorName = imageInfo.colorName,
             modifier = Modifier.fillMaxSize()
@@ -53,6 +70,8 @@ fun SingleImageDisplay(
             builder
                 .downsample(DownsampleStrategy.AT_MOST)
                 .encodeQuality(qualityImage)
+                // FIXED: Use actualiseSonImage as signature to force refresh
+                .signature(ObjectKey(imageRefreshKey.toString()))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .listener(object : RequestListener<Drawable> {

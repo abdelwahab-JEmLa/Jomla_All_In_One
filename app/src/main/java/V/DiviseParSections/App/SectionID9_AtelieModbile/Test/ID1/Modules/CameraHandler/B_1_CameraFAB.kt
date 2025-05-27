@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CameraHandler
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
-import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -39,9 +38,8 @@ import java.io.IOException
 
 @Composable
 fun B_1_CameraFAB(
-    // FIXED: Changed to callback that creates and returns a new product
     onCreateProductForCapture: (() -> A_ProduitInfosTest)? = null,
-    // Keep backward compatibility for existing usage
+    onImageUploadedToStorage: ((A_ProduitInfosTest) -> Unit)? = null, // FIXED: Add callback
     productForCapture: A_ProduitInfosTest? = null,
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50)
@@ -49,7 +47,7 @@ fun B_1_CameraFAB(
     val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
         .child("Images Articles Data Base")
         .child("produits")
-     val imagesProduitsLocalExternalStorageBasePath =
+    val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/" +
                 "Abdelwahab_jeMla.com" +
                 "/IMGs" +
@@ -97,13 +95,11 @@ fun B_1_CameraFAB(
                             val updatedProduct = product.copy(
                                 articleHaveUniteImages = true,
                                 needUpdate = true,
-                                timestamps = System.currentTimeMillis()
+                                timestamps = System.currentTimeMillis(),
+                                actualiseSonImage = product.actualiseSonImage + 1
                             )
 
-                            _ModelAppsFather.produitsFireBaseRef
-                                .child(product.id.toString())
-                                .setValue(updatedProduct)
-                                .await()
+                            onImageUploadedToStorage?.invoke(updatedProduct)
 
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "Image téléchargée avec succès pour ${product.nom}", Toast.LENGTH_SHORT).show()
@@ -132,7 +128,6 @@ fun B_1_CameraFAB(
             tempImageUri = null
         }
     }
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->

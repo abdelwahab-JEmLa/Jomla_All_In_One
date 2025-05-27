@@ -58,7 +58,8 @@ fun FragmentMain(
             onAddNewProductAndCapture = {
                 val newTestProduct = createTestProduct()
                 produitListLocal = produitListLocal + newTestProduct
-                newTestProduct // Return the new product for camera use
+                viewModel.addNewProduct(newTestProduct) // Add to ViewModel too
+                newTestProduct
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -82,15 +83,20 @@ fun FragmentMain(
                         product
                     }
                 }
+                // FIXED TODO(1): Update ViewModel when product is modified
+                viewModel.updateProduct(updatedProduct)
+                viewModel.updateActualisationImage(updatedProduct.id)
             },
             modifier = Modifier.fillMaxSize()
         )
     }
 }
 
+
 @Composable
 fun AppBar(
     onAddNewProductAndCapture: () -> A_ProduitInfosTest,
+    viewModel: ViewModel_TestID2 = viewModel(), // Add ViewModel parameter
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -106,13 +112,17 @@ fun AppBar(
             fontWeight = FontWeight.Bold
         )
 
-        // Camera FAB that creates a new product when clicked
+        // FIXED: Pass the image upload callback to camera FAB
         B_1_CameraFAB(
-            onCreateProductForCapture = onAddNewProductAndCapture
+            onCreateProductForCapture = onAddNewProductAndCapture,
+            onImageUploadedToStorage = { updatedProduct ->
+                // Update the product in ViewModel when image is uploaded
+                viewModel.updateProduct(updatedProduct)
+                viewModel.updateActualisationImage(updatedProduct.id)
+            }
         )
     }
 }
-
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
