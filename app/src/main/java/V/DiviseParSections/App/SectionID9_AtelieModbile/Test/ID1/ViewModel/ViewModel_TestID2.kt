@@ -31,18 +31,5 @@ class ViewModel_TestID2(
         _uiState.value.produitInfosList.addAll(testData)
     }
 
-    fun addProduct(product: A_ProduitInfosTest) {
-        _uiState.value.produitInfosList.add(product)
-    }
 
-    fun removeProduct(productId: Long) {
-        _uiState.value.produitInfosList.removeAll { it.id == productId }
-    }
-
-    fun updateProduct(product: A_ProduitInfosTest) {
-        val index = _uiState.value.produitInfosList.indexOfFirst { it.id == product.id }
-        if (index != -1) {
-            _uiState.value.produitInfosList[index] = product
-        }
-    }
 }

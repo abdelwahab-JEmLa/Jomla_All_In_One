@@ -57,7 +57,8 @@ fun FragmentMain(
         AppBar(
             onAddTestProduct = {
                 val newTestProduct = createTestProduct()
-                viewModel.addProduct(newTestProduct)
+                // TODO(1) FIXED: Add the new product to produitListLocal
+                produitListLocal = produitListLocal + newTestProduct
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -74,13 +75,18 @@ fun FragmentMain(
         MainList(
             produitList = produitListLocal,
             onPrixUpdate = { updatedProduct ->
-                viewModel.updateProduct(updatedProduct)
+                produitListLocal = produitListLocal.map { product ->
+                    if (product.id == updatedProduct.id) {
+                        updatedProduct
+                    } else {
+                        product
+                    }
+                }
             },
             modifier = Modifier.fillMaxSize()
         )
     }
 }
-
 @Composable
 fun AppBar(
     onAddTestProduct: () -> Unit,
