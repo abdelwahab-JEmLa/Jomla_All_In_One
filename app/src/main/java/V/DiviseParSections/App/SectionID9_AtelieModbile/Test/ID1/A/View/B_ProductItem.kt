@@ -69,13 +69,24 @@ fun ProductItem(
                         textColor = MaterialTheme.colorScheme.primary
                     )
 
-                    // Prix d'achat - using the modular component
-                    MonPrixAchat(
-                        produit = produit,
-                        onPrixUpdate = { newPrix ->
+                    // Prix d'achat - directly using PriceEditor with benefit calculation
+                    PriceEditor(
+                        currentPrice = produit.monPrixAchat,
+                        label = "Achat",
+                        onPriceUpdate = { newPrix ->
                             val updatedProduct = produit.copy(monPrixAchat = newPrix)
                             produit = updatedProduct
                             onPrixUpdate(updatedProduct)
+                        },
+                        showOnlyWhenPositive = true,
+                        additionalInfo = {
+                            val benefice = produit.prixVent - produit.monPrixAchat
+                            Text(
+                                text = "Bénéfice: $benefice DA",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (benefice > 0) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.error
+                            )
                         }
                     )
                 }
