@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -108,6 +107,30 @@ fun ProductItem(
                         )
                     }
 
+                    // Prix d'achat unitaire - editable and updates purchase price
+                    val prixAchatUnitaire = if (produit.nombreUniteInt > 0) {
+                        // Round to 2 decimal places
+                        kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
+                    } else {
+                        0.0
+                    }
+
+                    if (produit.nombreUniteInt > 0) {
+                        PriceEditor(
+                            currentPrice = prixAchatUnitaire,
+                            label = "Achat/unité",
+                            onPriceUpdate = { newPrixAchatUnitaire ->
+                                // Calculate new purchase price based on unit price
+                                val newPrixAchat = newPrixAchatUnitaire * produit.nombreUniteInt
+                                val updatedProduct = produit.copy(prixAchat = newPrixAchat)
+                                produit = updatedProduct
+                                onPrixUpdate(updatedProduct)
+                            },
+                            showOnlyWhenPositive = true,
+                            textColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+
                     // Prix d'achat - editable using PriceEditor with benefit calculation
                     PriceEditor(
                         currentPrice = produit.prixAchat,
@@ -120,12 +143,20 @@ fun ProductItem(
                         showOnlyWhenPositive = true,
                         additionalInfo = {
                             val benefice = produit.prixVent - produit.prixAchat
-                            // FIX: Use Locale.US to ensure consistent formatting
-                            val beneficeFormatted = String.format(Locale.US, "%.2f", benefice)
-                            Text(
-                                text = "Bénéfice: $beneficeFormatted DA",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (benefice > 0) MaterialTheme.colorScheme.primary
+
+                            // Editable benefit using PriceEditor
+                            PriceEditor(
+                                currentPrice = benefice,
+                                label = "Bénéfice",
+                                onPriceUpdate = { newBenefice ->
+                                    // Calculate new sale price based on desired benefit
+                                    val newPrixVent = produit.prixAchat + newBenefice
+                                    val updatedProduct = produit.copy(prixVent = newPrixVent)
+                                    produit = updatedProduct
+                                    onPrixUpdate(updatedProduct)
+                                },
+                                showOnlyWhenPositive = false, // Allow negative benefits (losses)
+                                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.error
                             )
                         }
