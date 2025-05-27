@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
+package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import androidx.compose.foundation.layout.Arrangement
