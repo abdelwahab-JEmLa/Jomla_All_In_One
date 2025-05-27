@@ -125,7 +125,7 @@ class F0_FireBaseOperationsHandler(
 
     suspend inline fun <reified DataBase : Any> setListDataInlineFun(
         datas: List<DataBase> = emptyList(),
-        onAddSuccess: () -> Unit ={}
+        crossinline onAddSuccess: () -> Unit ={}
     ): Map<String, DataBase> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
@@ -209,6 +209,8 @@ class F0_FireBaseOperationsHandler(
             }
 
             onProgressUpdate(1f)
+            onAddSuccess()
+
             return@withContext emptyMap()
 
         } catch (e: Exception) {

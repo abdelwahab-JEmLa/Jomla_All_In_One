@@ -28,9 +28,9 @@ class E_GroupedDataBasesRepository(
 
     private val idComptActivePourCeTelep = repositorysModel.activeIdDe_1_5_Vendeur
 
-    val repository15Vendeur = repositorysModel.repository_1_5_Vendeur
+    private val repository15Vendeur = repositorysModel.repository_1_5_Vendeur
 
-    private val findComptActive = repository15Vendeur
+     private val findComptActive = repository15Vendeur
         .modelDatasSnapList.find { it.vid == idComptActivePourCeTelep }
 
     private val comptActuelle_migreSonDataBaseAuStart = findComptActive?.migreSonDataBaseAuStart ?: false
@@ -234,12 +234,12 @@ class E_GroupedDataBasesRepository(
 
                 val newDataList = resultMap.values.toList()
 
-                fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList) {
-                    if (findComptActive != null) {
-                        repository15Vendeur.addDataAndReturneItVID(
-                            findComptActive.copy(migreSonDataBaseAuStart = false)
-                        )
-                    }
+                fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
+
+                if (findComptActive != null) {
+                    repository15Vendeur.addDataAndReturneItVID(
+                        findComptActive.copy(migreSonDataBaseAuStart = false)
+                    )
                 }
 
             } catch (migrationError: Exception) {

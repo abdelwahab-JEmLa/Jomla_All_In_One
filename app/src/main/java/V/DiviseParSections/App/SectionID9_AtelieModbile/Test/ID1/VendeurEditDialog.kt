@@ -33,12 +33,9 @@ import androidx.compose.ui.unit.dp
 @Preview
 @Composable
 private fun VP() {
-    val context = LocalContext.current
     VendeurEditDialog(
         _1_5_Vendeur(
         ),
-        onConfirm = { vendeur ->
-        }
     )
 }
 
