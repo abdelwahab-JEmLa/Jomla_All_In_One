@@ -83,7 +83,6 @@ fun FragmentMain(
                         product
                     }
                 }
-                // FIXED TODO(1): Update ViewModel when product is modified
                 viewModel.updateProduct(updatedProduct)
                 viewModel.updateActualisationImage(updatedProduct.id)
             },

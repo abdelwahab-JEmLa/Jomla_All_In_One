@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,27 +38,70 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
     product: A_ProduitInfosTest? = null,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject()
 ) {
-    // FIXED: Now properly tracks image updates
+    val TAG = "MainDisplayComponent"
+
     var imageFiles by remember { mutableStateOf<List<ProductImageInfo>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var currentActualiseSonImage by remember { mutableStateOf(0) }
 
     val allProductImages by calculeCouleurHandler.productImageInfoFlowList.collectAsState()
 
-    // FIXED: Now includes actualiseSonImage in LaunchedEffect dependencies
+    Log.d(TAG, "=== Main Display Component Render ===")
+    Log.d(TAG, "Parameters:")
+    Log.d(TAG, "  produitVID: $produitVID")
+    Log.d(TAG, "  produitNom: $produitNom")
+    Log.d(TAG, "  product: ${product?.id} (${product?.nom})")
+    Log.d(TAG, "  product.actualiseSonImage: ${product?.actualiseSonImage}")
+    Log.d(TAG, "  size: $size")
+    Log.d(TAG, "  qualityImage: $qualityImage")
+    Log.d(TAG, "Current state:")
+    Log.d(TAG, "  imageFiles.size: ${imageFiles.size}")
+    Log.d(TAG, "  isLoading: $isLoading")
+    Log.d(TAG, "  currentActualiseSonImage: $currentActualiseSonImage")
+    Log.d(TAG, "  allProductImages.size: ${allProductImages.size}")
+
     LaunchedEffect(produitVID, product, allProductImages, product?.actualiseSonImage) {
+        Log.d(TAG, "=== LaunchedEffect triggered ===")
+        Log.d(TAG, "Dependencies changed:")
+        Log.d(TAG, "  produitVID: $produitVID")
+        Log.d(TAG, "  product?.id: ${product?.id}")
+        Log.d(TAG, "  product?.actualiseSonImage: ${product?.actualiseSonImage}")
+        Log.d(TAG, "  allProductImages.size: ${allProductImages.size}")
+
         withContext(Dispatchers.IO) {
-            imageFiles = calculeCouleurHandler.getImageFilesForDisplay(
+            val newActualiseSonImage = product?.actualiseSonImage ?: 0
+
+            Log.d(TAG, "Processing in IO context:")
+            Log.d(TAG, "  Previous currentActualiseSonImage: $currentActualiseSonImage")
+            Log.d(TAG, "  New actualiseSonImage: $newActualiseSonImage")
+
+            Log.d(TAG, "Calling calculeCouleurHandler.getImageFilesForDisplay...")
+            val newImageFiles = calculeCouleurHandler.getImageFilesForDisplay(
                 produitVID = produitVID,
                 product = product,
                 produitNom = produitNom
             )
 
-            // Update the tracked actualiseSonImage value
-            currentActualiseSonImage = product?.actualiseSonImage ?: 0
+            Log.d(TAG, "Received ${newImageFiles.size} image files:")
+            newImageFiles.forEachIndexed { index, imageInfo ->
+                Log.d(TAG, "  [$index] File: ${imageInfo.file.name}")
+                Log.d(TAG, "       Exists: ${imageInfo.exists}")
+                Log.d(TAG, "       Color: ${imageInfo.couleurId} (${imageInfo.colorName})")
+                Log.d(TAG, "       actualiseSonImage: ${imageInfo.actualiseSonImage}")
+                Log.d(TAG, "       shouldShowColorText: ${imageInfo.shouldShowColorText}")
+            }
 
+            imageFiles = newImageFiles
+            currentActualiseSonImage = newActualiseSonImage
             isLoading = false
+
+            Log.d(TAG, "State updated:")
+            Log.d(TAG, "  imageFiles.size: ${imageFiles.size}")
+            Log.d(TAG, "  currentActualiseSonImage: $currentActualiseSonImage")
+            Log.d(TAG, "  isLoading: $isLoading")
         }
+
+        Log.d(TAG, "=== LaunchedEffect completed ===")
     }
 
     Box(
@@ -66,6 +110,7 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
     ) {
         when {
             imageFiles.isEmpty() || isLoading -> {
+                Log.d(TAG, "Displaying placeholder - isEmpty: ${imageFiles.isEmpty()}, isLoading: $isLoading")
                 OnImageExistPas()
             }
             imageFiles.size > 1 -> {
