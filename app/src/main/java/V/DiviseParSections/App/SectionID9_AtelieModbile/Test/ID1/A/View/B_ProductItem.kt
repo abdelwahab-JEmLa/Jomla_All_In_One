@@ -56,12 +56,20 @@ fun ProductItem(
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${produit.prixVent} DA",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                    // Prix de vente - now also editable using PriceEditor
+                    PriceEditor(
+                        currentPrice = produit.prixVent,
+                        label = "Vente",
+                        onPriceUpdate = { newPrix ->
+                            val updatedProduct = produit.copy(prixVent = newPrix)
+                            produit = updatedProduct
+                            onPrixUpdate(updatedProduct)
+                        },
+                        showOnlyWhenPositive = false, // Always show sale price
+                        textColor = MaterialTheme.colorScheme.primary
                     )
+
+                    // Prix d'achat - using the modular component
                     MonPrixAchat(
                         produit = produit,
                         onPrixUpdate = { newPrix ->
