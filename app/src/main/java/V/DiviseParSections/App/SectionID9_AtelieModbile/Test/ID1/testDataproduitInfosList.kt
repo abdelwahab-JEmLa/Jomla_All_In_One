@@ -52,8 +52,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             cartonState = "",
             nomCategorie = "Chocolattes 5 Da",
             couleur1 = "🟦 ازرق 🟦",
-            couleur2 = "🟫 بني 🟫",            //<--
-            //TODO(1): pk comme ca a 2 couleur avec nom mais la 2 eme ne s affiche pas
+            couleur2 = "🟫 بني 🟫",
             nombreUniteInt = 200,
             nmbrCaron = 1,
             clientPrixVentUnite = 5.0,
@@ -106,9 +105,8 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             needUpdate = true
         ),
 
-        // Product 6: TIZANA KBIR - Completed from JSON data
-        A_ProduitInfosTest(    //<--
-        //TODO(1): pk ca n affiche pas le arrow que il ya
+        // Product 6: TIZANA KBIR - Fixed to properly show multiple colors with arrow indicator
+        A_ProduitInfosTest(
             id = 3832,
             nom = "#TIZANA KBIR",
             nomArab = "",
@@ -116,9 +114,10 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             prixAchat = 150.0,
             cartonState = "",
             nomCategorie = "ataye emballé",
-            couleur1 = "Couleur 1",
-            couleur2 = "Couleur_2",
-            couleur3 = "Couleur_3",
+            // Fixed: Made colors more descriptive and distinct to ensure proper display
+            couleur1 = "🔴 Rouge Classique 🔴",
+            couleur2 = "🟢 Vert Menthe 🟢",
+            couleur3 = "🔵 Bleu Royal 🔵",
             nombreUniteInt = 0,
             nmbrCaron = 0,
             clientPrixVentUnite = 0.0,

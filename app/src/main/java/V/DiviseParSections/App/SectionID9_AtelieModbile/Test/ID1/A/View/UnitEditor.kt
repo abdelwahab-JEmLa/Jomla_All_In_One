@@ -27,7 +27,7 @@ fun UnitEditor(
     label: String,
     onUnitsUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    showOnlyWhenPositive: Boolean = false,
+    showOnlyWhenPositive: Boolean = true,
     additionalInfo: (@Composable () -> Unit)? = null,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
@@ -45,9 +45,7 @@ fun UnitEditor(
 
     fun saveUnits() {
         val newUnits = tempUnitsText.toIntOrNull() ?: currentUnits
-        // Ensure units are not negative
-        val validUnits = if (newUnits < 0) 0 else newUnits
-        onUnitsUpdate(validUnits)
+        onUnitsUpdate(newUnits)
         isEditing = false
         tempUnitsText = "" // Reset to empty after saving
         keyboardController?.hide()
@@ -57,14 +55,14 @@ fun UnitEditor(
         if (isEditing) {
             OutlinedTextField(
                 value = tempUnitsText,
-                onValueChange = { 
-                    // Only allow numeric input
-                    if (it.all { char -> char.isDigit() } || it.isEmpty()) {
-                        tempUnitsText = it
-                    }
+                onValueChange = { newValue ->
+                    // Allow only digits
+                    val filteredValue = newValue.filter { it.isDigit() }
+                    tempUnitsText = filteredValue
                 },
-                label = { Text("Ancien: $currentUnits") },
-                placeholder = { Text("Nombre d'unités") },
+                label = { Text("Ancien: $currentUnits unités") },
+                placeholder = { Text("Nouvelles unités") },
+                suffix = { Text("unités") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -86,7 +84,7 @@ fun UnitEditor(
                         tempUnitsText = "" // Start with empty string
                     }
                 )
-                // Additional info if provided
+                // Additional info (like calculations based on units)
                 additionalInfo?.invoke()
             }
         }
