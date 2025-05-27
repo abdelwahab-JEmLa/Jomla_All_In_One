@@ -4,13 +4,11 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosT
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -22,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +44,6 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
 
     LaunchedEffect(produitVID, product, allProductImages) {
         withContext(Dispatchers.IO) {
-            // Use the centralized logic from CalculeCouleurHandler
             imageFiles = calculeCouleurHandler.getImageFilesForDisplay(
                 produitVID = produitVID,
                 product = product,
@@ -61,53 +57,45 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
         modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize()),
         contentAlignment = Alignment.Center
     ) {
-        if (imageFiles.isEmpty() || isLoading) {
-            OnImageExistPas()
-        } else {
-            // Display images based on count
-            when {
-                imageFiles.size > 1 -> {
-                    Box(contentAlignment = Alignment.Center) {
-                        MultipleImagesDisplay(
-                            imageFiles = imageFiles,
-                            size = size,
-                            qualityImage = qualityImage,
-                            onLoadComplete = onLoadComplete
-                        )
-
-                        // Show arrow indicator for multiple items
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(4.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                    shape = RoundedCornerShape(24.dp)
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = "Plus d'articles",
-                                tint = Color.Red,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .width(32.dp)
-                                    .height(32.dp)
-                            )
-                        }
-                    }
-                }
-                imageFiles.size == 1 -> {
-                    SingleImageDisplay(
-                        imageInfo = imageFiles.first(),
+        when {
+            imageFiles.isEmpty() || isLoading -> {
+                OnImageExistPas()
+            }
+            imageFiles.size > 1 -> {
+                Box(contentAlignment = Alignment.Center) {
+                    MultipleImagesDisplay(
+                        imageFiles = imageFiles,
+                        size = size,
                         qualityImage = qualityImage,
                         onLoadComplete = onLoadComplete
                     )
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(2.dp)
+                            .size(20.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Plus d'articles",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
                 }
-                else -> {
-                    OnImageExistPas()
-                }
+            }
+            else -> {
+                SingleImageDisplay(
+                    imageInfo = imageFiles.first(),
+                    qualityImage = qualityImage,
+                    onLoadComplete = onLoadComplete
+                )
             }
         }
     }
