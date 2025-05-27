@@ -13,11 +13,13 @@ data class A_ProduitInfosTest(
 
     // Section Etates Mutable
     val timestamps: Long = System.currentTimeMillis(),
-    val needUpdate: Boolean = true ,
+    val needUpdate: Boolean = true,
 
     // Section sonCategory
     // Section InfosCoutes
     var prixVent: Double = 0.0,
+    var prixAchat: Double = 0.0,    //edited
+    var nombreUniteInt: Int = 0,           //edited
 
     // Section keyFireBase
     val keyFireBase: String = "",
@@ -36,12 +38,10 @@ data class A_ProduitInfosTest(
     var couleur4: String? = null,
     var idcolor4: Long = 0,
     var nomCategorie2: String? = null,
-    var nmbrUnite: Int = 0,
     var nmbrCaron: Int = 0,
     var affichageUniteState: Boolean = false,
     var commmentSeVent: String? = null,
     var afficheBoitSiUniter: String? = null,
-    var monPrixAchat: Double = 0.0,
     var clienPrixVentUnite: Double = 0.0,
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,

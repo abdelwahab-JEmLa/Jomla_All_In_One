@@ -56,7 +56,7 @@ fun ProductItem(
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
-                    // Prix de vente - now also editable using PriceEditor
+                    // Prix de vente - editable using PriceEditor
                     PriceEditor(
                         currentPrice = produit.prixVent,
                         label = "Vente",
@@ -65,22 +65,56 @@ fun ProductItem(
                             produit = updatedProduct
                             onPrixUpdate(updatedProduct)
                         },
-                        showOnlyWhenPositive = false, // Always show sale price
+                        showOnlyWhenPositive = false,
                         textColor = MaterialTheme.colorScheme.primary
                     )
 
-                    // Prix d'achat - directly using PriceEditor with benefit calculation
+                    // Nombre d'unités - editable using UnitEditor
+                    UnitEditor(
+                        currentUnits = produit.nombreUniteInt,
+                        label = "Unités",
+                        onUnitsUpdate = { newUnits ->
+                            val updatedProduct = produit.copy(nombreUniteInt = newUnits)
+                            produit = updatedProduct
+                            onPrixUpdate(updatedProduct)
+                        }
+                    )
+
+                    // Prix unitaire - editable and updates sale price
+                    val prixUnitaire = if (produit.nombreUniteInt > 0) {
+                        String.format("%.2f", produit.prixVent / produit.nombreUniteInt).toDouble()
+                    } else {
+                        0.0
+                    }
+
+                    if (produit.nombreUniteInt > 0) {
+                        PriceEditor(
+                            currentPrice = prixUnitaire,
+                            label = "Prix/unité",
+                            onPriceUpdate = { newPrixUnitaire ->
+                                // Calculate new sale price based on unit price
+                                val newPrixVent = newPrixUnitaire * produit.nombreUniteInt
+                                val updatedProduct = produit.copy(prixVent = newPrixVent)
+                                produit = updatedProduct
+                                onPrixUpdate(updatedProduct)
+                            },
+                            showOnlyWhenPositive = false,
+                            textColor = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+
+                    // Prix d'achat - editable using PriceEditor with benefit calculation
                     PriceEditor(
-                        currentPrice = produit.monPrixAchat,
+                        currentPrice = produit.prixAchat,
                         label = "Achat",
                         onPriceUpdate = { newPrix ->
-                            val updatedProduct = produit.copy(monPrixAchat = newPrix)
+                            val updatedProduct = produit.copy(prixAchat = newPrix)
                             produit = updatedProduct
                             onPrixUpdate(updatedProduct)
                         },
                         showOnlyWhenPositive = true,
                         additionalInfo = {
-                            val benefice = produit.prixVent - produit.monPrixAchat
+                            val benefice = produit.prixVent - produit.prixAchat
                             Text(
                                 text = "Bénéfice: $benefice DA",
                                 style = MaterialTheme.typography.bodySmall,
