@@ -52,7 +52,8 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             cartonState = "",
             nomCategorie = "Chocolattes 5 Da",
             couleur1 = "🟦 ازرق 🟦",
-            couleur2 = "🟫 بني 🟫",
+            couleur2 = "🟫 بني 🟫",            //<--
+            //TODO(1): pk comme ca a 2 couleur avec nom mais la 2 eme ne s affiche pas
             nombreUniteInt = 200,
             nmbrCaron = 1,
             clientPrixVentUnite = 5.0,
@@ -106,7 +107,8 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
         ),
 
         // Product 6: TIZANA KBIR - Completed from JSON data
-        A_ProduitInfosTest(
+        A_ProduitInfosTest(    //<--
+        //TODO(1): pk ca n affiche pas le arrow que il ya
             id = 3832,
             nom = "#TIZANA KBIR",
             nomArab = "",

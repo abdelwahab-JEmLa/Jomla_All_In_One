@@ -61,7 +61,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         }
     }
 
-     fun getImageFilesForDisplay(
+    fun getImageFilesForDisplay(
         produitVID: Long? = null,
         product: A_ProduitInfosTest? = null,
         produitNom: String? = null
@@ -74,14 +74,23 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                 val targetProduct = product ?: produitVID?.let { findProductById(it) }
 
                 if (targetProduct != null) {
+                    // First, try to get actual image files
                     val productSpecificImages = _productImageInfoFlowList.value.filter { imageInfo ->
-                        extractProductIdFromImagePath(imageInfo.file.absolutePath) == targetProduct.id
-                    }.ifEmpty {
-                        findAllValidImageFiles(targetProduct.id)
+                        extractProductIdFromImagePath(imageInfo.file.absolutePath) == targetProduct.id && imageInfo.exists
                     }
 
-                    productSpecificImages.ifEmpty {
-                        createColorTextFallbacks(targetProduct)
+                    if (productSpecificImages.isNotEmpty()) {
+                        // Return actual images if found
+                        productSpecificImages
+                    } else {
+                        // If no images exist, create color text fallbacks for ALL defined colors
+                        val colorFallbacks = createColorTextFallbacks(targetProduct)
+                        if (colorFallbacks.isNotEmpty()) {
+                            colorFallbacks
+                        } else {
+                            // If no colors defined, return default
+                            listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: targetProduct.nom))
+                        }
                     }
                 } else {
                     listOf(ProductImageInfo(defaultFile, 0, false, produitNom ?: ""))
@@ -96,6 +105,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
     }
 
     private fun createColorTextFallbacks(product: A_ProduitInfosTest): List<ProductImageInfo> {
+        // Fixed: Create fallbacks for ALL defined colors, not just when images don't exist
         return (1..4).mapNotNull { couleurId ->
             val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
             if (colorName != null) {

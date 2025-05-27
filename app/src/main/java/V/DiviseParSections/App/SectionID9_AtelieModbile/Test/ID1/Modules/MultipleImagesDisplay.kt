@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -32,10 +31,15 @@ fun MultipleImagesDisplay(
     val itemsToShow = imageFiles.take(maxDisplayedItems)
     val hasMoreItems = imageFiles.size > maxDisplayedItems
 
+    // Fixed: Calculate proper width considering spacing and arrow
+    val baseWidth = imageSize * itemsToShow.size.coerceAtMost(maxDisplayedItems)
+    val spacingWidth = 4.dp * (itemsToShow.size - 1).coerceAtLeast(0)
+    val arrowWidth = if (hasMoreItems) imageSize + 8.dp else 0.dp
+    val totalWidth = baseWidth + spacingWidth + arrowWidth
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.width(imageSize * itemsToShow.size.coerceAtMost(maxDisplayedItems) +
-                if (hasMoreItems) imageSize + 16.dp else 12.dp)
+        modifier = Modifier.width(totalWidth)
     ) {
         items(itemsToShow) { imageInfo ->
             SingleImageItem(
@@ -46,6 +50,7 @@ fun MultipleImagesDisplay(
             )
         }
 
+        // Fixed: Show arrow when there are more than maxDisplayedItems
         if (hasMoreItems) {
             item {
                 Box(
@@ -55,18 +60,15 @@ fun MultipleImagesDisplay(
                         .height(imageSize)
                         .padding(4.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                            shape = RoundedCornerShape(24.dp)
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            shape = RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Plus d'articles",
-                        tint = Color.Red,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .width(32.dp)
-                            .height(32.dp)
+                        contentDescription = "Plus d'articles (${imageFiles.size - maxDisplayedItems} de plus)",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
             }
