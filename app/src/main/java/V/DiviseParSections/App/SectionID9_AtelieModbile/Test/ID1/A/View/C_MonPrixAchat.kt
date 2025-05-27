@@ -22,21 +22,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
- fun MonPrixAchat(
+fun MonPrixAchat(
     produit: A_ProduitInfosTest,
     onPrixUpdate: (Double) -> Unit = {}
 ) {
     var isEditing by remember { mutableStateOf(false) }
-    var tempPrixText by remember { mutableStateOf(produit.monPrixAchat.toString()) }
+    var tempPrixText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    // Update tempPrixText when produit changes
-    LaunchedEffect(produit.monPrixAchat) {
-        if (!isEditing) {
-            tempPrixText = produit.monPrixAchat.toString()
-        }
-    }
 
     // Focus and show keyboard when editing starts
     LaunchedEffect(isEditing) {
@@ -49,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
         val newPrix = tempPrixText.toDoubleOrNull() ?: produit.monPrixAchat
         onPrixUpdate(newPrix)
         isEditing = false
+        tempPrixText = "" // Reset to empty after saving
         keyboardController?.hide()
     }
 
@@ -57,7 +51,8 @@ import androidx.compose.ui.text.input.KeyboardType
             OutlinedTextField(
                 value = tempPrixText,
                 onValueChange = { tempPrixText = it },
-                label = { Text("Prix d'achat") },
+                label = { Text("Ancien: ${produit.monPrixAchat} DA") },
+                placeholder = { Text("Nouveau prix") },
                 suffix = { Text("DA") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal,
@@ -77,7 +72,7 @@ import androidx.compose.ui.text.input.KeyboardType
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable {
                         isEditing = true
-                        tempPrixText = produit.monPrixAchat.toString()
+                        tempPrixText = "" // Start with empty string
                     }
                 )
                 val benefice = produit.prixVent - produit.monPrixAchat
