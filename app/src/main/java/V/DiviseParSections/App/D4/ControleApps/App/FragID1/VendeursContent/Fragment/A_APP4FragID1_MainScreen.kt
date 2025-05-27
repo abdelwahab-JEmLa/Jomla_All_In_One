@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursUiState
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ElevatedCard
@@ -28,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -76,7 +80,7 @@ fun VendeursContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                
+
                 item {
                     Text(
                         text = "Liste des Vendeurs",
@@ -139,7 +143,6 @@ fun VendeursContent(
         }
     }
 }
-// In A_APP4FragID1_MainScreen.kt - Add this new composable function at the end of the file:
 
 @Composable
 fun AddPeriodeItem(
@@ -174,7 +177,6 @@ fun AddPeriodeItem(
     }
 }
 
-
 @Composable
 fun SectionDivider(
     color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
@@ -193,6 +195,9 @@ fun VendeurItem(
     onVendeurSelected: (Long) -> Unit,
     onVendeurUpdate: (_1_5_Vendeur) -> Unit,
 ) {
+    // State for dialog visibility
+    var showEditDialog by remember { mutableStateOf(false) }
+
     // Determine background color based on whether this is the active vendeur
     val backgroundColor = when {
         isActive -> MaterialTheme.colorScheme.surfaceVariant
@@ -226,9 +231,23 @@ fun VendeurItem(
                 modifier = Modifier.weight(1f)
             )
 
+            // Edit button
             IconButton(
                 onClick = {
-                    // Toggle hideAppScreen property and upsert_1_3_TransactionCommercial the vendeur
+                    showEditDialog = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Modifier le vendeur",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            // Visibility toggle button
+            IconButton(
+                onClick = {
+                    // Toggle hideAppScreen property and update the vendeur
                     val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
                     onVendeurUpdate(updatedVendeur)
                 }
@@ -259,6 +278,18 @@ fun VendeurItem(
             text = "Nom: ${vendeur.nom}",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    // Edit Dialog
+    if (showEditDialog) {
+        VendeurEditDialog(
+            vendeur = vendeur,
+            onDismiss = { showEditDialog = false },
+            onConfirm = { updatedVendeur ->
+                onVendeurUpdate(updatedVendeur)
+                showEditDialog = false
+            }
         )
     }
 }
@@ -314,11 +345,11 @@ fun PeriodeItem(
 
             IconButton(
                 onClick = {
-                    // Call function to upsert_1_3_TransactionCommercial comptVendeurInsertBonsAchatAuPeriodID
+                    // Call function to update comptVendeurInsertBonsAchatAuPeriodID
                     onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
                 }
             ) {
-                // Change icon based on whether this is the upsertEtReturnSonNewVid period
+                // Change icon based on whether this is the insert period
                 val icon = if (isInsertPeriod) {
                     Icons.Default.Check
                 } else {

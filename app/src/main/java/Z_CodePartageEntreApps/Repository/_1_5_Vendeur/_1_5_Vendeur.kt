@@ -21,6 +21,7 @@ data class _1_5_Vendeur(
     var itsProductionModePourCeCompt : Boolean = false,
 
     var hideAppScreen: Boolean = false,
+    // Section Options Personele
 
 
     ) {
