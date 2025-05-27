@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
+
 @Composable
 fun VendeurEditDialog(
     vendeur: _1_5_Vendeur,
