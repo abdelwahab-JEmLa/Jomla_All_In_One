@@ -18,7 +18,7 @@ fun MultipleImagesDisplay(
     size: Dp?,
     qualityImage: Int,
     onLoadComplete: () -> Unit,
-    actualiseSonImage: Int = 0 // FIXED: Added parameter to force refresh
+    actualiseSonImage: Int = 0
 ) {
     val pagerState = rememberPagerState(pageCount = { imageFiles.size })
 

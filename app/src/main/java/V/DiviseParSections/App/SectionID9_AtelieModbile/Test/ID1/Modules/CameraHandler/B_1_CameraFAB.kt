@@ -37,10 +37,8 @@ import java.io.IOException
 
 @Composable
 fun B_1_CameraFAB(
-    onCreateProductForCapture: (() -> A_ProduitInfosTest)? = null,
-    onImageUploadedToStorage: ((A_ProduitInfosTest) -> Unit)? = null,
-    onProductCreated: ((A_ProduitInfosTest) -> Unit)? = null,
-    productForCapture: A_ProduitInfosTest? = null,
+    onCreateProductAndCapture: () -> A_ProduitInfosTest,
+    onProductCreated: (A_ProduitInfosTest) -> Unit, // New callback for successful creation
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50)
 ) {
@@ -57,7 +55,7 @@ fun B_1_CameraFAB(
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
     var pendingProduct by remember { mutableStateOf<A_ProduitInfosTest?>(null) }
 
-    suspend fun handleImageCapture(uri: Uri) {
+    suspend fun handleImageCaptureAndProductCreation(uri: Uri) {
         try {
             if (uri.toString().isEmpty()) {
                 throw IllegalArgumentException("Invalid URI")
@@ -93,17 +91,10 @@ fun B_1_CameraFAB(
                         }
 
                         if (uploadSuccess && localFile.exists() && localFile.length() > 0) {
-                            val updatedProduct = product.copy(
-                                articleHaveUniteImages = true,
-                                needUpdate = true,
-                                timestamps = System.currentTimeMillis(),
-                                actualiseSonImage = product.actualiseSonImage + 1
-                            )
-
-                            onImageUploadedToStorage?.invoke(updatedProduct)
-
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "Image téléchargée avec succès pour ${product.nom}", Toast.LENGTH_SHORT).show()
+                                // FIXED: Only add product to UI after successful upload
+                                onProductCreated(product)
+                                Toast.makeText(context, "Produit créé avec succès: ${product.nom}", Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             throw IOException("La vérification du téléchargement a échoué")
@@ -135,7 +126,7 @@ fun B_1_CameraFAB(
         if (success) {
             tempImageUri?.let { uri ->
                 scope.launch {
-                    handleImageCapture(uri)
+                    handleImageCaptureAndProductCreation(uri)
                 }
             }
         } else {
@@ -144,6 +135,8 @@ fun B_1_CameraFAB(
                     Toast.makeText(context, "Échec de la capture d'image", Toast.LENGTH_SHORT).show()
                 }
             }
+            // Clear pending product if capture failed
+            pendingProduct = null
         }
     }
 
@@ -165,6 +158,8 @@ fun B_1_CameraFAB(
                     ).show()
                 }
             }
+            // Clear pending product if permissions denied
+            pendingProduct = null
         }
     }
 
@@ -197,22 +192,10 @@ fun B_1_CameraFAB(
         if (!hasPermissions) {
             permissionLauncher.launch(permissions)
         } else {
-            val productToUse = when {
-                onCreateProductForCapture != null -> {
-                    val newProduct = onCreateProductForCapture.invoke()
-                    onProductCreated?.invoke(newProduct)
-                    newProduct
-                }
-                productForCapture != null -> {
-                    productForCapture
-                }
-                else -> {
-                    Toast.makeText(context, "Aucun produit disponible pour la photo", Toast.LENGTH_SHORT).show()
-                    return
-                }
-            }
+            // FIXED: Create product but don't add to UI yet - wait for successful upload
+            val newProduct = onCreateProductAndCapture()
+            pendingProduct = newProduct
 
-            pendingProduct = productToUse
             createTempImageUri()?.let { uri ->
                 cameraLauncher.launch(uri)
             }

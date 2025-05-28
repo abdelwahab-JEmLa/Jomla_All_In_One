@@ -55,11 +55,14 @@ fun FragmentMain(
             .padding(16.dp)
     ) {
         AppBar(
-            onAddNewProductAndCapture = {
-                val newTestProduct = createTestProduct()
-                produitListLocal = produitListLocal + newTestProduct
-                viewModel.addNewProduct(newTestProduct) // Add to ViewModel too
-                newTestProduct
+            onCreateProductAndCapture = {
+                // Just create the product, don't add to UI yet
+                createTestProduct()
+            },
+            onProductCreated = { newProduct ->
+                // FIXED: Only add to UI when image upload succeeds
+                viewModel.addNewProduct(newProduct)
+                produitListLocal = produitListLocal + newProduct
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -91,11 +94,10 @@ fun FragmentMain(
     }
 }
 
-
 @Composable
 fun AppBar(
-    onAddNewProductAndCapture: () -> A_ProduitInfosTest,
-    viewModel: ViewModel_TestID2 = viewModel(), // Add ViewModel parameter
+    onCreateProductAndCapture: () -> A_ProduitInfosTest,
+    onProductCreated: (A_ProduitInfosTest) -> Unit, // New parameter
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -111,17 +113,13 @@ fun AppBar(
             fontWeight = FontWeight.Bold
         )
 
-        // FIXED: Pass the image upload callback to camera FAB
         B_1_CameraFAB(
-            onCreateProductForCapture = onAddNewProductAndCapture,
-            onImageUploadedToStorage = { updatedProduct ->
-                // Update the product in ViewModel when image is uploaded
-                viewModel.updateProduct(updatedProduct)
-                viewModel.updateActualisationImage(updatedProduct.id)
-            }
+            onCreateProductAndCapture = onCreateProductAndCapture,
+            onProductCreated = onProductCreated // Pass the new callback
         )
     }
 }
+
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,

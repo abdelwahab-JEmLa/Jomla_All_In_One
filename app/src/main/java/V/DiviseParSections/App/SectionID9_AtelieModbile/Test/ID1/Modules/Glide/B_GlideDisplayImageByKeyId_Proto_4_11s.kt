@@ -35,14 +35,15 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
     onLoadComplete: () -> Unit = {},
     qualityImage: Int = 3,
     product: A_ProduitInfosTest? = null,
-    calculeCouleurHandler: CalculeCouleurHandler = koinInject()
+    calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
+    refreshImage: Int
 ) {
     var imageFiles by remember { mutableStateOf<List<ProductImageInfo>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     val allProductImages by calculeCouleurHandler.productImageInfoFlowList.collectAsState()
 
-    LaunchedEffect(produitVID, product?.id, product?.actualiseSonImage, allProductImages) {
+    LaunchedEffect(produitVID, product?.id, product?.actualiseSonImage, allProductImages, refreshImage) {
         withContext(Dispatchers.IO) {
             val newImageFiles = calculeCouleurHandler.getImageFilesForDisplay(
                 produitVID = produitVID,
@@ -70,7 +71,7 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                         size = size,
                         qualityImage = qualityImage,
                         onLoadComplete = onLoadComplete,
-                        actualiseSonImage = product?.actualiseSonImage ?: 0
+                        actualiseSonImage = refreshImage
                     )
 
                     Box(
@@ -98,7 +99,7 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                     imageInfo = imageFiles.first(),
                     qualityImage = qualityImage,
                     onLoadComplete = onLoadComplete,
-                    actualiseSonImage = product?.actualiseSonImage ?: 0
+                    actualiseSonImage = refreshImage
                 )
             }
         }

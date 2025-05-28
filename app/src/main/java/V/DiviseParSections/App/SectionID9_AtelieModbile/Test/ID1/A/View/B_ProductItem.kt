@@ -29,7 +29,7 @@ fun ProductItem(
     produitInit: A_ProduitInfosTest,
     onPrixUpdate: (A_ProduitInfosTest) -> Unit = {}
 ) {
-    var produit by remember { mutableStateOf(produitInit) }
+    var produit by remember(produitInit.actualiseSonImageTest2) { mutableStateOf(produitInit) }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -53,8 +53,10 @@ fun ProductItem(
 
                     A_GlideDisplayImageByKeyId_Proto_5(
                         produitVID = produit.id,
+                        refreshImage = produit.actualiseSonImageTest2,
                         size = 80.dp,
                     )
+
                     ColumnInfosBase(produit)
 
                     Column(horizontalAlignment = Alignment.End) {

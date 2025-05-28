@@ -24,6 +24,7 @@ data class A_ProduitInfosTest(
     var clientPrixVentUnite: Double = 0.0,
     //ajoute
     var actualiseSonImage: Int = 0,
+    var actualiseSonImageTest2: Int = 0,
 
     // Section keyFireBase
     val keyFireBase: String = "",
