@@ -73,6 +73,7 @@ fun ProductItem(
                 ) {
 
                     A_GlideDisplayImageByKeyId_Proto_5(
+                        product=produit,
                         produitVID = produit.id,
                         refreshImage = produit.actualiseSonImageTest2,
                         size = 80.dp,

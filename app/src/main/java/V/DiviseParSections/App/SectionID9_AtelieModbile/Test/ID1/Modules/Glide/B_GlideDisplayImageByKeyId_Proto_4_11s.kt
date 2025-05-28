@@ -78,6 +78,8 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
             imageFiles.size > 1 -> {
                 Box(contentAlignment = Alignment.Center) {
                     MultipleImagesDisplay(
+                        product=product,
+
                         imageFiles = imageFiles,
                         size = size,
                         qualityImage = qualityImage,
@@ -108,6 +110,7 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
             }
             else -> {
                 SingleImageDisplay(
+                    product=product,
                     imageInfo = imageFiles.first(),
                     qualityImage = qualityImage,
                     onLoadComplete = onLoadComplete,

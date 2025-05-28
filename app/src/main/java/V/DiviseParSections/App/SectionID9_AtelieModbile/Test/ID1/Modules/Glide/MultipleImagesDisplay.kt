@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -16,11 +17,11 @@ import kotlinx.coroutines.delay
 fun MultipleImagesDisplay(
     imageFiles: List<ProductImageInfo>,
     size: Dp?,
-
     qualityImage: Int,
     onLoadComplete: () -> Unit,
     actualiseSonImage: Int = 0,
-    imageRefreshKey: String? = null // FIXED: Accept external refresh key
+    imageRefreshKey: String? = null, // FIXED: Accept external refresh key
+    product: A_ProduitInfosTest?
 ) {
     val pagerState = rememberPagerState(pageCount = { imageFiles.size })
 
@@ -47,7 +48,8 @@ fun MultipleImagesDisplay(
                     qualityImage = qualityImage,
                     onLoadComplete = if (page == 0) onLoadComplete else { {} },
                     actualiseSonImage = actualiseSonImage,
-                    imageRefreshKey = imageRefreshKey // FIXED: Pass refresh key to SingleImageDisplay
+                    imageRefreshKey = imageRefreshKey,
+                    product = product // FIXED: Pass refresh key to SingleImageDisplay
                 )
             } else {
                 OnImageExistPas()

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,7 +14,8 @@ fun SingleImageDisplay(
     qualityImage: Int,
     onLoadComplete: () -> Unit,
     actualiseSonImage: Int = 0,
-    imageRefreshKey: String? = null
+    imageRefreshKey: String? = null,
+    product: A_ProduitInfosTest?
 ) {
     // Check if we should show color text instead of image
     if (imageInfo.shouldShowColorText && imageInfo.colorName.isNotEmpty()) {
@@ -23,15 +25,18 @@ fun SingleImageDisplay(
         )
         onLoadComplete()
     } else if (!imageInfo.exists) {
-        // Show placeholder when no image exists
-        OnImageExistPas()
+        // FIXED: Pass image path and product name to show debugging info
+        OnImageExistPas(
+            imagePath = imageInfo.file.absolutePath,
+            productName = imageInfo.productName
+        )
         onLoadComplete()
     } else {
         // Use the existing GlidDisplaye for actual image display
         // We pass the imageRefreshKey as the imageGlidReloadTigger parameter
         GlidDisplaye(
             imageGlidReloadTigger = imageRefreshKey?.hashCode() ?: actualiseSonImage,
-            mainItem = null, // We don't have the full product item here, just the image info
+            mainItem = product, // We don't have the full product item here, just the image info
             size = 80.dp,
             onLoadComplete = onLoadComplete,
             qualityImage = qualityImage,
