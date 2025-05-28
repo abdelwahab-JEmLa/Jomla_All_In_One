@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosT
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,7 +38,8 @@ import java.io.IOException
 @Composable
 fun B_1_CameraFAB(
     onCreateProductForCapture: (() -> A_ProduitInfosTest)? = null,
-    onImageUploadedToStorage: ((A_ProduitInfosTest) -> Unit)? = null, // FIXED: Add callback
+    onImageUploadedToStorage: ((A_ProduitInfosTest) -> Unit)? = null,
+    onProductCreated: ((A_ProduitInfosTest) -> Unit)? = null,
     productForCapture: A_ProduitInfosTest? = null,
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50)
@@ -64,7 +64,8 @@ fun B_1_CameraFAB(
             }
 
             pendingProduct?.let { product ->
-                val fileName = "${product.id}Model.jpg"
+                val fileName = "${product.id}_1.jpg"
+
                 val localStorageDir = File(imagesProduitsLocalExternalStorageBasePath).apply {
                     if (!exists()) mkdirs()
                 }
@@ -119,7 +120,6 @@ fun B_1_CameraFAB(
                 }
             }
         } catch (e: Exception) {
-            Log.e("ImageUpload", "Échec du traitement de la capture d'image", e)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Erreur lors du traitement de l'image: ${e.message}", Toast.LENGTH_LONG).show()
             }
@@ -128,6 +128,7 @@ fun B_1_CameraFAB(
             tempImageUri = null
         }
     }
+
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
@@ -178,7 +179,6 @@ fun B_1_CameraFAB(
                 tempFile
             ).also { tempImageUri = it }
         } catch (e: IOException) {
-            Log.e("ImageCapture", "Échec de la création du fichier temporaire", e)
             null
         }
     }
@@ -197,14 +197,13 @@ fun B_1_CameraFAB(
         if (!hasPermissions) {
             permissionLauncher.launch(permissions)
         } else {
-            // FIXED: Create new product when camera FAB is clicked
             val productToUse = when {
                 onCreateProductForCapture != null -> {
-                    // Create new product using the callback
-                    onCreateProductForCapture.invoke()
+                    val newProduct = onCreateProductForCapture.invoke()
+                    onProductCreated?.invoke(newProduct)
+                    newProduct
                 }
                 productForCapture != null -> {
-                    // Use existing product (backward compatibility)
                     productForCapture
                 }
                 else -> {
