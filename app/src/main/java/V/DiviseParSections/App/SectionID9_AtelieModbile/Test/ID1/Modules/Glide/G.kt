@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
@@ -39,7 +40,7 @@ fun GlidDisplaye(
     mainItem: A_ProduitInfosTest? = null,
     size: Dp? = null,
     onLoadComplete: () -> Unit = {},
-    qualityImage: Int = 50,
+    qualityImage: Int = 3,
     colorIndex: Int = 0
 ) {
     var imageFile by remember { mutableStateOf<File?>(null) }
@@ -108,11 +109,11 @@ fun GlidDisplaye(
             GlideImage(
                 model = displayFile,
                 contentDescription = "Product $keyImageId",
-                contentScale = ContentScale.Fit, // Changé de Crop à Fit
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(8.dp))
-                // SUPPRIMÉ: .blur(if (isLoading) 10.dp else 0.dp)
+                    .blur(if (isLoading) 10.dp else 0.dp)
             ) { builder ->
                 builder
                     .downsample(com.bumptech.glide.load.resource.bitmap.DownsampleStrategy.AT_MOST)
