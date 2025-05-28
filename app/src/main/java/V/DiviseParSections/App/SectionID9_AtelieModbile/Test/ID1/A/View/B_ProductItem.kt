@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,7 +32,25 @@ fun ProductItem(
     produitInit: A_ProduitInfosTest,
     onPrixUpdate: (A_ProduitInfosTest) -> Unit = {}
 ) {
-    var produit by remember(produitInit.actualiseSonImageTest2) { mutableStateOf(produitInit) }
+    val TAG = "ProductItem"
+    var produit by remember(produitInit.id, produitInit.actualiseSonImageTest2, produitInit.timestamps) {
+        mutableStateOf(produitInit)
+    }
+
+    // Separate state for image refresh to force recomposition
+    var imageRefreshKey by remember(produitInit.id) { mutableIntStateOf(0) }
+
+    // Update product state when input changes
+    LaunchedEffect(produitInit.actualiseSonImageTest2, produitInit.timestamps) {
+        if (produitInit.id == produit.id &&
+            (produitInit.actualiseSonImageTest2 != produit.actualiseSonImageTest2 ||
+                    produitInit.timestamps != produit.timestamps)) {
+
+            Log.d(TAG, "Updating product ${produitInit.nom}: refresh counter ${produit.actualiseSonImageTest2} -> ${produitInit.actualiseSonImageTest2}")
+            produit = produitInit
+            imageRefreshKey++ // Force image refresh
+        }
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -71,6 +92,7 @@ fun ProductItem(
                             showOnlyWhenPositive = false,
                             textColor = MaterialTheme.colorScheme.primary
                         )
+
 
                         UnitEditor(
                             currentUnits = produit.nombreUniteInt,
@@ -195,6 +217,12 @@ fun ColumnInfosBase(produit: A_ProduitInfosTest) {
             text = "ID: ${produit.id}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        // Debug info - remove this in production
+        Text(
+            text = "Refresh: ${produit.actualiseSonImageTest2}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
         )
     }
 }

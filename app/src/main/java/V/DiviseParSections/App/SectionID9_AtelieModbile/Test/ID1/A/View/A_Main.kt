@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosT
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CameraHandler.B_1_CameraFAB
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.createTestProduct
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,12 +42,15 @@ fun FragmentMain(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_TestID2 = viewModel()
 ) {
+    val TAG = "FragmentMain"
     val uiState by viewModel.uiState.collectAsState()
     var produitListLocal by remember { mutableStateOf(uiState.produitInfosList.toList()) }
 
     // Update local state when ViewModel state changes
-    LaunchedEffect(uiState.produitInfosList.size) {
-        produitListLocal = uiState.produitInfosList.toList()
+    LaunchedEffect(uiState.produitInfosList.size, uiState.produitInfosList.hashCode()) {
+        val newList = uiState.produitInfosList.toList()
+        Log.d(TAG, "ViewModel state changed - updating local list (${newList.size} items)")
+        produitListLocal = newList
     }
 
     Column(
@@ -55,14 +59,16 @@ fun FragmentMain(
             .padding(16.dp)
     ) {
         AppBar(
+            viewModel = viewModel, // Pass ViewModel to AppBar
             onCreateProductAndCapture = {
                 // Just create the product, don't add to UI yet
                 createTestProduct()
             },
             onProductCreated = { newProduct ->
-                // FIXED: Only add to UI when image upload succeeds
+                // Add to ViewModel - this will trigger UI update via StateFlow
+                Log.d(TAG, "Adding new product to ViewModel: ${newProduct.nom} (refresh: ${newProduct.actualiseSonImageTest2})")
                 viewModel.addNewProduct(newProduct)
-                produitListLocal = produitListLocal + newProduct
+                // Local list will be updated via LaunchedEffect above
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -70,7 +76,7 @@ fun FragmentMain(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Liste des Produits",
+            text = "Liste des Produits (${produitListLocal.size})",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -79,6 +85,7 @@ fun FragmentMain(
         MainList(
             produitList = produitListLocal,
             onPrixUpdate = { updatedProduct ->
+                // Update local state
                 produitListLocal = produitListLocal.map { product ->
                     if (product.id == updatedProduct.id) {
                         updatedProduct
@@ -86,6 +93,7 @@ fun FragmentMain(
                         product
                     }
                 }
+                // Update ViewModel
                 viewModel.updateProduct(updatedProduct)
                 viewModel.updateActualisationImage(updatedProduct.id)
             },
@@ -96,8 +104,9 @@ fun FragmentMain(
 
 @Composable
 fun AppBar(
+    viewModel: ViewModel_TestID2, // Add ViewModel parameter
     onCreateProductAndCapture: () -> A_ProduitInfosTest,
-    onProductCreated: (A_ProduitInfosTest) -> Unit, // New parameter
+    onProductCreated: (A_ProduitInfosTest) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -115,7 +124,8 @@ fun AppBar(
 
         B_1_CameraFAB(
             onCreateProductAndCapture = onCreateProductAndCapture,
-            onProductCreated = onProductCreated // Pass the new callback
+            onProductCreated = onProductCreated,
+            viewModel = viewModel // Pass ViewModel to CameraFAB
         )
     }
 }
@@ -130,7 +140,10 @@ fun MainList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(produitList) { produit ->
+        items(
+            items = produitList,
+            key = { it.id } // Use stable key for better performance
+        ) { produit ->
             ProductItem(
                 produitInit = produit,
                 onPrixUpdate = onPrixUpdate

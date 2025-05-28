@@ -16,9 +16,11 @@ import kotlinx.coroutines.delay
 fun MultipleImagesDisplay(
     imageFiles: List<ProductImageInfo>,
     size: Dp?,
+
     qualityImage: Int,
     onLoadComplete: () -> Unit,
-    actualiseSonImage: Int = 0
+    actualiseSonImage: Int = 0,
+    imageRefreshKey: String? = null // FIXED: Accept external refresh key
 ) {
     val pagerState = rememberPagerState(pageCount = { imageFiles.size })
 
@@ -44,7 +46,8 @@ fun MultipleImagesDisplay(
                     imageInfo = imageInfo,
                     qualityImage = qualityImage,
                     onLoadComplete = if (page == 0) onLoadComplete else { {} },
-                    actualiseSonImage = actualiseSonImage // FIXED: Pass to SingleImageDisplay
+                    actualiseSonImage = actualiseSonImage,
+                    imageRefreshKey = imageRefreshKey // FIXED: Pass refresh key to SingleImageDisplay
                 )
             } else {
                 OnImageExistPas()

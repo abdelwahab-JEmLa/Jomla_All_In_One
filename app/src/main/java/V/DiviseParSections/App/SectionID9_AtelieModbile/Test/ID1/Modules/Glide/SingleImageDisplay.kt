@@ -1,29 +1,10 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 
-import android.graphics.drawable.Drawable
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.signature.ObjectKey
-import java.security.MessageDigest
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -31,83 +12,30 @@ fun SingleImageDisplay(
     imageInfo: ProductImageInfo,
     qualityImage: Int,
     onLoadComplete: () -> Unit,
-    actualiseSonImage: Int = 0
+    actualiseSonImage: Int = 0,
+    imageRefreshKey: String? = null
 ) {
-    var isImageLoading by remember { mutableStateOf(true) }
-
-    val imageRefreshKey = remember(actualiseSonImage, imageInfo.file.absolutePath, imageInfo.actualiseSonImage) {
-        "${imageInfo.file.absolutePath}_${actualiseSonImage}_${imageInfo.actualiseSonImage}_${System.currentTimeMillis()}"
-    }
-
-    LaunchedEffect(actualiseSonImage, imageInfo.actualiseSonImage) {
-        isImageLoading = true
-        kotlinx.coroutines.delay(200)
-    }
-
-    if (imageInfo.shouldShowColorText) {
+    // Check if we should show color text instead of image
+    if (imageInfo.shouldShowColorText && imageInfo.colorName.isNotEmpty()) {
         ColorTextDisplay(
             colorName = imageInfo.colorName,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.size(80.dp)
         )
         onLoadComplete()
     } else if (!imageInfo.exists) {
+        // Show placeholder when no image exists
         OnImageExistPas()
+        onLoadComplete()
     } else {
-        GlideImage(
-            model = imageInfo.file,
-            contentDescription = "Product image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp))
-                .blur(if (isImageLoading) 10.dp else 0.dp)
-        ) { builder ->
-            builder
-                .downsample(DownsampleStrategy.AT_MOST)
-                .encodeQuality(qualityImage)
-                .signature(ObjectKey(imageRefreshKey))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .transform(object : com.bumptech.glide.load.resource.bitmap.BitmapTransformation() {
-                    override fun transform(
-                        pool: com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool,
-                        toTransform: android.graphics.Bitmap,
-                        outWidth: Int,
-                        outHeight: Int
-                    ): android.graphics.Bitmap {
-                        return toTransform
-                    }
-
-                    override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-                        messageDigest.update(imageRefreshKey.toByteArray())
-                    }
-
-                    override fun equals(other: Any?): Boolean = false
-                    override fun hashCode(): Int = imageRefreshKey.hashCode()
-                })
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        isImageLoading = false
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        isImageLoading = false
-                        onLoadComplete()
-                        return false
-                    }
-                })
-        }
+        // Use the existing GlidDisplaye for actual image display
+        // We pass the imageRefreshKey as the imageGlidReloadTigger parameter
+        GlidDisplaye(
+            imageGlidReloadTigger = imageRefreshKey?.hashCode() ?: actualiseSonImage,
+            mainItem = null, // We don't have the full product item here, just the image info
+            size = 80.dp,
+            onLoadComplete = onLoadComplete,
+            qualityImage = qualityImage,
+            colorIndex = imageInfo.couleurId - 1 // Convert from 1-based to 0-based index
+        )
     }
 }

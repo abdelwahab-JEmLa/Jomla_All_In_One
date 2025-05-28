@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,6 +24,7 @@ data class ProductImageInfo(
 )
 
 class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
+    private val TAG = "CalculeCouleurHandler"
     private val _productImageInfoFlowList = MutableStateFlow<List<ProductImageInfo>>(emptyList())
     val productImageInfoFlowList: StateFlow<List<ProductImageInfo>> = _productImageInfoFlowList.asStateFlow()
 
@@ -32,6 +34,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         updateProductImageInfoList()
         scope.launch {
             viewModel.uiState.collect { uiState ->
+                Log.d(TAG, "ViewModel state changed - updating image info list")
                 updateProductImageInfoList()
             }
         }
@@ -45,6 +48,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
         }
 
         _productImageInfoFlowList.value = allImageInfos.toList()
+        Log.d(TAG, "Updated product image info list with ${allImageInfos.size} items")
     }
 
     private fun getAllDefinedColorsForProduct(product: A_ProduitInfosTest): List<ProductImageInfo> {
@@ -58,6 +62,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                 .map { ext -> File("$basePath.$ext") }
                 .find { file ->
                     val exists = file.exists() && file.length() > 0
+                    Log.d(TAG, "Checking file ${file.absolutePath}: exists=$exists, size=${if (exists) file.length() else 0}")
                     exists
                 }
 
@@ -74,11 +79,13 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
             } else null
         }
 
+        Log.d(TAG, "Found ${colors.size} color variants for product ${product.nom} (ID: ${product.id})")
         return colors
     }
 
     fun findProductById(productId: Long): A_ProduitInfosTest? {
         val product = viewModel.uiState.value.produitInfosList.find { it.id == productId }
+        Log.d(TAG, "Finding product by ID $productId: ${if (product != null) "found" else "not found"}")
         return product
     }
 
@@ -95,11 +102,16 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                 val targetProduct = product ?: produitVID?.let { findProductById(it) }
 
                 if (targetProduct != null) {
+                    Log.d(TAG, "Getting image files for product: ${targetProduct.nom} (ID: ${targetProduct.id}, refresh: ${targetProduct.actualiseSonImage})")
+
+                    // Force refresh of product colors to get latest state
                     val allDefinedColors = getAllDefinedColorsForProduct(targetProduct)
 
                     if (allDefinedColors.isNotEmpty()) {
+                        Log.d(TAG, "Found ${allDefinedColors.size} image files for product ${targetProduct.nom}")
                         allDefinedColors
                     } else {
+                        Log.d(TAG, "No image files found for product ${targetProduct.nom}, using default")
                         listOf(
                             ProductImageInfo(
                                 file = defaultFile,
@@ -111,6 +123,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                         )
                     }
                 } else {
+                    Log.w(TAG, "Target product not found, using default image")
                     listOf(
                         ProductImageInfo(
                             file = defaultFile,
@@ -122,6 +135,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                     )
                 }
             } else {
+                Log.d(TAG, "Using default image (no product specified)")
                 listOf(
                     ProductImageInfo(
                         file = defaultFile,
@@ -133,6 +147,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
                 )
             }
         } catch (e: Exception) {
+            Log.e(TAG, "Error getting image files for display", e)
             val defaultFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
             listOf(
                 ProductImageInfo(
@@ -155,6 +170,7 @@ class CalculeCouleurHandler(private val viewModel: ViewModel_TestID2) {
             else -> null
         }
         val trimmedName = colorName?.trim()?.takeIf { it.isNotEmpty() } ?: ""
+        Log.d(TAG, "Color name for ID $colorId: '$trimmedName'")
         return trimmedName
     }
 }

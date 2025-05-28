@@ -2,25 +2,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
     return listOf(
-        // Product 1: Frienda
-        A_ProduitInfosTest(
-            id = 53,
-            nom = "Frienda®",
-            nomArab = "فريندا",
-            prixVent = 600.0,
-            prixAchat = 470.0,
-            cartonState = "",
-            nomCategorie = "حلوى طرية 5 دج",
-            couleur1 = "🌈 Multi Couleur 🎨",
-            nombreUniteInt = 220,
-            nmbrCaron = 1,
-            clientPrixVentUnite = 5.0,
-            commmentSeVent = "U",
-            diponibilityState = "",
-            articleHaveUniteImages = false,
-            timestamps = System.currentTimeMillis(),
-            needUpdate = true
-        ),
 
         // Product 2: Tonner
         A_ProduitInfosTest(
@@ -41,7 +22,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             timestamps = System.currentTimeMillis(),
             needUpdate = true
         ),
-
+          /*
         // Product 3: golden sachet - This demonstrates the color text fallback feature
         A_ProduitInfosTest(
             id = 565,
@@ -153,6 +134,6 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             monPrixVentUniter = 0.0,
             monBeneficeUniter = 0.0,
             keyFireBase = ""
-        )
+        )       */
     )
 }

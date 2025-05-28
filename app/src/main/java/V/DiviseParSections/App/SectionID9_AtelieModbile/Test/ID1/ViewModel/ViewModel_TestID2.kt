@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.testDataproduitInfosList
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,7 @@ class ViewModel_TestID2 : ViewModel() {
         _uiState.value.produitInfosList.addAll(testData)
     }
 
+
     fun updateActualisationImage(productId: Long? = null) {
         val currentList = _uiState.value.produitInfosList
 
@@ -37,28 +39,25 @@ class ViewModel_TestID2 : ViewModel() {
             if (index != -1) {
                 val product = currentList[index]
                 val newValue = product.actualiseSonImage + 1
+                val newTestValue = product.actualiseSonImageTest2 + 1
 
                 currentList[index] = product.copy(
                     actualiseSonImage = newValue,
-                    timestamps = System.currentTimeMillis()
+                    actualiseSonImageTest2 = newTestValue, // Mettre à jour les deux compteurs
+                    timestamps = System.currentTimeMillis(),
+                    needUpdate = true
                 )
 
-                _uiState.value = _uiState.value.copy()
-            }
-        } else {
-            for (i in currentList.indices) {
-                val product = currentList[i]
-                val newValue = product.actualiseSonImage + 1
-
-                currentList[i] = product.copy(
-                    actualiseSonImage = newValue,
-                    timestamps = System.currentTimeMillis()
+                // Forcer la mise à jour de l'état pour déclencher la recomposition
+                _uiState.value = _uiState.value.copy(
+                    produitInfosList = currentList
                 )
-            }
 
-            _uiState.value = _uiState.value.copy()
+                Log.d("ViewModel_TestID2", "Updated product $productId: refresh=${newValue}, test2=${newTestValue}")
+            }
         }
     }
+
 
     fun updateProduct(updatedProduct: A_ProduitInfosTest) {
         val currentList = _uiState.value.produitInfosList

@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,8 +44,18 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
 
     val allProductImages by calculeCouleurHandler.productImageInfoFlowList.collectAsState()
 
-    LaunchedEffect(produitVID, product?.id, product?.actualiseSonImage, allProductImages, refreshImage) {
+    // FIXED: Create consistent refresh key similar to working GlidDisplaye
+    val imageKey by remember(produitVID, product?.id, refreshImage, allProductImages.size) {
+        derivedStateOf {
+            val baseKey = produitVID ?: product?.id ?: 0L
+            "$baseKey-$refreshImage-${System.currentTimeMillis()}"
+        }
+    }
+
+    LaunchedEffect(imageKey) {
         withContext(Dispatchers.IO) {
+            isLoading = true
+
             val newImageFiles = calculeCouleurHandler.getImageFilesForDisplay(
                 produitVID = produitVID,
                 product = product,
@@ -71,7 +82,8 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                         size = size,
                         qualityImage = qualityImage,
                         onLoadComplete = onLoadComplete,
-                        actualiseSonImage = refreshImage
+                        actualiseSonImage = refreshImage,
+                        imageRefreshKey = imageKey // FIXED: Pass consistent refresh key
                     )
 
                     Box(
@@ -99,7 +111,8 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
                     imageInfo = imageFiles.first(),
                     qualityImage = qualityImage,
                     onLoadComplete = onLoadComplete,
-                    actualiseSonImage = refreshImage
+                    actualiseSonImage = refreshImage,
+                    imageRefreshKey = imageKey // FIXED: Pass consistent refresh key
                 )
             }
         }

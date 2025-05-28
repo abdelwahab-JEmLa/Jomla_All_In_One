@@ -30,7 +30,8 @@ fun OnImageExistPas() {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "📦",
+                text = "",  //<--
+                //TODO(1): affiche le path de l image 
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
