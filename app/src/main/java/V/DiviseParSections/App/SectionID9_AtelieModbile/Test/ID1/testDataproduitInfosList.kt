@@ -22,7 +22,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             timestamps = System.currentTimeMillis(),
             needUpdate = true
         ),
-          /*
+
         // Product 3: golden sachet - This demonstrates the color text fallback feature
         A_ProduitInfosTest(
             id = 565,
@@ -134,6 +134,6 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             monPrixVentUniter = 0.0,
             monBeneficeUniter = 0.0,
             keyFireBase = ""
-        )       */
+        )
     )
 }
