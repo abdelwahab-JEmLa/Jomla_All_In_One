@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,190 +42,162 @@ fun B_1_CameraFAB(
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     viewModel: ViewModel_TestID2 = koinInject(),
-    webPQuality: Int = 85 // Paramètre qualité WebP seulement
+    webPQuality: Int = 85
 ) {
     val TAG = "CameraFAB"
     val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
         .child("Images Articles Data Base")
         .child("produits")
     val imagesProduitsLocalExternalStorageBasePath =
-        "/storage/emulated/0/" +
-                "Abdelwahab_jeMla.com" +
-                "/IMGs" +
-                "/BaseDonne"
+        "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
     var pendingProduct by remember { mutableStateOf<A_ProduitInfosTest?>(null) }
+    var isProcessing by remember { mutableStateOf(false) } // État pour éviter double traitement
 
-    suspend fun forceImageRefreshWithDelay(
-        viewModel: ViewModel_TestID2,
-        productId: Long,
-        delayMs: Long = 500L
-    ) {
-        repeat(3) { attempt ->
-            delay(delayMs)
-            viewModel.updateActualisationImage(productId)
-            Log.d(TAG, "Force refresh attempt ${attempt + 1} for product $productId")
-        }
-    }
+    // Fonction optimisée pour le traitement d'image
+    suspend fun handleImageCaptureOptimized(uri: Uri) {
+        if (isProcessing) return // Éviter les traitements multiples
+        isProcessing = true
 
-    suspend fun handleImageCaptureAndProductCreation(uri: Uri) {
         try {
             pendingProduct?.let { product ->
-                Log.d(TAG, "Processing image for product: ${product.nom} (ID: ${product.id})")
+                Log.d(TAG, "Traitement image pour: ${product.nom} (ID: ${product.id})")
 
-                // Utiliser l'extension WebP au lieu de JPG
                 val fileName = "${product.id}_1.webp"
-
                 val localStorageDir = File(imagesProduitsLocalExternalStorageBasePath).apply {
-                    if (!exists()) {
-                        Log.d(TAG, "Creating directory: $absolutePath")
-                        mkdirs()
-                    }
+                    if (!exists()) mkdirs()
                 }
-
                 val localFile = File(localStorageDir, fileName)
-                var uploadSuccess = false
 
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val imageBytes = inputStream.readBytes()
-                    Log.d(TAG, "WebP image bytes size: ${imageBytes.size}")
+                // Lecture et traitement de l'image en une seule opération
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        val imageBytes = inputStream.readBytes()
+                        Log.d(TAG, "Image WebP: ${imageBytes.size} bytes")
 
-                    try {
-                        withContext(Dispatchers.IO) {
-                            FileOutputStream(localFile).use { output ->
-                                output.write(imageBytes)
-                                output.flush()
-                            }
+                        // Sauvegarde locale immédiate
+                        FileOutputStream(localFile).use { output ->
+                            output.write(imageBytes)
+                            output.flush()
                         }
 
-                        Log.d(TAG, "Local WebP file saved: ${localFile.absolutePath}")
+                        // Upload Firebase en parallèle (ne pas attendre)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val uploadTask = imagesProduitsFireBaseStorageRef
+                                    .child(fileName)
+                                    .putBytes(imageBytes)
+                                    .await()
 
-                        if (!localFile.exists() || localFile.length() == 0L) {
-                            throw Exception("Local WebP file verification failed")
-                        }
-
-                        val uploadTask = imagesProduitsFireBaseStorageRef
-                            .child(fileName)
-                            .putBytes(imageBytes)
-                            .await()
-
-                        if (uploadTask.metadata != null) {
-                            uploadSuccess = true
-                            Log.d(TAG, "Firebase WebP upload successful for $fileName")
-                        }
-
-                        if (uploadSuccess && localFile.exists() && localFile.length() > 0) {
-                            withContext(Dispatchers.Main) {
-                                delay(200)
-
-                                val updatedProduct = product.copy(
-                                    actualiseSonImage = 1,
-                                    actualiseSonImageTest2 = 1,
-                                    timestamps = System.currentTimeMillis(),
-                                    needUpdate = true
-                                )
-
-                                Log.d(TAG, "Product updated with WebP image refresh counters")
-                                onProductCreated(updatedProduct)
-
-                                delay(300)
-                                viewModel.updateActualisationImage(updatedProduct.id)
-                                delay(200)
-                                viewModel.updateActualisationImage(updatedProduct.id)
-
-                                scope.launch {
-                                    forceImageRefreshWithDelay(viewModel, updatedProduct.id)
+                                if (uploadTask.metadata != null) {
+                                    Log.d(TAG, "Upload Firebase réussi: $fileName")
+                                } else {
+                                    Log.w(TAG, "Upload Firebase incertain: $fileName")
                                 }
-
-                                Toast.makeText(
-                                    context,
-                                    "Produit WebP créé avec succès: ${updatedProduct.nom}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Upload Firebase échoué: $fileName", e)
                             }
-                        } else {
-                            throw Exception("WebP upload verification failed")
                         }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error during WebP image processing", e)
-                        if (localFile.exists() && !uploadSuccess) {
-                            localFile.delete()
-                        }
+
+                        // Mise à jour immédiate du produit (ne pas attendre l'upload)
                         withContext(Dispatchers.Main) {
+                            val updatedProduct = product.copy(
+                                actualiseSonImage = 1,
+                                actualiseSonImageTest2 = 1,
+                                timestamps = System.currentTimeMillis(),
+                                needUpdate = true
+                            )
+
+                            Log.d(TAG, "Produit mis à jour avec compteurs d'actualisation")
+                            onProductCreated(updatedProduct)
+
+                            // Actualisation de l'image en arrière-plan
+                            scope.launch {
+                                delay(100) // Délai minimal
+                                viewModel.updateActualisationImage(updatedProduct.id)
+                                delay(200)
+                                viewModel.updateActualisationImage(updatedProduct.id)
+                            }
+
                             Toast.makeText(
                                 context,
-                                "Échec du téléchargement WebP: ${e.message}",
-                                Toast.LENGTH_LONG
+                                "Produit WebP créé: ${updatedProduct.nom}",
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
-                        throw e
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in handleImageCaptureAndProductCreation", e)
+            Log.e(TAG, "Erreur traitement image", e)
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    "Erreur lors du traitement WebP: ${e.message}",
-                    Toast.LENGTH_LONG
+                    "Erreur WebP: ${e.message}",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         } finally {
+            isProcessing = false
             pendingProduct = null
         }
     }
 
-    // Permission launcher
+    // Launcher de permission
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             val newProduct = onCreateProductAndCapture()
             pendingProduct = newProduct
-            Log.d(TAG, "Created pending product: ${newProduct.nom} (ID: ${newProduct.id})")
+            Log.d(TAG, "Produit créé: ${newProduct.nom} (ID: ${newProduct.id})")
             showCameraDialog = true
         } else {
-            Toast.makeText(
-                context,
-                "Permission caméra requise",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
             pendingProduct = null
         }
     }
 
-    // Camera dialog
+    // Dialogue caméra optimisé
     if (showCameraDialog) {
         CameraXDialog(
             onImageCaptured = { uri ->
-                showCameraDialog = false
+                showCameraDialog = false // Fermeture immédiate du dialogue
+                Log.d(TAG, "Image reçue, fermeture dialogue")
+
+                // Traitement en arrière-plan
                 scope.launch {
-                    handleImageCaptureAndProductCreation(uri)
+                    handleImageCaptureOptimized(uri)
                 }
             },
             onDismiss = {
                 showCameraDialog = false
                 pendingProduct = null
+                isProcessing = false
             },
-            webPQuality = webPQuality // Passer seulement la qualité WebP
+            webPQuality = webPQuality
         )
     }
 
     FloatingActionButton(
         onClick = {
-            Log.d(TAG, "FAB clicked - starting WebP product creation process")
-            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+            if (!isProcessing) { // Éviter les clics multiples
+                Log.d(TAG, "FAB cliqué - démarrage processus WebP")
+                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+            }
         },
         modifier = Modifier.size(size),
-        containerColor = containerColor
+        containerColor = if (isProcessing)
+            containerColor.copy(alpha = 0.6f)
+        else
+            containerColor
     ) {
         Icon(
             imageVector = Icons.Default.AddAPhoto,
-            contentDescription = "Créer produit et prendre photo WebP"
+            contentDescription = "Créer produit WebP"
         )
     }
 }

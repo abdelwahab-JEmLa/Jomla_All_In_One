@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,13 +55,14 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 @Composable
 fun CameraXDialog(
     onImageCaptured: (Uri) -> Unit,
     onDismiss: () -> Unit,
-    webPQuality: Int = 85 // Qualité WebP (0-100) - Toujours WebP maintenant
+    webPQuality: Int = 85
 ) {
     val TAG = "CameraXDialog"
     val context = LocalContext.current
@@ -71,97 +72,161 @@ fun CameraXDialog(
     var preview: Preview? by remember { mutableStateOf(null) }
     var cameraProvider: ProcessCameraProvider? by remember { mutableStateOf(null) }
     var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
+    var isCapturing by remember { mutableStateOf(false) }
+    var isCameraReady by remember { mutableStateOf(false) }
 
-    // Fonction pour convertir ImageProxy en Bitmap
-    fun imageProxyToBitmap(imageProxy: ImageProxy): Bitmap {
-        val buffer: ByteBuffer = imageProxy.planes[0].buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer.get(bytes)
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-    }
+    // Executor pour les opérations caméra
+    val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
 
-    // Fonction alternative pour YUV_420_888 format (plus robuste)
-    fun imageProxyToBitmapYuv(imageProxy: ImageProxy): Bitmap {
-        val yBuffer = imageProxy.planes[0].buffer // Y
-        val vuBuffer = imageProxy.planes[2].buffer // V
+    // CORRECTION 1: Conversion YUV simplifiée et plus rapide
+    fun convertYuvToRgb(imageProxy: ImageProxy): Bitmap {
+        val yBuffer = imageProxy.planes[0].buffer
+        val uBuffer = imageProxy.planes[1].buffer
+        val vBuffer = imageProxy.planes[2].buffer
 
         val ySize = yBuffer.remaining()
-        val vuSize = vuBuffer.remaining()
+        val uSize = uBuffer.remaining()
+        val vSize = vBuffer.remaining()
 
-        val nv21 = ByteArray(ySize + vuSize)
-
+        val nv21 = ByteArray(ySize + uSize + vSize)
         yBuffer.get(nv21, 0, ySize)
-        vuBuffer.get(nv21, ySize, vuSize)
+        vBuffer.get(nv21, ySize, vSize)
+        uBuffer.get(nv21, ySize + vSize, uSize)
 
         val yuvImage = YuvImage(nv21, ImageFormat.NV21, imageProxy.width, imageProxy.height, null)
         val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+
+        // CORRECTION: Utiliser une qualité réduite pour la conversion temporaire
+        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 90, out)
         val imageBytes = out.toByteArray()
+
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
-    // Fonction simplifiée pour convertir ImageProxy en WebP uniquement
-    suspend fun convertImageProxyToWebP(imageProxy: ImageProxy): Uri? {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Conversion de ImageProxy en Bitmap avec gestion des différents formats
-                val bitmap = try {
-                    when (imageProxy.format) {
-                        ImageFormat.JPEG -> imageProxyToBitmap(imageProxy)
-                        ImageFormat.YUV_420_888 -> imageProxyToBitmapYuv(imageProxy)
-                        else -> {
-                            Log.w(TAG, "Unsupported format: ${imageProxy.format}, trying default conversion")
-                            imageProxyToBitmap(imageProxy)
-                        }
+    // CORRECTION 2: Méthode de capture optimisée avec gestion d'erreurs améliorée
+    suspend fun processImageToWebP(imageProxy: ImageProxy): Uri? {
+        return try {
+            withContext(Dispatchers.IO) {
+                Log.d(TAG, "Début traitement image - Format: ${imageProxy.format}")
+
+                val bitmap = when (imageProxy.format) {
+                    ImageFormat.JPEG -> {
+                        Log.d(TAG, "Traitement format JPEG")
+                        val buffer = imageProxy.planes[0].buffer
+                        val bytes = ByteArray(buffer.remaining())
+                        buffer.get(bytes)
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error converting ImageProxy to Bitmap", e)
+                    else -> {
+                        Log.d(TAG, "Traitement format YUV")
+                        convertYuvToRgb(imageProxy)
+                    }
+                }
+
+                if (bitmap == null) {
+                    Log.e(TAG, "Bitmap null après décodage")
                     return@withContext null
                 }
 
-                // Toujours créer un fichier WebP
-                val outputFile = File(
-                    context.cacheDir,
-                    "captured_image_${System.currentTimeMillis()}.webp"
-                )
+                // CORRECTION 3: Réduire la taille si nécessaire pour améliorer les performances
+                val maxSize = 2048
+                val scaledBitmap = if (bitmap.width > maxSize || bitmap.height > maxSize) {
+                    val scale = minOf(maxSize.toFloat() / bitmap.width, maxSize.toFloat() / bitmap.height)
+                    val newWidth = (bitmap.width * scale).toInt()
+                    val newHeight = (bitmap.height * scale).toInt()
 
-                FileOutputStream(outputFile).use { outputStream ->
-                    val success = when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                            // API 30+ : Utiliser WEBP_LOSSY
-                            bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, webPQuality, outputStream)
-                        }
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 -> {
-                            // API 18+ : Utiliser WEBP (legacy)
-                            @Suppress("DEPRECATION")
-                            bitmap.compress(Bitmap.CompressFormat.WEBP, webPQuality, outputStream)
-                        }
-                        else -> {
-                            // Fallback vers JPEG pour les versions très anciennes (renommer le fichier)
-                            Log.w(TAG, "WebP not supported on this API level, falling back to JPEG")
-                            val jpegFile = File(
-                                context.cacheDir,
-                                "captured_image_${System.currentTimeMillis()}.jpg"
-                            )
-                            outputFile.renameTo(jpegFile)
-                            FileOutputStream(jpegFile).use { jpegStream ->
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, webPQuality, jpegStream)
+                    Log.d(TAG, "Redimensionnement: ${bitmap.width}x${bitmap.height} -> ${newWidth}x${newHeight}")
+                    Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true).also {
+                        if (it !== bitmap) bitmap.recycle()
+                    }
+                } else {
+                    bitmap
+                }
+
+                // CORRECTION 4: Nom de fichier plus simple et création sécurisée
+                val timestamp = System.currentTimeMillis()
+                val outputFile = File(context.cacheDir, "webp_$timestamp.webp")
+
+                Log.d(TAG, "Création fichier WebP: ${outputFile.absolutePath}")
+
+                // CORRECTION 5: Compression WebP simplifiée avec fallback
+                val success = try {
+                    FileOutputStream(outputFile).use { outputStream ->
+                        when {
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, webPQuality, outputStream)
+                            }
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 -> {
+                                @Suppress("DEPRECATION")
+                                scaledBitmap.compress(Bitmap.CompressFormat.WEBP, webPQuality, outputStream)
+                            }
+                            else -> {
+                                // Fallback vers JPEG pour les très anciennes versions
+                                Log.w(TAG, "WebP non supporté, utilisation JPEG")
+                                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, webPQuality, outputStream)
                             }
                         }
                     }
-
-                    if (success) {
-                        Log.d(TAG, "Image saved as WebP: ${outputFile.absolutePath}")
-                        Uri.fromFile(outputFile)
-                    } else {
-                        Log.e(TAG, "Failed to compress image")
-                        null
-                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Erreur compression", e)
+                    false
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error converting image", e)
-                null
+
+                scaledBitmap.recycle()
+
+                if (success && outputFile.exists() && outputFile.length() > 0) {
+                    Log.d(TAG, "Fichier créé avec succès: ${outputFile.length()} bytes")
+                    Uri.fromFile(outputFile)
+                } else {
+                    Log.e(TAG, "Échec création fichier")
+                    outputFile.delete()
+                    null
+                }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Erreur traitement image", e)
+            null
+        }
+    }
+
+    // CORRECTION 6: Initialisation de la caméra améliorée
+    LaunchedEffect(lensFacing) {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        try {
+            cameraProvider = cameraProviderFuture.get()
+
+            preview = Preview.Builder()
+                .build()
+
+            // CORRECTION 7: Configuration ImageCapture optimisée
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setJpegQuality(95) // Qualité élevée pour une meilleure base
+                .build()
+
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build()
+
+            cameraProvider?.let { provider ->
+                try {
+                    provider.unbindAll()
+                    provider.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        preview,
+                        imageCapture
+                    )
+                    isCameraReady = true
+                    Log.d(TAG, "Caméra initialisée avec succès")
+                } catch (exc: Exception) {
+                    Log.e(TAG, "Erreur binding caméra", exc)
+                    isCameraReady = false
+                }
+            }
+        } catch (exc: Exception) {
+            Log.e(TAG, "Erreur initialisation caméra", exc)
+            isCameraReady = false
         }
     }
 
@@ -182,152 +247,106 @@ fun CameraXDialog(
                 factory = { ctx ->
                     PreviewView(ctx).apply {
                         scaleType = PreviewView.ScaleType.FILL_CENTER
+                        implementationMode = PreviewView.ImplementationMode.PERFORMANCE
                     }
                 },
                 modifier = Modifier.fillMaxSize()
             ) { previewView ->
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
-                cameraProviderFuture.addListener({
-                    try {
-                        cameraProvider = cameraProviderFuture.get()
-
-                        preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
-                        }
-
-                        imageCapture = ImageCapture.Builder()
-                            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                            .build()
-
-                        val cameraSelector = CameraSelector.Builder()
-                            .requireLensFacing(lensFacing)
-                            .build()
-
-                        cameraProvider?.let { provider ->
-                            try {
-                                provider.unbindAll()
-                                provider.bindToLifecycle(
-                                    lifecycleOwner,
-                                    cameraSelector,
-                                    preview,
-                                    imageCapture
-                                )
-                            } catch (exc: Exception) {
-                                Log.e(TAG, "Use case binding failed", exc)
-                            }
-                        }
-                    } catch (exc: Exception) {
-                        Log.e(TAG, "CameraProvider initialization failed", exc)
-                    }
-                }, ContextCompat.getMainExecutor(context))
+                preview?.setSurfaceProvider(previewView.surfaceProvider)
             }
 
-            // Controls overlay
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top controls
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
                         onClick = onDismiss,
-                        modifier = Modifier
-                            .background(
-                                Color.Black.copy(alpha = 0.5f),
-                                CircleShape
-                            )
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = "Fermer",
-                            tint = Color.White
+                        modifier = Modifier.background(
+                            Color.Black.copy(alpha = 0.5f),
+                            CircleShape
                         )
+                    ) {
+                        Icon(Icons.Default.Close, "Fermer", tint = Color.White)
                     }
 
                     IconButton(
                         onClick = {
-                            lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                                CameraSelector.LENS_FACING_FRONT
-                            } else {
-                                CameraSelector.LENS_FACING_BACK
-                            }
-                            // Restart camera with new lens facing
-                            cameraProvider?.let { provider ->
-                                try {
-                                    provider.unbindAll()
-                                    val cameraSelector = CameraSelector.Builder()
-                                        .requireLensFacing(lensFacing)
-                                        .build()
-                                    provider.bindToLifecycle(
-                                        lifecycleOwner,
-                                        cameraSelector,
-                                        preview,
-                                        imageCapture
-                                    )
-                                } catch (exc: Exception) {
-                                    Log.e(TAG, "Camera flip failed", exc)
+                            if (!isCapturing && isCameraReady) {
+                                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                                    CameraSelector.LENS_FACING_FRONT
+                                } else {
+                                    CameraSelector.LENS_FACING_BACK
                                 }
+                                isCameraReady = false // Réinitialisation nécessaire
                             }
                         },
-                        modifier = Modifier
-                            .background(
-                                Color.Black.copy(alpha = 0.5f),
-                                CircleShape
-                            )
-                    ) {
-                        Icon(
-                            Icons.Default.FlipCameraAndroid,
-                            contentDescription = "Changer caméra",
-                            tint = Color.White
+                        modifier = Modifier.background(
+                            Color.Black.copy(alpha = 0.5f),
+                            CircleShape
                         )
+                    ) {
+                        Icon(Icons.Default.FlipCameraAndroid, "Changer", tint = Color.White)
                     }
                 }
 
-                // Bottom capture button
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            imageCapture?.let { capture ->
-                                // Capture avec conversion WebP uniquement
-                                capture.takePicture(
-                                    ContextCompat.getMainExecutor(context),
+                            // CORRECTION 8: Vérifications avant capture
+                            if (!isCapturing && isCameraReady && imageCapture != null) {
+                                isCapturing = true
+                                Log.d(TAG, "Début capture...")
+
+                                imageCapture?.takePicture(
+                                    cameraExecutor,
                                     object : ImageCapture.OnImageCapturedCallback() {
                                         override fun onCaptureSuccess(imageProxy: ImageProxy) {
+                                            Log.d(TAG, "Image capturée, traitement...")
+
                                             CoroutineScope(Dispatchers.Main).launch {
-                                                val convertedUri = convertImageProxyToWebP(imageProxy)
+                                                val uri = processImageToWebP(imageProxy)
                                                 imageProxy.close()
 
-                                                convertedUri?.let { uri ->
-                                                    Log.d(TAG, "WebP photo captured successfully: $uri")
-                                                    onImageCaptured(uri)
+                                                isCapturing = false
+
+                                                uri?.let {
+                                                    Log.d(TAG, "Succès: $it")
+                                                    onImageCaptured(it)
                                                 } ?: run {
-                                                    Log.e(TAG, "Failed to convert image to WebP")
+                                                    Log.e(TAG, "Échec traitement")
                                                 }
                                             }
                                         }
 
                                         override fun onError(exception: ImageCaptureException) {
-                                            Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
+                                            Log.e(TAG, "Erreur capture: ${exception.message}", exception)
+                                            isCapturing = false
                                         }
                                     }
                                 )
+                            } else {
+                                Log.w(TAG, "Capture impossible - isCapturing:$isCapturing, isCameraReady:$isCameraReady")
                             }
                         },
                         modifier = Modifier.size(80.dp),
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = when {
+                            isCapturing -> MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                            !isCameraReady -> MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
+                            else -> MaterialTheme.colorScheme.primary
+                        }
                     ) {
                         Icon(
                             Icons.Default.Camera,
-                            contentDescription = "Prendre photo",
+                            contentDescription = "Capturer WebP",
                             modifier = Modifier.size(32.dp),
                             tint = Color.White
                         )
@@ -337,8 +356,10 @@ fun CameraXDialog(
         }
     }
 
-    // Cleanup when composable is disposed
-    LaunchedEffect(Unit) {
-        return@LaunchedEffect
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraProvider?.unbindAll()
+            cameraExecutor.shutdown()
+        }
     }
 }
