@@ -59,16 +59,13 @@ fun FragmentMain(
             .padding(16.dp)
     ) {
         AppBar(
-            viewModel = viewModel, // Pass ViewModel to AppBar
+            viewModel = viewModel,
             onCreateProductAndCapture = {
-                // Just create the product, don't add to UI yet
                 createTestProduct()
             },
             onProductCreated = { newProduct ->
-                // Add to ViewModel - this will trigger UI update via StateFlow
                 Log.d(TAG, "Adding new product to ViewModel: ${newProduct.nom} (refresh: ${newProduct.actualiseSonImageTest2})")
                 viewModel.addNewProduct(newProduct)
-                // Local list will be updated via LaunchedEffect above
             },
             modifier = Modifier.fillMaxWidth()
         )
