@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
+    val idParentCategorie1 = 1L
     return listOf(
         // Product 2: Tonner - Category 1 (Fun Candys)
         A_ProduitInfosTest(
@@ -20,7 +21,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             articleHaveUniteImages = false,
             timestamps = System.currentTimeMillis(),
             needUpdate = true,
-            idParentCategorie = 1L // Fun Candys category
+            idParentCategorie = idParentCategorie1 // Fun Candys category
         ),
 
         // Product 3: golden sachet - Category 2 (Chocolattes)
@@ -42,7 +43,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             articleHaveUniteImages = false,
             timestamps = System.currentTimeMillis(),
             needUpdate = true,
-            idParentCategorie = 2L // Chocolattes category
+            idParentCategorie = idParentCategorie1 // Chocolattes category
         ),
 
         // Product 4: Mini Chips - Category 3 (شيبس)
@@ -86,7 +87,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             articleHaveUniteImages = true,
             timestamps = System.currentTimeMillis(),
             needUpdate = true,
-            idParentCategorie = 4L // Jellies category
+            idParentCategorie = idParentCategorie1 // Jellies category
         ),
 
         // Product 6: TIZANA KBIR - Category 5 (ataye emballé)
@@ -136,7 +137,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             monPrixVentUniter = 0.0,
             monBeneficeUniter = 0.0,
             keyFireBase = "",
-            idParentCategorie = 5L // ataye emballé category
+            idParentCategorie = idParentCategorie1 // ataye emballé category
         ),
 
         // Additional products to demonstrate grouping
