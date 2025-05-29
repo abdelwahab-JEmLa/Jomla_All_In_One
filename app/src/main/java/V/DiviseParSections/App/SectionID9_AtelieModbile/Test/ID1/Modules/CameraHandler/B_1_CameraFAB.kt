@@ -2,8 +2,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Camera
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
-import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -25,8 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +33,6 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 
 @Composable
 fun B_1_CameraFAB(
@@ -45,7 +40,8 @@ fun B_1_CameraFAB(
     onProductCreated: (A_ProduitInfosTest) -> Unit,
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
-    viewModel: ViewModel_TestID2 = koinInject() // Inject ViewModel to trigger refresh
+    viewModel: ViewModel_TestID2 = koinInject(),
+    webPQuality: Int = 85 // Paramètre qualité WebP seulement
 ) {
     val TAG = "CameraFAB"
     val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
@@ -56,12 +52,13 @@ fun B_1_CameraFAB(
                 "Abdelwahab_jeMla.com" +
                 "/IMGs" +
                 "/BaseDonne"
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var tempImageUri by remember { mutableStateOf<Uri?>(null) }
+    var showCameraDialog by remember { mutableStateOf(false) }
     var pendingProduct by remember { mutableStateOf<A_ProduitInfosTest?>(null) }
 
-     suspend fun forceImageRefreshWithDelay(
+    suspend fun forceImageRefreshWithDelay(
         viewModel: ViewModel_TestID2,
         productId: Long,
         delayMs: Long = 500L
@@ -69,19 +66,17 @@ fun B_1_CameraFAB(
         repeat(3) { attempt ->
             delay(delayMs)
             viewModel.updateActualisationImage(productId)
-            Log.d("CameraFAB", "Force refresh attempt ${attempt + 1} for product $productId")
+            Log.d(TAG, "Force refresh attempt ${attempt + 1} for product $productId")
         }
     }
 
     suspend fun handleImageCaptureAndProductCreation(uri: Uri) {
         try {
-            if (uri.toString().isEmpty()) {
-                throw IllegalArgumentException("Invalid URI")
-            }
-
             pendingProduct?.let { product ->
                 Log.d(TAG, "Processing image for product: ${product.nom} (ID: ${product.id})")
-                val fileName = "${product.id}_1.jpg"
+
+                // Utiliser l'extension WebP au lieu de JPG
+                val fileName = "${product.id}_1.webp"
 
                 val localStorageDir = File(imagesProduitsLocalExternalStorageBasePath).apply {
                     if (!exists()) {
@@ -95,21 +90,20 @@ fun B_1_CameraFAB(
 
                 context.contentResolver.openInputStream(uri)?.use { inputStream ->
                     val imageBytes = inputStream.readBytes()
-                    Log.d(TAG, "Image bytes size: ${imageBytes.size}")
+                    Log.d(TAG, "WebP image bytes size: ${imageBytes.size}")
 
                     try {
                         withContext(Dispatchers.IO) {
                             FileOutputStream(localFile).use { output ->
                                 output.write(imageBytes)
-                                output.flush() // Ensure data is written
+                                output.flush()
                             }
                         }
 
-                        Log.d(TAG, "Local file saved: ${localFile.absolutePath} (${localFile.length()} bytes)")
+                        Log.d(TAG, "Local WebP file saved: ${localFile.absolutePath}")
 
-                        // Verify file was written correctly
-                        if (!localFile.exists() || localFile.length().toInt() == 0) {
-                            throw IOException("Local file verification failed")
+                        if (!localFile.exists() || localFile.length() == 0L) {
+                            throw Exception("Local WebP file verification failed")
                         }
 
                         val uploadTask = imagesProduitsFireBaseStorageRef
@@ -119,55 +113,52 @@ fun B_1_CameraFAB(
 
                         if (uploadTask.metadata != null) {
                             uploadSuccess = true
-                            Log.d(TAG, "Firebase upload successful for $fileName")
+                            Log.d(TAG, "Firebase WebP upload successful for $fileName")
                         }
 
                         if (uploadSuccess && localFile.exists() && localFile.length() > 0) {
                             withContext(Dispatchers.Main) {
-                                // CRITICAL FIX: Attendre un peu pour s'assurer que le fichier est complètement écrit
                                 delay(200)
 
-                                // Créer le produit avec un timestamp unique et des compteurs de refresh
                                 val updatedProduct = product.copy(
-                                    actualiseSonImage = 1, // Commencer à 1 pour forcer le chargement
+                                    actualiseSonImage = 1,
                                     actualiseSonImageTest2 = 1,
                                     timestamps = System.currentTimeMillis(),
                                     needUpdate = true
                                 )
 
-                                Log.d(TAG, "Product updated with refresh counters: actualiseSonImage=${updatedProduct.actualiseSonImage}, actualiseSonImageTest2=${updatedProduct.actualiseSonImageTest2}")
-
-                                // Ajouter le produit à l'UI
+                                Log.d(TAG, "Product updated with WebP image refresh counters")
                                 onProductCreated(updatedProduct)
 
-                                // Attendre que l'UI soit mise à jour, puis forcer un refresh supplémentaire
                                 delay(300)
-
-                                // Double refresh pour s'assurer que l'image se charge
                                 viewModel.updateActualisationImage(updatedProduct.id)
-
                                 delay(200)
-
-                                // Triple refresh si nécessaire (pour les cas difficiles)
                                 viewModel.updateActualisationImage(updatedProduct.id)
 
                                 scope.launch {
                                     forceImageRefreshWithDelay(viewModel, updatedProduct.id)
                                 }
-                                Log.d(TAG, "Product creation and refresh completed for ${updatedProduct.nom}")
-                                Toast.makeText(context, "Produit créé avec succès: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
+
+                                Toast.makeText(
+                                    context,
+                                    "Produit WebP créé avec succès: ${updatedProduct.nom}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        }else {
-                            throw IOException("La vérification du téléchargement a échoué")
+                        } else {
+                            throw Exception("WebP upload verification failed")
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error during image processing", e)
+                        Log.e(TAG, "Error during WebP image processing", e)
                         if (localFile.exists() && !uploadSuccess) {
                             localFile.delete()
-                            Log.d(TAG, "Deleted incomplete local file")
                         }
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Échec du téléchargement de l'image: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Échec du téléchargement WebP: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                         throw e
                     }
@@ -176,117 +167,64 @@ fun B_1_CameraFAB(
         } catch (e: Exception) {
             Log.e(TAG, "Error in handleImageCaptureAndProductCreation", e)
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Erreur lors du traitement de l'image: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Erreur lors du traitement WebP: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } finally {
             pendingProduct = null
-            tempImageUri = null
         }
     }
 
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { success ->
-        if (success) {
-            Log.d(TAG, "Camera capture successful")
-            tempImageUri?.let { uri ->
-                scope.launch {
-                    handleImageCaptureAndProductCreation(uri)
-                }
-            }
-        } else {
-            Log.w(TAG, "Camera capture failed")
-            scope.launch {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Échec de la capture d'image", Toast.LENGTH_SHORT).show()
-                }
-            }
-            // Clear pending product if capture failed
-            pendingProduct = null
-        }
-    }
-
+    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            Log.d(TAG, "All permissions granted")
-            if (pendingProduct != null && tempImageUri != null) {
-                cameraLauncher.launch(tempImageUri!!)
-            }
-        } else {
-            Log.w(TAG, "Permissions denied: $permissions")
-            scope.launch {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Permissions requises pour l'utilisation de la caméra",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            // Clear pending product if permissions denied
-            pendingProduct = null
-        }
-    }
-
-    fun createTempImageUri(): Uri? {
-        return try {
-            val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir).apply {
-                deleteOnExit()
-            }
-            val uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                tempFile
-            )
-            tempImageUri = uri
-            Log.d(TAG, "Created temp image URI: $uri")
-            uri
-        } catch (e: IOException) {
-            Log.e(TAG, "Failed to create temp image URI", e)
-            null
-        }
-    }
-
-    fun checkAndRequestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        val hasPermissions = permissions.all {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-
-        if (!hasPermissions) {
-            Log.d(TAG, "Requesting permissions")
-            permissionLauncher.launch(permissions)
-        } else {
-            // Create product but don't add to UI yet - wait for successful upload
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
             val newProduct = onCreateProductAndCapture()
             pendingProduct = newProduct
             Log.d(TAG, "Created pending product: ${newProduct.nom} (ID: ${newProduct.id})")
-
-            createTempImageUri()?.let { uri ->
-                cameraLauncher.launch(uri)
-            }
+            showCameraDialog = true
+        } else {
+            Toast.makeText(
+                context,
+                "Permission caméra requise",
+                Toast.LENGTH_SHORT
+            ).show()
+            pendingProduct = null
         }
+    }
+
+    // Camera dialog
+    if (showCameraDialog) {
+        CameraXDialog(
+            onImageCaptured = { uri ->
+                showCameraDialog = false
+                scope.launch {
+                    handleImageCaptureAndProductCreation(uri)
+                }
+            },
+            onDismiss = {
+                showCameraDialog = false
+                pendingProduct = null
+            },
+            webPQuality = webPQuality // Passer seulement la qualité WebP
+        )
     }
 
     FloatingActionButton(
         onClick = {
-            Log.d(TAG, "FAB clicked - starting product creation process")
-            checkAndRequestPermissions()
+            Log.d(TAG, "FAB clicked - starting WebP product creation process")
+            permissionLauncher.launch(android.Manifest.permission.CAMERA)
         },
         modifier = Modifier.size(size),
         containerColor = containerColor
     ) {
         Icon(
             imageVector = Icons.Default.AddAPhoto,
-            contentDescription = "Créer produit et prendre photo"
+            contentDescription = "Créer produit et prendre photo WebP"
         )
     }
 }

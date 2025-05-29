@@ -104,7 +104,7 @@ fun FragmentMain(
 
 @Composable
 fun AppBar(
-    viewModel: ViewModel_TestID2, // Add ViewModel parameter
+    viewModel: ViewModel_TestID2,
     onCreateProductAndCapture: () -> A_ProduitInfosTest,
     onProductCreated: (A_ProduitInfosTest) -> Unit,
     modifier: Modifier = Modifier
@@ -125,7 +125,8 @@ fun AppBar(
         B_1_CameraFAB(
             onCreateProductAndCapture = onCreateProductAndCapture,
             onProductCreated = onProductCreated,
-            viewModel = viewModel // Pass ViewModel to CameraFAB
+            viewModel = viewModel,
+            webPQuality = 85   // Qualité WebP
         )
     }
 }

@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A.View
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CameraHandler.ProductImageCaptureButton
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
@@ -56,24 +56,21 @@ fun ProductItem(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-
                     A_GlideDisplayImageByKeyId_Proto_5(
-                        product=produit,
+                        product = produit,
                         produitVID = produit.id,
                         refreshImage = produit.actualiseSonImageTest2,
                         size = 80.dp,
@@ -93,7 +90,6 @@ fun ProductItem(
                             showOnlyWhenPositive = false,
                             textColor = MaterialTheme.colorScheme.primary
                         )
-
 
                         UnitEditor(
                             currentUnits = produit.nombreUniteInt,
@@ -202,6 +198,17 @@ fun ProductItem(
                     }
                 }
             }
+
+            // Camera button positioned at top-end
+            ProductImageCaptureButton(
+                product = produit,
+                onImageCaptured = { updatedProduct ->
+                    produit = updatedProduct
+                    onPrixUpdate(updatedProduct)
+                },
+                modifier = Modifier.align(Alignment.TopEnd),
+                webPQuality = 85   // Qualité WebP
+            )
         }
     }
 }
