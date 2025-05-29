@@ -80,7 +80,7 @@ fun FilterMainScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 } else {
-                    MainList(
+                    EditeInfosMainList(
                         uiState = uiState,
                     )
                 }
@@ -90,7 +90,7 @@ fun FilterMainScreen(
 }
 
 @Composable
-private fun MainList(
+private fun EditeInfosMainList(
     uiState: PeriodesUiState,
 ) {
     LazyColumn(

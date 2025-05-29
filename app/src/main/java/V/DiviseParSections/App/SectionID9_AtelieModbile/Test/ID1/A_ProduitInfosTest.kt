@@ -25,6 +25,7 @@ data class A_ProduitInfosTest(
     //ajoute
     var actualiseSonImage: Int = 0,
     var actualiseSonImageTest2: Int = 0,
+    var idParentCategorie: Long? =null,
 
     // Section keyFireBase
     val keyFireBase: String = "",
@@ -50,7 +51,6 @@ data class A_ProduitInfosTest(
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
     var neaon2: String = "",
-    var idCategorie: Double = 0.0,
     var catalogeParentID: Long = 0,
     var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
     var nomCategorie: String = "",

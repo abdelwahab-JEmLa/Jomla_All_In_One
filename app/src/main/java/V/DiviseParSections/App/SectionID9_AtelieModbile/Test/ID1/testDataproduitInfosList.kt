@@ -2,8 +2,7 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1
 
 fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
     return listOf(
-
-        // Product 2: Tonner
+        // Product 2: Tonner - Category 1 (Fun Candys)
         A_ProduitInfosTest(
             id = 54,
             nom = "Tonner®",
@@ -20,10 +19,11 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             diponibilityState = "",
             articleHaveUniteImages = false,
             timestamps = System.currentTimeMillis(),
-            needUpdate = true
+            needUpdate = true,
+            idParentCategorie = 1L // Fun Candys category
         ),
 
-        // Product 3: golden sachet - This demonstrates the color text fallback feature
+        // Product 3: golden sachet - Category 2 (Chocolattes)
         A_ProduitInfosTest(
             id = 565,
             nom = "golden sachet®",
@@ -41,10 +41,11 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             diponibilityState = "Non Dispo",
             articleHaveUniteImages = false,
             timestamps = System.currentTimeMillis(),
-            needUpdate = true
+            needUpdate = true,
+            idParentCategorie = 2L // Chocolattes category
         ),
 
-        // Product 4: Mini Chips
+        // Product 4: Mini Chips - Category 3 (شيبس)
         A_ProduitInfosTest(
             id = 567,
             nom = "Mini Chips®",
@@ -63,10 +64,11 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             articleHaveUniteImages = false,
             imageDimention = "Demi",
             timestamps = System.currentTimeMillis(),
-            needUpdate = true
+            needUpdate = true,
+            idParentCategorie = 3L // شيبس category
         ),
 
-        // Product 5: Jellopy Matrag
+        // Product 5: Jellopy Matrag - Category 4 (Jellies)
         A_ProduitInfosTest(
             id = 572,
             nom = "Jellopy Matrag®",
@@ -83,10 +85,11 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             diponibilityState = "Non Dispo",
             articleHaveUniteImages = true,
             timestamps = System.currentTimeMillis(),
-            needUpdate = true
+            needUpdate = true,
+            idParentCategorie = 4L // Jellies category
         ),
 
-        // Product 6: TIZANA KBIR - Fixed to properly show multiple colors with arrow indicator
+        // Product 6: TIZANA KBIR - Category 5 (ataye emballé)
         A_ProduitInfosTest(
             id = 3832,
             nom = "#TIZANA KBIR",
@@ -112,7 +115,6 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             classementCate = -156.0,
             dateCreationCategorie = "1740564102869",
             funChangeImagsDimention = true,
-            idCategorie = 0.0,
             catalogeParentID = 0,
             lastUpdateState = "",
             neaon1 = 0.0,
@@ -133,7 +135,70 @@ fun testDataproduitInfosList(): List<A_ProduitInfosTest> {
             monPrixAchatUniter = 0.0,
             monPrixVentUniter = 0.0,
             monBeneficeUniter = 0.0,
-            keyFireBase = ""
+            keyFireBase = "",
+            idParentCategorie = 5L // ataye emballé category
+        ),
+
+        // Additional products to demonstrate grouping
+        A_ProduitInfosTest(
+            id = 1001,
+            nom = "Extra Chocolate Bar",
+            nomArab = "شوكولاتة إضافية",
+            prixVent = 300.0,
+            prixAchat = 250.0,
+            cartonState = "itsCarton",
+            nomCategorie = "Chocolattes 5 Da",
+            couleur1 = "🍫 Dark 🍫",
+            nombreUniteInt = 50,
+            nmbrCaron = 1,
+            clientPrixVentUnite = 6.0,
+            commmentSeVent = "U",
+            diponibilityState = "",
+            articleHaveUniteImages = false,
+            timestamps = System.currentTimeMillis(),
+            needUpdate = true,
+            idParentCategorie = 2L // Same as golden sachet (Chocolattes)
+        ),
+
+        A_ProduitInfosTest(
+            id = 1002,
+            nom = "Spicy Chips",
+            nomArab = "شيبس حار",
+            prixVent = 350.0,
+            prixAchat = 320.0,
+            cartonState = "itsCarton",
+            nomCategorie = "شيبس",
+            couleur1 = "🌶️ حار 🌶️",
+            nombreUniteInt = 80,
+            nmbrCaron = 1,
+            clientPrixVentUnite = 4.5,
+            commmentSeVent = "U",
+            diponibilityState = "",
+            articleHaveUniteImages = false,
+            timestamps = System.currentTimeMillis(),
+            needUpdate = true,
+            idParentCategorie = 3L // Same as Mini Chips (شيبس)
+        ),
+
+        // Product without category (will go to "Sans Catégorie")
+        A_ProduitInfosTest(
+            id = 1003,
+            nom = "Uncategorized Item",
+            nomArab = "عنصر غير مصنف",
+            prixVent = 100.0,
+            prixAchat = 80.0,
+            cartonState = "",
+            nomCategorie = "",
+            couleur1 = "⚪ Standard ⚪",
+            nombreUniteInt = 25,
+            nmbrCaron = 1,
+            clientPrixVentUnite = 4.0,
+            commmentSeVent = "U",
+            diponibilityState = "",
+            articleHaveUniteImages = false,
+            timestamps = System.currentTimeMillis(),
+            needUpdate = true,
+            idParentCategorie = null // No category - will be grouped under "Sans Catégorie"
         )
     )
 }
