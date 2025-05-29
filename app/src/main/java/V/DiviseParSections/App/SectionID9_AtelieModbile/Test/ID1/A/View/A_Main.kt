@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosT
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.CameraHandler.B_1_CameraFAB
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.createTestProduct
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,14 +41,11 @@ fun FragmentMain(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_TestID2 = viewModel()
 ) {
-    val TAG = "FragmentMain"
     val uiState by viewModel.uiState.collectAsState()
     var produitListLocal by remember { mutableStateOf(uiState.produitInfosList.toList()) }
 
-    // Update local state when ViewModel state changes
     LaunchedEffect(uiState.produitInfosList.size, uiState.produitInfosList.hashCode()) {
         val newList = uiState.produitInfosList.toList()
-        Log.d(TAG, "ViewModel state changed - updating local list (${newList.size} items)")
         produitListLocal = newList
     }
 
@@ -64,7 +60,6 @@ fun FragmentMain(
                 createTestProduct()
             },
             onProductCreated = { newProduct ->
-                Log.d(TAG, "Adding new product to ViewModel: ${newProduct.nom} (refresh: ${newProduct.actualiseSonImageTest2})")
                 viewModel.addNewProduct(newProduct)
             },
             modifier = Modifier.fillMaxWidth()
@@ -82,7 +77,6 @@ fun FragmentMain(
         MainList(
             produitList = produitListLocal,
             onPrixUpdate = { updatedProduct ->
-                // Update local state
                 produitListLocal = produitListLocal.map { product ->
                     if (product.id == updatedProduct.id) {
                         updatedProduct
@@ -90,7 +84,6 @@ fun FragmentMain(
                         product
                     }
                 }
-                // Update ViewModel
                 viewModel.updateProduct(updatedProduct)
                 viewModel.updateActualisationImage(updatedProduct.id)
             },
@@ -123,7 +116,7 @@ fun AppBar(
             onCreateProductAndCapture = onCreateProductAndCapture,
             onProductCreated = onProductCreated,
             viewModel = viewModel,
-            webPQuality = 85   // Qualité WebP
+            webPQuality = 85
         )
     }
 }
@@ -140,7 +133,7 @@ fun MainList(
     ) {
         items(
             items = produitList,
-            key = { it.id } // Use stable key for better performance
+            key = { it.id }
         ) { produit ->
             ProductItem(
                 produitInit = produit,
