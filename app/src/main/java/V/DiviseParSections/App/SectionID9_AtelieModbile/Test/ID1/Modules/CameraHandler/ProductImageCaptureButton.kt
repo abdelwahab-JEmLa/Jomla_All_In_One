@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Camera
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,23 +43,14 @@ fun ProductImageCaptureButton(
     onImageCaptured: (A_ProduitInfosTest) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ViewModel_TestID2 = koinInject(),
-    webPQuality: Int = 85 // Paramètre qualité WebP seulement
+    webPQuality: Int = 85
 ) {
-    val TAG = "ProductImageCaptureButton"
-    val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
-        .child("Images Articles Data Base")
-        .child("produits")
-    val imagesProduitsLocalExternalStorageBasePath =
-        "/storage/emulated/0/" +
-                "Abdelwahab_jeMla.com" +
-                "/IMGs" +
-                "/BaseDonne"
-
+    val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
+    val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
 
-    // Calculate next color index but now check for WebP files
     fun getNextColorIndex(): Int {
         for (i in 1..4) {
             val colorValue = when (i) {
@@ -70,37 +60,22 @@ fun ProductImageCaptureButton(
                 4 -> product.couleur4
                 else -> null
             }
-
-            // Vérifier les fichiers WebP au lieu de JPG
-            val imageFile = File("$imagesProduitsLocalExternalStorageBasePath/${product.id}_$i.webp")
-            if (colorValue.isNullOrBlank() || !imageFile.exists()) {
-                return i
-            }
+            val imageFile = File("$localPath/${product.id}_$i.webp")
+            if (colorValue.isNullOrBlank() || !imageFile.exists()) return i
         }
-        return 1 // Overwrite slot 1 if all are taken
+        return 1
     }
 
-    suspend fun handleImageCaptureForProduct(uri: Uri) {
+    suspend fun handleImageCapture(uri: Uri) {
         try {
-            Log.d(TAG, "Processing new WebP image for product: ${product.nom} (ID: ${product.id})")
-
             val colorIndex = getNextColorIndex()
-            // Utiliser l'extension WebP au lieu de JPG
             val fileName = "${product.id}_$colorIndex.webp"
-
-            val localStorageDir = File(imagesProduitsLocalExternalStorageBasePath).apply {
-                if (!exists()) {
-                    Log.d(TAG, "Creating directory: $absolutePath")
-                    mkdirs()
-                }
-            }
-
-            val localFile = File(localStorageDir, fileName)
+            val localDir = File(localPath).apply { if (!exists()) mkdirs() }
+            val localFile = File(localDir, fileName)
             var uploadSuccess = false
 
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                val imageBytes = inputStream.readBytes()
-                Log.d(TAG, "WebP image bytes size: ${imageBytes.size}")
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                val imageBytes = input.readBytes()
 
                 try {
                     withContext(Dispatchers.IO) {
@@ -110,26 +85,16 @@ fun ProductImageCaptureButton(
                         }
                     }
 
-                    Log.d(TAG, "Local WebP file saved: ${localFile.absolutePath}")
-
                     if (!localFile.exists() || localFile.length() == 0L) {
                         throw Exception("Local WebP file verification failed")
                     }
 
-                    val uploadTask = imagesProduitsFireBaseStorageRef
-                        .child(fileName)
-                        .putBytes(imageBytes)
-                        .await()
-
-                    if (uploadTask.metadata != null) {
-                        uploadSuccess = true
-                        Log.d(TAG, "Firebase WebP upload successful for $fileName")
-                    }
+                    val uploadTask = storageRef.child(fileName).putBytes(imageBytes).await()
+                    if (uploadTask.metadata != null) uploadSuccess = true
 
                     if (uploadSuccess && localFile.exists() && localFile.length() > 0) {
                         withContext(Dispatchers.Main) {
                             delay(200)
-
                             val updatedProduct = product.copy(
                                 actualiseSonImage = product.actualiseSonImage + 1,
                                 actualiseSonImageTest2 = product.actualiseSonImageTest2 + 1,
@@ -137,78 +102,50 @@ fun ProductImageCaptureButton(
                                 needUpdate = true
                             )
 
-                            Log.d(TAG, "Product updated with new WebP image: color index $colorIndex")
                             onImageCaptured(updatedProduct)
-
                             delay(300)
                             viewModel.updateActualisationImage(updatedProduct.id)
                             delay(200)
                             viewModel.updateActualisationImage(updatedProduct.id)
 
-                            Toast.makeText(
-                                context,
-                                "Nouvelle image WebP ajoutée pour ${updatedProduct.nom}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "Nouvelle image WebP ajoutée pour ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         throw Exception("WebP upload verification failed")
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error during WebP image processing", e)
-                    if (localFile.exists() && !uploadSuccess) {
-                        localFile.delete()
-                    }
+                    if (localFile.exists() && !uploadSuccess) localFile.delete()
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "Échec du téléchargement WebP: ${e.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(context, "Échec du téléchargement WebP: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                     throw e
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in handleImageCaptureForProduct", e)
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Erreur lors du traitement WebP: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(context, "Erreur lors du traitement WebP: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             showCameraDialog = true
         } else {
-            Toast.makeText(
-                context,
-                "Permission caméra requise",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Camera dialog with CameraX
     if (showCameraDialog) {
         CameraXDialog(
             onImageCaptured = { uri ->
                 showCameraDialog = false
-                scope.launch {
-                    handleImageCaptureForProduct(uri)
-                }
+                scope.launch { handleImageCapture(uri) }
             },
-            onDismiss = {
-                showCameraDialog = false
-            },
-            webPQuality = webPQuality // Passer seulement la qualité WebP
+            onDismiss = { showCameraDialog = false },
+            webPQuality = webPQuality
         )
     }
 
@@ -222,7 +159,6 @@ fun ProductImageCaptureButton(
                 shape = RoundedCornerShape(10.dp)
             )
             .clickable {
-                Log.d(TAG, "WebP Camera button clicked for product: ${product.nom}")
                 permissionLauncher.launch(android.Manifest.permission.CAMERA)
             }
     ) {

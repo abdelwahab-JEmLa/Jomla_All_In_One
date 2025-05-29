@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Camera
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.A_ProduitInfosTest
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,65 +43,39 @@ fun B_1_CameraFAB(
     viewModel: ViewModel_TestID2 = koinInject(),
     webPQuality: Int = 85
 ) {
-    val TAG = "CameraFAB"
-    val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
-        .child("Images Articles Data Base")
-        .child("produits")
-    val imagesProduitsLocalExternalStorageBasePath =
-        "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-
+    val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
+    val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
     var pendingProduct by remember { mutableStateOf<A_ProduitInfosTest?>(null) }
-    var isProcessing by remember { mutableStateOf(false) } // État pour éviter double traitement
+    var isProcessing by remember { mutableStateOf(false) }
 
-    // Fonction optimisée pour le traitement d'image
-    suspend fun handleImageCaptureOptimized(uri: Uri) {
-        if (isProcessing) return // Éviter les traitements multiples
+    suspend fun handleImageCapture(uri: Uri) {
+        if (isProcessing) return
         isProcessing = true
 
         try {
             pendingProduct?.let { product ->
-                Log.d(TAG, "Traitement image pour: ${product.nom} (ID: ${product.id})")
-
                 val fileName = "${product.id}_1.webp"
-                val localStorageDir = File(imagesProduitsLocalExternalStorageBasePath).apply {
-                    if (!exists()) mkdirs()
-                }
-                val localFile = File(localStorageDir, fileName)
+                val localDir = File(localPath).apply { if (!exists()) mkdirs() }
+                val localFile = File(localDir, fileName)
 
-                // Lecture et traitement de l'image en une seule opération
                 withContext(Dispatchers.IO) {
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        val imageBytes = inputStream.readBytes()
-                        Log.d(TAG, "Image WebP: ${imageBytes.size} bytes")
+                    context.contentResolver.openInputStream(uri)?.use { input ->
+                        val bytes = input.readBytes()
 
-                        // Sauvegarde locale immédiate
                         FileOutputStream(localFile).use { output ->
-                            output.write(imageBytes)
+                            output.write(bytes)
                             output.flush()
                         }
 
-                        // Upload Firebase en parallèle (ne pas attendre)
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
-                                val uploadTask = imagesProduitsFireBaseStorageRef
-                                    .child(fileName)
-                                    .putBytes(imageBytes)
-                                    .await()
-
-                                if (uploadTask.metadata != null) {
-                                    Log.d(TAG, "Upload Firebase réussi: $fileName")
-                                } else {
-                                    Log.w(TAG, "Upload Firebase incertain: $fileName")
-                                }
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Upload Firebase échoué: $fileName", e)
-                            }
+                                storageRef.child(fileName).putBytes(bytes).await()
+                            } catch (e: Exception) {}
                         }
 
-                        // Mise à jour immédiate du produit (ne pas attendre l'upload)
                         withContext(Dispatchers.Main) {
                             val updatedProduct = product.copy(
                                 actualiseSonImage = 1,
@@ -111,34 +84,23 @@ fun B_1_CameraFAB(
                                 needUpdate = true
                             )
 
-                            Log.d(TAG, "Produit mis à jour avec compteurs d'actualisation")
                             onProductCreated(updatedProduct)
 
-                            // Actualisation de l'image en arrière-plan
                             scope.launch {
-                                delay(100) // Délai minimal
+                                delay(100)
                                 viewModel.updateActualisationImage(updatedProduct.id)
                                 delay(200)
                                 viewModel.updateActualisationImage(updatedProduct.id)
                             }
 
-                            Toast.makeText(
-                                context,
-                                "Produit WebP créé: ${updatedProduct.nom}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Erreur traitement image", e)
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Erreur WebP: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Erreur WebP: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         } finally {
             isProcessing = false
@@ -146,14 +108,11 @@ fun B_1_CameraFAB(
         }
     }
 
-    // Launcher de permission
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            val newProduct = onCreateProductAndCapture()
-            pendingProduct = newProduct
-            Log.d(TAG, "Produit créé: ${newProduct.nom} (ID: ${newProduct.id})")
+            pendingProduct = onCreateProductAndCapture()
             showCameraDialog = true
         } else {
             Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
@@ -161,17 +120,11 @@ fun B_1_CameraFAB(
         }
     }
 
-    // Dialogue caméra optimisé
     if (showCameraDialog) {
         CameraXDialog(
             onImageCaptured = { uri ->
-                showCameraDialog = false // Fermeture immédiate du dialogue
-                Log.d(TAG, "Image reçue, fermeture dialogue")
-
-                // Traitement en arrière-plan
-                scope.launch {
-                    handleImageCaptureOptimized(uri)
-                }
+                showCameraDialog = false
+                scope.launch { handleImageCapture(uri) }
             },
             onDismiss = {
                 showCameraDialog = false
@@ -184,16 +137,12 @@ fun B_1_CameraFAB(
 
     FloatingActionButton(
         onClick = {
-            if (!isProcessing) { // Éviter les clics multiples
-                Log.d(TAG, "FAB cliqué - démarrage processus WebP")
+            if (!isProcessing) {
                 permissionLauncher.launch(android.Manifest.permission.CAMERA)
             }
         },
         modifier = Modifier.size(size),
-        containerColor = if (isProcessing)
-            containerColor.copy(alpha = 0.6f)
-        else
-            containerColor
+        containerColor = if (isProcessing) containerColor.copy(alpha = 0.6f) else containerColor
     ) {
         Icon(
             imageVector = Icons.Default.AddAPhoto,
