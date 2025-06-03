@@ -1048,7 +1048,7 @@ open class HeadViewModel(
                             ?: emptyList(),
                         categories = model.repoStateC_CategorieProduitInfos?.modelListFlow
                             ?: emptyList(),
-                        loadingProgress = model.progress // Update progress from master model
+                        loadingProgress = model.progress
                     )
 
                     // Optional: Set loading to false when progress reaches 100%

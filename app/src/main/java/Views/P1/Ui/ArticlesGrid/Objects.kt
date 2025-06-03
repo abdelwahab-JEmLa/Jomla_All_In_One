@@ -8,10 +8,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -57,9 +54,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -357,76 +351,3 @@ fun RequestBuilder<Drawable>.applyImageOptions(
     })
 
 
-@Composable
-fun InfosArticleBottom(
-    article: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier,
-    uiState: UiState,
-    cAfficheurTelephone: Boolean
-) {
-
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-
-        Text(
-            text = "زبون جديد في طور عرض الخدمة",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        if (cAfficheurTelephone) {
-
-            // Check if monPrixVent is greater than 0
-            if (article.prixVent > 0) {
-                // Row to display both prices side by side
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Total price
-                    Text(
-                        text = remember {
-                            val currencyFormat =
-                                NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
-                                    currency = Currency.getInstance("DZD")
-                                }
-                            currencyFormat.format(article.prixVent)
-                        },
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    if (article.nombreUniteInt > 1) {
-                        Text("->")
-                        Text(
-                            text = remember {
-                                val currencyFormat =
-                                    NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
-                                        currency = Currency.getInstance("DZD")
-                                    }
-                                val unitPrice =
-                                    article.prixVent / article.nombreUniteInt
-
-                                currencyFormat.format(unitPrice)
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            } else {
-                Text(
-                    text = "ان شاء الله نحاولو نديرولك سعر شباب",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-        }
-
-        Text(
-            text = article.nomArticleFinale,
-            style = MaterialTheme.typography.titleMedium
-        )
-    }
-}

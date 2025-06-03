@@ -10,6 +10,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,23 +45,23 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 private const val TAG = "ArticleGridDebug"
- @Composable
+@Composable
 fun ArticleGridWithScrollbar(
-     uiState: UiState,
-     gridColumns: Int,
-     filterText: String,
-     showFilter: Boolean,
-     gridState: LazyStaggeredGridState,
-     viewModel: HeadViewModel,
-     reloadTrigger: Int,
-     modifier: Modifier = Modifier,
-     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-     currentClient: B_ClientsDataBase?,
-     viewModelInitApp: ViewModelInitApp,
-     a_ProduitModelRepository: A_ProduitRepository,
-     targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean,
-     onClickImageToShowControles: () -> Unit
- ) {
+    uiState: UiState,
+    gridColumns: Int,
+    filterText: String,
+    showFilter: Boolean,
+    gridState: LazyStaggeredGridState,
+    viewModel: HeadViewModel,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    currentClient: B_ClientsDataBase?,
+    viewModelInitApp: ViewModelInitApp,
+    a_ProduitModelRepository: A_ProduitRepository,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean,
+    onClickImageToShowControles: () -> Unit
+) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
         Scrollbar(
@@ -170,6 +171,57 @@ fun ArticleGrid(
         }
     }
 
+    // Debug logging for category positions
+    LaunchedEffect(uiState.categories) {
+        Log.d(TAG, "=== CATEGORY POSITION DEBUG ===")
+        Log.d(TAG, "Total categories: ${uiState.categories.size}")
+
+        // Log original order
+        Log.d(TAG, "Original order:")
+        uiState.categories.forEachIndexed { index, category ->
+            Log.d(TAG, "  [$index] ${category.nom} - position: ${category.position}")
+        }
+
+        // Log sorted order
+        val sortedCategories = uiState.categories.sortedBy { it.position }
+        Log.d(TAG, "Sorted order:")
+        sortedCategories.forEachIndexed { index, category ->
+            Log.d(TAG, "  [$index] ${category.nom} - position: ${category.position}")
+        }
+
+        // Check for issues
+        val positions = uiState.categories.map { it.position }
+        val duplicatePositions = positions.groupBy { it }.filter { it.value.size > 1 }
+        if (duplicatePositions.isNotEmpty()) {
+            Log.w(TAG, "ISSUE: Duplicate positions found: $duplicatePositions")
+        }
+
+        val nullPositions = uiState.categories.filter { it.position == null }
+        if (nullPositions.isNotEmpty()) {
+            Log.w(TAG, "ISSUE: Categories with null positions: ${nullPositions.map { it.nom }}")
+        }
+
+        val negativePositions = uiState.categories.filter { it.position != null && it.position < 0 }
+        if (negativePositions.isNotEmpty()) {
+            Log.w(TAG, "ISSUE: Categories with negative positions: ${negativePositions.map { "${it.nom}(${it.position})" }}")
+        }
+
+        Log.d(TAG, "=== END CATEGORY DEBUG ===")
+    }
+
+    // Sort categories outside the LazyVerticalStaggeredGrid scope
+    val sortedCategories = remember(uiState.categories) {
+        uiState.categories
+            .sortedWith(compareBy(
+                // Handle null positions by putting them at the end
+                { it.position ?: Int.MAX_VALUE },
+                // Secondary sort by name for consistent ordering
+                { it.nom }
+            ))
+            .also { sorted ->
+                Log.d(TAG, "Final sorted categories for display: ${sorted.map { "${it.nom}(${it.position})" }}")
+            }
+    }
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
@@ -197,67 +249,63 @@ fun ArticleGrid(
             }
         }
 
-        // Display categories in order
-        uiState.categories
-            .sortedBy { when {
-                it.nom == "NewArrivale" -> 0
-                else -> it.position + 1
-            } }
-            .forEach { category ->
-                val lazyPagingItems = categoryPagingItems[category]
+        // Display categories in sorted order
 
-                if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-                    // Show category header if needed
-                    if (category.displayedHeader) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            CategoryHeader(category)
+        sortedCategories.forEach { category ->
+            val lazyPagingItems = categoryPagingItems[category]
+
+            if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
+                // Show category header if needed
+                if (category.displayedHeader) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        CategoryHeader(category)
+                    }
+                }
+
+                // Display articles without keys
+                items(
+                    count = lazyPagingItems.itemCount,
+                    span = { index ->
+                        val article = lazyPagingItems[index]
+
+                        if (true) {
+                            StaggeredGridItemSpan.SingleLane
+                        } else {
+                            StaggeredGridItemSpan.SingleLane
                         }
                     }
-
-                    // Display articles without keys
-                    items(
-                        count = lazyPagingItems.itemCount,
-                        span = { index ->
-                            val article = lazyPagingItems[index]
-
-                            if (true) {
-                                StaggeredGridItemSpan.SingleLane
-                            } else {
-                                StaggeredGridItemSpan.SingleLane
-                            }
+                ) { index ->
+                    val article = lazyPagingItems[index]
+                    article?.let { ancienData ->
+                        val isFirstVisible = when {
+                            !isSettled -> index == lastSettledFirstVisible
+                            else -> index == gridState.firstVisibleItemIndex
                         }
-                    ) { index ->
-                        val article = lazyPagingItems[index]
-                        article?.let { ancienData ->
-                            val isFirstVisible = when {
-                                !isSettled -> index == lastSettledFirstVisible
-                                else -> index == gridState.firstVisibleItemIndex
-                            }
 
-                            if (isFirstVisible) {
-                                currentCategory = category.nom
-                            }
-                            val produitDepuitNewDATABASE =  a_ProduitModelRepository
-                                .modelDatas.find { it.id == article.id }
-                            ArticleItem(
-                                article = ancienData,
-                                viewModel = viewModel,
-                                reloadTrigger = reloadTrigger,
-                                onClickToOpenWindos = onClickToOpenWindos,
-                                uiState = uiState,
-                                isFirstVisible = isFirstVisible,
-                                modifier = Modifier.animateItem(
-                                    fadeInSpec = null,
-                                    fadeOutSpec = null
-                                ),
-                                currentClient = currentClient,
-                                produitDepuitNewDATABASE =produitDepuitNewDATABASE, lockHost = lockHost,
-                                viewModelInitApp =viewModelInitApp
-                            )
+                        if (isFirstVisible) {
+                            currentCategory = category.nom
                         }
+                        val produitDepuitNewDATABASE =  a_ProduitModelRepository
+                            .modelDatas.find { it.id == article.id }
+                        ArticleItem(
+                            article = ancienData,
+                            viewModel = viewModel,
+                            reloadTrigger = reloadTrigger,
+                            onClickToOpenWindos = onClickToOpenWindos,
+                            uiState = uiState,
+                            isFirstVisible = isFirstVisible,
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = null,
+                                fadeOutSpec = null
+                            ),
+                            currentClient = currentClient,
+                            produitDepuitNewDATABASE =produitDepuitNewDATABASE, lockHost = lockHost,
+                            viewModelInitApp =viewModelInitApp
+                        )
                     }
                 }
             }
+        }
     }
 }
 
