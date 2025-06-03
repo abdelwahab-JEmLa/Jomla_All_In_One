@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.Receipt
@@ -201,6 +202,7 @@ object NavigationItems {
         Screen.TravailleTempRecorder,
         Screen.CommandeProduits,
         Screen.ToggleFab,
+        Screen.EditeProduitsBaseDonneS9,
         Screen.NewFragTest
     )
 }
@@ -211,6 +213,13 @@ sealed class Screen(
     val title: String,
     val color: Color
 ) {
+    data object EditeProduitsBaseDonneS9 : Screen(
+        route = "EditeProduitsBaseDonneS9",
+        icon = Icons.Default.Dataset,
+        title = "EditeProduitsBaseDonneS9",
+        color = Color(0xFF7B351D)
+    )
+
     data object A_ClientsLocationGps : Screen(
         route = "A_ClientsLocationGps",
         icon = Icons.Default.MapsHomeWork,

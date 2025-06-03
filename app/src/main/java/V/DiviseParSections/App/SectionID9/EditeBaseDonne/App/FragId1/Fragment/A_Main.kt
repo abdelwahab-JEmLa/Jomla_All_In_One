@@ -40,7 +40,7 @@ enum class ModeAffichage {
 }
 @Preview
 @Composable
-fun EditeBaseDonneMainScreen(
+fun EditeBaseDonneMainScreenIdS9(
     viewModel: StartUpFragmentViewModel = koinViewModel(),
     modifier: Modifier = Modifier,
 ) {
