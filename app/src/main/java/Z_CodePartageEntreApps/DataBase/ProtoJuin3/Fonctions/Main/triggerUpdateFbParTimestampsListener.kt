@@ -1,9 +1,10 @@
-package A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
+import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import android.util.Log
-import com.example.serveure.Manager.Room.AppDatabase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference

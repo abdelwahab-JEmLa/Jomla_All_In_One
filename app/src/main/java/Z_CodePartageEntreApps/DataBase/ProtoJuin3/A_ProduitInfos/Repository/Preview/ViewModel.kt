@@ -1,7 +1,7 @@
-package A.AtelierMobile.Test.ID1.Test.Shared.DataBase.A_ProduitInfos.Repository.Preview
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview
 
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
-import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.A_MasterRepositorys
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow

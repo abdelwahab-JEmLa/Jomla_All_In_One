@@ -1,4 +1,4 @@
-package A.AtelierMobile.Test.ID1.Test.Shared.DataBase.A_ProduitInfos.Repository.Preview
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -230,6 +230,7 @@ val uiHandlersModule = module {
 // Ensuite, incluez ce module dans votre appModule
 val appModule = module {
     includes(
+        moduleGrouperKoinProtoJuin3,
         commonRepositoriesModule,
         appTypeModule,
         viewModelModule,

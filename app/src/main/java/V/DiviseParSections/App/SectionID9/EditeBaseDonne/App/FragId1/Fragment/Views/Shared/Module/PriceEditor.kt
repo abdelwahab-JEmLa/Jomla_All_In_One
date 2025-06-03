@@ -1,0 +1,114 @@
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun PriceEditor(
+    currentPrice: Double,
+    label: String,
+    onPriceUpdate: (Double) -> Unit,
+    modifier: Modifier = Modifier,
+    showOnlyWhenPositive: Boolean = false,
+    additionalInfo: (@Composable () -> Unit)? = null,
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
+    var isEditing by remember { mutableStateOf(false) }
+    var tempText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(isEditing) {
+        if (isEditing) focusRequester.requestFocus()
+    }
+
+    fun parsePrice(text: String): Double? {
+        return try {
+            text.replace(',', '.').toDoubleOrNull()
+        } catch (e: Exception) { null }
+    }
+
+    fun savePrice() {
+        val newPrice = parsePrice(tempText) ?: currentPrice
+        onPriceUpdate(newPrice)
+        isEditing = false
+        tempText = ""
+        keyboardController?.hide()
+    }
+
+    if (!showOnlyWhenPositive || currentPrice > 0 || isEditing) {
+        Column(modifier = modifier) {
+            if (isEditing) {
+                OutlinedTextField(
+                    value = tempText,
+                    onValueChange = { newValue ->
+                        val filtered = newValue.filter { char ->
+                            char.isDigit() || char == '.' || char == ','
+                        }
+                        val dotCount = filtered.count { it == '.' }
+                        val commaCount = filtered.count { it == ',' }
+                        if (dotCount <= 1 && commaCount <= 1 && (dotCount + commaCount) <= 1) {
+                            tempText = filtered
+                        }
+                    },
+                    label = { Text("Ancien: $currentPrice DA") },
+                    placeholder = { Text("Nouveau prix") },
+                    suffix = { Text("DA") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { savePrice() }),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                    shape = RoundedCornerShape(12.dp)
+                )
+            } else {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            isEditing = true
+                            tempText = ""
+                        },
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = textColor.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "$currentPrice DA",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = textColor,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                }
+            }
+            additionalInfo?.invoke()
+        }
+    }
+}
