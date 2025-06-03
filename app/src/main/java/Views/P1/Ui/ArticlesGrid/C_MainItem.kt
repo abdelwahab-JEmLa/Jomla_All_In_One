@@ -1,13 +1,7 @@
-package Views.P1.Ui.ArticlesGrid.ArticleItem
+package Views.P1.Ui.ArticlesGrid
 
-import Views.P1.Ui.ArticlesGrid.ArticleLayout
-import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
-import Views.P1.Ui.ArticlesGrid.checkImageExists
-import Views.P1.Ui.ArticlesGrid.countColors
-import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
+import Views.P1.Ui.ArticlesGrid.Components.ArticleItem.ColorIndicator
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,9 +34,8 @@ fun ArticleItem(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     isFirstVisible: Boolean = false,
-    currentClient: B_ClientsDataBase?,
-    produitDepuitNewDATABASE: A_Produit?,
-    lockHost: Boolean, viewModelInitApp: ViewModelInitApp
+    lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     val colorCount = countColors(article)
 
@@ -62,12 +55,11 @@ fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
-
         val layout = when {
-            colorCount == 1 -> ArticleLayout.SmallUno
-            colorCount == 2 -> ArticleLayout.SmallDual
-            colorCount > 2 -> ArticleLayout.SmallMulti
-            else -> ArticleLayout.SmallUno
+            colorCount == 1 -> E_ArticleLayout.SmallUno
+            colorCount == 2 -> E_ArticleLayout.SmallDual
+            colorCount > 2 -> E_ArticleLayout.SmallMulti
+            else -> E_ArticleLayout.SmallUno
         }
 
         layout.Content(
@@ -75,12 +67,12 @@ fun ArticleItem(
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindos = onClickToOpenWindos,
-            uiState = uiState, lockHost = lockHost, viewModelInitApp = viewModelInitApp
+            uiState = uiState,
+            lockHost = lockHost,
+            viewModelInitApp = viewModelInitApp
         )
     }
 }
-
-
 
 @Composable
 fun ArticleImageWithOverlay(
@@ -93,8 +85,8 @@ fun ArticleImageWithOverlay(
     contentScale: ContentScale = ContentScale.Fit,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     imageSize: DpSize,
-    qualityImagePourcentage: Int =100, viewModelInitApp: ViewModelInitApp
-
+    qualityImagePourcentage: Int = 100,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Surface(
         modifier = modifier,
@@ -121,8 +113,8 @@ fun ArticleImageWithOverlay(
                 showOverlay = !imageExists,
                 imageScale = contentScale,
                 imageSize = imageSize,
-                finalequalityImagePourcentage=qualityImagePourcentage,
-                viewModelInitApp=viewModelInitApp,
+                finalequalityImagePourcentage = qualityImagePourcentage,
+                viewModelInitApp = viewModelInitApp,
             )
 
             if (imageExists) {
@@ -134,8 +126,7 @@ fun ArticleImageWithOverlay(
                                 .padding(3.dp)
                                 .align(Alignment.BottomEnd)
                                 .wrapContentSize()
-                                .offset(x = (-10).dp, y = (-15).dp)
-                            ,
+                                .offset(x = (-10).dp, y = (-15).dp),
                             imageSize = imageSize,
                             onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
                         )
@@ -145,4 +136,3 @@ fun ArticleImageWithOverlay(
         }
     }
 }
-

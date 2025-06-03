@@ -1,6 +1,6 @@
 package Views.P1.Ui.ArticlesGrid
 
-import Views.P1.Ui.ArticlesGrid.ArticleItem.ColorOverlay
+import Views.P1.Ui.ArticlesGrid.Components.ArticleItem.ColorOverlay
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

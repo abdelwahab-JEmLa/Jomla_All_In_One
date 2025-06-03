@@ -40,7 +40,6 @@ data class ArticlesBasesStatsTable(
     var keyFireBase: String = "",
 
 
-    var classementCate: Double = 0.0,
     var nomArab: String = "",
     var autreNomDarticle: String? = null,
     var nmbrCat: Int = 0,

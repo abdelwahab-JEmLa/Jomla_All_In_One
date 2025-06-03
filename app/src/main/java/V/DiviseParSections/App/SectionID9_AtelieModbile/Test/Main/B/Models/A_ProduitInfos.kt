@@ -99,7 +99,6 @@ fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
         prixVent = ancien.prixVent,
 
 
-        classementCate = ancien.classementCate,
         nomArab = ancien.nomArab,
         autreNomDarticle = ancien.autreNomDarticle,
         nmbrCat = ancien.nmbrCat,

@@ -1,4 +1,4 @@
-package Views.P1.Ui.ArticlesGrid.ArticleItem
+package Views.P1.Ui.ArticlesGrid.Components.ArticleItem
 import Views.P1.Ui.ArticlesGrid.AutoResizedText
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import androidx.compose.foundation.BorderStroke

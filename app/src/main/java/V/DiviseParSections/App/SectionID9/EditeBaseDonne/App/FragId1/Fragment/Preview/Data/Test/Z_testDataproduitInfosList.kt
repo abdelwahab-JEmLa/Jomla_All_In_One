@@ -98,7 +98,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             benficeTotaleEntreMoiEtClien = -150.0,
             benificeClient = -150.0,
             benificeTotaleEn2 = -75.0,
-            classementCate = -156.0,
             dateCreationCategorie = "1740564102869",
             funChangeImagsDimention = true,
             catalogeParentID = 0,

@@ -8,7 +8,6 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
         ArticlesBasesStatsTable(
             id = 1, // Using product ID from JSON
             nomArticleFinale = "chahrazed 80g", // Using product name from JSON
-            classementCate = 1.0,
             nomArab = "",
             nmbrCat = 1,
             couleur1 = "#FFFFFF",
@@ -29,7 +28,6 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
         ArticlesBasesStatsTable(
             id = 2,
             nomArticleFinale = "milk 1L",
-            classementCate = 2.0,
             nomArab = "",
             nmbrCat = 1,
             couleur1 = "#F5F5F5",
