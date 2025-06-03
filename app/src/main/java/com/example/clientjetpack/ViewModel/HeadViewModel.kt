@@ -1,6 +1,7 @@
-    package com.example.clientjetpack.ViewModel
+package com.example.clientjetpack.ViewModel
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
@@ -47,6 +48,7 @@ import java.util.Locale
 open class HeadViewModel(
     context: Context,
     val database: AppDatabase,
+    val a_MasterRepositorys: A_MasterRepositorys
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
@@ -59,7 +61,8 @@ open class HeadViewModel(
 
     open val uiState = _uiState.asStateFlow()
 
-    val categoriesRepository: I_CategorieProduitsRepository = I_CategorieProduitsRepositoryImpl(database)
+    val categoriesRepository: I_CategorieProduitsRepository =
+        I_CategorieProduitsRepositoryImpl(database)
 
 
     private val connectionManager = ConnectionManager(
@@ -298,7 +301,6 @@ open class HeadViewModel(
     fun disconnect() = connectionManager.disconnect()
 
 
-
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath =
         File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
@@ -332,8 +334,6 @@ open class HeadViewModel(
             )
         }
     }
-
-
 
 
     val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
@@ -989,47 +989,6 @@ open class HeadViewModel(
     }
 
 
-    private suspend fun loadDataOfUiStateFromRoom() {
-        try {
-            setLoading(true)
-            var progress = 0f
-
-            while (progress < 100f) {
-                progress += 10f
-                updateLoadingProgress(progress)
-                delay(100)
-            }
-            setupAppSettingsListener()
-
-            val articles = database.articlesBasesStatsModelDao().getAll()
-            val colors = database.colorsArticlesDao().getAllOrdred()
-            val soldArticles = database.soldArticlesModelDao().getAll()
-            val devicesTypeManager = database.devicesTypeManagerDao().getAll()
-
-            val diviseurDeDisplayProductForEachClient =
-                database.diviseurDeDisplayProductForEachClientDao().getAll()
-
-            createNewArrivaleCategoryIfNeeded(categorieChangeposisio())
-
-            _uiState.update {
-                it.copy(
-                    articlesBasesStatTables = articles,
-                    categories = categorieChangeposisio(),
-                    colorsArticlesTabelleModel = colors,
-                    soldArticlesModel = soldArticles,
-                    devicesTypeManager = devicesTypeManager,
-
-                    diviseurDeDisplayProductForEachClient = diviseurDeDisplayProductForEachClient,
-
-                    )
-            }
-        } catch (e: Exception) {
-            _uiState.update { it.copy(error = e.message) }
-        } finally {
-            setLoading(false)
-        }
-    }
-
     private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
         try {
             val categories = database.I_CategorieProduitsDao().getAll()
@@ -1056,6 +1015,7 @@ open class HeadViewModel(
             return mutableListOf()
         }
     }
+
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
@@ -1091,7 +1051,7 @@ open class HeadViewModel(
                 database.articlesBasesStatsModelDao().insertAll(articles)
                 updateLoadingProgress(100f)
 
-                loadDataOfUiStateFromRoom()
+                loadDataCollectOfUiStateFromRoom()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             } finally {
@@ -1103,14 +1063,74 @@ open class HeadViewModel(
     init {
         viewModelScope.launch {
 
-            if(database.articlesBasesStatsModelDao().getAll().size==0)
-            {
+            if (database.articlesBasesStatsModelDao().getAll().size == 0) {
                 importFromFirebase()
             }
-            loadDataOfUiStateFromRoom()
+            loadDataCollectOfUiStateFromRoom()
         }
         observeConnectionState()
         setupMaxPriceObserver()
+    }
+
+    private fun collectDatasAuUiStateMasterRepositorysProtoJuin3() {
+        viewModelScope.launch {
+            a_MasterRepositorys.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    _uiState.value = _uiState.value.copy(
+                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
+                            ?: emptyList(),
+                        c_CategorieProduitInfosList = model.repoStateC_CategorieProduitInfos?.modelListFlow
+                            ?: emptyList(),
+                        mainLoadingProgressPJuin3 = model.progress
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun loadDataCollectOfUiStateFromRoom() {
+        try {
+            collectDatasAuUiStateMasterRepositorysProtoJuin3()
+
+            setLoading(true)
+            var progress = 0f
+
+            while (progress < 100f) {
+                progress += 10f
+                updateLoadingProgress(progress)
+                delay(100)
+            }
+            setupAppSettingsListener()
+
+            val articlesProtoAvanJuin3 = database.articlesBasesStatsModelDao().getAll()
+            val colors = database.colorsArticlesDao().getAllOrdred()
+            val soldArticles = database.soldArticlesModelDao().getAll()
+            val devicesTypeManager = database.devicesTypeManagerDao().getAll()
+
+            val diviseurDeDisplayProductForEachClient =
+                database.diviseurDeDisplayProductForEachClientDao().getAll()
+
+            val existingCategoriesProtoAvanJuin3 = categorieChangeposisio()
+
+            createNewArrivaleCategoryIfNeeded(existingCategoriesProtoAvanJuin3)
+
+            _uiState.update {
+                it.copy(
+                    articlesBasesStatTables = articlesProtoAvanJuin3,
+                    categories = existingCategoriesProtoAvanJuin3,
+                    colorsArticlesTabelleModel = colors,
+                    soldArticlesModel = soldArticles,
+                    devicesTypeManager = devicesTypeManager,
+
+                    diviseurDeDisplayProductForEachClient = diviseurDeDisplayProductForEachClient,
+
+                    )
+            }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(error = e.message) }
+        } finally {
+            setLoading(false)
+        }
     }
 
 }

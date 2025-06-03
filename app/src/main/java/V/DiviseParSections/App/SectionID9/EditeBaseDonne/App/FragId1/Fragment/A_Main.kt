@@ -45,7 +45,7 @@ fun EditeBaseDonneMainScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val progress = uiState.mainLoadingProgress
+    val progress = uiState.mainLoadingProgressPJuin3
     val produitList = uiState.a_ProduitInfosList
     val categoriesList = uiState.c_CategorieProduitInfosList
 

@@ -175,8 +175,9 @@ val viewModelModule = module {
     viewModel { (context: Context) ->
         HeadViewModel(
             get(),
-            AppDatabase.DatabaseModule.getDatabase(get())
-        )
+            AppDatabase.DatabaseModule.getDatabase(get()),
+            get(),
+            )
     }
 
     viewModel { Windows__ViewModel(get()) }

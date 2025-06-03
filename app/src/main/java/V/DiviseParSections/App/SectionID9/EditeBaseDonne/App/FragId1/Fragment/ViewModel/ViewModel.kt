@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     val a_ProduitInfosList: List<A_ProduitInfosProtoJuin3> = emptyList(),
     val c_CategorieProduitInfosList: List<C_CategorieProduitInfos> = emptyList(),
-    val mainLoadingProgress: Float = 0f
+    val mainLoadingProgressPJuin3: Float = 0f,
 )
 
 class StartUpFragmentViewModel(
@@ -25,13 +25,19 @@ class StartUpFragmentViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
+        collecteMasterRepositorysDatasAuUiState()
+    }
+
+    private fun collecteMasterRepositorysDatasAuUiState() {
         viewModelScope.launch {
             masterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList(),
-                        c_CategorieProduitInfosList = model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList(),
-                        mainLoadingProgress = model.progress
+                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
+                            ?: emptyList(),
+                        c_CategorieProduitInfosList = model.repoStateC_CategorieProduitInfos?.modelListFlow
+                            ?: emptyList(),
+                        mainLoadingProgressPJuin3 = model.progress
                     )
                 }
             }
