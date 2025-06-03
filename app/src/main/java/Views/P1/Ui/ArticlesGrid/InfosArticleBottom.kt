@@ -46,13 +46,13 @@ fun InfosArticleBottom(
         val relatedCat = categ.find { it.id == article.idParentCategorie }
 
         // Display category information
-        Text(
+     /*   Text(
             text = if (relatedCat != null) {
                 "الفئة: ${relatedCat.nom} (ID: ${article.idParentCategorie} Posit = ${relatedCat.position})"
             } else {
                 "الفئة: غير محددة (ID: ${article.idParentCategorie})"
             }
-        )
+        )     */
 
         if (cAfficheurTelephone) {
 

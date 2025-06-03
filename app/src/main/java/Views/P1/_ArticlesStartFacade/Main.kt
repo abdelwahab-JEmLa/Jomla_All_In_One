@@ -1,7 +1,7 @@
 package Views.P1._ArticlesStartFacade
 
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
-import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
+import Views.P1.Ui.ArticlesGrid.A.List.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable

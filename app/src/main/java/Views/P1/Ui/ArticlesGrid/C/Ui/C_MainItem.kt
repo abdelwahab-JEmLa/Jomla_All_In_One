@@ -1,6 +1,11 @@
-package Views.P1.Ui.ArticlesGrid
+package Views.P1.Ui.ArticlesGrid.C.Ui
 
 import Views.P1.Ui.ArticlesGrid.Components.ArticleItem.ColorIndicator
+import Views.P1.Ui.ArticlesGrid.E_ArticleLayout
+import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
+import Views.P1.Ui.ArticlesGrid.checkImageExists
+import Views.P1.Ui.ArticlesGrid.countColors
+import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable

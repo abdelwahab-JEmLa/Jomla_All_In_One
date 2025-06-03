@@ -1,5 +1,6 @@
-package Views.P1.Ui.ArticlesGrid
+package Views.P1.Ui.ArticlesGrid.A.List
 
+import Views.P1.Ui.ArticlesGrid.C.Ui.ArticleItem
 import Views.P1.Ui.ArticlesGrid.B.Main.Filter.filterArticles
 import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader

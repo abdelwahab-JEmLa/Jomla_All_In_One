@@ -1,5 +1,6 @@
 package Views.P1.Ui.ArticlesGrid
 
+import Views.P1.Ui.ArticlesGrid.C.Ui.ArticleImageWithOverlay
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
