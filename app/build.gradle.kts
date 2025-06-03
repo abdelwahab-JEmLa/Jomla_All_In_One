@@ -167,12 +167,15 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
-    // CameraX dependencies
+    //Dependencies ProtoIndex0
+    // Guava for ListenableFuture (required by CameraX)
+    implementation("com.google.guava:guava:32.1.3-android")
+
+    // CameraX (used in B_1_CameraFAB.kt)
     implementation("androidx.camera:camera-core:1.3.1")
     implementation("androidx.camera:camera-camera2:1.3.1")
     implementation("androidx.camera:camera-lifecycle:1.3.1")
     implementation("androidx.camera:camera-view:1.3.1")
-    implementation("androidx.camera:camera-extensions:1.3.1")
 }
 
 apply(plugin = "com.google.gms.google-services")

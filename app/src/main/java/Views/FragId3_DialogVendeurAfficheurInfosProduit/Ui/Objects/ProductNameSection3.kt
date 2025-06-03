@@ -55,7 +55,9 @@ fun ProductNameSection3(
                     } else {
                         ""
                     }
-                    val text = "${article.nomArticleFinale} $idArticle  "
+                    val text = "${article.nomArticleFinale} $idArticle " +
+                            "${article.nomCategorie} " +
+                            "${article.nomCategorie} "
                     Text(
                         text = text,
                         style = MaterialTheme.typography.headlineSmall.copy(

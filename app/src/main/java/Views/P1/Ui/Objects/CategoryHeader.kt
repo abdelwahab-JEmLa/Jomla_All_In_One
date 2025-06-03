@@ -31,6 +31,12 @@ fun CategoryHeader(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
+                text = category.idClassementCategorieInCategoriesTabele.toString(),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+            Text(
                 text = category.nomCategorieInCategoriesTabele,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier

@@ -11,15 +11,19 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.D_TarificationInfos
+import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.Z.Daos.A_ProduitInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.Z.Daos.D_TarificationInfosDao
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfosDao
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.A_ProduitInfosProtoJuin3Dao
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.C_CategorieProduitInfosDao
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -90,7 +94,11 @@ import java.util.Date
         A_ProduitInfos::class,
         B_ClientInfos::class,
         C_TypeTarificationInfos::class,
-        D_TarificationInfos::class
+        D_TarificationInfos::class   ,
+
+        A_ProduitInfosProtoJuin3::class,
+        C_CategorieProduitInfos::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -133,6 +141,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun b_ClientInfosDao(): B_ClientInfosDao
     abstract fun c_TypeTarificationInfosDao(): C_TypeTarificationInfosDao
     abstract fun dTarificationInfosDao(): D_TarificationInfosDao
+
+    abstract fun A_ProduitInfosProtoJuin3Dao(): A_ProduitInfosProtoJuin3Dao
+    abstract fun c_CategorieProduitInfosDao(): C_CategorieProduitInfosDao
 
 
     object DatabaseModule {
