@@ -1,6 +1,6 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorArrangement
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
@@ -64,7 +64,7 @@ fun B_CouleurAfficheur_F7(
         ), label = ""
     )
     val articleproduitsMainDataBase =
-        viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id.toInt() == article.idArticle }
+        viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id == article.id }
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(0.dp),
@@ -72,7 +72,7 @@ fun B_CouleurAfficheur_F7(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             A_GlideDisplayImageByKeyId_Proto_4_11(
-                produitVID = article.idArticle.toLong(),
+                produitVID = article.id.toLong(),
                 couleurVID = colorIndex.toLong() + 1,
                 size = 600.dp,
                 qualityImage = 100,

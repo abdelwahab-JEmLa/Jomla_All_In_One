@@ -1,5 +1,5 @@
 package Views.FragId4_EStorePresentationToClient.Modules
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +25,7 @@ fun ImageDisplayer7(
     val context = LocalContext.current
 
     // Move file operations outside of composition
-    val imagePath = remember(article.idArticle, indexColor, reloadKey) {
+    val imagePath = remember(article.id, indexColor, reloadKey) {
         val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/")
         if (!viewModelImagesPath.exists()) {
             viewModelImagesPath.mkdirs()
@@ -33,7 +33,7 @@ fun ImageDisplayer7(
 
         val baseImagePath = File(
             viewModelImagesPath,
-            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+            "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
         ).absolutePath
 
         listOf("jpg", "webp")
@@ -58,7 +58,7 @@ fun ImageDisplayer7(
 
             Image(
                 painter = painter,
-                contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
+                contentDescription = "Article image ${article.id} color ${indexColor + 1}",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds
             )

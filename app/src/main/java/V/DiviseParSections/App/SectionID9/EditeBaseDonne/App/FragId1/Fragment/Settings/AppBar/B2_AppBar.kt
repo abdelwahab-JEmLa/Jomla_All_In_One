@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterDropdownMenu
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ModeAffichage
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppBar(
-    onCreateProductAndCapture: () -> A_ProduitInfosProtoJuin3,
-    onProductCreated: (A_ProduitInfosProtoJuin3) -> Unit,
+    onCreateProductAndCapture: () -> ArticlesBasesStatsTable,
+    onProductCreated: (ArticlesBasesStatsTable) -> Unit,
     currentMode: ModeAffichage,
     onModeChanged: (ModeAffichage) -> Unit,
     filterState: FilterState,

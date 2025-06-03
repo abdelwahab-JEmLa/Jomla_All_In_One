@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
 import A.AtelierMobile.Test.ID1.Test.EditeBaseDonneMainScreen.Fragment.Views.CATEGORIES_LIST.Dialogs.AddCategoryDialog
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +49,7 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun CategorySelectionDialog(
-    product: A_ProduitInfosProtoJuin3,
+    product: ArticlesBasesStatsTable,
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
     onAddCategory: ((String) -> Unit)? = null,

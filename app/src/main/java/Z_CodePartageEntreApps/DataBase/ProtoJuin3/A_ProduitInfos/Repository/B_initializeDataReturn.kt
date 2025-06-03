@@ -1,13 +1,12 @@
-package A.AtelierMobile.Test.ID1.Test.Shared.DataBase.A_ProduitInfos.Repository
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.isRoomEmpty
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<A_ProduitInfosProtoJuin3> {
+suspend fun A_ProduitInfosRepository.initializeDataReturn(): List<ArticlesBasesStatsTable> {
     return if (isRoomEmpty()) {
         val firebaseData = suspendCancellableCoroutine { continuation ->
             getFirebaseData { dataFB ->

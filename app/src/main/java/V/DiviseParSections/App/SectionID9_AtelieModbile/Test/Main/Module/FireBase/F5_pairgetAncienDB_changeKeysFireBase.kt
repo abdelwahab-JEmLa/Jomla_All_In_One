@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 

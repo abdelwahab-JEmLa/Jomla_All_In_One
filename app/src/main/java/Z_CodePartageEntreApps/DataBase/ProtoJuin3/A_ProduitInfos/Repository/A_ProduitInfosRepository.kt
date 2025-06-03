@@ -1,8 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.A_ProduitInfos.Repository.initializeDataReturn
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +20,12 @@ class A_ProduitInfosRepository(
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
     data class RepoState(
-        val modelListFlow: List<A_ProduitInfosProtoJuin3>,
+        val modelListFlow: List<ArticlesBasesStatsTable>,
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.A_ProduitInfosProtoJuin3Dao()
-    val ref = A_ProduitInfosProtoJuin3.caRef
+    val dao = appDatabase.articlesBasesStatsModelDao()
+    val ref = ArticlesBasesStatsTable.caRef
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -35,7 +34,7 @@ class A_ProduitInfosRepository(
         }
     }
 
-    suspend fun updateRepoState(data: List<A_ProduitInfosProtoJuin3>) {
+    suspend fun updateRepoState(data: List<ArticlesBasesStatsTable>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,

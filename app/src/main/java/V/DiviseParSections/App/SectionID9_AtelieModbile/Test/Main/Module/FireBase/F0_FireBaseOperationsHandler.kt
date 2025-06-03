@@ -6,7 +6,7 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.getKe
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.parseDepuitOldAuNew
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.ReflectionUtils.isSyntheticProperty
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.ReflectionUtils.sanitizeValue
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

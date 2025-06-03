@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MainItemEditeCategories(
-    produit: A_ProduitInfosProtoJuin3,
+    produit: ArticlesBasesStatsTable,
     availableCategories: List<Long>,
-    onCategoryChanged: (A_ProduitInfosProtoJuin3) -> Unit,
+    onCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
     categoriesMap: Map<Long, C_CategorieProduitInfos> = emptyMap(),
     onAddCategory: ((String) -> Unit)? = null,

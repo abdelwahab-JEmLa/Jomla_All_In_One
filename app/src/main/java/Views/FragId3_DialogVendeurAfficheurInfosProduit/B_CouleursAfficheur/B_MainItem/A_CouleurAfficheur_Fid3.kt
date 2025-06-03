@@ -2,7 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_M
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -280,7 +280,7 @@ fun B_CouleurAfficheur(
                         .clip(RoundedCornerShape(8.dp))
                 ) {
                     A_GlideDisplayImageByKeyId_Proto_4_11(
-                        produitVID = article.idArticle.toLong(),
+                        produitVID = article.id.toLong(),
                         couleurVID = index.toLong() + 1,
                         size = 600.dp,
                         qualityImage = 100,

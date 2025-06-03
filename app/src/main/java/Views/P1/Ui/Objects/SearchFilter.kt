@@ -1,6 +1,6 @@
 package Views.P1.Ui.Objects
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

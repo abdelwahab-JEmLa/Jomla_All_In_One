@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
@@ -115,12 +115,12 @@ private fun setupProductFirebaseListener(
     appDatabase: AppDatabase,
     comptApp: Y_Model_ComptApp
 ) {
-    triggerUpdateFbParTimestampsListener<A_ProduitInfosProtoJuin3>(
+    triggerUpdateFbParTimestampsListener<ArticlesBasesStatsTable>(
         compt = comptApp,
         scope = scope,
-        ref = A_ProduitInfosProtoJuin3.caRef,
-        upsertFunction = { product: A_ProduitInfosProtoJuin3 ->
-            appDatabase.A_ProduitInfosProtoJuin3Dao().upsertData(product)
+        ref = ArticlesBasesStatsTable.caRef,
+        upsertFunction = { product: ArticlesBasesStatsTable ->
+            appDatabase.articlesBasesStatsModelDao().upsertData(product)
         },
         callback = {
             Log.d("Repository", "Product Firebase listener callback executed")

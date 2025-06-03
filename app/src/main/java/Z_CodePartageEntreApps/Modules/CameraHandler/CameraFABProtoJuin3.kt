@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -33,8 +33,8 @@ import java.io.FileOutputStream
 
 @Composable
 fun CameraFABProtoJuin3(
-    onCreateProductAndCapture: () -> A_ProduitInfosProtoJuin3,
-    onProductCreated: (A_ProduitInfosProtoJuin3) -> Unit,
+    onCreateProductAndCapture: () -> ArticlesBasesStatsTable,
+    onProductCreated: (ArticlesBasesStatsTable) -> Unit,
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     webPQuality: Int = 85
@@ -44,7 +44,7 @@ fun CameraFABProtoJuin3(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showCameraDialog by remember { mutableStateOf(false) }
-    var pendingProduct by remember { mutableStateOf<A_ProduitInfosProtoJuin3?>(null) }
+    var pendingProduct by remember { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var isProcessing by remember { mutableStateOf(false) }
 
     suspend fun handleImageCapture(uri: Uri) {

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val a_ProduitInfosList: List<A_ProduitInfosProtoJuin3> = emptyList(),
+    val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val c_CategorieProduitInfosList: List<C_CategorieProduitInfos> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
 )
@@ -48,7 +48,7 @@ class StartUpFragmentViewModel(
         masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(categories)
     }
 
-    fun addOrUpdateProduit(data: A_ProduitInfosProtoJuin3) {
+    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
         masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data)
     }
 }

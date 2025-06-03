@@ -1,5 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,8 +33,8 @@ fun ImageDisplayer3(
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
 
-    val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
-        File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
+    val baseImagePath = remember(viewModelImagesPath, article.id, indexColor) {
+        File(viewModelImagesPath, "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
             .absolutePath
     }
 
@@ -53,8 +53,8 @@ fun ImageDisplayer3(
         imageExist?.let { File(it) }
     }
 
-    val requestKey = remember(article.idArticle, indexColor, reloadKey) {
-        "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
+    val requestKey = remember(article.id, indexColor, reloadKey) {
+        "${article.id}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
     }
 
     Box(modifier = modifier.fillMaxWidth()) {
@@ -70,7 +70,7 @@ fun ImageDisplayer3(
 
             Image(
                 painter = painter,
-                contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
+                contentDescription = "Article image ${article.id} color ${indexColor + 1}",
                 modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.FillWidth
             )

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.Glide
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +36,7 @@ import java.io.File
 fun GlidDisplaye(
     modifier: Modifier = Modifier,
     imageGlidReloadTigger: Int = 0,
-    mainItem: A_ProduitInfosProtoJuin3? = null,
+    mainItem: ArticlesBasesStatsTable? = null,
     size: Dp? = null,
     onLoadComplete: () -> Unit = {},
     qualityImage: Int = 3,

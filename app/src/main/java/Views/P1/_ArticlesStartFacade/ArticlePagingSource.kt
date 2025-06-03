@@ -1,9 +1,9 @@
 package Views.P1._ArticlesStartFacade
 
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.clientjetpack.Repositorys.UiState
@@ -33,7 +33,7 @@ class ArticlePagingSource(
             articles.filter { article ->
                 // Find the corresponding product model
                 val productModel = a_ProduitRepository.modelDatas
-                    .find { it.id.toInt() == article.idArticle }
+                    .find { it.id == article.id }
 
                 val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
                         B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU

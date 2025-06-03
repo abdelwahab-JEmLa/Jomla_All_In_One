@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -39,8 +39,8 @@ import java.io.FileOutputStream
 
 @Composable
 fun ProductImageCaptureButton(
-    product: A_ProduitInfosProtoJuin3,
-    onImageCaptured: (A_ProduitInfosProtoJuin3) -> Unit,
+    product: ArticlesBasesStatsTable,
+    onImageCaptured: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StartUpFragmentViewModel = koinInject(),
     webPQuality: Int = 85

@@ -3,7 +3,7 @@ package Views.P1.Ui.ArticlesGrid
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -217,7 +217,7 @@ private fun DemiDisplayerMultiColor(
         ) {
             val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
             items(availableColors) { index ->
-                val imageExists = remember(article.idArticle, index, reloadTrigger) {
+                val imageExists = remember(article.id, index, reloadTrigger) {
                     checkImageExists(viewModel, article, index, reloadTrigger)
                 }
 

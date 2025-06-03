@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 
 // Helper function to create a test product
-fun createTestProduct(): A_ProduitInfosProtoJuin3 {
+fun createTestProduct(): ArticlesBasesStatsTable {
     val randomId = (1000..9999).random().toLong()
-    return A_ProduitInfosProtoJuin3(
+    return ArticlesBasesStatsTable(
         id = randomId,
         nom = "Test Product $randomId",
         nomArab = "منتج تجريبي $randomId",

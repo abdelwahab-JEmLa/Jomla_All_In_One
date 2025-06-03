@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 
 // 3. Fix testDataproduitInfosList to include proper availability states
-fun testDataproduitInfosList(): List<A_ProduitInfosProtoJuin3> {
+fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
     val idParentCategorie1 = 1L
     return listOf(
-        A_ProduitInfosProtoJuin3(
+        ArticlesBasesStatsTable(
             id = 54,
             nom = "Tonner®",
             nomArab = "اونير",
@@ -25,7 +25,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosProtoJuin3> {
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = idParentCategorie1
         ),
-        A_ProduitInfosProtoJuin3(
+        ArticlesBasesStatsTable(
             id = 565,
             nom = "golden sachet®",
             nomArab = "غولدن ساشي",
@@ -44,7 +44,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosProtoJuin3> {
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = idParentCategorie1
         ),
-        A_ProduitInfosProtoJuin3(
+        ArticlesBasesStatsTable(
             id = 567,
             nom = "Mini Chips®",
             nomArab = "ميني شيبس",
@@ -64,7 +64,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosProtoJuin3> {
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = 3L
         ),
-        A_ProduitInfosProtoJuin3(
+        ArticlesBasesStatsTable(
             id = 572,
             nom = "Jellopy Matrag®",
             nomArab = "",
@@ -83,7 +83,7 @@ fun testDataproduitInfosList(): List<A_ProduitInfosProtoJuin3> {
             idParentCategorie = idParentCategorie1
         ),
 
-        A_ProduitInfosProtoJuin3(
+        ArticlesBasesStatsTable(
             id = 3832,
             nom = "#TIZANA KBIR",
             nomArab = "",

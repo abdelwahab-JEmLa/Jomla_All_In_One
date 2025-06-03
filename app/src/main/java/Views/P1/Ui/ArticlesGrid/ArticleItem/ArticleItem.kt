@@ -5,10 +5,10 @@ import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
 import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,11 +63,10 @@ fun ArticleItem(
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
 
-
         val layout = when {
-            article.diponibilityState != "" && colorCount == 1 -> ArticleLayout.DemiUno
-            article.diponibilityState != "" && colorCount == 2 -> ArticleLayout.DemiDual
-            article.diponibilityState != "" && colorCount > 2 -> ArticleLayout.DemiMulti
+            article.diponibilityState == "" && colorCount == 1 -> ArticleLayout.DemiUno
+            article.diponibilityState == "" && colorCount == 2 -> ArticleLayout.DemiDual
+            article.diponibilityState == "" && colorCount > 2 -> ArticleLayout.DemiMulti
             colorCount == 1 -> ArticleLayout.SmallUno
             colorCount == 2 -> ArticleLayout.SmallDual
             colorCount > 2 -> ArticleLayout.SmallMulti
@@ -111,7 +110,7 @@ fun ArticleImageWithOverlay(
                 .clickable { onClickToOpenWindow(article, colorIndex) }
                 .fillMaxSize()
         ) {
-            val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
+            val imageExists = remember(article.id, colorIndex, reloadTrigger) {
                 checkImageExists(viewModel, article, colorIndex, reloadTrigger)
             }
 

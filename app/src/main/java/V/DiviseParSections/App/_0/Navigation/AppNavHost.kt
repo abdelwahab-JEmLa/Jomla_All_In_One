@@ -6,7 +6,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -139,14 +139,14 @@ fun AppNavHost(
                                         showClientSelection = true
                                     } else {
                                         headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                                            relatedArticleBaseStats!!.idArticle.toLong(),
+                                            relatedArticleBaseStats!!.id.toLong(),
                                             currentClientId,
                                             pendingIndexColor
                                         )
                                         opnerSaleWindows = true
                                         headViewModel.sendOrderToClientDisplayer(
                                             WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
-                                            relatedArticleBaseStats!!.idArticle.toLong()
+                                            relatedArticleBaseStats!!.id.toLong()
                                         )
                                     }
                                 },

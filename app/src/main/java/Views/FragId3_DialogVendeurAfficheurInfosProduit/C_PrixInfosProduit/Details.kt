@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -40,8 +40,8 @@ fun Details(
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
 
-    val allTimeMaxPrice = viewModel.getMaxPrice(article.idArticle)
-    val priceHistory = viewModel.getHistoryProductForClient(article.idArticle, currentClientId)
+    val allTimeMaxPrice = viewModel.getMaxPrice(article.id)
+    val priceHistory = viewModel.getHistoryProductForClient(article.id, currentClientId)
 
     AnimatedVisibility(
         visible = isDetailsVisible,
@@ -69,7 +69,7 @@ fun Details(
                             .fillMaxWidth()
                             .padding(top = 2.dp)
                     ) {
-                        if (article.monPrixAchat > 0) {
+                        if (article.prixAchat > 0) {
                             PriceDetailsTable(
                                 article = article,
                                 allTimeMaxPrice = allTimeMaxPrice,
@@ -92,7 +92,7 @@ private fun PriceDetailsTable(
     allTimeMaxPrice: Double,
     priceHistory: List<PriceRecord>
 ) {
-    val clientSoldPackage = article.clienPrixVentUnite * article.nmbrUnite
+    val clientSoldPackage = article.clientPrixVentUnite * article.nombreUniteInt
     val latestHistoryPrice = priceHistory.lastOrNull()?.price ?: 0.0
 
     Column(
@@ -113,8 +113,8 @@ private fun PriceDetailsTable(
         )
 
         // Price rows with data - Only show non-zero values
-        val baseValue = if (article.monPrixVent > 0) {
-            article.monPrixVent
+        val baseValue = if (article.prixVent > 0) {
+            article.prixVent
         } else {
             0.0
         }
@@ -122,9 +122,9 @@ private fun PriceDetailsTable(
             RowData("ب.الحزمة", baseValue, latestHistoryPrice, allTimeMaxPrice),
             RowData(
                 "ب.الوحدة",
-                baseValue / article.nmbrUnite,
-                latestHistoryPrice / article.nmbrUnite,
-                allTimeMaxPrice / article.nmbrUnite
+                baseValue / article.nombreUniteInt,
+                latestHistoryPrice / article.nombreUniteInt,
+                allTimeMaxPrice / article.nombreUniteInt
             ),
             RowData(
                 "ر.العميل",
@@ -134,9 +134,9 @@ private fun PriceDetailsTable(
             ),
             RowData(
                 "ر.خ.الحزمة",
-                baseValue - article.monPrixAchat,
-                latestHistoryPrice - article.monPrixAchat,
-                allTimeMaxPrice - article.monPrixAchat
+                baseValue - article.prixAchat,
+                latestHistoryPrice - article.prixAchat,
+                allTimeMaxPrice - article.prixAchat
             ),
             RowData("س.ب.عم", clientSoldPackage, clientSoldPackage, clientSoldPackage)
         ).filter { rowData ->

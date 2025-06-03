@@ -5,11 +5,11 @@ import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -174,7 +174,7 @@ fun ArticleGrid(
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
             if (uiState.categories.any { it.nomCategorieInCategoriesTabele == "NewArrivale" })
-                gridColumns else 2
+                2 else 2
         ),
         state = gridState,
         contentPadding = PaddingValues(3.dp),
@@ -220,8 +220,8 @@ fun ArticleGrid(
                         span = { index ->
                             val article = lazyPagingItems[index]
 
-                            if (article?.diponibilityState != "") {
-                                StaggeredGridItemSpan.FullLine
+                            if (article?.diponibilityState == "") {
+                                StaggeredGridItemSpan.SingleLane
                             } else {
                                 StaggeredGridItemSpan.SingleLane
                             }
@@ -238,7 +238,7 @@ fun ArticleGrid(
                                 currentCategory = category.nomCategorieInCategoriesTabele
                             }
                             val produitDepuitNewDATABASE =  a_ProduitModelRepository
-                                .modelDatas.find { it.id.toInt() == article.idArticle }
+                                .modelDatas.find { it.id == article.id }
                             ArticleItem(
                                 article = ancienData,
                                 viewModel = viewModel,

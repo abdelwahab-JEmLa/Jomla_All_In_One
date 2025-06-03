@@ -1,7 +1,7 @@
 package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ColorOverlay
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
@@ -81,7 +81,7 @@ fun ImageDisplayer1(
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
 
     val produitDepuitNewDATABASE = a_ProduitModelRepository
-        .modelDatas.find { it.id.toInt() == article.idArticle }
+        .modelDatas.find { it.id == article.id }
 
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
@@ -118,10 +118,10 @@ fun ImageDisplayer1(
         isLoading = false
     }
 
-    val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
+    val imagePath by remember(viewModel.viewModelImagesPath, article.id, indexColor) {
         derivedStateOf {
             val baseFileName =
-                "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+                "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
             File(viewModel.viewModelImagesPath, baseFileName)
         }
     }
@@ -143,7 +143,7 @@ fun ImageDisplayer1(
         imageFile?.let { file ->
             GlideImage(
                 model = file,
-                contentDescription = "Article image ${article.idArticle}",
+                contentDescription = "Article image ${article.id}",
                 contentScale = imageScale,
                 modifier = Modifier
                     .fillMaxSize()
@@ -259,7 +259,7 @@ fun checkImageExists(
 ): Boolean {
     val baseImagePath = File(
         viewModel.viewModelImagesPath,
-        "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
+        "${article.id}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
     ).absolutePath
 
     return listOf("jpg", "webp").any { extension ->
@@ -335,7 +335,7 @@ fun RequestBuilder<Drawable>.applyImageOptions(
     .transition(DrawableTransitionOptions.withCrossFade())
     .diskCacheStrategy(DiskCacheStrategy.ALL)
     .priority(Priority.HIGH)
-    .signature(ObjectKey("${article.idArticle}_${indexColor}_${quality}"))
+    .signature(ObjectKey("${article.id}_${indexColor}_${quality}"))
     .listener(object : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
@@ -379,7 +379,7 @@ fun InfosArticleBottom(
         if (cAfficheurTelephone) {
 
             // Check if monPrixVent is greater than 0
-            if (article.monPrixVent > 0) {
+            if (article.prixVent > 0) {
                 // Row to display both prices side by side
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -392,12 +392,12 @@ fun InfosArticleBottom(
                                 NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
                                     currency = Currency.getInstance("DZD")
                                 }
-                            currencyFormat.format(article.monPrixVent)
+                            currencyFormat.format(article.prixVent)
                         },
                         style = MaterialTheme.typography.bodyMedium
                     )
 
-                    if (article.nmbrUnite > 1) {
+                    if (article.nombreUniteInt > 1) {
                         Text("->")
                         Text(
                             text = remember {
@@ -406,7 +406,7 @@ fun InfosArticleBottom(
                                         currency = Currency.getInstance("DZD")
                                     }
                                 val unitPrice =
-                                    article.monPrixVent / article.nmbrUnite
+                                    article.prixVent / article.nombreUniteInt
 
                                 currencyFormat.format(unitPrice)
                             },

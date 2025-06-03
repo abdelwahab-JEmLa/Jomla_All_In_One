@@ -1,7 +1,7 @@
 package Views.Package_4.SoldCartScreen.Components
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -65,10 +65,10 @@ fun ImageDisplayer4(
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
 
-    val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
+    val baseImagePath = remember(viewModelImagesPath, article.id, indexColor) {
         File(
             viewModelImagesPath,
-            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+            "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
         )
             .absolutePath
     }
@@ -88,8 +88,8 @@ fun ImageDisplayer4(
         imageExist?.let { File(it) } ?: R.drawable.logo
     }
 
-    val requestKey = remember(article.idArticle, indexColor, reloadKey) {
-        "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
+    val requestKey = remember(article.id, indexColor, reloadKey) {
+        "${article.id}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
     }
 
     Box(
@@ -108,7 +108,7 @@ fun ImageDisplayer4(
 
         Image(
             painter = painter,
-            contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
+            contentDescription = "Article image ${article.id} color ${indexColor + 1}",
             modifier = Modifier
                 .fillMaxWidth()
                 .then(if (imageExist == null) Modifier.alpha(0.7f) else Modifier),
@@ -149,7 +149,7 @@ fun CartItem(
                 )
 
                 Text(
-                    text = "${baseArticle.monPrixVent} دج",
+                    text = "${baseArticle.prixVent} دج",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

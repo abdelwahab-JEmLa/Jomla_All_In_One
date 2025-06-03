@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val A_ProduitInfosList: List<A_ProduitInfosProtoJuin3> = emptyList(),
+    val A_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgress: Float = 0f
 )
 

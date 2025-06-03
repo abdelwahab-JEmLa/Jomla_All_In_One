@@ -278,7 +278,7 @@ fun MainScreen(
                 if (showProductDisplay && shouldShowContent && !hideAppScreen) {
                     val productId = productDisplayController.clientWindowsDisplayedProductId
                     val displayProductDataBase = productId?.let { id ->
-                        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
+                        uiState.articlesBasesStatTables.find { it.id.toLong() == id }
                     }
 
                     if (displayProductDataBase != null) {

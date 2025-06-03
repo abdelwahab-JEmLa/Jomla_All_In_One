@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.Glide
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,7 @@ class CalculeCouleurHandler(private val viewModel: StartUpFragmentViewModel) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private fun getAllDefinedColorsForProduct(product: A_ProduitInfosProtoJuin3): List<ProductImageInfo> {
+    private fun getAllDefinedColorsForProduct(product: ArticlesBasesStatsTable): List<ProductImageInfo> {
         val colors = (1..4).mapNotNull { couleurId ->
             val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
 
@@ -46,7 +46,7 @@ class CalculeCouleurHandler(private val viewModel: StartUpFragmentViewModel) {
         return colors
     }
 
-    fun findProductById(productId: Long): A_ProduitInfosProtoJuin3? {
+    fun findProductById(productId: Long): ArticlesBasesStatsTable? {
         val product = viewModel.uiState.value.a_ProduitInfosList.find { it.id == productId }
         Log.d(TAG, "Finding product by ID $productId: ${if (product != null) "found" else "not found"}")
         return product
@@ -54,7 +54,7 @@ class CalculeCouleurHandler(private val viewModel: StartUpFragmentViewModel) {
 
     fun getImageFilesForDisplay(
         produitVID: Long? = null,
-        product: A_ProduitInfosProtoJuin3? = null,
+        product: ArticlesBasesStatsTable? = null,
         produitNom: String? = null
     ): List<ProductImageInfo> {
         return try {
@@ -124,7 +124,7 @@ class CalculeCouleurHandler(private val viewModel: StartUpFragmentViewModel) {
         }
     }
 
-    fun getColorNameById(product: A_ProduitInfosProtoJuin3?, colorId: Int): String {
+    fun getColorNameById(product: ArticlesBasesStatsTable?, colorId: Int): String {
         val colorName = when (colorId) {
             1 -> product?.couleur1
             2 -> product?.couleur2

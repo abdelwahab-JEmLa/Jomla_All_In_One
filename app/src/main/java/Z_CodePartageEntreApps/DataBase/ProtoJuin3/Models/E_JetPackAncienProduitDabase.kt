@@ -1,11 +1,8 @@
-package Z_CodePartageEntreApps.Model.Z.Archive
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity
-data class ArticlesBasesStatsTable(
-    @PrimaryKey var idArticle: Int = 0,
+data class E_JetPackAncienProduitDabase (
+    var idArticle: Int = 0,
     var nomArticleFinale: String = "",
     var classementCate: Double = 0.0,
     var nomArab: String = "",
@@ -57,7 +54,7 @@ data class ArticlesBasesStatsTable(
     var idForSearchArticles: Long = 0,
 
     var keyFireBase: String = "",
-    ) {
+) {
     // No-argument constructor for Firebase
     constructor() : this(0)
 }

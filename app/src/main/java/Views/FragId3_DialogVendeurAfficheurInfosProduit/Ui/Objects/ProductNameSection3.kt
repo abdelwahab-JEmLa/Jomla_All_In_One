@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,7 +51,7 @@ fun ProductNameSection3(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val idArticle = if (true) {
-                        article.idArticle
+                        article.id
                     } else {
                         ""
                     }
@@ -76,7 +76,7 @@ fun ProductNameSection3(
                     ) {
 
                         Text(
-                            text = "${article.nmbrUnite}",
+                            text = "${article.nombreUniteInt}",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp)
                         )

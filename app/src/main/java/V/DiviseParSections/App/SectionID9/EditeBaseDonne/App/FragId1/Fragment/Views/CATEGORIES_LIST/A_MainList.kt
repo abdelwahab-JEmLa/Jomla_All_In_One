@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun EditeCategoriesMainList(
     categoriesList: List<C_CategorieProduitInfos>,
-    produitList: List<A_ProduitInfosProtoJuin3>,
-    onProductCategoryChanged: (A_ProduitInfosProtoJuin3) -> Unit,
+    produitList: List<ArticlesBasesStatsTable>,
+    onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
     onCategoriesEdite: ((List<C_CategorieProduitInfos>) -> Unit)? = null,
 ) {

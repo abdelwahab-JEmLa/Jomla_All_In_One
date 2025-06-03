@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,7 +10,7 @@ fun ReorderMultiCategories(
     modifier: Modifier = Modifier,
     categoriesList: List<C_CategorieProduitInfos> = emptyList(),
     onCategoriesReordered: (List<C_CategorieProduitInfos>) -> Unit = {},
-    produitList: List<A_ProduitInfosProtoJuin3> = emptyList()
+    produitList: List<ArticlesBasesStatsTable> = emptyList()
 ) {
     MainList(categoriesList, produitList, modifier, onCategoriesReordered)
 }

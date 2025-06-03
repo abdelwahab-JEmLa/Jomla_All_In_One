@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 fun LazyListScope.categorieSection(
-    groupedProducts: Map<Long, List<A_ProduitInfosProtoJuin3>>,
+    groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
     availableCategories: List<Long>,
-    onProductCategoryChanged: (A_ProduitInfosProtoJuin3) -> Unit,
+    onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     categoryMap: Map<Long, C_CategorieProduitInfos> = emptyMap(),
     onHeldPourDeplacement: (Long, Boolean) -> Unit,
     onClickPourChangeDeplaceApre: (Long, Boolean) -> Unit,

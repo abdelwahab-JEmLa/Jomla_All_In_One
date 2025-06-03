@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -91,12 +91,12 @@ fun getActiveMigration(): Boolean {
 
 fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
     A_ProduitInfos(
-        id = ancien.idArticle.toLong(),
+        id = ancien.id.toLong(),
         nom = ancien.nomArticleFinale,
         keyFireBase = "",
         timestamps = System.currentTimeMillis(),
         needUpdate = true,
-        prixVent = ancien.monPrixVent,
+        prixVent = ancien.prixVent,
 
 
         classementCate = ancien.classementCate,
@@ -112,13 +112,13 @@ fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
         couleur4 = ancien.couleur4,
         idcolor4 = ancien.idcolor4,
         nomCategorie2 = ancien.nomCategorie2,
-        nmbrUnite = ancien.nmbrUnite,
+        nmbrUnite = ancien.nombreUniteInt,
         nmbrCaron = ancien.nmbrCaron,
         affichageUniteState = ancien.affichageUniteState,
         commmentSeVent = ancien.commmentSeVent,
         afficheBoitSiUniter = ancien.afficheBoitSiUniter,
-        monPrixAchat = ancien.monPrixAchat,
-        clienPrixVentUnite = ancien.clienPrixVentUnite,
+        monPrixAchat = ancien.prixAchat,
+        clienPrixVentUnite = ancien.clientPrixVentUnite,
         minQuan = ancien.minQuan,
         monBenfice = ancien.monBenfice,
         neaon2 = ancien.neaon2,

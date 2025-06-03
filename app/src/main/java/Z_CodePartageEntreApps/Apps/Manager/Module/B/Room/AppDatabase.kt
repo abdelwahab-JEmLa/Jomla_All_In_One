@@ -20,9 +20,8 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfosDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.A_ProduitInfosProtoJuin3Dao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.C_CategorieProduitInfosDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
@@ -31,7 +30,6 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_Clie
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.BaseDonne
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -96,7 +94,6 @@ import java.util.Date
         C_TypeTarificationInfos::class,
         D_TarificationInfos::class   ,
 
-        A_ProduitInfosProtoJuin3::class,
         C_CategorieProduitInfos::class,
 
     ],
@@ -142,7 +139,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun c_TypeTarificationInfosDao(): C_TypeTarificationInfosDao
     abstract fun dTarificationInfosDao(): D_TarificationInfosDao
 
-    abstract fun A_ProduitInfosProtoJuin3Dao(): A_ProduitInfosProtoJuin3Dao
     abstract fun c_CategorieProduitInfosDao(): C_CategorieProduitInfosDao
 
 

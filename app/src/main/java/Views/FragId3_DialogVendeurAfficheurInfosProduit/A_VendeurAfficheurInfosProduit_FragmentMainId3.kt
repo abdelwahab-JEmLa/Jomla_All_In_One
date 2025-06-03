@@ -6,7 +6,7 @@ import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_Ma
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -50,7 +50,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
-        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == sale.idArticle }
+        uiState.articlesBasesStatTables.find { it.id.toLong() == sale.idArticle }
     }
 
     var isDetailsVisible by remember { mutableStateOf(true) }
@@ -148,7 +148,7 @@ fun MainUi(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
                     parentIdClient=idClientActuelleDepui1_3?:0,
-                    provisoireMonPrix =articlesBaseStats?.monPrixVent ?:0.0,
+                    provisoireMonPrix =articlesBaseStats?.prixVent ?:0.0,
                     parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
                     repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(

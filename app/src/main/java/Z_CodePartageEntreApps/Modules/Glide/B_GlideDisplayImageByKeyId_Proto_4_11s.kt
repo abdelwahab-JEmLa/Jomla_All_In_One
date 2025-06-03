@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.Glide
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +34,7 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
     size: Dp? = null,
     onLoadComplete: () -> Unit = {},
     qualityImage: Int = 3,
-    product: A_ProduitInfosProtoJuin3? = null,
+    product: ArticlesBasesStatsTable? = null,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     refreshImage: Int,
     enableAutoScroll: Boolean = false

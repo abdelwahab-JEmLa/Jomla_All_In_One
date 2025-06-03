@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun MainItem(
-    productsByCategory: Map<Long, List<A_ProduitInfosProtoJuin3>>,
+    productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
     category: C_CategorieProduitInfos,
     selectedCategories: Set<Long>,
     categoriesListLocal: List<C_CategorieProduitInfos>,

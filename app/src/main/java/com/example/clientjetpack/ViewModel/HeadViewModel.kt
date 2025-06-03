@@ -2,12 +2,12 @@ package com.example.clientjetpack.ViewModel
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
@@ -112,7 +112,7 @@ open class HeadViewModel(
         }
     }
 
-    open fun getMaxPrice(productId: Int): Double {
+    open fun getMaxPrice(productId: Long): Double {
         return uiState.value.maxPriceMap
             .filter { it.key.first == productId.toLong() }
             .values
@@ -120,7 +120,7 @@ open class HeadViewModel(
             .maxOfOrNull { it.price } ?: 0.0
     }
 
-    open fun getHistoryProductForClient(productId: Int, clientId: Long): List<PriceRecord> {
+    open fun getHistoryProductForClient(productId: Long, clientId: Long): List<PriceRecord> {
         val key = Pair(productId.toLong(), clientId)
         return uiState.value.maxPriceMap[key] ?: emptyList()
     }
@@ -322,9 +322,7 @@ open class HeadViewModel(
         firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
 
 
-    fun updateLoadingProgress(progress: Float) {
-        _uiState.update { it.copy(loadingProgress = progress) }
-    }
+  
 
     private fun setLoading(isLoading: Boolean) {
         _uiState.update {
@@ -379,13 +377,13 @@ open class HeadViewModel(
 
             // Calculate new ID (max existing ID + 1)
             val maxIdArticle = currentState.articlesBasesStatTables
-                .maxOfOrNull { it.idArticle } ?: 0
+                .maxOfOrNull { it.id } ?: 0
             // Calculate new ID (max existing ID + 1)
             val maxidForSearchArticles = currentState.articlesBasesStatTables
                 .maxOfOrNull { it.idForSearchArticles } ?: 0
             // Create new article with incremented ID
             val newArticle = ArticlesBasesStatsTable(
-                idArticle = maxIdArticle + 1,
+                id = maxIdArticle + 1,
                 nomArticleFinale = nameArticleNIB,
                 idcolor1 = 1,
                 dateCreationCategorie = formattedDate,
@@ -398,7 +396,7 @@ open class HeadViewModel(
             // Update state with the new list
             _uiState.update { it.copy(articlesBasesStatTables = updatedArticles) }
             // Add to Firebase
-            refDBJetPackExport.child(newArticle.idArticle.toString()).setValue(newArticle)
+            refDBJetPackExport.child(newArticle.id.toString()).setValue(newArticle)
 
             // Add to Room database
             database.articlesBasesStatsModelDao().insert(newArticle)
@@ -440,7 +438,7 @@ open class HeadViewModel(
 
                 // Find the related article
                 val article = currentState.articlesBasesStatTables
-                    .find { it.idArticle.toLong() == relatedArticleDataBaseId }
+                    .find { it.id.toLong() == relatedArticleDataBaseId }
                     ?: throw IllegalStateException("Article not found with ID: $relatedArticleDataBaseId")
 
                 // Create base sale object
@@ -521,7 +519,7 @@ open class HeadViewModel(
         viewModelScope.launch {
             _currentSaleInWindows.value?.let { sale ->
                 val article = _uiState.value.articlesBasesStatTables
-                    .find { it.idArticle.toLong() == sale.idArticle }
+                    .find { it.id.toLong() == sale.idArticle }
 
                 // Find which color slot to upsert_1_3_TransactionCommercial by searching through colorIdPicked fields
                 val updatedSale = when (colorId) {
@@ -888,7 +886,7 @@ open class HeadViewModel(
                 _uiState.value.articlesBasesStatTables.forEach { article ->
                     try {
                         refDBJetPackExport
-                            .child(article.idArticle.toString())
+                            .child(article.id.toString())
                             .setValue(article)
                             .await()
 
@@ -896,7 +894,7 @@ open class HeadViewModel(
                         updateLoadingProgress(currentArticle.toFloat() / totalArticles)
                     } catch (e: Exception) {
                         _uiState.update {
-                            it.copy(error = "Failed to export article ${article.idArticle}: ${e.message}")
+                            it.copy(error = "Failed to export article ${article.id}: ${e.message}")
                         }
                     }
                 }
@@ -989,32 +987,6 @@ open class HeadViewModel(
     }
 
 
-    private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
-        try {
-            val categories = database.I_CategorieProduitsDao().getAll()
-
-            // If no existing categories, create new ones from repository
-            val newCategories = categories.map { category ->
-                CategoriesTabelle(
-                    idCategorieInCategoriesTabele = category.id,
-                    nomCategorieInCategoriesTabele = category.nom,
-                    idClassementCategorieInCategoriesTabele = category.indexDonsParentList.toInt(),
-                    displayedHeader = category.afficheSonHeader,
-                )
-            }.toMutableList()
-
-            // Insert new categories into database
-            database.categoriesModelDao().insertAll(newCategories)
-
-
-            return newCategories
-
-
-        } catch (e: Exception) {
-            _uiState.update { it.copy(error = e.message) }
-            return mutableListOf()
-        }
-    }
 
     fun importFromFirebase() {
         viewModelScope.launch {
@@ -1044,11 +1016,11 @@ open class HeadViewModel(
                 diviseurDeDisplayProductForEachClientInit(85f)
 
 
-                val articlesSnapshot = refDBJetPackExport.get().await()
+           /*     val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
                     snapshot.getValue(ArticlesBasesStatsTable::class.java)
                 }
-                database.articlesBasesStatsModelDao().insertAll(articles)
+          //      database.articlesBasesStatsModelDao().insertAll(articles)        */
                 updateLoadingProgress(100f)
 
                 loadDataCollectOfUiStateFromRoom()
@@ -1070,22 +1042,57 @@ open class HeadViewModel(
         observeConnectionState()
         setupMaxPriceObserver()
     }
+    fun updateLoadingProgress(progress: Float) {
+        _uiState.update { it.copy(loadingProgress = progress) }
+    }
 
     private fun collectDatasAuUiStateMasterRepositorysProtoJuin3() {
         viewModelScope.launch {
             a_MasterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
+                    // Update the UI state with the progress from the master model
                     _uiState.value = _uiState.value.copy(
-                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
+                        articlesBasesStatTables = model.repoStateA_ProduitInfos?.modelListFlow
                             ?: emptyList(),
-                        c_CategorieProduitInfosList = model.repoStateC_CategorieProduitInfos?.modelListFlow
-                            ?: emptyList(),
-                        mainLoadingProgressPJuin3 = model.progress
+                        loadingProgress = model.progress // Update progress from master model
                     )
+
+                    // Optional: Set loading to false when progress reaches 100%
+                    if (model.progress >= 1.0f) {
+                        setLoading(false)
+                    }
                 }
             }
         }
     }
+
+    private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
+        try {
+            val categories = database.c_CategorieProduitInfosDao().getAll()
+
+            // If no existing categories, create new ones from repository
+            val newCategories = categories.map { category ->
+                CategoriesTabelle(
+                    idCategorieInCategoriesTabele = category.id,
+                    nomCategorieInCategoriesTabele = category.nom,
+                    idClassementCategorieInCategoriesTabele = category.position,
+                    displayedHeader = category.displayedHeader,
+                )
+            }.toMutableList()
+
+            // Insert new categories into database
+            database.categoriesModelDao().insertAll(newCategories)
+
+
+            return newCategories
+
+
+        } catch (e: Exception) {
+            _uiState.update { it.copy(error = e.message) }
+            return mutableListOf()
+        }
+    }
+
 
     private suspend fun loadDataCollectOfUiStateFromRoom() {
         try {
@@ -1115,7 +1122,7 @@ open class HeadViewModel(
 
             _uiState.update {
                 it.copy(
-                    articlesBasesStatTables = articlesProtoAvanJuin3,
+               //     articlesBasesStatTables = articlesProtoAvanJuin3,
                     categories = existingCategoriesProtoAvanJuin3,
                     colorsArticlesTabelleModel = colors,
                     soldArticlesModel = soldArticles,

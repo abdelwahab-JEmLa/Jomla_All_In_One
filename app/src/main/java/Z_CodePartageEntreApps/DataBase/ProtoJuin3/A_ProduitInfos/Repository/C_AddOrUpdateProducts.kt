@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun A_ProduitInfosRepository.addOrUpdateData(data: A_ProduitInfosProtoJuin3) {
+fun A_ProduitInfosRepository.addOrUpdateData(data: ArticlesBasesStatsTable) {
     CoroutineScope(Dispatchers.IO).launch {
         val preparedData = data.withProperKeyFireBaseAndTimeTamp()
 
@@ -19,7 +19,7 @@ fun A_ProduitInfosRepository.addOrUpdateData(data: A_ProduitInfosProtoJuin3) {
     }
 }
 
-fun A_ProduitInfosRepository.addOrUpdateDatasList(datas: List<A_ProduitInfosProtoJuin3>) {
+fun A_ProduitInfosRepository.addOrUpdateDatasList(datas: List<ArticlesBasesStatsTable>) {
     CoroutineScope(Dispatchers.IO).launch {
         val preparedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
 

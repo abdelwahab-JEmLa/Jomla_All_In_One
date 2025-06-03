@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Test
 
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 
 fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
     // Fixed: returning a list of 2 items instead of a single item
     return listOf(
         ArticlesBasesStatsTable(
-            idArticle = 1, // Using product ID from JSON
+            id = 1, // Using product ID from JSON
             nomArticleFinale = "chahrazed 80g", // Using product name from JSON
             classementCate = 1.0,
             nomArab = "",
@@ -14,9 +14,9 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
             couleur1 = "#FFFFFF",
             idcolor1 = 0L,
             nomCategorie = "Produits alimentaires",
-            monPrixAchat = 8.5, // Example purchase price
-            monPrixVent = 10.0, // Using price from JSON tarification
-            clienPrixVentUnite = 10.0,
+            prixAchat = 8.5, // Example purchase price
+            prixVent = 10.0, // Using price from JSON tarification
+            clientPrixVentUnite = 10.0,
             monBenfice = 1.5, // Example profit
             minQuan = 10,
             catalogeParentID = 100L,
@@ -28,7 +28,7 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
             // Using default values for other fields
         ),
         ArticlesBasesStatsTable(
-            idArticle = 2,
+            id = 2,
             nomArticleFinale = "milk 1L",
             classementCate = 2.0,
             nomArab = "",
@@ -36,9 +36,9 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
             couleur1 = "#F5F5F5",
             idcolor1 = 1L,
             nomCategorie = "Produits laitiers",
-            monPrixAchat = 12.0,
-            monPrixVent = 14.5,
-            clienPrixVentUnite = 14.5,
+            prixAchat = 12.0,
+            prixVent = 14.5,
+            clientPrixVentUnite = 14.5,
             monBenfice = 2.5,
             minQuan = 5,
             catalogeParentID = 101L,

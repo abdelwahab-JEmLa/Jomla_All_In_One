@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.Glide
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.A_ProduitInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -21,7 +21,7 @@ fun MultipleImagesDisplay(
     onLoadComplete: () -> Unit,
     actualiseSonImage: Int = 0,
     imageRefreshKey: String? = null,
-    product: A_ProduitInfosProtoJuin3?,
+    product: ArticlesBasesStatsTable?,
     enableAutoScroll: Boolean = true // FIXED: Add parameter to control auto-scroll
 ) {
     val pagerState = rememberPagerState(pageCount = { imageFiles.size })
