@@ -1,15 +1,15 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 
-fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<C_CategorieProduitInfos>) -> Unit) {
+fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<CategoriesTabelle>) -> Unit) {
     updateProgress(0.1f)
     ref.get()
         .addOnSuccessListener { snapshot ->
-            val dataList = mutableListOf<C_CategorieProduitInfos>()
+            val dataList = mutableListOf<CategoriesTabelle>()
             snapshot.children.forEach { child ->
-                child.getValue(C_CategorieProduitInfos::class.java)?.let { item ->
+                child.getValue(CategoriesTabelle::class.java)?.let { item ->
                     item.keyFireBase = child.key ?: ""
                     dataList.add(item)
                 }

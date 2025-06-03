@@ -3,11 +3,11 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repos
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.isRoomEmpty
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<C_CategorieProduitInfos> {
+suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<CategoriesTabelle> {
     return if (isRoomEmpty()) {
         val firebaseData = suspendCancellableCoroutine { continuation ->
             getFirebaseData { dataFB ->

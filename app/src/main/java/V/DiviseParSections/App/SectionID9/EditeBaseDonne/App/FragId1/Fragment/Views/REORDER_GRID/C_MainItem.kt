@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,12 +34,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun MainItem(
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
-    category: C_CategorieProduitInfos,
+    category: CategoriesTabelle,
     selectedCategories: Set<Long>,
-    categoriesListLocal: List<C_CategorieProduitInfos>,
-    onCategoriesReordered: (List<C_CategorieProduitInfos>) -> Unit,
+    categoriesListLocal: List<CategoriesTabelle>,
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit,
     onSelectionChanged: (Set<Long>) -> Unit,
-    onCategoriesUpdated: (List<C_CategorieProduitInfos>) -> Unit
+    onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit
 ) {
     val categoryProducts = productsByCategory[category.id] ?: emptyList()
     val displayProducts = categoryProducts.take(3)

@@ -17,7 +17,6 @@ fun createTestProduct(): ArticlesBasesStatsTable {
         nmbrCaron = 1,
         clientPrixVentUnite = (5..20).random().toDouble(),
         commmentSeVent = "U",
-        diponibilityState = "",
         articleHaveUniteImages = false,
         dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
     )

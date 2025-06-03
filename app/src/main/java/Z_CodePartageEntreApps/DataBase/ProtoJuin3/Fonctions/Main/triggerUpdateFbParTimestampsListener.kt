@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -133,12 +133,12 @@ private fun setupCategoryFirebaseListener(
     appDatabase: AppDatabase,
     comptApp: Y_Model_ComptApp
 ) {
-    triggerUpdateFbParTimestampsListener<C_CategorieProduitInfos>(
+    triggerUpdateFbParTimestampsListener<CategoriesTabelle>(
         compt = comptApp,
         scope = scope,
-        ref = C_CategorieProduitInfos.caRef,
-        upsertFunction = { category: C_CategorieProduitInfos ->
-            appDatabase.c_CategorieProduitInfosDao().upsertData(category)
+        ref = CategoriesTabelle.caRef,
+        upsertFunction = { category: CategoriesTabelle ->
+            appDatabase.categoriesModelDao().upsertData(category)
         },
         callback = {
             Log.d("Repository", "Category Firebase listener callback executed")

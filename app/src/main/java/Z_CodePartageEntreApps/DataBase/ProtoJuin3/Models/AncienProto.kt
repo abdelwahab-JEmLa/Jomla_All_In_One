@@ -36,13 +36,13 @@ data class AncienProto(
             companion object {
                 val caRef = ref.child("ProtoB2")
 
-                private suspend fun getFireBaseProto2Datas(): List<C_CategorieProduitInfos> {
+                private suspend fun getFireBaseProto2Datas(): List<CategoriesTabelle> {
                     return try {
                         Log.d("Test", "ProtoB2Ref=$caRef")
 
                         val snapshot = caRef.get().await()
 
-                        val result = mutableListOf<C_CategorieProduitInfos>()
+                        val result = mutableListOf<CategoriesTabelle>()
 
                         snapshot.children.forEach { dataSnapshot ->
                             try {
@@ -55,8 +55,8 @@ data class AncienProto(
                                 val protoB2Data = dataSnapshot.getValue(ProtoB2::class.java)
 
                                 if (protoB2Data != null) {
-                                    // Convert ProtoB2 to C_CategorieProduitInfos using the new schema
-                                    val categorieProduitInfo = C_CategorieProduitInfos(
+                                    // Convert ProtoB2 to CategoriesTabelle using the new schema
+                                    val categorieProduitInfo = CategoriesTabelle(
                                         id = protoB2Data.id,
                                         nom = protoB2Data.nom,
                                         position = protoB2Data.indexDonsParentList.toInt(), // Map indexDonsParentList to position
@@ -82,8 +82,8 @@ data class AncienProto(
                     }
                 }
 
-                suspend fun updateCategoriePositionDepuitProto2(categorysInit: List<C_CategorieProduitInfos>)
-                        : List<C_CategorieProduitInfos> {
+                suspend fun updateCategoriePositionDepuitProto2(categorysInit: List<CategoriesTabelle>)
+                        : List<CategoriesTabelle> {
                     val firebaseProto2Data = getFireBaseProto2Datas()
 
                     Log.d("firebaseProto2Data", "firebaseProto2Data=${firebaseProto2Data}")

@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
-    val c_CategorieProduitInfosList: List<C_CategorieProduitInfos> = emptyList(),
+    val c_CategorieProduitInfosList: List<CategoriesTabelle> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
 )
 
@@ -44,7 +44,7 @@ class StartUpFragmentViewModel(
         }
     }
 
-    fun addOrUpdateCategs(categories: List<C_CategorieProduitInfos>) {
+    fun addOrUpdateCategs(categories: List<CategoriesTabelle>) {
         masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(categories)
     }
 

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun MainList(
-    categoriesList: List<C_CategorieProduitInfos>,
+    categoriesList: List<CategoriesTabelle>,
     produitList: List<ArticlesBasesStatsTable>,
     modifier: Modifier,
-    onCategoriesReordered: (List<C_CategorieProduitInfos>) -> Unit
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
 ) {
     var categoriesListLocal by remember(categoriesList) {
         mutableStateOf(categoriesList.sortedBy { it.position })

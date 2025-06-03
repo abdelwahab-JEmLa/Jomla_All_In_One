@@ -1,5 +1,5 @@
 package Views.P1.Ui.Objects
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,13 +31,13 @@ fun CategoryHeader(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = category.idClassementCategorieInCategoriesTabele.toString(),
+                text = category.position.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(16.dp)
             )
             Text(
-                text = category.nomCategorieInCategoriesTabele,
+                text = category.nom,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(16.dp)

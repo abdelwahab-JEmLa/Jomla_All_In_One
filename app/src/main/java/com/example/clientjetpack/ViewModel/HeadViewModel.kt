@@ -3,12 +3,12 @@ package com.example.clientjetpack.ViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
@@ -794,18 +794,18 @@ open class HeadViewModel(
 
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {
-            it.nomCategorieInCategoriesTabele == "NewArrivale"
+            it.nom == "NewArrivale"
         }
 
         if (!hasNewArrivale) {
             val maxId = existingCategories.maxOfOrNull {
-                it.idCategorieInCategoriesTabele
+                it.id
             } ?: 0
 
             val newArrivaleCategory = CategoriesTabelle(
-                idCategorieInCategoriesTabele = maxId + 1,
-                nomCategorieInCategoriesTabele = "NewArrivale",
-                idClassementCategorieInCategoriesTabele = 1,
+                id = maxId + 1,
+                nom = "NewArrivale",
+                position = 1,
                 displayedHeader = true
             )
 
@@ -999,15 +999,7 @@ open class HeadViewModel(
 
                 updateLoadingProgress(20f)
 
-                val categoriesSnapshot = refCategorieModel.get().await()
-                updateLoadingProgress(40f)
 
-                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(CategoriesTabelle::class.java)
-                }
-                database.categoriesModelDao().insertAll(categories)
-
-                createNewArrivaleCategoryIfNeeded(categories)
                 updateLoadingProgress(70f)
 
                 colorInitialize(80f)
@@ -1054,6 +1046,8 @@ open class HeadViewModel(
                     _uiState.value = _uiState.value.copy(
                         articlesBasesStatTables = model.repoStateA_ProduitInfos?.modelListFlow
                             ?: emptyList(),
+                        categories = model.repoStateC_CategorieProduitInfos?.modelListFlow
+                            ?: emptyList(),
                         loadingProgress = model.progress // Update progress from master model
                     )
 
@@ -1065,34 +1059,6 @@ open class HeadViewModel(
             }
         }
     }
-
-    private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
-        try {
-            val categories = database.c_CategorieProduitInfosDao().getAll()
-
-            // If no existing categories, create new ones from repository
-            val newCategories = categories.map { category ->
-                CategoriesTabelle(
-                    idCategorieInCategoriesTabele = category.id,
-                    nomCategorieInCategoriesTabele = category.nom,
-                    idClassementCategorieInCategoriesTabele = category.position,
-                    displayedHeader = category.displayedHeader,
-                )
-            }.toMutableList()
-
-            // Insert new categories into database
-            database.categoriesModelDao().insertAll(newCategories)
-
-
-            return newCategories
-
-
-        } catch (e: Exception) {
-            _uiState.update { it.copy(error = e.message) }
-            return mutableListOf()
-        }
-    }
-
 
     private suspend fun loadDataCollectOfUiStateFromRoom() {
         try {
@@ -1108,7 +1074,6 @@ open class HeadViewModel(
             }
             setupAppSettingsListener()
 
-            val articlesProtoAvanJuin3 = database.articlesBasesStatsModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
             val soldArticles = database.soldArticlesModelDao().getAll()
             val devicesTypeManager = database.devicesTypeManagerDao().getAll()
@@ -1116,14 +1081,10 @@ open class HeadViewModel(
             val diviseurDeDisplayProductForEachClient =
                 database.diviseurDeDisplayProductForEachClientDao().getAll()
 
-            val existingCategoriesProtoAvanJuin3 = categorieChangeposisio()
 
-            createNewArrivaleCategoryIfNeeded(existingCategoriesProtoAvanJuin3)
 
             _uiState.update {
                 it.copy(
-               //     articlesBasesStatTables = articlesProtoAvanJuin3,
-                    categories = existingCategoriesProtoAvanJuin3,
                     colorsArticlesTabelleModel = colors,
                     soldArticlesModel = soldArticles,
                     devicesTypeManager = devicesTypeManager,

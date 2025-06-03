@@ -20,9 +20,9 @@ import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.B_ClientInfosDao
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Z.Archive.Fragment.Models.C_TypeTarificationInfosDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.C_CategorieProduitInfosDao
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.CategoriesModelDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -31,7 +31,6 @@ import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.BaseDonne
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
@@ -61,8 +60,7 @@ import java.util.Date
 
 @Database(
     entities = [
-        ArticlesBasesStatsTable::class,
-        CategoriesTabelle::class,
+
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         AppSettingsSaverModel::class,
@@ -94,8 +92,8 @@ import java.util.Date
         C_TypeTarificationInfos::class,
         D_TarificationInfos::class   ,
 
-        C_CategorieProduitInfos::class,
-
+        ArticlesBasesStatsTable::class,
+        CategoriesTabelle::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -105,8 +103,7 @@ import java.util.Date
 abstract class AppDatabase : RoomDatabase() {
 
     // All DAOs
-    abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
-    abstract fun categoriesModelDao(): CategoriesModelDao
+
     abstract fun colorsArticlesDao(): ColorsArticlesDao
     abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
@@ -139,8 +136,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun c_TypeTarificationInfosDao(): C_TypeTarificationInfosDao
     abstract fun dTarificationInfosDao(): D_TarificationInfosDao
 
-    abstract fun c_CategorieProduitInfosDao(): C_CategorieProduitInfosDao
-
+    //Proto j3
+    abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
+    abstract fun categoriesModelDao(): CategoriesModelDao
 
     object DatabaseModule {
 

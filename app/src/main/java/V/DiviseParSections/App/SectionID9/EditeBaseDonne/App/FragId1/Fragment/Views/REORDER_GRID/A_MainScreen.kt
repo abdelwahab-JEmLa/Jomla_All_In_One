@@ -1,26 +1,26 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
 fun ReorderMultiCategories(
     modifier: Modifier = Modifier,
-    categoriesList: List<C_CategorieProduitInfos> = emptyList(),
-    onCategoriesReordered: (List<C_CategorieProduitInfos>) -> Unit = {},
+    categoriesList: List<CategoriesTabelle> = emptyList(),
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit = {},
     produitList: List<ArticlesBasesStatsTable> = emptyList()
 ) {
     MainList(categoriesList, produitList, modifier, onCategoriesReordered)
 }
 
 fun moveSelectedCategories(
-    categories: List<C_CategorieProduitInfos>,
+    categories: List<CategoriesTabelle>,
     selectedIds: Set<Long>,
     targetId: Long,
     moveBefore: Boolean
-): List<C_CategorieProduitInfos> {
+): List<CategoriesTabelle> {
     if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
 
     val selected = categories.filter { selectedIds.contains(it.id) }

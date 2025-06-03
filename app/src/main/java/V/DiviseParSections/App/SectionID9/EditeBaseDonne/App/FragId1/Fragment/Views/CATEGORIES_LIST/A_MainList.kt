@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,11 +21,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun EditeCategoriesMainList(
-    categoriesList: List<C_CategorieProduitInfos>,
+    categoriesList: List<CategoriesTabelle>,
     produitList: List<ArticlesBasesStatsTable>,
     onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
-    onCategoriesEdite: ((List<C_CategorieProduitInfos>) -> Unit)? = null,
+    onCategoriesEdite: ((List<CategoriesTabelle>) -> Unit)? = null,
 ) {
     var categoriesListLocal by remember(categoriesList) { mutableStateOf(categoriesList) }
 
@@ -55,7 +55,7 @@ fun EditeCategoriesMainList(
 
         categoriesListLocal = categoriesListLocal.map { cat ->
             cat.copy(position = cat.position + 1)
-        } + C_CategorieProduitInfos(newId, name, 1)
+        } + CategoriesTabelle(newId, name, 1)
 
         categoriesListLocal = categoriesListLocal.sortedBy { it.position }
 

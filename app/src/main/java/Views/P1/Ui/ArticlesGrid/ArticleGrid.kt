@@ -6,9 +6,9 @@ import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -127,12 +127,12 @@ fun ArticleGrid(
             Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = when {
-                        category.nomCategorieInCategoriesTabele == "NewArrivale" ->
+                        category.nom == "NewArrivale" ->
                             uiState.articlesBasesStatTables.filter { it.itsNewArrivale }
 
                         else ->
                             uiState.articlesBasesStatTables.filter {
-                                it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
+                                it.nomCategorie == category.nom && !it.itsNewArrivale
                             }
                     },
                     filterText = filterText,
@@ -173,7 +173,7 @@ fun ArticleGrid(
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
-            if (uiState.categories.any { it.nomCategorieInCategoriesTabele == "NewArrivale" })
+            if (uiState.categories.any { it.nom == "NewArrivale" })
                 2 else 2
         ),
         state = gridState,
@@ -200,8 +200,8 @@ fun ArticleGrid(
         // Display categories in order
         uiState.categories
             .sortedBy { when {
-                it.nomCategorieInCategoriesTabele == "NewArrivale" -> 0
-                else -> it.idClassementCategorieInCategoriesTabele + 1
+                it.nom == "NewArrivale" -> 0
+                else -> it.position + 1
             } }
             .forEach { category ->
                 val lazyPagingItems = categoryPagingItems[category]
@@ -220,7 +220,7 @@ fun ArticleGrid(
                         span = { index ->
                             val article = lazyPagingItems[index]
 
-                            if (article?.diponibilityState == "") {
+                            if (true) {
                                 StaggeredGridItemSpan.SingleLane
                             } else {
                                 StaggeredGridItemSpan.SingleLane
@@ -235,7 +235,7 @@ fun ArticleGrid(
                             }
 
                             if (isFirstVisible) {
-                                currentCategory = category.nomCategorieInCategoriesTabele
+                                currentCategory = category.nom
                             }
                             val produitDepuitNewDATABASE =  a_ProduitModelRepository
                                 .modelDatas.find { it.id == article.id }

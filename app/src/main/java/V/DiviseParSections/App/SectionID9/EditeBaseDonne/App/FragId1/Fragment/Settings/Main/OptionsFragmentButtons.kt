@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.*
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.AncienProto.C_CategorieProduitInfosAncienProto.ProtoB2.Companion.updateCategoriePositionDepuitProto2
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -23,8 +23,8 @@ enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
 @Composable
 fun OptionsFragmentButtons(
     viewModelScope: CoroutineScope,
-    function: (List<C_CategorieProduitInfos>) -> Unit,
-    initCategories: List<C_CategorieProduitInfos>,
+    function: (List<CategoriesTabelle>) -> Unit,
+    initCategories: List<CategoriesTabelle>,
     onToggleMasque: (Set<AfficheElements>) -> Unit = {}
 ) {
     var showButtons by remember { mutableStateOf(false) }

@@ -75,8 +75,6 @@ data class ArticlesBasesStatsTable(
     var monPrixVentUniter: Double = 0.0,
     var benificeClient: Double = 0.0,
     var monBeneficeUniter: Double = 0.0,
-    //Stats
-    var diponibilityState: String = "",  //StatsInIt: "Non Dispo"
 
     var cLeDataOuvertDuParentList: Boolean = false,
 
@@ -99,7 +97,6 @@ data class ArticlesBasesStatsTable(
         val newState = disponibilityEtates.toggleEntreEtates()
         return this.copy(
             disponibilityEtates = newState,
-            diponibilityState = newState.nomArabe,
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
         )
     }

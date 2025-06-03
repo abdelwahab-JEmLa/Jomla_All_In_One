@@ -1,20 +1,5 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-
-@Entity
-data class CategoriesTabelle(
-    @PrimaryKey(autoGenerate = true)
-    val idCategorieInCategoriesTabele: Long = 0,
-    var nomCategorieInCategoriesTabele: String = "",
-    var idClassementCategorieInCategoriesTabele: Int = 0,
-    var displayedHeader: Boolean = false,
-
-    ) {
-    constructor() : this(0, "", 0)
-}
 
 data class ArticlesRecived(
     val aa_vid: Long = 0,

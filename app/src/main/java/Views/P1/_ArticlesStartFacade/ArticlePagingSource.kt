@@ -1,7 +1,7 @@
 package Views.P1._ArticlesStartFacade
 
+import Views.P1._ArticlesStartFacade.Filter.filterArticles
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import androidx.paging.PagingSource
@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 
 class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTable>,
-    private val filterText: String,
-    private val currentClient: B_ClientsDataBase?,
+    val articles: List<ArticlesBasesStatsTable>,
+    val filterText: String,
+    val currentClient: B_ClientsDataBase?,
     private val uiState: UiState,
-    private val a_ProduitRepository: A_ProduitRepository = GlobalContext.get().get()
+    val a_ProduitRepository: A_ProduitRepository = GlobalContext.get().get()
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
     private val pageSize = 10
     private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
@@ -24,39 +24,6 @@ class ArticlePagingSource(
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.let { anchorPage ->
                 anchorPage.prevKey?.plus(1) ?: anchorPage.nextKey?.minus(1)
-            }
-        }
-    }
-
-    private fun filterArticles(): List<ArticlesBasesStatsTable> {
-        return if (filterText.isEmpty()) {
-            articles.filter { article ->
-                // Find the corresponding product model
-                val productModel = a_ProduitRepository.modelDatas
-                    .find { it.id == article.id }
-
-                val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
-                        B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU
-
-                // Check if the product is completely unavailable for all clientAchteurs
-                val isProductUnavailableForAll = productModel?.enumVarNonDispoPourClients ==
-                        A_Produit.NON_DISPO_POUR_CLIENTS.TOUT
-
-                // Check if the product is unavailable specifically for temporary clientAchteurs
-                val isProductUnavailableForTemporary = productModel?.enumVarNonDispoPourClients ==
-                        A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU
-
-                // Common filtering conditions
-                !isProductUnavailableForAll &&
-                        !(isTemporaryClient && isProductUnavailableForTemporary) &&
-                        article.idForSearchArticles <= 0 &&
-                        !article.nomArticleFinale.contains("New")
-            }
-        } else {
-            // Filtering for search text
-            articles.filter { article ->
-                article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
-                        article.idForSearchArticles > 0
             }
         }
     }

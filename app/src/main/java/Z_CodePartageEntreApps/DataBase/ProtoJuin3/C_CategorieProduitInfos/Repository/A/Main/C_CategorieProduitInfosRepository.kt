@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repos
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init.initializeDataReturn
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -23,12 +23,12 @@ class C_CategorieProduitInfosRepository(
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
     data class RepoState(
-        val modelListFlow: List<C_CategorieProduitInfos>,
+        val modelListFlow: List<CategoriesTabelle>,
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.c_CategorieProduitInfosDao()
-    val ref = C_CategorieProduitInfos.caRef
+    val dao = appDatabase.categoriesModelDao()
+    val ref = CategoriesTabelle.caRef
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -37,7 +37,7 @@ class C_CategorieProduitInfosRepository(
         }
     }
 
-    suspend fun updateRepoState(data: List<C_CategorieProduitInfos>) {
+    suspend fun updateRepoState(data: List<CategoriesTabelle>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,

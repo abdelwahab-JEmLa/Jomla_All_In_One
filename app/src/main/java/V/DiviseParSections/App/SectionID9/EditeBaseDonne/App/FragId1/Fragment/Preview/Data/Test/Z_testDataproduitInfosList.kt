@@ -20,7 +20,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             clientPrixVentUnite = 10.0,
             commmentSeVent = "U",
             disponibilityEtates = DisponibilityEtates.DISPO,
-            diponibilityState = DisponibilityEtates.DISPO.nomArabe,
             articleHaveUniteImages = false,
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = idParentCategorie1
@@ -39,7 +38,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             clientPrixVentUnite = 5.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.NON_DISPO,
-            diponibilityState = DisponibilityEtates.NON_DISPO.nomArabe,
             articleHaveUniteImages = false,
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = idParentCategorie1
@@ -58,7 +56,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             clientPrixVentUnite = 5.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.DISPO,
-            diponibilityState = DisponibilityEtates.DISPO.nomArabe,
             articleHaveUniteImages = false,
             imageDimention = "Demi",
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
@@ -77,7 +74,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             clientPrixVentUnite = 0.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.NON_DISPO,
-            diponibilityState = DisponibilityEtates.NON_DISPO.nomArabe,
             articleHaveUniteImages = true,
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
             idParentCategorie = idParentCategorie1
@@ -94,7 +90,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             nmbrCaron = 0,
             clientPrixVentUnite = 0.0,
             commmentSeVent = "",
-            diponibilityState = "",
             articleHaveUniteImages = false,
             imageDimention = "",
             itsNewArrivale = false,

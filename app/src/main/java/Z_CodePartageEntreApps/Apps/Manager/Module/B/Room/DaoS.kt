@@ -2,7 +2,6 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
@@ -143,28 +142,6 @@ interface ColorsArticlesDao {
 
     @Update
     suspend fun updateAll(colorsArticleTabelles: List<ColorsArticlesTabelle>)
-}
-@Dao
-interface CategoriesModelDao {
-    @Query("SELECT * FROM CategoriesTabelle ORDER BY idClassementCategorieInCategoriesTabele")
-    suspend fun getAll(): MutableList<CategoriesTabelle>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: CategoriesTabelle)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<CategoriesTabelle>)
-
-    @Query("DELETE FROM CategoriesTabelle")
-    suspend fun deleteAll()
-
-    @Update
-    suspend fun updateAll(categories: List<CategoriesTabelle>)
-
-    @Transaction
-    suspend fun transaction(block: suspend CategoriesModelDao.() -> Unit) {
-        block()
-    }
 }
 
 @Dao

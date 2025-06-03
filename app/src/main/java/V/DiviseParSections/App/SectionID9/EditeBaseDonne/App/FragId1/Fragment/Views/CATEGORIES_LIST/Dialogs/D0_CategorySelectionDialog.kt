@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 
 import A.AtelierMobile.Test.ID1.Test.EditeBaseDonneMainScreen.Fragment.Views.CATEGORIES_LIST.Dialogs.AddCategoryDialog
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +54,7 @@ fun CategorySelectionDialog(
     onDismiss: () -> Unit,
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
-    categoriesMap: Map<Long, C_CategorieProduitInfos> = emptyMap(),
+    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList()
 ) {
     var showAddDialog by remember { mutableStateOf(false) }

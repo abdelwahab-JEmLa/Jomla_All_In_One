@@ -20,7 +20,6 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
             monBenfice = 1.5, // Example profit
             minQuan = 10,
             catalogeParentID = 100L,
-            diponibilityState = "disponible",
             articleHaveUniteImages = false,
             itsNewArrivale = false,
             imageDimention = "300x300",
@@ -42,7 +41,6 @@ fun testDataArticlesBasesStatsTable2(): List<ArticlesBasesStatsTable> {
             monBenfice = 2.5,
             minQuan = 5,
             catalogeParentID = 101L,
-            diponibilityState = "disponible",
             articleHaveUniteImages = true,
             itsNewArrivale = true,
             imageDimention = "300x300",

@@ -137,7 +137,6 @@ fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
         monPrixVentUniter = ancien.monPrixVentUniter,
         benificeClient = ancien.benificeClient,
         monBeneficeUniter = ancien.monBeneficeUniter,
-        diponibilityState = ancien.diponibilityState,
         cLeDataOuvertDuParentList = ancien.cLeDataOuvertDuParentList,
         articleHaveUniteImages = ancien.articleHaveUniteImages,
         itsNewArrivale = ancien.itsNewArrivale,

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.C_CategorieProduitInfos
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun E_StickyHeader(
     categoryId: Long?,
-    category: C_CategorieProduitInfos? = null,
+    category: CategoriesTabelle? = null,
     onHeldPourDeplacement: (Boolean) -> Unit = {},
     onClickPourChangeDeplaceApre: (Boolean) -> Unit = {}
 ) {

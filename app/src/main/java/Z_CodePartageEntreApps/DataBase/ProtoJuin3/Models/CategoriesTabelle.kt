@@ -7,12 +7,16 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 
 @Entity
-data class C_CategorieProduitInfos(
+data class CategoriesTabelle(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+
     var nom: String = "",
+
     var position: Int = 0,
+
     var displayedHeader: Boolean = false,
+
     val itsHeldPourDeplacement: Boolean = false,
 
     // Section Etates Mutable
@@ -20,8 +24,8 @@ data class C_CategorieProduitInfos(
 
     // Section keyFireBase
     var keyFireBase: String = "",
-) {
-    fun withProperKeyFireBaseAndTimeTamp(): C_CategorieProduitInfos {
+    ) {
+    fun withProperKeyFireBaseAndTimeTamp(): CategoriesTabelle {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
             keyFireBase = safeKey,
