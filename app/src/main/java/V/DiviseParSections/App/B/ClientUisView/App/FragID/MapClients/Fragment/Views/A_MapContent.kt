@@ -64,8 +64,12 @@ fun MapContent(
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
-        mutableStateOf<ViewModel_MapClients_App2FragID1.VisibleClientsNow>(
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+        mutableStateOf(
+            if (viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeIdDe_1_5_Vendeur==1L) {
+                ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+            }  else {
+                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+            }
         )
     }
 
