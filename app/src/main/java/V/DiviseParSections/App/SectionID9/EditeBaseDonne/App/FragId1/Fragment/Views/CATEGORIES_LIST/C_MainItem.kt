@@ -48,7 +48,8 @@ fun MainItemEditeCategories(
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
-    onShowBulkMoveDialog: (Boolean) -> Unit = {}
+    onShowBulkMoveDialog: (Boolean) -> Unit = {},
+    products: List<ArticlesBasesStatsTable>
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val isSelected = selectedProducts.contains(produit)
@@ -151,6 +152,7 @@ fun MainItemEditeCategories(
     // Individual product dialog (if needed for single product operations)
     if (showDialog) {
         CategorySelectionDialog(
+            allProducts = products,
             product = produit,
             onCategorySelected = { newId ->
                 onCategoryChanged(produit.copy(idParentCategorie = newId))

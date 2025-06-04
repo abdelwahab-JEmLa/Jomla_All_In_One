@@ -6,19 +6,19 @@ fun startupeDatas(): List<CataloguesCaegorie> {
         CataloguesCaegorie(
             id = 2,
             nom = "Cosmétique",
-            premierCategorieId = 18,
+            premierCategorieId = 100,
             position = 1  // Added position for consistency
         ),
         CataloguesCaegorie(
             id = 1,
             nom = "Confiserie",
-            premierCategorieId = 32,
+            premierCategorieId = 3,
             position = 2  // Fixed: Added missing position
         ),
         CataloguesCaegorie(
             id = 3,
             nom = "TeBnage",
-            premierCategorieId = 136,
+            premierCategorieId = 92,
             position = 3  // Added position for consistency
         )
     )

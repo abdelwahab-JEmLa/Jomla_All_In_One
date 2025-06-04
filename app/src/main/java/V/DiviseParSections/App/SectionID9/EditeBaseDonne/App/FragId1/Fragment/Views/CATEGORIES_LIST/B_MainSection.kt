@@ -37,6 +37,7 @@ fun LazyListScope.categorieSection(
             LazyRow(contentPadding = PaddingValues(12.dp, 8.dp)) {
                 items(products, key = { "product_${it.id}" }) { produit ->
                     MainItemEditeCategories(
+                        products=products,
                         produit = produit,
                         availableCategories = availableCategories,
                         onCategoryChanged = onProductCategoryChanged,

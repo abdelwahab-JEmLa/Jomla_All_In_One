@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +51,17 @@ fun CategoryOptionGridCard(
     categoryProducts: List<ArticlesBasesStatsTable> = emptyList()
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
+
+    // Add logging to debug image display issues
+    LaunchedEffect(categoryProducts, categoryId) {
+        Log.d("CategoryOptionGridCard", "Category: $categoryName (ID: $categoryId)")
+        Log.d("CategoryOptionGridCard", "Products count: ${categoryProducts.size}")
+        categoryProducts.forEachIndexed { index, product ->
+            Log.d("CategoryOptionGridCard", "Product $index: ${product.nom} (ID: ${product.id})")
+            Log.d("CategoryOptionGridCard", "  - Image refresh flag: ${product.actualiseSonImageTest2}")
+            Log.d("CategoryOptionGridCard", "  - Parent category: ${product.idParentCategorie}")
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -74,9 +87,10 @@ fun CategoryOptionGridCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Product images row - matching the main grid style
+                // Product images row - with enhanced logging
                 ProductImagesRow(
                     displayProducts = categoryProducts,
+                    categoryName = categoryName,
                     modifier = Modifier.padding(top = 4.dp)
                 )
 
@@ -140,8 +154,23 @@ fun CategoryOptionGridCard(
 @Composable
 private fun ProductImagesRow(
     displayProducts: List<ArticlesBasesStatsTable>,
+    categoryName: String,
     modifier: Modifier = Modifier
 ) {
+    // Enhanced logging for debugging
+    LaunchedEffect(displayProducts) {
+        Log.d("ProductImagesRow", "=== ProductImagesRow for category: $categoryName ===")
+        Log.d("ProductImagesRow", "Total products received: ${displayProducts.size}")
+        displayProducts.take(3).forEachIndexed { index, product ->
+            Log.d("ProductImagesRow", "Product $index details:")
+            Log.d("ProductImagesRow", "  - Name: ${product.nom}")
+            Log.d("ProductImagesRow", "  - ID: ${product.id}")
+            Log.d("ProductImagesRow", "  - Parent Category ID: ${product.idParentCategorie}")
+            Log.d("ProductImagesRow", "  - Image refresh: ${product.actualiseSonImageTest2}")
+            Log.d("ProductImagesRow", "  - Product object: $product")
+        }
+    }
+
     if (displayProducts.isNotEmpty()) {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -150,6 +179,8 @@ private fun ProductImagesRow(
         ) {
             // Show actual products (up to 3, matching main grid)
             items(displayProducts.take(3)) { product ->
+                Log.d("ProductImagesRow", "Rendering image for product: ${product.nom} (ID: ${product.id})")
+
                 A_GlideDisplayImageByKeyId_Proto_5(
                     produitVID = product.id,
                     modifier = Modifier.size(28.dp), // Slightly smaller than main grid (35dp) to fit better
@@ -165,7 +196,9 @@ private fun ProductImagesRow(
             // Fill remaining slots with placeholder boxes (only if we have less than 3 products)
             val remainingSlots = maxOf(0, 3 - displayProducts.size)
             if (remainingSlots > 0) {
-                items(remainingSlots) {
+                Log.d("ProductImagesRow", "Adding $remainingSlots placeholder slots")
+                items(remainingSlots) { index ->
+                    Log.d("ProductImagesRow", "Rendering placeholder $index")
                     Box(
                         modifier = Modifier
                             .size(28.dp)
@@ -185,6 +218,7 @@ private fun ProductImagesRow(
             }
         }
     } else {
+        Log.d("ProductImagesRow", "No products for category: $categoryName - showing empty state")
         // Empty state matching main grid style
         Box(
             modifier = modifier

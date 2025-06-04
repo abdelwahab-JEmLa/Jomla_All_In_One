@@ -80,7 +80,7 @@ internal fun MainList(
             .background(Color(0xFFF8D7EB))
     ) {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(4),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -89,7 +89,7 @@ internal fun MainList(
             // Add catalogue sections with headers
             categoriesByCatalogue.forEach { (catalogue, categories) ->
                 // Add catalogue header
-                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
+                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                     CatalogHeaderCard(
                         catalogue = catalogue,
                         modifier = Modifier
@@ -115,44 +115,4 @@ internal fun MainList(
             }
         }
     }
-}
-
-// Additional helper function to ensure catalogue ordering is maintained
-fun organizeCategoriesByCatalogue(
-    categories: List<CategoriesTabelle>,
-    catalogues: List<CataloguesCaegorie>
-): Map<CataloguesCaegorie, List<CategoriesTabelle>> {
-    val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-
-    // Sort catalogues by position to maintain order
-    val sortedCatalogues = catalogues.sortedBy { it.position }
-
-    sortedCatalogues.forEach { catalogue ->
-        val catalogueCategories = categories.filter { category ->
-            category.id >= catalogue.premierCategorieId &&
-                    (sortedCatalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                        category.id < nextCatalogue.premierCategorieId
-                    } ?: true)
-        }.sortedBy { it.position }
-
-        if (catalogueCategories.isNotEmpty()) {
-            grouped[catalogue] = catalogueCategories
-        }
-    }
-
-    // Add uncategorized items
-    val uncategorizedCategories = categories.filter { category ->
-        !sortedCatalogues.any { catalogue ->
-            category.id >= catalogue.premierCategorieId &&
-                    (sortedCatalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                        category.id < nextCatalogue.premierCategorieId
-                    } ?: true)
-        }
-    }.sortedBy { it.position }
-
-    if (uncategorizedCategories.isNotEmpty()) {
-        grouped[CataloguesCaegorie(0, "Autres", 0, Int.MAX_VALUE)] = uncategorizedCategories
-    }
-
-    return grouped
 }
