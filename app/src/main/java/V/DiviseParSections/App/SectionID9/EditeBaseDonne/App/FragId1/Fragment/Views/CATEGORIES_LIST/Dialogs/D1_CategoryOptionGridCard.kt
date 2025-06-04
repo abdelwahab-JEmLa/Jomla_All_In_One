@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import android.util.Log
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,9 +32,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategoryOptionGridCard(
@@ -41,25 +45,35 @@ fun CategoryOptionGridCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
-    categoryProducts: List<ArticlesBasesStatsTable> = emptyList()
+    viewModel: StartUpFragmentViewModel = koinViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     var showEditDialog by remember { mutableStateOf(false) }
 
-    // Add logging to debug image display issues
-    LaunchedEffect(categoryProducts, categoryId) {
-        Log.d("CategoryOptionGridCard", "Category: $categoryName (ID: $categoryId)")
-        Log.d("CategoryOptionGridCard", "Products count: ${categoryProducts.size}")
-        categoryProducts.forEachIndexed { index, product ->
-            Log.d("CategoryOptionGridCard", "Product $index: ${product.nom} (ID: ${product.id})")
-            Log.d("CategoryOptionGridCard", "  - Image refresh flag: ${product.actualiseSonImageTest2}")
-            Log.d("CategoryOptionGridCard", "  - Parent category: ${product.idParentCategorie}")
+    val productsForCategory by remember(categoryId, uiState.a_ProduitInfosList) {
+        derivedStateOf {
+            if (categoryId != null) {
+                uiState.a_ProduitInfosList
+                    .filter { it.idParentCategorie == categoryId }
+                    .take(2) // Take only 2 products as requested
+            } else {
+                // For "Sans Catégorie" option, get products with no category
+                uiState.a_ProduitInfosList
+                    .filter { it.idParentCategorie == null }
+                    .take(2)
+            }
         }
     }
+
+    // Get the first product to display its image
+    val displayProduct = productsForCategory.firstOrNull()
+    val displayProduct2 = productsForCategory.lastOrNull()
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(100.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surface
@@ -72,29 +86,64 @@ fun CategoryOptionGridCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            Row( // Changed from Column to Row for horizontal layout
+            // FIXED: Changed from Row to Column for better layout
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable(onClick = onClick),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .clickable(onClick = onClick)
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                // Category name - positioned at left
+                // Image positioned at the top center
+                if (displayProduct != null) {
+                    Row {
+                    A_GlideDisplayImageByKeyId_Proto_5(
+                        produitVID = displayProduct.id,
+                        modifier = Modifier.size(40.dp),
+                        produitNom = displayProduct.nom,
+                        size = 40.dp,
+                        product = displayProduct,
+                        qualityImage = 3,
+                        refreshImage = displayProduct.actualiseSonImage,
+                        enableAutoScroll = false
+                    )
+                        if (displayProduct2 != null) {
+                            A_GlideDisplayImageByKeyId_Proto_5(
+                                produitVID = displayProduct2.id,
+                                modifier = Modifier.size(40.dp),
+                                produitNom = displayProduct2.nom,
+                                size = 40.dp,
+                                product = displayProduct,
+                                qualityImage = 3,
+                                refreshImage = displayProduct.actualiseSonImage,
+                                enableAutoScroll = false
+                            )
+                        }
+                    }
+                } else {
+                    // Show placeholder when no product is available for this category
+                    A_GlideDisplayImageByKeyId_Proto_5(
+                        produitVID = null, // This will show the default logo
+                        modifier = Modifier.size(20.dp),
+                        produitNom = categoryName,
+                        size = 20.dp,
+                        product = null,
+                        qualityImage = 3,
+                        refreshImage = 0,
+                        enableAutoScroll = false
+                    )
+                }
+
+                // Category name positioned below the image
                 Text(
                     text = categoryName,
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 11.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    maxLines = 4,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Product images row - positioned at right
-                ProductImagesRow(
-                    displayProducts = categoryProducts,
-                    categoryName = categoryName,
-                    modifier = Modifier.padding(start = 8.dp)
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -106,7 +155,7 @@ fun CategoryOptionGridCard(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(4.dp)
-                        .size(12.dp), // Smaller icon for compact layout
+                        .size(12.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -116,7 +165,7 @@ fun CategoryOptionGridCard(
                     onClick = { showEditDialog = true },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .size(16.dp) // Smaller button for compact layout
+                        .size(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
@@ -141,4 +190,3 @@ fun CategoryOptionGridCard(
         )
     }
 }
-

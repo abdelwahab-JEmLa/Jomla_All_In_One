@@ -154,7 +154,6 @@ fun MainItemEditeCategories(
     // Individual product dialog (if needed for single product operations)
     if (showDialog) {
         CategorySelectionDialog(
-            allProducts = products,
             product = produit,
             onCategorySelected = { newId ->
                 onCategoryChanged(produit.copy(idParentCategorie = newId))

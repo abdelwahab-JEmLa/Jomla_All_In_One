@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategorySelectionDialog(
@@ -62,7 +65,7 @@ fun CategorySelectionDialog(
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
-    allProducts: List<ArticlesBasesStatsTable> = emptyList()
+    viewModel: StartUpFragmentViewModel = koinViewModel(), // Added viewModel parameter
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var showSearch by remember { mutableStateOf(false) }
@@ -70,6 +73,8 @@ fun CategorySelectionDialog(
     var filterWithProducts by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
+
+    val uiState by viewModel.uiState.collectAsState()
 
     if (showSearch) {
         LaunchedEffect(Unit) {
@@ -81,6 +86,13 @@ fun CategorySelectionDialog(
 
     val catalogues = remember { startupeDatas() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
+
+    // FIXED: Create productsByCategory map from uiState
+    val productsByCategory by remember(uiState.a_ProduitInfosList) {
+        derivedStateOf {
+            uiState.a_ProduitInfosList.groupBy { it.idParentCategorie }
+        }
+    }
 
     // Group categories by catalogue
     val categoriesByCatalogue = remember(allCategories, catalogues) {
@@ -126,10 +138,6 @@ fun CategorySelectionDialog(
         }
     }
 
-    // Group products by category for image display
-    val productsByCategory = remember(allProducts) {
-        allProducts.groupBy { it.idParentCategorie ?: 0L }
-    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -269,7 +277,7 @@ fun CategorySelectionDialog(
                 )
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3), // Changed from 4 to 3 columns
+                    columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
@@ -278,7 +286,7 @@ fun CategorySelectionDialog(
                 ) {
                     // Add "Sans Catégorie" option at the top
                     if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) { // Changed from 4 to 3
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
                             CatalogHeaderCard(
                                 catalogue = CataloguesCaegorie(0, "Sans Catégorie", 0),
                                 modifier = Modifier.padding(bottom = 4.dp)
@@ -290,15 +298,15 @@ fun CategorySelectionDialog(
                                 categoryName = "Sans Catégorie",
                                 isSelected = product.idParentCategorie == null,
                                 onClick = { onCategorySelected(null) },
-                                onEditName = null,
-                                categoryProducts = emptyList()
+                                onEditName = null
+                                // FIXED: Pass products for null category
                             )
                         }
                     }
 
                     // Add catalogue sections with sticky headers
                     filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) { // Changed from 4 to 3
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
                             CatalogHeaderCard(
                                 catalogue = catalogue,
                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -310,8 +318,8 @@ fun CategorySelectionDialog(
                                 categoryName = cat.nom,
                                 isSelected = product.idParentCategorie == cat.id,
                                 onClick = { onCategorySelected(cat.id) },
-                                onEditName = if (onUpdateCategory != null) { name -> onUpdateCategory(cat.id, name) } else null,
-                                categoryProducts = productsByCategory[cat.id] ?: emptyList()
+                                onEditName = if (onUpdateCategory != null) { name -> onUpdateCategory(cat.id, name) } else null
+                                // FIXED: Pass products for this category
                             )
                         }
                     }
