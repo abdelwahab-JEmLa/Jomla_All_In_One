@@ -18,21 +18,36 @@ fun LazyListScope.categorieSection(
     onHeldPourDeplacement: (Long, Boolean) -> Unit,
     onClickPourChangeDeplaceApre: (Long, Boolean) -> Unit,
     onAddCategory: ((String) -> Unit)? = null,
-    onUpdateCategory: ((Long, String) -> Unit)? = null
+    onUpdateCategory: ((Long, String) -> Unit)? = null,
+    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
+    onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
+    showBulkMoveDialog: Boolean = false,
+    onShowBulkMoveDialog: (Boolean) -> Unit = {}
 ) {
     groupedProducts.forEach { (id, products) ->
         item(key = "header_$id") {
-            E_StickyHeader(id, categoryMap[id],
-                { onHeldPourDeplacement(id ?: 0L, it) },
-                { onClickPourChangeDeplaceApre(id ?: 0L, it) })
+            E_StickyHeader(
+                categoryId = id,
+                category = categoryMap[id],
+                onHeldPourDeplacement = { onHeldPourDeplacement(id ?: 0L, it) },
+                onClickPourChangeDeplaceApre = { onClickPourChangeDeplaceApre(id ?: 0L, it) }
+            )
         }
         item(key = "products_$id") {
             LazyRow(contentPadding = PaddingValues(12.dp, 8.dp)) {
                 items(products, key = { "product_${it.id}" }) { produit ->
                     MainItemEditeCategories(
-                        produit, availableCategories,
+                        produit = produit,
+                        availableCategories = availableCategories,
                         onCategoryChanged = onProductCategoryChanged,
-                        Modifier.size(120.dp), categoryMap, onAddCategory, onUpdateCategory
+                        modifier = Modifier.size(120.dp),
+                        categoriesMap = categoryMap,
+                        onAddCategory = onAddCategory,
+                        onUpdateCategory = onUpdateCategory,
+                        selectedProducts = selectedProducts,
+                        onProductSelectionToggle = onProductSelectionToggle,
+                        showBulkMoveDialog = showBulkMoveDialog,
+                        onShowBulkMoveDialog = onShowBulkMoveDialog
                     )
                 }
             }

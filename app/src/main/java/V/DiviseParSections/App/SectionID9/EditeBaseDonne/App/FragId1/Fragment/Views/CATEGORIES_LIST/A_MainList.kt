@@ -26,6 +26,10 @@ fun EditeCategoriesMainList(
     onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
     onCategoriesEdite: ((List<CategoriesTabelle>) -> Unit)? = null,
+    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
+    onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
+    showBulkMoveDialog: Boolean = false,
+    onShowBulkMoveDialog: (Boolean) -> Unit = {}
 ) {
     var categoriesListLocal by remember(categoriesList) { mutableStateOf(categoriesList) }
 
@@ -48,7 +52,6 @@ fun EditeCategoriesMainList(
             onCategoriesEdite?.invoke(categoriesListLocal)
         }
     }
-
 
     val handleAddCategory: (String) -> Unit = { name ->
         val newId = (categoriesListLocal.maxOfOrNull { it.id } ?: 0L) + 1
@@ -88,11 +91,18 @@ fun EditeCategoriesMainList(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             categorieSection(
-                groupedProducts,
-                availableCategories,
-                onProductCategoryChanged
-                , categoryMap,
-                onHeldPourDeplacement, onClickPourChangeDeplaceApre, handleAddCategory, handleUpdateCategory
+                groupedProducts = groupedProducts,
+                availableCategories = availableCategories,
+                onProductCategoryChanged = onProductCategoryChanged,
+                categoryMap = categoryMap,
+                onHeldPourDeplacement = onHeldPourDeplacement,
+                onClickPourChangeDeplaceApre = onClickPourChangeDeplaceApre,
+                onAddCategory = handleAddCategory,
+                onUpdateCategory = handleUpdateCategory,
+                selectedProducts = selectedProducts,
+                onProductSelectionToggle = onProductSelectionToggle,
+                showBulkMoveDialog = showBulkMoveDialog,
+                onShowBulkMoveDialog = onShowBulkMoveDialog
             )
         }
     }

@@ -5,17 +5,24 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,50 +44,111 @@ fun MainItemEditeCategories(
     modifier: Modifier = Modifier,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     onAddCategory: ((String) -> Unit)? = null,
-    onUpdateCategory: ((Long, String) -> Unit)? = null
-) {             //<--
-//TODO(1): au lieu au click s affiche CategorySelectionDialog fait le click stock les prodiuit pour au click but2 il affche le dialoge qui deplace plsieur element au choisisement 
+    onUpdateCategory: ((Long, String) -> Unit)? = null,
+    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
+    onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
+    showBulkMoveDialog: Boolean = false,
+    onShowBulkMoveDialog: (Boolean) -> Unit = {}
+) {
     var showDialog by remember { mutableStateOf(false) }
+    val isSelected = selectedProducts.contains(produit)
 
-    Card(
-        modifier = modifier.clickable { showDialog = true },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
+    Box(modifier = modifier) {
+        Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-
-            A_GlideDisplayImageByKeyId_Proto_5(
-                produitVID = produit.id,
-                modifier = Modifier.weight(1f),
-                produitNom = produit.nom,
-                size = 80.dp,
-                product = produit,
-                refreshImage = produit.actualiseSonImageTest2
-            )
-            Text(
-                text = produit.nom,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-
-            // Add availability toggle button
-            DisponibilityToggleButton(
-                currentState = produit.disponibilityEtates,
-                onToggle = {
-                    val updatedProduct = produit.toggleDisponibilityEtates()
-                    onCategoryChanged(updatedProduct)
+                .clickable {
+                    // Toggle product selection instead of showing dialog immediately
+                    onProductSelectionToggle(produit)
                 },
-                modifier = Modifier.padding(top = 2.dp)
-            )
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSelected)
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                else
+                    MaterialTheme.colorScheme.surface
+            ),
+            border = if (isSelected)
+                androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            else null
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                A_GlideDisplayImageByKeyId_Proto_5(
+                    produitVID = produit.id,
+                    modifier = Modifier.weight(1f),
+                    produitNom = produit.nom,
+                    size = 80.dp,
+                    product = produit,
+                    refreshImage = produit.actualiseSonImageTest2
+                )
+                Text(
+                    text = produit.nom,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+
+                // Add availability toggle button
+                DisponibilityToggleButton(
+                    currentState = produit.disponibilityEtates,
+                    onToggle = {
+                        val updatedProduct = produit.toggleDisponibilityEtates()
+                        onCategoryChanged(updatedProduct)
+                    },
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+        }
+
+        // Selection indicator
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(20.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    modifier = Modifier.size(12.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 
+    // Show dialog only when bulk move dialog is triggered
+    if (showBulkMoveDialog && selectedProducts.isNotEmpty()) {
+        BulkCategorySelectionDialog(
+            products = selectedProducts.toList(),
+            onCategorySelected = { newId ->
+                selectedProducts.forEach { product ->
+                    onCategoryChanged(product.copy(idParentCategorie = newId))
+                }
+                onShowBulkMoveDialog(false)
+            },
+            onDismiss = { onShowBulkMoveDialog(false) },
+            onAddCategory = onAddCategory,
+            onUpdateCategory = onUpdateCategory,
+            categoriesMap = categoriesMap,
+            availableCategories = availableCategories
+        )
+    }
+
+    // Individual product dialog (if needed for single product operations)
     if (showDialog) {
         CategorySelectionDialog(
             product = produit,
@@ -96,6 +164,29 @@ fun MainItemEditeCategories(
         )
     }
 }
+
+@Composable
+fun BulkCategorySelectionDialog(
+    products: List<ArticlesBasesStatsTable>,
+    onCategorySelected: (Long?) -> Unit,
+    onDismiss: () -> Unit,
+    onAddCategory: ((String) -> Unit)? = null,
+    onUpdateCategory: ((Long, String) -> Unit)? = null,
+    categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
+    availableCategories: List<Long> = emptyList()
+) {
+    // Use the same CategorySelectionDialog but with modified title and text
+    CategorySelectionDialog(
+        product = products.first(), // Use first product as reference
+        onCategorySelected = onCategorySelected,
+        onDismiss = onDismiss,
+        onAddCategory = onAddCategory,
+        onUpdateCategory = onUpdateCategory,
+        categoriesMap = categoriesMap,
+        availableCategories = availableCategories
+    )
+}
+
 @Composable
 fun DisponibilityToggleButton(
     currentState: DisponibilityEtates,

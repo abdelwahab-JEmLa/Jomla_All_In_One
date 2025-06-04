@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.AncienProto.C_CategorieProduitInfosAncienProto.ProtoB2.Companion.updateCategoriePositionDepuitProto2
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -44,7 +46,9 @@ fun OptionsFragmentButtons(
     viewModelScope: CoroutineScope,
     function: (List<CategoriesTabelle>) -> Unit,
     initCategories: List<CategoriesTabelle>,
-    onToggleMasque: (Set<AfficheElements>) -> Unit = {}
+    onToggleMasque: (Set<AfficheElements>) -> Unit = {},
+    selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
+    onShowBulkMoveDialog: () -> Unit = {}
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
@@ -95,9 +99,15 @@ fun OptionsFragmentButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
-                    //<--
-                    //TODO(1): ajout un autre but2 au click 
-                    But1(showDialog, showLabels)
+                    // But1 - Update Categories
+                    But1(showDialog = showDialog, showLabels = showLabels) { showDialog = true }
+
+                    // But2 - Bulk Move Products
+                    But2(
+                        showLabels = showLabels,
+                        selectedCount = selectedProducts.size,
+                        onBulkMove = onShowBulkMoveDialog
+                    )
 
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         FloatingActionButton(
@@ -127,19 +137,35 @@ fun OptionsFragmentButtons(
 }
 
 @Composable
-private fun But1(showDialog: Boolean, showLabels: Boolean) {
-    var showDialog1 = showDialog
+private fun But1(showDialog: Boolean, showLabels: Boolean, onShowDialog: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         FloatingActionButton(
-            onClick = { showDialog1 = true },
+            onClick = onShowDialog,
             modifier = Modifier.size(40.dp),
             containerColor = Color.Yellow
         ) {
             Icon(Icons.Default.Refresh, "Update Categories", tint = Color.Black)
         }
         if (showLabels) Text("Update")
+    }
+}
+
+@Composable
+private fun But2(showLabels: Boolean, selectedCount: Int, onBulkMove: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onBulkMove,
+            modifier = Modifier.size(40.dp),
+            containerColor = if (selectedCount > 0) Color.Green else Color.Gray
+        ) {
+            Icon(Icons.Default.SwapHoriz, "Bulk Move Products", tint = Color.Black)
+        }
+        if (showLabels) Text("Move ($selectedCount)")
     }
 }
