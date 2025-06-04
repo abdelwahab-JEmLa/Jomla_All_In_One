@@ -153,7 +153,8 @@ fun MainItemEditeCategories(
 
     // Individual product dialog (if needed for single product operations)
     if (showDialog) {
-        CategorySelectionDialog(
+        CategorySelectionDialog(      //<--
+        //TODO(1): au lieux d alle ici fait que au click de aller MainList et choisi laba le selectione cate 
             allProducts = products,
             product = produit,
             onCategorySelected = { newId ->
