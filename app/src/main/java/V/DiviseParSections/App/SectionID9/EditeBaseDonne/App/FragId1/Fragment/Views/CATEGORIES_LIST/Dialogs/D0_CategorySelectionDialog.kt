@@ -71,13 +71,13 @@ fun CategorySelectionDialog(
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-     if (showSearch) {
-         LaunchedEffect(Unit) {
-             delay(100)
-             focusRequester.requestFocus()
-             keyboard?.show()
-         }
-     }
+    if (showSearch) {
+        LaunchedEffect(Unit) {
+            delay(100)
+            focusRequester.requestFocus()
+            keyboard?.show()
+        }
+    }
 
     val catalogues = remember { startupeDatas() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
@@ -269,7 +269,7 @@ fun CategorySelectionDialog(
                 )
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
+                    columns = GridCells.Fixed(3), // Changed from 4 to 3 columns
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
@@ -278,15 +278,14 @@ fun CategorySelectionDialog(
                 ) {
                     // Add "Sans Catégorie" option at the top
                     if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) { // Changed from 4 to 3
                             CatalogHeaderCard(
                                 catalogue = CataloguesCaegorie(0, "Sans Catégorie", 0),
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
                         item {
-                            CategoryOptionGridCard(           //<--
-                            //TODO(1): fait le heig = 40 dp
+                            CategoryOptionGridCard(
                                 categoryId = null,
                                 categoryName = "Sans Catégorie",
                                 isSelected = product.idParentCategorie == null,
@@ -299,15 +298,14 @@ fun CategorySelectionDialog(
 
                     // Add catalogue sections with sticky headers
                     filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) { // Changed from 4 to 3
                             CatalogHeaderCard(
                                 catalogue = catalogue,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
                         items(categories) { cat ->
-                            CategoryOptionGridCard(       //<--
-                                //TODO(1): fait le heig = 40 dp
+                            CategoryOptionGridCard(
                                 categoryId = cat.id,
                                 categoryName = cat.nom,
                                 isSelected = product.idParentCategorie == cat.id,

@@ -23,8 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun MainList(    //<--
-//TODO(1): regle pour accepte le click de selection produit
+internal fun MainList(
     categoriesList: List<CategoriesTabelle>,
     produitList: List<ArticlesBasesStatsTable>,
     modifier: Modifier,

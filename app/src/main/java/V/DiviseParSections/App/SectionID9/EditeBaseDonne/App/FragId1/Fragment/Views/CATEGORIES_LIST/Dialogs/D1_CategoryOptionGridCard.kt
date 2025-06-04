@@ -59,7 +59,7 @@ fun CategoryOptionGridCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp), // TODO(1): Set height to 40dp - FIXED
+            .height(50.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surface
@@ -75,7 +75,6 @@ fun CategoryOptionGridCard(
             Row( // Changed from Column to Row for horizontal layout
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
                     .clickable(onClick = onClick),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -86,7 +85,7 @@ fun CategoryOptionGridCard(
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 11.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    maxLines = 1,
+                    maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
