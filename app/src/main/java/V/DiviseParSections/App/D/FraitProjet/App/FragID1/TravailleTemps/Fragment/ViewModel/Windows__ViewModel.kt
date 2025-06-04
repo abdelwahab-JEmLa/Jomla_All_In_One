@@ -10,6 +10,7 @@ import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,15 +21,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 data class UiState(
+    val activeBonAchat: C3_BonAchate? = null,
+    val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(
+        vid = 7L
+    ),
+
     val isRecording: Boolean = false,
     val displayTime: String = "00:00:00",
     val currentDate: String = "",
     val isAbdelwahabLeGerant: Boolean = true,
     val editingInterval: K_TempTravaille.IntervalesDeTravaille? = null,
-    val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(
-        vid = 7L
-    ),
-    val activeBonAchat: C3_BonAchate? = null,
     val nombreClientsAvecCible: Int = 0,
     val totalWorkedTime: String = "00:00:00"
 )
@@ -61,8 +63,16 @@ class Windows__ViewModel(
 
         viewModelScope.launch {
             repos.activeVId_C3_BonAchate_Repository.collect { id ->
-                val bon =
-                    repos.c3_BonAchate_Repository.modelDatasSnapList.firstOrNull { it.vid == id }
+                Log.d(GroupeRepositorysProtoAvJuin3.TAG, "activeVId_C3_BonAchate_Repository collected: $id")
+
+                val bon = repos.c3_BonAchate_Repository.modelDatasSnapList.firstOrNull { it.vid == id }
+
+                if (bon != null) {
+                    Log.d(GroupeRepositorysProtoAvJuin3.TAG, "Found BonAchat with vid=$id: ${bon.javaClass.simpleName}")
+                } else {
+                    Log.w(GroupeRepositorysProtoAvJuin3.TAG, "No BonAchat found with vid=$id")
+                }
+
                 updateUiState { it.copy(activeBonAchat = bon) }
             }
         }

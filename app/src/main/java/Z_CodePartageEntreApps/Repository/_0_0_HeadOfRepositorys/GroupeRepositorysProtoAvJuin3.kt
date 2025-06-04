@@ -13,7 +13,7 @@ interface GroupeRepositorysProtoAvJuin3 {
         }
 
     companion object {
-        const val TAG = "_0_0_HeadOfRepositorys"
+        const val TAG = "GroupeRepositorysProtoAvJuin3"
     }
 
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
