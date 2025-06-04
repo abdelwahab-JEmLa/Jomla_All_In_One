@@ -4,7 +4,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
@@ -50,7 +50,7 @@ fun Couleurs(
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     buyerIds: List<Long>,
-    models: _0_0_HeadOfRepositorys_Model,
+    models: GroupeRepositorysProtoAvJuin3Model,
     periodFilter: Long? = null  // Add the missing periodFilter parameter
 ) {
     // Only proceed if the product is in CONFIRME state
@@ -299,7 +299,7 @@ fun Couleurs(
 @Composable
 fun Acheteurs(
     clientQuantities: Map<Long, Long>,
-    models: _0_0_HeadOfRepositorys_Model,
+    models: GroupeRepositorysProtoAvJuin3Model,
     B_ClientDataBaseRepository: B_ClientDataBaseRepository = koinInject(),
 ) {
     Column(

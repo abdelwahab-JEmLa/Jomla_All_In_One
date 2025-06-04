@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
@@ -82,7 +82,7 @@ data class C3_BonAchate(
     }
     companion object {
         val caRef =
-            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+            GroupeRepositorysProtoAvJuin3Model.getHeadSqlDataBaseRef()
                 .child("C_AchatsDataBases")
                 .child(
                     "D" +

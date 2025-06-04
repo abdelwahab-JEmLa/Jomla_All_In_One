@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 fun B_MainList_APP2_ID_2(
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
-    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (SnapshotStateList<_1_1_CouleurAcheteOperation>) -> Unit,
 ) {
@@ -71,7 +71,7 @@ fun B_MainList_APP2_ID_2(
 }
 
 private fun produitsBonAchatIDs(
-    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     composeKeyVID: Long?,
     validColorOperations: List<_1_1_CouleurAcheteOperation>,
 ) = _0_HeadOfRepositorys_Repository_Model

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
@@ -144,7 +144,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
 
 private fun calcule_totalPrice(
     produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
-    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     colorOperations: List<_1_1_CouleurAcheteOperation>? = null
 ) = produitsBonAchatIDs.sumOf { produitOpe ->
     // Check if there's a provisional price, use it instead of the default if available

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
@@ -30,7 +30,7 @@ data class ArticleImpression(
 fun printReceipt(
     context: Context,
     bonAchat: C3_BonAchate?,
-    repositorysModel: _0_0_HeadOfRepositorys_Model,
+    repositorysModel: GroupeRepositorysProtoAvJuin3Model,
     database: AppDatabase,
     scope: CoroutineScope? = null
 ) {

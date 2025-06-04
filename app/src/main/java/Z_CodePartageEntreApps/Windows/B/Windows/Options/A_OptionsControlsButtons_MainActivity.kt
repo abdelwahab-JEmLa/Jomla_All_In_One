@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.Options
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
@@ -113,8 +113,7 @@ fun A_OptionsControlsButtons_Main(
                             ) {
                                 Icon(
                                     Icons.Filled.PhoneAndroid,
-                                    contentDescription = "Add New _1_5_Vendeur"    //<--
-                                    //TODO(1): change au functionemnent
+                                    contentDescription = "Add New _1_5_Vendeur"
                                 )
                             }
 

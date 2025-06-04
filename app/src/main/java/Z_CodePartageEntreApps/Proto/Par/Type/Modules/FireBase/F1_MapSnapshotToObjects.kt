@@ -11,10 +11,6 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
 
-/**
- * Dynamic Firebase snapshot mapper that automatically handles all property types
- * without hard-coded values. Fixes the TODO from F1_MapSnapshotToObjects.kt
- */
 
 inline fun <reified T : Any> getDatasFixed(
     snapshot: DataSnapshot,

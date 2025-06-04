@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Model.parseDepuitOldAuNew
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.isSyntheticProperty
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.sanitizeValue
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -25,7 +25,7 @@ import kotlin.reflect.full.memberProperties
 class F0_FireBaseOperationsHandler(
     val onProgressUpdate: (Float) -> Unit = { }
 ) {
-    val ref: DatabaseReference = _0_0_HeadOfRepositorys_Model
+    val ref: DatabaseReference = GroupeRepositorysProtoAvJuin3Model
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
     val childD_TarificationInfos = ref.child("D_TarificationInfos")

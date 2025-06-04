@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GroupeRepositorysProtoAvJuin3 {
-    var repositorys_Model: _0_0_HeadOfRepositorys_Model
+    var repositorys_Model: GroupeRepositorysProtoAvJuin3Model
 
     val progressRepo: MutableStateFlow<Float>
         get() {

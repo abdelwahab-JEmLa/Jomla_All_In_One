@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +43,7 @@ fun ClientEdites(
     onUpdateLongAppSetting: () -> Unit = {},
     coroutineScope: CoroutineScope,
     existingBonAchat: C3_BonAchate?,
-    repositorysModel: _0_0_HeadOfRepositorys_Model,
+    repositorysModel: GroupeRepositorysProtoAvJuin3Model,
     clientId: Long,
     ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
 ) {

@@ -3,10 +3,10 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
@@ -35,7 +35,7 @@ import kotlinx.coroutines.withContext
  *     ,
  *     GroupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3 = koinInject()
  */
-class _groupe_RepositorysProtoAvJuin3Impl(
+class GroupeRepositorysProtoAvJuin3Impl(
 
     val appDatabase: AppDatabase,
 
@@ -53,7 +53,7 @@ class _groupe_RepositorysProtoAvJuin3Impl(
 
     private val TAG = GroupeRepositorysProtoAvJuin3.TAG
     private val activeId_1_3_BonAchat = MutableStateFlow<Long>(-1L)
-    override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
+    override var repositorys_Model: GroupeRepositorysProtoAvJuin3Model = GroupeRepositorysProtoAvJuin3Model(
         repo_1_1_CouleurAcheteOperation,
         repo_1_2_ProduitAcheteOperation,
         repo_1_3_TransactionCommercial,
@@ -703,7 +703,7 @@ class _groupe_RepositorysProtoAvJuin3Impl(
             progressRepo.value = 0.6f
             withContext(Dispatchers.IO) {
                 // Create a repository head with all repositories
-                repositorys_Model = _0_0_HeadOfRepositorys_Model(
+                repositorys_Model = GroupeRepositorysProtoAvJuin3Model(
                     _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
                     repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
                     c3_BonAchate_Repository = repo_1_3_TransactionCommercial,

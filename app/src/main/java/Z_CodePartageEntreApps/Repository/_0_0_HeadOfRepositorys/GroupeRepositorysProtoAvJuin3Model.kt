@@ -14,7 +14,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class _0_0_HeadOfRepositorys_Model(
+class GroupeRepositorysProtoAvJuin3Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val repositoryC2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
 

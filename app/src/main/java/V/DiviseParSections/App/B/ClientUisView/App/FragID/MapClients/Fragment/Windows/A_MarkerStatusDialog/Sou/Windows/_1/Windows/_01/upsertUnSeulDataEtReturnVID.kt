@@ -65,7 +65,6 @@ override fun upsertUnSeulDataEtReturnVID(data: _01_VentsNoSQl, onSuccess: (Long)
         dataList: List<_01_VentsNoSQl>,
         onAddSuccess: (List<Long>) -> Unit,
     ) {
-        TODO("Not yet implemented")
     }
 
 private suspend fun checkDataConsistency() {

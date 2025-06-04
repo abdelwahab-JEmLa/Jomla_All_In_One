@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ interface E1SecteurDeClientsRepository {
 
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+            GroupeRepositorysProtoAvJuin3Model.getHeadSqlDataBaseRef()
             .child("E")
             .child("1")
     }

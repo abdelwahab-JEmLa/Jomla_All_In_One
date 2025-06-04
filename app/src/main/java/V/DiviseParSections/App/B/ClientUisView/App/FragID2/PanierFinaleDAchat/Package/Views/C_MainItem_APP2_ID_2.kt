@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.background
@@ -54,7 +54,7 @@ private const val TAG = "C_MainItem_APP2_ID_2"
 fun C_MainItem_APP2_ID_2(
     modifier: Modifier = Modifier,
     composeKeyVID: Long,
-    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (String) -> Unit,
     headRepository: GroupeRepositorysProtoAvJuin3= koinInject(),

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.B2_SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.lifecycle.ViewModel
 
 class ViewModelPanierFinaleDAchat_FragIdB2(
@@ -13,7 +13,7 @@ class ViewModelPanierFinaleDAchat_FragIdB2(
         priceText: String,
         defaultPrice: Double,
         produitAcheteOperation: _1_2_ProduitAcheteOperation?,
-        repositoryModel: _0_0_HeadOfRepositorys_Model,
+        repositoryModel: GroupeRepositorysProtoAvJuin3Model,
         updateChangePrixDeBase: Boolean = false
     ) {
         val newPrice = priceText.toDoubleOrNull() ?: defaultPrice

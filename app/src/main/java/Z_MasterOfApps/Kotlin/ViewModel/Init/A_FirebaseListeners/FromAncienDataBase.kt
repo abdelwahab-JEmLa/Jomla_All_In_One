@@ -100,7 +100,6 @@ object FromAncienDataBase {
                                         }
                                 }
                             } else {
-                                // Implementation of TODO(1): Create a new product if it doesn't exist
                                 val newProductId = productId.toLongOrNull() ?: return@addOnSuccessListener
 
                                 val newProduct = A_ProduitModel(

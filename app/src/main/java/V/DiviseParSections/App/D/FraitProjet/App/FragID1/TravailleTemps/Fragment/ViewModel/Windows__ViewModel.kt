@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
@@ -9,88 +10,122 @@ import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+
+data class UiState(
+    val isRecording: Boolean = false,
+    val displayTime: String = "00:00:00",
+    val currentDate: String = "",
+    val isAbdelwahabLeGerant: Boolean = true,
+    val editingInterval: K_TempTravaille.IntervalesDeTravaille? = null,
+    val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(
+        vid = 7L
+    ),
+    val activeBonAchat: C3_BonAchate? = null,
+    val nombreClientsAvecCible: Int = 0,
+    val totalWorkedTime: String = "00:00:00"
+)
 
 class Windows__ViewModel(
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
-
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
-    // Recording handler handles all recording-related functionality
-    val recordingHandler = RecordingHandler(repository, viewModelScope)
 
+    val recordingHandler = RecordingHandler(repository, viewModelScope)
     val dateList get() = repository.modelDatas
-    // Added state for Abdelwahab Le Gérant privileges
-    private val _isAbdelwahabLeGerant = MutableStateFlow(true)
-    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
-    // Expose recording states from handler
     val isRecording = recordingHandler.isRecording
     val displayTime = recordingHandler.displayTime
-    private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
-
-
     val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
 
-    fun getLastTransaction(
-        client: B_ClientDataBase
-    ): C3_BonAchate? {
-        val historicalData = groupeRepositorysProtoAvJuin3
-            .repositorys_Model
-            .c3_BonAchate_Repository
-            .modelDatasSnapList
-        val lastTransaction = historicalData
-            .filter { it.clientAcheteurID == client.id }
-            .maxByOrNull { it.timestamps }
-        return lastTransaction
-    }
+    private val _isAbdelwahabLeGerant = MutableStateFlow(true)
+    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
+    private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
+    private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
+    val editingInterval = _editingInterval.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun nombreClientAvecCibleCommeLastBonAchat(): Int {
-        return bProto_ClientsDataBase.count { client ->
-            getLastTransaction(client)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
-        }
-    }
+    private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
 
     init {
         recordingHandler.updateTotalWorkedTime()
         recordingHandler.setupRecordingStateListener()
+
+        viewModelScope.launch {
+            repos.activeVId_C3_BonAchate_Repository.collect { id ->
+                val bon =
+                    repos.c3_BonAchate_Repository.modelDatasSnapList.firstOrNull { it.vid == id }
+                updateUiState { it.copy(activeBonAchat = bon) }
+            }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { repos.c3_BonAchate_Repository.modelDatasSnapList.toList() }.collect { list ->
+                _uiState.value.activePeriodeVent?.let { pid ->
+                    list.filter { it.parentVID_1_4_PeriodeVent == pid.vid && it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT }
+                        .minByOrNull { it.timestamps }?.let { bon ->
+                            if (!isRecording.value) {
+                                repos.activeVId_C3_BonAchate_Repository.value = bon.vid
+                                getTodayRecord()?.let { rec ->
+                                    rec.intervalesDeTravaille.find { it.enCoureDEnregestrement }
+                                        ?.let { interval ->
+                                            recordingHandler.startRecordingWithInterval(
+                                                rec.vid,
+                                                interval.vid,
+                                                interval.tempDepart
+                                            )
+                                        } ?: toggleRecording()
+                                }
+                            }
+                        }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            combine(isRecording, displayTime, editingInterval) { r, t, i -> Triple(r, t, i) }
+                .collect { (r, t, i) ->
+                    updateUiState {
+                        it.copy(
+                            isRecording = r,
+                            displayTime = t,
+                            editingInterval = i,
+                            nombreClientsAvecCible = nombreClientAvecCibleCommeLastBonAchat(),
+                            totalWorkedTime = t
+                        )
+                    }
+                }
+        }
     }
 
-    // Function to toggle admin privileges
+    fun getLastTransaction(client: B_ClientDataBase): C3_BonAchate? =
+        repos.c3_BonAchate_Repository.modelDatasSnapList
+            .filter { it.clientAcheteurID == client.id }
+            .maxByOrNull { it.timestamps }
+
+    fun nombreClientAvecCibleCommeLastBonAchat(): Int =
+        bProto_ClientsDataBase.count { getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible }
+
+    private fun updateUiState(update: (UiState) -> UiState) {
+        _uiState.value = update(_uiState.value)
+    }
+
     fun toggleAbdelwahabLeGerant() {
         _isAbdelwahabLeGerant.value = !_isAbdelwahabLeGerant.value
     }
 
-    // Add these state variables to Windows__ViewModel class
-    private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
-    val editingInterval = _editingInterval.asStateFlow()
-
-    // Add this function to Windows__ViewModel class
     fun editIntervaleTemp(interval: K_TempTravaille.IntervalesDeTravaille) {
         _editingInterval.value = interval
     }
-    // In Windows__ViewModel.kt
-    fun togleRecodingOnUtilisontCetteIntervale(record: K_TempTravaille?) {
-        if (record == null) return
 
-        // Find the active interval that was just created
-        val activeInterval = record.intervalesDeTravaille.find { it.enCoureDEnregestrement }
-
-        if (activeInterval != null) {
-            // Set the recording state variables in the RecordingHandler
-            recordingHandler.startRecordingWithInterval(
-                recordId = record.vid,
-                intervalId = activeInterval.vid,
-                startTime = activeInterval.tempDepart
-            )
-        }
-    }
-
-    // Add this function to Windows__ViewModel class
     fun clearEditingInterval() {
         _editingInterval.value = null
     }
@@ -100,70 +135,44 @@ class Windows__ViewModel(
     }
 
     fun deleteIntervaleTemp(intervalId: String) {
-        // Utiliser la méthode de repository directement
         repository.deleteIntevaleDeTemp(intervalId)
-        recordingHandler.updateTotalWorkedTime() // Update the time calculations after deletion
+        recordingHandler.updateTotalWorkedTime()
     }
 
     fun updatePareMain(
-        recordId: String,
-        startTime: String? = null,
-        endTime: String? = null,
+        recordId: String, startTime: String? = null, endTime: String? = null,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
     ) {
-        // Find the existing record
-        val existingRecord = dateList.find { it.vid == recordId }
-
-        if (existingRecord != null) {
-            // If we have an active interval, update it
-            val activeInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
-
-            if (activeInterval != null) {
-                // Update the existing interval using repository
+        dateList.find { it.vid == recordId }?.let { record ->
+            record.intervalesDeTravaille.find { it.enCoureDEnregestrement }?.let { interval ->
                 repository.updateExistingInterval(
-                    recordId = existingRecord.vid,
-                    intervalId = activeInterval.vid,
-                    startTime = startTime,
-                    endTime = endTime,
-                    typeTemp = typeTemp
+                    record.vid,
+                    interval.vid,
+                    startTime,
+                    endTime,
+                    typeTemp
                 )
-
-                // Update the total worked time to reflect the changes
                 recordingHandler.updateTotalWorkedTime()
-            } else {
-                // If no active interval, create a new one if both start and end time are provided
+            } ?: run {
                 if (startTime != null && endTime != null) {
-                    val currentTime = TimeFormatUtils.getCurrentTime()
-                    val currentTimeFormatted = currentTime.replace(":", "_")
-
-                    // Add new interval with repository
-                    repository.addNewInterval(
-                        recordId = existingRecord.vid,
-                        intervalId = currentTimeFormatted,
-                        startTime = startTime
-                    )
-
-                    // Update the interval we just created
+                    val timeId = TimeFormatUtils.getCurrentTime().replace(":", "_")
+                    repository.addNewInterval(record.vid, timeId, startTime)
                     repository.updateExistingInterval(
-                        recordId = existingRecord.vid,
-                        intervalId = currentTimeFormatted,
+                        record.vid,
+                        timeId,
                         endTime = endTime,
                         typeTemp = typeTemp
                     )
-
                     recordingHandler.updateTotalWorkedTime()
                 }
             }
         }
     }
 
-
-
-    // Delegate recording functions to RecordingHandler
-    fun toggleRecording(forceStop : Boolean = false) {
+    fun toggleRecording(forceStop: Boolean = false) {
         recordingHandler.toggleRecording(forceStop)
     }
-    // Delegate recording functions to RecordingHandler
+
     fun stopRecording() {
         recordingHandler.stopRecording()
     }
@@ -172,11 +181,8 @@ class Windows__ViewModel(
         recordingHandler.updateElapsedTime()
     }
 
-    fun getTodayRecord(): K_TempTravaille? {
-        val currentDate = _currentDate.value
-        return dateList.find { it.infosDeBase.dateInString == currentDate }
-    }
-
+    fun getTodayRecord(): K_TempTravaille? =
+        dateList.find { it.infosDeBase.dateInString == _currentDate.value }
 
     fun resetSessionTimer() {
         recordingHandler.resetSessionTimer()

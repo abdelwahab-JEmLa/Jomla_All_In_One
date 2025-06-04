@@ -1,7 +1,7 @@
 // B_ProduitCommande.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.util.Log
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun B_ProduitCommande(
-    models: _0_0_HeadOfRepositorys_Model,
+    models: GroupeRepositorysProtoAvJuin3Model,
     Produit: _1_2_ProduitAcheteOperation,
 ) {
     val TAG = "B_ProduitCommande"

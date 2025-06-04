@@ -110,12 +110,15 @@ fun filterClientsBasedOnMode(
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_EVITE
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME

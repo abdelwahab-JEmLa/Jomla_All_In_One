@@ -11,17 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * Handles all recording-related functionality that was previously in the ViewModel
- */
-class RecordingHandler(
-    private val repository: K_TempTravailleRepository,
-    private val coroutineScope: CoroutineScope
-) {
-    // State tracking
+class RecordingHandler(private val repository: K_TempTravailleRepository, private val coroutineScope: CoroutineScope) {
+
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
-
     private val _currentRecordId = MutableStateFlow<String?>(null)
     private val _currentIntervalId = MutableStateFlow<String?>(null)
     private val _currentStartTime = MutableStateFlow<String?>(null)
@@ -32,23 +25,18 @@ class RecordingHandler(
     private val _currentElapsedSeconds = MutableStateFlow(0L)
     private val _lastUpdateTime = MutableStateFlow(System.currentTimeMillis())
 
-    // Toggle recording state
     fun stopRecording() {
         stopTimeInterval()
         updateRecordingState(false)
     }
 
     fun toggleRecording(forceStop: Boolean) {
-        if (_isRecording.value && !forceStop) {
-            stopTimeInterval()
-            updateRecordingState(false)
-        } else {
+        if (_isRecording.value && !forceStop) stopRecording() else {
             startTimeInterval()
             updateRecordingState(true)
         }
     }
 
-    // In RecordingHandler.kt
     fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String) {
         _currentRecordId.value = recordId
         _currentIntervalId.value = intervalId
@@ -56,39 +44,27 @@ class RecordingHandler(
         _currentElapsedSeconds.value = 0L
         _lastUpdateTime.value = System.currentTimeMillis()
         _elapsedTimeInSeconds.value = 0
-
-        // Update the recording state
         _isRecording.value = true
         updateRecordingState(true)
     }
 
     fun setupRecordingStateListener() {
-        val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
-        recordingStateRef.addValueEventListener(object : ValueEventListener {
+        K_TempTravailleRepository.caReference.child("_isRecording").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val isRecordingValue = snapshot.getValue(Boolean::class.java) ?: false
                 if (isRecordingValue != _isRecording.value) {
                     _isRecording.value = isRecordingValue
                     if (isRecordingValue) {
-                        // We're now recording but weren't before, so setup the recording state
-                        val currentDate = TimeFormatUtils.getCurrentDate()
-                        val currentDateStr = currentDate.replace("/", "_")
-                        // Check if there's an active interval
-                        val existingRecord = repository.modelDatas.find { it.vid == currentDateStr }
-                        val activeInterval =
-                            existingRecord?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }
-                        if (activeInterval != null) {
-                            _currentRecordId.value = currentDateStr
-                            _currentIntervalId.value = activeInterval.vid
-                            _currentStartTime.value = activeInterval.tempDepart
-                            _currentElapsedSeconds.value = 0L
-                            _lastUpdateTime.value = System.currentTimeMillis()
-                        } else {
-                            // No active interval, strange state, reset recording
-                            updateRecordingState(false)
-                        }
+                        val currentDateStr = TimeFormatUtils.getCurrentDate().replace("/", "_")
+                        repository.modelDatas.find { it.vid == currentDateStr }
+                            ?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }?.let { interval ->
+                                _currentRecordId.value = currentDateStr
+                                _currentIntervalId.value = interval.vid
+                                _currentStartTime.value = interval.tempDepart
+                                _currentElapsedSeconds.value = 0L
+                                _lastUpdateTime.value = System.currentTimeMillis()
+                            } ?: updateRecordingState(false)
                     } else {
-                        // We're no longer recording
                         _currentRecordId.value = null
                         _currentIntervalId.value = null
                         _currentStartTime.value = null
@@ -98,72 +74,44 @@ class RecordingHandler(
                     }
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                println("Error listening to recording state: ${error.message}")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 
-    // Method to upsert_1_3_TransactionCommercial the recording state in Firebase
     private fun updateRecordingState(isRecording: Boolean) {
-        val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
-        recordingStateRef.setValue(isRecording)
-            .addOnSuccessListener {
-                println("Recording state updated successfully")
-            }
-            .addOnFailureListener { e ->
-                println("Failed to upsert_1_3_TransactionCommercial recording state: ${e.message}")
-            }
+        K_TempTravailleRepository.caReference.child("_isRecording").setValue(isRecording)
     }
 
-
     private fun startTimeInterval() {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val currentDateStr = currentDate.replace("/", "_")
+        val currentDate = TimeFormatUtils.getCurrentDate().replace("/", "_")
         val currentTime = TimeFormatUtils.getCurrentTime()
-        val currentTimeStr = currentTime.replace(":", "_")
+        val timeId = currentTime.replace(":", "_")
 
-        _currentRecordId.value = currentDateStr
-        _currentIntervalId.value = currentTimeStr
+        _currentRecordId.value = currentDate
+        _currentIntervalId.value = timeId
         _currentStartTime.value = currentTime
         _currentElapsedSeconds.value = 0L
         _lastUpdateTime.value = System.currentTimeMillis()
 
         coroutineScope.launch {
-            // Utiliser la méthode de repository pour ajouter un nouvel intervalle
-            repository.addNewInterval(
-                recordId = currentDateStr,
-                intervalId = currentTimeStr,
-                startTime = currentTime
-            )
+            repository.addNewInterval(currentDate, timeId, currentTime)
             _isRecording.value = true
             _elapsedTimeInSeconds.value = 0
         }
     }
 
     fun stopTimeInterval() {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val currentDateStr = currentDate.replace("/", "_")
+        val currentDate = TimeFormatUtils.getCurrentDate().replace("/", "_")
         val currentTime = TimeFormatUtils.getCurrentTime()
-        val currentTimeStr = currentTime.replace(":", "_")
 
         coroutineScope.launch {
-            // Utiliser la méthode de repository pour mettre à jour l'intervalle existant
-            val intervalId = _currentIntervalId.value ?: currentTimeStr
-            repository.updateExistingInterval(
-                recordId = currentDateStr,
-                intervalId = intervalId,
-                endTime = currentTime
-            )
-
+            repository.updateExistingInterval(currentDate, _currentIntervalId.value ?: currentTime.replace(":", "_"), endTime = currentTime)
             _isRecording.value = false
             _currentRecordId.value = null
             _currentIntervalId.value = null
             _currentStartTime.value = null
             _elapsedTimeInSeconds.value = 0
             _currentElapsedSeconds.value = 0L
-
             updateTotalWorkedTime()
         }
     }
@@ -171,70 +119,38 @@ class RecordingHandler(
     fun updateElapsedTime() {
         if (_isRecording.value) {
             _elapsedTimeInSeconds.value += 1
-
             val now = System.currentTimeMillis()
-            val delta = (now - _lastUpdateTime.value) / 1000
-            _currentElapsedSeconds.value += delta
+            _currentElapsedSeconds.value += (now - _lastUpdateTime.value) / 1000
             _lastUpdateTime.value = now
-
-            if (_elapsedTimeInSeconds.value % 5 == 0) {
-                updateTotalWorkedTime()
-            } else {
-                updateDisplayTime()
-            }
+            if (_elapsedTimeInSeconds.value % 5 == 0) updateTotalWorkedTime() else updateDisplayTime()
         }
     }
 
     fun calculateTotalWorkedTime(record: K_TempTravaille?, isCurrentlyRecording: Boolean): Long {
+        if (record == null) return 0L
         var total = 0L
-
-        if (record == null) {
-            return 0L
-        }
-
         record.intervalesDeTravaille.forEach { interval ->
             if (!interval.enCoureDEnregestrement) {
-                val durationMinutes = K_TempTravaille.calculateDurationMinutes(
-                    interval.tempDepart,
-                    interval.temparrete
-                )
-
-                if (durationMinutes > 0) {
-                    total += durationMinutes * 60L
-                }
+                val duration = K_TempTravaille.calculateDurationMinutes(interval.tempDepart, interval.temparrete)
+                if (duration > 0) total += duration * 60L
             } else if (isCurrentlyRecording && interval.vid == _currentIntervalId.value) {
-                val startMinutes = interval.tempDepart.split(":").let {
-                    if (it.size >= 2) it[0].toInt() * 60 + it[1].toInt() else 0
-                }
-
-                val currentTime = TimeFormatUtils.getCurrentTime()
-                val currentMinutes = currentTime.split(":").let {
-                    if (it.size >= 2) it[0].toInt() * 60 + it[1].toInt() else 0
-                }
-
-                val durationMinutes = if (currentMinutes < startMinutes) {
-                    (24 * 60 - startMinutes) + currentMinutes
-                } else {
-                    currentMinutes - startMinutes
-                }
-
-                total += durationMinutes * 60L
+                val startMinutes = interval.tempDepart.split(":").let { if (it.size >= 2) it[0].toInt() * 60 + it[1].toInt() else 0 }
+                val currentMinutes = TimeFormatUtils.getCurrentTime().split(":").let { if (it.size >= 2) it[0].toInt() * 60 + it[1].toInt() else 0 }
+                val duration = if (currentMinutes < startMinutes) (24 * 60 - startMinutes) + currentMinutes else currentMinutes - startMinutes
+                total += duration * 60L
             }
         }
-
         return total
     }
 
     fun updateTotalWorkedTime() {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val todayRecord = repository.modelDatas.find { it.infosDeBase.dateInString == currentDate }
+        val todayRecord = repository.modelDatas.find { it.infosDeBase.dateInString == TimeFormatUtils.getCurrentDate() }
         _totalWorkedSeconds.value = calculateTotalWorkedTime(todayRecord, _isRecording.value)
         updateDisplayTime()
     }
 
     fun updateDisplayTime() {
-        val totalTimeSeconds = _totalWorkedSeconds.value +
-                if (_isRecording.value) _elapsedTimeInSeconds.value.toLong() else 0
+        val totalTimeSeconds = _totalWorkedSeconds.value + if (_isRecording.value) _elapsedTimeInSeconds.value.toLong() else 0
         _displayTime.value = TimeFormatUtils.formatSecondsToTime(totalTimeSeconds)
     }
 
@@ -243,10 +159,7 @@ class RecordingHandler(
         _lastUpdateTime.value = System.currentTimeMillis()
     }
 
-    fun onLifecycleResume(todayRecord: K_TempTravaille?) {
-        _totalWorkedSeconds.value = calculateTotalWorkedTime(todayRecord, _isRecording.value)
-    }
-
+    fun onLifecycleResume(todayRecord: K_TempTravaille?) { _totalWorkedSeconds.value = calculateTotalWorkedTime(todayRecord, _isRecording.value) }
     fun onRecordingStopped(todayRecord: K_TempTravaille?) {
         if (_currentElapsedSeconds.value > 0) {
             _currentElapsedSeconds.value = 0
