@@ -71,12 +71,13 @@ fun CategorySelectionDialog(
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-    // Auto-focus the search field and show keyboard when dialog opens
-    LaunchedEffect(Unit) {
-        delay(100)
-        focusRequester.requestFocus()
-        keyboard?.show()
-    }
+     if (showSearch) {
+         LaunchedEffect(Unit) {
+             delay(100)
+             focusRequester.requestFocus()
+             keyboard?.show()
+         }
+     }
 
     val catalogues = remember { startupeDatas() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
