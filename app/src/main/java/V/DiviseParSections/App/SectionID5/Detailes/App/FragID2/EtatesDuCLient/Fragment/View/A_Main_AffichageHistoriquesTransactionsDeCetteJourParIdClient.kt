@@ -13,14 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
+@Preview
 @Composable
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient = koinViewModel(),
-    idClient: Long = 0
+    idClient: Long = 4
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateStringName = DatesHandler()

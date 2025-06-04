@@ -35,11 +35,8 @@ data class B_ClientDataBase(
     var snippet: String = "",
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI
 ) {
-    // Keep the enum classes as they are
     @IgnoreExtraProperties
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
-
-
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
         VENDU_A_LUI(android.R.color.holo_purple, ""),
