@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -94,6 +95,19 @@ class ViewModel_MapClients_App2FragID1(
     // Dialog states
     val showSecteurDialog = mutableStateOf(false)
     val showAddSecteurDialog = mutableStateOf(false)
+
+     fun getLastTransaction(
+        client: B_ClientDataBase
+    ): C3_BonAchate? {
+        val historicalData = repo_0_0_HeadSQLRepositorys
+            .repositorys_Model
+            .c3_BonAchate_Repository
+            .modelDatasSnapList
+        val lastTransaction = historicalData
+            .filter { it.clientAcheteurID == client.id }
+            .maxByOrNull { it.timestamps }
+        return lastTransaction
+    }
 
     init {
         loadSecteurs()

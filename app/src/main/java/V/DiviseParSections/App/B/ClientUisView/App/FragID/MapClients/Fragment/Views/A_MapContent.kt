@@ -158,7 +158,6 @@ fun MapContent(
             mapView,
             viewModel,
             clientDataBaseSnapList,
-            clientEnCourDeVent,
             currentFilterMode,
             showMarkerDetails
         ) { marker ->

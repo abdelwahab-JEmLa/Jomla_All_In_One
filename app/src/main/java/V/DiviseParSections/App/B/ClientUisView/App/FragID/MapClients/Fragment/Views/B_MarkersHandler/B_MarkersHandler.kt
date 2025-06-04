@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -21,7 +20,6 @@ suspend fun updateMapMarkers(
     mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
     clientDataBaseSnapList: List<B_ClientDataBase>,
-    clientEnCourDeVent: Long,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
@@ -42,7 +40,6 @@ suspend fun updateMapMarkers(
         mapView,
         clientsToShow,
         viewModel,
-        clientEnCourDeVent,
         showMarkerDetails,
         onMarkerSelected
     )
@@ -55,7 +52,6 @@ fun addMarkersForFilteredClients(
     mapView: MapView,
     clientsToShow: List<B_ClientDataBase>,
     viewModel: ViewModel_MapClients_App2FragID1,
-    clientEnCourDeVent: Long,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
@@ -67,7 +63,6 @@ fun addMarkersForFilteredClients(
                 viewModel,
                 mapView,
                 client,
-                clientEnCourDeVent,
                 context,
                 showMarkerDetails,
                 onMarkerSelected
@@ -84,23 +79,10 @@ fun createAndAddMarker(
     viewModel: ViewModel_MapClients_App2FragID1,
     mapView: MapView,
     client: B_ClientDataBase,
-    clientEnCourDeVent: Long,
     context: Context,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-    val historicalData = viewModel.repo_0_0_HeadSQLRepositorys
-        .repositorys_Model
-        .c3_BonAchate_Repository
-        .modelDatasSnapList
-    val lastTransaction = historicalData
-        .filter { it.clientAcheteurID == client.id }
-        .maxByOrNull { it.timestamps }
-
-    val actuelleEtat =
-        if (client.id == clientEnCourDeVent)
-            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
-        else client.actuelleEtat
 
     val marker = Marker(mapView).apply {
         id = client.id.toString()
@@ -109,14 +91,14 @@ fun createAndAddMarker(
             client.longitude
         )
 
-        title(viewModel, client,lastTransaction)
+        title(viewModel, client)
 
         snippet = if (client.cUnClientTemporaire)
             "ClientAchteur temporaire" else "ClientAchteur permanent"
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
         try {
-            configureMarkerInfoWindow(this, mapView, context, actuelleEtat,lastTransaction)
+            configureMarkerInfoWindow(this, mapView, context, viewModel,client)
         } catch (_: Exception) {
         }
 
@@ -133,20 +115,21 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
+
+
 private fun Marker.title(
     viewModel: ViewModel_MapClients_App2FragID1,
     client: B_ClientDataBase,
-    lastTransaction: C3_BonAchate?,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
-        val timeStr = lastTransaction?.timestamps?.let { dateHandler.getDateAndTimString(it).time }
-        val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
-        val distanceSemain = dateHandler.getAbrgDistanceSemain(lastTransaction?.timestamps)
+        val timeStr = viewModel.getLastTransaction(client)?.timestamps?.let { dateHandler.getDateAndTimString(it).time }
+        val dayName = dateHandler.getArabicDayNameFromTimestamp(viewModel.getLastTransaction(client)?.timestamps ?: 0)
+        val distanceSemain = dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.timestamps)
 
-        if (lastTransaction != null) {
+        if (viewModel.getLastTransaction(client) != null) {
             "$distanceSemain.$dayName (${timeStr})" +
-                    "\n${lastTransaction.etateActuellementEst?.nomArabe}" +
+                    "\n${viewModel.getLastTransaction(client)!!.etateActuellementEst.nomArabe}" +
                     "\n${client.nom}"
         } else {
             client.nom
@@ -160,8 +143,8 @@ fun configureMarkerInfoWindow(
     marker: Marker,
     mapView: MapView,
     context: Context,
-    actuelleEtat: B_ClientDataBase.DernierEtatAAffiche,
-    lastTransaction: C3_BonAchate?,
+    viewModel: ViewModel_MapClients_App2FragID1,
+    client: B_ClientDataBase,
 ) {
     val markerInfoWindowLayout = xmlResources
         .find { it.first == "marker_info_window" }?.second
@@ -181,8 +164,8 @@ fun configureMarkerInfoWindow(
 
     val container = marker.infoWindow.view.findViewById<LinearLayout>(containerResourceId)
     container?.let {
-        val backgroundColor = lastTransaction?.let { lastTransaction ->
-            ContextCompat.getColor(context, lastTransaction.etateActuellementEst.color)
+        val backgroundColor = viewModel.getLastTransaction(client)?.let {
+            ContextCompat.getColor(context, viewModel.getLastTransaction(client)!!.etateActuellementEst.color)
         }
 
         if (backgroundColor != null) {
