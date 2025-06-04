@@ -27,7 +27,8 @@ internal fun RowProduitImages(displayProducts: List<ArticlesBasesStatsTable>) {
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
-            items(displayProducts) { product ->
+            // Show actual products (up to 3)
+            items(displayProducts.take(3)) { product ->
                 A_GlideDisplayImageByKeyId_Proto_5(
                     produitVID = product.id,
                     modifier = Modifier.size(35.dp),
@@ -40,21 +41,25 @@ internal fun RowProduitImages(displayProducts: List<ArticlesBasesStatsTable>) {
                 )
             }
 
-            items(3 - displayProducts.size) {
-                Box(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            RoundedCornerShape(6.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "?",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+            // Fill remaining slots with placeholder boxes (only if we have less than 3 products)
+            val remainingSlots = maxOf(0, 3 - displayProducts.size)
+            if (remainingSlots > 0) {
+                items(remainingSlots) {
+                    Box(
+                        modifier = Modifier
+                            .size(35.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(6.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "?",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }

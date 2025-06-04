@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
-import A.AtelierMobile.Test.ID1.Test.EditeBaseDonneMainScreen.Fragment.Views.CATEGORIES_LIST.Dialogs.AddCategoryDialog
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
@@ -59,10 +58,11 @@ fun CategorySelectionDialog(
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
-    availableCategories: List<Long> = emptyList()
+    availableCategories: List<Long> = emptyList(),
+    allProducts: List<ArticlesBasesStatsTable> = emptyList()
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
-    var showSearch by remember { mutableStateOf(true) }  // Show search by default
+    var showSearch by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     var filterWithProducts by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
@@ -70,19 +70,61 @@ fun CategorySelectionDialog(
 
     // Auto-focus the search field and show keyboard when dialog opens
     LaunchedEffect(Unit) {
-        delay(100) // Small delay to ensure the dialog is fully rendered
+        delay(100)
         focusRequester.requestFocus()
         keyboard?.show()
     }
 
+    val catalogues = remember { startupeDatas() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
-    val filteredCategories by remember(allCategories, searchText, filterWithProducts, availableCategories) {
-        derivedStateOf {
-            var filtered = allCategories
-            if (filterWithProducts) filtered = filtered.filter { availableCategories.contains(it.id) }
-            if (searchText.isNotBlank()) filtered = filtered.filter { it.nom.contains(searchText, true) }
-            filtered
+
+    // Group categories by catalogue
+    val categoriesByCatalogue = remember(allCategories, catalogues) {
+        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+        catalogues.forEach { catalogue ->
+            val catalogueCategories = allCategories.filter { category ->
+                category.id >= catalogue.premierCategorieId &&
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                            category.id < nextCatalogue.premierCategorieId
+                        } ?: true)
+            }
+            if (catalogueCategories.isNotEmpty()) {
+                grouped[catalogue] = catalogueCategories
+            }
         }
+
+        // Add categories that don't belong to any catalogue
+        val uncategorizedCategories = allCategories.filter { category ->
+            !catalogues.any { catalogue ->
+                category.id >= catalogue.premierCategorieId &&
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                            category.id < nextCatalogue.premierCategorieId
+                        } ?: true)
+            }
+        }
+
+        if (uncategorizedCategories.isNotEmpty()) {
+            grouped[CataloguesCaegorie(0, "Autres", 0)] = uncategorizedCategories
+        }
+
+        grouped
+    }
+
+    val filteredCategoriesByCatalogue by remember(categoriesByCatalogue, searchText, filterWithProducts, availableCategories) {
+        derivedStateOf {
+            categoriesByCatalogue.mapValues { (_, categories) ->
+                var filtered = categories
+                if (filterWithProducts) filtered = filtered.filter { availableCategories.contains(it.id) }
+                if (searchText.isNotBlank()) filtered = filtered.filter { it.nom.contains(searchText, true) }
+                filtered
+            }.filterValues { it.isNotEmpty() }
+        }
+    }
+
+    // Group products by category for image display
+    val productsByCategory = remember(allProducts) {
+        allProducts.groupBy { it.idParentCategorie ?: 0L }
     }
 
     Dialog(
@@ -199,7 +241,7 @@ fun CategorySelectionDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .focusRequester(focusRequester), // Add focus requester
+                            .focusRequester(focusRequester),
                         label = { Text("Rechercher") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
@@ -230,25 +272,44 @@ fun CategorySelectionDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Add "Sans Catégorie" option at the top
                     if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                            CatalogHeaderCard(
+                                catalogue = CataloguesCaegorie(0, "Sans Catégorie", 0),
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
                         item {
                             CategoryOptionGridCard(
                                 categoryId = null,
                                 categoryName = "Sans Catégorie",
                                 isSelected = product.idParentCategorie == null,
                                 onClick = { onCategorySelected(null) },
-                                onEditName = null
+                                onEditName = null,
+                                categoryProducts = emptyList()
                             )
                         }
                     }
-                    items(filteredCategories) { cat ->
-                        CategoryOptionGridCard(
-                            categoryId = cat.id,
-                            categoryName = cat.nom,
-                            isSelected = product.idParentCategorie == cat.id,
-                            onClick = { onCategorySelected(cat.id) },
-                            onEditName = if (onUpdateCategory != null) { name -> onUpdateCategory(cat.id, name) } else null
-                        )
+
+                    // Add catalogue sections with sticky headers
+                    filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                            CatalogHeaderCard(
+                                catalogue = catalogue,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                        items(categories) { cat ->
+                            CategoryOptionGridCard(
+                                categoryId = cat.id,
+                                categoryName = cat.nom,
+                                isSelected = product.idParentCategorie == cat.id,
+                                onClick = { onCategorySelected(cat.id) },
+                                onEditName = if (onUpdateCategory != null) { name -> onUpdateCategory(cat.id, name) } else null,
+                                categoryProducts = productsByCategory[cat.id] ?: emptyList()
+                            )
+                        }
                     }
                 }
 

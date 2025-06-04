@@ -15,23 +15,49 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.delay
 
 @Composable
-fun AddCategoryDialog(
-    onCategoryAdded: (String) -> Unit,
+fun EditCategoryDialog(
+    currentName: String,
+    onCategoryUpdated: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    var textFieldValue by remember { 
+        mutableStateOf(
+            TextFieldValue(
+                text = currentName,
+                selection = TextRange(currentName.length) // Place cursor at end
+            )
+        )
+    }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
+    // Auto-focus and select text when dialog opens
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
+        keyboard?.show()
+        // Select all text for easy editing
+        textFieldValue = textFieldValue.copy(selection = TextRange(0, currentName.length))
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -50,20 +76,23 @@ fun AddCategoryDialog(
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(
-                    text = "Nouvelle Catégorie",
+                    text = "Modifier Catégorie",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    value = textFieldValue,
+                    onValueChange = { textFieldValue = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                     label = { Text("Nom") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            if (name.trim().isNotEmpty()) onCategoryAdded(name.trim())
+                            val trimmedName = textFieldValue.text.trim()
+                            if (trimmedName.isNotEmpty()) onCategoryUpdated(trimmedName)
                         }
                     ),
                     singleLine = true
@@ -77,11 +106,12 @@ fun AddCategoryDialog(
                     TextButton(onClick = onDismiss) { Text("Annuler") }
                     TextButton(
                         onClick = {
-                            if (name.trim().isNotEmpty()) onCategoryAdded(name.trim())
+                            val trimmedName = textFieldValue.text.trim()
+                            if (trimmedName.isNotEmpty()) onCategoryUpdated(trimmedName)
                         },
-                        enabled = name.trim().isNotEmpty()
+                        enabled = textFieldValue.text.trim().isNotEmpty()
                     ) {
-                        Text("Ajouter")
+                        Text("Modifier")
                     }
                 }
             }
