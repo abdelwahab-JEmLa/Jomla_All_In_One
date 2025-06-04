@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -63,10 +64,10 @@ fun addMarkersForFilteredClients(
     clientsToShow.forEach { client ->
         try {
             createAndAddMarker(
+                viewModel,
                 mapView,
                 client,
                 clientEnCourDeVent,
-                viewModel,
                 context,
                 showMarkerDetails,
                 onMarkerSelected
@@ -80,14 +81,22 @@ fun addMarkersForFilteredClients(
 }
 
 fun createAndAddMarker(
+    viewModel: ViewModel_MapClients_App2FragID1,
     mapView: MapView,
     client: B_ClientDataBase,
     clientEnCourDeVent: Long,
-    viewModel: ViewModel_MapClients_App2FragID1,
     context: Context,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
+    val historicalData = viewModel.repo_0_0_HeadSQLRepositorys
+        .repositorys_Model
+        .c3_BonAchate_Repository
+        .modelDatasSnapList
+    val lastTransaction = historicalData
+        .filter { it.clientAcheteurID == client.id }
+        .maxByOrNull { it.timestamps }
+
     val actuelleEtat =
         if (client.id == clientEnCourDeVent)
             B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
@@ -100,14 +109,14 @@ fun createAndAddMarker(
             client.longitude
         )
 
-        title(viewModel, client)
+        title(viewModel, client,lastTransaction)
 
         snippet = if (client.cUnClientTemporaire)
             "ClientAchteur temporaire" else "ClientAchteur permanent"
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
         try {
-            configureMarkerInfoWindow(this, mapView, context, actuelleEtat)
+            configureMarkerInfoWindow(this, mapView, context, actuelleEtat,lastTransaction)
         } catch (_: Exception) {
         }
 
@@ -127,17 +136,9 @@ fun createAndAddMarker(
 private fun Marker.title(
     viewModel: ViewModel_MapClients_App2FragID1,
     client: B_ClientDataBase,
+    lastTransaction: C3_BonAchate?,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
-        val historicalData = viewModel.repo_0_0_HeadSQLRepositorys
-            .repositorys_Model
-            .c3_BonAchate_Repository
-            .modelDatasSnapList
-
-        val lastTransaction = historicalData
-            .filter { it.clientAcheteurID == client.id }
-            .maxByOrNull { it.timestamps }
-
         val dateHandler = DatesHandler()
         val timeStr = lastTransaction?.timestamps?.let { dateHandler.getDateAndTimString(it).time }
         val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
@@ -160,6 +161,7 @@ fun configureMarkerInfoWindow(
     mapView: MapView,
     context: Context,
     actuelleEtat: B_ClientDataBase.DernierEtatAAffiche,
+    lastTransaction: C3_BonAchate?,
 ) {
     val markerInfoWindowLayout = xmlResources
         .find { it.first == "marker_info_window" }?.second
@@ -179,11 +181,13 @@ fun configureMarkerInfoWindow(
 
     val container = marker.infoWindow.view.findViewById<LinearLayout>(containerResourceId)
     container?.let {
-        val backgroundColor = actuelleEtat.let { statue ->
-            ContextCompat.getColor(context, statue.color)
+        val backgroundColor = lastTransaction?.let { lastTransaction ->
+            ContextCompat.getColor(context, lastTransaction.etateActuellementEst.color)
         }
 
-        it.setBackgroundColor(backgroundColor)
+        if (backgroundColor != null) {
+            it.setBackgroundColor(backgroundColor)
+        }
 
         val titleTextViewId = xmlResources
             .find { it.first == "title" }?.second
