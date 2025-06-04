@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.TypeTarificationEnumT2
+import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

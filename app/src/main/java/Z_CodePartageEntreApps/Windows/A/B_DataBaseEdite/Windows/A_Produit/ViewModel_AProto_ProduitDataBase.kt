@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.A_ProduitAncienModelStructure
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.annotation.SuppressLint
 import android.util.Log
@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 
 class ViewModel_AProto_ProduitDataBase(
     private val a_ProduitRepository: A_ProduitRepository,
-    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
     val TAG = "ViewModel_AProto_ProduitDataBase"
     val _2_1_ProduitsDataBase_Repository =_0_0_HeadSQLRepositorys.repositorys_Model._2_1_ProduitsDataBase_Repository

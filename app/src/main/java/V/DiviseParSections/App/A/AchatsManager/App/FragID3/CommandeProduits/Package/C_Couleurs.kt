@@ -1,7 +1,7 @@
 // C_Couleurs.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
@@ -111,7 +111,7 @@ fun Couleurs(
             val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
             val bonAchatPeriod = bonAchatId?.let { id ->
-                models.repository_1_3_TransactionCommercial.modelDatasSnapList
+                models.c3_BonAchate_Repository.modelDatasSnapList
                     .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
             }
 
@@ -168,7 +168,7 @@ fun Couleurs(
                         val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
                         val bonAchatPeriod = bonAchatId?.let { id ->
-                            models.repository_1_3_TransactionCommercial.modelDatasSnapList
+                            models.c3_BonAchate_Repository.modelDatasSnapList
                                 .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
                         }
 
@@ -191,7 +191,7 @@ fun Couleurs(
 
                     // Find the client
                     if (bonAchatVid != null) {
-                        val bonAchat = models.repository_1_3_TransactionCommercial.modelDatasSnapList
+                        val bonAchat = models.c3_BonAchate_Repository.modelDatasSnapList
                             .firstOrNull { it.vid == bonAchatVid }
 
                         val clientId = bonAchat?.clientAcheteurID

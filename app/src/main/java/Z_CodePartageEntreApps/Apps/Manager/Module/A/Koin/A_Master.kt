@@ -4,17 +4,14 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepositoryImpl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.ViewModelPanierFinaleDAchat_FragIdB2
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.Modules.Glide.CalculeCouleurHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.ID1.ViewModel.ViewModel_TestID2
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.F0_FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.G_RoomOperationsHandler
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
@@ -39,9 +36,12 @@ import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticle
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
 import Z_CodePartageEntreApps.Modules.ConnectionManager
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_Head_SQL_RepositorysImpl
+import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.F0_FireBaseOperationsHandler
+import Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL.G_RoomOperationsHandler
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._groupe_RepositorysProtoAvJuin3Impl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
@@ -92,8 +92,8 @@ val commonRepositoriesModule = module {
         _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode)
     }
 
-    single<_0_0_HeadSQLRepositorys> {
-        _0_0_Head_SQL_RepositorysImpl(
+    single<GroupeRepositorysProtoAvJuin3> {
+        _groupe_RepositorysProtoAvJuin3Impl(
             get(),
             get(),
             get(),
@@ -143,7 +143,8 @@ val navigationModule = module {
 
 val viewModelModule = module {
     viewModel {
-        ViewModel_TestID2(
+        ViewModelT2(
+            get(),
         )
     }
 

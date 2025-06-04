@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.EnregestrementMessageVocaleEtLeMetreAuStorageGoogle
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,7 +52,7 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
+    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {            //<--
     val ceTelephoneEstDeAbdelwahab = _0_0_HeadSQLRepositorys
         .repositorys_Model
@@ -79,12 +79,12 @@ fun MarkerStatusDialog(
 
     val clientId = relatedClients?.id ?: 0L
     // Check if a BonAchat already exists for this client in the active period
-    val existingBonAchat = viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
+    val existingBonAchat = viewModel.c3_BonAchate_List.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
 
-    val activeTransactionId by viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    val activeTransactionId by viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
 
     // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {
@@ -223,7 +223,7 @@ fun MarkerStatusDialog(
                                                 relatedClients?.let { client ->
                                                     // Update the transaction with the voice message ID
                                                     val currentTransaction =
-                                                        viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
+                                                        viewModel.c3_BonAchate_List.find {
                                                             it.clientAcheteurID == clientId &&
                                                                     it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
                                                         }
@@ -240,7 +240,7 @@ fun MarkerStatusDialog(
                                                             updatedTransaction
                                                         ) { vid ->
                                                             // Update active transaction ID if needed
-                                                            repositorysModel.activeVId_1_3_TransactionCommercial.value =
+                                                            repositorysModel.activeVId_C3_BonAchate_Repository.value =
                                                                 vid
                                                         }
                                                     }

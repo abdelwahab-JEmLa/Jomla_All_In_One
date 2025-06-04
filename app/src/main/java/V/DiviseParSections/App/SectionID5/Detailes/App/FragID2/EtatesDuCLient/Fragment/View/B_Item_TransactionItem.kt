@@ -58,7 +58,7 @@ fun B_Item_TransactionItem(
 ) {
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
-    val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
 
     // For blinking effect when not active
     val blinkState = remember { mutableStateOf(false) }
@@ -166,7 +166,7 @@ fun B_Item_TransactionItem(
                                         ouvert = !transaction.ouvert
                                     )
                                 ) {
-                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
+                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.value =
                                         transaction.vid
 
                                     // Navigate to the cart screen after selecting a transaction

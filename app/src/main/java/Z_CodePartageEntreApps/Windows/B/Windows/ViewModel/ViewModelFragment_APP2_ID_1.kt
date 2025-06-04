@@ -1,12 +1,12 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
@@ -38,7 +38,7 @@ data class UiState_StartUpScreen(
 )
 
 class ViewModelFragment_StartUpScreen(
-    val _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    val _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val C3_BonAchate_Repository: C3_BonAchate_Repository,
@@ -70,7 +70,7 @@ class ViewModelFragment_StartUpScreen(
         // Add hardcoded data only if repository is empty
         viewModelScope.launch {
             if (_1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.isEmpty()) {
-                Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
+                Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
                     _1_1_CouleurAcheteOperation_Repository,
                     _1_2_ProduitAcheteOperation_Repository,
                     C3_BonAchate_Repository,

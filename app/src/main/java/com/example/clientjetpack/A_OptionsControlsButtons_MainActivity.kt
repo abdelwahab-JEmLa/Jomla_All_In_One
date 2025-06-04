@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 @Composable
 fun A_OptionsControlsButtons_A1FragID_3(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
-    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
+    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
     onShoControleurApps: () -> Unit,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {

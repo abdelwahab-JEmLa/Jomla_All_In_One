@@ -28,7 +28,7 @@ fun upsert_1_3_TransactionCommercial(
 
     val clientId = relatedClients?.id ?: 0L
 
-    val existingBonAchat = viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
+    val existingBonAchat = viewModel.c3_BonAchate_List.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
                 && it.etateActuellementEst == newEtate
@@ -41,7 +41,7 @@ fun upsert_1_3_TransactionCommercial(
         viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
-            repositorysModel.activeVId_1_3_TransactionCommercial.value = updatedBonAchat.vid
+            repositorysModel.activeVId_C3_BonAchate_Repository.value = updatedBonAchat.vid
         }
 
     } else {
@@ -60,9 +60,9 @@ fun upsert_1_3_TransactionCommercial(
         ) { vid ->
             if (newEtate == C3_BonAchate.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
-            ) repositorysModel.activeVId_1_3_TransactionCommercial.value = 0
+            ) repositorysModel.activeVId_C3_BonAchate_Repository.value = 0
             else
-                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
+                repositorysModel.activeVId_C3_BonAchate_Repository.value = vid
         }
 
     }

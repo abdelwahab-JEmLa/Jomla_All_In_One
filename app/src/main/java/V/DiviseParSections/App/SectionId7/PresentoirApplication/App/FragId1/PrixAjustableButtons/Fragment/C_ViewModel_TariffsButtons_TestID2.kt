@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.D_TarificationInfos
+import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
 import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.C3_BonAchate
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -35,7 +35,7 @@ data class UiState(
 )
 
 class TariffsButtonsViewModel_TestID2(
-    val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepository,
 ) : ViewModel() {
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
@@ -45,7 +45,7 @@ class TariffsButtonsViewModel_TestID2(
 
     private val repoC3_BonVent = repo_0_0_HeadSQLRepositorys
         .repositorys_Model
-        .repository_1_3_TransactionCommercial
+        .c3_BonAchate_Repository
 
     private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
         .repositorys_Model

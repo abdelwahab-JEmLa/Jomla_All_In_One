@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows.PressistatntMainActivityButtons
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
@@ -9,7 +9,7 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -95,13 +95,13 @@ fun MainUi(
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
+    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
     clickedCouleurIndex: Int,
     onPourFermeWindows: () -> Unit,
 ) {
     val idProduitActuelle = currentSale.idArticle
     val parentCompose_1_3_BonAchatVid by
-    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
 
     // Fixed access to progress value
     val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
@@ -109,7 +109,7 @@ fun MainUi(
 
     val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
 
-    val find = repositorysModel.repository_1_3_TransactionCommercial
+    val find = repositorysModel.c3_BonAchate_Repository
         .modelDatasSnapList.find {
             it.vid == parentCompose_1_3_BonAchatVid
         }

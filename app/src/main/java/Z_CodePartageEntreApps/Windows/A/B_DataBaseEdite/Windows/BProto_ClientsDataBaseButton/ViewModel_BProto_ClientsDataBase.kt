@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class ViewModel_BProto_ClientsDataBase(
     val mainRepo: B_ClientDataBaseRepository,
-    val _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    val _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     ) : ViewModel() {
     fun changeToutLesclientStateAuCIBLE_PRIORITE_2() {
         viewModelScope.launch {

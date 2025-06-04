@@ -3,7 +3,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -37,7 +37,7 @@ fun B_ProduitCommande(
 
     // Create a map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {
-        models.repository_1_3_TransactionCommercial.modelDatasSnapList
+        models.c3_BonAchate_Repository.modelDatasSnapList
             .associate { it.vid to it.parentVID_1_4_PeriodeVent }
     }
 
@@ -104,7 +104,7 @@ fun B_ProduitCommande(
         val bonAchatIds = relevantProductInstances.map { it.parent_1_3_TransactionCommercial }.distinct()
 
         // Get all client IDs from those BonAchat entries
-        models.repository_1_3_TransactionCommercial.modelDatasSnapList
+        models.c3_BonAchate_Repository.modelDatasSnapList
             .filter { it.vid in bonAchatIds }
             .map { it.clientAcheteurID }
             .distinct()

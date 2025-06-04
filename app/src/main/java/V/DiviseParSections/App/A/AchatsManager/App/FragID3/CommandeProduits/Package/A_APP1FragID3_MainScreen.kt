@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +25,7 @@ import org.koin.compose.koinInject
 @Composable
 fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
-    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
+    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
     val TAG = "APP2_FragID3_MainScreen"
 
@@ -65,7 +65,7 @@ fun A_APP1FragID3_MainScreen(
 
             // Check BonAchat for product 127
             val bonAchatId = product127.parent_1_3_TransactionCommercial
-            val bonAchat = models.repository_1_3_TransactionCommercial.modelDatasSnapList.find { it.vid == bonAchatId }
+            val bonAchat = models.c3_BonAchate_Repository.modelDatasSnapList.find { it.vid == bonAchatId }
             if (bonAchat != null) {
                 Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentVID_1_4_PeriodeVent}, filter=$periodFilter")
             } else {
@@ -80,7 +80,7 @@ fun A_APP1FragID3_MainScreen(
     LaunchedEffect(
         models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList,
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList,
-        models.repository_1_3_TransactionCommercial.modelDatasSnapList,
+        models.c3_BonAchate_Repository.modelDatasSnapList,
         periodFilter
     ) {
         withContext(Dispatchers.Default) {
@@ -88,11 +88,11 @@ fun A_APP1FragID3_MainScreen(
             val colorsByProductVid = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
                 .groupBy { it.parentProduitAchateOperationVID }
 
-            val bonAchatsById = models.repository_1_3_TransactionCommercial.modelDatasSnapList
+            val bonAchatsById = models.c3_BonAchate_Repository.modelDatasSnapList
                 .associateBy { it.vid }
 
             // Debug logging for period filtering
-            val bonAchatsPeriods = models.repository_1_3_TransactionCommercial.modelDatasSnapList
+            val bonAchatsPeriods = models.c3_BonAchate_Repository.modelDatasSnapList
                 .map { "${it.vid}: ${it.parentVID_1_4_PeriodeVent}" }
             Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 

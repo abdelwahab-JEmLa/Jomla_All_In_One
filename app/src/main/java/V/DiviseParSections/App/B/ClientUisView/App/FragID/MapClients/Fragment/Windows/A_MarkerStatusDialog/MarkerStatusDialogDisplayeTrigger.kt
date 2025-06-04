@@ -11,7 +11,7 @@ suspend fun displayLatestTransactions(
     onMarkerSelected: (Marker) -> Unit,
 ) {
     val latestTransactionsMap = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
-        .repository_1_3_TransactionCommercial.modelDatasSnapList
+        .c3_BonAchate_Repository.modelDatasSnapList
         .groupBy { it.clientAcheteurID }
         .mapValues { (_, transactions) ->
             transactions.maxByOrNull { it.timestamps }
@@ -37,7 +37,7 @@ suspend fun displayOpenTransactions(
     onMarkerSelected: (Marker) -> Unit,
 ) {
     viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
-        .repository_1_3_TransactionCommercial.modelDatasSnapList
+        .c3_BonAchate_Repository.modelDatasSnapList
         .filter { it.ouvert }
         .forEach { transaction ->
             val marker = mapView.overlays.filterIsInstance<Marker>()

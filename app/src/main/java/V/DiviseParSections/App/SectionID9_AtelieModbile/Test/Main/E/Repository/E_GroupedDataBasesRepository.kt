@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository
 
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A0_DataBasesGroup
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.A_ProduitInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.B.Models.D_TarificationInfos
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.F0_FireBaseOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.FireBase.deleteRef
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Module.G_RoomOperationsHandler
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.Test.testD_TarificationInfosT2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
+import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import Z_CodePartageEntreApps.Proto.Par.Type.Data.testD_TarificationInfosT2
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.F0_FireBaseOperationsHandler
+import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.deleteRef
+import Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL.G_RoomOperationsHandler
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 
 class E_GroupedDataBasesRepository(
     val database: AppDatabase,
-    val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val fireBase: F0_FireBaseOperationsHandler,
     private val room: G_RoomOperationsHandler
 ) {

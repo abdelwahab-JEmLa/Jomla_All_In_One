@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ data class UiState_APP2_ID_2(
 )
 
 class ViewModelFragment_APP2_ID_2(
-    val _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
+    val _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 

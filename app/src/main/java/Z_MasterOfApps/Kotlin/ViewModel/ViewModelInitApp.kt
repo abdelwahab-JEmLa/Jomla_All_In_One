@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
@@ -37,7 +37,7 @@ class ViewModelInitApp(
     val C3_BonAchate_Repository: C3_BonAchate_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
-    val repo_0_0_HeadOfRepositorys_SQL_Repository: _0_0_HeadSQLRepositorys,
+    val repo_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
     val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository,
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
