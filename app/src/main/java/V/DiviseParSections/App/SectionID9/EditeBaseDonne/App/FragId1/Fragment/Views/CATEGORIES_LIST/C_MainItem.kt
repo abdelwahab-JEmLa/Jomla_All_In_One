@@ -38,7 +38,8 @@ fun MainItemEditeCategories(
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null
-) {
+) {             //<--
+//TODO(1): au lieu au click s affiche CategorySelectionDialog fait le click stock les prodiuit pour au click but2 il affche le dialoge qui deplace plsieur element au choisisement 
     var showDialog by remember { mutableStateOf(false) }
 
     Card(
