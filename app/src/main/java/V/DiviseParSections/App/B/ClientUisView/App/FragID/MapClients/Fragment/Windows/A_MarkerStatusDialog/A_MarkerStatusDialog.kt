@@ -250,24 +250,24 @@ fun MarkerStatusDialog(
                                     )
                                 }
 
-                                    item {
-                                        C3_BonAchate.EtateActuellementEst.Cible
-                                            .Button(
-                                                coroutineScope = coroutineScope,
-                                                viewModel = viewModel,
-                                                clientId = clientId,
-                                                context = context
-                                            )
-                                    }
-                                    item {
-                                        C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
-                                            .Button(
-                                                coroutineScope = coroutineScope,
-                                                viewModel = viewModel,
-                                                clientId = clientId,
-                                                context = context
-                                            )
-                                    }
+                                item {
+                                    C3_BonAchate.EtateActuellementEst.Cible
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
+                                }
+                                item {
+                                    C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
+                                }
                             }
                         }
                     }
