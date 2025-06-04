@@ -1,19 +1,24 @@
 package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -45,9 +50,11 @@ fun PressistatntMainActivityButtons(
     onPourFermeWindows: (D_TarificationInfos) -> Unit,
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
-    onClickAnulationButton: () -> Unit={},
+    onClickAnulationButton: () -> Unit = {},
 ) {
+    var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
+
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     val isRecording by viewModel.isRecording.collectAsState()
@@ -125,18 +132,56 @@ fun PressistatntMainActivityButtons(
             ) {
                 val displayTime by viewModel.displayTime.collectAsState()
 
-                ControlButton(
-                    onClick = {
-                        viewModel.toggleRecording()
+                if (showButtons) {
+                    val buttonBackgroundColor =
+                        if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
+                    val enable = true
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        // Labels toggle button
+                        FloatingActionButton(
+                            onClick = {
+                                if (enable) {
+                                   //<--
+                                   //TODO(1): fa
+                                }
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = buttonBackgroundColor,
+                        ) {
+                            val iconColor = Color.Black
 
-                    },
-                    icon = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
-                    contentDescription = if (isRecording) "Stop Recording" else "",
-                    showLabels = showLabels,
-                    labelText = displayTime,
-                    containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
-                    enabled = false
-                )
+                            Icon(
+                                imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
+                                contentDescription = null,
+                                tint = iconColor
+                            )
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                displayTime,
+                                modifier = Modifier
+                                    .background(if (enable) buttonBackgroundColor else Color.Gray)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+                /* ControlButton(
+                     onClick = {
+
+                     },
+                     icon = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
+                     contentDescription = if (isRecording) "Stop Recording" else "",
+                     showLabels = showLabels,
+                     labelText = displayTime,
+                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
+                     enabled = false
+                 )     */
 
                 TariffsButtons_TestID2(
                     showLabels = showLabels,
