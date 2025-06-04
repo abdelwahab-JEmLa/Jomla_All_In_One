@@ -56,7 +56,6 @@ fun MapContent(
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
 ) {
-
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }

@@ -109,20 +109,18 @@ fun filterClientsBasedOnMode(
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_EVITE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ACHETEUR_NON_DISPO
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.FERME
             }
         }
 

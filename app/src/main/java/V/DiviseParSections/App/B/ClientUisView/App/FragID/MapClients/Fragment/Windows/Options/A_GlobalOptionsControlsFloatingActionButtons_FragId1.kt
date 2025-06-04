@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
+import androidx.compose.material.icons.filled.IncompleteCircle
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +50,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -127,8 +131,16 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 modifier = Modifier.align(Alignment.BottomStart),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                if (showMenu) {
+                showDayFilterDialog = AfficheTemporaireDeCibleEtPasseAEux(
+                    showDayFilterDialog = showDayFilterDialog,
+                    showLabels = showLabels,
+                    viewModel = viewModel,
+                    onFilterChanged = { newMode ->
+                        onPickFilter(newMode)
+                    }
+                )
 
+                if (showMenu) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -214,74 +226,72 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     )
 
 
-                    if (!packageName.contains("clientje") || true) {
-                        But1_NearbyMarkersButton(
-                            viewModel = viewModel,
-                            showLabels = showLabels,
-                            viewModelInitApp = viewModelInitApp,
-                            markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
-                            locationTracker = locationTracker,
-                            proximiteMeter = proximiteMeter,
-                            mapView = mapView
-                        )
+                    But1_NearbyMarkersButton(
+                        viewModel = viewModel,
+                        showLabels = showLabels,
+                        viewModelInitApp = viewModelInitApp,
+                        markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
+                        locationTracker = locationTracker,
+                        proximiteMeter = proximiteMeter,
+                        mapView = mapView
+                    )
 
-                        But_2(
-                            viewModel = viewModel,
-                            viewModelInitApp = viewModelInitApp,
-                            textButton = "onFilterMarkers",
-                            showLabels = showLabels,
-                            onClick = {
-                                mapView.overlays.filterIsInstance<Marker>()
-                                    .forEach { it.closeInfoWindow() }
+                    But_2(
+                        viewModel = viewModel,
+                        viewModelInitApp = viewModelInitApp,
+                        textButton = "onFilterMarkers",
+                        showLabels = showLabels,
+                        onClick = {
+                            mapView.overlays.filterIsInstance<Marker>()
+                                .forEach { it.closeInfoWindow() }
 
-                                // Log the filter change
-                                val previousMode = currentFilterMode
-                                val newMode = when (currentFilterMode) {
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+                            // Log the filter change
+                            val previousMode = currentFilterMode
+                            val newMode = when (currentFilterMode) {
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
 
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
-                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-                                }
+                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                            }
 
-                                FilterLogger.logFilterChange(previousMode, newMode)
-                                onFilterMarkers()
-                            },
-                            currentFilterMode = currentFilterMode
-                        )
-                        A_ChangeIdColor(
-                            viewModel = viewModel,
-                            viewModelInitApp = viewModelInitApp,
-                            showLabels = showLabels,
-                            contentDescription = "Repeat",
-                        )
-                        ClearHistoryButton(
-                            viewModelInitApp = viewModelInitApp,
-                            showLabels = showLabels,
-                            onClear,
-                        )
-                    }
+                            FilterLogger.logFilterChange(previousMode, newMode)
+                            onFilterMarkers()
+                        },
+                        currentFilterMode = currentFilterMode
+                    )
+                    A_ChangeIdColor(
+                        viewModel = viewModel,
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels,
+                        contentDescription = "Repeat",
+                    )
+                    ClearHistoryButton(
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels,
+                        onClear,
+                    )
                 }
 
                 LabelsButton(
@@ -332,6 +342,73 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     }
 }
 
+@Composable
+private fun AfficheTemporaireDeCibleEtPasseAEux(
+    showDayFilterDialog: Boolean,
+    showLabels: Boolean,
+    viewModel: ViewModel_MapClients_App2FragID1,
+    onFilterChanged: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit
+): Boolean {
+    var showDayFilterDialog1 = showDayFilterDialog
+
+    // State to track if temporary filter is active
+    var isTemporaryFilterActive by remember { mutableStateOf(false) }
+
+    // Coroutine scope for launching the timer
+    val coroutineScope = rememberCoroutineScope()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val couleurButton1 = if (isTemporaryFilterActive) Color(0xFF4CAF50) else Color(0xFFF44336)
+
+        FloatingActionButton(
+            onClick = {
+                if (!isTemporaryFilterActive) {
+                    // Start temporary filter mode
+                    isTemporaryFilterActive = true
+
+                    // Change to CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX immediately
+                    onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX)
+
+                    // Start 20-second timer
+                    coroutineScope.launch {
+                        delay(20000) // 20 seconds
+
+                        // Revert back to AFFICHE_CIBLE_POUR_VENDEUR
+                        onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                        isTemporaryFilterActive = false
+                    }
+                }
+                // Also show the day filter dialog
+                showDayFilterDialog1 = true
+            },
+            modifier = Modifier.size(40.dp),
+            containerColor = couleurButton1
+        ) {
+            Icon(
+                if (isTemporaryFilterActive) Icons.Filled.IncompleteCircle else Icons.Filled.IncompleteCircle,
+                "Filter by day"
+            )
+        }
+
+        if (showLabels) {
+            Text(
+                if (isTemporaryFilterActive)
+                    "مؤقت: ${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList}"
+                else
+                    "فلتر: ${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList}",
+                modifier = Modifier
+                    .background(couleurButton1)
+                    .padding(4.dp),
+                color = Color.White
+            )
+        }
+    }
+    return showDayFilterDialog1            //<--
+    //TODO(1): change le a on et enleve returne 
+}
 
 @Composable
 fun ControlButton(
