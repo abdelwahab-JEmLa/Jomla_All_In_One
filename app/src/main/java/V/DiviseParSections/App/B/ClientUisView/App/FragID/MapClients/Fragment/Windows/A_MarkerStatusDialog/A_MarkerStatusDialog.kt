@@ -250,7 +250,6 @@ fun MarkerStatusDialog(
                                     )
                                 }
 
-                                if (ceTelephoneEstDeAbdelwahab) {
                                     item {
                                         C3_BonAchate.EtateActuellementEst.Cible
                                             .Button(
@@ -269,7 +268,6 @@ fun MarkerStatusDialog(
                                                 context = context
                                             )
                                     }
-                                }
                             }
                         }
                     }
