@@ -1,6 +1,7 @@
-package V.DiviseParSections.App.B2_SectionID9_AtelieModbile.Test.Main.B.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
@@ -78,5 +79,17 @@ data class C3_BonAchate(
         CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
         CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
+    }
+    companion object {
+        val caRef =
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("C_AchatsDataBases")
+                .child(
+                    "D" +
+                                "_" +
+                                "TransactionCommercial"
+                                + "DataBAse"
+
+                )
     }
 }
