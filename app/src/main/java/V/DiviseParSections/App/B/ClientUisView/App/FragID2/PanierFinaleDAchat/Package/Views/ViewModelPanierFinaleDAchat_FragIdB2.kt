@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
+import V.DiviseParSections.App.B2_SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.lifecycle.ViewModel
 
