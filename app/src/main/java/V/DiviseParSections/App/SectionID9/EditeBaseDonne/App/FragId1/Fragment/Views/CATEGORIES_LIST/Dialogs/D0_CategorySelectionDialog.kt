@@ -285,7 +285,8 @@ fun CategorySelectionDialog(
                             )
                         }
                         item {
-                            CategoryOptionGridCard(
+                            CategoryOptionGridCard(           //<--
+                            //TODO(1): fait le heig = 40 dp
                                 categoryId = null,
                                 categoryName = "Sans Catégorie",
                                 isSelected = product.idParentCategorie == null,
@@ -305,7 +306,8 @@ fun CategorySelectionDialog(
                             )
                         }
                         items(categories) { cat ->
-                            CategoryOptionGridCard(
+                            CategoryOptionGridCard(       //<--
+                                //TODO(1): fait le heig = 40 dp
                                 categoryId = cat.id,
                                 categoryName = cat.nom,
                                 isSelected = product.idParentCategorie == cat.id,

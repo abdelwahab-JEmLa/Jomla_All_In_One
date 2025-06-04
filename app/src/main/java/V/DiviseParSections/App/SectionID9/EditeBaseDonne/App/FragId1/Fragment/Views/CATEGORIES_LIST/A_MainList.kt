@@ -91,6 +91,7 @@ fun EditeCategoriesMainList(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             categorieSection(
+                produitList=produitList,
                 groupedProducts = groupedProducts,
                 availableCategories = availableCategories,
                 onProductCategoryChanged = onProductCategoryChanged,

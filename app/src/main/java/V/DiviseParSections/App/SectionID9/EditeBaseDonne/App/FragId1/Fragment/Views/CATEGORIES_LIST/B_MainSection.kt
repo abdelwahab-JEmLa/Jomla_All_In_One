@@ -22,7 +22,8 @@ fun LazyListScope.categorieSection(
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
-    onShowBulkMoveDialog: (Boolean) -> Unit = {}
+    onShowBulkMoveDialog: (Boolean) -> Unit = {},
+    produitList: List<ArticlesBasesStatsTable>
 ) {
     groupedProducts.forEach { (id, products) ->
         item(key = "header_$id") {
@@ -37,7 +38,7 @@ fun LazyListScope.categorieSection(
             LazyRow(contentPadding = PaddingValues(12.dp, 8.dp)) {
                 items(products, key = { "product_${it.id}" }) { produit ->
                     MainItemEditeCategories(
-                        products=products,
+                        products=produitList,
                         produit = produit,
                         availableCategories = availableCategories,
                         onCategoryChanged = onProductCategoryChanged,

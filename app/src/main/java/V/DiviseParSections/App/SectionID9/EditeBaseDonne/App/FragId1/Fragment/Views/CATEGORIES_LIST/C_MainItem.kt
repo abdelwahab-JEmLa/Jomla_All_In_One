@@ -51,6 +51,8 @@ fun MainItemEditeCategories(
     onShowBulkMoveDialog: (Boolean) -> Unit = {},
     products: List<ArticlesBasesStatsTable>
 ) {
+    var showSearch by remember { mutableStateOf(false) }
+
     var showDialog by remember { mutableStateOf(false) }
     val isSelected = selectedProducts.contains(produit)
 
