@@ -37,59 +37,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class CataloguesCaegorie(
-    val id: Long = 0,
-    val nom: String = "",
-    val premierCategorieId: Long = 0,
-)
-
-fun startupeDatas(): List<CataloguesCaegorie> {
-    return listOf(
-        CataloguesCaegorie(
-            id = 1,
-            nom = "Confiserie",
-            premierCategorieId = 20
-        ),
-        CataloguesCaegorie(
-            id = 2,
-            nom = "Cosmétique",
-            premierCategorieId = 1
-        ),
-        CataloguesCaegorie(
-            id = 3,
-            nom = "Teenager",
-            premierCategorieId = 100
-        )
-    )
-}
-
-@Composable
-fun CatalogHeaderCard(
-    catalogue: CataloguesCaegorie,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = catalogue.nom,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
 @Composable
 fun CategoryOptionGridCard(
@@ -100,7 +47,6 @@ fun CategoryOptionGridCard(
     onEditName: ((String) -> Unit)?,
     categoryProducts: List<ArticlesBasesStatsTable> = emptyList()
 ) {
-    var catalogueParentList by remember { mutableStateOf(startupeDatas()) }
     var showEditDialog by remember { mutableStateOf(false) }
 
     Card(
@@ -125,21 +71,20 @@ fun CategoryOptionGridCard(
                     .fillMaxSize()
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.SpaceBetween // Changed from Center to SpaceBetween
             ) {
-                // Product images row (similar to RowProduitImages but adapted for smaller space)
+                // Product images row - moved to top and increased size
                 if (categoryProducts.isNotEmpty()) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(1.dp),
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        modifier = Modifier.padding(top = 4.dp)
                     ) {
-                        categoryProducts.take(2).forEach { product -> // Show max 2 products due to space constraints
-                            A_GlideDisplayImageByKeyId_Proto_5( //<--
-                            //TODO(1): pk ca ne s affiche pas augment le height de item pour que s affiche 
+                        categoryProducts.take(2).forEach { product -> // Show max 2 products
+                            A_GlideDisplayImageByKeyId_Proto_5(
                                 produitVID = product.id,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(24.dp), // Increased from 16dp to 24dp
                                 produitNom = product.nom,
-                                size = 16.dp,
+                                size = 24.dp, // Increased from 16dp to 24dp
                                 product = product,
                                 qualityImage = 3,
                                 refreshImage = product.actualiseSonImageTest2,
@@ -148,9 +93,10 @@ fun CategoryOptionGridCard(
                         }
                     }
                 } else {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp)) // Increased to match image height
                 }
 
+                // Category name - positioned at bottom with more space
                 Text(
                     text = categoryName,
                     style = MaterialTheme.typography.bodySmall,
@@ -159,7 +105,7 @@ fun CategoryOptionGridCard(
                     textAlign = TextAlign.Center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
 
