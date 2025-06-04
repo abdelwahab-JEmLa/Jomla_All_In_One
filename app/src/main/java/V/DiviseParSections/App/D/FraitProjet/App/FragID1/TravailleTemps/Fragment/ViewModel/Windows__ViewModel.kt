@@ -1,10 +1,14 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +16,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class Windows__ViewModel(
+    val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
+    val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
 
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     // Recording handler handles all recording-related functionality
-     val recordingHandler = RecordingHandler(repository, viewModelScope)
+    val recordingHandler = RecordingHandler(repository, viewModelScope)
 
     val dateList get() = repository.modelDatas
     // Added state for Abdelwahab Le Gérant privileges
@@ -26,6 +32,28 @@ class Windows__ViewModel(
     val isRecording = recordingHandler.isRecording
     val displayTime = recordingHandler.displayTime
     private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
+
+
+    val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
+
+    fun getLastTransaction(
+        client: B_ClientDataBase
+    ): C3_BonAchate? {
+        val historicalData = groupeRepositorysProtoAvJuin3
+            .repositorys_Model
+            .c3_BonAchate_Repository
+            .modelDatasSnapList
+        val lastTransaction = historicalData
+            .filter { it.clientAcheteurID == client.id }
+            .maxByOrNull { it.timestamps }
+        return lastTransaction
+    }
+
+    fun nombreClientAvecCibleCommeLastBonAchat(): Int {
+        return bProto_ClientsDataBase.count { client ->
+            getLastTransaction(client)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+        }
+    }
 
     init {
         recordingHandler.updateTotalWorkedTime()
@@ -87,7 +115,7 @@ class Windows__ViewModel(
         val existingRecord = dateList.find { it.vid == recordId }
 
         if (existingRecord != null) {
-            // If we have an active interval, upsert_1_3_TransactionCommercial it
+            // If we have an active interval, update it
             val activeInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
 
             if (activeInterval != null) {

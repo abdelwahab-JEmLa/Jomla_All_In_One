@@ -54,13 +54,14 @@ fun PressistatntMainActivityButtons(
 ) {
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
+    var showAlertDialog by remember { mutableStateOf(false) }
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     val isRecording by viewModel.isRecording.collectAsState()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
-    // Set up a timer to upsert_1_3_TransactionCommercial the elapsed time every second when recording
+    // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -110,6 +111,12 @@ fun PressistatntMainActivityButtons(
         }
     }
 
+    WorkCompletionAlertDialog(
+        showDialog = showAlertDialog,
+        onDismiss = { showAlertDialog = false },
+        nombreClientAvecCibleCommeLastBonAchat = viewModel.nombreClientAvecCibleCommeLastBonAchat()
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -144,8 +151,7 @@ fun PressistatntMainActivityButtons(
                         FloatingActionButton(
                             onClick = {
                                 if (enable) {
-                                   //<--
-                                   //TODO(1): fa
+                                    showAlertDialog = true
                                 }
                             },
                             modifier = Modifier.size(40.dp),
@@ -161,8 +167,9 @@ fun PressistatntMainActivityButtons(
                         }
 
                         if (showLabels) {
+                            val remainingClients = viewModel.nombreClientAvecCibleCommeLastBonAchat()
                             Text(
-                                displayTime,
+                                "$displayTime | بقي $remainingClients زبون",
                                 modifier = Modifier
                                     .background(if (enable) buttonBackgroundColor else Color.Gray)
                                     .padding(4.dp),
@@ -171,17 +178,6 @@ fun PressistatntMainActivityButtons(
                         }
                     }
                 }
-                /* ControlButton(
-                     onClick = {
-
-                     },
-                     icon = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
-                     contentDescription = if (isRecording) "Stop Recording" else "",
-                     showLabels = showLabels,
-                     labelText = displayTime,
-                     containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
-                     enabled = false
-                 )     */
 
                 TariffsButtons_TestID2(
                     showLabels = showLabels,
@@ -196,4 +192,3 @@ fun PressistatntMainActivityButtons(
         }
     }
 }
-
