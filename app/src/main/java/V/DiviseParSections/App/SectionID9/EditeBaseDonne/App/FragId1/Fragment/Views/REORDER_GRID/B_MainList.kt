@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.background
@@ -35,12 +38,47 @@ internal fun MainList(
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
+    // Get catalogues data
+    val catalogues = remember { startupeDatas() }
+
+    // Group categories by catalogue (same logic as in CategorySelectionDialog)
+    val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
+        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+        catalogues.forEach { catalogue ->
+            val catalogueCategories = categoriesListLocal.filter { category ->
+                category.id >= catalogue.premierCategorieId &&
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                            category.id < nextCatalogue.premierCategorieId
+                        } ?: true)
+            }
+            if (catalogueCategories.isNotEmpty()) {
+                grouped[catalogue] = catalogueCategories
+            }
+        }
+
+        // Add categories that don't belong to any catalogue
+        val uncategorizedCategories = categoriesListLocal.filter { category ->
+            !catalogues.any { catalogue ->
+                category.id >= catalogue.premierCategorieId &&
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                            category.id < nextCatalogue.premierCategorieId
+                        } ?: true)
+            }
+        }
+
+        if (uncategorizedCategories.isNotEmpty()) {
+            grouped[CataloguesCaegorie(0, "Autres", 0)] = uncategorizedCategories
+        }
+
+        grouped
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFFF8D7EB))
     ) {
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier.fillMaxSize(),
@@ -48,21 +86,73 @@ internal fun MainList(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(categoriesListLocal, key = { it.id }) { category ->
-                MainItem(
-                    productsByCategory = productsByCategory,
-                    category = category,
-                    selectedCategories = selectedCategories,
-                    categoriesListLocal = categoriesListLocal,
-                    onCategoriesReordered = onCategoriesReordered,
-                    onSelectionChanged = { newSelection ->
-                        selectedCategories = newSelection
-                    },
-                    onCategoriesUpdated = { newCategories ->
-                        categoriesListLocal = newCategories
-                    }
-                )
+            // Add catalogue sections with headers
+            categoriesByCatalogue.forEach { (catalogue, categories) ->
+                // Add catalogue header
+                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
+                    CatalogHeaderCard(
+                        catalogue = catalogue,
+                        modifier = Modifier
+                    )
+                }
+
+                // Add categories for this catalogue
+                items(categories, key = { it.id }) { category ->
+                    MainItem(
+                        productsByCategory = productsByCategory,
+                        category = category,
+                        selectedCategories = selectedCategories,
+                        categoriesListLocal = categoriesListLocal,
+                        onCategoriesReordered = onCategoriesReordered,
+                        onSelectionChanged = { newSelection ->
+                            selectedCategories = newSelection
+                        },
+                        onCategoriesUpdated = { newCategories ->
+                            categoriesListLocal = newCategories
+                        }
+                    )
+                }
             }
         }
     }
+}
+
+// Additional helper function to ensure catalogue ordering is maintained
+fun organizeCategoriesByCatalogue(
+    categories: List<CategoriesTabelle>,
+    catalogues: List<CataloguesCaegorie>
+): Map<CataloguesCaegorie, List<CategoriesTabelle>> {
+    val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+
+    // Sort catalogues by position to maintain order
+    val sortedCatalogues = catalogues.sortedBy { it.position }
+
+    sortedCatalogues.forEach { catalogue ->
+        val catalogueCategories = categories.filter { category ->
+            category.id >= catalogue.premierCategorieId &&
+                    (sortedCatalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                        category.id < nextCatalogue.premierCategorieId
+                    } ?: true)
+        }.sortedBy { it.position }
+
+        if (catalogueCategories.isNotEmpty()) {
+            grouped[catalogue] = catalogueCategories
+        }
+    }
+
+    // Add uncategorized items
+    val uncategorizedCategories = categories.filter { category ->
+        !sortedCatalogues.any { catalogue ->
+            category.id >= catalogue.premierCategorieId &&
+                    (sortedCatalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
+                        category.id < nextCatalogue.premierCategorieId
+                    } ?: true)
+        }
+    }.sortedBy { it.position }
+
+    if (uncategorizedCategories.isNotEmpty()) {
+        grouped[CataloguesCaegorie(0, "Autres", 0, Int.MAX_VALUE)] = uncategorizedCategories
+    }
+
+    return grouped
 }
