@@ -259,14 +259,17 @@ fun MarkerStatusDialog(
                                             context = context
                                         )
                                 }
-                                item {
-                                    C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
-                                        .Button(
-                                            coroutineScope = coroutineScope,
-                                            viewModel = viewModel,
-                                            clientId = clientId,
-                                            context = context
-                                        )
+
+                                if (ceTelephoneEstDeAbdelwahab) {
+                                    item {
+                                        C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
+                                            .Button(
+                                                coroutineScope = coroutineScope,
+                                                viewModel = viewModel,
+                                                clientId = clientId,
+                                                context = context
+                                            )
+                                    }
                                 }
                             }
                         }
