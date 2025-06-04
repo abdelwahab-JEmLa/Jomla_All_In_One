@@ -13,9 +13,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +31,6 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
     showLabels: Boolean,
     viewModel: ViewModel_MapClients_App2FragID1,
     onFilterChanged: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
-    onShowDayFilter: () -> Unit
 ) {
     var isTemporaryFilterActive by remember { mutableStateOf(false) }
 
@@ -69,13 +70,12 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                 }
                 // Also show the day filter dialog
-                onShowDayFilter()
             },
             modifier = Modifier.size(40.dp),
             containerColor = couleurButton1
         ) {
             Icon(
-                if (isTemporaryFilterActive) Icons.Filled.DisabledVisible else Icons.Filled.FilterAlt,
+                if (isTemporaryFilterActive) Icons.Filled.FilterAlt else Icons.Filled.DisabledVisible,
                 "Filter by day"
             )
         }

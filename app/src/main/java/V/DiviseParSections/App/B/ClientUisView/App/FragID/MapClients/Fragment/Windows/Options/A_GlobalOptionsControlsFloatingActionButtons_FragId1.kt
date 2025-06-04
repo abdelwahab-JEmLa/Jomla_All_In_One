@@ -7,7 +7,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
@@ -28,9 +27,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -131,17 +132,11 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     showLabels = showLabels,
                     viewModel = viewModel,
                     onFilterChanged = { newMode ->
-                        // Log the filter change
-                        FilterLogger.logFilterChange(currentFilterMode, newMode)
                         onPickFilter(newMode)
                     },
-                    onShowDayFilter = {
-                        showDayFilterDialog = true
-                    }
                 )
 
                 if (showMenu) {
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -293,11 +288,12 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         onClear,
                     )
                 }
-
-                LabelsButton(
-                    showLabels = showLabels,
-                    onShowLabelsChange = { showLabels = it }
-                )
+                if (showMenu) {
+                    LabelsButton(
+                        showLabels = showLabels,
+                        onShowLabelsChange = { showLabels = it }
+                    )
+                }
 
                 MenuButton(
                     showLabels = showLabels,
@@ -340,6 +336,22 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
         panelsGroupeButtonHandler.AfficheDialogesHeadApps()
 
     }
+}
+
+@Composable
+fun MenuButton(
+    showLabels: Boolean,
+    showMenu: Boolean,
+    onShowMenuChange: (Boolean) -> Unit
+) {
+    ControlButton(
+        onClick = { onShowMenuChange(!showMenu) },
+        icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.Warning,
+        contentDescription = if (showMenu) "Hide menu" else "Show menu",
+        showLabels = showLabels,
+        labelText = if (showMenu) "Hide" else "Options",
+        containerColor = Color(0xFFE3DEDE)
+    )
 }
 
 @Composable
