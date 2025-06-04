@@ -191,7 +191,6 @@ val viewModelModule = module {
         ViewModel_MapClients_App2FragID1(
             get(),
             get(),
-            get(),
             get()
         )
     }
