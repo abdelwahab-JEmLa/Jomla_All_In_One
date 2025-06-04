@@ -14,11 +14,11 @@ fun WorkCompletionAlertDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = {
-                Text(text = "اعلام")
-            },
             text = {
-                Text(text = "بقي $nombreClientAvecCibleCommeLastBonAchat لإكمال الخدمة معهم. هل تمت وظيفة اليوم؟")
+                val nombreClientAvecCibleCommeLastBonAchat1 = if(nombreClientAvecCibleCommeLastBonAchat>1)
+                    nombreClientAvecCibleCommeLastBonAchat.toString() else ""
+
+                Text(text = "يرجى تعيين تقارير  $nombreClientAvecCibleCommeLastBonAchat1 زبون لإكمال الخدمة .")
             },
             confirmButton = {
                 // Removed - only showing information
