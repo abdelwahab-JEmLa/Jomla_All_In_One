@@ -68,6 +68,9 @@ fun EditeBaseDonneMainScreenIdS9(
         categoriesListLocal = categoriesList
     }
 
+    // Updated filter logic for A_Main.kt
+// Replace the filteredProduitList derivedStateOf block with this:
+
     val filteredProduitList by remember(produitListLocal, filterState) {
         derivedStateOf {
             var filtered = produitListLocal
@@ -80,13 +83,18 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePetiteProbability) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
-            // Added: Filter for products with prixAchat > 0
+            // Filter for products with prixAchat > 0 (hide products without purchase price)
             if (filterState.hidePrixAchatZero) {
-                filtered = filtered.filter { it.prixAchat > 0.0 }
+                filtered = filtered.filter { it.prixAchat > 0.0  }
+            }
+            // Added: Filter for products with prixAchat <= 0 (hide products with purchase price)
+            if (filterState.hidePrixAchatPositif) {
+                filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
             filtered
         }
     }
+
     if (progress < 1.0f) {
         LoadingScreen(progress)
     } else {

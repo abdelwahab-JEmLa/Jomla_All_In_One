@@ -22,7 +22,8 @@ data class FilterState(
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,
-    val hidePrixAchatZero: Boolean = false // Added: hide products with prixAchat <= 0
+    val hidePrixAchatZero: Boolean = false, // Hide products with prixAchat <= 0
+    val hidePrixAchatPositif: Boolean = false // Added: hide products with prixAchat > 0
 )
 
 @Composable
@@ -37,7 +38,8 @@ fun MainFilter(
         filterState.hideNonDispo ||
                 filterState.hideDispoOnly ||
                 filterState.hidePetiteProbability ||
-                filterState.hidePrixAchatZero
+                filterState.hidePrixAchatZero ||
+                filterState.hidePrixAchatPositif
 
     if (hasActiveFilters) {
         Card(
@@ -89,6 +91,13 @@ fun MainFilter(
                         FilterChip(
                             label = "Masquer Prix Achat = 0",
                             onRemove = { onFilterChanged(filterState.copy(hidePrixAchatZero = false)) }
+                        )
+                    }
+
+                    if (filterState.hidePrixAchatPositif) {
+                        FilterChip(
+                            label = "Masquer Prix Achat > 0",
+                            onRemove = { onFilterChanged(filterState.copy(hidePrixAchatPositif = false)) }
                         )
                     }
                 }
@@ -188,6 +197,14 @@ fun FilterDropdownMenu(
                 }
             )
 
+            FilterOption(
+                label = "Masquer produits avec prix d'achat",
+                checked = filterState.hidePrixAchatPositif,
+                onCheckedChange = {
+                    onFilterChanged(filterState.copy(hidePrixAchatPositif = it))
+                }
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -209,7 +226,8 @@ fun FilterDropdownMenu(
                                 hideNonDispo = true,
                                 hideDispoOnly = true,
                                 hidePetiteProbability = true,
-                                hidePrixAchatZero = true
+                                hidePrixAchatZero = true,
+                                hidePrixAchatPositif = true
                             )
                         )
                     }
