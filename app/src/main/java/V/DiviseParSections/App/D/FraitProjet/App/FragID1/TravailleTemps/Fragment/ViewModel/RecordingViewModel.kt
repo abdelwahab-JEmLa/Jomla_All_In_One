@@ -35,7 +35,7 @@ data class UiState(
 class RecordingViewModel(
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
-    private val recordingHandler: IRecordingHandler ,
+    private val recordingHandler: IRecordingHandler,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
@@ -45,7 +45,7 @@ class RecordingViewModel(
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    val  bonAchatList = uiState.value.bonAchatList
+    val bonAchatList = uiState.value.bonAchatList
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
@@ -59,8 +59,7 @@ class RecordingViewModel(
     val editingInterval = _editingInterval.asStateFlow()
 
     private fun log(list: List<C3_BonAchate>) {
-        val map = list
-            .map { bon ->
+        val map = list.map { bon ->
                 val clientAcheteurID = bon.clientAcheteurID
                 val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
                 bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentVID_1_4_PeriodeVent)
@@ -73,10 +72,8 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid &&
-                            it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                })
-                Log.i(TAG, "LencePrint")
+                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                }) Log.i(TAG, "LencePrint")
 
             recordingHandler.toggleRecording()
         }
@@ -118,9 +115,7 @@ class RecordingViewModel(
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
-            repositorysModel1.repository_1_5_Vendeur.modelDatasSnapList
-                .find { it.vid == repositorysModel1.activeReactiveIdDe_1_5_Vendeur.value }
-                ?.ceComptVendeurInsertBonsAchatAuPeriodID
+            repositorysModel1.repository_1_5_Vendeur.modelDatasSnapList.find { it.vid == repositorysModel1.activeReactiveIdDe_1_5_Vendeur.value }?.ceComptVendeurInsertBonsAchatAuPeriodID
 
         return repositorysModel1.repository_1_4_PeriodeVent.modelDatasSnapList.find {
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
@@ -128,12 +123,13 @@ class RecordingViewModel(
     }
 
     fun getLastTransaction(client: B_ClientDataBase): C3_BonAchate? =
-        repos.c3_BonAchate_Repository.modelDatasSnapList
-            .filter { it.clientAcheteurID == client.id }
+        repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 
-    fun nombreClientAvecCibleCommeLastBonAchat(): Int =
-        bProto_ClientsDataBase.count { getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible }
+    fun nombreClientAvecCibleCommeLastBonAchat(): Int {
+        Log.d(TAG, bProto_ClientsDataBase.size.toString())
+        return bProto_ClientsDataBase.count { getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible }
+    }
 
     private fun updateUiState(update: (UiState) -> UiState) {
         _uiState.value = update(_uiState.value)
@@ -161,17 +157,15 @@ class RecordingViewModel(
     }
 
     fun updatePareMain(
-        recordId: String, startTime: String? = null, endTime: String? = null,
+        recordId: String,
+        startTime: String? = null,
+        endTime: String? = null,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
     ) {
         dateList.find { it.vid == recordId }?.let { record ->
             record.intervalesDeTravaille.find { it.enCoureDEnregestrement }?.let { interval ->
                 repository.updateExistingInterval(
-                    record.vid,
-                    interval.vid,
-                    startTime,
-                    endTime,
-                    typeTemp
+                    record.vid, interval.vid, startTime, endTime, typeTemp
                 )
                 recordingHandler.updateTotalWorkedTime()
             } ?: run {
@@ -179,10 +173,7 @@ class RecordingViewModel(
                     val timeId = TimeFormatUtils.getCurrentTime().replace(":", "_")
                     repository.addNewInterval(record.vid, timeId, startTime)
                     repository.updateExistingInterval(
-                        record.vid,
-                        timeId,
-                        endTime = endTime,
-                        typeTemp = typeTemp
+                        record.vid, timeId, endTime = endTime, typeTemp = typeTemp
                     )
                     recordingHandler.updateTotalWorkedTime()
                 }
