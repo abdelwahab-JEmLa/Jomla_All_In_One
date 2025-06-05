@@ -74,6 +74,18 @@ fun EditeBaseDonneMainScreenIdS9(
     val filteredProduitList by remember(produitListLocal, filterState) {
         derivedStateOf {
             var filtered = produitListLocal
+
+            // Search filter by product name
+            if (filterState.searchText.isNotEmpty()) {
+                val searchQuery = filterState.searchText.lowercase()
+                filtered = filtered.filter { product ->
+                    product.nom.lowercase().contains(searchQuery) ||
+                            product.nomArticleFinale.lowercase().contains(searchQuery) ||
+                            product.nomArab.lowercase().contains(searchQuery) ||
+                            (product.autreNomDarticle?.lowercase()?.contains(searchQuery) == true)
+                }
+            }
+
             if (filterState.hideNonDispo) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
@@ -85,9 +97,9 @@ fun EditeBaseDonneMainScreenIdS9(
             }
             // Filter for products with prixAchat > 0 (hide products without purchase price)
             if (filterState.hidePrixAchatZero) {
-                filtered = filtered.filter { it.prixAchat > 0.0  }
+                filtered = filtered.filter { it.prixAchat > 0.0 }
             }
-            // Added: Filter for products with prixAchat <= 0 (hide products with purchase price)
+            // Filter for products with prixAchat <= 0 (hide products with purchase price)
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }

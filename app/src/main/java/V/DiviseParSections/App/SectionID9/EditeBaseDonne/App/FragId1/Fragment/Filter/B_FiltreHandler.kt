@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +28,8 @@ data class FilterState(
     val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,
     val hidePrixAchatZero: Boolean = false, // Hide products with prixAchat <= 0
-    val hidePrixAchatPositif: Boolean = false // Added: hide products with prixAchat > 0
+    val hidePrixAchatPositif: Boolean = false, // Hide products with prixAchat > 0
+    val searchText: String = "kabir" // Added: search filter by product name
 )
 
 @Composable
@@ -39,7 +45,8 @@ fun MainFilter(
                 filterState.hideDispoOnly ||
                 filterState.hidePetiteProbability ||
                 filterState.hidePrixAchatZero ||
-                filterState.hidePrixAchatPositif
+                filterState.hidePrixAchatPositif ||
+                filterState.searchText.isNotEmpty()
 
     if (hasActiveFilters) {
         Card(
@@ -61,6 +68,14 @@ fun MainFilter(
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                // Search text filter chip
+                if (filterState.searchText.isNotEmpty()) {
+                    FilterChip(
+                        label = "Recherche: \"${filterState.searchText}\"",
+                        onRemove = { onFilterChanged(filterState.copy(searchText = "")) }
+                    )
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -165,6 +180,37 @@ fun FilterDropdownMenu(
                 fontWeight = FontWeight.Bold
             )
 
+            // Search field
+            OutlinedTextField(
+                value = filterState.searchText,
+                onValueChange = {
+                    onFilterChanged(filterState.copy(searchText = it))
+                },
+                label = { Text("Rechercher par nom") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Rechercher"
+                    )
+                },
+                trailingIcon = {
+                    if (filterState.searchText.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                onFilterChanged(filterState.copy(searchText = ""))
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Effacer"
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
             FilterOption(
                 label = "Masquer produits non disponibles",
                 checked = filterState.hideNonDispo,
@@ -227,7 +273,8 @@ fun FilterDropdownMenu(
                                 hideDispoOnly = true,
                                 hidePetiteProbability = true,
                                 hidePrixAchatZero = true,
-                                hidePrixAchatPositif = true
+                                hidePrixAchatPositif = true,
+                                searchText = filterState.searchText // Keep current search text
                             )
                         )
                     }
