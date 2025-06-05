@@ -81,11 +81,16 @@ class Windows__ViewModel(
         }
     }
 
+    private suspend fun collectBonAchatRepoModel() {
+        snapshotFlow { reposBonAchatList.modelDatasSnapList.toList() }.collect { list ->
+            updateUiState { it.copy(bonAchatList = list) }
+        }
+    }
+
     init {
         viewModelScope.launch {
-            snapshotFlow { reposBonAchatList.modelDatasSnapList.toList() }.collect { list ->
-                updateUiState { it.copy(bonAchatList = list) }
-            }
+            collectBonAchatRepoModel()
+            collectActiveVendeurId()
         }
 
         viewModelScope.launch {
@@ -97,17 +102,29 @@ class Windows__ViewModel(
         recordingHandler.setupRecordingStateListener()
     }
 
+    private suspend fun collectActiveVendeurId() {
+        groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect { activeVendeurId ->
+            val activePeriodeVent = get_PeriodVentActive()
+            updateUiState { currentState ->
+                currentState.copy(
+                    activePeriodeVent = activePeriodeVent,
+                )
+            }
+        }
+    }
+
     fun get_PeriodVentActive(
-        groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3
     ): _1_4_PeriodeVent? {
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
             repositorysModel1.repository_1_5_Vendeur.modelDatasSnapList
-                .find { it.vid == groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDe_1_5_Vendeur }
+                .find { it.vid == repositorysModel1.activeReactiveIdDe_1_5_Vendeur.value }
                 ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
-        return repositorysModel1.repository_1_4_PeriodeVent.modelDatasSnapList.find { it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive }
+        return repositorysModel1.repository_1_4_PeriodeVent.modelDatasSnapList.find {
+            it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
+        }
     }
 
     fun getLastTransaction(client: B_ClientDataBase): C3_BonAchate? =

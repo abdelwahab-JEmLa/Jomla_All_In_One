@@ -29,7 +29,6 @@ fun A_APP1FragID3_MainScreen(
 ) {
     val TAG = "APP2_FragID3_MainScreen"
 
-    // Get the active vendor ID
     val activeIdDe_1_5_Vendeur = _0_0_HeadSQLRepositorys.repositorys_Model.activeIdDe_1_5_Vendeur
 
     // Get the period filter from the active vendor

@@ -12,6 +12,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,10 +32,14 @@ fun B_ProduitCommande(
     }
 
     // Get the current period filter
-    val activeIdDe_1_5_Vendeur = models.activeIdDe_1_5_Vendeur
-    val periodFilter = models.repository_1_5_Vendeur
-        .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
-        ?.ceComptVendeurStartAffichePeriod
+    val activeIdDe_1_5_Vendeur by models.activeIdDe_1_5_Vendeur
+
+    // Derive the period filter as a remembered value
+    val periodFilter = remember(activeIdDe_1_5_Vendeur) {
+        models.repository_1_5_Vendeur
+            .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+            ?.ceComptVendeurStartAffichePeriod
+    }
 
     // Create a map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {

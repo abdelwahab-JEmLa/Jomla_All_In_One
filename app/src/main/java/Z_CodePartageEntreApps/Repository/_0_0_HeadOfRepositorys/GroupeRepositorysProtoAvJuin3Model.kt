@@ -14,6 +14,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
+val startActive = 1L
+
 class GroupeRepositorysProtoAvJuin3Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val repositoryC2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
@@ -32,8 +34,10 @@ class GroupeRepositorysProtoAvJuin3Model(
 
     val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
+    // FIXED: Make this reactive instead of a simple Long
     var activeIdDe_1_5_Vendeur: Long = 1L,
-) {
+    var activeReactiveIdDe_1_5_Vendeur: MutableStateFlow<Long> = MutableStateFlow(startActive),
+    ) {
     companion object {
         fun getHeadSqlDataBaseRef(itsProductionMode:Boolean = false): DatabaseReference {
             val _01_HeadRef = Firebase.database.getReference("00_DataPrototype-04-02")
