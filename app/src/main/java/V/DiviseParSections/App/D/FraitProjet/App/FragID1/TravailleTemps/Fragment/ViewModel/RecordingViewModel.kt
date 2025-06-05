@@ -45,6 +45,7 @@ class RecordingViewModel(
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val  bonAchatList = uiState.value.bonAchatList
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
@@ -70,9 +71,8 @@ class RecordingViewModel(
     suspend fun suitUiBonAchet(): Unit {
         snapshotFlow { uiState.value.bonAchatList }.collect { list ->
             val uiState = uiState.value
-            val bonAchatList = uiState.bonAchatList
-            log(bonAchatList)
-            if (bonAchatList.any {
+            log(list)
+            if (list.any {
                     it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid &&
                             it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
@@ -103,7 +103,7 @@ class RecordingViewModel(
     }
 
     private suspend fun collectActiveVendeurId() {
-        groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect { activeVendeurId ->
+        groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect {
             val activePeriodeVent = get_PeriodVentActive()
             updateUiState { currentState ->
                 currentState.copy(
