@@ -14,7 +14,6 @@ fun createTestProduct(): ArticlesBasesStatsTable {
         cartonState = "Test",
         couleur1 = "🔴 Rouge 🔴",
         nombreUniteInt = (10..200).random(),
-        nmbrCaron = 1,
         clientPrixVentUnite = (5..20).random().toDouble(),
         commmentSeVent = "U",
         articleHaveUniteImages = false,

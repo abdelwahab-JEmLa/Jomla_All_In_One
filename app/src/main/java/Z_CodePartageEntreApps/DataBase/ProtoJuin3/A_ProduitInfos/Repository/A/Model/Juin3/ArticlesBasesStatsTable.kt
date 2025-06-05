@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.getKeyFireBase
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
@@ -81,6 +80,7 @@ data class ArticlesBasesStatsTable(
 
     )
 {
+
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
@@ -104,7 +104,10 @@ data class ArticlesBasesStatsTable(
 
     companion object {
         val caRef =
-            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/A_ProduitInfos")
+            Firebase.database.getReference("00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases" +
+                    "/A_ProduitInfos")
 
         fun securedRemoveFireBaseDB() {
             caRef.removeValue()

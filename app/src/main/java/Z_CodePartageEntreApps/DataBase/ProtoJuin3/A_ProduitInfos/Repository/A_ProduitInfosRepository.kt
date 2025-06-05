@@ -28,6 +28,8 @@ class A_ProduitInfosRepository(
     val ref = ArticlesBasesStatsTable.caRef
 
     init {
+        //ArticlesBasesStatsTable.securedRemoveFireBaseDB()
+
         CoroutineScope(Dispatchers.IO).launch {
             val initializedData = initializeDataReturn()
             updateRepoState(initializedData)

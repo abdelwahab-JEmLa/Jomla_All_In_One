@@ -94,6 +94,7 @@ fun OptionsFragmentButtons(
 
                                 if (ancData != null) {
                                     // Update product details
+                                    currentProduct.prixAchat=ancData.monPrixAchat
                                     currentProduct.nomArab = ancData.nomArab
                                     currentProduct.autreNomDarticle = ancData.autreNomDarticle
 

@@ -27,9 +27,9 @@ data class FilterState(
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,
-    val hidePrixAchatZero: Boolean = false, // Hide products with prixAchat <= 0
-    val hidePrixAchatPositif: Boolean = false, // Hide products with prixAchat > 0
-    val searchText: String = "kabir" // Added: search filter by product name
+    val hidePrixAchatZero: Boolean = false,
+    val hidePrixAchatPositif: Boolean = false,
+    val searchText: String = ""
 )
 
 @Composable

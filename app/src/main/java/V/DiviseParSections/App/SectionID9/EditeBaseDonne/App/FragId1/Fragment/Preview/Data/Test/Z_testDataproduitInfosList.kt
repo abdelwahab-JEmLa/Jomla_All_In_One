@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.DisponibilityEtates
 
 // 3. Fix testDataproduitInfosList to include proper availability states
 fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
@@ -16,7 +16,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             cartonState = "itsCarton",
             couleur1 = "🍫 chocolat 🍫",
             nombreUniteInt = 60,
-            nmbrCaron = 1,
             clientPrixVentUnite = 10.0,
             commmentSeVent = "U",
             disponibilityEtates = DisponibilityEtates.DISPO,
@@ -34,7 +33,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             couleur1 = "🟦 ازرق 🟦",
             couleur2 = "🟫 بني 🟫",
             nombreUniteInt = 200,
-            nmbrCaron = 1,
             clientPrixVentUnite = 5.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.NON_DISPO,
@@ -52,7 +50,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             couleur1 = "🧀 فرماج 🧀",
             couleur2 = "🧆 barbecu 🧆",
             nombreUniteInt = 100,
-            nmbrCaron = 1,
             clientPrixVentUnite = 5.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.DISPO,
@@ -70,7 +67,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             cartonState = "UNITE",
             couleur1 = "Standar",
             nombreUniteInt = 0,
-            nmbrCaron = 0,
             clientPrixVentUnite = 0.0,
             commmentSeVent = "",
             disponibilityEtates = DisponibilityEtates.NON_DISPO,
@@ -87,7 +83,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             prixAchat = 150.0,
             cartonState = "",
             nombreUniteInt = 0,
-            nmbrCaron = 0,
             clientPrixVentUnite = 0.0,
             commmentSeVent = "",
             articleHaveUniteImages = false,
@@ -96,7 +91,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             dernierFireBaseUpdateTimestamps = 1748355111768,
             affichageUniteState = false,
             benficeTotaleEntreMoiEtClien = -150.0,
-            benificeClient = -150.0,
             benificeTotaleEn2 = -75.0,
             dateCreationCategorie = "1740564102869",
             funChangeImagsDimention = true,
@@ -108,7 +102,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             monBenfice = 0.0,
             afficheBoitSiUniter = null,
             autreNomDarticle = null,
-            cLeDataOuvertDuParentList = false,
             idForSearchArticles = 0,
             idcolor1 = 0,
             idcolor2 = 0,
@@ -119,7 +112,6 @@ fun testDataproduitInfosList(): List<ArticlesBasesStatsTable> {
             prixDeVentTotaleChezClient = 0.0,
             monPrixAchatUniter = 0.0,
             monPrixVentUniter = 0.0,
-            monBeneficeUniter = 0.0,
             keyFireBase = "",
             idParentCategorie = idParentCategorie1
         ),
