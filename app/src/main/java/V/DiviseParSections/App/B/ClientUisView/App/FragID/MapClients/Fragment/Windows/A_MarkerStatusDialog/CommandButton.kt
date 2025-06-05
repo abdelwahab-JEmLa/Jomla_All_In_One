@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -21,47 +21,50 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.osmdroid.views.overlay.Marker
 
 @Composable
-fun C3_BonAchate.EtateActuellementEst.Button(
+fun CommandButton(
+    modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope,
-    viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
+    selectedMarker: Marker,
+    viewModel: ViewModel_MapClients_App2FragID1,
+    onUpdateLongAppSetting: () -> Unit,
+    onDismiss: () -> Unit,
     context: Context,
+    etateActuellementEst1: C3_BonAchate.EtateActuellementEst,
+
 ) {
-    val Etate =
-        this
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
                 upsert_1_3_TransactionCommercial(
                     viewModel,
                     clientId,
-                    Etate
+                    etateActuellementEst1
                 )
-                val data = viewModel.repo_0_0_HeadSQLRepositorys
-                    .repositorys_Model
-                    .c3_BonAchate_Repository
-                    .getOuvert_1_3_TransactionCommercial()
-                viewModel.repo_0_0_HeadSQLRepositorys
-                    .upsertUneDataEtReturnVID(
-                        data?.copy(ouvert = false)
-                    )
 
+                val selectedMarkedID = selectedMarker.id.toLong()
+                viewModel.updateLongAppSetting(selectedMarkedID)
+
+                onUpdateLongAppSetting()
+                onDismiss()
+                viewModel.startRecordIfNot()
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
                     context,
-                    Etate.color
+                    etateActuellementEst1.color
                 )
             ).copy(alpha = 0.2f),
             contentColor = Color(
                 ContextCompat.getColor(
                     context,
-                    Etate.color
+                    etateActuellementEst1.color
                 )
             )
         )
@@ -72,13 +75,11 @@ fun C3_BonAchate.EtateActuellementEst.Button(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = Etate.nomArabe,
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(Etate.nomArabe)
+            Text(etateActuellementEst1.name)
         }
     }
 }
-
-

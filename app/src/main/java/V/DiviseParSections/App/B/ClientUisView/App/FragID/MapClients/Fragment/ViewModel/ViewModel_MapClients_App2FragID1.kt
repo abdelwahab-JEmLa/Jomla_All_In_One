@@ -6,6 +6,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.Modules.RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
@@ -60,7 +61,9 @@ class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
-    ) : ViewModel() {
+    val recordingHandler: IRecordingHandler
+
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MapClientsUiState())
     val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
 
@@ -378,5 +381,5 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-
+    fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
 }

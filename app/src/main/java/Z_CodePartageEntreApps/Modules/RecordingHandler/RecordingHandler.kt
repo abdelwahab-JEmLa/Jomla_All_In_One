@@ -19,6 +19,7 @@ interface IRecordingHandler {
     val displayTime: StateFlow<String>
 
     fun toggleRecording(forceStop: Boolean = false)
+    fun startRecordIfNot()
 
     fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String)
     fun setupRecordingStateListener()
@@ -29,6 +30,7 @@ interface IRecordingHandler {
     fun resetSessionTimer()
     fun onLifecycleResume(todayRecord: K_TempTravaille?)
     fun onRecordingStopped(todayRecord: K_TempTravaille?)
+    fun stopRecording()
 }
 
 class RecordingHandler(
@@ -60,7 +62,14 @@ class RecordingHandler(
         }
     }
 
-    private fun stopRecording() {
+    override fun startRecordIfNot() {
+        if (!_isRecording.value) {
+            startTimeInterval()
+            updateRecordingState(true)
+        }
+    }
+
+    override fun stopRecording() {
         stopTimeInterval()
         updateRecordingState(false)
     }

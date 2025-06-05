@@ -122,7 +122,7 @@ fun PressistatntMainActivityButtons(
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {
-          viewModel.recordingHandler.toggleRecording(forceStop = true)
+          viewModel.recordingHandler.stopRecording()
         },
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
