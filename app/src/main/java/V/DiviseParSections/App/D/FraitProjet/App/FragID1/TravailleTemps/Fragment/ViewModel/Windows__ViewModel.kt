@@ -78,6 +78,7 @@ class Windows__ViewModel(
                             it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
+            toggleRecording()
         }
     }
 
@@ -89,6 +90,7 @@ class Windows__ViewModel(
         }
 
         viewModelScope.launch {
+            stopRecording()
             suitUiBonAchet()
         }
 
