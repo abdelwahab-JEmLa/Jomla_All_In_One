@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
+package P0_MainScreen.Main.Main.Settings
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text

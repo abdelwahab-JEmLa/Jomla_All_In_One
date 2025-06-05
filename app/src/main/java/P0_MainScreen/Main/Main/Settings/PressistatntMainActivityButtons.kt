@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID8.FloatingButtons.App.FragID1.Windows
+package P0_MainScreen.Main.Main.Settings
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
@@ -47,7 +47,7 @@ import kotlin.math.roundToInt
 fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: Windows__ViewModel = koinViewModel(),
-    onPourFermeWindows: (D_TarificationInfos) -> Unit,
+    onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
     onClickAnulationButton: () -> Unit = {},
