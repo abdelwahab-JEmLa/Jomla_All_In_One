@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.AncienProto.C_CategorieProduitInfosAncienProto.ProtoB2.Companion.updateCategoriePositionDepuitProto2
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,11 +45,10 @@ enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
 @Composable
 fun OptionsFragmentButtons(
     viewModelScope: CoroutineScope,
-    function: (List<CategoriesTabelle>) -> Unit,
-    initCategories: List<CategoriesTabelle>,
     onToggleMasque: (Set<AfficheElements>) -> Unit = {},
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
-    onShowBulkMoveDialog: () -> Unit = {}
+    onShowBulkMoveDialog: () -> Unit = {},
+    viewModel: StartUpFragmentViewModel
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
@@ -61,7 +60,7 @@ fun OptionsFragmentButtons(
 
     // Initialize offset to start at the right edge of the screen
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value  + 100f) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -78,11 +77,22 @@ fun OptionsFragmentButtons(
         AlertDialog(
             onDismissRequest = { showDialog = false },
             title = { Text("Confirmation") },
-            text = { Text("Update categories? This action cannot be undone.") },
+            text = { Text("Update Datas? This action cannot be undone.") },
             confirmButton = {
                 TextButton(onClick = {
                     showDialog = false
-                    viewModelScope.launch { function(updateCategoriePositionDepuitProto2(initCategories)) }
+                    viewModelScope.launch {
+                        E_JetPackAncienProduitDabase.getFirebaseData { ancDatas ->
+                            val newPrdList =
+                                viewModel.uiState.value.a_ProduitInfosList.toMutableList()
+                            newPrdList.forEach {
+                                it.prixAchat =
+                                    ancDatas.find { ancData -> ancData.idArticle.toLong() == it.id }?.monPrixAchat
+                                        ?: 0.0
+                            }
+                            viewModel.addOrUpdateProduits(newPrdList)
+                        }
+                    }
                 }) { Text("Confirm") }
             },
             dismissButton = { TextButton(onClick = { showDialog = false }) { Text("Cancel") } }

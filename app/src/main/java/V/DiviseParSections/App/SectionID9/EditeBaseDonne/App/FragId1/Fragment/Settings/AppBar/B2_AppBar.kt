@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterDropdownMenu
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ModeAffichage
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

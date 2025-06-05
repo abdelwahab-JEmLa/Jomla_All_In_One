@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import android.util.Log
 import com.google.firebase.database.DataSnapshot

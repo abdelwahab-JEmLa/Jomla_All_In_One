@@ -11,7 +11,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.EditeCategoriesMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.PRODUCTS_LIST.EditeInfosMainList
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID.ReorderMultiCategories
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -211,11 +211,8 @@ fun EditeBaseDonneMainScreenIdS9(
             }
 
             OptionsFragmentButtons(
+                viewModel=viewModel,
                 viewModelScope = viewModel.viewModelScope,
-                function = { updatedCategories ->
-                    viewModel.addOrUpdateCategs(updatedCategories)
-                },
-                initCategories = categoriesListLocal,
                 onToggleMasque = { newMaskedElements ->
                     maskedElements = newMaskedElements
                 },

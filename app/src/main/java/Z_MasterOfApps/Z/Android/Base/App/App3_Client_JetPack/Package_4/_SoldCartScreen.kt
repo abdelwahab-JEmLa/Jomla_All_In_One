@@ -2,7 +2,7 @@ package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 
 class _SoldCartScreen(val viewModelInitApp: ViewModelInitApp) {
     fun onClickOnMain(

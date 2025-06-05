@@ -21,7 +21,7 @@ import Z_CodePartageEntreApps.Proto.Par.Type.Repository.B_ClientInfosDao
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.C_TypeTarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Repository.C_TypeTarificationInfosDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.CategoriesModelDao
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao

@@ -1,7 +1,7 @@
 package Views.P1._ArticlesStartFacade
 
 import Views.P1._ArticlesStartFacade.Filter.filterArticles
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import androidx.paging.PagingSource

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 

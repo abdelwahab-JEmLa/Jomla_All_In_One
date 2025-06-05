@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Ui.UnitEditor
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
@@ -103,7 +103,7 @@ fun ProductItem(
                 // Product info with key metrics at top
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = produit.nom,
+                        text =" ${produit.id}id>${produit.nom}",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         maxLines = 2,

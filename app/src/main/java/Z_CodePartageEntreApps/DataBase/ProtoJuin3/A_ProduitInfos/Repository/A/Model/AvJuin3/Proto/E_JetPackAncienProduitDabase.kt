@@ -1,4 +1,8 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto
+
+import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 
 
 data class E_JetPackAncienProduitDabase (
@@ -55,6 +59,27 @@ data class E_JetPackAncienProduitDabase (
 
     var keyFireBase: String = "",
 ) {
-    // No-argument constructor for Firebase
-    constructor() : this(0)
+    companion object {
+        val caRef =
+            Firebase.database.getReference("e_DBJetPackExport")
+
+        fun getFirebaseData(onSuccess: (List<E_JetPackAncienProduitDabase>) -> Unit) {
+            caRef.get()
+                .addOnSuccessListener { snapshot ->
+                    val dataList = mutableListOf<E_JetPackAncienProduitDabase>()
+                    snapshot.children.forEach { child ->
+                        child.getValue(E_JetPackAncienProduitDabase::class.java)?.let { item ->
+                            item.keyFireBase = child.key ?: ""
+                            dataList.add(item)
+                        }
+                    }
+                    onSuccess(dataList)
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("FirebaseError", "Failed to fetch data", exception)
+                    throw RuntimeException("Firebase data fetch failed", exception)
+                }
+        }
+
+    }
 }

@@ -6,7 +6,7 @@ import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
 import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

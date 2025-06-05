@@ -1,6 +1,6 @@
 package Views.P1.Ui.ArticlesGrid.B.Main.Filter
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.DisponibilityEtates
 
 fun filterArticles(

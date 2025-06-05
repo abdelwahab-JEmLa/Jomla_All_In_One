@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateDatasList
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,7 +49,6 @@ class StartUpFragmentViewModel(
         masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(categories)
     }
 
-    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
-        masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data)
-    }
+    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data) }
+    fun addOrUpdateProduits(datas:List<ArticlesBasesStatsTable> ) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
 }
