@@ -17,13 +17,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 data class UiState(
     val bonAchatList: List<C3_BonAchate> = emptyList(),
 
-    val activeBonAchat: C3_BonAchate? = null,
     val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(vid = 7L),
     val isRecording: Boolean = false,
     val displayTime: String = "00:00:00",
@@ -39,24 +37,25 @@ class Windows__ViewModel(
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
-      val TAG ="Windows__ViewModel"
     val recordingHandler = RecordingHandler(repository, viewModelScope)
-    val dateList get() = repository.modelDatas
-    val isRecording = recordingHandler.isRecording
-    val displayTime = recordingHandler.displayTime
+    private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
     val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
+    val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
 
-    private val _isAbdelwahabLeGerant = MutableStateFlow(true)
-    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
-    private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
-    private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
-    val editingInterval = _editingInterval.asStateFlow()
+    val TAG = "Windows__ViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
+    private val _isAbdelwahabLeGerant = MutableStateFlow(true)
+    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
 
-    val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
+    val dateList get() = repository.modelDatas
+    val isRecording = recordingHandler.isRecording
+    val displayTime = recordingHandler.displayTime
+
+    private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
+    private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
+    val editingInterval = _editingInterval.asStateFlow()
 
     private fun log(list: List<C3_BonAchate>) {
         val map = list
@@ -69,7 +68,7 @@ class Windows__ViewModel(
     }
 
     suspend fun suitUiBonAchet(): Unit {
-        snapshotFlow { uiState.value.bonAchatList}.collect { list ->
+        snapshotFlow { uiState.value.bonAchatList }.collect { list ->
             val uiState = uiState.value
             val bonAchatList = uiState.bonAchatList
             log(bonAchatList)
@@ -96,63 +95,6 @@ class Windows__ViewModel(
 
         recordingHandler.updateTotalWorkedTime()
         recordingHandler.setupRecordingStateListener()
-
-        viewModelScope.launch {
-            repos.activeVId_C3_BonAchate_Repository.collect { id ->
-                val bon =
-                    if (id > 0) repos.c3_BonAchate_Repository.modelDatasSnapList.firstOrNull { it.vid == id } else null
-                updateUiState { it.copy(activeBonAchat = bon) }
-            }
-        }
-
-        viewModelScope.launch {
-            snapshotFlow { repos.c3_BonAchate_Repository.modelDatasSnapList.toList() }.collect { list ->
-                handleBonAchatSelection(list)
-            }
-        }
-
-        viewModelScope.launch {
-            combine(isRecording, displayTime, editingInterval) { r, t, i -> Triple(r, t, i) }
-                .collect { (r, t, i) ->
-                    updateUiState {
-                        it.copy(
-                            isRecording = r,
-                            displayTime = t,
-                            editingInterval = i,
-                            nombreClientsAvecCible = nombreClientAvecCibleCommeLastBonAchat(),
-                            totalWorkedTime = t
-                        )
-                    }
-                }
-        }
-    }
-
-    private fun handleBonAchatSelection(list: List<C3_BonAchate>) {
-        _uiState.value.activePeriodeVent?.let { pid ->
-            val filtered = list.filter {
-                it.parentVID_1_4_PeriodeVent == pid.vid &&
-                        it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            }
-
-            when {
-                filtered.isEmpty() -> {
-                    if (repos.activeVId_C3_BonAchate_Repository.value != -1L) {
-                        repos.activeVId_C3_BonAchate_Repository.value = -1L
-                    } else {
-
-                    }
-                }
-
-                else -> {
-                    filtered.minByOrNull { it.timestamps }?.let { bon ->
-                        if (repos.activeVId_C3_BonAchate_Repository.value != bon.vid && !isRecording.value) {
-                            repos.activeVId_C3_BonAchate_Repository.value = bon.vid
-                            handleRecordingLogic()
-                        }
-                    }
-                }
-            }
-        }
     }
 
     fun get_PeriodVentActive(
@@ -166,19 +108,6 @@ class Windows__ViewModel(
                 ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
         return repositorysModel1.repository_1_4_PeriodeVent.modelDatasSnapList.find { it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive }
-    }
-
-    private fun handleRecordingLogic() {
-        getTodayRecord()?.let { rec ->
-            rec.intervalesDeTravaille.find { it.enCoureDEnregestrement }
-                ?.let { interval ->
-                    recordingHandler.startRecordingWithInterval(
-                        rec.vid,
-                        interval.vid,
-                        interval.tempDepart
-                    )
-                } ?: toggleRecording()
-        }
     }
 
     fun getLastTransaction(client: B_ClientDataBase): C3_BonAchate? =
