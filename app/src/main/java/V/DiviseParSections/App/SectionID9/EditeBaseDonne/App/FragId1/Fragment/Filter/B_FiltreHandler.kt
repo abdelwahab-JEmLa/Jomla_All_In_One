@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 data class FilterState(
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
-    val hidePetiteProbability: Boolean = false
+    val hidePetiteProbability: Boolean = false,
+    val hidePrixAchatZero: Boolean = false // Added: hide products with prixAchat <= 0
 )
 
 @Composable
@@ -33,7 +34,10 @@ fun MainFilter(
     modifier: Modifier = Modifier
 ) {
     val hasActiveFilters =
-        filterState.hideNonDispo || filterState.hideDispoOnly || filterState.hidePetiteProbability
+        filterState.hideNonDispo ||
+                filterState.hideDispoOnly ||
+                filterState.hidePetiteProbability ||
+                filterState.hidePrixAchatZero
 
     if (hasActiveFilters) {
         Card(
@@ -78,6 +82,13 @@ fun MainFilter(
                         FilterChip(
                             label = "Masquer Possible",
                             onRemove = { onFilterChanged(filterState.copy(hidePetiteProbability = false)) }
+                        )
+                    }
+
+                    if (filterState.hidePrixAchatZero) {
+                        FilterChip(
+                            label = "Masquer Prix Achat = 0",
+                            onRemove = { onFilterChanged(filterState.copy(hidePrixAchatZero = false)) }
                         )
                     }
                 }
@@ -169,6 +180,14 @@ fun FilterDropdownMenu(
                 }
             )
 
+            FilterOption(
+                label = "Masquer produits sans prix d'achat",
+                checked = filterState.hidePrixAchatZero,
+                onCheckedChange = {
+                    onFilterChanged(filterState.copy(hidePrixAchatZero = it))
+                }
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -180,6 +199,22 @@ fun FilterDropdownMenu(
                     }
                 ) {
                     Text("Réinitialiser")
+                }
+
+                // Added: Button to activate all filters
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        onFilterChanged(
+                            FilterState(
+                                hideNonDispo = true,
+                                hideDispoOnly = true,
+                                hidePetiteProbability = true,
+                                hidePrixAchatZero = true
+                            )
+                        )
+                    }
+                ) {
+                    Text("Tout Activer")
                 }
 
                 androidx.compose.material3.TextButton(

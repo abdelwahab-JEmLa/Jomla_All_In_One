@@ -72,20 +72,21 @@ fun EditeBaseDonneMainScreenIdS9(
         derivedStateOf {
             var filtered = produitListLocal
             if (filterState.hideNonDispo) {
-                filtered =
-                    filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
+                filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
             if (filterState.hideDispoOnly) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.DISPO }
             }
             if (filterState.hidePetiteProbability) {
-                filtered =
-                    filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
+                filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
+            }
+            // Added: Filter for products with prixAchat > 0
+            if (filterState.hidePrixAchatZero) {
+                filtered = filtered.filter { it.prixAchat > 0.0 }
             }
             filtered
         }
     }
-
     if (progress < 1.0f) {
         LoadingScreen(progress)
     } else {
