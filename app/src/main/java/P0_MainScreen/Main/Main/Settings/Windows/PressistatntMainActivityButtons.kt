@@ -3,7 +3,6 @@ package P0_MainScreen.Main.Main.Settings.Windows
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -127,8 +126,6 @@ fun PressistatntMainActivityButtons(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    // Log only once per recomposition instead of multiple times
-    Log.d(TAG, "UI recomposed - Cached clients count: $remainingClients")
 
     Box(
         modifier = Modifier.fillMaxSize(),

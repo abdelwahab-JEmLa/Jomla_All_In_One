@@ -16,14 +16,14 @@ fun WorkCompletionAlertDialog(
         AlertDialog(
             onDismissRequest = onDismiss,
             text = {
-                val nombreClientAvecCibleCommeLastBonAchat1 = if(nombreClientAvecCibleCommeLastBonAchat > 1)
+                val nombreClientAvecCibleCommeLastBonAchat1 = if(nombreClientAvecCibleCommeLastBonAchat >= 1)
                     nombreClientAvecCibleCommeLastBonAchat.toString() else ""
 
                 Text(text = "يرجى تعيين تقارير  $nombreClientAvecCibleCommeLastBonAchat1 زبون لإكمال الخدمة .")
             },
             confirmButton = {
-                // Only show confirm button when remaining clients < 3
-                if (nombreClientAvecCibleCommeLastBonAchat < 5) {
+                val testActivation = true
+                if (nombreClientAvecCibleCommeLastBonAchat == 0 ||testActivation) {
                     TextButton(
                         onClick = {
                             onConfirm() // Execute confirmation action
