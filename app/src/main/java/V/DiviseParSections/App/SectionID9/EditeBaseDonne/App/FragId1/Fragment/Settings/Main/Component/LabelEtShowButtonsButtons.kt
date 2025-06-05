@@ -31,6 +31,9 @@ fun LabelEtShowButtonsButtons(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            if (showLabels) {
+                Text("Labels") // Texte avant le bouton
+            }
             // Labels toggle button
             FloatingActionButton(
                 onClick = onShowLabelsToggle,
@@ -45,10 +48,6 @@ fun LabelEtShowButtonsButtons(
                     tint = iconColor
                 )
             }
-
-            if (showLabels) {
-                Text("Labels")
-            }
         }
     }
 
@@ -56,6 +55,9 @@ fun LabelEtShowButtonsButtons(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        if (showLabels) {
+            Text(if (showButtons) "Hide" else "OptionsFragmentButtons") // Texte avant le bouton
+        }
         // Show buttons toggle button
         FloatingActionButton(
             onClick = onShowButtonsToggle,
@@ -69,10 +71,6 @@ fun LabelEtShowButtonsButtons(
                 contentDescription = "Toggle Buttons Visibility",
                 tint = iconColor
             )
-        }
-
-        if (showLabels) {
-            Text(if (showButtons) "Hide" else "OptionsFragmentButtons")
         }
     }
 }

@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -14,12 +17,17 @@ fun EditeInfosMainList(
     produitList: List<ArticlesBasesStatsTable> = emptyList(),
     onPrixUpdate: (ArticlesBasesStatsTable) -> Unit = {}
 ) {
+
+    val produitListLocal by remember(produitList) { mutableStateOf(
+        produitList.sortedByDescending { it.id }
+    ) }
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = produitList,
+            items = produitListLocal,
             key = { it.id }
         ) { produit ->
             ProductItem(

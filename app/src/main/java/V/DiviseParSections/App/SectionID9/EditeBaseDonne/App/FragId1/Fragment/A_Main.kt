@@ -54,7 +54,7 @@ fun EditeBaseDonneMainScreenIdS9(
     var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
     var categoriesListLocal by remember(categoriesList) { mutableStateOf(categoriesList) }
 
-    var currentMode by remember { mutableStateOf(ModeAffichage.CATEGORIES_LIST) }
+    var currentMode by remember { mutableStateOf(ModeAffichage.PRODUCTS_LIST) }
     var filterState by remember { mutableStateOf(FilterState()) }
 
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }

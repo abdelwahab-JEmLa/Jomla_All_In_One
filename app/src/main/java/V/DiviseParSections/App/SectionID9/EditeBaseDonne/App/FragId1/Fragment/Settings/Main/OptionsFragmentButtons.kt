@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -52,8 +53,15 @@ fun OptionsFragmentButtons(
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
+
+    // Get screen configuration to position at the right edge
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeightDp = configuration.screenHeightDp.dp
+
+    // Initialize offset to start at the right edge of the screen
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 150f)) } // 80f accounts for button size + padding
+    var offsetY by remember { mutableFloatStateOf(screenWidth.value + 500f) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -95,8 +103,9 @@ fun OptionsFragmentButtons(
                 .padding(16.dp)
         ) {
             Column(
-                modifier = Modifier.align(Alignment.BottomStart),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.align(Alignment.BottomEnd),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
             ) {
                 if (showButtons) {
                     // But1 - Update Categories
@@ -109,7 +118,11 @@ fun OptionsFragmentButtons(
                         onBulkMove = onShowBulkMoveDialog
                     )
 
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (showLabels) Text("AfficheElements")
                         FloatingActionButton(
                             onClick = { viewModelScope.launch { onToggle() } },
                             modifier = Modifier.size(40.dp),
@@ -121,7 +134,6 @@ fun OptionsFragmentButtons(
                                 tint = Color.Black
                             )
                         }
-                        if (showLabels) Text("AfficheElements")
                     }
                 }
 
@@ -129,7 +141,8 @@ fun OptionsFragmentButtons(
                     showLabels = showLabels,
                     showButtons = showButtons,
                     onShowLabelsToggle = { showLabels = !showLabels },
-                    onShowButtonsToggle = { showButtons = !showButtons }
+                    onShowButtonsToggle = { showButtons = !showButtons },
+                    modifier = Modifier
                 )
             }
         }
@@ -142,6 +155,7 @@ private fun But1(showDialog: Boolean, showLabels: Boolean, onShowDialog: () -> U
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        if (showLabels) Text("Update")
         FloatingActionButton(
             onClick = onShowDialog,
             modifier = Modifier.size(40.dp),
@@ -149,7 +163,6 @@ private fun But1(showDialog: Boolean, showLabels: Boolean, onShowDialog: () -> U
         ) {
             Icon(Icons.Default.Refresh, "Update Categories", tint = Color.Black)
         }
-        if (showLabels) Text("Update")
     }
 }
 
@@ -159,6 +172,7 @@ private fun But2(showLabels: Boolean, selectedCount: Int, onBulkMove: () -> Unit
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        if (showLabels) Text("Move ($selectedCount)")
         FloatingActionButton(
             onClick = onBulkMove,
             modifier = Modifier.size(40.dp),
@@ -166,6 +180,5 @@ private fun But2(showLabels: Boolean, selectedCount: Int, onBulkMove: () -> Unit
         ) {
             Icon(Icons.Default.SwapHoriz, "Bulk Move Products", tint = Color.Black)
         }
-        if (showLabels) Text("Move ($selectedCount)")
     }
 }
