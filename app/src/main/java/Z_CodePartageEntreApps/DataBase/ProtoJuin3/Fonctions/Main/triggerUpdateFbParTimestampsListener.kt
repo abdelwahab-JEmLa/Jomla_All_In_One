@@ -118,7 +118,7 @@ private fun setupProductFirebaseListener(
     triggerUpdateFbParTimestampsListener<ArticlesBasesStatsTable>(
         compt = comptApp,
         scope = scope,
-        ref = ArticlesBasesStatsTable.caRef,
+        ref = ArticlesBasesStatsTable.ref,
         upsertFunction = { product: ArticlesBasesStatsTable ->
             appDatabase.articlesBasesStatsModelDao().upsertData(product)
         },

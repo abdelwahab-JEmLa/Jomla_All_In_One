@@ -2,8 +2,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateData
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.addOrUpdateDatasList
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateDatasList
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.lifecycle.ViewModel
@@ -19,7 +20,7 @@ data class UiState(
     val mainLoadingProgressPJuin3: Float = 0f,
 )
 
-class StartUpFragmentViewModel(
+class EditeBaseDonneMainScreenIdS9ViewModel(
     private val masterRepositorys: A_MasterRepositorys,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
@@ -51,4 +52,5 @@ class StartUpFragmentViewModel(
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data) }
     fun addOrUpdateProduits(datas:List<ArticlesBasesStatsTable> ) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
+    fun deleteArticlesBasesStatsTable(data:ArticlesBasesStatsTable ) { masterRepositorys.repoA_ProduitInfos.deleteData(data) }
 }

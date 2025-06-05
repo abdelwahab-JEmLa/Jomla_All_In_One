@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import android.util.Log
@@ -49,7 +49,7 @@ fun OptionsFragmentButtons(
     onToggleMasque: (Set<AfficheElements>) -> Unit = {},
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onShowBulkMoveDialog: () -> Unit = {},
-    viewModel: StartUpFragmentViewModel
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }

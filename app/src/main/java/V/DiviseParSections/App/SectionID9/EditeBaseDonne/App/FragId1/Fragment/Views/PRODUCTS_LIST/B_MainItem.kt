@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.PRODUCTS_LIST
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Ui.UnitEditor
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
@@ -20,13 +21,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,18 +47,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
     produitInit: ArticlesBasesStatsTable,
-    onUpdate: (ArticlesBasesStatsTable) -> Unit = {}
+    onUpdate: (ArticlesBasesStatsTable) -> Unit = {},
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinInject()
 ) {
     val TAG = "ProductItem"
     var produit by remember(produitInit.id, produitInit.actualiseSonImageTest2, produitInit.dernierFireBaseUpdateTimestamps) {
         mutableStateOf(produitInit)
     }
     var imageRefreshKey by remember(produitInit.id) { mutableIntStateOf(0) }
+
+    // State for delete dialog
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(produitInit.actualiseSonImageTest2, produitInit.dernierFireBaseUpdateTimestamps) {
         if (produitInit.id == produit.id &&
@@ -68,6 +80,49 @@ fun ProductItem(
         onUpdate(updatedProduct)
     }
 
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(
+                    text = "Supprimer le produit",
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Êtes-vous sûr de vouloir supprimer \"${produit.nom}\" ?\n\nCette action est irréversible."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                       viewModel.deleteArticlesBasesStatsTable(produit)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text(
+                        text = "Supprimer",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("Annuler")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp
+        )
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -76,7 +131,7 @@ fun ProductItem(
         Column(
             modifier = Modifier.fillMaxWidth().padding(20.dp)
         ) {
-            // Header: Image + Name + Key Info
+            // Header: Image + Name + Key Info + Delete Button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
@@ -186,11 +241,27 @@ fun ProductItem(
                         )
                     }
                 }
+
+                // Delete button in top-right corner
+                IconButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier.padding(start = 8.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Supprimer le produit",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pricing section
+            // Pricing section (rest remains the same...)
             Surface(
                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
@@ -65,7 +65,7 @@ fun CategorySelectionDialog(
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
-    viewModel: StartUpFragmentViewModel = koinViewModel(), // Added viewModel parameter
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(), // Added viewModel parameter
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var showSearch by remember { mutableStateOf(false) }

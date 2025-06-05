@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import android.net.Uri
 import android.widget.Toast
@@ -42,7 +42,7 @@ fun ProductImageCaptureButton(
     product: ArticlesBasesStatsTable,
     onImageCaptured: (ArticlesBasesStatsTable) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: StartUpFragmentViewModel = koinInject(),
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinInject(),
     webPQuality: Int = 85
 ) {
     val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")

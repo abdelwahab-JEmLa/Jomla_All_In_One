@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +45,7 @@ fun CategoryOptionGridCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
-    viewModel: StartUpFragmentViewModel = koinViewModel(),
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

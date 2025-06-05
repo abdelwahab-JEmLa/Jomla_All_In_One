@@ -25,7 +25,7 @@ class A_ProduitInfosRepository(
     )
 
     val dao = appDatabase.articlesBasesStatsModelDao()
-    val ref = ArticlesBasesStatsTable.caRef
+    val ref = ArticlesBasesStatsTable.ref
 
     init {
         //ArticlesBasesStatsTable.securedRemoveFireBaseDB()
@@ -34,6 +34,8 @@ class A_ProduitInfosRepository(
             val initializedData = initializeDataReturn()
             updateRepoState(initializedData)
         }
+
+
     }
 
     suspend fun updateRepoState(data: List<ArticlesBasesStatsTable>) {

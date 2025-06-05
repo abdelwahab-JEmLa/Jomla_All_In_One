@@ -103,14 +103,20 @@ data class ArticlesBasesStatsTable(
 
 
     companion object {
-        val caRef =
+        val ref =
             Firebase.database.getReference("00_DataPrototype-04-02" +
                     "/_1_developingRef" +
                     "/C_InfosSqlDataBases" +
                     "/A_ProduitInfos")
 
         fun securedRemoveFireBaseDB() {
-            caRef.removeValue()
+            ref.removeValue()
+        }
+
+        fun removeRef(
+            preparedData: ArticlesBasesStatsTable
+        ) {
+            ref.child(preparedData.keyFireBase).removeValue()
         }
     }
 }
