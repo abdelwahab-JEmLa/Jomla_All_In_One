@@ -99,8 +99,8 @@ fun OptionsFragmentButtons(
                                     currentProduct.autreNomDarticle = ancData.autreNomDarticle
 
                                     // Update quantity information
-                                    currentProduct.nombreUniteInt = ancData.nmbrUnite
-                                    currentProduct.nombreProduitDonSonCarton = ancData.nmbrCaron
+                                    currentProduct.nombreUniteInt = if (ancData.nmbrUnite == 0) 1 else  ancData.nmbrUnite
+                                    currentProduct.nombreProduitDonSonCarton = if (ancData.nmbrCaron == 0) 1 else  ancData.nmbrCaron
 
                                     // Update display and state information
                                     currentProduct.affichageUniteState = ancData.affichageUniteState
