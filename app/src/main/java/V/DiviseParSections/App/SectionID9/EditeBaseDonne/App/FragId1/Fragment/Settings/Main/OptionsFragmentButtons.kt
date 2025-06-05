@@ -60,8 +60,8 @@ fun OptionsFragmentButtons(
     val screenHeightDp = configuration.screenHeightDp.dp
 
     // Initialize offset to start at the right edge of the screen
-    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 150f)) } // 80f accounts for button size + padding
-    var offsetY by remember { mutableFloatStateOf(screenWidth.value + 500f) }
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value  + 100f) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
 
