@@ -32,7 +32,7 @@ data class UiState(
     val totalWorkedTime: String = "00:00:00"
 )
 
-class Windows__ViewModel(
+class RecordingViewModel(
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
     private val recordingHandler: IRecordingHandler ,
@@ -42,7 +42,7 @@ class Windows__ViewModel(
     val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
     val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
 
-    val TAG = "Windows__ViewModel"
+    val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 

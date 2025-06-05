@@ -1,6 +1,6 @@
-package P0_MainScreen.Main.Main.Settings
+package P0_MainScreen.Main.Main.Settings.Windows
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import androidx.compose.foundation.background
@@ -46,7 +46,7 @@ import kotlin.math.roundToInt
 @Composable
 fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
-    viewModel: Windows__ViewModel = koinViewModel(),
+    viewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
@@ -114,6 +114,9 @@ fun PressistatntMainActivityButtons(
     WorkCompletionAlertDialog(
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
+        onConfirm = {
+                viewModel.stopRecording()
+        },
         nombreClientAvecCibleCommeLastBonAchat = viewModel.nombreClientAvecCibleCommeLastBonAchat()
     )
 

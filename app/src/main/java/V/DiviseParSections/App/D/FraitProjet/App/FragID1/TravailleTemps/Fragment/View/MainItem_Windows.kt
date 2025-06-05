@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MainItem_Windows(
     modifier: Modifier = Modifier,
     intervale: K_TempTravaille.IntervalesDeTravaille,
-    viewModel: Windows__ViewModel,
+    viewModel: RecordingViewModel,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
 ) {
     val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {

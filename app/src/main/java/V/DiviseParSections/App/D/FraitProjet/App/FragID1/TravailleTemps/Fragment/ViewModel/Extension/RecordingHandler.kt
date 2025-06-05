@@ -18,8 +18,8 @@ interface IRecordingHandler {
     val isRecording: StateFlow<Boolean>
     val displayTime: StateFlow<String>
 
-    fun stopRecording()
     fun toggleRecording(forceStop: Boolean = false)
+    fun stopRecording()
     fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String)
     fun setupRecordingStateListener()
     fun updateElapsedTime()

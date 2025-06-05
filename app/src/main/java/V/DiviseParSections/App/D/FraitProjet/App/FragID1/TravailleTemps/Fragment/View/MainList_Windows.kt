@@ -3,7 +3,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.DayHeader
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.WeekHeader
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import java.util.Locale
 @Composable
 fun MainList_Windows(
     modifier: Modifier = Modifier,
-    viewModel: Windows__ViewModel = koinViewModel(),
+    viewModel: RecordingViewModel = koinViewModel(),
 ) {
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->

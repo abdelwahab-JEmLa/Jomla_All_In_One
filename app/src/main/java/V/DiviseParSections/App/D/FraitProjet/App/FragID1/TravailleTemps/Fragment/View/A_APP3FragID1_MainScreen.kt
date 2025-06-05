@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.A_OptionsControlsButtons_FragId_
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun A_APP3FragID1_MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: Windows__ViewModel = koinViewModel(),
+    viewModel: RecordingViewModel = koinViewModel(),
     fabsVisibility: Boolean = true,
 ) {
     // Collect recording state

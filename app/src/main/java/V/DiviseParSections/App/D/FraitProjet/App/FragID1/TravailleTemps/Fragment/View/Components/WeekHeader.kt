@@ -2,7 +2,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.WeekInfo
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -45,7 +45,7 @@ import java.util.Locale
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
-    viewModel: Windows__ViewModel
+    viewModel: RecordingViewModel
 ) {
     // Get all records for this specific week and checkADD_1_4_PeriodeVent if all are paid
     val weekRecords = viewModel.dateList.filter { record ->
@@ -229,7 +229,7 @@ fun WeekHeader(
 // Function to mark all days in the week as paid
 fun markAllDaysAsPaid(
     weekInfo: WeekInfo,
-    viewModel: Windows__ViewModel,
+    viewModel: RecordingViewModel,
     paidStatus: MutableState<Boolean>
 ) {
     // Get all records for the specific week and year
@@ -302,7 +302,7 @@ fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String
 }
 
 // Function to calculate total work time for the week
-fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: Windows__ViewModel): Int {
+fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel): Int {
     var totalMinutes = 0
 
     // Get all records for the specific week and year

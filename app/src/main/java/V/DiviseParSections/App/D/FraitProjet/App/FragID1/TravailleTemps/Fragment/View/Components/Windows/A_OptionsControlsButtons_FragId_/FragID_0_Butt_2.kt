@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FragID_0_Butt_2(
-    viewModel: Windows__ViewModel,
+    viewModel: RecordingViewModel,
     showLabels: Boolean,
     labelText: String,
 ) {

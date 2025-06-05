@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components
 
 import Z_CodePartageEntreApps.Model.K_TempTravaille
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,7 +67,7 @@ private val arabicDays = mapOf(
 @Composable
 fun DayHeader(
     tempTravaille: K_TempTravaille,
-    viewModel: Windows__ViewModel
+    viewModel: RecordingViewModel
 ) {
     // Get admin state
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()

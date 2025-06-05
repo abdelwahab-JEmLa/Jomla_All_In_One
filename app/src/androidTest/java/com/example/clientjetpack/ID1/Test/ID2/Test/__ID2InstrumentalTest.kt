@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test.ID2.Test
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.Modules.LogFilterRule
@@ -45,7 +45,7 @@ class __ID2InstrumentalTest : KoinTest {
                 module {
                     single { this@__ID2InstrumentalTest }
                     viewModel {
-                        Windows__ViewModel(
+                        RecordingViewModel(
                             get(),
                             get(),
                             get(),
