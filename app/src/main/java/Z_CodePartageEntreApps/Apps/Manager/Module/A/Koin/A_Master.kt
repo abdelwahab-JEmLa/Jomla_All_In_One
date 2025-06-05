@@ -7,8 +7,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.ViewModelPanierFinaleDAchat_FragIdB2
 import V.DiviseParSections.App.B2_SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.IRecordingHandler
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
+import Z_CodePartageEntreApps.Modules.RecordingHandler.IRecordingHandler
+import Z_CodePartageEntreApps.Modules.RecordingHandler.RecordingHandler
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
@@ -32,8 +32,8 @@ import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.I_Categorie
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
 import Z_CodePartageEntreApps.Modules.ConnectionManager

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -13,8 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.google.firebase.Firebase
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.database
 
 class K_TempTravaille(var vid: String = "2025_01_01") {
     var infosDeBase by mutableStateOf(InfosDeBase())
@@ -79,5 +81,11 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
                 return 0
             }
         }
+        val caRef =
+            Firebase.database.getReference("00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases" +
+                    "/A_ProduitInfos")
+
     }
 }

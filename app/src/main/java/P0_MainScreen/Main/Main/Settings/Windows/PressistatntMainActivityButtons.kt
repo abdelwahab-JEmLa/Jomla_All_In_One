@@ -3,6 +3,7 @@ package P0_MainScreen.Main.Main.Settings.Windows
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +53,7 @@ fun PressistatntMainActivityButtons(
     parentCompose_1_3_BonAchatVid: Long = 0,
     onClickAnulationButton: () -> Unit = {},
 ) {
+    val TAG ="PressistatntMainActivityButtons"
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
@@ -59,7 +61,12 @@ fun PressistatntMainActivityButtons(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     val isRecording by viewModel.isRecording.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val displayTime by viewModel.displayTime.collectAsState()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    // Cache the client count to avoid multiple reads
+    val remainingClients = uiState.nombreClientsAvecCible
 
     // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
@@ -115,10 +122,13 @@ fun PressistatntMainActivityButtons(
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {
-                viewModel.stopRecording()
+          viewModel.recordingHandler.toggleRecording(forceStop = true)
         },
-        nombreClientAvecCibleCommeLastBonAchat = viewModel.nombreClientAvecCibleCommeLastBonAchat()
+        nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
+
+    // Log only once per recomposition instead of multiple times
+    Log.d(TAG, "UI recomposed - Cached clients count: $remainingClients")
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -140,8 +150,6 @@ fun PressistatntMainActivityButtons(
                 modifier = Modifier.align(Alignment.BottomStart),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val displayTime by viewModel.displayTime.collectAsState()
-
                 if (showButtons) {
                     val buttonBackgroundColor =
                         if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
@@ -170,7 +178,7 @@ fun PressistatntMainActivityButtons(
                         }
 
                         if (showLabels) {
-                            val remainingClients = viewModel.nombreClientAvecCibleCommeLastBonAchat()
+                            // Use the pre-cached value
                             Text(
                                 "$displayTime | بقي $remainingClients زبون",
                                 modifier = Modifier

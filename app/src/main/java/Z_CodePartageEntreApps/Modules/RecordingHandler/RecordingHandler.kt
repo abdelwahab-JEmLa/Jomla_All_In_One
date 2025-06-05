@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension
+package Z_CodePartageEntreApps.Modules.RecordingHandler
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -19,7 +19,7 @@ interface IRecordingHandler {
     val displayTime: StateFlow<String>
 
     fun toggleRecording(forceStop: Boolean = false)
-    fun stopRecording()
+
     fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String)
     fun setupRecordingStateListener()
     fun updateElapsedTime()
@@ -51,11 +51,6 @@ class RecordingHandler(
     private val _currentElapsedSeconds = MutableStateFlow(0L)
     private val _lastUpdateTime = MutableStateFlow(System.currentTimeMillis())
 
-    override fun stopRecording() {
-        stopTimeInterval()
-        updateRecordingState(false)
-    }
-
     override fun toggleRecording(forceStop: Boolean) {
         if (_isRecording.value && !forceStop) {
             stopRecording()
@@ -65,7 +60,16 @@ class RecordingHandler(
         }
     }
 
-    override fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String) {
+    private fun stopRecording() {
+        stopTimeInterval()
+        updateRecordingState(false)
+    }
+
+    override fun startRecordingWithInterval(
+        recordId: String,
+        intervalId: String,
+        startTime: String
+    ) {
         _currentRecordId.value = recordId
         _currentIntervalId.value = intervalId
         _currentStartTime.value = startTime
@@ -77,33 +81,36 @@ class RecordingHandler(
     }
 
     override fun setupRecordingStateListener() {
-        K_TempTravailleRepository.caReference.child("_isRecording").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val isRecordingValue = snapshot.getValue(Boolean::class.java) ?: false
-                if (isRecordingValue != _isRecording.value) {
-                    _isRecording.value = isRecordingValue
-                    if (isRecordingValue) {
-                        val currentDateStr = TimeFormatUtils.getCurrentDate().replace("/", "_")
-                        repository.modelDatas.find { it.vid == currentDateStr }
-                            ?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }?.let { interval ->
-                                _currentRecordId.value = currentDateStr
-                                _currentIntervalId.value = interval.vid
-                                _currentStartTime.value = interval.tempDepart
-                                _currentElapsedSeconds.value = 0L
-                                _lastUpdateTime.value = System.currentTimeMillis()
-                            } ?: updateRecordingState(false)
-                    } else {
-                        _currentRecordId.value = null
-                        _currentIntervalId.value = null
-                        _currentStartTime.value = null
-                        _elapsedTimeInSeconds.value = 0
-                        _currentElapsedSeconds.value = 0L
-                        updateTotalWorkedTime()
+        K_TempTravailleRepository.caReference.child("_isRecording")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val isRecordingValue = snapshot.getValue(Boolean::class.java) ?: false
+                    if (isRecordingValue != _isRecording.value) {
+                        _isRecording.value = isRecordingValue
+                        if (isRecordingValue) {
+                            val currentDateStr = TimeFormatUtils.getCurrentDate().replace("/", "_")
+                            repository.modelDatas.find { it.vid == currentDateStr }
+                                ?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }
+                                ?.let { interval ->
+                                    _currentRecordId.value = currentDateStr
+                                    _currentIntervalId.value = interval.vid
+                                    _currentStartTime.value = interval.tempDepart
+                                    _currentElapsedSeconds.value = 0L
+                                    _lastUpdateTime.value = System.currentTimeMillis()
+                                } ?: updateRecordingState(false)
+                        } else {
+                            _currentRecordId.value = null
+                            _currentIntervalId.value = null
+                            _currentStartTime.value = null
+                            _elapsedTimeInSeconds.value = 0
+                            _currentElapsedSeconds.value = 0L
+                            updateTotalWorkedTime()
+                        }
                     }
                 }
-            }
-            override fun onCancelled(error: DatabaseError) {}
-        })
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     private fun updateRecordingState(isRecording: Boolean) {
@@ -162,12 +169,18 @@ class RecordingHandler(
         }
     }
 
-    override fun calculateTotalWorkedTime(record: K_TempTravaille?, isCurrentlyRecording: Boolean): Long {
+    override fun calculateTotalWorkedTime(
+        record: K_TempTravaille?,
+        isCurrentlyRecording: Boolean
+    ): Long {
         if (record == null) return 0L
         var total = 0L
         record.intervalesDeTravaille.forEach { interval ->
             if (!interval.enCoureDEnregestrement) {
-                val duration = K_TempTravaille.calculateDurationMinutes(interval.tempDepart, interval.temparrete)
+                val duration = K_TempTravaille.calculateDurationMinutes(
+                    interval.tempDepart,
+                    interval.temparrete
+                )
                 if (duration > 0) {
                     total += duration * 60L
                 }

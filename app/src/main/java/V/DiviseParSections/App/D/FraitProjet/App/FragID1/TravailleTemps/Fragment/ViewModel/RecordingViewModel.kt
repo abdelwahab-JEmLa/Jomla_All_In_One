@@ -2,13 +2,13 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.IRecordingHandler
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
-import Z_CodePartageEntreApps.Model.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Modules.RecordingHandler.IRecordingHandler
+import Z_CodePartageEntreApps.Modules.RecordingHandler.TimeFormatUtils
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import android.util.Log
 import androidx.compose.runtime.snapshotFlow
@@ -35,7 +35,7 @@ data class UiState(
 class RecordingViewModel(
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
-    private val recordingHandler: IRecordingHandler,
+    val recordingHandler: IRecordingHandler,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
@@ -45,7 +45,6 @@ class RecordingViewModel(
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    val bonAchatList = uiState.value.bonAchatList
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
@@ -60,10 +59,10 @@ class RecordingViewModel(
 
     private fun log(list: List<C3_BonAchate>) {
         val map = list.map { bon ->
-                val clientAcheteurID = bon.clientAcheteurID
-                val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
-                bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentVID_1_4_PeriodeVent)
-            }
+            val clientAcheteurID = bon.clientAcheteurID
+            val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
+            bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentVID_1_4_PeriodeVent)
+        }
         Log.d(TAG, "$map")
     }
 
@@ -73,15 +72,24 @@ class RecordingViewModel(
             log(list)
             if (list.any {
                     it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                }) Log.i(TAG, "LencePrint")
+                })
+                Log.i(TAG, "LencePrint")
 
-            recordingHandler.toggleRecording()
+          //  recordingHandler.toggleRecording()
         }
     }
 
     private suspend fun collectBonAchatRepoModel() {
+        Log.i(TAG, "collectBonAchatRepoModel")
+
         snapshotFlow { reposBonAchatList.modelDatasSnapList.toList() }.collect { list ->
-            updateUiState { it.copy(bonAchatList = list) }
+            log(list)
+
+            updateUiState {
+                it.copy(bonAchatList = list)
+            }
+            // Calculate after updating the state to ensure fresh data
+            updateClientCountCache()
         }
     }
 
@@ -103,10 +111,10 @@ class RecordingViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect {
             val activePeriodeVent = get_PeriodVentActive()
             updateUiState { currentState ->
-                currentState.copy(
-                    activePeriodeVent = activePeriodeVent,
-                )
+                currentState.copy(activePeriodeVent = activePeriodeVent)
             }
+            // Update client count after state change
+            updateClientCountCache()
         }
     }
 
@@ -126,9 +134,27 @@ class RecordingViewModel(
         repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 
+    // Make this private and use the cached value from UiState instead
+    private fun calculateNombreClientAvecCible(): Int {
+        val count = bProto_ClientsDataBase.count { client ->
+            val lastTransaction = getLastTransaction(client)
+            val isCible = lastTransaction?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+            Log.d(TAG, "Client ${client.id}: last transaction state = ${lastTransaction?.etateActuellementEst}, is Cible = $isCible")
+            isCible
+        }
+        Log.d(TAG, "Calculating nombre clients avec cible: total clients = ${bProto_ClientsDataBase.size}, clients with Cible = $count")
+        return count
+    }
+
+    // Helper method to update the client count cache
+    private fun updateClientCountCache() {
+        val count = calculateNombreClientAvecCible()
+        updateUiState { it.copy(nombreClientsAvecCible = count) }
+    }
+
+    // Public method that returns the cached value
     fun nombreClientAvecCibleCommeLastBonAchat(): Int {
-        Log.d(TAG, bProto_ClientsDataBase.size.toString())
-        return bProto_ClientsDataBase.count { getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible }
+        return uiState.value.nombreClientsAvecCible
     }
 
     private fun updateUiState(update: (UiState) -> UiState) {
@@ -181,7 +207,6 @@ class RecordingViewModel(
         }
     }
 
-    fun stopRecording() = recordingHandler.stopRecording()
     fun updateElapsedTime() = recordingHandler.updateElapsedTime()
     fun getTodayRecord(): K_TempTravaille? =
         dateList.find { it.infosDeBase.dateInString == _currentDate.value }

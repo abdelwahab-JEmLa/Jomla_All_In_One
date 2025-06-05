@@ -1,9 +1,6 @@
-package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -52,7 +49,7 @@ interface K_TempTravailleRepository {
 
 
     companion object {
-        val caReference = Firebase.database.getReference("K_TempTravaille")
+        val caReference = K_TempTravaille.caRef
     }
 }
 
