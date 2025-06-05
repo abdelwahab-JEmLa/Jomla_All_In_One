@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
+       //<--
+       //TODO(1): cree une interface  toggleRecording est le seul override
 class RecordingHandler(private val repository: K_TempTravailleRepository, private val coroutineScope: CoroutineScope) {
-
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
     private val _currentRecordId = MutableStateFlow<String?>(null)
