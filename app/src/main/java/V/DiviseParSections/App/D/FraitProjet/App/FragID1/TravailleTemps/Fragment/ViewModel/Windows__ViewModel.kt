@@ -2,7 +2,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.IRecordingHandler
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -35,9 +35,9 @@ data class UiState(
 class Windows__ViewModel(
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
+    private val recordingHandler: IRecordingHandler ,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
-    val recordingHandler = RecordingHandler(repository, viewModelScope)
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
     val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
     val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
@@ -77,7 +77,8 @@ class Windows__ViewModel(
                             it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
-            toggleRecording()
+
+            recordingHandler.toggleRecording()
         }
     }
 
@@ -94,7 +95,6 @@ class Windows__ViewModel(
         }
 
         viewModelScope.launch {
-            stopRecording()
             suitUiBonAchet()
         }
 
@@ -190,7 +190,6 @@ class Windows__ViewModel(
         }
     }
 
-    fun toggleRecording(forceStop: Boolean = false) = recordingHandler.toggleRecording(forceStop)
     fun stopRecording() = recordingHandler.stopRecording()
     fun updateElapsedTime() = recordingHandler.updateElapsedTime()
     fun getTodayRecord(): K_TempTravaille? =

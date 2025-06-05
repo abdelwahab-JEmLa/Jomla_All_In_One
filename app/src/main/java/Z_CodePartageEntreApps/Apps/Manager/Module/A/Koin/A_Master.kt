@@ -8,6 +8,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.ViewModelPanierFinaleDAchat_FragIdB2
 import V.DiviseParSections.App.B2_SectionID9_AtelieModbile.Test.Main.E.Repository.E_GroupedDataBasesRepository
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.IRecordingHandler
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
@@ -62,6 +64,9 @@ import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_Star
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -141,6 +146,24 @@ val navigationModule = module {
     single { FragmentNavigationHandler() }
 }
 
+val classesHandlersModule = module {
+    // Provide a CoroutineScope for handlers that need it
+    single<CoroutineScope> {
+        CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    }
+
+    // Recording Handler
+    single<IRecordingHandler> {
+        RecordingHandler(
+            repository = get<K_TempTravailleRepository>(),
+            coroutineScope = get<CoroutineScope>()
+        )
+    }
+
+    // Add other handlers here as needed
+    // single<IAnotherHandler> { AnotherHandlerImpl(get()) }
+}
+
 val viewModelModule = module {
     viewModel {
         ViewModelT2(
@@ -178,13 +201,16 @@ val viewModelModule = module {
             get(),
             AppDatabase.DatabaseModule.getDatabase(get()),
             get(),
-            )
+        )
     }
 
-    viewModel { Windows__ViewModel(
-        get(),
-        get(),
-    ) }
+    // Updated to inject the RecordingHandler
+    viewModel {
+        Windows__ViewModel(
+            get(), // K_TempTravailleRepository
+            get(), // RecordingHandler
+        )
+    }
 
     // Original viewModels
     viewModel { PeriodeVenteViewModel(get()) }
@@ -231,7 +257,7 @@ val uiHandlersModule = module {
     single { PanelsGroupeButtonHandler() }
 }
 
-// Ensuite, incluez ce module dans votre appModule
+// Updated appModule to include classesHandlersModule
 val appModule = module {
     includes(
         moduleGrouperKoinProtoJuin3,
@@ -239,7 +265,8 @@ val appModule = module {
         appTypeModule,
         viewModelModule,
         navigationModule,
-        uiHandlersModule
+        uiHandlersModule,
+        classesHandlersModule  // Added the new module
     )
 
     // Rest of the code remains the same
