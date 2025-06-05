@@ -11,28 +11,30 @@ import com.google.firebase.database.database
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+    //S P Ids
+    var idParentCategorie: Long? = null,
 
     // Section InfosDeBase
     var nom: String = "",
     var nomArticleFinale: String = "",
 
+    //
+    var nombreUniteInt: Int = 0,
+    var nombreProduitDonSonCarton: Int = 0,
+
     // Section Etates Mutable
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
-    // Section sonCategory
     // Section InfosCoutes
     var prixVent: Double = 0.0,
-    //edited
     var prixAchat: Double = 0.0,
-
-    var nombreUniteInt: Int = 0,
     var clientPrixVentUnite: Double = 0.0,
 
-    //ajoute
+
+    //image
     var actualiseSonImage: Int = 0,
     var actualiseSonImageTest2: Int = 0,
 
-    var idParentCategorie: Long? = null,
 
     // Add availability states with proper initialization
     var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.DISPO,
@@ -41,9 +43,9 @@ data class ArticlesBasesStatsTable(
     var keyFireBase: String = "",
 
 
+
     var nomArab: String = "",
     var autreNomDarticle: String? = null,
-    var nmbrCat: Int = 0,
     var couleur1: String? = null,
     var idcolor1: Long = 0,
     var couleur2: String? = null,
@@ -53,14 +55,12 @@ data class ArticlesBasesStatsTable(
     var couleur4: String? = null,
     var idcolor4: Long = 0,
     var nomCategorie2: String? = null,
-    var nmbrCaron: Int = 0,
     var affichageUniteState: Boolean = false,
     var commmentSeVent: String? = null,
     var afficheBoitSiUniter: String? = null,
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
     var neaon2: String = "",
-    var idCategorie: Double = 0.0,
     var catalogeParentID: Long = 0,
     var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
     var nomCategorie: String = "",
@@ -73,10 +73,6 @@ data class ArticlesBasesStatsTable(
     var benificeTotaleEn2: Double = 0.0,
     var monPrixAchatUniter: Double = 0.0,
     var monPrixVentUniter: Double = 0.0,
-    var benificeClient: Double = 0.0,
-    var monBeneficeUniter: Double = 0.0,
-
-    var cLeDataOuvertDuParentList: Boolean = false,
 
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
@@ -100,6 +96,11 @@ data class ArticlesBasesStatsTable(
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
         )
     }
+
+    fun getNomFilesDesCouleursImagesDispoDonSockage(): List<String> {
+        return emptyList()
+    }
+
 
     companion object {
         val caRef =

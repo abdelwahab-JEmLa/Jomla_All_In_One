@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Se
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.StartUpFragmentViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,18 +81,48 @@ fun OptionsFragmentButtons(
             text = { Text("Update Datas? This action cannot be undone.") },
             confirmButton = {
                 TextButton(onClick = {
-                    showDialog = false
+
                     viewModelScope.launch {
                         E_JetPackAncienProduitDabase.getFirebaseData { ancDatas ->
-                            val newPrdList =
-                                viewModel.uiState.value.a_ProduitInfosList.toMutableList()
-                            newPrdList.forEach {
-                                it.prixAchat =
-                                    ancDatas.find { ancData -> ancData.idArticle.toLong() == it.id }?.monPrixAchat
-                                        ?: 0.0
+                            val newPrdList = viewModel.uiState.value.a_ProduitInfosList.toMutableList()
+
+                            // Create a map for faster lookup
+                            val ancDataMap = ancDatas.associateBy { it.idArticle.toLong() }
+
+                            newPrdList.forEach { currentProduct ->
+                                val ancData = ancDataMap[currentProduct.id]
+
+                                if (ancData != null) {
+                                    // Update product details
+                                    currentProduct.nomArab = ancData.nomArab
+                                    currentProduct.autreNomDarticle = ancData.autreNomDarticle
+
+                                    // Update quantity information
+                                    currentProduct.nombreUniteInt = ancData.nmbrUnite
+                                    currentProduct.nombreProduitDonSonCarton = ancData.nmbrCaron
+
+                                    // Update display and state information
+                                    currentProduct.affichageUniteState = ancData.affichageUniteState
+                                    currentProduct.commmentSeVent = ancData.commmentSeVent
+                                    currentProduct.afficheBoitSiUniter = ancData.afficheBoitSiUniter
+                                    currentProduct.cartonState = ancData.cartonState
+                                }
                             }
+
+                            // Apply the updates to the view model
                             viewModel.addOrUpdateProduits(newPrdList)
+
+                            // Optional: Log the synchronization results
+                            val updatedCount = newPrdList.count { product ->
+                                ancDataMap.containsKey(product.id)
+                            }
+                            val totalCount = newPrdList.size
+                            val notFoundCount = totalCount - updatedCount
+                            Log.d("DataSync", "Synchronization completed: $updatedCount updated, $notFoundCount not found in legacy data")
+
                         }
+                        showDialog = false
+
                     }
                 }) { Text("Confirm") }
             },

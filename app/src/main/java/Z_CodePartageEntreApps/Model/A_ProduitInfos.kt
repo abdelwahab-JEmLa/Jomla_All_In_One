@@ -101,7 +101,7 @@ fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
 
         nomArab = ancien.nomArab,
         autreNomDarticle = ancien.autreNomDarticle,
-        nmbrCat = ancien.nmbrCat,
+        nmbrCat = ancien.nombreProduitDonSonCarton,
         couleur1 = ancien.couleur1,
         idcolor1 = ancien.idcolor1,
         couleur2 = ancien.couleur2,
