@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

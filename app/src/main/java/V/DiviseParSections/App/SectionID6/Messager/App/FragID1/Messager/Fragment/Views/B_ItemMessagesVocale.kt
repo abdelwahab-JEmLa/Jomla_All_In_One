@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
-
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+     /*
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.playVoiceMessage
@@ -50,7 +49,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun B_ItemMessagesVocale(
     parentMessageVocale: MessageVocale,
-    etatesChildKeyIDsList: List<EtateMessageVocale>,
+    etatesChildKeyIDsList: List<D_EtateMessageVocale>,
     uiState: MessageurUiState,
     viewModel: ViewModelMessageur,
 ) {
@@ -63,12 +62,12 @@ fun B_ItemMessagesVocale(
     val datesHandler = remember { DatesHandler() }
 
     // Check message states
-    val isListened = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.ECOUTE }
-    val isViewed = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.VUE }
+    val isListened = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ECOUTE }
+    val isViewed = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.VUE }
     val isBeingRecorded = etatesChildKeyIDsList.any {
-        it.nom == EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT
+        it.nom == D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT
     }
-    val isSent = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.ENVOYER }
+    val isSent = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ENVOYER }
 
     // Get the latest state timestamp
     val latestTimestamp = etatesChildKeyIDsList.maxByOrNull { it.timestamps }?.timestamps ?: 0L
@@ -214,14 +213,14 @@ fun B_ItemMessagesVocale(
                                             // Update message state to ECOUTE if not already
                                             if (!isListened) {
                                                 coroutineScope.launch {
-                                                    // Create a new EtateMessageVocale with ECOUTE state
-                                                    val newEtate = EtateMessageVocale(
+                                                    // Create a new D_EtateMessageVocale with ECOUTE state
+                                                    val newEtate = D_EtateMessageVocale(
                                                         parentMessageVID = parentMessageVocale.vid,
                                                         parentMessageKeyID = parentMessageVocale.keyID,
-                                                        nom = EtateMessageVocale.Nom.ECOUTE,
+                                                        nom = D_EtateMessageVocale.Nom.ECOUTE,
                                                         timestamps = datesHandler.getCurrentTimestamps()
                                                     )
-                                                    viewModel.appDatabase.etateMessageVocaleDao()
+                                                    viewModel.appDatabase.D_EtateMessageVocaleDao()
                                                         .insert(newEtate)
                                                 }
                                             }
@@ -301,3 +300,4 @@ fun B_ItemMessagesVocale(
             .padding(horizontal = 16.dp)
     )
 }
+                   */

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions
-
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+   /*
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import android.content.Context
 import android.media.AudioAttributes
@@ -97,3 +96,4 @@ suspend fun ViewModelMessageur.playVoiceMessage(
         }
     }
 }
+                               */

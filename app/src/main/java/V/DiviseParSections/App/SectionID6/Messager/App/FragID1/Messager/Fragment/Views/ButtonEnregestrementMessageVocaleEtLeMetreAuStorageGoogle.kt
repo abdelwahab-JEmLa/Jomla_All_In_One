@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
-
+    /*
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.formatTime
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.startRecording
@@ -165,3 +165,4 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
     }
 }
+                     */

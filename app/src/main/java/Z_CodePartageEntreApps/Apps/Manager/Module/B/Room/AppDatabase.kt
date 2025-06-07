@@ -7,10 +7,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.EtateMessageVocaleDao
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.MessageVocaleDao
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.D_EtateMessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.CategoriesModelDao
@@ -85,8 +83,7 @@ import java.util.Date
         E1SecteurDeClients::class,
         PolygonGeoLimite::class,
 
-        MessageVocale::class,
-        EtateMessageVocale::class,
+        D_EtateMessageVocale::class,
 
         A_ProduitInfos::class,
         B_ClientInfos::class,
@@ -129,8 +126,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
     abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
 
-    abstract fun messageVocaleDao(): MessageVocaleDao
-    abstract fun etateMessageVocaleDao(): EtateMessageVocaleDao
 
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
     abstract fun b_ClientInfosDao(): B_ClientInfosDao
@@ -140,6 +135,7 @@ abstract class AppDatabase : RoomDatabase() {
     //Proto j3
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
+    abstract fun D_EtateMessageVocaleDao(): D_EtateMessageVocaleDao
 
     object DatabaseModule {
 

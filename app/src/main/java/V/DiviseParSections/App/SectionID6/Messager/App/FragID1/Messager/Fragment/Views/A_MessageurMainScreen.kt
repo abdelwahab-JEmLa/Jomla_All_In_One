@@ -1,12 +1,11 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
-
+    /*
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.FabButtonsMessageurMainScreen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +30,7 @@ fun A_MessageurMainScreen(
             items(uiState.noSqlMessageVocaleList) { noSqlMessageVocale ->
                 val parentMessage = uiState.messageVocaleList.find { it.keyID == noSqlMessageVocale.keyIDMessageVocale }
 
-                val relevantEtates = uiState.etateMessageVocaleList.filter { etate ->
+                val relevantEtates = uiState.d_EtateMessageVocaleList.filter { etate ->
                     noSqlMessageVocale.keyIDsChildListEtateMessageVocale.contains(etate.keyID)
                 }
 
@@ -50,3 +49,4 @@ fun A_MessageurMainScreen(
         FabButtonsMessageurMainScreen(viewModel)
     }
 }
+                             */

@@ -1,17 +1,27 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.P.Preview.D_EtateMessageVocalePreviewViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val moduleRepositorys = module {
+
+    single {
+        D_EtateMessageVocaleRepository(
+            androidContext(),
+            get()
+        )
+    }
+
     single {
         A_ProduitInfosRepository(
             androidContext(),
@@ -30,12 +40,19 @@ val moduleRepositorys = module {
         A_MasterRepositorys(
             get(),
             get(),
+            get(),
         )
     }
 
 }
 
 val moduleViewModels = module {
+    viewModel {
+        D_EtateMessageVocalePreviewViewModel(
+            get(),
+        )
+    }
+
     viewModel {
         A_ProduitInfosViewModel(
             get()

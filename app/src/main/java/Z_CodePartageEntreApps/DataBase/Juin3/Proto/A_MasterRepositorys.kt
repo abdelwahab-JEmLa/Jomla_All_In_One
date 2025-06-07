@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import kotlinx.coroutines.CoroutineScope
@@ -13,12 +14,14 @@ import kotlinx.coroutines.launch
 data class MasterRepositorysModel(
     val repoStateA_ProduitInfos: A_ProduitInfosRepository.RepoState?,
     val repoStateC_CategorieProduitInfos: C_CategorieProduitInfosRepository.RepoState?,
+    val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository.RepoState?,
     val progress: Float = 0f
 )
 
 class A_MasterRepositorys(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
+    val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
 ) {
     private val _model = MutableStateFlow<MasterRepositorysModel?>(null)
     val model: StateFlow<MasterRepositorysModel?> = _model.asStateFlow()
@@ -27,15 +30,18 @@ class A_MasterRepositorys(
         CoroutineScope(Dispatchers.Main).launch {
             combine(
                 repoA_ProduitInfos.repoState,
-                repoC_CategorieProduitInfos.repoState
-            ) { repoA_ProduitInfos, repoC_CategorieProduitInfos ->
+                repoC_CategorieProduitInfos.repoState,
+                d_EtateMessageVocaleRepository.repoState,
+            ) { repoA_ProduitInfos, repoC_CategorieProduitInfos,d_EtateMessageVocaleRepository->
                 val progressA = repoA_ProduitInfos?.mainProgressRepo ?: 0f
                 val progressC = repoC_CategorieProduitInfos?.mainProgressRepo ?: 0f
-                val combinedProgress = (progressA + progressC) / 2f
+                val progressD = d_EtateMessageVocaleRepository?.mainProgressRepo ?: 0f
+                val combinedProgress = (progressA + progressC + progressD) / 2f
 
                 MasterRepositorysModel(
                     repoStateA_ProduitInfos = repoA_ProduitInfos,
                     repoStateC_CategorieProduitInfos = repoC_CategorieProduitInfos,
+                    d_EtateMessageVocaleRepository = d_EtateMessageVocaleRepository,
                     progress = combinedProgress
                 )
             }.collect { masterModel ->

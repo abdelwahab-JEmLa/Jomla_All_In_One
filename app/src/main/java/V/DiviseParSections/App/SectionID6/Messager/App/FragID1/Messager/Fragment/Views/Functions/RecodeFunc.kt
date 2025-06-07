@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions
-
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+      /*
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -69,12 +68,12 @@ fun startRecording(
 
                     viewModel.appDatabase.messageVocaleDao().insert(newMessage)
 
-                    val newStatue = EtateMessageVocale(
+                    val newStatue = D_EtateMessageVocale(
                         parentMessageVID = maxVid,
                         parentMessageKeyID = newMessageKeyID
                     )
 
-                    viewModel.appDatabase.etateMessageVocaleDao().insert(newStatue)
+                    viewModel.appDatabase.D_EtateMessageVocaleDao().insert(newStatue)
                 } catch (e: Exception) {
                     Toast.makeText(
                         context,
@@ -194,13 +193,13 @@ fun uploadVoiceMessage(
                 try {
 
                     // Create new state for the message
-                    val newEtate = EtateMessageVocale(
+                    val newEtate = D_EtateMessageVocale(
                         parentMessageVID = lastMessage.vid,
                         parentMessageKeyID = lastMessage.keyID,
-                        nom = EtateMessageVocale.Nom.ENVOYER
+                        nom = D_EtateMessageVocale.Nom.ENVOYER
                     )
 
-                    viewModel.appDatabase.etateMessageVocaleDao().insert(newEtate)
+                    viewModel.appDatabase.D_EtateMessageVocaleDao().insert(newEtate)
 
                 } catch (e: Exception) {
                     Toast.makeText(
@@ -219,3 +218,4 @@ fun uploadVoiceMessage(
             ).show()
         }
 }
+           */

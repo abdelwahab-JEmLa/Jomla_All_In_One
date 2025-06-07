@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateDatasList
@@ -47,7 +47,9 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateCategs(categories: List<CategoriesTabelle>) {
-        masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(categories)
+        masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(
+            categories
+        )
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data) }
