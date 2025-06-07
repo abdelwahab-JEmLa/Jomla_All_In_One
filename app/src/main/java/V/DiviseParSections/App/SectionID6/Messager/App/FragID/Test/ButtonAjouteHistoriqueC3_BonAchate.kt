@@ -2,6 +2,10 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioRecorderAndPlayHandler
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateDatas
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
@@ -34,12 +38,14 @@ import org.koin.compose.koinInject
 
 @Composable
 fun ButtonAjouteHistoriqueC3_BonAchate(
+    masterRepositorys: A_MasterRepositorys = koinInject(),
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     modifier: Modifier = Modifier,
     clientId: Long? = null,
     onVoiceMessageUploaded: (String) -> Unit = {},
     currentC3_BonAchate: C3_BonAchate?
 ) {
+    val d_EtateMessageVocaleRepository = masterRepositorys.d_EtateMessageVocaleRepository
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -127,6 +133,22 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
 
                             if (uploadResult.isSuccess) {
                                 val downloadUrl = uploadResult.getOrThrow()
+
+                                // Create and save the voice message record to database
+                                val voiceMessageRecord = D_EtateMessageVocale(
+                                    parentMessageVID = parentMessageVID,
+                                    nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                    timestamps = DatesHandler().getCurrentTimestamps(),
+                                    relativeAuDataBase = if (currentC3_BonAchate != null) {
+                                        D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate
+                                    } else {
+                                        D_EtateMessageVocale.RelativeAuDataBase.NONE
+                                    },
+                                    parentC3_BonAchateVID = currentC3_BonAchate?.vid ?: 0
+                                )
+
+                                d_EtateMessageVocaleRepository.addOrUpdateDatas(listOf(voiceMessageRecord))
+
                                 onVoiceMessageUploaded(downloadUrl)
                                 Toast.makeText(
                                     context,

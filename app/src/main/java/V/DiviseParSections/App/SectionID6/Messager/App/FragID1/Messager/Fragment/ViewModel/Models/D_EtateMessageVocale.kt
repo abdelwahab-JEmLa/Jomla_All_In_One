@@ -20,11 +20,20 @@ data class D_EtateMessageVocale(
     var timestamps: Long = DatesHandler().getCurrentTimestamps(),
 
     //Etates Mutable
+    var relativeAuDataBase: RelativeAuDataBase = RelativeAuDataBase.C3_BonAchate,
+    val parentC3_BonAchateVID: Long = 0,
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
     var dernierFireBaseUpdateTimestamps: Long = 0,
-    ) {
+) {
+
+    enum class RelativeAuDataBase() {
+        NONE,
+        C3_BonAchate,
+
+    }
+
     enum class Nom(val nomArabe: String? = null) {
         EN_COURT_ENREGESTREMENT,
         ENVOYER,
@@ -66,9 +75,11 @@ data class D_EtateMessageVocale(
             )
         }
 
-        val parent = Firebase.database.getReference("00_DataPrototype-04-02" +
-                "/_1_developingRef" +
-                "/C_InfosSqlDataBases" )
+        val parent = Firebase.database.getReference(
+            "00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases"
+        )
 
         val caRef = parent.child("D_EtateMessageVocale")
     }
