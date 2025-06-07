@@ -1,10 +1,11 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,10 +31,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
+import org.koin.compose.koinInject
 
 @Composable
 fun A_MainListFragId3(
     viewModel: HeadViewModel,
+    calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
+
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
@@ -59,9 +63,26 @@ fun A_MainListFragId3(
     }
 
     LaunchedEffect(Unit) {
-        colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
-            .filter { it != 0L }
-            .mapNotNull { colorId -> colorsArticlesTabelleModel.find { it.idColore == colorId } }
+        // Get product image info and convert to ColorsArticlesTabelle
+        val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(stats)
+
+        // Create a list of exactly 4 ColorsArticlesTabelle objects
+        colorsListToDisplay = (1..4).mapNotNull { couleurId ->
+            val imageInfo = productImageInfos.find { it.couleurId == couleurId }
+
+            if (imageInfo != null && (imageInfo.exists || imageInfo.colorName.isNotBlank())) {
+                // First try to find existing color from colorsArticlesTabelleModel
+                colorsArticlesTabelleModel.find { it.idColore == couleurId.toLong() }
+                    ?: // If not found, create a new one from imageInfo
+                    ColorsArticlesTabelle(
+                        idColore = 0,
+                        nameColore = imageInfo.colorName,
+                        iconColore = "",
+                        classementColore = 0,
+                        rankingTmpToDisplaye = 0
+                    )
+            } else null
+        }
     }
 
     LaunchedEffect(clickedCouleurIndex, colorsListToDisplay) {
@@ -102,7 +123,6 @@ fun A_MainListFragId3(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     itemsIndexed(colorsListToDisplay) { index, color ->
-
 
                         Box(
                             modifier = Modifier

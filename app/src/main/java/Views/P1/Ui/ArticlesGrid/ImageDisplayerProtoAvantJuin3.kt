@@ -2,7 +2,7 @@ package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.Components.ArticleItem.ColorOverlay
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -53,14 +53,16 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ImageDisplayer1(
+fun ImageDisplayerProtoAvantJuin3(
+    viewModel: HeadViewModel,
+    calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
     indexColor: Int,
     reloadKey: Any,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -71,7 +73,8 @@ fun ImageDisplayer1(
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
-    ) {
+) {
+
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
 
     val produitDepuitNewDATABASE = a_ProduitModelRepository
@@ -163,42 +166,43 @@ fun ImageDisplayer1(
         }
 
         if (showOverlay) {
-            article.getColorIdForIndex(indexColor)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorOverlayWithBlur(
-                        color = color,
-                        cornerRadius = cornerRadius,
-                        onClickToOpenWindow = { onClickToOpenWindow(article, indexColor) }
-                    )
-                }
+            val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(article)
+            val currentColorInfo = productImageInfos.getOrNull(indexColor)
+
+            currentColorInfo?.let { colorInfo ->
+                ColorOverlayWithBlur(
+                    color = colorInfo,
+                    cornerRadius = cornerRadius,
+                    onClickToOpenWindow = { onClickToOpenWindow(article, indexColor) }
+                )
             }
         }
+    }
 
-        produitDepuitNewDATABASE?.let { produit ->
-            if (produit.probablementNonDispo) {
-                Box(
+    produitDepuitNewDATABASE?.let { produit ->
+        if (produit.probablementNonDispo) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color(0xFFFFA000).copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(
+                            topStart = cornerRadius,
+                            topEnd = cornerRadius
+                        )
+                    )
+            ) {
+                Text(
+                    text = "احتمال انو غير متوفر لكن نحاولو نبحثولك عليه",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            color = Color(0xFFFFA000).copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(
-                                topStart = cornerRadius,
-                                topEnd = cornerRadius
-                            )
-                        )
-                ) {
-                    Text(
-                        text = "احتمال انو غير متوفر لكن نحاولو نبحثولك عليه",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                        .padding(4.dp),
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -206,7 +210,7 @@ fun ImageDisplayer1(
 
 @Composable
 fun ColorOverlayWithBlur(
-    color: ColorsArticlesTabelle,
+    color: CalculeCouleurHandler.ProductImageInfo,
     cornerRadius: Dp,
     onClickToOpenWindow: () -> Unit,
 ) {
@@ -243,43 +247,6 @@ fun ColorOverlayWithBlur(
     }
 }
 
-
-// Utility functions
-fun checkImageExists(
-    viewModel: HeadViewModel,
-    article: ArticlesBasesStatsTable,
-    colorIndex: Int,
-    reloadTrigger: Int
-): Boolean {
-    val baseImagePath = File(
-        viewModel.viewModelImagesPath,
-        "${article.id}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
-    ).absolutePath
-
-    return listOf("jpg", "webp").any { extension ->
-        val file = File("$baseImagePath.$extension")
-        file.exists() && file.canRead()
-    }
-}
-
-fun ArticlesBasesStatsTable.getColorIdForIndex(index: Int): Long? {
-    return when (index) {
-        0 -> idcolor1.takeIf { it != 0L }
-        1 -> idcolor2.takeIf { it != 0L }
-        2 -> idcolor3.takeIf { it != 0L }
-        3 -> idcolor4.takeIf { it != 0L }
-        else -> null
-    }
-}
-
-fun countColors(article: ArticlesBasesStatsTable): Int {
-    return listOf(
-        article.couleur1,
-        article.couleur2,
-        article.couleur3,
-        article.couleur4
-    ).count { !it.isNullOrEmpty() }
-}
 
 @Composable
 fun AutoResizedText(

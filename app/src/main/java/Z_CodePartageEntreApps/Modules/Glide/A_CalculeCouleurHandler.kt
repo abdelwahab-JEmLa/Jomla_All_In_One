@@ -14,6 +14,49 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    private fun getCouleurNomParIndex(
+        article: ArticlesBasesStatsTable,
+        indexColor: Int
+    ) = when (indexColor) {
+        0 -> article.couleur1.takeIf { it != "" }
+        1 -> article.couleur2.takeIf { it != "" }
+        2 -> article.couleur3.takeIf { it != "" }
+        3 -> article.couleur4.takeIf { it != "" }
+        else -> null
+    }
+
+    fun getProduitInfoImageParIndex(product: ArticlesBasesStatsTable): List<ProductImageInfo> {
+        val colors = (0..3).mapNotNull { index ->
+            val colorName = getCouleurNomParIndex(product, index)?.takeIf { it.isNotBlank() }
+
+            val keyImageId = "${product.id}_${index + 1}"
+            val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
+
+            val imageFile = listOf("jpg", "jpeg", "png", "webp")
+                .map { ext -> File("$basePath.$ext") }
+                .find { file ->
+                    val exists = file.exists() && file.length() > 0
+                    Log.d(TAG, "Checking file ${file.absolutePath}: exists=$exists, size=${if (exists) file.length() else 0}")
+                    exists
+                }
+
+            if (colorName != null || imageFile != null) {
+                ProductImageInfo(
+                    file = imageFile ?: File(""),
+                    couleurId = index + 1, // couleurId should be 1-based
+                    exists = imageFile != null,
+                    colorName = if (imageFile != null) "" else (colorName ?: ""),
+                    shouldShowColorText = imageFile == null && colorName != null,
+                    productName = product.nom,
+                    actualiseSonImage = product.actualiseSonImage
+                )
+            } else null
+        }
+
+        Log.d(TAG, "Found ${colors.size} color variants for product ${product.nom} (ID: ${product.id})")
+        return colors
+    }
+
     private fun getAllDefinedColorsForProduct(product: ArticlesBasesStatsTable): List<ProductImageInfo> {
         val colors = (1..4).mapNotNull { couleurId ->
             val colorName = getColorNameById(product, couleurId).takeIf { it.isNotBlank() }
@@ -34,7 +77,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
                     file = imageFile ?: File(""),
                     couleurId = couleurId,
                     exists = imageFile != null,
-                    colorName = colorName ?: "",
+                    colorName = if (imageFile != null) "" else (colorName ?: ""),
                     shouldShowColorText = imageFile == null && colorName != null,
                     productName = product.nom,
                     actualiseSonImage = product.actualiseSonImage
@@ -136,14 +179,14 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         Log.d(TAG, "Color name for ID $colorId: '$trimmedName'")
         return trimmedName
     }
+
     data class ProductImageInfo(
         val file: File,
-        val couleurId: Int,
+        val couleurId: Int = 0,
         val exists: Boolean = true,
         val colorName: String = "",
         val shouldShowColorText: Boolean = false,
         val productName: String = "",
         val actualiseSonImage: Int = 0
     )
-
 }

@@ -10,6 +10,7 @@ data class ColorsArticlesTabelle(
     val iconColore: String = "",
     var classementColore: Int = 0,
     var rankingTmpToDisplaye: Int = 0,
+    var imageNomFichie: String = "",
 ){
     // No-argument constructor for Firebase
     constructor() : this(0)

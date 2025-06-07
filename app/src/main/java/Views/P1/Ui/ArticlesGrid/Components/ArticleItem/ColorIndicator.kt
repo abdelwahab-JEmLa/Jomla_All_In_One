@@ -1,6 +1,6 @@
 package Views.P1.Ui.ArticlesGrid.Components.ArticleItem
 import Views.P1.Ui.ArticlesGrid.AutoResizedText
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
@@ -21,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -67,13 +65,13 @@ fun ColorIndicator(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorOverlay(
-    color: ColorsArticlesTabelle,
+    color: CalculeCouleurHandler.ProductImageInfo,
     modifier: Modifier = Modifier,
     onClickToOpenWindow: () -> Unit,
-) {
+    ) {
+
     Box(
         modifier = modifier
             .fillMaxSize(),
@@ -101,7 +99,7 @@ fun ColorOverlay(
                 ) {}
 
                 AutoResizedText(
-                    text = color.nameColore,
+                    text = color.colorName,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable { onClickToOpenWindow() },
@@ -111,44 +109,6 @@ fun ColorOverlay(
                     ),
                     maxLines = 1
                 )
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.8f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                ) {}
-                Text(
-                    text = color.iconColore,
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold ,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.White,
-                    maxLines = 1
-                )
-                // Fixed hand icon positioning
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .offset(x = (14).dp, y = 18.dp)
-                        .size(60.dp)
-                        .clickable { onClickToOpenWindow() }
-                ) {
-                    GlideImage(
-                        model = R.drawable.hand,
-                        contentDescription = "Click indicator",
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-
             }
         }
     }

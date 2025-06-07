@@ -67,7 +67,7 @@ fun FragmentStartupScreen(
     val filterTextInit = if (DevMode) "dyd" else ""
     var showFilter by remember { mutableStateOf(false) }
     var gridColumns by remember { mutableStateOf(2) }
-    var filterText by remember { mutableStateOf("") }
+    var filterText by remember { mutableStateOf(filterTextInit) }
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
 

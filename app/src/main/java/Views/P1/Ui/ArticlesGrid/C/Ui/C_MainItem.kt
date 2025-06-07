@@ -1,27 +1,22 @@
 package Views.P1.Ui.ArticlesGrid.C.Ui
 
-import Views.P1.Ui.ArticlesGrid.Components.ArticleItem.ColorIndicator
 import Views.P1.Ui.ArticlesGrid.E_ArticleLayout
-import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
+import Views.P1.Ui.ArticlesGrid.ImageDisplayerProtoAvantJuin3
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
-import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -108,9 +103,9 @@ fun ArticleImageWithOverlay(
                 checkImageExists(viewModel, article, colorIndex, reloadTrigger)
             }
 
-            ImageDisplayer1(
-                article = article,
+            ImageDisplayerProtoAvantJuin3(
                 viewModel = viewModel,
+                article = article,
                 indexColor = colorIndex,
                 reloadKey = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindow,
@@ -122,22 +117,6 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
             )
 
-            if (imageExists) {
-                article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                    uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                        ColorIndicator(
-                            iconColore = color.iconColore,
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .align(Alignment.BottomEnd)
-                                .wrapContentSize()
-                                .offset(x = (-10).dp, y = (-15).dp),
-                            imageSize = imageSize,
-                            onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
-                        )
-                    }
-                }
-            }
         }
     }
 }

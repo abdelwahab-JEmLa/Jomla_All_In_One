@@ -31,12 +31,12 @@ fun ArticlePagingSource.filterArticles(): List<ArticlesBasesStatsTable> {
                 !isProductUnavailableForAll &&
                         !(isTemporaryClient && isProductUnavailableForTemporary) &&
                         article.idForSearchArticles <= 0 &&
-                        !article.nomArticleFinale.contains("New")
+                        !article.nom.contains("New")
             }
         } else {
             // Filtering for search text
             articles.filter { article ->
-                article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
+                article.nom.contains(filterText, ignoreCase = true) ||
                         article.idForSearchArticles > 0
             }
         }
