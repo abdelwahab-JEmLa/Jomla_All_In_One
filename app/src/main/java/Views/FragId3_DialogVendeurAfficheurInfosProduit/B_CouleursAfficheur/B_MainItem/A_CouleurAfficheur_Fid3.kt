@@ -298,15 +298,6 @@ fun B_CouleurAfficheur(
                     )
                 }
 
-                color.let { colorData ->
-                    ColorInfoSection(
-                        colorData = colorData,
-                        onColorClick = {
-                            updateColorToBeMain(colorData.idColore)
-                            showDialog = true
-                        }
-                    )
-                }
             }
         }
 

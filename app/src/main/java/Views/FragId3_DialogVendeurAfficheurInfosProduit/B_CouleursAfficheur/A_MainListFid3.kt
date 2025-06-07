@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,16 +72,9 @@ fun A_MainListFragId3(
             val imageInfo = productImageInfos.find { it.couleurId == couleurId }
 
             if (imageInfo != null && (imageInfo.exists || imageInfo.colorName.isNotBlank())) {
-                // First try to find existing color from colorsArticlesTabelleModel
-                colorsArticlesTabelleModel.find { it.idColore == couleurId.toLong() }
-                    ?: // If not found, create a new one from imageInfo
-                    ColorsArticlesTabelle(
-                        idColore = 0,
-                        nameColore = imageInfo.colorName,
-                        iconColore = "",
-                        classementColore = 0,
-                        rankingTmpToDisplaye = 0
-                    )
+                ColorsArticlesTabelle(
+                    nameColore = imageInfo.colorName,
+                )
             } else null
         }
     }
@@ -122,8 +116,9 @@ fun A_MainListFragId3(
                         .height(listHeight),  // Using calculated adaptive height
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    itemsIndexed(colorsListToDisplay) { index, color ->
+                    Log.d("ColoreList", colorsListToDisplay.toString())
 
+                    itemsIndexed(colorsListToDisplay) { index, color ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
