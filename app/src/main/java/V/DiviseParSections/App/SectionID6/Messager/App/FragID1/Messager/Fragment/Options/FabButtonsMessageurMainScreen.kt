@@ -29,6 +29,8 @@ import kotlin.math.roundToInt
 fun FabButtonsMessageurMainScreen(
     viewModel: ViewModelMessageur,
 ) {
+    var showMenuButtons by remember { mutableStateOf(false) }
+
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
@@ -61,22 +63,22 @@ fun FabButtonsMessageurMainScreen(
                 modifier = Modifier.align(Alignment.BottomStart),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                if (showMenu) {
-                    ButtonMessageVocale(
-                        viewModel = viewModel
+                ButtonMessageVocale(
+                    viewModel = viewModel
+                )
+
+                if (showMenuButtons) {
+                    LabelsButton(
+                        showLabels = showLabels,
+                        onShowLabelsChange = { showLabels = it }
+                    )
+
+                    MenuButton(
+                        showLabels = showLabels,
+                        showMenu = showMenu,
+                        onShowMenuChange = { showMenu = it }
                     )
                 }
-
-                LabelsButton(
-                    showLabels = showLabels,
-                    onShowLabelsChange = { showLabels = it }
-                )
-
-                MenuButton(
-                    showLabels = showLabels,
-                    showMenu = showMenu,
-                    onShowMenuChange = { showMenu = it }
-                )
             }
         }
     }

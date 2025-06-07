@@ -9,13 +9,11 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -115,161 +114,168 @@ fun ButtonMessageVocale(
             )
         }
 
-        // Record/Stop button with Telegram styling
-        FilledTonalButton(
-            onClick = {
-                if (!hasRecordPermission) {
-                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                    return@FilledTonalButton
-                }
+        // Single FloatingActionButton that changes based on state
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    if (!hasRecordPermission) {
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        return@FloatingActionButton
+                    }
 
-                coroutineScope.launch {
-                    if (isRecording) {
-                        // Stop recording workflow
-                        try {
-                            val stopResult = audioHandler.stopRecording()
+                    coroutineScope.launch {
+                        if (isRecording) {
+                            // Stop recording workflow
+                            try {
+                                val stopResult = audioHandler.stopRecording()
 
-                            if (stopResult.isFailure) {
-                                Toast.makeText(
-                                    context,
-                                    "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@launch
-                            }
-
-                            isRecording = false
-                            recordingTimeSeconds = 0
-
-                            val recordedFile = stopResult.getOrThrow()
-
-                            Toast.makeText(
-                                context,
-                                "Enregistrement sauvegardé localement",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            // Upload to Firebase Storage
-                            currentRecordingEtate?.let { etate ->
-                                isUploading = true
-
-                                val uploadResult = audioHandler.uploadAudioFile(
-                                    recordedFile,
-                                    etate.parentMessageVID
-                                )
-
-                                isUploading = false
-
-                                if (uploadResult.isSuccess) {
-                                    // Update the recording state to ENVOYER after successful upload
-                                    val updatedEtate = etate.copy(
-                                        nom = D_EtateMessageVocale.Nom.ENVOYER,
-                                        timestamps = datesHandler.getCurrentTimestamps()
-                                    )
-                                    viewModel.addOrUpdateData(updatedEtate)
-
+                                if (stopResult.isFailure) {
                                     Toast.makeText(
                                         context,
-                                        "Message vocal envoyé via Telegram!",
+                                        "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                    return@launch
                                 }
-                            }
 
-                            currentRecordingEtate = null
+                                isRecording = false
+                                recordingTimeSeconds = 0
 
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Erreur lors de l'arrêt de l'enregistrement: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            isRecording = false
-                            currentRecordingEtate = null
-                        }
-                    } else {
-                        // Start recording workflow
-                        try {
-                            // Create a new D_EtateMessageVocale with EN_COURT_ENREGESTREMENT state
-                            val newEtate = D_EtateMessageVocale(
-                                parentMessageVID = System.currentTimeMillis(), // Use timestamp as unique ID
-                                nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
-                                timestamps = datesHandler.getCurrentTimestamps()
-                            )
+                                val recordedFile = stopResult.getOrThrow()
 
-                            viewModel.addOrUpdateData(newEtate)
-                            currentRecordingEtate = newEtate
-
-                            // Start recording using unified function - no currentTransaction for ButtonMessageVocale
-                            val startResult = audioHandler.startRecording(
-                                context,
-                                newEtate.parentMessageVID,
-                                currentTransaction = null // ButtonMessageVocale doesn't use transactions
-                            )
-
-                            if (startResult.isFailure) {
                                 Toast.makeText(
                                     context,
-                                    "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
+                                    "Enregistrement sauvegardé localement",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                return@launch
+
+                                // Upload to Firebase Storage
+                                currentRecordingEtate?.let { etate ->
+                                    isUploading = true
+
+                                    val uploadResult = audioHandler.uploadAudioFile(
+                                        recordedFile,
+                                        etate.parentMessageVID
+                                    )
+
+                                    isUploading = false
+
+                                    if (uploadResult.isSuccess) {
+                                        // Update the recording state to ENVOYER after successful upload
+                                        val updatedEtate = etate.copy(
+                                            nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                            timestamps = datesHandler.getCurrentTimestamps()
+                                        )
+                                        viewModel.addOrUpdateData(updatedEtate)
+
+                                        Toast.makeText(
+                                            context,
+                                            "Message vocal envoyé via Telegram!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+
+                                currentRecordingEtate = null
+
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors de l'arrêt de l'enregistrement: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                isRecording = false
+                                currentRecordingEtate = null
                             }
+                        } else {
+                            // Start recording workflow
+                            try {
+                                // Create a new D_EtateMessageVocale with EN_COURT_ENREGESTREMENT state
+                                val idParent_1_5_Vendeur =
+                                    viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorysModel.activeIdDe_1_5_Vendeur
+                                val newEtate = D_EtateMessageVocale(
+                                    idParent_1_5_Vendeur = idParent_1_5_Vendeur,
+                                    nomParent_1_5_Vendeur = viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+                                        .find { it.vid == idParent_1_5_Vendeur }?.nom ?: "Non Trouve",
+                                    parentMessageVID = System.currentTimeMillis(), // Use timestamp as unique ID
+                                    nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
+                                    timestamps = datesHandler.getCurrentTimestamps()
+                                )
 
-                            isRecording = true
+                                viewModel.addOrUpdateData(newEtate)
+                                currentRecordingEtate = newEtate
 
-                            // Start the timer
-                            recordingTimeSeconds = 0
-                            while (isRecording) {
-                                delay(1000)
-                                recordingTimeSeconds++
+                                // Start recording using unified function - no currentTransaction for ButtonMessageVocale
+                                val startResult = audioHandler.startRecording(
+                                    context,
+                                    newEtate.parentMessageVID,
+                                    currentTransaction = null // ButtonMessageVocale doesn't use transactions
+                                )
+
+                                if (startResult.isFailure) {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
+                                }
+
+                                isRecording = true
+
+                                // Start the timer
+                                recordingTimeSeconds = 0
+                                while (isRecording) {
+                                    delay(1000)
+                                    recordingTimeSeconds++
+                                }
+
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors du démarrage de l'enregistrement: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                isRecording = false
+                                currentRecordingEtate = null
                             }
-
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Erreur lors du démarrage de l'enregistrement: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            isRecording = false
-                            currentRecordingEtate = null
                         }
                     }
-                }
-            },
-            modifier = Modifier.fillMaxWidth(0.9f),
-            enabled = !isUploading // Disable button while uploading
-        ) {
-            // Utilisation des icônes Telegram personnalisées
-            when {
-                isUploading -> Icon(
-                    painter = painterResource(id = R.drawable.ic_telegram_send),
-                    contentDescription = "Envoi en cours via Telegram"
-                )
-                isRecording -> Icon(
-                    imageVector = Icons.Default.Stop,
-                    contentDescription = "Arrêter l'enregistrement"
-                )
-                else -> Icon(
-                    painter = painterResource(id = R.drawable.ic_telegram_mic),
-                    contentDescription = "Commencer l'enregistrement vocal"
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = when {
-                    isUploading -> "Envoi Telegram..."
-                    isRecording -> "Arrêter l'enregistrement"
-                    else -> "Message vocal Telegram"
                 },
-                modifier = Modifier.padding(8.dp)
-            )
+                modifier = Modifier.size(56.dp), // Standard FAB size
+                containerColor = when {
+                    isUploading -> Color(0xFF4CAF50) // Green for uploading
+                    isRecording -> Color(0xFFFF5722) // Red/Orange for recording
+                    else -> Color(0xFF0088CC) // Telegram blue for idle
+                },
+            ) {
+                // Icon changes based on state
+                when {
+                    isUploading -> Icon(
+                        painter = painterResource(id = R.drawable.ic_telegram_send),
+                        contentDescription = "Envoi en cours via Telegram",
+                        tint = Color.White
+                    )
+                    isRecording -> Icon(
+                        painter = painterResource(id = R.drawable.ic_telegram_mic), // Keep mic icon when recording
+                        contentDescription = "Enregistrement en cours - Appuyer pour arrêter",
+                        tint = Color.White
+                    )
+                    else -> Icon(
+                        painter = painterResource(id = R.drawable.ic_telegram_mic),
+                        contentDescription = "Commencer l'enregistrement vocal",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }

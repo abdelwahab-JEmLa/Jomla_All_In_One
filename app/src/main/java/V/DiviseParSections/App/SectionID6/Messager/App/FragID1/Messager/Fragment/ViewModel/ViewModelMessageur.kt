@@ -19,7 +19,7 @@ data class UiState(
 )
 
 class ViewModelMessageur(
-    private val masterRepositorys: A_MasterRepositorys,
+     val masterRepositorys: A_MasterRepositorys,
     val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
