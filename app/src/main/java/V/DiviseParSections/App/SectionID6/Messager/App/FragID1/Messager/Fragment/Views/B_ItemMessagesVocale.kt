@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -24,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -38,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,17 +72,17 @@ fun B_ItemMessagesVocale(
     // Get the latest state timestamp
     val latestTimestamp = etatesChildKeyIDsList.maxByOrNull { it.timestamps }?.timestamps ?: 0L
 
-    // Check if this specific message is currently playing - FIXED: More defensive checks
+    // Check if this specific message is currently playing
     val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == parentD_EtateMessageVocale.parentMessageVID && playbackProgress.isPlaying
     }
 
-    // Check if this message is currently downloading - FIXED: More defensive checks
+    // Check if this message is currently downloading
     val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == parentD_EtateMessageVocale.parentMessageVID && playbackProgress.isDownloading
     }
 
-    // Update progress periodically while playing - FIXED: Prevent memory leaks
+    // Update progress periodically while playing
     LaunchedEffect(parentD_EtateMessageVocale.parentMessageVID, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
@@ -91,23 +96,20 @@ fun B_ItemMessagesVocale(
                     }
                 }
             } catch (e: Exception) {
-                // Handle any exceptions to prevent crashes
                 e.printStackTrace()
             }
         }
     }
 
-    // Cleanup when leaving composition - FIXED: More aggressive cleanup
+    // Cleanup when leaving composition
     DisposableEffect(parentD_EtateMessageVocale.parentMessageVID) {
         onDispose {
             try {
-                // Only cleanup if this item is currently playing
                 val currentSession = audioHandler.getCurrentPlaybackSession()
                 if (currentSession?.parentMessageVID == parentD_EtateMessageVocale.parentMessageVID) {
                     audioHandler.stopPlayback()
                 }
             } catch (e: Exception) {
-                // Ignore cleanup errors to prevent crashes
                 e.printStackTrace()
             }
         }
@@ -119,243 +121,350 @@ fun B_ItemMessagesVocale(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                isListened -> MaterialTheme.colorScheme.primaryContainer
-                isViewed -> MaterialTheme.colorScheme.secondaryContainer
-                else -> MaterialTheme.colorScheme.tertiaryContainer
+                isListened -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                isViewed -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                isBeingRecorded -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                else -> MaterialTheme.colorScheme.surface
             }
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(12.dp)
         ) {
-            // Message header with message info and timestamp
+            // Improved message header with better visual hierarchy
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Message vocal #${parentD_EtateMessageVocale.parentMessageVID}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    text = "الوقت: ${datesHandler.getDateAndTimString(parentD_EtateMessageVocale.timestamps).time}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            // Show different UI based on message state
-            if (isBeingRecorded && !isSent) {
-                // Display "Recording in progress" text instead of player controls
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Enregistrement en cours...",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            } else if (isSent) {
-                // Audio player controls - only show for sent messages
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Play/Pause/Stop Button
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                when {
-                                    isCurrentlyPlaying -> {
-                                        // Stop current playback
-                                        val stopResult = audioHandler.stopPlayback()
-                                        if (stopResult.isFailure) {
-                                            Toast.makeText(
-                                                context,
-                                                "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                    else -> {
-                                        // Start playback
-                                        val playResult = audioHandler.startPlayback(
-                                            context = context,
-                                            parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
-                                            onPlaybackComplete = {
-                                                // Update message state to ECOUTE if not already
-                                                if (!isListened) {
-                                                    coroutineScope.launch {
-                                                        try {
-                                                            val newEtate = D_EtateMessageVocale(
-                                                                parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
-                                                                nom = D_EtateMessageVocale.Nom.ECOUTE,
-                                                                timestamps = datesHandler.getCurrentTimestamps()
-                                                            )
-                                                            viewModel.addOrUpdateData(newEtate)
-                                                        } catch (e: Exception) {
-                                                            e.printStackTrace()
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                            onPlaybackError = { errorMessage ->
-                                                Toast.makeText(
-                                                    context,
-                                                    errorMessage,
-                                                    Toast.LENGTH_LONG
-                                                ).show()
-                                            }
-                                        )
-
-                                        if (playResult.isFailure) {
-                                            Toast.makeText(
-                                                context,
-                                                "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        enabled = !isCurrentlyDownloading // Disable button while downloading
+                    // Voice message icon
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            imageVector = when {
-                                isCurrentlyDownloading -> Icons.Default.PlayArrow // Show play icon while downloading
-                                isCurrentlyPlaying -> Icons.Default.Stop
-                                else -> Icons.Default.PlayArrow
-                            },
-                            contentDescription = when {
-                                isCurrentlyDownloading -> "Téléchargement en cours"
-                                isCurrentlyPlaying -> "Arrêter la lecture"
-                                else -> "Lecture du message vocal"
-                            },
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                            imageVector = Icons.Outlined.GraphicEq,
+                            contentDescription = "Message vocal",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .size(18.dp)
+                                .padding(2.dp)
                         )
                     }
 
-                    // Progress Bar - FIXED: Use proper conditional logic
-                    when {
-                        isCurrentlyDownloading -> {
-                            // Show indeterminate progress while downloading
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(4.dp)
-                                    .padding(horizontal = 8.dp)
-                                    .clip(RoundedCornerShape(2.dp)),
-                                color = MaterialTheme.colorScheme.secondary,
-                                trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Column {
+                        Text(
+                            text = "Message vocal",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "#${parentD_EtateMessageVocale.parentMessageVID}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                // Timestamp with better formatting
+                Text(
+                    text = datesHandler.getDateAndTimString(parentD_EtateMessageVocale.timestamps).time,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Show different UI based on message state with improved visuals
+            when {
+                isBeingRecorded && !isSent -> {
+                    // Recording in progress indicator with better visual feedback
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Stop,
+                                contentDescription = "Enregistrement",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(20.dp)
                             )
-                        }
-                        isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                            // Show determinate progress while playing
-                            LinearProgressIndicator(
-                                progress = { playbackProgress.progress.coerceIn(0f, 1f) },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(4.dp)
-                                    .padding(horizontal = 8.dp)
-                                    .clip(RoundedCornerShape(2.dp)),
-                                color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                            )
-                        }
-                        else -> {
-                            // Show empty progress bar when not playing
-                            LinearProgressIndicator(
-                                progress = { 0f },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(4.dp)
-                                    .padding(horizontal = 8.dp)
-                                    .clip(RoundedCornerShape(2.dp)),
-                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Enregistrement en cours...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
                             )
                         }
                     }
+                }
 
-                    // Time display and status
-                    Column(
-                        modifier = Modifier.padding(start = 4.dp),
-                        horizontalAlignment = Alignment.End
+                isSent -> {
+                    // Enhanced audio player controls
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     ) {
-                        when {
-                            isCurrentlyDownloading -> {
-                                Text(
-                                    text = "Téléchargement...",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            }
-                            isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                                // Show current time / total time
-                                Text(
-                                    text = "${audioHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioHandler.formatTimeFromMillis(playbackProgress.duration)}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            }
-                            isListened -> {
-                                // Show check mark if message has been listened to
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = "Message écouté",
-                                    tint = Color.Green,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                // Show when the message was listened to
-                                if (latestTimestamp > 0) {
-                                    Text(
-                                        text = datesHandler.getDateAndTimString(latestTimestamp).time,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer
-                                    )
+                        Column(
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Enhanced Play/Pause/Stop Button
+                                Surface(
+                                    shape = RoundedCornerShape(50),
+                                    color = when {
+                                        isCurrentlyPlaying -> MaterialTheme.colorScheme.error
+                                        isCurrentlyDownloading -> MaterialTheme.colorScheme.secondary
+                                        else -> MaterialTheme.colorScheme.primary
+                                    },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                when {
+                                                    isCurrentlyPlaying -> {
+                                                        val stopResult = audioHandler.stopPlayback()
+                                                        if (stopResult.isFailure) {
+                                                            Toast.makeText(
+                                                                context,
+                                                                "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }
+                                                    }
+                                                    else -> {
+                                                        val playResult = audioHandler.startPlayback(
+                                                            context = context,
+                                                            parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
+                                                            onPlaybackComplete = {
+                                                                if (!isListened) {
+                                                                    coroutineScope.launch {
+                                                                        try {
+                                                                            val newEtate = D_EtateMessageVocale(
+                                                                                parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
+                                                                                nom = D_EtateMessageVocale.Nom.ECOUTE,
+                                                                                timestamps = datesHandler.getCurrentTimestamps()
+                                                                            )
+                                                                            viewModel.addOrUpdateData(newEtate)
+                                                                        } catch (e: Exception) {
+                                                                            e.printStackTrace()
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            onPlaybackError = { errorMessage ->
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    errorMessage,
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            }
+                                                        )
+
+                                                        if (playResult.isFailure) {
+                                                            Toast.makeText(
+                                                                context,
+                                                                "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}",
+                                                                Toast.LENGTH_LONG
+                                                            ).show()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        enabled = !isCurrentlyDownloading
+                                    ) {
+                                        Icon(
+                                            imageVector = when {
+                                                isCurrentlyDownloading -> Icons.Default.PlayArrow
+                                                isCurrentlyPlaying -> Icons.Default.Stop
+                                                else -> Icons.Default.PlayArrow
+                                            },
+                                            contentDescription = when {
+                                                isCurrentlyDownloading -> "Téléchargement en cours"
+                                                isCurrentlyPlaying -> "Arrêter la lecture"
+                                                else -> "Lecture du message vocal"
+                                            },
+                                            tint = Color.White,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
                                 }
-                            }
-                            else -> {
-                                // Show warning if message has not been listened to
-                                Icon(
-                                    imageVector = Icons.Default.Warning,
-                                    contentDescription = "Message non écouté",
-                                    tint = Color.Yellow,
-                                    modifier = Modifier.size(24.dp)
-                                )
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                // Enhanced Progress Bar
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    when {
+                                        isCurrentlyDownloading -> {
+                                            LinearProgressIndicator(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(RoundedCornerShape(3.dp)),
+                                                color = MaterialTheme.colorScheme.secondary,
+                                                trackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                                            )
+                                        }
+                                        isCurrentlyPlaying && playbackProgress.duration > 0 -> {
+                                            LinearProgressIndicator(
+                                                progress = { playbackProgress.progress.coerceIn(0f, 1f) },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(RoundedCornerShape(3.dp)),
+                                                color = MaterialTheme.colorScheme.primary,
+                                                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                                            )
+                                        }
+                                        else -> {
+                                            LinearProgressIndicator(
+                                                progress = { 0f },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .clip(RoundedCornerShape(3.dp)),
+                                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                                                trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    // Time and status display
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        when {
+                                            isCurrentlyDownloading -> {
+                                                Text(
+                                                    text = "Téléchargement...",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                            isCurrentlyPlaying && playbackProgress.duration > 0 -> {
+                                                Text(
+                                                    text = "${audioHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioHandler.formatTimeFromMillis(playbackProgress.duration)}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                            else -> {
+                                                Text(
+                                                    text = "Prêt à lire",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+
+                                        // Status indicator
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            if (isListened) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Message écouté",
+                                                    tint = Color.Green,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                if (latestTimestamp > 0) {
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Text(
+                                                        text = datesHandler.getDateAndTimString(latestTimestamp).time,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
+                                            } else {
+                                                Icon(
+                                                    imageVector = Icons.Default.Warning,
+                                                    contentDescription = "Message non écouté",
+                                                    tint = MaterialTheme.colorScheme.error,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                // Message is in an unknown state
-                Text(
-                    text = "État du message inconnu",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.padding(8.dp)
-                )
+
+                else -> {
+                    // Unknown state with better visual feedback
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "État inconnu",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "État du message inconnu",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 
+    // Improved divider
     HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        thickness = 1.dp,
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
     )
 }
