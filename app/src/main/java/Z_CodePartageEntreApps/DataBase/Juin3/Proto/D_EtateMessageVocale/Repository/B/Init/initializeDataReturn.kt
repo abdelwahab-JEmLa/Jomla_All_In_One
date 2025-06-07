@@ -17,12 +17,12 @@ suspend fun D_EtateMessageVocaleRepository.initializeDataReturn(): List<D_EtateM
         }
 
         if (firebaseData.isEmpty()) {
-            val itsDevelopingTest = true
-            val testData =
-                if (itsDevelopingTest) emptyList() else D_EtateMessageVocale.createTestInstance()
-
-            addOrUpdateDatas(testData)
-            testData
+            val itsTestDataFlow = false
+            if (itsTestDataFlow) {
+                val testData = D_EtateMessageVocale.createTestInstance()
+                addOrUpdateDatas(testData)
+                testData
+            } else emptyList()
         } else {
             dao.insertAll(firebaseData)
             firebaseData
