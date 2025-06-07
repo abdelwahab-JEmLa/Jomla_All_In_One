@@ -3,8 +3,12 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 import java.io.IOException
 
@@ -17,6 +21,11 @@ class AudioRecorderAndPlayHandler(
         IDLE, RECORDING, UPLOADING
     }
 
+    // Playback states
+    enum class PlaybackState {
+        IDLE, PLAYING, PAUSED, DOWNLOADING, ERROR
+    }
+
     data class RecordingSession(
         val mediaRecorder: MediaRecorder,
         val outputFile: File,
@@ -25,12 +34,31 @@ class AudioRecorderAndPlayHandler(
         val state: RecordingState = RecordingState.RECORDING
     )
 
-    private var currentSession: RecordingSession? = null
+    data class PlaybackSession(
+        val mediaPlayer: MediaPlayer,
+        val audioFile: File,
+        val parentMessageVID: Long,
+        val state: PlaybackState = PlaybackState.PLAYING,
+        val duration: Int = 0,
+        val currentPosition: Int = 0
+    )
 
-    /**
-     * Start recording with optional transaction parameter
-     * This method works for both ButtonMessageVocale and ButtonAjouteHistoriqueC3_BonAchate
-     */
+    data class PlaybackProgress(
+        val currentPosition: Int = 0,
+        val duration: Int = 0,
+        val progress: Float = 0f,
+        val isPlaying: Boolean = false,
+        val isDownloading: Boolean = false
+    )
+
+    private var currentRecordingSession: RecordingSession? = null
+    private var currentPlaybackSession: PlaybackSession? = null
+
+    // Playback progress state flow
+    private val _playbackProgress = MutableStateFlow(PlaybackProgress())
+    val playbackProgress: StateFlow<PlaybackProgress> = _playbackProgress.asStateFlow()
+
+    // Recording functions (existing)
     fun startRecording(
         context: Context,
         parentMessageVID: Long,
@@ -38,7 +66,7 @@ class AudioRecorderAndPlayHandler(
     ): Result<RecordingSession> {
         return try {
             // Ensure no recording is in progress
-            if (currentSession != null) {
+            if (currentRecordingSession != null) {
                 return Result.failure(IllegalStateException("Recording already in progress"))
             }
 
@@ -73,7 +101,7 @@ class AudioRecorderAndPlayHandler(
                 currentTransaction = currentTransaction
             )
 
-            currentSession = session
+            currentRecordingSession = session
             Result.success(session)
 
         } catch (e: Exception) {
@@ -81,12 +109,9 @@ class AudioRecorderAndPlayHandler(
         }
     }
 
-    /**
-     * Stop recording - works for both components
-     */
     fun stopRecording(): Result<File> {
         return try {
-            val session = currentSession
+            val session = currentRecordingSession
                 ?: return Result.failure(IllegalStateException("No recording session in progress"))
 
             session.mediaRecorder.apply {
@@ -102,25 +127,215 @@ class AudioRecorderAndPlayHandler(
             }
 
             // Clear current session
-            currentSession = null
+            currentRecordingSession = null
 
             Result.success(file)
 
         } catch (e: Exception) {
             // Clean up on error
-            currentSession?.mediaRecorder?.apply {
+            currentRecordingSession?.mediaRecorder?.apply {
                 try {
                     release()
                 } catch (ex: Exception) {
                     // Ignore cleanup errors
                 }
             }
-            currentSession = null
+            currentRecordingSession = null
 
             Result.failure(Exception("Failed to stop recording: ${e.message}"))
         }
     }
 
+    // New Playback functions
+    suspend fun startPlayback(
+        context: Context,
+        parentMessageVID: Long,
+        onPlaybackComplete: (() -> Unit)? = null,
+        onPlaybackError: ((String) -> Unit)? = null
+    ): Result<PlaybackSession> {
+        return try {
+            // Stop any current playback
+            stopPlayback()
+
+            // Update progress to show downloading
+            _playbackProgress.value = _playbackProgress.value.copy(
+                isDownloading = true,
+                isPlaying = false
+            )
+
+            // Download audio file if needed
+            val downloadResult = downloadAudioFileIfNeeded(context, parentMessageVID)
+
+            _playbackProgress.value = _playbackProgress.value.copy(isDownloading = false)
+
+            if (downloadResult.isFailure) {
+                onPlaybackError?.invoke("Failed to download audio: ${downloadResult.exceptionOrNull()?.message}")
+                return Result.failure(downloadResult.exceptionOrNull() ?: Exception("Download failed"))
+            }
+
+            val audioFile = downloadResult.getOrThrow()
+
+            // Verify file exists and is not empty
+            if (!audioFile.exists() || audioFile.length() == 0L) {
+                onPlaybackError?.invoke("Audio file is empty or doesn't exist")
+                return Result.failure(IOException("Audio file is empty or doesn't exist"))
+            }
+
+            // Create and configure MediaPlayer
+            val mediaPlayer = MediaPlayer().apply {
+                setDataSource(audioFile.absolutePath)
+                prepare()
+
+                setOnCompletionListener {
+                    // Reset progress
+                    _playbackProgress.value = PlaybackProgress()
+
+                    // Clean up session
+                    currentPlaybackSession = null
+
+                    // Call completion callback
+                    onPlaybackComplete?.invoke()
+
+                    // Release resources
+                    release()
+                }
+
+                setOnErrorListener { _, what, extra ->
+                    val errorMessage = "MediaPlayer error: what=$what, extra=$extra"
+                    onPlaybackError?.invoke(errorMessage)
+
+                    // Reset progress
+                    _playbackProgress.value = PlaybackProgress()
+
+                    // Clean up session
+                    currentPlaybackSession = null
+
+                    true // Indicate we handled the error
+                }
+
+                start()
+            }
+
+            val session = PlaybackSession(
+                mediaPlayer = mediaPlayer,
+                audioFile = audioFile,
+                parentMessageVID = parentMessageVID,
+                duration = mediaPlayer.duration,
+                currentPosition = 0
+            )
+
+            currentPlaybackSession = session
+
+            // Update initial progress
+            _playbackProgress.value = PlaybackProgress(
+                duration = mediaPlayer.duration,
+                currentPosition = 0,
+                progress = 0f,
+                isPlaying = true,
+                isDownloading = false
+            )
+
+            Result.success(session)
+
+        } catch (e: Exception) {
+            _playbackProgress.value = PlaybackProgress()
+            onPlaybackError?.invoke("Failed to start playback: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    fun stopPlayback(): Result<Unit> {
+        return try {
+            currentPlaybackSession?.mediaPlayer?.apply {
+                if (isPlaying) {
+                    stop()
+                }
+                release()
+            }
+
+            currentPlaybackSession = null
+            _playbackProgress.value = PlaybackProgress()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            currentPlaybackSession = null
+            _playbackProgress.value = PlaybackProgress()
+            Result.failure(e)
+        }
+    }
+
+    fun pausePlayback(): Result<Unit> {
+        return try {
+            val session = currentPlaybackSession
+                ?: return Result.failure(IllegalStateException("No playback session in progress"))
+
+            session.mediaPlayer.pause()
+
+            _playbackProgress.value = _playbackProgress.value.copy(isPlaying = false)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun resumePlayback(): Result<Unit> {
+        return try {
+            val session = currentPlaybackSession
+                ?: return Result.failure(IllegalStateException("No playback session in progress"))
+
+            session.mediaPlayer.start()
+
+            _playbackProgress.value = _playbackProgress.value.copy(isPlaying = true)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun seekTo(position: Int): Result<Unit> {
+        return try {
+            val session = currentPlaybackSession
+                ?: return Result.failure(IllegalStateException("No playback session in progress"))
+
+            session.mediaPlayer.seekTo(position)
+
+            val progress = if (session.duration > 0) position.toFloat() / session.duration.toFloat() else 0f
+
+            _playbackProgress.value = _playbackProgress.value.copy(
+                currentPosition = position,
+                progress = progress
+            )
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun updatePlaybackProgress() {
+        currentPlaybackSession?.let { session ->
+            try {
+                if (session.mediaPlayer.isPlaying) {
+                    val currentPosition = session.mediaPlayer.currentPosition
+                    val duration = session.mediaPlayer.duration
+                    val progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f
+
+                    _playbackProgress.value = _playbackProgress.value.copy(
+                        currentPosition = currentPosition,
+                        duration = duration,
+                        progress = progress,
+                        isPlaying = true
+                    )
+                }
+            } catch (e: Exception) {
+                // Handle error silently or log if needed
+            }
+        }
+    }
+
+    // File management functions (existing)
     suspend fun uploadAudioFile(localFile: File, parentMessageVID: Long): Result<String> {
         return firebaseAudioHelper.uploadAudioFile(localFile, parentMessageVID)
     }
@@ -145,26 +360,17 @@ class AudioRecorderAndPlayHandler(
         }
     }
 
-    /**
-     * Get current recording session info
-     */
-    fun getCurrentSession(): RecordingSession? = currentSession
+    // State query functions
+    fun getCurrentRecordingSession(): RecordingSession? = currentRecordingSession
+    fun getCurrentPlaybackSession(): PlaybackSession? = currentPlaybackSession
+    fun getCurrentTransaction(): C3_BonAchate? = currentRecordingSession?.currentTransaction
+    fun isRecording(): Boolean = currentRecordingSession != null
+    fun isPlaying(): Boolean = currentPlaybackSession?.mediaPlayer?.isPlaying == true
 
-    /**
-     * Get current transaction from the recording session
-     */
-    fun getCurrentTransaction(): C3_BonAchate? = currentSession?.currentTransaction
-
-    /**
-     * Check if currently recording
-     */
-    fun isRecording(): Boolean = currentSession != null
-
-    /**
-     * Force cleanup of current session (emergency stop)
-     */
+    // Cleanup functions
     fun forceCleanup() {
-        currentSession?.mediaRecorder?.apply {
+        // Clean up recording
+        currentRecordingSession?.mediaRecorder?.apply {
             try {
                 stop()
                 release()
@@ -172,12 +378,25 @@ class AudioRecorderAndPlayHandler(
                 // Ignore cleanup errors
             }
         }
-        currentSession = null
+        currentRecordingSession = null
+
+        // Clean up playback
+        currentPlaybackSession?.mediaPlayer?.apply {
+            try {
+                if (isPlaying) {
+                    stop()
+                }
+                release()
+            } catch (e: Exception) {
+                // Ignore cleanup errors
+            }
+        }
+        currentPlaybackSession = null
+
+        _playbackProgress.value = PlaybackProgress()
     }
 
-    /**
-     * Format time in MM:SS format
-     */
+    // Utility functions
     @SuppressLint("DefaultLocale")
     fun formatTime(seconds: Int): String {
         val minutes = seconds / 60
@@ -185,6 +404,13 @@ class AudioRecorderAndPlayHandler(
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
+    @SuppressLint("DefaultLocale")
+    fun formatTimeFromMillis(millis: Int): String {
+        val seconds = millis / 1000
+        return formatTime(seconds)
+    }
+
+    // Deprecated functions
     @Deprecated("Use stopRecording() instead")
     fun stopRecording(mediaRecorder: MediaRecorder?) {
         stopRecording()
