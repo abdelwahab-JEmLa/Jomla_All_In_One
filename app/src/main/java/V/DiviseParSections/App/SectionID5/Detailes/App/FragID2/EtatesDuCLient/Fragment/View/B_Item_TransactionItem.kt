@@ -3,8 +3,9 @@ package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.F
 // Add these imports at the top of your file
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import android.media.MediaPlayer
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,10 +50,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
-fun B_Item_TransactionItem(  //<--
-//TODO(1): regle ca pour quil utilise 
+fun B_Item_TransactionItem(
+    audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
@@ -64,26 +65,61 @@ fun B_Item_TransactionItem(  //<--
     // For blinking effect when not active
     val blinkState = remember { mutableStateOf(false) }
 
-    // Audio player states
+    // Audio player states using the centralized handler
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var isPlaying by remember { mutableStateOf(false) }
-    var playbackProgress by remember { mutableStateOf(0f) }
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
 
     // Has voice message
     val hasVoiceMessage = transaction.vocaleKeyID.isNotEmpty()
 
-    // Cleanup MediaPlayer when leaving composition
-    DisposableEffect(Unit) {
-        onDispose {
-            mediaPlayer?.apply {
-                if (isPlaying) {
-                    stop()
+    // Check if this specific transaction's voice message is currently playing
+    val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isPlaying
+    }
+
+    // Check if this message is currently downloading
+    val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isDownloading
+    }
+
+    // Update progress periodically while playing
+    LaunchedEffect(transaction.vid, isCurrentlyPlaying) {
+        if (isCurrentlyPlaying) {
+            try {
+                Log.d("TransactionItem", "Starting progress update loop for transaction ${transaction.vid}")
+                while (isCurrentlyPlaying && audioRecorderAndPlayHandler.isPlaying()) {
+                    audioRecorderAndPlayHandler.updatePlaybackProgress()
+                    delay(100)
+
+                    // Safety check: break if session is no longer for this transaction
+                    if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != transaction.vid) {
+                        Log.d("TransactionItem", "Breaking progress loop - session changed for transaction ${transaction.vid}")
+                        break
+                    }
                 }
-                release()
+                Log.d("TransactionItem", "Progress update loop ended for transaction ${transaction.vid}")
+            } catch (e: Exception) {
+                Log.e("TransactionItem", "Error in progress update loop for transaction ${transaction.vid}", e)
+                e.printStackTrace()
             }
-            mediaPlayer = null
+        }
+    }
+
+    // Cleanup when leaving composition
+    DisposableEffect(transaction.vid) {
+        onDispose {
+            try {
+                // Only cleanup if this transaction is currently playing
+                val currentSession = audioRecorderAndPlayHandler.getCurrentPlaybackSession()
+                if (currentSession?.parentMessageVID == transaction.vid) {
+                    Log.d("TransactionItem", "Cleaning up playback session for transaction ${transaction.vid}")
+                    audioRecorderAndPlayHandler.stopPlayback()
+                }
+            } catch (e: Exception) {
+                Log.e("TransactionItem", "Error during cleanup for transaction ${transaction.vid}", e)
+                e.printStackTrace()
+            }
         }
     }
 
@@ -115,16 +151,20 @@ fun B_Item_TransactionItem(  //<--
             // Delete button at the top start
             IconButton(
                 onClick = {
+                    Log.d("TransactionItem", "Delete button clicked for transaction ${transaction.vid}")
                     // Check if there's a voice recording to delete
                     if (transaction.vocaleKeyID.isNotEmpty()) {
+                        Log.d("TransactionItem", "Deleting voice recording ${transaction.vocaleKeyID} for transaction ${transaction.vid}")
                         // Delete voice recording from storage first
                         viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
                             if (success) {
+                                Log.d("TransactionItem", "Voice recording deleted successfully, now deleting transaction ${transaction.vid}")
                                 // Then delete the transaction from database
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
                                     transaction
                                 )
                             } else {
+                                Log.e("TransactionItem", "Failed to delete voice recording ${transaction.vocaleKeyID}")
                                 // Show error message if voice deletion failed
                                 Toast.makeText(
                                     context,
@@ -134,6 +174,7 @@ fun B_Item_TransactionItem(  //<--
                             }
                         }
                     } else {
+                        Log.d("TransactionItem", "No voice recording to delete, deleting transaction ${transaction.vid} directly")
                         // No voice recording to delete, just delete the transaction
                         viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
                     }
@@ -162,6 +203,7 @@ fun B_Item_TransactionItem(  //<--
                     if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
+                                Log.d("TransactionItem", "Shopping cart clicked for transaction ${transaction.vid}")
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
                                     transaction.copy(
                                         ouvert = !transaction.ouvert
@@ -203,102 +245,152 @@ fun B_Item_TransactionItem(  //<--
                     )
                 }
 
-                // Audio player sectionSqlRepository (only show if there's a voice message)
+                // Audio player section (only show if there's a voice message)
                 if (hasVoiceMessage) {
+                    Log.d("TransactionItem", "Displaying audio player for transaction ${transaction.vid} with vocaleKeyID: ${transaction.vocaleKeyID}")
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Play/Pause Button
+                        // Play/Stop Button using centralized handler
                         IconButton(
                             onClick = {
-                                if (isPlaying) {
-                                    // Stop playing
-                                    mediaPlayer?.apply {
-                                        if (isPlaying) {
-                                            stop()
-                                        }
-                                        release()
-                                    }
-                                    mediaPlayer = null
-                                    isPlaying = false
-                                    playbackProgress = 0f
-                                } else {
-                                    // Start playing
-                                    coroutineScope.launch {
-                                        playVoiceMessage(
-                                            transaction.vocaleKeyID,
-                                            context,
-                                            onPrepared = { player ->
-                                                mediaPlayer = player
-                                                isPlaying = true
-
-                                                // Update progress every 100ms while playing
-                                                coroutineScope.launch {
-                                                    while (isPlaying && mediaPlayer != null) {
-                                                        val duration = mediaPlayer?.duration ?: 1
-                                                        val currentPosition =
-                                                            mediaPlayer?.currentPosition ?: 0
-                                                        playbackProgress =
-                                                            currentPosition.toFloat() / duration.toFloat()
-                                                        delay(100)
-                                                    }
-                                                }
-                                            },
-                                            onCompletion = {
-                                                isPlaying = false
-                                                playbackProgress = 0f
-                                                mediaPlayer?.release()
-                                                mediaPlayer = null
-
-                                                // Update the transaction to mark voice message as listened
-                                                if (!transaction.sonVocaleEstEcoute) {
-                                                    // Get current timestamp
-                                                    val currentTimestamp =
-                                                        datesHandler.getCurrentTimestamps()
-
-                                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                                        transaction.copy(
-                                                            sonVocaleEstEcoute = true,
-                                                            sonEcoutementEstFaitAutimestamps = currentTimestamp
-                                                        )
-                                                    ) {}
-                                                }
-                                            },
-                                            onError = {
-                                                isPlaying = false
-                                                playbackProgress = 0f
+                                Log.d("TransactionItem", "Audio play/stop button clicked for transaction ${transaction.vid}")
+                                coroutineScope.launch {
+                                    when {
+                                        isCurrentlyPlaying -> {
+                                            Log.d("TransactionItem", "Stopping playback for transaction ${transaction.vid}")
+                                            // Stop current playback using the handler
+                                            val stopResult = audioRecorderAndPlayHandler.stopPlayback()
+                                            if (stopResult.isFailure) {
+                                                val errorMessage = "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
+                                                Log.e("TransactionItem", "Failed to stop playback for transaction ${transaction.vid}: ${stopResult.exceptionOrNull()?.message}")
                                                 Toast.makeText(
                                                     context,
-                                                    "Erreur de lecture du message vocal",
+                                                    errorMessage,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
+                                            } else {
+                                                Log.d("TransactionItem", "Playback stopped successfully for transaction ${transaction.vid}")
                                             }
-                                        )
+                                        }
+                                        else -> {
+                                            Log.d("TransactionItem", "Starting playback for transaction ${transaction.vid}")
+                                            // Start playback using the handler with Firebase URL
+                                            val playResult = audioRecorderAndPlayHandler.startPlayback(
+                                                context = context,
+                                                parentMessageVID = transaction.vid,
+                                                firebaseUrl = transaction.vocaleKeyID, // Pass the Firebase URL here
+                                                onPlaybackComplete = {
+                                                    Log.d("TransactionItem", "Playback completed for transaction ${transaction.vid}")
+                                                    // Update the transaction to mark voice message as listened
+                                                    if (!transaction.sonVocaleEstEcoute) {
+                                                        Log.d("TransactionItem", "Marking voice message as listened for transaction ${transaction.vid}")
+                                                        // Get current timestamp
+                                                        val currentTimestamp = datesHandler.getCurrentTimestamps()
+
+                                                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
+                                                            transaction.copy(
+                                                                sonVocaleEstEcoute = true,
+                                                                sonEcoutementEstFaitAutimestamps = currentTimestamp
+                                                            )
+                                                        ) {}
+                                                    }
+                                                },
+                                                onPlaybackError = { errorMessage ->
+                                                    Log.e("TransactionItem", "Playback error for transaction ${transaction.vid}: $errorMessage")
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Erreur de lecture du message vocal: $errorMessage",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                            )
+
+                                            if (playResult.isFailure) {
+                                                val errorMessage = "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
+                                                Log.e("TransactionItem", "Failed to start playback for transaction ${transaction.vid}: ${playResult.exceptionOrNull()?.message}")
+
+                                                // Additional debug information
+                                                Log.e("TransactionItem", "Debug info - Transaction VID: ${transaction.vid}")
+                                                Log.e("TransactionItem", "Debug info - VocaleKeyID: ${transaction.vocaleKeyID}")
+                                                Log.e("TransactionItem", "Debug info - HasVoiceMessage: $hasVoiceMessage")
+                                                Log.e("TransactionItem", "Debug info - Exception details: ${playResult.exceptionOrNull()?.stackTrace?.joinToString("\n")}")
+
+                                                Toast.makeText(
+                                                    context,
+                                                    errorMessage,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            } else {
+                                                Log.d("TransactionItem", "Playback started successfully for transaction ${transaction.vid}")
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            },
+                            enabled = !isCurrentlyDownloading // Disable button while downloading
                         ) {
                             Icon(
-                                imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                contentDescription = if (isPlaying) "Arrêter la lecture" else "Lecture du message vocal",
+                                imageVector = when {
+                                    isCurrentlyDownloading -> Icons.Default.PlayArrow // Show play icon while downloading
+                                    isCurrentlyPlaying -> Icons.Default.Stop
+                                    else -> Icons.Default.PlayArrow
+                                },
+                                contentDescription = when {
+                                    isCurrentlyDownloading -> "Téléchargement en cours"
+                                    isCurrentlyPlaying -> "Arrêter la lecture"
+                                    else -> "Lecture du message vocal"
+                                },
                                 tint = Color.White
                             )
                         }
 
-                        // Progress Bar
-                        LinearProgressIndicator(
-                            progress = { playbackProgress },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(4.dp)
-                                .padding(horizontal = 8.dp)
-                                .clip(RoundedCornerShape(2.dp)),
-                            color = Color.White,
-                            trackColor = Color.White.copy(alpha = 0.3f)
-                        )
+                        // Progress Bar using centralized handler progress
+                        when {
+                            isCurrentlyDownloading -> {
+                                Log.d("TransactionItem", "Showing download progress for transaction ${transaction.vid}")
+                                // Show indeterminate progress while downloading
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(4.dp)
+                                        .padding(horizontal = 8.dp)
+                                        .clip(RoundedCornerShape(2.dp)),
+                                    color = Color.White,
+                                    trackColor = Color.White.copy(alpha = 0.3f)
+                                )
+                            }
+                            isCurrentlyPlaying && playbackProgress.duration > 0 -> {
+                                // Show determinate progress while playing
+                                LinearProgressIndicator(
+                                    progress = { playbackProgress.progress.coerceIn(0f, 1f) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(4.dp)
+                                        .padding(horizontal = 8.dp)
+                                        .clip(RoundedCornerShape(2.dp)),
+                                    color = Color.White,
+                                    trackColor = Color.White.copy(alpha = 0.3f)
+                                )
+                            }
+                            else -> {
+                                // Show empty progress bar when not playing
+                                LinearProgressIndicator(
+                                    progress = { 0f },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(4.dp)
+                                        .padding(horizontal = 8.dp)
+                                        .clip(RoundedCornerShape(2.dp)),
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    trackColor = Color.White.copy(alpha = 0.2f)
+                                )
+                            }
+                        }
 
                         // Show status icon and listened time
                         Column(
@@ -306,35 +398,55 @@ fun B_Item_TransactionItem(  //<--
                                 .padding(start = 4.dp),
                             horizontalAlignment = Alignment.End
                         ) {
-                            if (transaction.sonVocaleEstEcoute) {
-                                // Show check mark if message has been listened to
-                                Column {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = "Message écouté",
-                                        tint = Color.Green,
-                                        modifier = Modifier.size(24.dp)
+                            when {
+                                isCurrentlyDownloading -> {
+                                    Text(
+                                        text = "Téléchargement...",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White
                                     )
-                                    // Show when the message was listened to
-                                    if (transaction.sonEcoutementEstFaitAutimestamps > 0) {
-                                        Text(
-                                            text = datesHandler.getDateAndTimString(transaction.sonEcoutementEstFaitAutimestamps).time,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White
+                                }
+                                isCurrentlyPlaying && playbackProgress.duration > 0 -> {
+                                    // Show current time / total time
+                                    Text(
+                                        text = "${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.duration)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.White
+                                    )
+                                }
+                                transaction.sonVocaleEstEcoute -> {
+                                    // Show check mark if message has been listened to
+                                    Column {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = "Message écouté",
+                                            tint = Color.Green,
+                                            modifier = Modifier.size(24.dp)
                                         )
+                                        // Show when the message was listened to
+                                        if (transaction.sonEcoutementEstFaitAutimestamps > 0) {
+                                            Text(
+                                                text = datesHandler.getDateAndTimString(transaction.sonEcoutementEstFaitAutimestamps).time,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Color.White
+                                            )
+                                        }
                                     }
                                 }
-                            } else {
-                                // Show warning if message has not been listened to
-                                Icon(
-                                    imageVector = Icons.Default.Warning,
-                                    contentDescription = "Message non écouté",
-                                    tint = Color.Yellow,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                                else -> {
+                                    // Show warning if message has not been listened to
+                                    Icon(
+                                        imageVector = Icons.Default.Warning,
+                                        contentDescription = "Message non écouté",
+                                        tint = Color.Yellow,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                         }
                     }
+                } else {
+                    Log.d("TransactionItem", "No voice message to display for transaction ${transaction.vid}")
                 }
             }
         }
