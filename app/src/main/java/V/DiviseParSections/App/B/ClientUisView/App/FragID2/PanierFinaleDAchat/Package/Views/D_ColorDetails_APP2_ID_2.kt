@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.Windows.ColorSelectionDialogF2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
@@ -26,14 +27,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
@@ -41,6 +40,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun D_ColorDetails_APP2_ID_2(
+    calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     relative_2_1_ProduitsDataBase_vid: Long?,
@@ -48,8 +48,6 @@ fun D_ColorDetails_APP2_ID_2(
 ) {
     val database = koinInject<AppDatabase>()
     val viewModelInitApp = koinInject<ViewModelInitApp>()
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
     var showQuantityDialog by remember { mutableStateOf(false) }
@@ -67,40 +65,17 @@ fun D_ColorDetails_APP2_ID_2(
         .modelDatasSnapList
         .find { it.vid == composeKeyVID }
 
-    // Find the parent product operation
-    val parentProduitAcheteOperation = relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID?.let { parentId ->
-        _0_HeadOfRepositorys_Repository_Model
-            .repositoryC2_ProduitAcheteOperation
-            .modelDatasSnapList
-            .find { it.vid == parentId }
+
+    val colorName = remember(relative_2_1_ProduitsDataBase_vid, relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID) {
+        relative_2_1_ProduitsDataBase_vid?.let { productId ->
+            val product = calculeCouleurHandler.findProductById(productId)
+            product?.let {
+                val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(it)
+                val colorIndex = relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID?.toInt() ?: 0
+                productImageInfos.getOrNull(colorIndex)?.colorName ?: "Unknown color"
+            }
+        } ?: "Unknown color"
     }
-
-    // Determine if we should use provisional price or regular price
-    val provisionalPrice = parentProduitAcheteOperation?.provisoireMonPrix ?: 0.0
-
-    fun getColorNameByIndex(colorIndex: Long?, productId: Long?): String? {
-        if (colorIndex == null || productId == null) return null
-
-        val article = articlesBasesStatsModel?.find {
-            it.javaClass.getMethod("getIdArticle").invoke(it) == productId.toInt()
-        } ?: return null
-
-        return when (colorIndex) {
-            0L -> article.javaClass.getMethod("getCouleur1").invoke(article) as? String
-            1L -> article.javaClass.getMethod("getCouleur2").invoke(article) as? String
-            2L -> article.javaClass.getMethod("getCouleur3").invoke(article) as? String
-            3L -> article.javaClass.getMethod("getCouleur4").invoke(article) as? String
-            else -> "Unknown color"
-        }
-    }
-
-    // Get color name for this specific color
-    val colorName = if (relative_2_1_ProduitsDataBase_vid != null) {
-        getColorNameByIndex(
-            relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID,
-            relative_2_1_ProduitsDataBase_vid
-        ) ?: "Color"
-    } else "Color"
 
     // Create a dummy sale for the dialog
     val dummySale = remember {
@@ -220,7 +195,7 @@ fun D_ColorDetails_APP2_ID_2(
                             Text(
                                 text =
                                     //"${relative_1_1_CouleurAcheteOperation.vid}-" +
-                                        "$quantity",
+                                    "$quantity",
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )

@@ -185,6 +185,7 @@ class CalculeCouleurHandler(private val viewModel: EditeBaseDonneMainScreenIdS9V
         val couleurId: Int = 0,
         val exists: Boolean = true,
         val colorName: String = "",
+        val imageCouleurNomDeSonFichie: String = "",
         val shouldShowColorText: Boolean = false,
         val productName: String = "",
         val actualiseSonImage: Int = 0
