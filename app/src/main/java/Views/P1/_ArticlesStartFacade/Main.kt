@@ -62,7 +62,7 @@ fun FragmentStartupScreen(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
-    val DevMode = true
+    val DevMode = false
     val isFabVisible = if (DevMode) DevMode else isFabVisibleInit
     val filterTextInit = if (DevMode) "dyd" else ""
     var showFilter by remember { mutableStateOf(false) }

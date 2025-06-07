@@ -179,7 +179,7 @@ fun PressistatntMainActivityButtons(
 
                         if (showLabels) {
                             Text(
-                                "Messages Vocaux",
+                                "Telegrame Abdelwahab",
                                 modifier = Modifier
                                     .background(Color(0xFF0088CC))
                                     .padding(4.dp),
