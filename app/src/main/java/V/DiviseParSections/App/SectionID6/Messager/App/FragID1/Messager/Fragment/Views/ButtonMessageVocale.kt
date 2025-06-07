@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.pm.PackageManager
-import android.media.MediaRecorder
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,10 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
-fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
+fun ButtonMessageVocale(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
 ) {
@@ -50,13 +48,12 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val datesHandler = remember { DatesHandler() }
+    val audioHandler = viewModel.audioRecorderAndPlayHandler
 
     // States
     var isRecording by remember { mutableStateOf(false) }
     var isUploading by remember { mutableStateOf(false) }
     var recordingTimeSeconds by remember { mutableStateOf(0) }
-    var mediaRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
-    var outputFile by remember { mutableStateOf<File?>(null) }
     var currentRecordingEtate by remember { mutableStateOf<D_EtateMessageVocale?>(null) }
     var hasRecordPermission by remember {
         mutableStateOf(
@@ -72,9 +69,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasRecordPermission = isGranted
-        if (isGranted) {
-            // Can start recording now
-        } else {
+        if (!isGranted) {
             Toast.makeText(
                 context,
                 "Permission d'enregistrement nécessaire pour cette fonctionnalité",
@@ -83,20 +78,12 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
     }
 
-    // Clean up the recorder when the component is disposed
+    // Clean up on dispose
     DisposableEffect(Unit) {
         onDispose {
-            mediaRecorder?.apply {
-                try {
-                    if (isRecording) {
-                        stop()
-                    }
-                    release()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            if (isRecording) {
+                audioHandler.forceCleanup()
             }
-            mediaRecorder = null
         }
     }
 
@@ -107,7 +94,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         // Recording timer display
         if (isRecording) {
             Text(
-                text = viewModel.audioRecorderAndPlayHandler.formatTime(recordingTimeSeconds),
+                text = audioHandler.formatTime(recordingTimeSeconds),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
                 textAlign = TextAlign.Center
@@ -138,65 +125,65 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
 
                 coroutineScope.launch {
                     if (isRecording) {
-                        // Stop recording
+                        // Stop recording workflow
                         try {
-                            viewModel.audioRecorderAndPlayHandler.stopRecording(mediaRecorder)
+                            val stopResult = audioHandler.stopRecording()
+
+                            if (stopResult.isFailure) {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
 
                             isRecording = false
-                            mediaRecorder = null
                             recordingTimeSeconds = 0
 
-                            // Verify that the file was created and has content
-                            outputFile?.let { file ->
-                                if (file.exists() && file.length() > 0) {
+                            val recordedFile = stopResult.getOrThrow()
+
+                            Toast.makeText(
+                                context,
+                                "Enregistrement sauvegardé localement",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // Upload to Firebase Storage
+                            currentRecordingEtate?.let { etate ->
+                                isUploading = true
+
+                                val uploadResult = audioHandler.uploadAudioFile(
+                                    recordedFile,
+                                    etate.parentMessageVID
+                                )
+
+                                isUploading = false
+
+                                if (uploadResult.isSuccess) {
+                                    // Update the recording state to ENVOYER after successful upload
+                                    val updatedEtate = etate.copy(
+                                        nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                        timestamps = datesHandler.getCurrentTimestamps()
+                                    )
+                                    viewModel.addOrUpdateData(updatedEtate)
+
                                     Toast.makeText(
                                         context,
-                                        "Enregistrement sauvegardé localement",
+                                        "Message vocal envoyé avec succès!",
                                         Toast.LENGTH_SHORT
                                     ).show()
-
-                                    // Upload to Firebase Storage using AudioRecorderAndPlayHandler
-                                    currentRecordingEtate?.let { etate ->
-                                        isUploading = true
-
-                                        val uploadResult = viewModel.audioRecorderAndPlayHandler.uploadAudioFile(
-                                            file,
-                                            etate.parentMessageVID
-                                        )
-
-                                        isUploading = false
-
-                                        if (uploadResult.isSuccess) {
-                                            // Update the recording state to ENVOYER after successful upload
-                                            val updatedEtate = etate.copy(
-                                                nom = D_EtateMessageVocale.Nom.ENVOYER,
-                                                timestamps = datesHandler.getCurrentTimestamps()
-                                            )
-                                            viewModel.addOrUpdateData(updatedEtate)
-
-                                            Toast.makeText(
-                                                context,
-                                                "Message vocal envoyé avec succès!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-                                    }
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "Erreur: fichier d'enregistrement vide ou inexistant",
-                                        Toast.LENGTH_SHORT
+                                        "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
+                                        Toast.LENGTH_LONG
                                     ).show()
                                 }
                             }
 
                             currentRecordingEtate = null
+
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,
@@ -207,7 +194,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                             currentRecordingEtate = null
                         }
                     } else {
-                        // Start recording
+                        // Start recording workflow
                         try {
                             // Create a new D_EtateMessageVocale with EN_COURT_ENREGESTREMENT state
                             val newEtate = D_EtateMessageVocale(
@@ -219,14 +206,22 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                             viewModel.addOrUpdateData(newEtate)
                             currentRecordingEtate = newEtate
 
-                            // Start recording
-                            val (recorder, file) = viewModel.audioRecorderAndPlayHandler.startRecording(
+                            // Start recording using unified function - no currentTransaction for ButtonMessageVocale
+                            val startResult = audioHandler.startRecording(
                                 context,
-                                newEtate.parentMessageVID
+                                newEtate.parentMessageVID,
+                                currentTransaction = null // ButtonMessageVocale doesn't use transactions
                             )
 
-                            mediaRecorder = recorder
-                            outputFile = file
+                            if (startResult.isFailure) {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@launch
+                            }
+
                             isRecording = true
 
                             // Start the timer
@@ -235,6 +230,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                                 delay(1000)
                                 recordingTimeSeconds++
                             }
+
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,

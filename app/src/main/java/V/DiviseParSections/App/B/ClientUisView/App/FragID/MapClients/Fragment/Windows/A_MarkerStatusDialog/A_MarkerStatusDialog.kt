@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.EnregestrementMessageVocaleEtLeMetreAuStorageGoogle
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID.Test.ButtonAjouteHistoriqueC3_BonAchate
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -214,17 +214,19 @@ fun MarkerStatusDialog(
                                         )
 
                                 }
+                                val currentTransaction =
+                                    viewModel.c3_BonAchate_List.find {
+                                        it.clientAcheteurID == clientId &&
+                                                it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+                                    }
                                 item {
-                                    EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
+                                    ButtonAjouteHistoriqueC3_BonAchate(
+                                        currentC3_BonAchate=currentTransaction,
                                         clientId = clientId,
                                         onVoiceMessageUploaded = { voiceMessageId ->
                                             coroutineScope.launch {
                                                 relatedClients?.let {
-                                                    val currentTransaction =
-                                                        viewModel.c3_BonAchate_List.find {
-                                                            it.clientAcheteurID == clientId &&
-                                                                    it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                                                        }
+
 
                                                     currentTransaction?.let { transaction ->
                                                         // Update the transaction with the voice message ID

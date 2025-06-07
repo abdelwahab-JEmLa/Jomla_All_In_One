@@ -1,164 +1,136 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
-import android.widget.Toast
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
 
-class AudioRecorderAndPlayHandler(val firebaseAudioHelper: FirebaseAudioStorageHelper
+class AudioRecorderAndPlayHandler(
+    private val firebaseAudioHelper: FirebaseAudioStorageHelper
 ) {
 
-    fun startRecording(context: Context): Pair<MediaRecorder, File> {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val fileName = "voice_$timestamp.aac"  // Utiliser AAC au lieu de 3GP
-        val file = File(context.cacheDir, fileName)
-
-        val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            MediaRecorder(context)
-        } else {
-            @Suppress("DEPRECATION")
-            MediaRecorder()
-        }
-
-        recorder.apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            // Configuration pour AAC (qualité faible pour petit fichier)
-            setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setAudioChannels(1)  // Mono
-            setAudioSamplingRate(16000)  // 16kHz - bon pour la voix
-            setAudioEncodingBitRate(32000)  // 32kbps - taille réduite mais qualité suffisante pour la voix
-            setOutputFile(file.absolutePath)
-
-            try {
-                prepare()
-                start()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return Pair(recorder, file)
+    // Recording states
+    enum class RecordingState {
+        IDLE, RECORDING, UPLOADING
     }
 
-    fun stopRecording(
-        recorder: MediaRecorder?,
-        context: Context,
-        file: File?,
-        onComplete: (File) -> Unit
-    ) {
-        try {
-            recorder?.apply {
-                stop()
-                release()
-            }
-            file?.let { onComplete(it) }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(
-                context,
-                "Erreur lors de l'arrêt de l'enregistrement",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+    data class RecordingSession(
+        val mediaRecorder: MediaRecorder,
+        val outputFile: File,
+        val parentMessageVID: Long,
+        val currentTransaction: C3_BonAchate? = null,
+        val state: RecordingState = RecordingState.RECORDING
+    )
 
-    fun uploadVoiceMessage(
-        file: File?,
-        clientId: Long?,
-        context: Context,
-        onSuccess: (String) -> Unit
-    ) {
-        if (file == null) return
+    private var currentSession: RecordingSession? = null
 
-        val messagesVocalesRef = Firebase.storage.reference
-            .child("1_messagesVocales")
-
-        // Generate a unique filename for the voice message
-        val fileId = "voice_${clientId}_${UUID.randomUUID()}.aac"  // Extension AAC
-        val fileRef = messagesVocalesRef.child(fileId)
-
-        fileRef.putFile(android.net.Uri.fromFile(file))
-            .addOnSuccessListener {
-                Toast.makeText(
-                    context,
-                    "Message vocal enregistré avec succès",
-                    Toast.LENGTH_SHORT
-                ).show()
-                onSuccess(fileId)
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(
-                    context,
-                    "Échec de l'enregistrement du message: ${exception.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-    }
-
-    @SuppressLint("DefaultLocale")
-    fun formatTime(seconds: Int): String {
-        val minutes = seconds / 60
-        val remainingSeconds = seconds % 60
-        return String.format("%02d:%02d", minutes, remainingSeconds)
-    }
-
+    /**
+     * Start recording with optional transaction parameter
+     * This method works for both ButtonMessageVocale and ButtonAjouteHistoriqueC3_BonAchate
+     */
     fun startRecording(
         context: Context,
-        parentMessageVID: Long
-    ): Pair<MediaRecorder, File> {
-        val outputFile = File(context.filesDir, "voice_${parentMessageVID}.3gp")
-
-        val mediaRecorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            setOutputFile(outputFile.absolutePath)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-
-            try {
-                prepare()
-                start()
-            } catch (e: IOException) {
-                throw IOException("Failed to start recording: ${e.message}")
+        parentMessageVID: Long,
+        currentTransaction: C3_BonAchate? = null
+    ): Result<RecordingSession> {
+        return try {
+            // Ensure no recording is in progress
+            if (currentSession != null) {
+                return Result.failure(IllegalStateException("Recording already in progress"))
             }
-        }
 
-        return Pair(mediaRecorder, outputFile)
-    }
+            val outputFile = File(context.filesDir, "voice_${parentMessageVID}.3gp")
 
-    fun stopRecording(mediaRecorder: MediaRecorder?): Unit {
-        try {
-            mediaRecorder?.apply {
-                stop()
-                release()
+            val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                MediaRecorder(context)
+            } else {
+                @Suppress("DEPRECATION")
+                MediaRecorder()
             }
+
+            mediaRecorder.apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                setOutputFile(outputFile.absolutePath)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+
+                try {
+                    prepare()
+                    start()
+                } catch (e: IOException) {
+                    release()
+                    throw IOException("Failed to start recording: ${e.message}")
+                }
+            }
+
+            val session = RecordingSession(
+                mediaRecorder = mediaRecorder,
+                outputFile = outputFile,
+                parentMessageVID = parentMessageVID,
+                currentTransaction = currentTransaction
+            )
+
+            currentSession = session
+            Result.success(session)
+
         } catch (e: Exception) {
-            throw Exception("Failed to stop recording: ${e.message}")
+            Result.failure(e)
         }
     }
 
     /**
-     * Downloads audio file from Firebase if it doesn't exist locally
-     * @param context The Android context
-     * @param parentMessageVID The unique message ID
-     * @return Result containing the local file or an exception
+     * Stop recording - works for both components
      */
+    fun stopRecording(): Result<File> {
+        return try {
+            val session = currentSession
+                ?: return Result.failure(IllegalStateException("No recording session in progress"))
+
+            session.mediaRecorder.apply {
+                stop()
+                release()
+            }
+
+            val file = session.outputFile
+
+            // Verify file was created successfully
+            if (!file.exists() || file.length() == 0L) {
+                return Result.failure(IOException("Recording failed - file is empty or doesn't exist"))
+            }
+
+            // Clear current session
+            currentSession = null
+
+            Result.success(file)
+
+        } catch (e: Exception) {
+            // Clean up on error
+            currentSession?.mediaRecorder?.apply {
+                try {
+                    release()
+                } catch (ex: Exception) {
+                    // Ignore cleanup errors
+                }
+            }
+            currentSession = null
+
+            Result.failure(Exception("Failed to stop recording: ${e.message}"))
+        }
+    }
+
+    suspend fun uploadAudioFile(localFile: File, parentMessageVID: Long): Result<String> {
+        return firebaseAudioHelper.uploadAudioFile(localFile, parentMessageVID)
+    }
+
     suspend fun downloadAudioFileIfNeeded(
         context: Context,
         parentMessageVID: Long
     ): Result<File> {
         return try {
-            val audioFileKey = "voice_${parentMessageVID}"
-            val audioFile = File(context.filesDir, "$audioFileKey.3gp")
+            val audioFile = File(context.filesDir, "voice_${parentMessageVID}.3gp")
 
             // Check if file exists locally
             if (audioFile.exists() && audioFile.length() > 0) {
@@ -174,15 +146,47 @@ class AudioRecorderAndPlayHandler(val firebaseAudioHelper: FirebaseAudioStorageH
     }
 
     /**
-     * Uploads audio file to Firebase Storage
-     * @param localFile The local audio file to upload
-     * @param parentMessageVID The unique message ID
-     * @return Result containing the download URL or an exception
+     * Get current recording session info
      */
-    suspend fun uploadAudioFile(
-        localFile: File,
-        parentMessageVID: Long
-    ): Result<String> {
-        return firebaseAudioHelper.uploadAudioFile(localFile, parentMessageVID)
+    fun getCurrentSession(): RecordingSession? = currentSession
+
+    /**
+     * Get current transaction from the recording session
+     */
+    fun getCurrentTransaction(): C3_BonAchate? = currentSession?.currentTransaction
+
+    /**
+     * Check if currently recording
+     */
+    fun isRecording(): Boolean = currentSession != null
+
+    /**
+     * Force cleanup of current session (emergency stop)
+     */
+    fun forceCleanup() {
+        currentSession?.mediaRecorder?.apply {
+            try {
+                stop()
+                release()
+            } catch (e: Exception) {
+                // Ignore cleanup errors
+            }
+        }
+        currentSession = null
+    }
+
+    /**
+     * Format time in MM:SS format
+     */
+    @SuppressLint("DefaultLocale")
+    fun formatTime(seconds: Int): String {
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d", minutes, remainingSeconds)
+    }
+
+    @Deprecated("Use stopRecording() instead")
+    fun stopRecording(mediaRecorder: MediaRecorder?) {
+        stopRecording()
     }
 }

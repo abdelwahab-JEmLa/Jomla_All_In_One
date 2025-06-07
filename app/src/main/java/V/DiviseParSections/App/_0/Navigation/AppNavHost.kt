@@ -4,6 +4,7 @@ import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pack
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2PanierFinaleDAchat
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
@@ -278,7 +279,7 @@ fun AppNavHost(
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
-                            // Empty fragment implementation
+                            A_MessageurMainScreen()
                         }
                     }
                 }
