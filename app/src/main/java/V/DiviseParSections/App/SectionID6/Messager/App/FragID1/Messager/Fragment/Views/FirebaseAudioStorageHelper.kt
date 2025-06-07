@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
 import android.content.Context
 import android.util.Log
