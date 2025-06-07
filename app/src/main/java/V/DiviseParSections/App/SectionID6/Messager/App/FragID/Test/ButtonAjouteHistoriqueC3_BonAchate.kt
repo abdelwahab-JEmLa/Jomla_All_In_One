@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
@@ -43,7 +44,8 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
     modifier: Modifier = Modifier,
     clientId: Long? = null,
     onVoiceMessageUploaded: (String) -> Unit = {},
-    currentC3_BonAchate: C3_BonAchate?
+    currentC3_BonAchate: C3_BonAchate?,
+    findActiveComptVendeur: _1_5_Vendeur?
 ) {
     val d_EtateMessageVocaleRepository = masterRepositorys.d_EtateMessageVocaleRepository
     val context = LocalContext.current
@@ -136,6 +138,8 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
 
                                 // Create and save the voice message record to database
                                 val voiceMessageRecord = D_EtateMessageVocale(
+                                    idParent_1_5_Vendeur = findActiveComptVendeur!!.vid,
+                                    nomParent_1_5_Vendeur = findActiveComptVendeur.nom,
                                     parentMessageVID = parentMessageVID,
                                     nom = D_EtateMessageVocale.Nom.ENVOYER,
                                     timestamps = DatesHandler().getCurrentTimestamps(),
@@ -147,7 +151,11 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
                                     parentC3_BonAchateVID = currentC3_BonAchate?.vid ?: 0
                                 )
 
-                                d_EtateMessageVocaleRepository.addOrUpdateDatas(listOf(voiceMessageRecord))
+                                d_EtateMessageVocaleRepository.addOrUpdateDatas(
+                                    listOf(
+                                        voiceMessageRecord
+                                    )
+                                )
 
                                 onVoiceMessageUploaded(downloadUrl)
                                 Toast.makeText(

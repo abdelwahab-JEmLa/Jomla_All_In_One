@@ -72,9 +72,10 @@ fun MarkerStatusDialog(
     val repositorysModel =
         _0_0_HeadSQLRepositorys.repositorys_Model
 
+    val findActiveComptVendeur = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+        .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
     val ceComptVendeurInsertBonsAchatAuPeriodID =
-        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-            .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
+        findActiveComptVendeur
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     val clientId = relatedClients?.id ?: 0L
@@ -221,6 +222,7 @@ fun MarkerStatusDialog(
                                     }
                                 item {
                                     ButtonAjouteHistoriqueC3_BonAchate(
+                                        findActiveComptVendeur=findActiveComptVendeur,
                                         currentC3_BonAchate=currentTransaction,
                                         clientId = clientId,
                                         onVoiceMessageUploaded = { voiceMessageId ->

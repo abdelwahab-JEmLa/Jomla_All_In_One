@@ -42,6 +42,7 @@ val moduleRepositorys = module {
             get(),
             get(),
             get(),
+            get(),
         )
     }
 

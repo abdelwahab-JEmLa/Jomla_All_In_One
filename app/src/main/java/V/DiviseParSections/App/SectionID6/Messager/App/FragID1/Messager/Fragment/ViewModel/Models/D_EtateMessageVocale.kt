@@ -22,6 +22,9 @@ data class D_EtateMessageVocale(
     //Etates Mutable
     var relativeAuDataBase: RelativeAuDataBase = RelativeAuDataBase.C3_BonAchate,
     val parentC3_BonAchateVID: Long = 0,
+    val idParent_1_5_Vendeur: Long = 0,
+    val nomParent_1_5_Vendeur: String = "",            //<--
+    //TODO(1): ajout afficheage du nom 
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",

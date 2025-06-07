@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
@@ -52,6 +53,7 @@ fun B_ItemMessagesVocale(
     parentD_EtateMessageVocale: D_EtateMessageVocale,
     etatesChildKeyIDsList: List<D_EtateMessageVocale>,
     viewModel: ViewModelMessageur,
+    uiState: UiState,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -60,6 +62,17 @@ fun B_ItemMessagesVocale(
 
     // Collect playback progress from the handler
     val playbackProgress by audioHandler.playbackProgress.collectAsState()
+
+    // Find the related C3_BonAchate based on parentC3_BonAchateVID
+    val relatedBonAchate = remember(parentD_EtateMessageVocale.parentC3_BonAchateVID, uiState.c3_BonAchate) {
+        uiState.c3_BonAchate.find { it.vid == parentD_EtateMessageVocale.parentC3_BonAchateVID }
+    }
+
+    // Get client name from the related BonAchate, fallback to "Client inconnu" if not found
+    val clientName = relatedBonAchate?.nomClientConcerned ?: "Client inconnu"
+
+    // Get vendor name from the message data, fallback to "Vendeur inconnu" if empty
+    val vendorName = parentD_EtateMessageVocale.nomParent_1_5_Vendeur.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 
     // Check message states
     val isListened = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ECOUTE }
@@ -134,7 +147,7 @@ fun B_ItemMessagesVocale(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Improved message header with better visual hierarchy
+            // Improved message header with client name
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -162,16 +175,32 @@ fun B_ItemMessagesVocale(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Column {
+                        // Display client name as primary information
                         Text(
-                            text = "Message vocal",
+                            text = clientName,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+
+                        // Display vendor name as secondary information
                         Text(
-                            text = "#${parentD_EtateMessageVocale.parentMessageVID}",
+                            text = "Vendeur: $vendorName",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        // Tertiary info: Message ID and type
+                        Text(
+                            text = "Message vocal #${parentD_EtateMessageVocale.parentMessageVID}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }

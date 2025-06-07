@@ -1,6 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.Windows
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import androidx.compose.foundation.background
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.FloatingActionButton
@@ -56,6 +58,7 @@ fun PressistatntMainActivityButtons(
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
+    var showMessageurDialog by remember { mutableStateOf(false) }
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -121,11 +124,17 @@ fun PressistatntMainActivityButtons(
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {
-          viewModel.recordingHandler.stopRecording()
+            viewModel.recordingHandler.stopRecording()
         },
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
+    // Show Messager Dialog when triggered
+    if (showMessageurDialog) {
+        A_MessageurMainScreen(
+            onDismiss = { showMessageurDialog = false }
+        )
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -148,43 +157,75 @@ fun PressistatntMainActivityButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
-                    val buttonBackgroundColor =
-                        if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
-                    val enable = true
+                    // New Row: Messager Button
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Labels toggle button
                         FloatingActionButton(
                             onClick = {
-                                if (enable) {
-                                    showAlertDialog = true
-                                }
+                                showMessageurDialog = true
                             },
                             modifier = Modifier.size(40.dp),
-                            containerColor = buttonBackgroundColor,
+                            containerColor = Color(0xFF2196F3), // Blue color for messager
                         ) {
-                            val iconColor = Color.Black
-
                             Icon(
-                                imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
-                                contentDescription = null,
-                                tint = iconColor
+                                imageVector = Icons.Default.Chat,
+                                contentDescription = "Ouvrir Messager",
+                                tint = Color.White
                             )
                         }
 
                         if (showLabels) {
-                            // Use the pre-cached value
                             Text(
-                                "$displayTime | بقي $remainingClients زبون",
+                                "Messages Vocaux",
                                 modifier = Modifier
-                                    .background(if (enable) buttonBackgroundColor else Color.Gray)
+                                    .background(Color(0xFF2196F3))
                                     .padding(4.dp),
                                 color = Color.White
                             )
                         }
                     }
+
+                     if (!cLenceDepuitDialogeAchate) {
+                         val buttonBackgroundColor =
+                             if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
+                         val enable = true
+                         Row(
+                             verticalAlignment = Alignment.CenterVertically,
+                             horizontalArrangement = Arrangement.spacedBy(4.dp)
+                         ) {
+                             // Labels toggle button
+                             FloatingActionButton(
+                                 onClick = {
+                                     if (enable) {
+                                         showAlertDialog = true
+                                     }
+                                 },
+                                 modifier = Modifier.size(40.dp),
+                                 containerColor = buttonBackgroundColor,
+                             ) {
+                                 val iconColor = Color.Black
+
+                                 Icon(
+                                     imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
+                                     contentDescription = null,
+                                     tint = iconColor
+                                 )
+                             }
+
+                             if (showLabels) {
+                                 // Use the pre-cached value
+                                 Text(
+                                     "$displayTime | بقي $remainingClients زبون",
+                                     modifier = Modifier
+                                         .background(if (enable) buttonBackgroundColor else Color.Gray)
+                                         .padding(4.dp),
+                                     color = Color.White
+                                 )
+                             }
+                         }
+                     }
                 }
 
                 TariffsButtons_TestID2(
