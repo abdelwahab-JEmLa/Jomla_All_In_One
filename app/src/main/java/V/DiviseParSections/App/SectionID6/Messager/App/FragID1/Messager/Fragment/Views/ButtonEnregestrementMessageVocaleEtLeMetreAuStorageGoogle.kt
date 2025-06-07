@@ -4,8 +4,6 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.widget.Toast
@@ -42,48 +40,6 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.IOException
-
-@SuppressLint("DefaultLocale")
-private fun formatTime(seconds: Int): String {
-    val minutes = seconds / 60
-    val remainingSeconds = seconds % 60
-    return String.format("%02d:%02d", minutes, remainingSeconds)
-}
-
-private fun startRecording(
-    context: Context,
-    parentMessageVID: Long
-): Pair<MediaRecorder, File> {
-    val outputFile = File(context.filesDir, "voice_${parentMessageVID}.3gp")
-
-    val mediaRecorder = MediaRecorder().apply {
-        setAudioSource(MediaRecorder.AudioSource.MIC)
-        setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-        setOutputFile(outputFile.absolutePath)
-        setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-
-        try {
-            prepare()
-            start()
-        } catch (e: IOException) {
-            throw IOException("Failed to start recording: ${e.message}")
-        }
-    }
-
-    return Pair(mediaRecorder, outputFile)
-}
-
-private fun stopRecording(mediaRecorder: MediaRecorder?): Unit {
-    try {
-        mediaRecorder?.apply {
-            stop()
-            release()
-        }
-    } catch (e: Exception) {
-        throw Exception("Failed to stop recording: ${e.message}")
-    }
-}
 
 @Composable
 fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
@@ -94,7 +50,6 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val datesHandler = remember { DatesHandler() }
-    val firebaseAudioHelper = remember { FirebaseAudioStorageHelper() }
 
     // States
     var isRecording by remember { mutableStateOf(false) }
@@ -152,7 +107,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         // Recording timer display
         if (isRecording) {
             Text(
-                text = formatTime(recordingTimeSeconds),
+                text = viewModel.audioRecorderAndPlayHandler.formatTime(recordingTimeSeconds),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
                 textAlign = TextAlign.Center
@@ -185,7 +140,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                     if (isRecording) {
                         // Stop recording
                         try {
-                            stopRecording(mediaRecorder)
+                            viewModel.audioRecorderAndPlayHandler.stopRecording(mediaRecorder)
 
                             isRecording = false
                             mediaRecorder = null
@@ -200,11 +155,11 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                                         Toast.LENGTH_SHORT
                                     ).show()
 
-                                    // FIXED: Upload to Firebase Storage
+                                    // Upload to Firebase Storage using AudioRecorderAndPlayHandler
                                     currentRecordingEtate?.let { etate ->
                                         isUploading = true
 
-                                        val uploadResult = firebaseAudioHelper.uploadAudioFile(
+                                        val uploadResult = viewModel.audioRecorderAndPlayHandler.uploadAudioFile(
                                             file,
                                             etate.parentMessageVID
                                         )
@@ -265,7 +220,7 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                             currentRecordingEtate = newEtate
 
                             // Start recording
-                            val (recorder, file) = startRecording(
+                            val (recorder, file) = viewModel.audioRecorderAndPlayHandler.startRecording(
                                 context,
                                 newEtate.parentMessageVID
                             )

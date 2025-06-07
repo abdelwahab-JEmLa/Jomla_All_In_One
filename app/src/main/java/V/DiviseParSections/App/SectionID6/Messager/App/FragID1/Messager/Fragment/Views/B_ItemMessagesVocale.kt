@@ -43,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
 fun B_ItemMessagesVocale(
@@ -59,7 +58,6 @@ fun B_ItemMessagesVocale(
     var playbackProgress by remember { mutableFloatStateOf(0f) }
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     val datesHandler = remember { DatesHandler() }
-    val firebaseAudioHelper = remember { FirebaseAudioStorageHelper() }
 
     // Check message states
     val isListened = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ECOUTE }
@@ -162,38 +160,34 @@ fun B_ItemMessagesVocale(
                                 // Start playing - with download if file doesn't exist
                                 coroutineScope.launch {
                                     try {
-                                        // Create audio file path
-                                        val audioFileKey = "voice_${parentD_EtateMessageVocale.parentMessageVID}"
-                                        val audioFile = File(context.filesDir, "$audioFileKey.3gp")
+                                        // Use AudioRecorderAndPlayHandler to download if needed
+                                        isDownloading = true
+                                        Toast.makeText(
+                                            context,
+                                            "Préparation du message vocal...",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
 
-                                        // Check if file exists locally, if not download from Firebase
-                                        if (!audioFile.exists()) {
-                                            isDownloading = true
+                                        val downloadResult = viewModel.audioRecorderAndPlayHandler.downloadAudioFileIfNeeded(
+                                            context,
+                                            parentD_EtateMessageVocale.parentMessageVID
+                                        )
+
+                                        isDownloading = false
+
+                                        if (downloadResult.isFailure) {
                                             Toast.makeText(
                                                 context,
-                                                "Téléchargement du message vocal...",
-                                                Toast.LENGTH_SHORT
+                                                "Erreur lors du téléchargement: ${downloadResult.exceptionOrNull()?.message}",
+                                                Toast.LENGTH_LONG
                                             ).show()
-
-                                            val downloadResult = firebaseAudioHelper.downloadAudioFile(
-                                                context,
-                                                parentD_EtateMessageVocale.parentMessageVID
-                                            )
-
-                                            isDownloading = false
-
-                                            if (downloadResult.isFailure) {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Erreur lors du téléchargement: ${downloadResult.exceptionOrNull()?.message}",
-                                                    Toast.LENGTH_LONG
-                                                ).show()
-                                                return@launch
-                                            }
+                                            return@launch
                                         }
 
+                                        val audioFile = downloadResult.getOrNull()
+
                                         // Now play the audio file
-                                        if (audioFile.exists() && audioFile.length() > 0) {
+                                        if (audioFile != null && audioFile.exists() && audioFile.length() > 0) {
                                             mediaPlayer = MediaPlayer().apply {
                                                 setDataSource(audioFile.absolutePath)
                                                 prepare()

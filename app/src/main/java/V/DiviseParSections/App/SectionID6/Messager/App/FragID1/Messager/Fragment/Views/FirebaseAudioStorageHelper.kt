@@ -7,7 +7,6 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 
 class FirebaseAudioStorageHelper {
-    
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
     private val audioRef = storageRef.child("audio_messages").child("D_EtateMessageVocale")

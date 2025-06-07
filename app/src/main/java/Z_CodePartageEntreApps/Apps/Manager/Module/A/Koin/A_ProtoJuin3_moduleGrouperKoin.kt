@@ -14,8 +14,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val moduleRepositorys = module {
 
+val moduleRepositorys = module {
     single {
         D_EtateMessageVocaleRepository(
             androidContext(),
@@ -50,6 +50,7 @@ val moduleRepositorys = module {
 val moduleViewModels = module {
     viewModel {
         ViewModelMessageur(
+            get(),
             get(),
         )
     }

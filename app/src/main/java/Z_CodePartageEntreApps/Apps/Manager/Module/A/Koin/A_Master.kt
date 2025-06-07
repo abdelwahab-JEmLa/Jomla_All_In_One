@@ -11,6 +11,8 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.AudioRecorderAndPlayHandler
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.FirebaseAudioStorageHelper
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
@@ -147,7 +149,15 @@ val navigationModule = module {
 }
 
 val classesHandlersModule = module {
-    // Provide a CoroutineScope for handlers that need it
+    single {
+        FirebaseAudioStorageHelper(
+            )
+    }
+    single {
+        AudioRecorderAndPlayHandler(
+            get(),
+            )
+    }
     single<CoroutineScope> {
         CoroutineScope(SupervisorJob() + Dispatchers.Main)
     }
