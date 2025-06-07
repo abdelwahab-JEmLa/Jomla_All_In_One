@@ -108,7 +108,7 @@ fun EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
 
         // Record/Stop button
-       FilledTonalButton(
+        FilledTonalButton(
             onClick = {
                 if (!hasRecordPermission) {
                     permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -128,6 +128,7 @@ fun EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                                 context,
                                 onSuccess = { fileId ->
                                     onVoiceMessageUploaded(fileId)
+
                                 }
                             )
                         }
@@ -158,7 +159,7 @@ fun EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
             )
             Text(
                 text = if (isRecording) "Arrêter l'enregistrement" else "Message vocal",
-                fontSize=10.sp
+                fontSize = 10.sp
             )
         }
     }
