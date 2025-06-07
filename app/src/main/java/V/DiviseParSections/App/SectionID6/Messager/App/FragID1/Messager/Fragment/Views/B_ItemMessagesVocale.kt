@@ -134,10 +134,25 @@ fun B_ItemMessagesVocale(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                isListened -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                isViewed -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
-                isBeingRecorded -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
-                else -> MaterialTheme.colorScheme.surface
+                // Check if this message belongs to parent account 1 (current user)
+                parentD_EtateMessageVocale.idParent_1_5_Vendeur == 1L -> {
+                    // Red tint for current user's messages
+                    when {
+                        isListened -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+                        isViewed -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                        isBeingRecorded -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                        else -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
+                    }
+                }
+                else -> {
+                    // Blue tint for other users' messages
+                    when {
+                        isListened -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                        isViewed -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+                        isBeingRecorded -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                        else -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+                    }
+                }
             }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)

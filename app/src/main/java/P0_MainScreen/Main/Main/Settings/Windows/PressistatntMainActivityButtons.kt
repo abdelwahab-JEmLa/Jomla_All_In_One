@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.FloatingActionButton
@@ -33,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.clientjetpack.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -157,7 +158,7 @@ fun PressistatntMainActivityButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
-                    // New Row: Messager Button
+                    // New Row: Messager Button with Telegram icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -167,10 +168,10 @@ fun PressistatntMainActivityButtons(
                                 showMessageurDialog = true
                             },
                             modifier = Modifier.size(40.dp),
-                            containerColor = Color(0xFF2196F3), // Blue color for messager
+                            containerColor = Color(0xFF0088CC), // Telegram brand color
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Chat,
+                                painter = painterResource(id = R.drawable.ic_telegram),
                                 contentDescription = "Ouvrir Messager",
                                 tint = Color.White
                             )
@@ -180,52 +181,52 @@ fun PressistatntMainActivityButtons(
                             Text(
                                 "Messages Vocaux",
                                 modifier = Modifier
-                                    .background(Color(0xFF2196F3))
+                                    .background(Color(0xFF0088CC))
                                     .padding(4.dp),
                                 color = Color.White
                             )
                         }
                     }
 
-                     if (!cLenceDepuitDialogeAchate) {
-                         val buttonBackgroundColor =
-                             if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
-                         val enable = true
-                         Row(
-                             verticalAlignment = Alignment.CenterVertically,
-                             horizontalArrangement = Arrangement.spacedBy(4.dp)
-                         ) {
-                             // Labels toggle button
-                             FloatingActionButton(
-                                 onClick = {
-                                     if (enable) {
-                                         showAlertDialog = true
-                                     }
-                                 },
-                                 modifier = Modifier.size(40.dp),
-                                 containerColor = buttonBackgroundColor,
-                             ) {
-                                 val iconColor = Color.Black
+                    if (!cLenceDepuitDialogeAchate) {
+                        val buttonBackgroundColor =
+                            if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
+                        val enable = true
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            // Labels toggle button
+                            FloatingActionButton(
+                                onClick = {
+                                    if (enable) {
+                                        showAlertDialog = true
+                                    }
+                                },
+                                modifier = Modifier.size(40.dp),
+                                containerColor = buttonBackgroundColor,
+                            ) {
+                                val iconColor = Color.Black
 
-                                 Icon(
-                                     imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
-                                     contentDescription = null,
-                                     tint = iconColor
-                                 )
-                             }
+                                Icon(
+                                    imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
+                                    contentDescription = null,
+                                    tint = iconColor
+                                )
+                            }
 
-                             if (showLabels) {
-                                 // Use the pre-cached value
-                                 Text(
-                                     "$displayTime | بقي $remainingClients زبون",
-                                     modifier = Modifier
-                                         .background(if (enable) buttonBackgroundColor else Color.Gray)
-                                         .padding(4.dp),
-                                     color = Color.White
-                                 )
-                             }
-                         }
-                     }
+                            if (showLabels) {
+                                // Use the pre-cached value
+                                Text(
+                                    "$displayTime | بقي $remainingClients زبون",
+                                    modifier = Modifier
+                                        .background(if (enable) buttonBackgroundColor else Color.Gray)
+                                        .padding(4.dp),
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
                 }
 
                 TariffsButtons_TestID2(

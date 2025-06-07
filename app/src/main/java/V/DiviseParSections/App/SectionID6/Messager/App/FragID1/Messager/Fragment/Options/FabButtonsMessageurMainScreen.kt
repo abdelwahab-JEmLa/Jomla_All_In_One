@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -31,9 +32,14 @@ fun FabButtonsMessageurMainScreen(
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
-    // États pour le drag
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
+    // Get screen configuration to position at the right edge
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeightDp = configuration.screenHeightDp.dp
+
+// Initialize offset to start at the right edge of the screen
+    var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
 
     Box(
         modifier = Modifier.fillMaxSize(),

@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -33,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -109,13 +109,13 @@ fun ButtonMessageVocale(
                     .padding(bottom = 8.dp)
             )
             Text(
-                text = "Téléchargement vers Firebase...",
+                text = "Envoi vers Telegram...",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center
             )
         }
 
-        // Record/Stop button
+        // Record/Stop button with Telegram styling
         FilledTonalButton(
             onClick = {
                 if (!hasRecordPermission) {
@@ -170,7 +170,7 @@ fun ButtonMessageVocale(
 
                                     Toast.makeText(
                                         context,
-                                        "Message vocal envoyé avec succès!",
+                                        "Message vocal envoyé via Telegram!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
@@ -246,24 +246,27 @@ fun ButtonMessageVocale(
             modifier = Modifier.fillMaxWidth(0.9f),
             enabled = !isUploading // Disable button while uploading
         ) {
-            Icon(
-                imageVector = when {
-                    isUploading -> Icons.Default.CloudUpload
-                    isRecording -> Icons.Default.Stop
-                    else -> Icons.Default.Mic
-                },
-                contentDescription = when {
-                    isUploading -> "Téléchargement en cours"
-                    isRecording -> "Arrêter l'enregistrement"
-                    else -> "Commencer l'enregistrement"
-                }
-            )
+            // Utilisation des icônes Telegram personnalisées
+            when {
+                isUploading -> Icon(
+                    painter = painterResource(id = R.drawable.ic_telegram_send),
+                    contentDescription = "Envoi en cours via Telegram"
+                )
+                isRecording -> Icon(
+                    imageVector = Icons.Default.Stop,
+                    contentDescription = "Arrêter l'enregistrement"
+                )
+                else -> Icon(
+                    painter = painterResource(id = R.drawable.ic_telegram_mic),
+                    contentDescription = "Commencer l'enregistrement vocal"
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = when {
-                    isUploading -> "Envoi..."
+                    isUploading -> "Envoi Telegram..."
                     isRecording -> "Arrêter l'enregistrement"
-                    else -> "Message vocal"
+                    else -> "Message vocal Telegram"
                 },
                 modifier = Modifier.padding(8.dp)
             )
