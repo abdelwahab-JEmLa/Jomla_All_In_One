@@ -38,11 +38,8 @@ import org.koin.compose.koinInject
 fun A_MainListFragId3(
     viewModel: HeadViewModel,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
-
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
-    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
-    reloadTrigger: Int,
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,

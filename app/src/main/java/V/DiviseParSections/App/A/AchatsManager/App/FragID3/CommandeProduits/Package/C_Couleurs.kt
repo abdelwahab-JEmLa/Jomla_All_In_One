@@ -1,11 +1,12 @@
 // C_Couleurs.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -47,12 +48,14 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Couleurs(
+    calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     buyerIds: List<Long>,
     models: GroupeRepositorysProtoAvJuin3Model,
-    periodFilter: Long? = null  // Add the missing periodFilter parameter
-) {
+    periodFilter: Long? = null,
+
+    ) {
     // Only proceed if the product is in CONFIRME state
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
@@ -207,16 +210,15 @@ fun Couleurs(
                 // Sum the client quantities
                 val clientQuantitiesSum = allClientsMap.values.sum()
 
-                // Get color name for this specific color
-                val colorName = getColorNameByIndex(
-                    Couleur.couleurIndex_ParentVID,
-                    Produit.produitAcheterID
-                )
-
-                // Get product name as fallback
-                val productName = models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                    .find { it.vid == Produit.produitAcheterID }?.nom
-                    ?: "_015_Produits #${Produit.produitAcheterID}"
+                // Get color name for this specific color using calculeCouleurHandler
+                val colorName = remember(Produit.produitAcheterID, Couleur.couleurIndex_ParentVID) {
+                    val product = calculeCouleurHandler.findProductById(Produit.produitAcheterID)
+                    product?.let {
+                        val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(it)
+                        val colorIndex = Couleur.couleurIndex_ParentVID.toInt()
+                        productImageInfos.getOrNull(colorIndex)?.colorName?.takeIf { name -> name.isNotBlank() }
+                    }
+                }
 
                 Card(
                     modifier = Modifier.background(Color.Red)
@@ -229,7 +231,7 @@ fun Couleurs(
                                 360.dp,
                                 onImageNeExistePas = {
                                     Text(
-                                        text = colorName ?: productName,
+                                        text = colorName ?: "NonTrouve",
                                         fontSize = 55.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier

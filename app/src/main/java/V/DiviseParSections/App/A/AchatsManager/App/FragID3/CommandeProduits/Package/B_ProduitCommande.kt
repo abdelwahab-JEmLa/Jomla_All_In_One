@@ -124,7 +124,13 @@ fun B_ProduitCommande(
                     ?: "_015_Produits inconnu", Modifier.padding(4.dp)
             )
 
-            Couleurs(Produit, colorsForProduct, buyerIds, models, periodFilter)
+            Couleurs(
+                Produit = Produit,
+                colorsForProduct = colorsForProduct,
+                buyerIds = buyerIds,
+                models = models,
+                periodFilter = periodFilter
+            )
         }
     }
 }

@@ -199,11 +199,9 @@ fun MainUi(
                                 )
 
                                 A_MainListFragId3(
+                                    viewModel = viewModel,
                                     currentSale = currentSale,
                                     stats = stats,
-                                    colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-                                    viewModel = viewModel,
-                                    reloadTrigger = reloadTrigger,
                                     viewModelInitApp = viewModelInitApp,
                                     currentClient = currentClient,
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
