@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
@@ -42,16 +43,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
-                     //<--
-                     //TODO(1): diminue la taille et complicite d code sans change son fonctionemet et enleve commentaires
-// Helper function to format time in MM:SS format
+
+@SuppressLint("DefaultLocale")
 private fun formatTime(seconds: Int): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60
     return String.format("%02d:%02d", minutes, remainingSeconds)
 }
 
-// Helper function to start recording
 private fun startRecording(
     context: Context,
     parentMessageVID: Long
@@ -75,7 +74,6 @@ private fun startRecording(
     return Pair(mediaRecorder, outputFile)
 }
 
-// Helper function to stop recording
 private fun stopRecording(mediaRecorder: MediaRecorder?): Unit {
     try {
         mediaRecorder?.apply {
