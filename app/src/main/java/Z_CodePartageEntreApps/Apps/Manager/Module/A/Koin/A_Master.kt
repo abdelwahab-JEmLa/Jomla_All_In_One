@@ -183,12 +183,7 @@ val viewModelModule = module {
             get(),
         )
     }
-      /*
-    viewModel {
-        ViewModelMessageur(
-            get(),
-        )
-    }    */
+
 
     factory { (viewModel: HeadViewModel, context: Context) ->
         ConnectionManager(

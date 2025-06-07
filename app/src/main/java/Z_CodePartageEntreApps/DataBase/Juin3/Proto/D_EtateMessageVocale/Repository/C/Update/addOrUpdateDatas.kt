@@ -6,16 +6,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun D_EtateMessageVocaleRepository.addOrUpdateData(data: D_EtateMessageVocale) {
+fun D_EtateMessageVocaleRepository.addOrUpdateDatas(datas: List<D_EtateMessageVocale>) {
     CoroutineScope(Dispatchers.IO).launch {
-        val preparedData = data.withProperKeyFireBaseAndTimeTamp()
+        val preparedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
 
-        dao.upsert(preparedData)
+        dao.upsertAllDatas(preparedDatas)
 
-        ref.child(preparedData.keyFireBase).setValue(preparedData)
+        preparedDatas.forEach { data ->
+            ref.child(data.keyFireBase).setValue(data)
+        }
 
-        val allData = dao.getAll()
-        updateRepoState(allData)
+        updateRepoState(preparedDatas)
     }
 }
-

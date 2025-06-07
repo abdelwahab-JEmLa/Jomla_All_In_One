@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
-  /*
+
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
@@ -28,14 +28,12 @@ import kotlin.math.roundToInt
 fun FabButtonsMessageurMainScreen(
     viewModel: ViewModelMessageur,
 ) {
-
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
     // États pour le drag
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -77,4 +75,3 @@ fun FabButtonsMessageurMainScreen(
         }
     }
 }
-                   */

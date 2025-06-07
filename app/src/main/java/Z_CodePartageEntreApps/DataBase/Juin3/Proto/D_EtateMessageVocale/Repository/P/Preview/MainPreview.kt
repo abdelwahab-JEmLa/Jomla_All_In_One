@@ -27,7 +27,7 @@ fun MainPreviewD_EtateMessageVocale(
     viewModel: D_EtateMessageVocalePreviewViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val datas by remember(uiState.mainList) { mutableStateOf(uiState.mainList) }
+    val datas by remember(uiState.d_EtateMessageVocaleList) { mutableStateOf(uiState.d_EtateMessageVocaleList) }
     val progress = uiState.mainLoadingProgress
 
     val sortedDatas = remember(datas) {

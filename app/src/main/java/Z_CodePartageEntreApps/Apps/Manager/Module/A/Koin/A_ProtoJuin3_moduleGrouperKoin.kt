@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
@@ -47,6 +48,11 @@ val moduleRepositorys = module {
 }
 
 val moduleViewModels = module {
+    viewModel {
+        ViewModelMessageur(
+            get(),
+        )
+    }
     viewModel {
         D_EtateMessageVocalePreviewViewModel(
             get(),

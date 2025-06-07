@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler

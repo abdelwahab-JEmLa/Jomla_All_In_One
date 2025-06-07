@@ -1,9 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
-     /*
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
+
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.D_EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.playVoiceMessage
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.media.MediaPlayer
 import android.widget.Toast
@@ -45,12 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun B_ItemMessagesVocale(
-    parentMessageVocale: MessageVocale,
+    parentD_EtateMessageVocale: D_EtateMessageVocale,
     etatesChildKeyIDsList: List<D_EtateMessageVocale>,
-    uiState: MessageurUiState,
     viewModel: ViewModelMessageur,
 ) {
     // For audio playback
@@ -103,33 +101,13 @@ fun B_ItemMessagesVocale(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            // Message header with client name and timestamp
+            // Message header with message info and timestamp
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = try {
-                        when {
-                            parentMessageVocale.vocaleKeyID.startsWith("voice_") -> {
-                                // Extract the message ID part
-                                val parts = parentMessageVocale.vocaleKeyID.split("_")
-                                if (parts.size >= 2) {
-                                    "Message vocal #${parts[1]}"
-                                } else {
-                                    "Message vocal"
-                                }
-                            }
-                            parentMessageVocale.vocaleKeyID.isNotEmpty() -> {
-                                "Message: ${parentMessageVocale.vocaleKeyID}"
-                            }
-                            else -> {
-                                "Message vocal"
-                            }
-                        }
-                    } catch (e: Exception) {
-                        "Message vocal" // Error fallback
-                    },
+                    text = "Message vocal #${parentD_EtateMessageVocale.parentMessageVID}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -137,11 +115,7 @@ fun B_ItemMessagesVocale(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "الوقت: ${
-                        datesHandler.getDateAndTimString(
-                            parentMessageVocale.vocaleKeyID.hashCode().toLong()
-                        ).time
-                    }",
+                    text = "الوقت: ${datesHandler.getDateAndTimString(parentD_EtateMessageVocale.timestamps).time}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -158,11 +132,11 @@ fun B_ItemMessagesVocale(
                     Text(
                         text = "Enregistrement en cours...",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
-            } else {
+            } else if (isSent) {
                 // Audio player controls - only show for sent messages
                 Row(
                     modifier = Modifier
@@ -185,56 +159,85 @@ fun B_ItemMessagesVocale(
                             } else {
                                 // Start playing
                                 coroutineScope.launch {
-                                    viewModel.playVoiceMessage(
-                                        parentMessageVocale.vocaleKeyID,
-                                        context,
-                                        onPrepared = { player ->
-                                            mediaPlayer = player
+                                    try {
+                                        // Create a simple audio file key based on parentMessageVID
+                                        val audioFileKey = "voice_${parentD_EtateMessageVocale.parentMessageVID}"
+
+                                        // Create audio file path
+                                        val audioFile = File(context.filesDir, "$audioFileKey.3gp")
+
+                                        if (audioFile.exists()) {
+                                            mediaPlayer = MediaPlayer().apply {
+                                                setDataSource(audioFile.absolutePath)
+                                                prepare()
+                                                start()
+
+                                                setOnCompletionListener {
+                                                    isPlaying = false
+                                                    playbackProgress = 0f
+                                                    release()
+                                                    mediaPlayer = null
+
+                                                    // Update message state to ECOUTE if not already
+                                                    if (!isListened) {
+                                                        coroutineScope.launch {
+                                                            try {
+                                                                // Create a new D_EtateMessageVocale with ECOUTE state
+                                                                val newEtate = D_EtateMessageVocale(
+                                                                    parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
+                                                                    nom = D_EtateMessageVocale.Nom.ECOUTE,
+                                                                    timestamps = datesHandler.getCurrentTimestamps()
+                                                                )
+                                                                // FIXED: Use viewModel's addOrUpdateData method
+                                                                viewModel.addOrUpdateData(newEtate)
+                                                            } catch (e: Exception) {
+                                                                e.printStackTrace()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                setOnErrorListener { _, _, _ ->
+                                                    isPlaying = false
+                                                    playbackProgress = 0f
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Erreur de lecture du message vocal",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    true
+                                                }
+                                            }
+
                                             isPlaying = true
 
                                             // Update progress while playing
                                             coroutineScope.launch {
                                                 while (isPlaying && mediaPlayer != null) {
-                                                    val duration = mediaPlayer?.duration ?: 1
-                                                    val currentPosition =
-                                                        mediaPlayer?.currentPosition ?: 0
-                                                    playbackProgress =
-                                                        currentPosition.toFloat() / duration.toFloat()
-                                                    delay(100)
+                                                    try {
+                                                        val duration = mediaPlayer?.duration ?: 1
+                                                        val currentPosition = mediaPlayer?.currentPosition ?: 0
+                                                        playbackProgress = currentPosition.toFloat() / duration.toFloat()
+                                                        delay(100)
+                                                    } catch (e: Exception) {
+                                                        break
+                                                    }
                                                 }
                                             }
-                                        },
-                                        onCompletion = {
-                                            isPlaying = false
-                                            playbackProgress = 0f
-                                            mediaPlayer?.release()
-                                            mediaPlayer = null
-
-                                            // Update message state to ECOUTE if not already
-                                            if (!isListened) {
-                                                coroutineScope.launch {
-                                                    // Create a new D_EtateMessageVocale with ECOUTE state
-                                                    val newEtate = D_EtateMessageVocale(
-                                                        parentMessageVID = parentMessageVocale.vid,
-                                                        parentMessageKeyID = parentMessageVocale.keyID,
-                                                        nom = D_EtateMessageVocale.Nom.ECOUTE,
-                                                        timestamps = datesHandler.getCurrentTimestamps()
-                                                    )
-                                                    viewModel.appDatabase.D_EtateMessageVocaleDao()
-                                                        .insert(newEtate)
-                                                }
-                                            }
-                                        },
-                                        onError = {
-                                            isPlaying = false
-                                            playbackProgress = 0f
+                                        } else {
                                             Toast.makeText(
                                                 context,
-                                                "Erreur de lecture du message vocal",
+                                                "Fichier audio non trouvé",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
-                                    )
+                                    } catch (e: Exception) {
+                                        Toast.makeText(
+                                            context,
+                                            "Erreur lors du démarrage de la lecture: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             }
                         }
@@ -242,7 +245,7 @@ fun B_ItemMessagesVocale(
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
                             contentDescription = if (isPlaying) "Arrêter la lecture" else "Lecture du message vocal",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
 
@@ -254,8 +257,8 @@ fun B_ItemMessagesVocale(
                             .height(4.dp)
                             .padding(horizontal = 8.dp)
                             .clip(RoundedCornerShape(2.dp)),
-                        color = Color.White,
-                        trackColor = Color.White.copy(alpha = 0.3f)
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     )
 
                     // Status icon
@@ -276,7 +279,7 @@ fun B_ItemMessagesVocale(
                                 Text(
                                     text = datesHandler.getDateAndTimString(latestTimestamp).time,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
                                 )
                             }
                         } else {
@@ -290,6 +293,14 @@ fun B_ItemMessagesVocale(
                         }
                     }
                 }
+            } else {
+                // Message is in an unknown state
+                Text(
+                    text = "État du message inconnu",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         }
     }
@@ -300,4 +311,3 @@ fun B_ItemMessagesVocale(
             .padding(horizontal = 16.dp)
     )
 }
-                   */

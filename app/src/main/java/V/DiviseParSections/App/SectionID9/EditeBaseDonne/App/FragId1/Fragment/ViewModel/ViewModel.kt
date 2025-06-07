@@ -52,7 +52,11 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         )
     }
 
-    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data) }
+    fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
+        masterRepositorys.repoA_ProduitInfos.addOrUpdateData(
+            data
+        )
+    }
     fun addOrUpdateProduits(datas:List<ArticlesBasesStatsTable> ) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
     fun deleteArticlesBasesStatsTable(data:ArticlesBasesStatsTable ) { masterRepositorys.repoA_ProduitInfos.deleteData(data) }
 }
