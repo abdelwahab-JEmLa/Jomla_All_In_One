@@ -84,8 +84,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
 
         val parent = Firebase.database.getReference("00_DataPrototype-04-02" +
                 "/_1_developingRef" +
-                "/C_InfosSqlDataBases" +
-                "/K_TempTravaille")
+                "/C_InfosSqlDataBases")
 
         val caRef = parent.child("K_TempTravaille")
 
