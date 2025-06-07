@@ -42,7 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
-
+                     //<--
+                     //TODO(1): diminue la taille et complicite d code sans change son fonctionemet et enleve commentaires
 // Helper function to format time in MM:SS format
 private fun formatTime(seconds: Int): String {
     val minutes = seconds / 60

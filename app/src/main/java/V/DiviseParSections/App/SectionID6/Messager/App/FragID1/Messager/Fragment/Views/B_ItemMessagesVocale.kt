@@ -44,7 +44,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
-
+   //<--
+   //TODO(1): diminue la taille et complicite d code sans change son fonctionemet et enleve commentaires
 @Composable
 fun B_ItemMessagesVocale(
     parentD_EtateMessageVocale: D_EtateMessageVocale,

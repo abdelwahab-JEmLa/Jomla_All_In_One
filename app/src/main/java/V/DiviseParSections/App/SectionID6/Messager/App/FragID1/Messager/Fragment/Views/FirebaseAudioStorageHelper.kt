@@ -9,7 +9,8 @@ import java.io.File
 /**
  * Helper class to handle audio file uploads and downloads to/from Firebase Storage
  */
-class FirebaseAudioStorageHelper {
+class FirebaseAudioStorageHelper {        //<--
+//TODO(1): diminue la taille et complicite d code sans change son fonctionemet et enleve commentaires
     
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
