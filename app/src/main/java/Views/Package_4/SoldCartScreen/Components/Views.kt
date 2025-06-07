@@ -143,7 +143,7 @@ fun CartItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = baseArticle.nomArticleFinale,
+                    text = baseArticle.nom,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )

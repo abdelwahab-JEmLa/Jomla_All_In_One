@@ -384,7 +384,7 @@ open class HeadViewModel(
             // Create new article with incremented ID
             val newArticle = ArticlesBasesStatsTable(
                 id = maxIdArticle + 1,
-                nomArticleFinale = nameArticleNIB,
+                nom = nameArticleNIB,
                 idcolor1 = 1,
                 dateCreationCategorie = formattedDate,
                 idForSearchArticles = maxidForSearchArticles
@@ -445,7 +445,7 @@ open class HeadViewModel(
                 val newSale = SoldArticlesTabelle(
                     vid = maxId + 1,
                     idArticle = relatedArticleDataBaseId,
-                    nameArticle = article.nomArticleFinale,
+                    nameArticle = article.nom,
                     clientSoldToItId = currentClient,
                     date = System.currentTimeMillis().toString()
                 )

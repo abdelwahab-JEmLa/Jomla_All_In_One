@@ -81,11 +81,13 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
                 return 0
             }
         }
-        val caRef =
-            Firebase.database.getReference("00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases" +
-                    "/A_ProduitInfos")
+
+        val parent = Firebase.database.getReference("00_DataPrototype-04-02" +
+                "/_1_developingRef" +
+                "/C_InfosSqlDataBases" +
+                "/K_TempTravaille")
+
+        val caRef = parent.child("K_TempTravaille")
 
     }
 }

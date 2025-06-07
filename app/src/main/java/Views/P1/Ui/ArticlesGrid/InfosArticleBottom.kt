@@ -103,7 +103,7 @@ fun InfosArticleBottom(
         }
 
         Text(
-            text = article.nomArticleFinale,
+            text = article.nom,
             style = MaterialTheme.typography.titleMedium
         )
     }

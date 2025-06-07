@@ -1,7 +1,7 @@
 package Views.P1.Ui.ArticlesGrid.A.List
 
-import Views.P1.Ui.ArticlesGrid.C.Ui.ArticleItem
 import Views.P1.Ui.ArticlesGrid.B.Main.Filter.filterArticles
+import Views.P1.Ui.ArticlesGrid.C.Ui.ArticleItem
 import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
@@ -97,6 +97,8 @@ fun MainList(
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
+
+  //  Log.d("Filter","Filtred ${uiState.articlesBasesStatTables.size}")
 
     val filteredArticles = remember(uiState.articlesBasesStatTables, filterText, currentClient) {
         filterArticles(uiState.articlesBasesStatTables, filterText, )

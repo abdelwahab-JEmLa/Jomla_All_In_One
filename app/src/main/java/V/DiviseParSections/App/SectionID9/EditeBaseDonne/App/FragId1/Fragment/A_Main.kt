@@ -80,7 +80,7 @@ fun EditeBaseDonneMainScreenIdS9(
                 val searchQuery = filterState.searchText.lowercase()
                 filtered = filtered.filter { product ->
                     product.nom.lowercase().contains(searchQuery) ||
-                            product.nomArticleFinale.lowercase().contains(searchQuery) ||
+                            product.nom.lowercase().contains(searchQuery) ||
                             product.nomArab.lowercase().contains(searchQuery) ||
                             (product.autreNomDarticle?.lowercase()?.contains(searchQuery) == true)
                 }

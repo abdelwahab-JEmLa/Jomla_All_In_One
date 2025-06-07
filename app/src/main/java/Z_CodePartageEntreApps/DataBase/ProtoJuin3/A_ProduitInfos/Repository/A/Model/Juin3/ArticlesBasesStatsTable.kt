@@ -15,7 +15,6 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosDeBase
     var nom: String = "",
-    var nomArticleFinale: String = "",
 
     //
     var nombreUniteInt: Int = 0,

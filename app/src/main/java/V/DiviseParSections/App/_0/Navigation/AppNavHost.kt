@@ -154,7 +154,7 @@ fun AppNavHost(
                                 onClickToOpenClientsW = {
                                     showClientSelectionWithoutCondition = true
                                 },
-                                isFabVisible = isFabVisible,
+                                isFabVisibleInit = isFabVisible,
                                 onClickDonne = onClickDonne,
                                 onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                                 scrollTiger = scrollTiger,

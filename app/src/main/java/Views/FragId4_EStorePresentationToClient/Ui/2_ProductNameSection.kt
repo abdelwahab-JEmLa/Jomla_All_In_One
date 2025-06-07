@@ -49,7 +49,7 @@ fun ProductNameSection7(article: ArticlesBasesStatsTable) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = article.nomArticleFinale,
+                        text = article.nom,
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),

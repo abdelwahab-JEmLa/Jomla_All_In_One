@@ -92,7 +92,7 @@ fun getActiveMigration(): Boolean {
 fun parseDepuitOldAuNew(ancien: ArticlesBasesStatsTable) =
     A_ProduitInfos(
         id = ancien.id.toLong(),
-        nom = ancien.nomArticleFinale,
+        nom = ancien.nom,
         keyFireBase = "",
         timestamps = System.currentTimeMillis(),
         needUpdate = true,

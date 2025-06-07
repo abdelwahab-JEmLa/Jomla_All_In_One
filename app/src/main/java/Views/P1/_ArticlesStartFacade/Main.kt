@@ -51,7 +51,7 @@ fun FragmentStartupScreen(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit, // Removed @Composable annotation
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean,
+    isFabVisibleInit: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     scrollTiger: Int,
@@ -62,8 +62,11 @@ fun FragmentStartupScreen(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
-    var gridColumns by remember { mutableStateOf(2) }
+    val DevMode = true
+    val isFabVisible = if (DevMode) DevMode else isFabVisibleInit
+    val filterTextInit = if (DevMode) "dyd" else ""
     var showFilter by remember { mutableStateOf(false) }
+    var gridColumns by remember { mutableStateOf(2) }
     var filterText by remember { mutableStateOf("") }
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
@@ -96,7 +99,7 @@ fun FragmentStartupScreen(
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible = isFabVisible,
         onClickDonne = {
-            filterText=""
+            filterText = ""
             onClickDonne()
         },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
@@ -135,8 +138,10 @@ fun MainUi(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
+
     val scope = rememberCoroutineScope()
-    val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
+    val tag =
+        if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
     var savedScrollPosition by rememberSaveable() { mutableStateOf(0) }
     var hostSavePosition by rememberSaveable() { mutableStateOf(0) }
 
@@ -162,7 +167,7 @@ fun MainUi(
             }
         }
     }
-    LaunchedEffect(currentScrollPosition,) {//-->
+    LaunchedEffect(currentScrollPosition) {//-->
         if (uiState.productDisplayController.isHostPhone) {
             scope.launch {
                 try {
@@ -200,7 +205,7 @@ fun MainUi(
         isConnected = uiState.productDisplayController.isConnected,
         gridState = gridState,
         viewModel = viewModel,
-        onScrollHostChange = {hostSavePosition=it}
+        onScrollHostChange = { hostSavePosition = it }
     )
 
     HandleClientScroll(
@@ -238,9 +243,8 @@ fun MainUi(
                         viewModel = viewModel,
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = onClickToOpenWindos,
-                        currentClient = currentClient
-                        , viewModelInitApp =viewModelInitApp ,
-                        targetCategoryId =targetCategoryId ,
+                        currentClient = currentClient, viewModelInitApp = viewModelInitApp,
+                        targetCategoryId = targetCategoryId,
                         lockHost = lockHost,
                         onClickImageToShowControles = onClickImageToShowControles
                     )
@@ -257,8 +261,10 @@ fun MainUi(
             onToggleOutlineFilter = onToggleFilter,
             onChangeGridColumns = onChangeGridColumns,
             onClickToOpenClientsListW = onClickToOpenClientsW,
-            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost,
-            onToggleLockExpandedPricex = onToggleLockExpandedPricex, viewModelInitApp = viewModelInitApp
+            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+            onToggleLockHost = onToggleLockHost,
+            onToggleLockExpandedPricex = onToggleLockExpandedPricex,
+            viewModelInitApp = viewModelInitApp
         )
 
 
@@ -309,6 +315,7 @@ private fun AnimatedFabGroup(
         }
     }
 }
+
 private const val TAG = "ArticleGridDebug"
 
 @Composable
@@ -317,14 +324,17 @@ private fun HandleScrollBroadcast(
     isConnected: Boolean,
     gridState: LazyStaggeredGridState,
     viewModel: HeadViewModel,
-    onScrollHostChange : (Int) -> Unit,
+    onScrollHostChange: (Int) -> Unit,
 ) {
     var lastScrollPosition by remember { mutableStateOf(0) }
     var isScrollInProgress by remember { mutableStateOf(false) }
 
     LaunchedEffect(isHostPhone, isConnected) {
         if (!isHostPhone || !isConnected) {
-            Log.d(TAG, "HandleScrollBroadcast: Not handling scroll - isHost: $isHostPhone, isConnected: $isConnected")
+            Log.d(
+                TAG,
+                "HandleScrollBroadcast: Not handling scroll - isHost: $isHostPhone, isConnected: $isConnected"
+            )
             return@LaunchedEffect
         }
 
@@ -340,7 +350,8 @@ private fun HandleScrollBroadcast(
                 - Offset: $offset
                 - Last Position: $lastScrollPosition
                 - Is Scrolling: $isScrollInProgress
-            """.trimIndent())
+            """.trimIndent()
+                )
 
                 val isDragging = when {
                     gridState.layoutInfo.visibleItemsInfo.isEmpty() -> false
