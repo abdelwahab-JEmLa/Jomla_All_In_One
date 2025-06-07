@@ -264,55 +264,6 @@ class AudioRecorderAndPlayHandler(
         }
     }
 
-    fun pausePlayback(): Result<Unit> {
-        return try {
-            val session = currentPlaybackSession
-                ?: return Result.failure(IllegalStateException("No playback session in progress"))
-
-            session.mediaPlayer.pause()
-
-            _playbackProgress.value = _playbackProgress.value.copy(isPlaying = false)
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    fun resumePlayback(): Result<Unit> {
-        return try {
-            val session = currentPlaybackSession
-                ?: return Result.failure(IllegalStateException("No playback session in progress"))
-
-            session.mediaPlayer.start()
-
-            _playbackProgress.value = _playbackProgress.value.copy(isPlaying = true)
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    fun seekTo(position: Int): Result<Unit> {
-        return try {
-            val session = currentPlaybackSession
-                ?: return Result.failure(IllegalStateException("No playback session in progress"))
-
-            session.mediaPlayer.seekTo(position)
-
-            val progress = if (session.duration > 0) position.toFloat() / session.duration.toFloat() else 0f
-
-            _playbackProgress.value = _playbackProgress.value.copy(
-                currentPosition = position,
-                progress = progress
-            )
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 
     fun updatePlaybackProgress() {
         currentPlaybackSession?.let { session ->
@@ -361,10 +312,7 @@ class AudioRecorderAndPlayHandler(
     }
 
     // State query functions
-    fun getCurrentRecordingSession(): RecordingSession? = currentRecordingSession
     fun getCurrentPlaybackSession(): PlaybackSession? = currentPlaybackSession
-    fun getCurrentTransaction(): C3_BonAchate? = currentRecordingSession?.currentTransaction
-    fun isRecording(): Boolean = currentRecordingSession != null
     fun isPlaying(): Boolean = currentPlaybackSession?.mediaPlayer?.isPlaying == true
 
     // Cleanup functions

@@ -52,7 +52,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun B_Item_TransactionItem(
+fun B_Item_TransactionItem(  //<--
+//TODO(1): regle ca pour quil utilise 
     transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
