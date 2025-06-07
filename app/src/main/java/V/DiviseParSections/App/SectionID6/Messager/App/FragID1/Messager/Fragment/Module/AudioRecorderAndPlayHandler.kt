@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module
 
 import android.annotation.SuppressLint
 import android.content.Context
