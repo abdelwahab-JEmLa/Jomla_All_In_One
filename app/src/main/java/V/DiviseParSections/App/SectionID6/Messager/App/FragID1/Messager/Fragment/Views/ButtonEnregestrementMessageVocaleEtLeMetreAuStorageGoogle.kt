@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.D_EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
@@ -17,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,10 +53,9 @@ private fun formatTime(seconds: Int): String {
 // Helper function to start recording
 private fun startRecording(
     context: Context,
-    viewModel: ViewModelMessageur,
-    uiState: UiState
+    parentMessageVID: Long
 ): Pair<MediaRecorder, File> {
-    val outputFile = File(context.filesDir, "voice_${System.currentTimeMillis()}.3gp")
+    val outputFile = File(context.filesDir, "voice_${parentMessageVID}.3gp")
 
     val mediaRecorder = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -75,34 +75,11 @@ private fun startRecording(
 }
 
 // Helper function to stop recording
-private fun stopRecording(
-    uiState: UiState,
-    mediaRecorder: MediaRecorder?,
-    context: Context,
-    outputFile: File?,
-    viewModel: ViewModelMessageur
-) {
+private fun stopRecording(mediaRecorder: MediaRecorder?): Unit {
     try {
         mediaRecorder?.apply {
             stop()
             release()
-        }
-
-        // Verify that the file was created and has content
-        outputFile?.let { file ->
-            if (file.exists() && file.length() > 0) {
-                Toast.makeText(
-                    context,
-                    "Enregistrement sauvegardé: ${file.name}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    context,
-                    "Erreur: fichier d'enregistrement vide ou inexistant",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
         }
     } catch (e: Exception) {
         throw Exception("Failed to stop recording: ${e.message}")
@@ -118,9 +95,11 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val datesHandler = remember { DatesHandler() }
+    val firebaseAudioHelper = remember { FirebaseAudioStorageHelper() }
 
     // States
     var isRecording by remember { mutableStateOf(false) }
+    var isUploading by remember { mutableStateOf(false) }
     var recordingTimeSeconds by remember { mutableStateOf(0) }
     var mediaRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
     var outputFile by remember { mutableStateOf<File?>(null) }
@@ -181,6 +160,20 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
             )
         }
 
+        // Upload progress indicator
+        if (isUploading) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Téléchargement vers Firebase...",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
+            )
+        }
+
         // Record/Stop button
         FilledTonalButton(
             onClick = {
@@ -193,34 +186,71 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                     if (isRecording) {
                         // Stop recording
                         try {
-                            stopRecording(
-                                uiState,
-                                mediaRecorder,
-                                context,
-                                outputFile,
-                                viewModel,
-                            )
-
-                            // Update the recording state to ENVOYER using viewModel's addOrUpdateData
-                            currentRecordingEtate?.let { etate ->
-                                val updatedEtate = etate.copy(
-                                    nom = D_EtateMessageVocale.Nom.ENVOYER,
-                                    timestamps = datesHandler.getCurrentTimestamps()
-                                )
-                                // FIXED: Use viewModel's addOrUpdateData method instead of direct database access
-                                viewModel.addOrUpdateData(updatedEtate)
-                            }
+                            stopRecording(mediaRecorder)
 
                             isRecording = false
                             mediaRecorder = null
-                            currentRecordingEtate = null
                             recordingTimeSeconds = 0
+
+                            // Verify that the file was created and has content
+                            outputFile?.let { file ->
+                                if (file.exists() && file.length() > 0) {
+                                    Toast.makeText(
+                                        context,
+                                        "Enregistrement sauvegardé localement",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    // FIXED: Upload to Firebase Storage
+                                    currentRecordingEtate?.let { etate ->
+                                        isUploading = true
+
+                                        val uploadResult = firebaseAudioHelper.uploadAudioFile(
+                                            file,
+                                            etate.parentMessageVID
+                                        )
+
+                                        isUploading = false
+
+                                        if (uploadResult.isSuccess) {
+                                            // Update the recording state to ENVOYER after successful upload
+                                            val updatedEtate = etate.copy(
+                                                nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                                timestamps = datesHandler.getCurrentTimestamps()
+                                            )
+                                            viewModel.addOrUpdateData(updatedEtate)
+
+                                            Toast.makeText(
+                                                context,
+                                                "Message vocal envoyé avec succès!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur: fichier d'enregistrement vide ou inexistant",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                            currentRecordingEtate = null
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,
                                 "Erreur lors de l'arrêt de l'enregistrement: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            isRecording = false
+                            currentRecordingEtate = null
                         }
                     } else {
                         // Start recording
@@ -232,15 +262,13 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                                 timestamps = datesHandler.getCurrentTimestamps()
                             )
 
-                            // FIXED: Use viewModel's addOrUpdateData method instead of direct database access
                             viewModel.addOrUpdateData(newEtate)
                             currentRecordingEtate = newEtate
 
                             // Start recording
                             val (recorder, file) = startRecording(
                                 context,
-                                viewModel,
-                                uiState
+                                newEtate.parentMessageVID
                             )
 
                             mediaRecorder = recorder
@@ -265,15 +293,28 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(0.9f)
+            modifier = Modifier.fillMaxWidth(0.9f),
+            enabled = !isUploading // Disable button while uploading
         ) {
             Icon(
-                imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
-                contentDescription = if (isRecording) "Arrêter l'enregistrement" else "Commencer l'enregistrement"
+                imageVector = when {
+                    isUploading -> Icons.Default.CloudUpload
+                    isRecording -> Icons.Default.Stop
+                    else -> Icons.Default.Mic
+                },
+                contentDescription = when {
+                    isUploading -> "Téléchargement en cours"
+                    isRecording -> "Arrêter l'enregistrement"
+                    else -> "Commencer l'enregistrement"
+                }
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = if (isRecording) "Arrêter l'enregistrement" else "Message vocal",
+                text = when {
+                    isUploading -> "Envoi..."
+                    isRecording -> "Arrêter l'enregistrement"
+                    else -> "Message vocal"
+                },
                 modifier = Modifier.padding(8.dp)
             )
         }

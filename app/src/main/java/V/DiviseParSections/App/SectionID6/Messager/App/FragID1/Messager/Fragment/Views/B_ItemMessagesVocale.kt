@@ -55,9 +55,11 @@ fun B_ItemMessagesVocale(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var isPlaying by remember { mutableStateOf(false) }
+    var isDownloading by remember { mutableStateOf(false) }
     var playbackProgress by remember { mutableFloatStateOf(0f) }
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     val datesHandler = remember { DatesHandler() }
+    val firebaseAudioHelper = remember { FirebaseAudioStorageHelper() }
 
     // Check message states
     val isListened = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ECOUTE }
@@ -157,16 +159,41 @@ fun B_ItemMessagesVocale(
                                 isPlaying = false
                                 playbackProgress = 0f
                             } else {
-                                // Start playing
+                                // Start playing - with download if file doesn't exist
                                 coroutineScope.launch {
                                     try {
-                                        // Create a simple audio file key based on parentMessageVID
-                                        val audioFileKey = "voice_${parentD_EtateMessageVocale.parentMessageVID}"
-
                                         // Create audio file path
+                                        val audioFileKey = "voice_${parentD_EtateMessageVocale.parentMessageVID}"
                                         val audioFile = File(context.filesDir, "$audioFileKey.3gp")
 
-                                        if (audioFile.exists()) {
+                                        // Check if file exists locally, if not download from Firebase
+                                        if (!audioFile.exists()) {
+                                            isDownloading = true
+                                            Toast.makeText(
+                                                context,
+                                                "Téléchargement du message vocal...",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                            val downloadResult = firebaseAudioHelper.downloadAudioFile(
+                                                context,
+                                                parentD_EtateMessageVocale.parentMessageVID
+                                            )
+
+                                            isDownloading = false
+
+                                            if (downloadResult.isFailure) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Erreur lors du téléchargement: ${downloadResult.exceptionOrNull()?.message}",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                return@launch
+                                            }
+                                        }
+
+                                        // Now play the audio file
+                                        if (audioFile.exists() && audioFile.length() > 0) {
                                             mediaPlayer = MediaPlayer().apply {
                                                 setDataSource(audioFile.absolutePath)
                                                 prepare()
@@ -188,7 +215,7 @@ fun B_ItemMessagesVocale(
                                                                     nom = D_EtateMessageVocale.Nom.ECOUTE,
                                                                     timestamps = datesHandler.getCurrentTimestamps()
                                                                 )
-                                                                // FIXED: Use viewModel's addOrUpdateData method
+                                                                // Add the ECOUTE state to Firebase and local database
                                                                 viewModel.addOrUpdateData(newEtate)
                                                             } catch (e: Exception) {
                                                                 e.printStackTrace()
@@ -227,11 +254,12 @@ fun B_ItemMessagesVocale(
                                         } else {
                                             Toast.makeText(
                                                 context,
-                                                "Fichier audio non trouvé",
+                                                "Fichier audio non trouvé ou vide",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
                                     } catch (e: Exception) {
+                                        isDownloading = false
                                         Toast.makeText(
                                             context,
                                             "Erreur lors du démarrage de la lecture: ${e.message}",
@@ -240,7 +268,8 @@ fun B_ItemMessagesVocale(
                                     }
                                 }
                             }
-                        }
+                        },
+                        enabled = !isDownloading // Disable button while downloading
                     ) {
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
@@ -249,24 +278,30 @@ fun B_ItemMessagesVocale(
                         )
                     }
 
-                    // Progress Bar
+                    // Progress Bar (shows download progress or playback progress)
                     LinearProgressIndicator(
-                        progress = { playbackProgress },
+                        progress = { if (isDownloading) 0f else playbackProgress },
                         modifier = Modifier
                             .weight(1f)
                             .height(4.dp)
                             .padding(horizontal = 8.dp)
                             .clip(RoundedCornerShape(2.dp)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        color = if (isDownloading) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                        trackColor = (if (isDownloading) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary).copy(alpha = 0.3f)
                     )
 
-                    // Status icon
+                    // Status icon and download indicator
                     Column(
                         modifier = Modifier.padding(start = 4.dp),
                         horizontalAlignment = Alignment.End
                     ) {
-                        if (isListened) {
+                        if (isDownloading) {
+                            Text(
+                                text = "Téléchargement...",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        } else if (isListened) {
                             // Show check mark if message has been listened to
                             Icon(
                                 imageVector = Icons.Default.Check,
