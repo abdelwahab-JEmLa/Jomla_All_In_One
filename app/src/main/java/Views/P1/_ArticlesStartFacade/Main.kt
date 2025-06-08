@@ -49,7 +49,7 @@ fun FragmentStartupScreen(
     viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit, // Removed @Composable annotation
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisibleInit: Boolean,
     onClickDonne: () -> Unit,
@@ -73,12 +73,10 @@ fun FragmentStartupScreen(
 
     LaunchedEffect(Unit) {
         if (viewModelInitApp.savedGridScrollPosition > 0) {
-            // Restore previous scroll position
             gridState.scrollToItem(viewModelInitApp.savedGridScrollPosition)
         }
     }
 
-    // Add the DisposableEffect to save scroll position when leaving the screen
     DisposableEffect(Unit) {
         onDispose {
             viewModelInitApp.savedGridScrollPosition = gridState.firstVisibleItemIndex
@@ -95,7 +93,7 @@ fun FragmentStartupScreen(
         onToggleNavBar = onToggleNavBar,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
-        onClickToOpenWindos = onClickToOpenWindos,  // Now compatible with non-Composable function
+        onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible = isFabVisible,
         onClickDonne = {
@@ -145,17 +143,14 @@ fun MainUi(
     var savedScrollPosition by rememberSaveable() { mutableStateOf(0) }
     var hostSavePosition by rememberSaveable() { mutableStateOf(0) }
 
-    // Get the current scroll position from ProductDisplayController
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
-    // Handle initial scroll position and screen returns
     LaunchedEffect(currentScrollPosition) {
 
         if (currentScrollPosition > 0) {
             scope.launch {
                 try {
-                    // Animate scroll with custom duration and delay
-                    delay(100) // Small initial delay for smoother transition
+                    delay(100)
                     gridState.animateScrollToItem(
                         index = currentScrollPosition,
                         scrollOffset = 0
