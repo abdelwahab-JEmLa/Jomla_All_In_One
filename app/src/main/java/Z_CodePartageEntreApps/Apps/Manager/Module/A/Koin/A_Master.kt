@@ -11,7 +11,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioRecorderAndPlayHandler
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler.AudioRecorderAndPlayHandler
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.FirebaseAudioStorageHelper
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase

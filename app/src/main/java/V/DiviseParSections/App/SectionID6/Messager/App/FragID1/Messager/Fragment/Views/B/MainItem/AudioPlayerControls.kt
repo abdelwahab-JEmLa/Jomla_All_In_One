@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioHandlerInterface
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioRecorderAndPlayHandler
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler.AudioHandlerInterface
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler.AudioRecorderAndPlayHandler
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun AudioPlayerControls(
     parentD_EtateMessageVocale: D_EtateMessageVocale,
-    etatesChildKeyIDsList: List<D_EtateMessageVocale>,
     viewModel: ViewModelMessageur,
     audioHandler: AudioRecorderAndPlayHandler,
     isCurrentlyPlaying: Boolean,

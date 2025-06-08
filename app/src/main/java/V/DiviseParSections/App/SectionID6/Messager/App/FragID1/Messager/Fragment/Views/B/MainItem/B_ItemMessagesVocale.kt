@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,7 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-
+  //<--
+  //TODO(1): enlve les commentaires
 @Composable
 fun B_ItemMessagesVocale(
     parentD_EtateMessageVocale: D_EtateMessageVocale,
@@ -174,7 +174,6 @@ fun B_ItemMessagesVocale(
                 isSent -> {
                     AudioPlayerControls(
                         parentD_EtateMessageVocale = parentD_EtateMessageVocale,
-                        etatesChildKeyIDsList = etatesChildKeyIDsList,
                         viewModel = viewModel,
                         audioHandler = audioHandler,
                         isCurrentlyPlaying = isCurrentlyPlaying,
@@ -186,10 +185,6 @@ fun B_ItemMessagesVocale(
                         context = context,
                         coroutineScope = coroutineScope
                     )
-                }
-
-                else -> {
-                    UnknownStateIndicator()
                 }
             }
         }
@@ -306,36 +301,6 @@ private fun RecordingIndicator() {
                 text = "Enregistrement en cours...",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-    }
-}
-
-@Composable
-private fun UnknownStateIndicator() {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = "État inconnu",
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "État du message inconnu",
-                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer
             )
         }

@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID.Test
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.AudioRecorderAndPlayHandler
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler.AudioRecorderAndPlayHandler
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateDatas
