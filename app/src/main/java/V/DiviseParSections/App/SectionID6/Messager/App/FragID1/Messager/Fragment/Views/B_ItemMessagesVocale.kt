@@ -47,7 +47,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+       //<--
+       //TODO(1): enleve commentaireqs
 @Composable
 fun B_ItemMessagesVocale(
     parentD_EtateMessageVocale: D_EtateMessageVocale,
@@ -265,7 +266,8 @@ fun B_ItemMessagesVocale(
                     }
                 }
 
-                isSent -> {
+                isSent -> {       //<--
+                //TODO(1): extract cadon une fun separe
                     // Enhanced audio player controls
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
@@ -311,10 +313,17 @@ fun B_ItemMessagesVocale(
                                                                 if (!isListened) {
                                                                     coroutineScope.launch {
                                                                         try {
+                                                                            // FIXED: Copy parent account information from the original message
                                                                             val newEtate = D_EtateMessageVocale(
                                                                                 parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
                                                                                 nom = D_EtateMessageVocale.Nom.ECOUTE,
-                                                                                timestamps = datesHandler.getCurrentTimestamps()
+                                                                                timestamps = datesHandler.getCurrentTimestamps(),
+                                                                                // Copy all parent account information
+                                                                                idParent_1_5_Vendeur = parentD_EtateMessageVocale.idParent_1_5_Vendeur,
+                                                                                nomParent_1_5_Vendeur = parentD_EtateMessageVocale.nomParent_1_5_Vendeur,
+                                                                                // Copy related data info
+                                                                                relativeAuDataBase = parentD_EtateMessageVocale.relativeAuDataBase,
+                                                                                parentC3_BonAchateVID = parentD_EtateMessageVocale.parentC3_BonAchateVID
                                                                             )
                                                                             viewModel.addOrUpdateData(newEtate)
                                                                         } catch (e: Exception) {
