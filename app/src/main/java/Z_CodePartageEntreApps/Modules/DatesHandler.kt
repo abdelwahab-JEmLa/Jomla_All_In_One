@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.Modules
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
 import android.annotation.SuppressLint
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -39,8 +41,7 @@ class DatesHandler {
         }
     }
 
-    fun getDateAndTimString(timestamp: Long =getCurrentTimestamps()): DateAndTimString {
-
+    fun getDateAndTimString(timestamp: Long = getCurrentTimestamps()): DateAndTimString {
         try {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = timestamp
@@ -55,6 +56,33 @@ class DatesHandler {
             return DateAndTimString(date, time)
         } catch (e: Exception) {
             return DateAndTimString()
+        }
+    }
+
+    fun getDateAndTimStringAvecSeconds(timestamp: Long = getCurrentTimestamps()): DateAndTimString {
+        try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()) // Added seconds format
+
+            val date = dateFormat.format(calendar.time)
+            val timeString = timeFormat.format(calendar.time)
+            val time = timeString.formatTimeToArabicWithSeconds() // Use new extension function with seconds
+
+            return DateAndTimString(date, time)
+        } catch (e: Exception) {
+            return DateAndTimString()
+        }
+    }
+
+    fun debugTimestamps(transactions: List<C3_BonAchate>, tag: String) {
+        Log.d(tag, "=== DEBUG TIMESTAMPS ===")
+        transactions.forEachIndexed { index, transaction ->
+            val date = java.util.Date(transaction.timestamps)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            Log.d(tag, "Transaction $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}, Date=${dateFormat.format(date)}")
         }
     }
 
@@ -85,6 +113,7 @@ class DatesHandler {
             return "غير معروف"
         }
     }
+
     fun getAbrgDistanceSemain(timestamp: Long?): String {
         if (timestamp == null) return ""
 
@@ -133,8 +162,34 @@ class DatesHandler {
             return ""
         }
     }
+    fun getDistanceSemainParDateStr(dateString: String): String {
+        return try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = dateFormat.parse(dateString)
 
-    fun getDistanceSemainParDateStr(dataStr: String): String {
+            if (date != null) {
+                val calendar = Calendar.getInstance()
+                val today = calendar.time
+                val diffInMillies = today.time - date.time
+                val diffInDays = diffInMillies / (24 * 60 * 60 * 1000)
+
+                when {
+                    diffInDays <= 7 -> "هذا الأسبوع"
+                    diffInDays <= 14 -> "الأسبوع الماضي"
+                    diffInDays <= 21 -> "قبل أسبوعين"
+                    diffInDays <= 28 -> "قبل 3 أسابيع"
+                    diffInDays <= 35 -> "قبل 4 أسابيع"
+                    else -> "قبل أكثر من شهر"
+                }
+            } else {
+                "تاريخ غير صحيح"
+            }
+        } catch (e: Exception) {
+            "خطأ في التاريخ"
+        }
+    }
+
+    fun getDistanceSemainParDateStrs(dataStr: String): String {
         try {
             // Parse the input date string (expected format: "yyyy-MM-dd")
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -211,7 +266,7 @@ class DatesHandler {
     }
 }
 
-// Extension function for String to format time to Arabic
+// Extension function for String to format time to Arabic (without seconds)
 @SuppressLint("DefaultLocale")
 fun String.formatTimeToArabic(): String {
     try {
@@ -236,6 +291,37 @@ fun String.formatTimeToArabic(): String {
 
         // Format to hour:minute AM/PM in Arabic
         return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
+    } catch (e: Exception) {
+        return this
+    }
+}
+
+// New extension function for String to format time to Arabic WITH seconds
+@SuppressLint("DefaultLocale")
+fun String.formatTimeToArabicWithSeconds(): String {
+    try {
+        val timeParts = this.split(":")
+        if (timeParts.size < 3) {
+            return this.formatTimeToArabic() // Fallback to without seconds if format is wrong
+        }
+
+        val hour = timeParts[0].toIntOrNull() ?: return this
+        val minute = timeParts[1].toIntOrNull() ?: return this
+        val second = timeParts[2].toIntOrNull() ?: return this
+
+        // Check if it's AM or PM
+        val isPM = hour >= 12
+        val amPmIndicator = if (isPM) "م" else "ص"
+
+        // Convert to 12-hour format
+        val hour12 = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+
+        // Format to hour:minute:second AM/PM in Arabic
+        return String.format("%d:%02d:%02d %s", hour12, minute, second, amPmIndicator)
     } catch (e: Exception) {
         return this
     }

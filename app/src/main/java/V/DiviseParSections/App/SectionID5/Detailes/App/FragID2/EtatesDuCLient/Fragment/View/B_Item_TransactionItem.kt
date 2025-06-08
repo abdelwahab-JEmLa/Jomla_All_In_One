@@ -57,6 +57,14 @@ fun B_Item_TransactionItem(
     transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
+    Log.d("TransactionItem", "=== DÉBUT CRÉATION TRANSACTION ITEM ===")
+    Log.d("TransactionItem", "Transaction VID: ${transaction.vid}")
+    Log.d("TransactionItem", "Client ID: ${transaction.clientAcheteurID}")
+    Log.d("TransactionItem", "État: ${transaction.etateActuellementEst}")
+    Log.d("TransactionItem", "Timestamp: ${transaction.timestamps}")
+    Log.d("TransactionItem", "Vocal Key ID: ${transaction.vocaleKeyID}")
+    Log.d("TransactionItem", "Ouvert: ${transaction.ouvert}")
+
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
     val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
@@ -230,7 +238,7 @@ fun B_Item_TransactionItem(
                     }
 
                     Text(
-                        text = " الوقت: ${datesHandler.getDateAndTimString(transaction.timestamps).time}",
+                        text = " الوقت: ${datesHandler.getDateAndTimStringAvecSeconds(transaction.timestamps).time}",
                         style = MaterialTheme.typography.bodyMedium
                     )
 

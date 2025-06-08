@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -102,8 +103,13 @@ fun MainFilter(
     uiState: UiState,
     viewModel: ViewModelMessageur
 ) {
-    MainList(uiState = uiState, viewModel = viewModel)      //<--
-    //TODO(1): sort les itemes par id 
+    val sortedUiState = remember(uiState.d_EtateMessageVocaleList) {
+        uiState.copy(
+            d_EtateMessageVocaleList = uiState.d_EtateMessageVocaleList.sortedBy { it.id }
+        )
+    }
+
+    MainList(uiState = sortedUiState, viewModel = viewModel)
 }
 
 @Composable
@@ -111,8 +117,9 @@ fun MainList(
     modifier: Modifier = Modifier,
     uiState: UiState,
     viewModel: ViewModelMessageur
-) {  //<--
-//TODO(1): fait start soit au derineie item des la list 
+) {
+    val listState = rememberLazyListState()
+
     val groupedD_EtateMessageVocaleParParentMessage by remember(uiState.d_EtateMessageVocaleList) {
         derivedStateOf {
             uiState.d_EtateMessageVocaleList.groupBy { it.parentMessageVID }
@@ -135,7 +142,15 @@ fun MainList(
         }
     }
 
+    // Scroll to the last item when the list changes
+    LaunchedEffect(latestStatesForEachMessage.size) {
+        if (latestStatesForEachMessage.isNotEmpty()) {
+            listState.animateScrollToItem(latestStatesForEachMessage.size - 1)
+        }
+    }
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 80.dp) // Add padding for the FAB
@@ -143,7 +158,7 @@ fun MainList(
         items(latestStatesForEachMessage) { (latestEtate, allEtatesForMessage) ->
             // Show the item based on the latest state, but pass all states for status checking
             B_ItemMessagesVocale(
-                uiState=uiState,
+                uiState = uiState,
                 parentD_EtateMessageVocale = latestEtate,
                 etatesChildKeyIDsList = allEtatesForMessage,
                 viewModel = viewModel

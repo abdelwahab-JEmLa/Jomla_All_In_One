@@ -36,7 +36,6 @@ data class D_EtateMessageVocale(
     enum class RelativeAuDataBase() {
         NONE,
         C3_BonAchate,
-
     }
 
     enum class Nom(val nomArabe: String? = null) {

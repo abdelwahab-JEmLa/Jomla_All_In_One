@@ -73,14 +73,16 @@ fun MessageHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(
-                    text = clientName,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if(parentD_EtateMessageVocale.relativeAuDataBase== D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate) {
+                    Text(
+                        text = clientName,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Text(
                     text = "Vendeur: $vendorName",

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun C_2_Header_PeriodHeaderItem(dayName: String, startTime: String, endTime: String) {
+    Log.d("PeriodHeader", "Création de l'en-tête de période - Jour: '$dayName', Début: '$startTime', Fin: '$endTime'")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

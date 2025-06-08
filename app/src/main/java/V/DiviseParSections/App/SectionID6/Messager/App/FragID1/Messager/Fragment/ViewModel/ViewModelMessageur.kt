@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
     val c3_BonAchate: List<C3_BonAchate> = emptyList(),
+    val idActiveAppCompt:Long=0,
     val mainLoadingProgress: Float = 0f
 )
 
@@ -52,16 +53,5 @@ class ViewModelMessageur(
 
 
     fun addOrUpdateData(data: D_EtateMessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data) }
-
-    fun deleteData(data: D_EtateMessageVocale): Unit {
-        // Get all messages with the same parentMessageVID
-        val messagesToDelete = uiState.value.d_EtateMessageVocaleList.filter {
-            it.parentMessageVID == data.parentMessageVID
-        }
-
-        // Delete each message individually
-        messagesToDelete.forEach { message ->
-            masterRepositorys.d_EtateMessageVocaleRepository.deleteData(message)
-        }
-    }
+    fun deleteData(data: D_EtateMessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.deleteData(data) }
 }
