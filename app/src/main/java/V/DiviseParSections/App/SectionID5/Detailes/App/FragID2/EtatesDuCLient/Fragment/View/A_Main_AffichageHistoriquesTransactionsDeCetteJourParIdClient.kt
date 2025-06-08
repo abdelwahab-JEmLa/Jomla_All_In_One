@@ -26,5 +26,3 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
    
 }
 
-// Ajoutez ces logs dans votre fichier A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient.kt
-

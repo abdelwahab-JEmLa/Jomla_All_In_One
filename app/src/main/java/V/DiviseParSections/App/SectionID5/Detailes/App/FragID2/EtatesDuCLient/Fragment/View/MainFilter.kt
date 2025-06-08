@@ -25,14 +25,10 @@ fun MainFilter(
 
         val result = uiState.transactionsDateToList_C_3_BonAchate
             .map { (period, transactions) ->
-                val filteredTransactions = transactions
-                    .filter { transaction ->
-                        transaction.clientAcheteurID == idClient
-                    }
-                    // ✅ DOUBLE VÉRIFICATION: Re-tri par timestamp décroissant
-                    .sortedByDescending { transaction ->
-                        transaction.timestamps
-                    }
+                val filteredTransactions = transactions.filter { transaction ->
+                    transaction.clientAcheteurID == idClient
+                }
+                // ✅ IMPORTANT: NE PAS re-trier ici, garder l'ordre du ViewModel
 
                 Log.d("TransactionFilter", "Période ${period.startDateInString}: ${filteredTransactions.size} transactions filtrées")
                 filteredTransactions.forEachIndexed { index, transaction ->
@@ -42,7 +38,7 @@ fun MainFilter(
                 Pair(period, filteredTransactions)
             }
             .filter { (_, transactions) -> transactions.isNotEmpty() }
-            // ✅ CORRECTION: Tri des périodes par date décroissante
+            // Garder le tri des périodes par date décroissante
             .sortedByDescending { (period, _) ->
                 try {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun C_2_Header_PeriodHeaderItem(dayName: String, startTime: String, endTime: String) {
-    Log.d("PeriodHeader", "Création de l'en-tête de période - Jour: '$dayName', Début: '$startTime', Fin: '$endTime'")
 
     Column(
         modifier = Modifier

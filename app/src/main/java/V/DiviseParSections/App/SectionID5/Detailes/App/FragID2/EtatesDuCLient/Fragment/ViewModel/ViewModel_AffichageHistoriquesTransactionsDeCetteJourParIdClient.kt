@@ -176,10 +176,24 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 val periods = _uiState.value.sl_1_4_PeriodeVent.toList()
                 val transactions = _uiState.value.sl_C_3_BonAchate.toList()
 
-                // ✅ CORRECTION: Tri des périodes par timestamp décroissant (plus récent en premier)
+                Log.d(TAG, "=== DÉBUT TRI TRANSACTIONS ===")
+                Log.d(TAG, "Nombre total de transactions: ${transactions.size}")
+
+                // ✅ CORRECTION PRINCIPALE: Tri global des transactions par timestamp AVANT groupement
+                val sortedTransactions = transactions.sortedByDescending { transaction ->
+                    transaction.timestamps.also { timestamp ->
+                        Log.d(TAG, "Transaction VID=${transaction.vid}, Timestamp=$timestamp")
+                    }
+                }
+
+                Log.d(TAG, "=== APRÈS TRI GLOBAL ===")
+                sortedTransactions.forEachIndexed { index, transaction ->
+                    Log.d(TAG, "Position globale $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}")
+                }
+
+                // Tri des périodes par timestamp décroissant
                 val sortedPeriods = periods.sortedByDescending { period ->
                     try {
-                        // Convertir la date string en timestamp pour un tri précis
                         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                             .parse(period.startDateInString)?.time ?: 0L
                     } catch (e: Exception) {
@@ -188,16 +202,11 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     }
                 }
 
-                // Group transactions by period, maintaining the sorted order
+                // Group transactions by period, en gardant l'ordre de tri global
                 val groupedTransactions = sortedPeriods.map { period ->
-                    val periodTransactions = transactions
-                        .filter { transaction ->
-                            transaction.parentVID_1_4_PeriodeVent == period.vid
-                        }
-                        // ✅ CORRECTION CRITIQUE: Tri par timestamp décroissant (plus récent en premier)
-                        .sortedByDescending { transaction ->
-                            transaction.timestamps // Utiliser directement le timestamp Long
-                        }
+                    val periodTransactions = sortedTransactions.filter { transaction ->
+                        transaction.parentVID_1_4_PeriodeVent == period.vid
+                    }
 
                     Log.d(TAG, "Période ${period.startDateInString}: ${periodTransactions.size} transactions")
                     periodTransactions.forEachIndexed { index, transaction ->

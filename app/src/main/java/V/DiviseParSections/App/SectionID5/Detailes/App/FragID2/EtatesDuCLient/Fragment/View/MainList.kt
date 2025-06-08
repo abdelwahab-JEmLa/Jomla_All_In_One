@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 // 🔧 CORRECTION 3: Dans MainList.kt - Vérification finale du tri
+// 🔧 CORRECTION 3: Dans MainList.kt - Simplification du tri des semaines
 @Composable
 fun MainList(
     filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>>,
@@ -31,7 +32,7 @@ fun MainList(
     Log.d("MainList", "=== AFFICHAGE FINAL ===")
     Log.d("MainList", "Nombre de périodes à afficher: ${filteredGroupedTransactions.size}")
 
-    // ✅ VÉRIFICATION: Log des transactions dans l'ordre d'affichage
+    // Vérification finale de l'ordre
     filteredGroupedTransactions.forEachIndexed { periodIndex, (period, transactions) ->
         Log.d("MainList", "Période $periodIndex: ${period.startDateInString}")
         transactions.forEachIndexed { transIndex, transaction ->
@@ -39,7 +40,7 @@ fun MainList(
         }
     }
 
-    // Groupement par semaine avec tri amélioré
+    // Groupement par semaine SANS re-tri
     val groupedByWeek = remember(filteredGroupedTransactions) {
         filteredGroupedTransactions.groupBy { (period, _) ->
             try {
@@ -56,12 +57,11 @@ fun MainList(
         }
     }
 
-    // ✅ AMÉLIORATION: Tri des semaines par date la plus récente
+    // Tri des semaines par date la plus récente
     val sortedWeeks = remember(groupedByWeek) {
         groupedByWeek.toList().sortedByDescending { (_, periodsInWeek) ->
             try {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                // Prendre la période la plus récente de chaque semaine
                 periodsInWeek.maxOfOrNull { (period, _) ->
                     dateFormat.parse(period.startDateInString)?.time ?: 0L
                 } ?: 0L
@@ -86,7 +86,7 @@ fun MainList(
                 // En-tête de semaine
                 C_1_Header_WeekHeaderItem(weekString)
 
-                // ✅ FINAL: Tri des périodes dans chaque semaine
+                // ✅ CORRECTION: Tri des périodes dans chaque semaine par date décroissante
                 val sortedPeriodsInWeek = periodsInWeek.sortedByDescending { (period, _) ->
                     try {
                         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -110,7 +110,7 @@ fun MainList(
                         endTime = endTime
                     )
 
-                    // ✅ AFFICHAGE DES TRANSACTIONS (déjà triées par timestamp décroissant)
+                    // ✅ AFFICHAGE DES TRANSACTIONS dans l'ordre reçu du ViewModel
                     transactions.forEach { transaction ->
                         B_Item_TransactionItem(
                             viewModel = viewModel,

@@ -57,13 +57,6 @@ fun B_Item_TransactionItem(
     transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
-    Log.d("TransactionItem", "=== DÉBUT CRÉATION TRANSACTION ITEM ===")
-    Log.d("TransactionItem", "Transaction VID: ${transaction.vid}")
-    Log.d("TransactionItem", "Client ID: ${transaction.clientAcheteurID}")
-    Log.d("TransactionItem", "État: ${transaction.etateActuellementEst}")
-    Log.d("TransactionItem", "Timestamp: ${transaction.timestamps}")
-    Log.d("TransactionItem", "Vocal Key ID: ${transaction.vocaleKeyID}")
-    Log.d("TransactionItem", "Ouvert: ${transaction.ouvert}")
 
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
