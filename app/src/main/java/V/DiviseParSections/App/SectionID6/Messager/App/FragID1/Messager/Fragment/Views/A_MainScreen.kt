@@ -131,14 +131,14 @@ fun MainList(
         derivedStateOf {
             groupedD_EtateMessageVocaleParParentMessage.mapNotNull { (parentMessageVID, etatesList) ->
                 // Sort by timestamp to get the latest state
-                val sortedEtates = etatesList.sortedByDescending { it.timestamps }
+                val sortedEtates = etatesList.sortedBy { it.timestamps }
                 val latestEtate = sortedEtates.firstOrNull()
 
                 if (latestEtate != null) {
                     // Return a pair of the latest state and all states for this message
                     Pair(latestEtate, etatesList)
                 } else null
-            }.sortedByDescending { it.first.timestamps } // Sort messages by latest activity
+            }.sortedBy { it.first.timestamps } // Sort messages by latest activity
         }
     }
 

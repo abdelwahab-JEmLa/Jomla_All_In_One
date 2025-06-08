@@ -185,7 +185,7 @@ fun MessageHeader(
                     horizontalAlignment = Alignment.End
                 ) {
                     Text(
-                        text = datesHandler.getDateAndTimString(timestamp).time,
+                        text = datesHandler.getDateAndTimStringAvecSeconds(timestamp).time,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,

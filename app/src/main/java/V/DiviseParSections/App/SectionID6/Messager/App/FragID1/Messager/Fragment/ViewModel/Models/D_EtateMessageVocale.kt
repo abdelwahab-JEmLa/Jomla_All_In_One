@@ -21,7 +21,7 @@ data class D_EtateMessageVocale(
     var timestamps: Long = DatesHandler().getCurrentTimestamps(),
 
     //Etates Mutable
-    var relativeAuDataBase: RelativeAuDataBase = RelativeAuDataBase.C3_BonAchate,
+    var relativeAuDataBase: RelativeAuDataBase = RelativeAuDataBase.NONE,
     val parentC3_BonAchateVID: Long = 0,
     val idParent_1_5_Vendeur: Long = 0,
     val nomParent_1_5_Vendeur: String = "",
