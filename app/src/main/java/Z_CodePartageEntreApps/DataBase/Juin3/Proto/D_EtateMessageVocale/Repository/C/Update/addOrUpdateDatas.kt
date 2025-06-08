@@ -13,7 +13,7 @@ fun D_EtateMessageVocaleRepository.addOrUpdateDatas(datas: List<D_EtateMessageVo
         dao.upsertAllDatas(preparedDatas)
 
         preparedDatas.forEach { data ->
-            ref.child(data.keyFireBase).setValue(data)
+            repoRef.child(data.keyFireBase).setValue(data)
         }
 
         updateRepoState(preparedDatas)
