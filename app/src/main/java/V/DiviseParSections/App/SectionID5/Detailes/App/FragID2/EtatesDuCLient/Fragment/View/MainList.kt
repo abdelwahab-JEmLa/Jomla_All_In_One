@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.SecID5FragID2UiState
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,8 +18,6 @@ import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// 🔧 CORRECTION 3: Dans MainList.kt - Vérification finale du tri
-// 🔧 CORRECTION 3: Dans MainList.kt - Simplification du tri des semaines
 @Composable
 fun MainList(
     filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>>,
@@ -29,18 +26,6 @@ fun MainList(
     uiState: SecID5FragID2UiState,
     idClient: Long,
 ) {
-    Log.d("MainList", "=== AFFICHAGE FINAL ===")
-    Log.d("MainList", "Nombre de périodes à afficher: ${filteredGroupedTransactions.size}")
-
-    // Vérification finale de l'ordre
-    filteredGroupedTransactions.forEachIndexed { periodIndex, (period, transactions) ->
-        Log.d("MainList", "Période $periodIndex: ${period.startDateInString}")
-        transactions.forEachIndexed { transIndex, transaction ->
-            Log.d("MainList", "  Affichage $transIndex: VID=${transaction.vid}, Timestamp=${transaction.timestamps}")
-        }
-    }
-
-    // Groupement par semaine SANS re-tri
     val groupedByWeek = remember(filteredGroupedTransactions) {
         filteredGroupedTransactions.groupBy { (period, _) ->
             try {
@@ -51,13 +36,11 @@ fun MainList(
                     distanceWeek
                 }
             } catch (e: Exception) {
-                Log.e("MainList", "Erreur calcul semaine: ${e.message}")
                 "الأسبوع من ${period.startDateInString}"
             }
         }
     }
 
-    // Tri des semaines par date la plus récente
     val sortedWeeks = remember(groupedByWeek) {
         groupedByWeek.toList().sortedByDescending { (_, periodsInWeek) ->
             try {
@@ -66,7 +49,6 @@ fun MainList(
                     dateFormat.parse(period.startDateInString)?.time ?: 0L
                 } ?: 0L
             } catch (e: Exception) {
-                Log.e("MainList", "Erreur tri semaines: ${e.message}")
                 0L
             }
         }
@@ -78,15 +60,9 @@ fun MainList(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         if (filteredGroupedTransactions.isNotEmpty()) {
-            Log.d("MainList", "=== DÉBUT AFFICHAGE SEMAINES ===")
-
             sortedWeeks.forEach { (weekString, periodsInWeek) ->
-                Log.d("MainList", "=== SEMAINE: '$weekString' ===")
-
-                // En-tête de semaine
                 C_1_Header_WeekHeaderItem(weekString)
 
-                // ✅ CORRECTION: Tri des périodes dans chaque semaine par date décroissante
                 val sortedPeriodsInWeek = periodsInWeek.sortedByDescending { (period, _) ->
                     try {
                         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -97,20 +73,16 @@ fun MainList(
                 }
 
                 sortedPeriodsInWeek.forEach { (period, transactions) ->
-                    Log.d("MainList", "=== PÉRIODE: ${period.startDateInString} ===")
-
                     val dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString)
                     val startTime = period.heurDebutInString
                     val endTime = period.endDateInString.ifEmpty { "الآن" }
 
-                    // En-tête de période
                     C_2_Header_PeriodHeaderItem(
                         dayName = dayName,
                         startTime = startTime,
                         endTime = endTime
                     )
 
-                    // ✅ AFFICHAGE DES TRANSACTIONS dans l'ordre reçu du ViewModel
                     transactions.forEach { transaction ->
                         B_Item_TransactionItem(
                             viewModel = viewModel,

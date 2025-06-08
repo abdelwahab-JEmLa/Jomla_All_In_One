@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
-import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -23,15 +22,11 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-private const val TAG = "ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient"
-
 data class SecID5FragID2UiState(
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
     val sl_C_3_BonAchate: SnapshotStateList<C3_BonAchate> = SnapshotStateList(),
     val sl_3_ClientsDataBase: SnapshotStateList<_3_ClientsDataBase> = SnapshotStateList(),
-
-    val transactionsDateToList_C_3_BonAchate:
-    List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>> = emptyList(),
+    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>> = emptyList(),
 )
 
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
@@ -56,7 +51,6 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
     fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
         if (vocaleKeyID.isBlank()) {
-            Log.d(TAG, "No voice recording ID provided, skipping deletion")
             onComplete(true)
             return
         }
@@ -64,68 +58,52 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         val storageRef = FirebaseStorage.getInstance().reference
         val voiceRef = storageRef.child("1_messagesVocales/$vocaleKeyID")
 
-        // First check if the file exists
         voiceRef.metadata
-            .addOnSuccessListener { metadata ->
-                // File exists, proceed with deletion
+            .addOnSuccessListener {
                 voiceRef.delete()
                     .addOnSuccessListener {
-                        Log.d(TAG, "Voice recording $vocaleKeyID deleted successfully")
                         onComplete(true)
                     }
-                    .addOnFailureListener { exception ->
-                        Log.e(TAG, "Failed to delete existing voice recording: ${exception.message}")
+                    .addOnFailureListener {
                         onComplete(false)
                     }
             }
             .addOnFailureListener { exception ->
-                // File doesn't exist, which is fine - we wanted to delete it anyway
                 if (exception.message?.contains("Object does not exist", ignoreCase = true) == true) {
-                    Log.w(TAG, "Voice recording $vocaleKeyID doesn't exist, considering deletion successful")
                     onComplete(true)
                 } else {
-                    // Some other error occurred when checking existence
-                    Log.e(TAG, "Error checking voice recording existence: ${exception.message}")
                     onComplete(false)
                 }
             }
     }
+
     private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Ensure repositories are initialized
                 r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
                 r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.ensureDataIsInitialized()
                 r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.ensureDataIsInitialized()
 
-                // Add test data if the repositories are empty - check more reliably
                 if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
-                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.modelDatasSnapList.isEmpty()   ||
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.modelDatasSnapList.isEmpty() ||
                     r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList.isEmpty()
-
                 ) {
                     addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_SQL_Repository)
-                    // Wait briefly for data to be saved
                     delay(1000)
                 }
 
-                // Update UI with current snapshot data
                 withContext(Dispatchers.Main) {
                     _uiState.update { currentState ->
                         currentState.copy(
                             sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
-                            sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
-                                .c3_BonAchate_Repository.modelDatasSnapList,
-                            sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
-                                .repository_3_ClientsDataBase.modelDatasSnapList
+                            sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.modelDatasSnapList,
+                            sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList
                         )
                     }
                 }
 
-                // Process the grouped data once immediately
                 loadCollecttransactionsDateToList_1_3_TransactionCommercial()
 
-                // Now set up continuous monitoring in separate coroutines
                 launch {
                     r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
@@ -176,43 +154,23 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 val periods = _uiState.value.sl_1_4_PeriodeVent.toList()
                 val transactions = _uiState.value.sl_C_3_BonAchate.toList()
 
-                Log.d(TAG, "=== DÉBUT TRI TRANSACTIONS ===")
-                Log.d(TAG, "Nombre total de transactions: ${transactions.size}")
-
-                // ✅ CORRECTION PRINCIPALE: Tri global des transactions par timestamp AVANT groupement
                 val sortedTransactions = transactions.sortedByDescending { transaction ->
-                    transaction.timestamps.also { timestamp ->
-                        Log.d(TAG, "Transaction VID=${transaction.vid}, Timestamp=$timestamp")
-                    }
+                    transaction.timestamps
                 }
 
-                Log.d(TAG, "=== APRÈS TRI GLOBAL ===")
-                sortedTransactions.forEachIndexed { index, transaction ->
-                    Log.d(TAG, "Position globale $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}")
-                }
-
-                // Tri des périodes par timestamp décroissant
                 val sortedPeriods = periods.sortedByDescending { period ->
                     try {
                         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                             .parse(period.startDateInString)?.time ?: 0L
                     } catch (e: Exception) {
-                        Log.e(TAG, "Erreur parsing date ${period.startDateInString}: ${e.message}")
                         0L
                     }
                 }
 
-                // Group transactions by period, en gardant l'ordre de tri global
                 val groupedTransactions = sortedPeriods.map { period ->
                     val periodTransactions = sortedTransactions.filter { transaction ->
                         transaction.parentVID_1_4_PeriodeVent == period.vid
                     }
-
-                    Log.d(TAG, "Période ${period.startDateInString}: ${periodTransactions.size} transactions")
-                    periodTransactions.forEachIndexed { index, transaction ->
-                        Log.d(TAG, "  Transaction $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}")
-                    }
-
                     Pair(period, periodTransactions)
                 }
 
@@ -224,14 +182,12 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Erreur dans loadCollecttransactionsDateToList_1_3_TransactionCommercial", e)
                 e.printStackTrace()
             }
         }
     }
 
     fun notifyDataChanged() {
-        // Launch a coroutine to reload the data
         viewModelScope.launch {
             loadCollectSnapshotStateList()
         }
