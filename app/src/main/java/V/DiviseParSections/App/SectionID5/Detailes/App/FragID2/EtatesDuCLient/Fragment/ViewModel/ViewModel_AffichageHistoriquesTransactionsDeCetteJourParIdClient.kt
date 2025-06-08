@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 private const val TAG = "ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient"
@@ -177,29 +176,34 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 val periods = _uiState.value.sl_1_4_PeriodeVent.toList()
                 val transactions = _uiState.value.sl_C_3_BonAchate.toList()
 
-                // Sort periods by date in descending order (newest first)
+                // ✅ CORRECTION: Tri des périodes par timestamp décroissant (plus récent en premier)
                 val sortedPeriods = periods.sortedByDescending { period ->
                     try {
-                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(period.startDateInString)
+                        // Convertir la date string en timestamp pour un tri précis
+                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            .parse(period.startDateInString)?.time ?: 0L
                     } catch (e: Exception) {
-                        // Handle parsing errors by using a default old date
-                        Date(0)
+                        Log.e(TAG, "Erreur parsing date ${period.startDateInString}: ${e.message}")
+                        0L
                     }
                 }
 
                 // Group transactions by period, maintaining the sorted order
                 val groupedTransactions = sortedPeriods.map { period ->
-                    val periodTransactions = transactions.filter { transaction ->
-                        transaction.parentVID_1_4_PeriodeVent == period.vid
-                    }.sortedByDescending { transaction ->
-                        // For transactions in the same period, sort by transaction time if available
-                        try {
-                            SimpleDateFormat("HH:mm", Locale.getDefault()).parse(transaction.heurDebutInString)
-                        } catch (e: Exception) {
-                            // Handle parsing errors
-                            Date(0)
+                    val periodTransactions = transactions
+                        .filter { transaction ->
+                            transaction.parentVID_1_4_PeriodeVent == period.vid
                         }
+                        // ✅ CORRECTION CRITIQUE: Tri par timestamp décroissant (plus récent en premier)
+                        .sortedByDescending { transaction ->
+                            transaction.timestamps // Utiliser directement le timestamp Long
+                        }
+
+                    Log.d(TAG, "Période ${period.startDateInString}: ${periodTransactions.size} transactions")
+                    periodTransactions.forEachIndexed { index, transaction ->
+                        Log.d(TAG, "  Transaction $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}")
                     }
+
                     Pair(period, periodTransactions)
                 }
 
@@ -211,6 +215,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     }
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Erreur dans loadCollecttransactionsDateToList_1_3_TransactionCommercial", e)
                 e.printStackTrace()
             }
         }
