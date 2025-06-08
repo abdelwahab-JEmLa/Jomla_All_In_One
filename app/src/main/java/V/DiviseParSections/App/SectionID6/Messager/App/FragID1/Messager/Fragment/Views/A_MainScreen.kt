@@ -102,7 +102,8 @@ fun MainFilter(
     uiState: UiState,
     viewModel: ViewModelMessageur
 ) {
-    MainList(uiState = uiState, viewModel = viewModel)
+    MainList(uiState = uiState, viewModel = viewModel)      //<--
+    //TODO(1): sort les itemes par id 
 }
 
 @Composable
@@ -110,7 +111,8 @@ fun MainList(
     modifier: Modifier = Modifier,
     uiState: UiState,
     viewModel: ViewModelMessageur
-) {
+) {  //<--
+//TODO(1): fait start soit au derineie item des la list 
     val groupedD_EtateMessageVocaleParParentMessage by remember(uiState.d_EtateMessageVocaleList) {
         derivedStateOf {
             uiState.d_EtateMessageVocaleList.groupBy { it.parentMessageVID }
