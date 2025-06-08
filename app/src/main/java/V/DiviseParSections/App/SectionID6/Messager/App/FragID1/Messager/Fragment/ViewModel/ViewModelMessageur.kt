@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorys
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,11 +15,12 @@ import kotlinx.coroutines.launch
 data class UiState(
     val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
     val c3_BonAchate: List<C3_BonAchate> = emptyList(),
+    val idActiveAppCompt:Long=0,
     val mainLoadingProgress: Float = 0f
 )
 
 class ViewModelMessageur(
-     val masterRepositorys: A_MasterRepositorys,
+    val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
     val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
@@ -40,7 +41,7 @@ class ViewModelMessageur(
 
         viewModelScope.launch {
             val c3BonAchateList = masterRepositorys.e_GroupedDataBasesRepository
-                .repositorysModel.c3_BonAchate_Repository
+                .repositorys_Model.c3_BonAchate_Repository
                 .modelDatasSnapList.toList()
 
             _uiState.value = _uiState.value.copy(
@@ -48,6 +49,7 @@ class ViewModelMessageur(
             )
         }
     }
+    
 
     fun addOrUpdateData(data: D_EtateMessageVocale): Unit {
         masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data)

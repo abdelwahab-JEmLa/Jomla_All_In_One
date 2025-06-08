@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +19,11 @@ data class MasterRepositorysModel(
     val progress: Float = 0f
 )
 
-class A_MasterRepositorys(
+class A_MasterRepositorysGrpProtoJuin3(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
-    val e_GroupedDataBasesRepository: E_GroupedDataBasesRepository,
+    val e_GroupedDataBasesRepository: GroupeRepositorysProtoAvJuin3,
 ) {
     private val _model = MutableStateFlow<MasterRepositorysModel?>(null)
     val model: StateFlow<MasterRepositorysModel?> = _model.asStateFlow()
@@ -34,7 +34,7 @@ class A_MasterRepositorys(
                 repoA_ProduitInfos.repoState,
                 repoC_CategorieProduitInfos.repoState,
                 d_EtateMessageVocaleRepository.repoState,
-                e_GroupedDataBasesRepository.repositorysModel.c3_BonAchate_Repository.progressRepo,
+                e_GroupedDataBasesRepository.repositorys_Model.c3_BonAchate_Repository.progressRepo,
             ) { repoA_ProduitInfos,
                 repoC_CategorieProduitInfos,
                 d_EtateMessageVocaleRepository ,

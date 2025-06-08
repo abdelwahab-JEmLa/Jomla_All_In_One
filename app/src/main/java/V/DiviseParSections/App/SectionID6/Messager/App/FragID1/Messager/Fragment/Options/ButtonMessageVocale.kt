@@ -49,7 +49,6 @@ fun ButtonMessageVocale(
     val datesHandler = remember { DatesHandler() }
     val audioHandler = viewModel.audioRecorderAndPlayHandler
 
-    // States
     var isRecording by remember { mutableStateOf(false) }
     var isUploading by remember { mutableStateOf(false) }
     var recordingTimeSeconds by remember { mutableStateOf(0) }
@@ -63,7 +62,6 @@ fun ButtonMessageVocale(
         )
     }
 
-    // Request permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -77,7 +75,6 @@ fun ButtonMessageVocale(
         }
     }
 
-    // Clean up on dispose
     DisposableEffect(Unit) {
         onDispose {
             if (isRecording) {
@@ -90,7 +87,6 @@ fun ButtonMessageVocale(
         modifier = modifier.padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Recording timer display
         if (isRecording) {
             Text(
                 text = audioHandler.formatTime(recordingTimeSeconds),
@@ -100,7 +96,6 @@ fun ButtonMessageVocale(
             )
         }
 
-        // Upload progress indicator
         if (isUploading) {
             LinearProgressIndicator(
                 modifier = Modifier
@@ -114,7 +109,6 @@ fun ButtonMessageVocale(
             )
         }
 
-        // Single FloatingActionButton that changes based on state
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -127,7 +121,6 @@ fun ButtonMessageVocale(
 
                     coroutineScope.launch {
                         if (isRecording) {
-                            // Stop recording workflow
                             try {
                                 val stopResult = audioHandler.stopRecording()
 
@@ -151,7 +144,6 @@ fun ButtonMessageVocale(
                                     Toast.LENGTH_SHORT
                                 ).show()
 
-                                // Upload to Firebase Storage
                                 currentRecordingEtate?.let { etate ->
                                     isUploading = true
 
@@ -163,7 +155,6 @@ fun ButtonMessageVocale(
                                     isUploading = false
 
                                     if (uploadResult.isSuccess) {
-                                        // Update the recording state to ENVOYER after successful upload
                                         val updatedEtate = etate.copy(
                                             nom = D_EtateMessageVocale.Nom.ENVOYER,
                                             timestamps = datesHandler.getCurrentTimestamps()
@@ -196,16 +187,14 @@ fun ButtonMessageVocale(
                                 currentRecordingEtate = null
                             }
                         } else {
-                            // Start recording workflow
                             try {
-                                // Create a new D_EtateMessageVocale with EN_COURT_ENREGESTREMENT state
                                 val idParent_1_5_Vendeur =
-                                    viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorysModel.activeIdDe_1_5_Vendeur
+                                    viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorys_Model.activeIdDe_1_5_Vendeur
                                 val newEtate = D_EtateMessageVocale(
                                     idParent_1_5_Vendeur = idParent_1_5_Vendeur,
-                                    nomParent_1_5_Vendeur = viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+                                    nomParent_1_5_Vendeur = viewModel.masterRepositorys.e_GroupedDataBasesRepository.repositorys_Model.repository_1_5_Vendeur.modelDatasSnapList
                                         .find { it.vid == idParent_1_5_Vendeur }?.nom ?: "Non Trouve",
-                                    parentMessageVID = System.currentTimeMillis(), // Use timestamp as unique ID
+                                    parentMessageVID = System.currentTimeMillis(),
                                     nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
                                     timestamps = datesHandler.getCurrentTimestamps()
                                 )
@@ -213,11 +202,10 @@ fun ButtonMessageVocale(
                                 viewModel.addOrUpdateData(newEtate)
                                 currentRecordingEtate = newEtate
 
-                                // Start recording using unified function - no currentTransaction for ButtonMessageVocale
                                 val startResult = audioHandler.startRecording(
                                     context,
                                     newEtate.parentMessageVID,
-                                    currentTransaction = null // ButtonMessageVocale doesn't use transactions
+                                    currentTransaction = null
                                 )
 
                                 if (startResult.isFailure) {
@@ -231,7 +219,6 @@ fun ButtonMessageVocale(
 
                                 isRecording = true
 
-                                // Start the timer
                                 recordingTimeSeconds = 0
                                 while (isRecording) {
                                     delay(1000)
@@ -250,14 +237,13 @@ fun ButtonMessageVocale(
                         }
                     }
                 },
-                modifier = Modifier.size(56.dp), // Standard FAB size
+                modifier = Modifier.size(56.dp),
                 containerColor = when {
-                    isUploading -> Color(0xFF4CAF50) // Green for uploading
-                    isRecording -> Color(0xFFFF5722) // Red/Orange for recording
-                    else -> Color(0xFF0088CC) // Telegram blue for idle
+                    isUploading -> Color(0xFF4CAF50)
+                    isRecording -> Color(0xFFFF5722)
+                    else -> Color(0xFF0088CC)
                 },
             ) {
-                // Icon changes based on state
                 when {
                     isUploading -> Icon(
                         painter = painterResource(id = R.drawable.ic_telegram_send),
@@ -265,7 +251,7 @@ fun ButtonMessageVocale(
                         tint = Color.White
                     )
                     isRecording -> Icon(
-                        painter = painterResource(id = R.drawable.ic_telegram_mic), // Keep mic icon when recording
+                        painter = painterResource(id = R.drawable.ic_telegram_mic),
                         contentDescription = "Enregistrement en cours - Appuyer pour arrêter",
                         tint = Color.White
                     )

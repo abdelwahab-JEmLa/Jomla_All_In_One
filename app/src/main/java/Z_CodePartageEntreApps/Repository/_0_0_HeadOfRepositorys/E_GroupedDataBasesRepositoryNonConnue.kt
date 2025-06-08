@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-class E_GroupedDataBasesRepository(
+class E_GroupedDataBasesRepositoryNonConnue(
     val database: AppDatabase,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val fireBase: F0_FireBaseOperationsHandler,
