@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler
+package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.FirebaseAudioStorageHelper
+import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaPlayer
@@ -14,7 +14,7 @@ import java.io.File
 import java.io.IOException
 
 class AudioRecorderAndPlayHandler(
-    private val firebaseAudioHelper: FirebaseAudioStorageHelper
+    private val firebaseAudioHelper: A_FirebaseAudioStorageHelper
 ) : AudioHandlerInterface {
 
     private var currentRecordingSession: AudioHandlerInterface.RecordingSession? = null

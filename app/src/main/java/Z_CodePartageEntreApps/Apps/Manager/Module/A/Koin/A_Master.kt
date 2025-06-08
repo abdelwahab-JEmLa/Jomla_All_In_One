@@ -11,8 +11,8 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.PlayeAndRecordeHandler.AudioRecorderAndPlayHandler
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module.FirebaseAudioStorageHelper
+import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
+import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
@@ -39,8 +39,8 @@ import Z_CodePartageEntreApps.Modules.ConnectionManager
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import Z_CodePartageEntreApps.Modules.RecordingHandler.IRecordingHandler
-import Z_CodePartageEntreApps.Modules.RecordingHandler.RecordingHandler
+import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
+import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.F0_FireBaseOperationsHandler
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL.G_RoomOperationsHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -150,7 +150,7 @@ val navigationModule = module {
 
 val classesHandlersModule = module {
     single {
-        FirebaseAudioStorageHelper(
+        A_FirebaseAudioStorageHelper(
             )
     }
     single {

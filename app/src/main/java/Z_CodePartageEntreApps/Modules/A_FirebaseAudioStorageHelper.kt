@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Module
+package Z_CodePartageEntreApps.Modules
 
 import android.content.Context
 import android.util.Log
@@ -7,7 +7,7 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.net.URLDecoder
 
-class FirebaseAudioStorageHelper {
+class A_FirebaseAudioStorageHelper {
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
     private val audioRef = storageRef.child("audio_messages").child("D_EtateMessageVocale")
