@@ -38,8 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-  //<--
-  //TODO(1): enlve les commentaires
+
 @Composable
 fun B_ItemMessagesVocale(
     parentD_EtateMessageVocale: D_EtateMessageVocale,
@@ -52,21 +51,16 @@ fun B_ItemMessagesVocale(
     val datesHandler = remember { DatesHandler() }
     val audioHandler = viewModel.audioRecorderAndPlayHandler
 
-    // Collect playback progress from the handler
     val playbackProgress by audioHandler.playbackProgress.collectAsState()
 
-    // Find the related C3_BonAchate based on parentC3_BonAchateVID
     val relatedBonAchate = remember(parentD_EtateMessageVocale.parentC3_BonAchateVID, uiState.c3_BonAchate) {
         uiState.c3_BonAchate.find { it.vid == parentD_EtateMessageVocale.parentC3_BonAchateVID }
     }
 
-    // Get client name from the related BonAchate, fallback to "Client inconnu" if not found
     val clientName = relatedBonAchate?.nomClientConcerned ?: "Client inconnu"
 
-    // Get vendor name from the message data, fallback to "Vendeur inconnu" if empty
     val vendorName = parentD_EtateMessageVocale.nomParent_1_5_Vendeur.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 
-    // Check message states
     val isListened = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ECOUTE }
     val isViewed = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.VUE }
     val isBeingRecorded = etatesChildKeyIDsList.any {
@@ -74,20 +68,15 @@ fun B_ItemMessagesVocale(
     }
     val isSent = etatesChildKeyIDsList.any { it.nom == D_EtateMessageVocale.Nom.ENVOYER }
 
-    // Get the latest state timestamp
     val latestTimestamp = etatesChildKeyIDsList.maxByOrNull { it.timestamps }?.timestamps ?: 0L
 
-    // Check if this specific message is currently playing
     val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == parentD_EtateMessageVocale.parentMessageVID && playbackProgress.isPlaying
     }
 
-    // Check if this message is currently downloading
     val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == parentD_EtateMessageVocale.parentMessageVID && playbackProgress.isDownloading
     }
-
-    // Update progress periodically while playing
     LaunchedEffect(parentD_EtateMessageVocale.parentMessageVID, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
@@ -95,7 +84,6 @@ fun B_ItemMessagesVocale(
                     audioHandler.updatePlaybackProgress()
                     delay(100)
 
-                    // Safety check: break if session is no longer for this message
                     if (audioHandler.getCurrentPlaybackSession()?.parentMessageVID != parentD_EtateMessageVocale.parentMessageVID) {
                         break
                     }
@@ -106,7 +94,6 @@ fun B_ItemMessagesVocale(
         }
     }
 
-    // Cleanup when leaving composition
     DisposableEffect(parentD_EtateMessageVocale.parentMessageVID) {
         onDispose {
             try {
@@ -126,9 +113,7 @@ fun B_ItemMessagesVocale(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                // Check if this message belongs to parent account 1 (current user)
                 parentD_EtateMessageVocale.idParent_1_5_Vendeur == 1L -> {
-                    // Red tint for current user's messages
                     when {
                         isListened -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
                         isViewed -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
@@ -137,7 +122,6 @@ fun B_ItemMessagesVocale(
                     }
                 }
                 else -> {
-                    // Blue tint for other users' messages
                     when {
                         isListened -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                         isViewed -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
@@ -154,7 +138,6 @@ fun B_ItemMessagesVocale(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Message header with client name
             MessageHeader(
                 clientName = clientName,
                 vendorName = vendorName,
@@ -165,7 +148,6 @@ fun B_ItemMessagesVocale(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Show different UI based on message state
             when {
                 isBeingRecorded && !isSent -> {
                     RecordingIndicator()
@@ -190,7 +172,6 @@ fun B_ItemMessagesVocale(
         }
     }
 
-    // Divider
     HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
@@ -216,7 +197,6 @@ private fun MessageHeader(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Voice message icon
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
@@ -235,7 +215,6 @@ private fun MessageHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                // Display client name as primary information
                 Text(
                     text = clientName,
                     style = MaterialTheme.typography.titleSmall,
@@ -245,7 +224,6 @@ private fun MessageHeader(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Display vendor name as secondary information
                 Text(
                     text = "Vendeur: $vendorName",
                     style = MaterialTheme.typography.bodySmall,
@@ -254,7 +232,6 @@ private fun MessageHeader(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Tertiary info: Message ID and type
                 Text(
                     text = "Message vocal #$messageVID",
                     style = MaterialTheme.typography.bodySmall,
@@ -265,7 +242,6 @@ private fun MessageHeader(
             }
         }
 
-        // Timestamp with better formatting
         Text(
             text = datesHandler.getDateAndTimString(timestamp).time,
             style = MaterialTheme.typography.bodySmall,
