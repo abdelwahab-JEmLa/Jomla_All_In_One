@@ -18,15 +18,16 @@ import org.koin.dsl.module
 val moduleRepositorys = module {
     single {
         D_EtateMessageVocaleRepository(
+            get(),
             androidContext(),
-            get()
+            get(),
         )
     }
 
     single {
         A_ProduitInfosRepository(
             androidContext(),
-            get()
+            get(),
         )
     }
 

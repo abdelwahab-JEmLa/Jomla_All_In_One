@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposit
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.initializeDataReturn
 import android.content.Context
 import android.util.Log
@@ -17,9 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class D_EtateMessageVocaleRepository(
+    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val context: Context,
     appDatabase: AppDatabase,
-
 ) {
     val repoTAG = "D_EtateMessageVocaleRepository"
 
@@ -34,6 +35,14 @@ class D_EtateMessageVocaleRepository(
     val dao = appDatabase.D_EtateMessageVocaleDao()
     val repoRef = D_EtateMessageVocale.caRef
 
+    fun getLastUpdateTimePourCeTelephone(): Long {
+        return   a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+            .repositorys_Model.activeIdDe_1_5_Vendeur.let {acComp->
+                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+                    .repository_1_5_Vendeur.modelDatasSnapList.find { it.vid==acComp }
+                  ?.dernierTimeTampsSynchronisationAvecFireBase ?: 0
+            }
+    }
     init {
         CoroutineScope(Dispatchers.IO).launch {
             val initializedData = initializeDataReturn()
@@ -79,7 +88,7 @@ class D_EtateMessageVocaleRepository(
             try {
                 child.getValue(D_EtateMessageVocale::class.java)?.let { entity ->
                     val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
-                    if (shouldUpdateD_EtateMessageVocaleWithComparison(entityWithKey,0)) {
+                    if (shouldUpdateD_EtateMessageVocaleWithComparison(entityWithKey,getLastUpdateTimePourCeTelephone())) {
                         dao.upsert(entityWithKey)
                         updateCount++
                     }

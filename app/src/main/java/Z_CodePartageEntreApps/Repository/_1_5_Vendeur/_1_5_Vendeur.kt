@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.os.Build
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,4 +26,6 @@ data class _1_5_Vendeur(
     // Section Options Personele
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
+
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
     )

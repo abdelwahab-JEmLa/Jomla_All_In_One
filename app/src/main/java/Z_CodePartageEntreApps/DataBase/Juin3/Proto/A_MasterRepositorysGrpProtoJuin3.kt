@@ -23,7 +23,7 @@ class A_MasterRepositorysGrpProtoJuin3(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
-    val e_GroupedDataBasesRepository: GroupeRepositorysProtoAvJuin3,
+    val e_GroupedDataBasesRepositoryProtoAvant3Juin: GroupeRepositorysProtoAvJuin3,
 ) {
     private val _model = MutableStateFlow<MasterRepositorysModel?>(null)
     val model: StateFlow<MasterRepositorysModel?> = _model.asStateFlow()
@@ -34,7 +34,7 @@ class A_MasterRepositorysGrpProtoJuin3(
                 repoA_ProduitInfos.repoState,
                 repoC_CategorieProduitInfos.repoState,
                 d_EtateMessageVocaleRepository.repoState,
-                e_GroupedDataBasesRepository.repositorys_Model.c3_BonAchate_Repository.progressRepo,
+                e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3_BonAchate_Repository.progressRepo,
             ) { repoA_ProduitInfos,
                 repoC_CategorieProduitInfos,
                 d_EtateMessageVocaleRepository ,
