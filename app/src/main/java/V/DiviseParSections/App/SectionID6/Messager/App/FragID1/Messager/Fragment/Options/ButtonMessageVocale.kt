@@ -186,6 +186,7 @@ fun ButtonMessageVocale(
                                 isRecording = false
                                 currentRecordingEtate = null
                             }
+
                         } else {
                             try {
                                 val idParent_1_5_Vendeur =
