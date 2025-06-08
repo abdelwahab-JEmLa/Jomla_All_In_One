@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,85 +56,63 @@ fun B_Item_TransactionItem(
     transaction: C3_BonAchate,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
-
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
     val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
-
-    // For blinking effect when not active
     val blinkState = remember { mutableStateOf(false) }
-
-    // Audio player states using the centralized handler
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
-
-    // Has voice message
     val hasVoiceMessage = transaction.vocaleKeyID.isNotEmpty()
 
-    // Check if this specific transaction's voice message is currently playing
     val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isPlaying
     }
 
-    // Check if this message is currently downloading
     val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isDownloading
     }
 
-    // Update progress periodically while playing
     LaunchedEffect(transaction.vid, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
-                Log.d("TransactionItem", "Starting progress update loop for transaction ${transaction.vid}")
                 while (isCurrentlyPlaying && audioRecorderAndPlayHandler.isPlaying()) {
                     audioRecorderAndPlayHandler.updatePlaybackProgress()
                     delay(100)
-
-                    // Safety check: break if session is no longer for this transaction
                     if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != transaction.vid) {
-                        Log.d("TransactionItem", "Breaking progress loop - session changed for transaction ${transaction.vid}")
                         break
                     }
                 }
-                Log.d("TransactionItem", "Progress update loop ended for transaction ${transaction.vid}")
             } catch (e: Exception) {
-                Log.e("TransactionItem", "Error in progress update loop for transaction ${transaction.vid}", e)
                 e.printStackTrace()
             }
         }
     }
 
-    // Cleanup when leaving composition
     DisposableEffect(transaction.vid) {
         onDispose {
             try {
-                // Only cleanup if this transaction is currently playing
                 val currentSession = audioRecorderAndPlayHandler.getCurrentPlaybackSession()
                 if (currentSession?.parentMessageVID == transaction.vid) {
-                    Log.d("TransactionItem", "Cleaning up playback session for transaction ${transaction.vid}")
                     audioRecorderAndPlayHandler.stopPlayback()
                 }
             } catch (e: Exception) {
-                Log.e("TransactionItem", "Error during cleanup for transaction ${transaction.vid}", e)
                 e.printStackTrace()
             }
         }
     }
 
-    // Blinking effect using LaunchedEffect when not active and in ON_MODE_COMMEND_ACTUELLEMENT state
     if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeTransactionId != transaction.vid
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
                 blinkState.value = !blinkState.value
-                delay(500) // 500ms blink interval
+                delay(500)
             }
         }
     }
 
-    // Card with background color based on transaction state
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,24 +125,13 @@ fun B_Item_TransactionItem(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Delete button at the top start
             IconButton(
                 onClick = {
-                    Log.d("TransactionItem", "Delete button clicked for transaction ${transaction.vid}")
-                    // Check if there's a voice recording to delete
                     if (transaction.vocaleKeyID.isNotEmpty()) {
-                        Log.d("TransactionItem", "Deleting voice recording ${transaction.vocaleKeyID} for transaction ${transaction.vid}")
-                        // Delete voice recording from storage first
                         viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
                             if (success) {
-                                Log.d("TransactionItem", "Voice recording deleted successfully, now deleting transaction ${transaction.vid}")
-                                // Then delete the transaction from database
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
-                                    transaction
-                                )
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
                             } else {
-                                Log.e("TransactionItem", "Failed to delete voice recording ${transaction.vocaleKeyID}")
-                                // Show error message if voice deletion failed
                                 Toast.makeText(
                                     context,
                                     "Erreur lors de la suppression du message vocal",
@@ -174,8 +140,6 @@ fun B_Item_TransactionItem(
                             }
                         }
                     } else {
-                        Log.d("TransactionItem", "No voice recording to delete, deleting transaction ${transaction.vid} directly")
-                        // No voice recording to delete, just delete the transaction
                         viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
                     }
                 },
@@ -192,27 +156,19 @@ fun B_Item_TransactionItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .padding(top = 32.dp) // Add padding to avoid overlap with the delete button
+                    .padding(top = 32.dp)
             ) {
-                // Top row with transaction details
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Shopping cart icon moved inside the Row
                     if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
-                                Log.d("TransactionItem", "Shopping cart clicked for transaction ${transaction.vid}")
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                    transaction.copy(
-                                        ouvert = !transaction.ouvert
-                                    )
+                                    transaction.copy(ouvert = !transaction.ouvert)
                                 ) {
-                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.value =
-                                        transaction.vid
-
-                                    // Navigate to the cart screen after selecting a transaction
+                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.value = transaction.vid
                                     viewModel.navigateToCartScreen()
                                 }
                             }
@@ -223,7 +179,6 @@ fun B_Item_TransactionItem(
                                 tint = if (activeTransactionId == transaction.vid) {
                                     Color.White
                                 } else {
-                                    // Blinking effect - alternate between Red and Gray
                                     if (blinkState.value) Color.Red else Color.Gray
                                 }
                             )
@@ -241,57 +196,36 @@ fun B_Item_TransactionItem(
                         text = etateActuellementEst.nomArabe,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End  // Right-aligned for Arabic
+                        textAlign = TextAlign.End
                     )
                 }
 
-                // Audio player section (only show if there's a voice message)
                 if (hasVoiceMessage) {
-                    Log.d("TransactionItem", "Displaying audio player for transaction ${transaction.vid} with vocaleKeyID: ${transaction.vocaleKeyID}")
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Play/Stop Button using centralized handler
                         IconButton(
                             onClick = {
-                                Log.d("TransactionItem", "Audio play/stop button clicked for transaction ${transaction.vid}")
                                 coroutineScope.launch {
                                     when {
                                         isCurrentlyPlaying -> {
-                                            Log.d("TransactionItem", "Stopping playback for transaction ${transaction.vid}")
-                                            // Stop current playback using the handler
                                             val stopResult = audioRecorderAndPlayHandler.stopPlayback()
                                             if (stopResult.isFailure) {
                                                 val errorMessage = "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
-                                                Log.e("TransactionItem", "Failed to stop playback for transaction ${transaction.vid}: ${stopResult.exceptionOrNull()?.message}")
-                                                Toast.makeText(
-                                                    context,
-                                                    errorMessage,
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            } else {
-                                                Log.d("TransactionItem", "Playback stopped successfully for transaction ${transaction.vid}")
+                                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                                             }
                                         }
                                         else -> {
-                                            Log.d("TransactionItem", "Starting playback for transaction ${transaction.vid}")
-                                            // Start playback using the handler with Firebase URL
                                             val playResult = audioRecorderAndPlayHandler.startPlayback(
                                                 context = context,
                                                 parentMessageVID = transaction.vid,
-                                                firebaseUrl = transaction.vocaleKeyID, // Pass the Firebase URL here
+                                                firebaseUrl = transaction.vocaleKeyID,
                                                 onPlaybackComplete = {
-                                                    Log.d("TransactionItem", "Playback completed for transaction ${transaction.vid}")
-                                                    // Update the transaction to mark voice message as listened
                                                     if (!transaction.sonVocaleEstEcoute) {
-                                                        Log.d("TransactionItem", "Marking voice message as listened for transaction ${transaction.vid}")
-                                                        // Get current timestamp
                                                         val currentTimestamp = datesHandler.getCurrentTimestamps()
-
                                                         viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
                                                             transaction.copy(
                                                                 sonVocaleEstEcoute = true,
@@ -301,7 +235,6 @@ fun B_Item_TransactionItem(
                                                     }
                                                 },
                                                 onPlaybackError = { errorMessage ->
-                                                    Log.e("TransactionItem", "Playback error for transaction ${transaction.vid}: $errorMessage")
                                                     Toast.makeText(
                                                         context,
                                                         "Erreur de lecture du message vocal: $errorMessage",
@@ -312,31 +245,17 @@ fun B_Item_TransactionItem(
 
                                             if (playResult.isFailure) {
                                                 val errorMessage = "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
-                                                Log.e("TransactionItem", "Failed to start playback for transaction ${transaction.vid}: ${playResult.exceptionOrNull()?.message}")
-
-                                                // Additional debug information
-                                                Log.e("TransactionItem", "Debug info - Transaction VID: ${transaction.vid}")
-                                                Log.e("TransactionItem", "Debug info - VocaleKeyID: ${transaction.vocaleKeyID}")
-                                                Log.e("TransactionItem", "Debug info - HasVoiceMessage: $hasVoiceMessage")
-                                                Log.e("TransactionItem", "Debug info - Exception details: ${playResult.exceptionOrNull()?.stackTrace?.joinToString("\n")}")
-
-                                                Toast.makeText(
-                                                    context,
-                                                    errorMessage,
-                                                    Toast.LENGTH_LONG
-                                                ).show()
-                                            } else {
-                                                Log.d("TransactionItem", "Playback started successfully for transaction ${transaction.vid}")
+                                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                                             }
                                         }
                                     }
                                 }
                             },
-                            enabled = !isCurrentlyDownloading // Disable button while downloading
+                            enabled = !isCurrentlyDownloading
                         ) {
-                                Icon(
+                            Icon(
                                 imageVector = when {
-                                    isCurrentlyDownloading -> Icons.Default.PlayArrow // Show play icon while downloading
+                                    isCurrentlyDownloading -> Icons.Default.PlayArrow
                                     isCurrentlyPlaying -> Icons.Default.Stop
                                     else -> Icons.Default.PlayArrow
                                 },
@@ -349,11 +268,8 @@ fun B_Item_TransactionItem(
                             )
                         }
 
-                        // Progress Bar using centralized handler progress
                         when {
                             isCurrentlyDownloading -> {
-                                Log.d("TransactionItem", "Showing download progress for transaction ${transaction.vid}")
-                                // Show indeterminate progress while downloading
                                 LinearProgressIndicator(
                                     modifier = Modifier
                                         .weight(1f)
@@ -365,7 +281,6 @@ fun B_Item_TransactionItem(
                                 )
                             }
                             isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                                // Show determinate progress while playing
                                 LinearProgressIndicator(
                                     progress = { playbackProgress.progress.coerceIn(0f, 1f) },
                                     modifier = Modifier
@@ -378,7 +293,6 @@ fun B_Item_TransactionItem(
                                 )
                             }
                             else -> {
-                                // Show empty progress bar when not playing
                                 LinearProgressIndicator(
                                     progress = { 0f },
                                     modifier = Modifier
@@ -392,10 +306,8 @@ fun B_Item_TransactionItem(
                             }
                         }
 
-                        // Show status icon and listened time
                         Column(
-                            modifier = Modifier
-                                .padding(start = 4.dp),
+                            modifier = Modifier.padding(start = 4.dp),
                             horizontalAlignment = Alignment.End
                         ) {
                             when {
@@ -407,7 +319,6 @@ fun B_Item_TransactionItem(
                                     )
                                 }
                                 isCurrentlyPlaying && playbackProgress.duration > 0 -> {
-                                    // Show current time / total time
                                     Text(
                                         text = "${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.duration)}",
                                         style = MaterialTheme.typography.bodySmall,
@@ -415,7 +326,6 @@ fun B_Item_TransactionItem(
                                     )
                                 }
                                 transaction.sonVocaleEstEcoute -> {
-                                    // Show check mark if message has been listened to
                                     Column {
                                         Icon(
                                             imageVector = Icons.Default.Check,
@@ -423,7 +333,6 @@ fun B_Item_TransactionItem(
                                             tint = Color.Green,
                                             modifier = Modifier.size(24.dp)
                                         )
-                                        // Show when the message was listened to
                                         if (transaction.sonEcoutementEstFaitAutimestamps > 0) {
                                             Text(
                                                 text = datesHandler.getDateAndTimString(transaction.sonEcoutementEstFaitAutimestamps).time,
@@ -434,7 +343,6 @@ fun B_Item_TransactionItem(
                                     }
                                 }
                                 else -> {
-                                    // Show warning if message has not been listened to
                                     Icon(
                                         imageVector = Icons.Default.Warning,
                                         contentDescription = "Message non écouté",
@@ -445,8 +353,6 @@ fun B_Item_TransactionItem(
                             }
                         }
                     }
-                } else {
-                    Log.d("TransactionItem", "No voice message to display for transaction ${transaction.vid}")
                 }
             }
         }

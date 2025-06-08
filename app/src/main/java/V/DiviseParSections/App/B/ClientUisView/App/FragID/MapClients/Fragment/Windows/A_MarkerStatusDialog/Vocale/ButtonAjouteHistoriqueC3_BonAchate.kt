@@ -143,11 +143,8 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
                                     parentMessageVID = parentMessageVID,
                                     nom = D_EtateMessageVocale.Nom.ENVOYER,
                                     timestamps = DatesHandler().getCurrentTimestamps(),
-                                    relativeAuDataBase = if (currentC3_BonAchate != null) {
-                                        D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate
-                                    } else {
-                                        D_EtateMessageVocale.RelativeAuDataBase.NONE
-                                    },
+                                    relativeAuDataBase =
+                                        D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate,
                                     parentC3_BonAchateVID = currentC3_BonAchate?.vid ?: 0
                                 )
 
