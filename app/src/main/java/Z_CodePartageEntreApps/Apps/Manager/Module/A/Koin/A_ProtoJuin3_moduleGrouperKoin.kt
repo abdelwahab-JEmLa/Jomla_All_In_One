@@ -18,7 +18,6 @@ import org.koin.dsl.module
 val moduleRepositorys = module {
     single {
         D_EtateMessageVocaleRepository(
-            get(),
             androidContext(),
             get(),
         )
