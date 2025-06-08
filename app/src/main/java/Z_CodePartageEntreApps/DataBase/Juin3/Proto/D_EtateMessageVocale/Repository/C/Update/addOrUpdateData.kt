@@ -15,10 +15,10 @@ fun D_EtateMessageVocaleRepository.addOrUpdateData(data: D_EtateMessageVocale) {
 
         dao.upsert(preparedData)
 
-        repoRef.child(preparedData.keyFireBase).setValue(preparedData)
-
         val allData = dao.getAll()
         updateRepoState(allData)
+        repoRef.child(preparedData.keyFireBase).setValue(preparedData)
+
     }
 }
 

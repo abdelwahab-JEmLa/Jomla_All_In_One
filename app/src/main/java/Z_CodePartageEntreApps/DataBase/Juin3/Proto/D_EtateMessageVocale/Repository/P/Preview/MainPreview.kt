@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.P.Preview
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -35,7 +37,7 @@ fun MainPreviewD_EtateMessageVocale(
     }
 
     LaunchedEffect(Unit) {
-        println("Repository: ${datas.size} items, progress: $progress")
+        Log.d("MainPreview", "Repository: ${datas.size} items, progress: $progress")
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -47,22 +49,40 @@ fun MainPreviewD_EtateMessageVocale(
             )
         }
 
+        // Test button for Firebase listener
+        Button(
+            onClick = {
+                Log.d("MainPreview", "Test button clicked - triggering Firebase listener test")
+                // Access the repository through the master repository
+                viewModel.masterRepositorys.d_EtateMessageVocaleRepository.testTriggerUpdateFbParTimestampsListener()
+            },
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Text("Test Firebase Listener")
+        }
+
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(sortedDatas) { data ->
                 Card(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = data.nom.name,
-                            modifier = Modifier.weight(1f)
-                        )
+                    Column {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = data.nom.name,
+                                modifier = Modifier.weight(1f)
+                            )
 
-                        Text(data.id.toString())
+                            Text(data.id.toString())
+
+
+                        }
+                        Text(data.dernierFireBaseUpdateTimestamps.toString())
                     }
                 }
             }
         }
     }
 }
+
