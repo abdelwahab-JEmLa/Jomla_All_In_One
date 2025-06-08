@@ -1,4 +1,4 @@
-package A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main
+package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 
 fun getKeyFireBase(dataId: Long? = null, dataNom: String? = null): String {

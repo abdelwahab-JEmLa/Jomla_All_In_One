@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models
 
-import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.getKeyFireBase
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,6 +25,8 @@ data class D_EtateMessageVocale(
     val idParent_1_5_Vendeur: Long = 0,
     val nomParent_1_5_Vendeur: String = "",
 
+    val nomDeSonOriginaleFichie: String = "",
+
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
     var dernierFireBaseUpdateTimestamps: Long = 0,
@@ -44,7 +46,7 @@ data class D_EtateMessageVocale(
     }
 
     fun withProperKeyFireBaseAndTimeTamp(): D_EtateMessageVocale {
-        val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom.name) }
+        val safeKey = keyFireBase.ifEmpty { getKeyFireBase(parentMessageVID, nom.name) }
         return this.copy(
             keyFireBase = safeKey,
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis()

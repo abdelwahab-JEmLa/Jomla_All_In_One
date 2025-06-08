@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
-import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateDatas
+import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import android.Manifest
@@ -127,7 +127,7 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
                             val recordedFile = stopResult.getOrThrow()
 
                             // Upload the recorded file
-                            val parentMessageVID = clientId ?: System.currentTimeMillis()
+                            val parentMessageVID = System.currentTimeMillis()
                             val uploadResult = audioRecorderAndPlayHandler.uploadAudioFile(
                                 recordedFile,
                                 parentMessageVID

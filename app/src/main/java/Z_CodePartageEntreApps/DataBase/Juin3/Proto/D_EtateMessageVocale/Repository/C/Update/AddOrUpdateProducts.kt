@@ -8,7 +8,9 @@ import kotlinx.coroutines.launch
 
 fun D_EtateMessageVocaleRepository.addOrUpdateData(data: D_EtateMessageVocale) {
     CoroutineScope(Dispatchers.IO).launch {
-        val preparedData = data.withProperKeyFireBaseAndTimeTamp()
+        val dataWhithId = if (data.id == 0L) data.copy(id = getMaxIdPlus1()) else data
+
+        val preparedData = dataWhithId.withProperKeyFireBaseAndTimeTamp()
 
         dao.upsert(preparedData)
 

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3
 
-import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.getKeyFireBase
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase

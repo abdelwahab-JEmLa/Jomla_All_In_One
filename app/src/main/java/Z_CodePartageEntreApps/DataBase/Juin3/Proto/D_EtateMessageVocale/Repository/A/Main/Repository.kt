@@ -46,4 +46,12 @@ class D_EtateMessageVocaleRepository(
             _repoState.value = newRepoState
         }
     }
+    fun getMaxIdPlus1(): Long {
+        val currentData = _repoState.value?.modelListFlow ?: emptyList()
+        return if (currentData.isEmpty()) {
+            1L
+        } else {
+            (currentData.maxOfOrNull { it.id } ?: 0L) + 1L
+        }
+    }
 }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -35,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
@@ -143,7 +141,9 @@ fun B_ItemMessagesVocale(
                 vendorName = vendorName,
                 messageVID = parentD_EtateMessageVocale.parentMessageVID,
                 timestamp = parentD_EtateMessageVocale.timestamps,
-                datesHandler = datesHandler
+                datesHandler = datesHandler,
+                parentD_EtateMessageVocale = parentD_EtateMessageVocale,
+                etatesChildKeyIDsList = etatesChildKeyIDsList
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -181,76 +181,6 @@ fun B_ItemMessagesVocale(
     )
 }
 
-@Composable
-private fun MessageHeader(
-    clientName: String,
-    vendorName: String,
-    messageVID: Long,
-    timestamp: Long,
-    datesHandler: DatesHandler
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.GraphicEq,
-                    contentDescription = "Message vocal",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .padding(2.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column {
-                Text(
-                    text = clientName,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Text(
-                    text = "Vendeur: $vendorName",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Text(
-                    text = "Message vocal #$messageVID",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-
-        Text(
-            text = datesHandler.getDateAndTimString(timestamp).time,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
 
 @Composable
 private fun RecordingIndicator() {

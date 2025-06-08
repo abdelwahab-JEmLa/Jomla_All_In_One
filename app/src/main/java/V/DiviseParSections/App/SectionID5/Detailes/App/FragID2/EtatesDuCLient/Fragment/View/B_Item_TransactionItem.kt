@@ -333,7 +333,7 @@ fun B_Item_TransactionItem(
                             },
                             enabled = !isCurrentlyDownloading // Disable button while downloading
                         ) {
-                            Icon(
+                                Icon(
                                 imageVector = when {
                                     isCurrentlyDownloading -> Icons.Default.PlayArrow // Show play icon while downloading
                                     isCurrentlyPlaying -> Icons.Default.Stop
