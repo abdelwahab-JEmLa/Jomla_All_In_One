@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,15 +41,19 @@ fun MessageHeader(
     datesHandler: DatesHandler,
     // Added parameters for additional display
     parentD_EtateMessageVocale: D_EtateMessageVocale,
-    etatesChildKeyIDsList: List<D_EtateMessageVocale>
+    etatesChildKeyIDsList: List<D_EtateMessageVocale>,
+    viewModel: ViewModelMessageur
 ) {
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
         ) {
             Surface(
                 shape = RoundedCornerShape(8.dp),
@@ -150,24 +161,113 @@ fun MessageHeader(
         Column(
             horizontalAlignment = Alignment.End
         ) {
-            Text(
-                text = datesHandler.getDateAndTimString(timestamp).time,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Delete button
+                IconButton(
+                    onClick = {
+                        showDeleteConfirmation = true
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Supprimer le message",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
 
-            // Display total states count
-            if (etatesChildKeyIDsList.isNotEmpty()) {
-                Text(
-                    text = "${etatesChildKeyIDsList.size} état(s)",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = datesHandler.getDateAndTimString(timestamp).time,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    // Display total states count
+                    if (etatesChildKeyIDsList.isNotEmpty()) {
+                        Text(
+                            text = "${etatesChildKeyIDsList.size} état(s)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
     }
+
+    // Delete confirmation dialog
+    if (showDeleteConfirmation) {
+        DeleteConfirmationDialog(
+            onConfirm = {
+                // Delete the parent message and all related states
+                viewModel.deleteData(parentD_EtateMessageVocale)
+                etatesChildKeyIDsList.forEach { state ->
+                    viewModel.deleteData(state)
+                }
+                showDeleteConfirmation = false
+            },
+            onDismiss = {
+                showDeleteConfirmation = false
+            },
+            messageInfo = "Message vocal #$messageVID de $clientName"
+        )
+    }
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    messageInfo: String
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Supprimer le message",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        text = {
+            Text(
+                text = "Êtes-vous sûr de vouloir supprimer définitivement ce message?\n\n$messageInfo\n\nCette action ne peut pas être annulée.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(
+                onClick = onConfirm
+            ) {
+                Text(
+                    text = "Supprimer",
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = "Annuler",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 6.dp
+    )
 }

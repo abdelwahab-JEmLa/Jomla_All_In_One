@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models
 
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable.Companion.ref
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
@@ -86,5 +87,11 @@ data class D_EtateMessageVocale(
         )
 
         val caRef = parent.child("D_EtateMessageVocale")
+
+        fun removeRef(
+            preparedData: D_EtateMessageVocale
+        ) {
+            ref.child(preparedData.keyFireBase).removeValue()
+        }
     }
 }

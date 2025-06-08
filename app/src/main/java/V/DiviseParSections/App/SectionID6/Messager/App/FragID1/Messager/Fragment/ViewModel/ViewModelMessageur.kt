@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,6 @@ import kotlinx.coroutines.launch
 data class UiState(
     val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
     val c3_BonAchate: List<C3_BonAchate> = emptyList(),
-    val idActiveAppCompt:Long=0,
     val mainLoadingProgress: Float = 0f
 )
 
@@ -49,9 +49,19 @@ class ViewModelMessageur(
             )
         }
     }
-    
 
-    fun addOrUpdateData(data: D_EtateMessageVocale): Unit {
-        masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data)
+
+    fun addOrUpdateData(data: D_EtateMessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data) }
+
+    fun deleteData(data: D_EtateMessageVocale): Unit {
+        // Get all messages with the same parentMessageVID
+        val messagesToDelete = uiState.value.d_EtateMessageVocaleList.filter {
+            it.parentMessageVID == data.parentMessageVID
+        }
+
+        // Delete each message individually
+        messagesToDelete.forEach { message ->
+            masterRepositorys.d_EtateMessageVocaleRepository.deleteData(message)
+        }
     }
 }

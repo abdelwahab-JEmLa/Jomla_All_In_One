@@ -137,6 +137,7 @@ fun B_ItemMessagesVocale(
                 .padding(12.dp)
         ) {
             MessageHeader(
+                viewModel=viewModel,
                 clientName = clientName,
                 vendorName = vendorName,
                 messageVID = parentD_EtateMessageVocale.parentMessageVID,
