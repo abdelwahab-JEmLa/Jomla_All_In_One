@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -13,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ClearHistoryButton(
-    viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
     onClear: () -> Unit,
 ) {
@@ -24,7 +22,6 @@ fun ClearHistoryButton(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                viewModelInitApp.extentionStartup.clearAchats()
                 onClear()
                 clearDataClickCount = 0
             }

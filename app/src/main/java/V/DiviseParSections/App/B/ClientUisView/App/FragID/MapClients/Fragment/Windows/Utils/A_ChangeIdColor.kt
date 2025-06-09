@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.ControlButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
@@ -14,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun A_ChangeIdColor(
-    viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
     contentDescription: String,
     viewModel: ViewModel_MapClients_App2FragID1,
@@ -26,7 +24,6 @@ fun A_ChangeIdColor(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                viewModelInitApp.extentionStartup.updateProductsIdColor1()
                 clearDataClickCount = 0
             }
         },

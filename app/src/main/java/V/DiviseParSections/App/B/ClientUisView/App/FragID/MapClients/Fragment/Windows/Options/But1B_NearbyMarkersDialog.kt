@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.location.Location
 import androidx.compose.runtime.Composable
 import org.osmdroid.views.MapView
@@ -13,7 +12,6 @@ fun But1B_NearbyMarkersDialog(
     currentLocation: Location?,
     proxim: Double,
     mapView: MapView,
-    viewModelInitApp: ViewModelInitApp
 ) {
     /*
     // Get reference location with proper fallback handling

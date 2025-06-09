@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 )
 
@@ -25,7 +25,7 @@ class B_ClientInfosProtoJuin3PreviewViewModel(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        b_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
                         // FIXED: use lowercase 'b' to match the property name in MasterRepositorysModel
                         mainLoadingProgress = model.progress
                     )

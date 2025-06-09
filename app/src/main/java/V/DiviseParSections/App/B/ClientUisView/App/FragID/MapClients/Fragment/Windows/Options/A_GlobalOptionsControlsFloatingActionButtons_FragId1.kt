@@ -2,15 +2,12 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
@@ -79,7 +76,6 @@ private class FilterLogger {
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     viewModel: ViewModel_MapClients_App2FragID1,
     mapView: MapView,
-    viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     onPickFilter: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
@@ -224,7 +220,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     But1_NearbyMarkersButton(
                         viewModel = viewModel,
                         showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp,
                         markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
                         locationTracker = locationTracker,
                         proximiteMeter = proximiteMeter,
@@ -233,7 +228,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                     But_2(
                         viewModel = viewModel,
-                        viewModelInitApp = viewModelInitApp,
                         textButton = "onFilterMarkers",
                         showLabels = showLabels,
                         onClick = {
@@ -275,17 +269,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             onFilterMarkers()
                         },
                         currentFilterMode = currentFilterMode
-                    )
-                    A_ChangeIdColor(
-                        viewModel = viewModel,
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                        contentDescription = "Repeat",
-                    )
-                    ClearHistoryButton(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClear,
                     )
                 }
                 if (showMenu) {

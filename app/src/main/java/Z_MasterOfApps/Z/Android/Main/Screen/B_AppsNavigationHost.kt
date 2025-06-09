@@ -86,7 +86,6 @@ fun AppNavigationHost(
                             }
                             composable(InfosDatas_FramgmentId6.route) {
                                 A_MapClients_A2FragID_1(
-                                    viewModelInitApp = viewModelInitApp,
                                 )
                             }
                             composable(StartupIcon_Start.route) {

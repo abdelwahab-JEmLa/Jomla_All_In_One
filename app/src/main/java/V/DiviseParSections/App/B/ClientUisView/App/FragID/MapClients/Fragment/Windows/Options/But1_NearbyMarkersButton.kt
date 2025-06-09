@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTracker
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTracker
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,7 +15,6 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun But1_NearbyMarkersButton(
     showLabels: Boolean,
-    viewModelInitApp: ViewModelInitApp,
     markers: MutableList<Marker>,
     locationTracker: LocationTracker,
     proximiteMeter: Double,
@@ -36,7 +34,6 @@ fun But1_NearbyMarkersButton(
 
     if (showNearbyMarkersDialog) {
         But1B_NearbyMarkersDialog(
-            viewModelInitApp = viewModelInitApp,
             onDismiss = { showNearbyMarkersDialog = false },
             markers = markers,
             currentLocation = locationTracker.currentLocation,

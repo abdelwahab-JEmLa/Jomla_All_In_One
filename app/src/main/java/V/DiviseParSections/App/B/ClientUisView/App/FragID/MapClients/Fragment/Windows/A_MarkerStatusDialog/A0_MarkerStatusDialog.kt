@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsUiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.ButtonAjouteHistoriqueC3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,13 +46,13 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: ViewModel_MapClients_App2FragID1,
-    viewModelInitApp: ViewModelInitApp,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
+    uiState: MapClientsUiState,
 ) {            //<--
     val ceTelephoneEstDeAbdelwahab = _0_0_HeadSQLRepositorys
         .repositorys_Model
@@ -351,7 +351,7 @@ fun MarkerStatusDialog(
 
         // Phone Dialog
         if (showPhoneDialog) {
-            val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
+            val client =uiState.b_ClientInfosProtoJuin3List.find {
                 it.id.toString() == selectedMarker.id
             }
             AlertDialog(
@@ -384,7 +384,7 @@ fun MarkerStatusDialog(
                         onClick = {
                             coroutineScope.launch {
                                 val clientToDelete =
-                                    viewModelInitApp._modelAppsFather.clientDataBase.find {
+                                    uiState.b_ClientInfosProtoJuin3List.find {
                                         it.id.toString() == selectedMarker.id
                                     }
 

@@ -16,7 +16,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -50,12 +49,13 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
-    viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -64,9 +64,9 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
         mutableStateOf(
-            if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur==1L) {
+            if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur == 1L) {
                 ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
-            }  else {
+            } else {
                 ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
             }
         )
@@ -78,8 +78,6 @@ fun MapContent(
         viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    // Collect UI state to check button visibility
-    val uiState by viewModel.uiState.collectAsState()
 
     // Collect the current mapReloadTrigger from viewModel for sectors updates
     val sectorMapReloadTrigger = viewModel.mapReloadTigger
@@ -102,8 +100,9 @@ fun MapContent(
             // Check if there are existing sectors
             if (uiState.e1SecteurDeClientsList.isEmpty()) {
                 // If no sectors exist, create two with their polygons
-                insert2SecteurEtPolygon(viewModel,
-                    polygonDao =polygonDao
+                insert2SecteurEtPolygon(
+                    viewModel,
+                    polygonDao = polygonDao
                 )
             }
 
@@ -114,9 +113,10 @@ fun MapContent(
             // Get structured information about sectors and their polygons
 
             val secteurPolygonInfoList = getNoSqlDisplayer(
-                uiState=uiState,
-                viewModel=viewModel,
-                polygonDao= polygonDao)
+                uiState = uiState,
+                viewModel = viewModel,
+                polygonDao = polygonDao
+            )
 
             // Back to main thread to update UI
             withContext(Dispatchers.Main) {
@@ -190,32 +190,30 @@ fun MapContent(
 
         val isSecteursButtonVisible = panelsGroupeButtonHandler
             ._paneleGroupeButtonList.value
-            .find { it.key == PanelsGroupeButtonHandler
-                .PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons }
+            .find {
+                it.key == PanelsGroupeButtonHandler
+                    .PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons
+            }
             ?.isVisible ?: false
 
         if (isSecteursButtonVisible) {
             MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
-        // Floating action buttons for map controls
-        if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
-            A_GlobalOptionsControlsFloatingActionButtons_FragId1(
-                viewModel = viewModel,
-                mapView = mapView,
-                viewModelInitApp = viewModelInitApp,
-                onClear = onClear,
-                currentFilterMode = currentFilterMode,
-                onFilterMarkers = {
-                    handleFilterMarkersClick(mapView, currentFilterMode) { newMode ->
-                        currentFilterMode = newMode
-                    }
-                },
-                onPickFilter = {
-                    currentFilterMode = it
+        A_GlobalOptionsControlsFloatingActionButtons_FragId1(
+            viewModel = viewModel,
+            mapView = mapView,
+            onClear = onClear,
+            currentFilterMode = currentFilterMode,
+            onFilterMarkers = {
+                handleFilterMarkersClick(mapView, currentFilterMode) { newMode ->
+                    currentFilterMode = newMode
                 }
-            )
-        }
+            },
+            onPickFilter = {
+                currentFilterMode = it
+            }
+        )
 
         // Marker edit mode overlay
         if (showEditMarkerMode) {
@@ -240,8 +238,8 @@ fun MapContent(
         // Marker status dialog
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
+                uiState=uiState,
                 viewModel = viewModel,
-                viewModelInitApp = viewModelInitApp,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

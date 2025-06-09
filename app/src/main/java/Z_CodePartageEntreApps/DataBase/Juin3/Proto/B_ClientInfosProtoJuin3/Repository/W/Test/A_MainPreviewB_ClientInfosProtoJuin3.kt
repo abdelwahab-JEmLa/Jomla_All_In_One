@@ -30,7 +30,7 @@ fun MainPreviewB_ClientInfosProtoJuin3(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
-    val datasB_ClientInfosProtoJuin3List by remember(uiState.B_ClientInfosProtoJuin3List) { mutableStateOf(uiState.B_ClientInfosProtoJuin3List) }
+    val datasB_ClientInfosProtoJuin3List by remember(uiState.b_ClientInfosProtoJuin3List) { mutableStateOf(uiState.b_ClientInfosProtoJuin3List) }
 
     if (progress < 1.0f) {
         LoadingScreenB_ClientProtoJuin3(progress)

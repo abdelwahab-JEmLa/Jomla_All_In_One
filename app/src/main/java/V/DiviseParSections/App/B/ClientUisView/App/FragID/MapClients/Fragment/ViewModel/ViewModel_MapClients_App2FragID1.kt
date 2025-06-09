@@ -46,7 +46,7 @@ data class PanelsGroupeButton(
 }
 
 data class MapClientsUiState(
-    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
     val e1SecteurDeClientsList: List<E1SecteurDeClients> = emptyList(),
@@ -60,7 +60,7 @@ data class MapClientsUiState(
             PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
         ),
 
-)
+    )
 
 class ViewModel_MapClients_App2FragID1(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -82,7 +82,7 @@ class ViewModel_MapClients_App2FragID1(
     val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model
         .c3_BonAchate_Repository.modelDatasSnapList
 
-    val bProto_ClientsDataBase = uiState.value.B_ClientInfosProtoJuin3List
+    val bProto_ClientsDataBase = uiState.value.b_ClientInfosProtoJuin3List
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
@@ -109,7 +109,7 @@ class ViewModel_MapClients_App2FragID1(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        b_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
                         mainLoadingProgress = model.progress
                     )
                 }
