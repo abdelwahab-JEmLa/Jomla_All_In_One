@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 
 @Dao
 interface _1_3_TransactionCommercialDao {
@@ -14,6 +15,9 @@ interface _1_3_TransactionCommercialDao {
 
     @Query("SELECT * FROM C3_BonAchate")
     suspend fun getAll(): MutableList<C3_BonAchate>
+
+    @Upsert
+    suspend fun upsert(data: C3_BonAchate)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: C3_BonAchate)

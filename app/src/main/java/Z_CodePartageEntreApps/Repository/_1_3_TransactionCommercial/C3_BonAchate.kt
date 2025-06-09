@@ -41,7 +41,9 @@ data class C3_BonAchate(
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
 
-
+    // Section keyFireBase et Update Version Id
+    var keyFireBase: String = "",
+    var dernierFireBaseUpdateTimestamps: Long = 0,
     ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {

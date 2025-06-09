@@ -24,6 +24,8 @@ class C3_BonAchate_RepositoryImp(
     override var modelDatasSnapList: SnapshotStateList<C3_BonAchate> =
         mutableStateListOf()
 
+    val refModel = C3_BonAchate.caRef
+
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)
 
@@ -38,6 +40,10 @@ class C3_BonAchate_RepositoryImp(
     private var valueEventListener: ValueEventListener? = null
     private val listenerLock = Any()
     private val flowListenerLock = Any()
+
+    val dao = appDatabase._1_3_TransactionCommercialDao()
+
+    var isListenerRegistered = false
 
 
     init {
@@ -73,9 +79,69 @@ class C3_BonAchate_RepositoryImp(
             loadDepuitRoom()
             checkDataConsistency()
 
+            if (!isListenerRegistered) {
+                triggerUpdateFbParTimestampsListener()
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
+    }
+
+
+    fun triggerUpdateFbParTimestampsListener() {
+        if (isListenerRegistered) return
+        isListenerRegistered = true
+
+        refModel.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        var updateCount = 0
+                        for (child in snapshot.children) {
+                            try {
+                                child.getValue(C3_BonAchate::class.java)?.let { entity ->
+                                    val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
+                                    val shouldUpdate = try {
+                                        val localEntity = dao.getAll()
+                                            .find { it.keyFireBase == entityWithKey.keyFireBase }
+                                        if (localEntity == null) {
+                                            true
+                                        } else {
+                                            entityWithKey.dernierFireBaseUpdateTimestamps > localEntity.dernierFireBaseUpdateTimestamps
+                                        }
+                                    } catch (e: Exception) {
+                                        true
+                                    }
+
+                                    if (shouldUpdate) {
+                                        dao.upsert(entityWithKey)
+                                        updateCount++
+                                    }
+                                }
+                            } catch (e: Exception) {
+                            }
+                        }
+
+                        if (updateCount > 0) {
+                            val allData = dao.getAll()
+                            withContext(Dispatchers.Main) {
+                                updateUiModel(allData)
+                            }
+                        }
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                isListenerRegistered = false
+            }
+        })
+    }
+
+    fun updateUiModel(updatedList: MutableList<C3_BonAchate>) {
+        modelDatasSnapList.clear()
+        modelDatasSnapList.addAll(updatedList)
     }
 
     private suspend fun loadDepuitRoom() {
@@ -108,7 +174,7 @@ class C3_BonAchate_RepositoryImp(
         try {
             val roomCount = withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._1_3_TransactionCommercialDao().getCount()
+                    dao.getCount()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting Room count: ${e.message}")
                     0
@@ -162,15 +228,15 @@ class C3_BonAchate_RepositoryImp(
 
                             repositoryScope.launch(Dispatchers.Main) {
                                 if (updatedList.isNotEmpty()) {
-                                    modelDatasSnapList.clear()
-                                    modelDatasSnapList.addAll(updatedList)
+                                    updateUiModel(updatedList)
                                 }
                             }
 
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
                                     appDatabase._1_3_TransactionCommercialDao().deleteAll()
-                                    appDatabase._1_3_TransactionCommercialDao().insertAll(updatedList)
+                                    appDatabase._1_3_TransactionCommercialDao()
+                                        .insertAll(updatedList)
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -182,6 +248,7 @@ class C3_BonAchate_RepositoryImp(
                             Log.e(TAG, "Error in Firebase data listener: ${e.message}")
                         }
                     }
+
 
                     override fun onCancelled(error: DatabaseError) {
                         Log.e(TAG, "Firebase listener cancelled: ${error.message}")
@@ -198,7 +265,9 @@ class C3_BonAchate_RepositoryImp(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    C3_BonAchate_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    C3_BonAchate_Repository.sonDataBaseRef.removeEventListener(
+                        flowValueEventListener!!
+                    )
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -279,8 +348,6 @@ class C3_BonAchate_RepositoryImp(
             }
         }
     }
-
-
 
 
     fun cleanup() {
