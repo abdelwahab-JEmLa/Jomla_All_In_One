@@ -172,7 +172,8 @@ fun MarkerStatusDialog(
                             ) {
 
                                 item {
-                                    C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
+                                    C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE       //<--
+                                    //TODO(1): pk que je click ici 
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,

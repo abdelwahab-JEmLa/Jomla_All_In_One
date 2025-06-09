@@ -149,6 +149,7 @@ fun MapContent(
 
     // Main effect for updating markers on the map when data changes
     val updateTriggers = getMapUpdateTriggers(
+        viewModel.c3_BonAchate_List,
         viewModel,
         clientDataBaseSnapList.size,
         clientEnCourDeVent,
