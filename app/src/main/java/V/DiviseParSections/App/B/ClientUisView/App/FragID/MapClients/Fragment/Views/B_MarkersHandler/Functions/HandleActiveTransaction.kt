@@ -12,7 +12,6 @@ fun handleActiveTransaction(
     onMarkerFound: (Marker) -> Unit,
 ) {
     if (activeTransactionId != 0L) {
-        // Find the transaction to get the client ID
         val activeTransaction = viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
             .c3TransactionCommercialRepository.modelDatasSnapList
             .find { it.vid == activeTransactionId }
@@ -23,7 +22,6 @@ fun handleActiveTransaction(
                 .find { it.id == transaction.clientAcheteurID.toString() }
 
             clientMarker?.let { marker ->
-                // Select the marker and show its information
                 onMarkerFound(marker)
                 marker.showInfoWindow()
 

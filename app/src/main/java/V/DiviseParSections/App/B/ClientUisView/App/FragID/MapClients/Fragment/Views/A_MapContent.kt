@@ -75,7 +75,6 @@ fun MapContent(
         viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    // Handle active transaction by showing the relevant marker
     LaunchedEffect(viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value) {
         handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
             selectedMarker = marker
@@ -100,7 +99,6 @@ fun MapContent(
         }
     }
 
-    // Main effect for updating markers on the map when data changes
     val updateTriggers = getMapUpdateTriggers(
         viewModel.c3_BonAchate_List,
         currentFilterMode,
