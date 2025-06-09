@@ -7,6 +7,12 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.Extension.B_ClientDataBaseDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBaseProtoE
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F.B_ClientInfos
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F.B_ClientInfosDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.D_EtateMessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
@@ -16,8 +22,6 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.Extension.B_ClientDataBaseDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
@@ -26,11 +30,9 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.B_ClientInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.C_TypeTarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Repository.A_ProduitInfosDao
-import Z_CodePartageEntreApps.Proto.Par.Type.Repository.B_ClientInfosDao
 import Z_CodePartageEntreApps.Proto.Par.Type.Repository.C_TypeTarificationInfosDao
 import Z_CodePartageEntreApps.Proto.Par.Type.Repository.D_TarificationInfosDao
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao._1_1_CouleurAcheteOperationDao
@@ -44,8 +46,6 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_Ve
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.DataBase._2_1_ProduitsDataBaseDao
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBaseProtoE
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.DataBase._4_CouleurOperationCommandDao
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand
 import android.content.Context
@@ -78,7 +78,6 @@ import java.util.Date
         _1_5_Vendeur::class,
 
         _2_1_ProduitsDataBase::class,
-        _3_ClientsDataBaseProtoE::class,
         _4_CouleurOperationCommand::class,
 
         E1SecteurDeClients::class,
@@ -87,13 +86,16 @@ import java.util.Date
         D_EtateMessageVocale::class,
 
         A_ProduitInfos::class,
-        B_ClientInfos::class,
         C_TypeTarificationInfos::class,
         D_TarificationInfos::class   ,
 
         ArticlesBasesStatsTable::class,
         CategoriesTabelle::class,
+
+        B_ClientInfos::class,
         B_ClientInfosProtoJuin3 ::class,
+        _3_ClientsDataBaseProtoE::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -111,7 +113,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
     abstract fun articleDao(): ArticleDao
 
-    abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
     abstract fun I_CategorieProduitsDao(): I_CategorieProduitsDao
     abstract fun a_ProduiteDao(): A_ProduitDao
 
@@ -122,7 +123,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
 
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
-    abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
     abstract fun e1SecteurDeClientsDao(): E1SecteurDeClientsDao
@@ -130,7 +130,6 @@ abstract class AppDatabase : RoomDatabase() {
 
 
     abstract fun a_ProduitInfosDao(): A_ProduitInfosDao
-    abstract fun b_ClientInfosDao(): B_ClientInfosDao
     abstract fun c_TypeTarificationInfosDao(): C_TypeTarificationInfosDao
     abstract fun dTarificationInfosDao(): D_TarificationInfosDao
 
@@ -138,7 +137,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun D_EtateMessageVocaleDao(): D_EtateMessageVocaleDao
+
     abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
+    abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
+    abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
+    abstract fun b_ClientInfosDao(): B_ClientInfosDao
 
 
     object DatabaseModule {

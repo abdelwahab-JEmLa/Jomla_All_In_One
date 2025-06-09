@@ -1,6 +1,5 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Repository
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F
 
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.B_ClientInfos
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

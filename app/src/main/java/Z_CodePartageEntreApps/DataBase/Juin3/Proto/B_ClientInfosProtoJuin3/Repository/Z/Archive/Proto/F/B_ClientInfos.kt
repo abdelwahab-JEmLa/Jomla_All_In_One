@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Models
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F
 
 import Z_CodePartageEntreApps.Model.getKeyFireBase
 import androidx.room.Entity
