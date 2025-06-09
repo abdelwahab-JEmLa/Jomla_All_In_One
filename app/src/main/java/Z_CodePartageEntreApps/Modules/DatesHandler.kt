@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.annotation.SuppressLint
 import android.util.Log
 import java.text.SimpleDateFormat
@@ -77,7 +77,7 @@ class DatesHandler {
         }
     }
 
-    fun debugTimestamps(transactions: List<C3_BonAchate>, tag: String) {
+    fun debugTimestamps(transactions: List<C3_TransactionCommercial>, tag: String) {
         Log.d(tag, "=== DEBUG TIMESTAMPS ===")
         transactions.forEachIndexed { index, transaction ->
             val date = java.util.Date(transaction.timestamps)

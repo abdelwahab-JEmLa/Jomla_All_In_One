@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +28,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<C3_BonAchate>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<C3_TransactionCommercial>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible }
         }
     }
 
@@ -39,7 +39,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<C3_BonAchate>) {
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<C3_BonAchate>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<C3_TransactionCommercial>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,7 +50,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<C3_BonAchate>) {
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: C3_BonAchate) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: C3_TransactionCommercial) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -67,18 +67,18 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: C3_BonAchate) {
     }
 }
 
-fun testData(): List<C3_BonAchate> {
+fun testData(): List<C3_TransactionCommercial> {
     return listOf(
-        C3_BonAchate(
+        C3_TransactionCommercial(
             vid = 10L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
-            etateActuellementEst = C3_BonAchate.EtateActuellementEst.Cible
+            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.Cible
         ),
-        C3_BonAchate(
+        C3_TransactionCommercial(
             vid = 5L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
@@ -87,30 +87,29 @@ fun testData(): List<C3_BonAchate> {
             heurDebutInString = "20:47",
             heurFinInString = "Non Defini",
             cActive = false,
-            cJustPourVoirPanie = false,
-            ouvert = false,
+           // tagCeBonEstOuvertPourComptsIds = "false",
             vocaleKeyID = "",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
+            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
         ),
-        C3_BonAchate(
+        C3_TransactionCommercial(
             vid = 4L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
-            etateActuellementEst = C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
-        C3_BonAchate(
+        C3_TransactionCommercial(
             vid = 6L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",
-            etateActuellementEst = C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
         )
     )
 }

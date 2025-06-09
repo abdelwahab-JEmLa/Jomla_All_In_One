@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.TimeFormatUtils
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val bonAchatList: List<C3_BonAchate> = emptyList(),
+    val bonAchatList: List<C3_TransactionCommercial> = emptyList(),
 
     val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(vid = 7L),
     val isRecording: Boolean = false,
@@ -57,7 +57,7 @@ class RecordingViewModel(
     private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
     val editingInterval = _editingInterval.asStateFlow()
 
-    private fun log(list: List<C3_BonAchate>) {
+    private fun log(list: List<C3_TransactionCommercial>) {
         val map = list.map { bon ->
             val clientAcheteurID = bon.clientAcheteurID
             val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
@@ -71,7 +71,7 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
 
@@ -130,7 +130,7 @@ class RecordingViewModel(
         }
     }
 
-    fun getLastTransaction(client: B_ClientDataBase): C3_BonAchate? =
+    fun getLastTransaction(client: B_ClientDataBaseProtoJuin3): C3_TransactionCommercial? =
         repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 
@@ -138,7 +138,7 @@ class RecordingViewModel(
     private fun calculateNombreClientAvecCible(): Int {
         val count = bProto_ClientsDataBase.count { client ->
             val lastTransaction = getLastTransaction(client)
-            val isCible = lastTransaction?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
+            val isCible = lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
             Log.d(TAG, "Client ${client.id}: last transaction state = ${lastTransaction?.etateActuellementEst}, is Cible = $isCible")
             isCible
         }

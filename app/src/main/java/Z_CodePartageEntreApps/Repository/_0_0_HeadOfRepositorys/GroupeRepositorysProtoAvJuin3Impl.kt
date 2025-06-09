@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
@@ -107,7 +107,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is C3_BonAchate -> processDeleteOperation(
+                        is C3_TransactionCommercial -> processDeleteOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -191,7 +191,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
             // Delete from Room database
             when (databaseDao) {
-                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as C3_BonAchate)
+                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as C3_TransactionCommercial)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
                 is _1_4_PeriodeVentDao -> databaseDao.delete(data as _1_4_PeriodeVent)
                 is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
@@ -243,7 +243,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is C3_BonAchate -> processUpsertOperation(
+                        is C3_TransactionCommercial -> processUpsertOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -252,7 +252,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             onSuccess = { resultVid ->
                                 Log.d(
                                     TAG,
-                                    "Upsert completed for C3_BonAchate with VID: $resultVid"
+                                    "Upsert completed for C3_TransactionCommercial with VID: $resultVid"
                                 )
                                 if (resultVid <= 0) {
                                     Log.e(
@@ -314,7 +314,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     ) where DataBase : Any {
         // Create proper copy based on data type
         val dataToUpsert = when (data) {
-            is C3_BonAchate -> data.copy() as DataBase
+            is C3_TransactionCommercial -> data.copy() as DataBase
             is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
             else -> data // Fallback to original object if not a known data class
         }
@@ -336,8 +336,8 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_BonAchate)
-                        Log.d(TAG, "Update result for C3_BonAchate: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_TransactionCommercial)
+                        Log.d(TAG, "Update result for C3_TransactionCommercial: $result")
                         result
                     }
 
@@ -386,8 +386,8 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 val newVid = when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_BonAchate)
-                        Log.d(TAG, "New VID for C3_BonAchate: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as C3_TransactionCommercial)
+                        Log.d(TAG, "New VID for C3_TransactionCommercial: $result")
                         result
                     }
 
@@ -564,7 +564,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
                     // Update the snapshot list
                     withContext(Dispatchers.Main) {
-                        // Clear and upsert_1_3_TransactionCommercial on the main thread
+                        // Clear and upsertLenceCommandeRepoGroupedProtoAvanJuin3 on the main thread
                         repo_1_3_TransactionCommercial.modelDatasSnapList.clear()
                         repo_1_3_TransactionCommercial.modelDatasSnapList.addAll(refreshedData)
                     }
@@ -576,10 +576,10 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     "ProduitsDataBase refreshed: ${repo_1_3_TransactionCommercial.modelDatasSnapList.size} items"
                 )
 
-                // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
+                // Notify any observers that may need to upsertLenceCommandeRepoGroupedProtoAvanJuin3 UI based on this change
                 // (This will cause connected components to recompose)
                 progressRepo.value =
-                    progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
+                    progressRepo.value  // Trigger a small upsertLenceCommandeRepoGroupedProtoAvanJuin3 to force recomposition
             } catch (e: Exception) {
                 Log.e(
                     TAG,
@@ -590,7 +590,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     }
 
     override fun updateActiveIdDe_1_5_Vendeur(id: Long): Unit {
-        repositorys_Model.activeIdDe_1_5_Vendeur = id
+        repositorys_Model.activeIdDeA5Vendeur = id
     }
 
     override fun notifyDataChanged_2_1_ProduitsDataBase_Repository() {
@@ -606,7 +606,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
                     // Update the snapshot list
                     withContext(Dispatchers.Main) {
-                        // Clear and upsert_1_3_TransactionCommercial on the main thread
+                        // Clear and upsertLenceCommandeRepoGroupedProtoAvanJuin3 on the main thread
                         _2_1_Repository.modelDatasSnapList.clear()
                         _2_1_Repository.modelDatasSnapList.addAll(refreshedData)
                     }
@@ -618,10 +618,10 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     "ProduitsDataBase refreshed: ${_2_1_Repository.modelDatasSnapList.size} items"
                 )
 
-                // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
+                // Notify any observers that may need to upsertLenceCommandeRepoGroupedProtoAvanJuin3 UI based on this change
                 // (This will cause connected components to recompose)
                 progressRepo.value =
-                    progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
+                    progressRepo.value  // Trigger a small upsertLenceCommandeRepoGroupedProtoAvanJuin3 to force recomposition
             } catch (e: Exception) {
                 Log.e(
                     TAG,

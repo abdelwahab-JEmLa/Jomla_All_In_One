@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton
 
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
@@ -30,18 +30,18 @@ class ViewModel_BProto_ClientsDataBase(
                         val newName = client.nom.replace("Nouveau client", "ز")
                         client.copy(
                             nom = newName,
-                            actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                            actuelleEtat = B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.NON_DEFINI
                         )
                     } else {
-                        // Just upsert_1_3_TransactionCommercial the state for other clientAchteurs
+                        // Just upsertLenceCommandeRepoGroupedProtoAvanJuin3 the state for other clientAchteurs
                         client.copy(
-                            actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                            actuelleEtat = B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.NON_DEFINI
                         )
                     }
                 }
 
                 // Convert to SnapshotStateList for the repository
-                val snapshotList = SnapshotStateList<B_ClientDataBase>()
+                val snapshotList = SnapshotStateList<B_ClientDataBaseProtoJuin3>()
                 snapshotList.addAll(updatedClients)
 
                 // Update the repository with all modified clientAchteurs
@@ -66,7 +66,7 @@ class ViewModel_BProto_ClientsDataBase(
 
                 // Transform old data structure to new structure
                 val newDataList = ancienDataList.map { ancienData ->
-                    Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase(
+                    Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3(
                         id = ancienData.id,
                         nom = ancienData.nom,
                         numTelephone = ancienData.statueDeBase.numTelephone,
@@ -78,23 +78,23 @@ class ViewModel_BProto_ClientsDataBase(
                         auFilterFAB = ancienData.statueDeBase.auFilterFAB,
                         typeDeSonMagasine = when (ancienData.statueDeBase.typeDeSonMagasine) {
                             B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
 
                             B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
 
                             else ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                         },
                         clientTypeMode = when (ancienData.etatesMutable.clientTypeMode) {
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.NEVEAU
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.NEVEAU
 
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.ANCIEN ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.ANCIEN
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.ANCIEN
 
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.EVITE ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.EVITE
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.EVITE
                         },
                         latitude = ancienData.gpsLocation.latitude,
                         longitude = ancienData.gpsLocation.longitude,
@@ -151,7 +151,7 @@ class ViewModel_BProto_ClientsDataBase(
     }
 
     // Helper function to convert B_ClientInfos to _3_ClientsDataBase
-    private fun convertToClientsDataBase(client: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase): _3_ClientsDataBase {
+    private fun convertToClientsDataBase(client: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3): _3_ClientsDataBase {
         return _3_ClientsDataBase(
             vid = client.id,
             nom = client.nom,
@@ -173,61 +173,61 @@ class ViewModel_BProto_ClientsDataBase(
     }
 
     // Helper function to convert TypeDeSonMagasine enum
-    private fun convertTypeDeSonMagasine(typeDeSonMagasine: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine): _3_ClientsDataBase.TypeDeSonMagasine {
+    private fun convertTypeDeSonMagasine(typeDeSonMagasine: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine): _3_ClientsDataBase.TypeDeSonMagasine {
         return when (typeDeSonMagasine) {
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
                 _3_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
                 _3_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
         }
     }
 
     // Helper function to convert ClientTypeMode enum
-    private fun convertClientTypeMode(clientTypeMode: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode): _3_ClientsDataBase.ClientTypeMode {
+    private fun convertClientTypeMode(clientTypeMode: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode): _3_ClientsDataBase.ClientTypeMode {
         return when (clientTypeMode) {
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.NEVEAU ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.NEVEAU ->
                 _3_ClientsDataBase.ClientTypeMode.NEVEAU
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.ANCIEN ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.ANCIEN ->
                 _3_ClientsDataBase.ClientTypeMode.ANCIEN
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.EVITE ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.ClientTypeMode.EVITE ->
                 _3_ClientsDataBase.ClientTypeMode.EVITE
         }
     }
 
     // Helper function to convert DernierEtatAAffiche enum
-    private fun convertDernierEtatAAffiche(etat: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche): _3_ClientsDataBase.DernierEtatAAffiche {
+    private fun convertDernierEtatAAffiche(etat: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche): _3_ClientsDataBase.DernierEtatAAffiche {
         return when (etat) {
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.NON_DEFINI ->
                 _3_ClientsDataBase.DernierEtatAAffiche.NON_DEFINI
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT ->
                 _3_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.VENDU_A_LUI ->
                 _3_ClientsDataBase.DernierEtatAAffiche.VENDU_A_LUI
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.Cible ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.Cible ->
                 _3_ClientsDataBase.DernierEtatAAffiche.Cible
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2 ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2 ->
                 _3_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2 ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2 ->
                 _3_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO ->
                 _3_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.AVEC_MARCHANDISE ->
                 _3_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.FERME ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.FERME ->
                 _3_ClientsDataBase.DernierEtatAAffiche.FERME
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.A_EVITE ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.A_EVITE ->
                 _3_ClientsDataBase.DernierEtatAAffiche.A_EVITE
 
             else -> {
@@ -237,40 +237,40 @@ class ViewModel_BProto_ClientsDataBase(
     }
 
     // Helper function to map the old DernierEtatAAffiche enum to the new one
-    private fun mapActuelleEtat(oldEtat: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche?): Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche {
+    private fun mapActuelleEtat(oldEtat: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche?): Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche {
         return when (oldEtat) {
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.آNON_DEFINI ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.NON_DEFINI
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.VENDU_A_LUI
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.Cible
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.Cible
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2 ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2 ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.AVEC_MARCHANDISE
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.FERME
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.FERME
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.A_EVITE
 
             null ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.NON_DEFINI
         }
     }
 

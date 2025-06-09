@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
@@ -21,7 +21,7 @@ class B_ClientDataBaseRepositoryImpl(
 ) : B_ClientDataBaseRepository {
     private val TAG = "B_ClientInfos"
 
-    override var modelDatas: SnapshotStateList<B_ClientDataBase> = mutableStateListOf()
+    override var modelDatas: SnapshotStateList<B_ClientDataBaseProtoJuin3> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     // Use AtomicBoolean for thread safety
@@ -43,7 +43,7 @@ class B_ClientDataBaseRepositoryImpl(
     private suspend fun initializeRepository() {
         try {
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsert_1_3_TransactionCommercial if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsertLenceCommandeRepoGroupedProtoAvanJuin3 if necessary
         } catch (e: Exception) {
             // Log error
         }
@@ -108,7 +108,7 @@ class B_ClientDataBaseRepositoryImpl(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (dataSnapshot in snapshot.children) {
                             try {
-                                val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
+                                val clientData = dataSnapshot.getValue(B_ClientDataBaseProtoJuin3::class.java)
                                 clientData?.let { newData ->
                                     val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                                     if (existingIndex != -1) {
@@ -162,7 +162,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    private fun hasRelevantChanges(oldData: B_ClientDataBase, newData: B_ClientDataBase): Boolean {
+    private fun hasRelevantChanges(oldData: B_ClientDataBaseProtoJuin3, newData: B_ClientDataBaseProtoJuin3): Boolean {
         return oldData.latitude != newData.latitude ||
                 oldData.longitude != newData.longitude ||
                 oldData.actuelleEtat != newData.actuelleEtat ||
@@ -170,7 +170,7 @@ class B_ClientDataBaseRepositoryImpl(
                 oldData.clientTypeMode != newData.clientTypeMode
     }
 
-    override fun deleteUnSeulData(data: B_ClientDataBase) {
+    override fun deleteUnSeulData(data: B_ClientDataBaseProtoJuin3) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
                 val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
@@ -204,11 +204,11 @@ class B_ClientDataBaseRepositoryImpl(
                     val task = B_ClientDataBaseRepository.caReference.get()
                     val snapshot = Tasks.await(task)
                     appDatabase.b_ClientDataBaseDao().deleteAll()
-                    val clientsList = mutableListOf<B_ClientDataBase>()
+                    val clientsList = mutableListOf<B_ClientDataBaseProtoJuin3>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
+                            val clientData = dataSnapshot.getValue(B_ClientDataBaseProtoJuin3::class.java)
                             clientData?.let {
                                 clientsList.add(it)
                             }
@@ -237,7 +237,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    override fun addData(data: B_ClientDataBase) {
+    override fun addData(data: B_ClientDataBaseProtoJuin3) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
                 modelDatas.add(data)
@@ -256,7 +256,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    override fun updateUnSeulData(data: B_ClientDataBase?) {
+    override fun updateUnSeulData(data: B_ClientDataBaseProtoJuin3?) {
         if (data == null) {
             return
         }
@@ -278,7 +278,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: B_ClientDataBase) {
+    private suspend fun firebaseUpdateData(data: B_ClientDataBaseProtoJuin3) {
         try {
             B_ClientDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
         } catch (e: Exception) {
@@ -286,7 +286,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientDataBase>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientDataBaseProtoJuin3>) {
         if (isUpdating.getAndSet(true)) {
             return
         }
@@ -294,7 +294,7 @@ class B_ClientDataBaseRepositoryImpl(
         try {
             val datasList = datas.toList()
 
-            // First, handle Room database upsert_1_3_TransactionCommercial
+            // First, handle Room database upsertLenceCommandeRepoGroupedProtoAvanJuin3
             withContext(Dispatchers.IO) {
                 try {
                     appDatabase.b_ClientDataBaseDao().deleteAll()
@@ -304,7 +304,7 @@ class B_ClientDataBaseRepositoryImpl(
                 }
             }
 
-            // Then upsert_1_3_TransactionCommercial Firebase (temporarily remove listener to avoid cycles)
+            // Then upsertLenceCommandeRepoGroupedProtoAvanJuin3 Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
                 val tempListener = valueEventListener
 
@@ -338,7 +338,7 @@ class B_ClientDataBaseRepositoryImpl(
                 }
             }
 
-            // Finally upsert_1_3_TransactionCommercial UI
+            // Finally upsertLenceCommandeRepoGroupedProtoAvanJuin3 UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)

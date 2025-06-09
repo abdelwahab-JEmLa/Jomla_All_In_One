@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 data class UiState_StartUpScreen(
     var _1_1_CouleurAcheteOperationList: SnapshotStateList<_1_1_CouleurAcheteOperation> = mutableStateListOf(),
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
-    var _C_3_BonAchateList: SnapshotStateList<C3_BonAchate> = mutableStateListOf(),
+    var _C_3_BonAchateList: SnapshotStateList<C3_TransactionCommercial> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
 
     var bonAchetOnCourseMntID: Long = 1,
@@ -81,7 +81,7 @@ class ViewModelFragment_StartUpScreen(
     }
     private fun loadData() {
         _uiState.value = UiState_StartUpScreen(
-            itsManagerCompt= headModel.activeIdDe_1_5_Vendeur > 0
+            itsManagerCompt= headModel.activeIdDeA5Vendeur > 0
         )
     }
 

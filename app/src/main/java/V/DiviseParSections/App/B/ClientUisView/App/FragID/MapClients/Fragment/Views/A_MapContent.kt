@@ -64,7 +64,7 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
         mutableStateOf(
-            if (viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeIdDe_1_5_Vendeur==1L) {
+            if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur==1L) {
                 ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
             }  else {
                 ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
@@ -75,7 +75,7 @@ fun MapContent(
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
     val activeTransactionId =
-        viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
+        viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     // Collect UI state to check button visibility
@@ -85,7 +85,7 @@ fun MapContent(
     val sectorMapReloadTrigger = viewModel.mapReloadTigger
 
     // Handle active transaction by showing the relevant marker
-    LaunchedEffect(viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value) {
+    LaunchedEffect(viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value) {
         handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
             selectedMarker = marker
             showMarkerDialog = true

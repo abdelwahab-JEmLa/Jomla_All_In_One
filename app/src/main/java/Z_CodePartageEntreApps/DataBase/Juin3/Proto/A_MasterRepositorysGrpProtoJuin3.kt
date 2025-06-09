@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 data class MasterRepositorysModel(
     val repoStateA_ProduitInfos: A_ProduitInfosRepository.RepoState?,
+    val b_ClientInfosProtoJuin3Repository: B_ClientInfosProtoJuin3Repository.RepoState?,
     val repoStateC_CategorieProduitInfos: C_CategorieProduitInfosRepository.RepoState?,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository.RepoState?,
     val progress: Float = 0f
@@ -21,6 +23,7 @@ data class MasterRepositorysModel(
 
 class A_MasterRepositorysGrpProtoJuin3(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
+    val b_ClientInfosProtoJuin3Repository: B_ClientInfosProtoJuin3Repository,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
     val e_GroupedDataBasesRepositoryProtoAvant3Juin: GroupeRepositorysProtoAvJuin3,
@@ -32,10 +35,12 @@ class A_MasterRepositorysGrpProtoJuin3(
         CoroutineScope(Dispatchers.Main).launch {
             combine(
                 repoA_ProduitInfos.repoState,
+                b_ClientInfosProtoJuin3Repository.repoState,
                 repoC_CategorieProduitInfos.repoState,
                 d_EtateMessageVocaleRepository.repoState,
                 e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3_BonAchate_Repository.progressRepo,
             ) { repoA_ProduitInfos,
+                b_ClientInfosProtoJuin3Repository,
                 repoC_CategorieProduitInfos,
                 d_EtateMessageVocaleRepository ,
                 c3_BonAchate_Repository,
@@ -43,14 +48,17 @@ class A_MasterRepositorysGrpProtoJuin3(
                 val progressA = repoA_ProduitInfos?.mainProgressRepo ?: 0f
                 val progressC = repoC_CategorieProduitInfos?.mainProgressRepo ?: 0f
                 val progressD = d_EtateMessageVocaleRepository?.mainProgressRepo ?: 0f
-                val progressE = c3_BonAchate_Repository
-                val combinedProgress = (progressA + progressC
-                        + progressD
-                        + progressE
+                val combinedProgress = (
+                        progressA
+                                + progressC
+                                + progressD
+                                + c3_BonAchate_Repository
+                                + (b_ClientInfosProtoJuin3Repository?.mainProgressRepo ?: 0f)
                         ) / 2f
 
                 MasterRepositorysModel(
                     repoStateA_ProduitInfos = repoA_ProduitInfos,
+                    b_ClientInfosProtoJuin3Repository = b_ClientInfosProtoJuin3Repository,
                     repoStateC_CategorieProduitInfos = repoC_CategorieProduitInfos,
                     d_EtateMessageVocaleRepository = d_EtateMessageVocaleRepository,
                     progress = combinedProgress

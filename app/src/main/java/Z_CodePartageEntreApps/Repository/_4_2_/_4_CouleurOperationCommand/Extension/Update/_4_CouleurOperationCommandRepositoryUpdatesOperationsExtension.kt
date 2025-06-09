@@ -199,10 +199,10 @@ class _4_CouleurOperationCommandRepositoryUpdatesOperationsExtension(
 
             reference.updateChildren(batchUpdates)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Batch upsert_1_3_TransactionCommercial successful for ${datas.size} items")
+                    Log.d(TAG, "Batch upsertLenceCommandeRepoGroupedProtoAvanJuin3 successful for ${datas.size} items")
                 }
                 .addOnFailureListener { exception ->
-                    Log.e(TAG, "Batch upsert_1_3_TransactionCommercial failed: ${exception.message}")
+                    Log.e(TAG, "Batch upsertLenceCommandeRepoGroupedProtoAvanJuin3 failed: ${exception.message}")
                 }
         } catch (e: Exception) {
             Log.e(TAG, "Error in batchFireBaseSet: ${e.message}")

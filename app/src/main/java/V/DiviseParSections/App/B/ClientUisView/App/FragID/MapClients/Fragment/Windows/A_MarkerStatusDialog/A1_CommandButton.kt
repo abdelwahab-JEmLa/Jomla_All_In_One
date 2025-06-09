@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,13 +33,14 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
-    etateActuellementEst1: C3_BonAchate.EtateActuellementEst,
-
     ) {
+    val etateActuellementEst1=C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
-                upsert_1_3_TransactionCommercial(
+
+                upsertLenceCommandeRepoGroupedProtoAvanJuin3(
                     viewModel,
                     clientId,
                     etateActuellementEst1
@@ -47,10 +48,12 @@ fun CommandButton(
 
                 val selectedMarkedID = selectedMarker.id.toLong()
                 viewModel.updateLongAppSetting(selectedMarkedID)
-
                 onUpdateLongAppSetting()
+
                 onDismiss()
+
                 viewModel.startRecordIfNot()
+
             }
         },
         modifier = modifier.fillMaxWidth(),

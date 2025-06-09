@@ -103,10 +103,10 @@ fun C_MainItemF1(
             IconButton(
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        // Update local state first to trigger immediate UI upsert_1_3_TransactionCommercial
+                        // Update local state first to trigger immediate UI upsertLenceCommandeRepoGroupedProtoAvanJuin3
                         localProbablementNonDispo = !localProbablementNonDispo
 
-                        // Then upsert_1_3_TransactionCommercial the model
+                        // Then upsertLenceCommandeRepoGroupedProtoAvanJuin3 the model
                         mainItem.probablementNonDispo = localProbablementNonDispo
 
                         // Update the item in the repository and notify
@@ -142,7 +142,7 @@ fun C_MainItemF1(
             IconButton(
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        // Update local state for immediate UI upsert_1_3_TransactionCommercial
+                        // Update local state for immediate UI upsertLenceCommandeRepoGroupedProtoAvanJuin3
                         localEnumVarNonDispoPourClients = when (localEnumVarNonDispoPourClients) {
                             A_Produit.NON_DISPO_POUR_CLIENTS.TOUT ->
                                 A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU

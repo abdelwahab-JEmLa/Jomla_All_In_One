@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -24,9 +24,9 @@ import java.util.Locale
 
 data class SecID5FragID2UiState(
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
-    val sl_C_3_BonAchate: SnapshotStateList<C3_BonAchate> = SnapshotStateList(),
+    val sl_C_3_BonAchate: SnapshotStateList<C3_TransactionCommercial> = SnapshotStateList(),
     val sl_3_ClientsDataBase: SnapshotStateList<_3_ClientsDataBase> = SnapshotStateList(),
-    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<C3_BonAchate>>> = emptyList(),
+    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<C3_TransactionCommercial>>> = emptyList(),
 )
 
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(

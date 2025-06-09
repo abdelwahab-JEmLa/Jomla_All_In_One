@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 
 @Entity
-data class B_ClientDataBase(
+data class B_ClientDataBaseProtoJuin3(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
@@ -33,8 +33,12 @@ data class B_ClientDataBase(
     var longitude: Double = 0.0,
     var title: String = "",
     var snippet: String = "",
-    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI
-) {
+    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
+
+    // Section Centralization Valeurs Pour Injection a TOu modules
+    var tagCeBonEstOuvertPourComptsIds: String ="",
+
+    ) {
     @IgnoreExtraProperties
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
@@ -75,6 +79,4 @@ data class B_ClientDataBase(
         )
     }
 
-    // Add no-arg constructor for Firebase
-    constructor() : this(1L)
 }

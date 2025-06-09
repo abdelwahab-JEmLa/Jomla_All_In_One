@@ -270,7 +270,7 @@ private suspend fun _ModelAppsFather.updateProducts(snapshot: DataSnapshot?) {
         try {
             createProduct(snap)?.let { produitsMainDataBase.add(it) }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to upsert_1_3_TransactionCommercial product: ${snap.key}", e)
+            Log.e(TAG, "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 product: ${snap.key}", e)
         }
     }
 }
@@ -332,7 +332,7 @@ private suspend fun _ModelAppsFather.updateClients(snapshot: DataSnapshot?) {
         try {
             createClient(snap)?.let { clientDataBase.add(it) }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to upsert_1_3_TransactionCommercial client: ${snap.key}", e)
+            Log.e(TAG, "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client: ${snap.key}", e)
         }
     }
 }
@@ -367,7 +367,7 @@ private suspend fun _ModelAppsFather.updateGrossists(snapshot: DataSnapshot?) {
         try {
             createGrossist(snap)?.let { grossistsDataBase.add(it) }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to upsert_1_3_TransactionCommercial grossist: ${snap.key}", e)
+            Log.e(TAG, "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 grossist: ${snap.key}", e)
         }
     }
 }
@@ -406,7 +406,7 @@ private suspend fun _ModelAppsFather.updateCouleurs(snapshot: DataSnapshot?) {
         try {
             createCouleur(snap)?.let { couleursProduitsInfos.add(it) }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to upsert_1_3_TransactionCommercial couleur: ${snap.key}", e)
+            Log.e(TAG, "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 couleur: ${snap.key}", e)
         }
     }
 }

@@ -135,7 +135,7 @@ fun MainScreen(
             val repositorysModel = viewModelInitApp.repo_0_0_HeadOfRepositorys_SQL_Repository
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-                .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
+                .find { it.vid == repositorysModel.activeIdDeA5Vendeur }?.hideAppScreen ?: false
 
             if (!shouldShowContent) {
                 Box(

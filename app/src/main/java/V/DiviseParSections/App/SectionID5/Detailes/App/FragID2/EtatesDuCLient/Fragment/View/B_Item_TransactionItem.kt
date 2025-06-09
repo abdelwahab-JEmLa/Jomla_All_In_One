@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -53,7 +53,7 @@ import org.koin.compose.koinInject
 @Composable
 fun B_Item_TransactionItem(
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
-    transaction: C3_BonAchate,
+    transaction: C3_TransactionCommercial,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
     val datesHandler = DatesHandler()
@@ -102,7 +102,7 @@ fun B_Item_TransactionItem(
         }
     }
 
-    if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    if (etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeTransactionId != transaction.vid
     ) {
         LaunchedEffect(key1 = Unit) {
@@ -162,11 +162,13 @@ fun B_Item_TransactionItem(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                    if (etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                    transaction.copy(ouvert = !transaction.ouvert)
+                                    transaction.copy(
+                                      //  tagCeBonEstOuvertPourComptsIds = !transaction.tagCeBonEstOuvertPourComptsIds
+                                    )
                                 ) {
                                     viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.value = transaction.vid
                                     viewModel.navigateToCartScreen()

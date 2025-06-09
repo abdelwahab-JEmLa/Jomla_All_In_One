@@ -25,7 +25,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
 ) {
     val repositorysModel = repo_0_0_HeadSQLRepositorys.repositorys_Model
 
-    private val idComptActivePourCeTelep = repositorysModel.activeIdDe_1_5_Vendeur
+    private val idComptActivePourCeTelep = repositorysModel.activeIdDeA5Vendeur
 
     private val repository15Vendeur = repositorysModel.repository_1_5_Vendeur
 

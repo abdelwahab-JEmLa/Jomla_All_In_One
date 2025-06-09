@@ -35,7 +35,7 @@ class GroupeRepositorysProtoAvJuin3Model(
     val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
     // FIXED: Make this reactive instead of a simple Long
-    var activeIdDe_1_5_Vendeur: Long = 1L,
+    var activeIdDeA5Vendeur: Long = 1L,
     var activeReactiveIdDe_1_5_Vendeur: MutableStateFlow<Long> = MutableStateFlow(startActive),
     ) {
     companion object {

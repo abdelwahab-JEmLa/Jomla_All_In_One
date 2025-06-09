@@ -30,7 +30,7 @@ fun B_ProduitCommande(
     }
 
     // Get the current period filter
-    val activeIdDe_1_5_Vendeur = models.activeIdDe_1_5_Vendeur
+    val activeIdDe_1_5_Vendeur = models.activeIdDeA5Vendeur
 
     // Derive the period filter as a remembered value
     val periodFilter = remember(activeIdDe_1_5_Vendeur) {

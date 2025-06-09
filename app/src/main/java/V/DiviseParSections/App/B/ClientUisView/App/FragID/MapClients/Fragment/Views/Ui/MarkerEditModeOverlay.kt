@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,7 +72,7 @@ fun MarkerEditModeOverlay(
 }
 
 fun handleMarkerPositionUpdate(
-    clientDataBaseSnapList: List<B_ClientDataBase>,
+    clientDataBaseSnapList: List<B_ClientDataBaseProtoJuin3>,
     editingMarkerId: Long,
     mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
@@ -83,7 +83,7 @@ fun handleMarkerPositionUpdate(
 
     clientToUpdate?.let { client ->
         val centerPoint = mapView.mapCenter
-        val updatedClient = B_ClientDataBase().apply {
+        val updatedClient = B_ClientDataBaseProtoJuin3().apply {
             id = client.id
             nom = client.nom
             numTelephone = client.numTelephone

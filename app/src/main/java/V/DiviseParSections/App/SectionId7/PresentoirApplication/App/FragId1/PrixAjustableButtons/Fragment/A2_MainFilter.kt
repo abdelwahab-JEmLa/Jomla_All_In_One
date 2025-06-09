@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.content.Context
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
-    bonAchatList: List<C3_BonAchate>,
+    bonAchatList: List<C3_TransactionCommercial>,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
     produitInfosList: SnapshotStateList<A_ProduitInfos>,
     showLabels: Boolean,
@@ -26,7 +26,7 @@ fun MainFilter(
     onClickAnulationButton: (() -> Unit)? = null 
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID } ?: C3_BonAchate()
+        bonAchatList.find { it.vid == filterBonID } ?: C3_TransactionCommercial()
     }
 
     val filteredProduit = remember(produitInfosList, filterProduitID) {

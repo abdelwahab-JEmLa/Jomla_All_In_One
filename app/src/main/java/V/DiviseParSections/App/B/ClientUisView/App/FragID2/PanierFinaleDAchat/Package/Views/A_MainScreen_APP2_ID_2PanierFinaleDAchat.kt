@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
@@ -78,9 +78,9 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     // Check if the BonAchat is in COMMANDE_LENCE state
     val isOrderMode =
         relativeBonAchate?.etateActuellementEst ==
-                C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 ||       relativeBonAchate?.etateActuellementEst ==
-                C3_BonAchate.EtateActuellementEst.PourVoirPanie
+                C3_TransactionCommercial.EtateActuellementEst.PourVoirPanie
 
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -129,7 +129,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                     .repositorys_Model,
                                 onQuantitySelected = {
                                 },
-                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsert_1_3_TransactionCommercial totalPrice when price changes
+                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvanJuin3 totalPrice when price changes
                                 onDoneupdatePrice = { colorOperations ->
                                     _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
                                 }

@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 
 @Entity
-data class C3_BonAchate(
+data class C3_TransactionCommercial(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 
@@ -27,13 +27,6 @@ data class C3_BonAchate(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
-    var cLeDataOuvertDuParentList: Boolean?=null,
-
-    var cActive: Boolean = false,
-
-    var cJustPourVoirPanie: Boolean = false,
-    var ouvert: Boolean = false,
-
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
@@ -41,18 +34,24 @@ data class C3_BonAchate(
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
 
+    // Section Centralization Valeurs Pour Injection a TOu modules
+    var tagCeBonEstOuvertPourComptsIds: String ="",
+
+    var cLeDataOuvertDuParentList: Boolean? = null,
+    var cActive: Boolean = false,
+
+
+
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
     var dernierFireBaseUpdateTimestamps: Long = 0,
-    ) {
+) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {
             val parent = "(${parentVID_1_4_PeriodeVent})"
             val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
 
-            val name = if (cJustPourVoirPanie)
-                "PourVoirPanie"
-            else
+            val name =
                 etateActuellementEst.nomArabe
 
             val autre = "->($name)"
@@ -90,10 +89,33 @@ data class C3_BonAchate(
                 .child("C_AchatsDataBases")
                 .child(
                     "D" +
-                                "_" +
-                                "TransactionCommercial"
-                                + "DataBAse"
+                            "_" +
+                            "TransactionCommercial"
+                            + "DataBAse"
 
                 )
+
+        //ici ce trouve Unique Functions
+
+        fun addOrIgnorTagCeBonEstOuvertPourComptsIds(
+            existingBonAchat: C3_TransactionCommercial,
+            activeIdDeA5Vendeur: Long,
+            existingBonAchat0: C3_TransactionCommercial
+        ): String {
+            val currentTags =
+                existingBonAchat.tagCeBonEstOuvertPourComptsIds.split(",").map { it.trim() }
+            val activeIdStr = activeIdDeA5Vendeur.toString()
+
+            val updatedTags = if (currentTags.contains(activeIdStr)) {
+                existingBonAchat.tagCeBonEstOuvertPourComptsIds // Ne pas ajouter si déjà présent
+            } else {
+                if (existingBonAchat0.tagCeBonEstOuvertPourComptsIds.isEmpty()) {
+                    activeIdStr
+                } else {
+                    "${existingBonAchat.tagCeBonEstOuvertPourComptsIds},$activeIdStr"
+                }
+            }
+            return updatedTags
+        }
     }
 }

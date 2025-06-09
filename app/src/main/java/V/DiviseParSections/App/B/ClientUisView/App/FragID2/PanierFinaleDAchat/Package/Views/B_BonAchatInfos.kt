@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
@@ -43,7 +43,7 @@ import org.koin.compose.koinInject
 fun ColumnScope.BonAchatInfos(
     composeKeyVID: Long?,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
-    relativeBonAchate: C3_BonAchate?,
+    relativeBonAchate: C3_TransactionCommercial?,
     itemCount: Int,
     formattedTotalPrice: String,
     showOrderSuccess: Boolean,

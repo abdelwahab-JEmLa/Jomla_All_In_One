@@ -21,10 +21,10 @@ class C3_BonAchate_RepositoryImp(
 ) : C3_BonAchate_Repository {
     private val TAG = C3_BonAchate_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<C3_BonAchate> =
+    override var modelDatasSnapList: SnapshotStateList<C3_TransactionCommercial> =
         mutableStateListOf()
 
-    val refModel = C3_BonAchate.caRef
+    val refModel = C3_TransactionCommercial.caRef
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)
@@ -52,8 +52,9 @@ class C3_BonAchate_RepositoryImp(
         }
     }
 
-    override fun getOuvert_1_3_TransactionCommercial(): C3_BonAchate? {
-        return modelDatasSnapList.find { it.ouvert }
+    override fun getOuvert_1_3_TransactionCommercial(): C3_TransactionCommercial? {
+        return   C3_TransactionCommercial()
+        //modelDatasSnapList.find { it.tagCeBonEstOuvertPourComptsIds }
     }
 
     override suspend fun ensureDataIsInitialized() {
@@ -99,7 +100,7 @@ class C3_BonAchate_RepositoryImp(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(C3_BonAchate::class.java)?.let { entity ->
+                                child.getValue(C3_TransactionCommercial::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity = dao.getAll()
@@ -139,7 +140,7 @@ class C3_BonAchate_RepositoryImp(
         })
     }
 
-    fun updateUiModel(updatedList: MutableList<C3_BonAchate>) {
+    fun updateUiModel(updatedList: MutableList<C3_TransactionCommercial>) {
         modelDatasSnapList.clear()
         modelDatasSnapList.addAll(updatedList)
     }
@@ -218,9 +219,9 @@ class C3_BonAchate_RepositoryImp(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<C3_BonAchate>()
+                            val updatedList = mutableListOf<C3_TransactionCommercial>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(C3_BonAchate::class.java)
+                                val data = dataSnapshot.getValue(C3_TransactionCommercial::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -296,11 +297,11 @@ class C3_BonAchate_RepositoryImp(
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<C3_BonAchate>()
+                    val dataList = mutableListOf<C3_TransactionCommercial>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(C3_BonAchate::class.java)
+                            val data = dataSnapshot.getValue(C3_TransactionCommercial::class.java)
                             data?.let {
                                 dataList.add(it)
                             }

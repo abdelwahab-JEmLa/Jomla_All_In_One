@@ -167,7 +167,7 @@ fun C_MainItem_APP2_ID_2(
                                                 nom = newName
                                             )
 
-                                            // Use upsertUnSeulDataEtReturnVID to upsert_1_3_TransactionCommercial the product
+                                            // Use upsertUnSeulDataEtReturnVID to upsertLenceCommandeRepoGroupedProtoAvanJuin3 the product
                                             _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
                                                 .upsertUneDataEtReturnVID(updatedProduct) { _ ->
                                                     headRepository.notifyDataChanged_2_1_ProduitsDataBase_Repository()

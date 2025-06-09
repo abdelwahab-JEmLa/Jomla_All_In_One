@@ -201,14 +201,14 @@ class ViewModel_AProto_ProduitDataBase(
                             snapshotList[index].id = vid
                             Log.d(TAG, "Updated A_Produit[${index}] with VID: $vid, name: ${snapshotList[index].nom}")
                         } else {
-                            Log.w(TAG, "Cannot upsert_1_3_TransactionCommercial A_Produit with index $index - index out of bounds")
+                            Log.w(TAG, "Cannot upsertLenceCommandeRepoGroupedProtoAvanJuin3 A_Produit with index $index - index out of bounds")
                         }
                     }
 
                     // Update A_ProduitRepository with the updated objects
                     viewModelScope.launch {
                         try {
-                            Log.d(TAG, "Starting upsert_1_3_TransactionCommercial of ${snapshotList.size} products in A_ProduitRepository")
+                            Log.d(TAG, "Starting upsertLenceCommandeRepoGroupedProtoAvanJuin3 of ${snapshotList.size} products in A_ProduitRepository")
                             a_ProduitRepository.updateMultiDatas(snapshotList)
                             Log.d(TAG, "Successfully updated ${snapshotList.size} products in A_ProduitRepository")
                             _migrationProgress.value = 1.0f

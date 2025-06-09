@@ -22,7 +22,7 @@ fun A_MapClients_A2FragID_1(
     onClear: () -> Unit = {},
     mapReloadTrigger: Int = 0,
 ) {
-    val progress by viewModel.mainRepositery.progressRepo.collectAsState()
+    val progress by viewModel.b_ClientDataBaseRepository.progressRepo.collectAsState()
 
     // Clean up resources when fragment is disposed
     DisposableEffect(Unit) {

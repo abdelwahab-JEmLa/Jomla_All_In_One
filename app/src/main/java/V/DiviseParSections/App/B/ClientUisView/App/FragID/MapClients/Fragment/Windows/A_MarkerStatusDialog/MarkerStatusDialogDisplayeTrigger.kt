@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -10,7 +10,7 @@ suspend fun displayLatestTransactions(
     viewModel: ViewModel_MapClients_App2FragID1,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-    val latestTransactionsMap = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
+    val latestTransactionsMap = viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
         .c3_BonAchate_Repository.modelDatasSnapList
         .groupBy { it.clientAcheteurID }
         .mapValues { (_, transactions) ->
@@ -18,8 +18,9 @@ suspend fun displayLatestTransactions(
         }
 
     latestTransactionsMap.forEach { (clientId, latestTransaction) ->
-        if (latestTransaction?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
-            latestTransaction?.ouvert == true
+        if (latestTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+       /*     ||
+            latestTransaction?.tagCeBonEstOuvertPourComptsIds == true   */
         ) {
             val marker = mapView.overlays.filterIsInstance<Marker>()
                 .find { it.id == clientId.toString() }
@@ -36,9 +37,9 @@ suspend fun displayOpenTransactions(
     viewModel: ViewModel_MapClients_App2FragID1,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-    viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
+    viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
         .c3_BonAchate_Repository.modelDatasSnapList
-        .filter { it.ouvert }
+     //   .filter { it.tagCeBonEstOuvertPourComptsIds }
         .forEach { transaction ->
             val marker = mapView.overlays.filterIsInstance<Marker>()
                 .find { it.id == transaction.clientAcheteurID.toString() }

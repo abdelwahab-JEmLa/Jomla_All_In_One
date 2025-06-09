@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosListDepuitAncienDataBase: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var produitInfosList: SnapshotStateList<A_ProduitInfos> = mutableStateListOf(),
-    var bonAchatList: List<C3_BonAchate> = emptyList(),
+    var bonAchatList: List<C3_TransactionCommercial> = emptyList(),
     var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
 

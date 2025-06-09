@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,26 +11,26 @@ import androidx.room.Upsert
 @Dao
 interface _1_3_TransactionCommercialDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: C3_BonAchate): Long
+    suspend fun insertAvecRetureNewVid(item: C3_TransactionCommercial): Long
 
-    @Query("SELECT * FROM C3_BonAchate")
-    suspend fun getAll(): MutableList<C3_BonAchate>
+    @Query("SELECT * FROM C3_TransactionCommercial")
+    suspend fun getAll(): MutableList<C3_TransactionCommercial>
 
     @Upsert
-    suspend fun upsert(data: C3_BonAchate)
+    suspend fun upsert(data: C3_TransactionCommercial)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: C3_BonAchate)
+    suspend fun insert(item: C3_TransactionCommercial)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<C3_BonAchate>)
+    suspend fun insertAll(items: List<C3_TransactionCommercial>)
 
     @Delete
-    suspend fun delete(item: C3_BonAchate)
+    suspend fun delete(item: C3_TransactionCommercial)
 
-    @Query("DELETE FROM C3_BonAchate")
+    @Query("DELETE FROM C3_TransactionCommercial")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM C3_BonAchate")
+    @Query("SELECT COUNT(*) FROM C3_TransactionCommercial")
     fun getCount(): Int
 }

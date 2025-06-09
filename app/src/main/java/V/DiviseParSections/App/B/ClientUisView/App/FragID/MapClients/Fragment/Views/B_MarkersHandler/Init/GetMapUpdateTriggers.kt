@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Init
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 fun getMapUpdateTriggers(
-    c3_BonAchateList: SnapshotStateList<C3_BonAchate>,
+    c3_BonAchateList: SnapshotStateList<C3_TransactionCommercial>,
     viewModel: ViewModel_MapClients_App2FragID1,
     clientDataBaseSize: Int,
     clientEnCourDeVent: Long,
@@ -29,6 +29,6 @@ fun getMapUpdateTriggers(
         mapReloadTrigger,
 
         // Additional trigger for active transaction changes
-        viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.value
+        viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.value
     )
 }

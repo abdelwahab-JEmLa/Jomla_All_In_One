@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -46,44 +46,44 @@ fun handleFilterMarkersClick(
 }
 
 fun filterClientsBasedOnMode(
-    clientDataBaseSnapList: List<B_ClientDataBase>,
+    clientDataBaseSnapList: List<B_ClientDataBaseProtoJuin3>,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     viewModel: ViewModel_MapClients_App2FragID1,
-): List<B_ClientDataBase> {
+): List<B_ClientDataBaseProtoJuin3> {
     return when (currentFilterMode) {
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat != B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat != B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                        || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.Cible
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.VENDU_A_LUI
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.FERME
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.A_EVITE
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.AVEC_MARCHANDISE
+                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                it.typeDeSonMagasine == B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                it.typeDeSonMagasine == B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
             }
         }
 
@@ -93,11 +93,11 @@ fun filterClientsBasedOnMode(
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
             val clientsWithConfirmedProducts =
-                viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
+                viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
                     .c3_BonAchate_Repository.modelDatasSnapList
                     .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                || bonAchat.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        bonAchat.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                || bonAchat.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.clientAcheteurID }
                     .distinct()
@@ -109,21 +109,21 @@ fun filterClientsBasedOnMode(
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_EVITE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.A_COMMANDE_CONFIRME
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.ACHETEUR_NON_DISPO
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_BonAchate.EtateActuellementEst.FERME
+                viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.A_EVITE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.FERME
             }
         }
 

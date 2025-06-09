@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -29,7 +29,7 @@ data class ArticleImpression(
 
 fun printReceipt(
     context: Context,
-    bonAchat: C3_BonAchate?,
+    bonAchat: C3_TransactionCommercial?,
     repositorysModel: GroupeRepositorysProtoAvJuin3Model,
     database: AppDatabase,
     scope: CoroutineScope? = null
@@ -86,7 +86,7 @@ fun printReceipt(
             // Skip products with no quantities
             if (totalQuantity <= 0) return@forEach
 
-            // If product already exists in map, upsert_1_3_TransactionCommercial quantity; otherwise upsert new entry
+            // If product already exists in map, upsertLenceCommandeRepoGroupedProtoAvanJuin3 quantity; otherwise upsert new entry
             productMap[productName]?.let { existingArticle ->
                 productMap[productName] = existingArticle.copy(
                     quantite = existingArticle.quantite + totalQuantity

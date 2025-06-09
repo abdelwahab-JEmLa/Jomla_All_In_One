@@ -49,7 +49,7 @@ open class VendeursViewModel(
     private fun loadData() {
         val vendeurs = vendeurRepository.modelDatasSnapList
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val activeVendeurId = repository.repositorys_Model.activeIdDeA5Vendeur
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = VendeursUiState(
@@ -87,7 +87,7 @@ open class VendeursViewModel(
     }
 
     private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
         val currentVendeur =
             vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 
@@ -105,12 +105,12 @@ open class VendeursViewModel(
 
     // Add this method to the VendeursViewModel class
     fun getActiveVendeur(): _1_5_Vendeur? {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
         return vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
     }
 
     fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
         val currentVendeur =
             vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 

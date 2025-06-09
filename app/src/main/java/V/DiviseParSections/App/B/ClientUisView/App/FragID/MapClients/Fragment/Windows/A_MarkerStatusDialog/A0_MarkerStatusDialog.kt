@@ -2,9 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.ButtonAjouteHistoriqueC3_BonAchate
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,7 +56,7 @@ fun MarkerStatusDialog(
 ) {            //<--
     val ceTelephoneEstDeAbdelwahab = _0_0_HeadSQLRepositorys
         .repositorys_Model
-        .activeIdDe_1_5_Vendeur == 2L
+        .activeIdDeA5Vendeur == 2L
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -73,7 +73,7 @@ fun MarkerStatusDialog(
         _0_0_HeadSQLRepositorys.repositorys_Model
 
     val findActiveComptVendeur = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-        .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
+        .find { it.vid == repositorysModel.activeIdDeA5Vendeur }
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         findActiveComptVendeur
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
@@ -85,7 +85,7 @@ fun MarkerStatusDialog(
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
 
-    val activeTransactionId by viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
+    val activeTransactionId by viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
 
     // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {
@@ -172,8 +172,7 @@ fun MarkerStatusDialog(
                             ) {
 
                                 item {
-                                    C3_BonAchate.EtateActuellementEst.AVEC_MARCHANDISE       //<--
-                                    //TODO(1): pk que je click ici 
+                                    C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -193,12 +192,11 @@ fun MarkerStatusDialog(
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
                                         context = context,
-                                        etateActuellementEst1 = C3_BonAchate.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                     )
                                 }
 
                                 item {
-                                    C3_BonAchate.EtateActuellementEst.FERME
+                                    C3_TransactionCommercial.EtateActuellementEst.FERME
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -207,7 +205,7 @@ fun MarkerStatusDialog(
                                         )
                                 }
                                 item {
-                                    C3_BonAchate.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                    C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -242,7 +240,7 @@ fun MarkerStatusDialog(
                                                             )
 
                                                         // Update the transaction in the repository
-                                                        viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
+                                                        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
                                                             updatedTransaction
                                                         ) { vid ->
                                                             // Update active transaction ID if needed
@@ -257,7 +255,7 @@ fun MarkerStatusDialog(
                                 }
 
                                 item {
-                                    C3_BonAchate.EtateActuellementEst.Cible
+                                    C3_TransactionCommercial.EtateActuellementEst.Cible
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
@@ -268,7 +266,7 @@ fun MarkerStatusDialog(
 
                                 if (ceTelephoneEstDeAbdelwahab) {
                                     item {
-                                        C3_BonAchate.EtateActuellementEst.CIBLE_POUR_2
+                                        C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
                                             .Button(
                                                 coroutineScope = coroutineScope,
                                                 viewModel = viewModel,

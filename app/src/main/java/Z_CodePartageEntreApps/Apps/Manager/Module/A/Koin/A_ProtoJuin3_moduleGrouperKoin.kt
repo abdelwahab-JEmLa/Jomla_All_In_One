@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
@@ -16,6 +17,12 @@ import org.koin.dsl.module
 
 
 val moduleRepositorys = module {
+    single {
+        B_ClientInfosProtoJuin3Repository(
+            androidContext(),
+            get(),
+        )
+    }
     single {
         D_EtateMessageVocaleRepository(
             androidContext(),
@@ -39,6 +46,7 @@ val moduleRepositorys = module {
 
     single {
         A_MasterRepositorysGrpProtoJuin3(
+            get(),
             get(),
             get(),
             get(),

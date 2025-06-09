@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto.E_GoogleAuth// ComptApp.kt    /*
+package Z_MasterOfApps.E_GoogleAuth// ComptApp.kt    /*
 // comptAppDao.kt
 /*import android.os.Build
 import androidx.room.Dao

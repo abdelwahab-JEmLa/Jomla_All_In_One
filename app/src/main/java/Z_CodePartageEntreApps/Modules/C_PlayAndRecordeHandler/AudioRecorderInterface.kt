@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
@@ -11,7 +11,7 @@ interface AudioRecorderInterface {
     fun startRecording(
         context: Context,
         parentMessageVID: Long,
-        currentTransaction: C3_BonAchate? = null
+        currentTransaction: C3_TransactionCommercial? = null
     ): Result<AudioHandlerInterface.RecordingSession>
 
     fun stopRecording(): Result<File>
@@ -59,7 +59,7 @@ interface AudioHandlerInterface :
         val mediaRecorder: MediaRecorder,
         val outputFile: File,
         val parentMessageVID: Long,
-        val currentTransaction: C3_BonAchate? = null,
+        val currentTransaction: C3_TransactionCommercial? = null,
         val state: RecordingState = RecordingState.RECORDING
     )
 

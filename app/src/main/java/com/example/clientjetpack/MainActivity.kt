@@ -36,8 +36,6 @@ class ViewModelFactory(
     private val database: AppDatabase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
-
-
         modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
             GenerativeAiViewModel() as T
 
