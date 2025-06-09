@@ -88,14 +88,14 @@ fun A_OptionsControlsButtons_App4FragId_4(viewModel: ViewModel_A4FragID1) {
                         }
                     }
 
-                    // Labels AutreButtons
+                    // Labels ButtonAutreEtates
                     LabelsButton(
                         showLabels = showLabels,
                         onShowLabelsChange = { showLabels = it }
                     )
                 }
 
-                // Menu AutreButtons
+                // Menu ButtonAutreEtates
                 MenuButton(
                     showLabels = showLabels,
                     showMenu = showMenu,

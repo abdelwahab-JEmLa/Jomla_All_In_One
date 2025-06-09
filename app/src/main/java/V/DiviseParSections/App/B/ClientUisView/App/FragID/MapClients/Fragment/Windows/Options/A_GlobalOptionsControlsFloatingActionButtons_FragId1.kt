@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
@@ -57,8 +57,8 @@ private class FilterLogger {
         private val logs = mutableListOf<String>()
 
         fun logFilterChange(
-            previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+            previousMode: MapClientsViewModel.VisibleClientsNow,
+            newMode: MapClientsViewModel.VisibleClientsNow,
         ) {
             val timestamp =
                 java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
@@ -74,12 +74,12 @@ private class FilterLogger {
 
 @Composable
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     mapView: MapView,
     onClear: () -> Unit,
-    onPickFilter: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
+    onPickFilter: (MapClientsViewModel.VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
-    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler =
         koinInject<PanelsGroupeButtonHandler>()
 ) {
@@ -237,32 +237,32 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             // Log the filter change
                             val previousMode = currentFilterMode
                             val newMode = when (currentFilterMode) {
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+                                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                                    MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                                MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+                                    MapClientsViewModel.VisibleClientsNow.showAll
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+                                MapClientsViewModel.VisibleClientsNow.showAll ->
+                                    MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+                                MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly ->
+                                    MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                                MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes ->
+                                    MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+                                MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+                                    MapClientsViewModel.VisibleClientsNow.showAtayClients
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+                                MapClientsViewModel.VisibleClientsNow.showAtayClients ->
+                                    MapClientsViewModel.VisibleClientsNow.showAlimentionlients
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+                                MapClientsViewModel.VisibleClientsNow.showAlimentionlients ->
+                                    MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts
 
-                                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
-                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                                MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
+                                    MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                             }
 
                             FilterLogger.logFilterChange(previousMode, newMode)

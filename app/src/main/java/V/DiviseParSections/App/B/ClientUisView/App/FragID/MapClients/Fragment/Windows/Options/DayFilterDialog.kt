@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +43,7 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun DayFilterDialog(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     onDismiss: () -> Unit
 ) {
     val days = listOf(
@@ -144,7 +144,7 @@ fun DayFilterDialog(
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // AutreButtons to clear all selections
+                // ButtonAutreEtates to clear all selections
                 Button(
                     onClick = {
                         selectedDays = emptyList()

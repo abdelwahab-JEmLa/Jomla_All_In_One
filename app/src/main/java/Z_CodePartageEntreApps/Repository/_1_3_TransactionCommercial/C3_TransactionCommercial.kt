@@ -35,11 +35,9 @@ data class C3_TransactionCommercial(
         EtateActuellementEst.NON_DEFINI,
 
     // Section Centralization Valeurs Pour Injection a TOu modules
-    var tagCeBonEstOuvertPourComptsIds: String ="",
 
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
-
 
 
     // Section keyFireBase et Update Version Id
@@ -83,6 +81,7 @@ data class C3_TransactionCommercial(
         CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
+
     companion object {
         val caRef =
             GroupeRepositorysProtoAvJuin3Model.getHeadSqlDataBaseRef()
@@ -97,25 +96,5 @@ data class C3_TransactionCommercial(
 
         //ici ce trouve Unique Functions
 
-        fun addOrIgnorTagCeBonEstOuvertPourComptsIds(
-            existingBonAchat: C3_TransactionCommercial,
-            activeIdDeA5Vendeur: Long,
-            existingBonAchat0: C3_TransactionCommercial
-        ): String {
-            val currentTags =
-                existingBonAchat.tagCeBonEstOuvertPourComptsIds.split(",").map { it.trim() }
-            val activeIdStr = activeIdDeA5Vendeur.toString()
-
-            val updatedTags = if (currentTags.contains(activeIdStr)) {
-                existingBonAchat.tagCeBonEstOuvertPourComptsIds // Ne pas ajouter si déjà présent
-            } else {
-                if (existingBonAchat0.tagCeBonEstOuvertPourComptsIds.isEmpty()) {
-                    activeIdStr
-                } else {
-                    "${existingBonAchat.tagCeBonEstOuvertPourComptsIds},$activeIdStr"
-                }
-            }
-            return updatedTags
-        }
     }
 }

@@ -102,7 +102,7 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
             modelDatas[recordIndex] = data
 
             try {
-                // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvanJuin3 Firebase
+                // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase
                 checkConnectivity()
 
                 // Update Firebase database with the updated record
@@ -149,7 +149,7 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
 
             stopDatabaseListener()
 
-            // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvanJuin3
+            // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3
             checkConnectivity()
 
             datas.forEach { data ->

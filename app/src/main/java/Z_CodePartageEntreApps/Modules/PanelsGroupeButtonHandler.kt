@@ -147,7 +147,7 @@ class PanelsGroupeButtonHandler {
                         )
                     }
 
-                    // Menu AutreButtons - Inlined from MenuButton function
+                    // Menu ButtonAutreEtates - Inlined from MenuButton function
                     ControlButton(
                         onClick = { showMenu = !showMenu },
                         icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.Warning,

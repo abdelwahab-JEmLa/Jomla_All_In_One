@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
@@ -41,7 +41,7 @@ import org.koin.compose.koinInject
 fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
     modifier: Modifier = Modifier,
     uiState: UiState,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     masterRepositorys: A_MasterRepositorysGrpProtoJuin3 = koinInject(),
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     clientId: Long? = null,

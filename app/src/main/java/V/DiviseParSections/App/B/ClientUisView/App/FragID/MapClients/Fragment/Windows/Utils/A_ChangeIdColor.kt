@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 fun A_ChangeIdColor(
     showLabels: Boolean,
     contentDescription: String,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
 

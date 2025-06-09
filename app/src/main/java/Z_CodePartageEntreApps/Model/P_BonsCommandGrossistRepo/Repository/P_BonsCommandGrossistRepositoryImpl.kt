@@ -72,7 +72,7 @@ class P_BonsCommandGrossistRepositoryImpl(
         // Get total product IDs from current modelDatas
         val currentProductIdsCount = modelDatas.sumOf { it.produitCommendeIDs.size }
 
-        // Check if we need to upsertLenceCommandeRepoGroupedProtoAvanJuin3 based on product ID count differences
+        // Check if we need to upsertLenceCommandeRepoGroupedProtoAvantJuin3 based on product ID count differences
         if (currentProductIdsCount != calculatedProductIdsCount || modelDatas.isEmpty()) {
             // Clear Firebase data
             P_BonsCommandGrossistRepository.caReference.removeValue()
@@ -117,7 +117,7 @@ class P_BonsCommandGrossistRepositoryImpl(
             modelDatas[recordIndex] = data
 
             try {
-                // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvanJuin3 Firebase
+                // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase
                 checkConnectivityAndSync()
 
                 // Update Firebase database with the updated record
@@ -158,7 +158,7 @@ class P_BonsCommandGrossistRepositoryImpl(
 
             stopDatabaseListener()
 
-            // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvanJuin3
+            // Check connectivity before trying to upsertLenceCommandeRepoGroupedProtoAvantJuin3
             checkConnectivityAndSync()
 
             datas.forEach { data ->

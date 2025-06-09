@@ -59,7 +59,7 @@ fun ExpandedMainItem_F3(
             .clickable { onCLickOnMain() }
             .padding(8.dp)
     ) {
-        // Floating AutreButtons
+        // Floating ButtonAutreEtates
         IconButton(
             onClick = {
                 produitsAChoisireLeurClient.remove(mainItem)

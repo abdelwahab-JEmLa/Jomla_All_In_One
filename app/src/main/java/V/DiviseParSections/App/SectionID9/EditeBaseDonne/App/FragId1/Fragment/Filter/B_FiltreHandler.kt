@@ -264,7 +264,7 @@ fun FilterDropdownMenu(
                     Text("Réinitialiser")
                 }
 
-                // Added: AutreButtons to activate all filters
+                // Added: ButtonAutreEtates to activate all filters
                 androidx.compose.material3.TextButton(
                     onClick = {
                         onFilterChanged(

@@ -119,9 +119,9 @@ class _4_CouleurOperationCommand_RepositoryImpl(
                         }
 
                         _4_CouleurOperationCommand_Repository.sonDataBaseRef.updateChildren(updates).await()
-                        Log.d(TAG, "Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3 successful")
+                        Log.d(TAG, "Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 successful")
                     } catch (e: Exception) {
-                        Log.e(TAG, "Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3 failed: ${e.message}", e)
+                        Log.e(TAG, "Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 failed: ${e.message}", e)
                     }
 
                     // Call the success callback with the new vids

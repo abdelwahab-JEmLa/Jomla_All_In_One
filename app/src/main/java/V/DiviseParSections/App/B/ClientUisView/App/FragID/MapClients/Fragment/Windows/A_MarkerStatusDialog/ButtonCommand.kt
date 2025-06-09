@@ -1,15 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial.Companion.addOrIgnorTagCeBonEstOuvertPourComptsIds
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -22,41 +22,57 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
+import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun C3_TransactionCommercial.EtateActuellementEst.AutreButtons(
+fun CommandButton(
+    modifier: Modifier = Modifier,
+    uiState: UiState,
+    viewModel: MapClientsViewModel,
+    etateActuellementEst1: C3_TransactionCommercial.EtateActuellementEst,
     coroutineScope: CoroutineScope,
-    viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
+    selectedMarker: Marker,
+    onUpdateLongAppSetting: () -> Unit,
+    onDismiss: () -> Unit,
     context: Context,
 ) {
-    val Etate =
-        this
+    val selectedMarkedID = selectedMarker.id.toLong()
+
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
-                upsertLenceCommandeRepoGroupedProtoAvanJuin3(
-                    viewModel,
-                    clientId,
-                    Etate
+                upsertLenceCommandeRepoGroupedProtoAvantJuin3(
+                    uiState=uiState,
+                    viewModel=viewModel,
+                    relatedClientID = clientId,
+                    newEtate=etateActuellementEst1
                 )
 
+                updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 
+                onDismiss()
+
+                viewModel.updateActiveComptIdClientOuvertPoutCeCompt(selectedMarkedID)
+
+                viewModel.startRecordIfNot()
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
                     context,
-                    Etate.color
+                    etateActuellementEst1.color
                 )
             ).copy(alpha = 0.2f),
             contentColor = Color(
                 ContextCompat.getColor(
                     context,
-                    Etate.color
+                    etateActuellementEst1.color
                 )
             )
         )
@@ -67,37 +83,36 @@ fun C3_TransactionCommercial.EtateActuellementEst.AutreButtons(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = Etate.nomArabe,
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(Etate.nomArabe)
+            Text(etateActuellementEst1.name)
         }
     }
 }
 
+private fun updateProtoIndex0(
+    viewModel: MapClientsViewModel,
+    selectedMarkedID: Long,
+    onUpdateLongAppSetting: () -> Unit
+) {
+    viewModel.updateLongAppSetting(selectedMarkedID)
+    onUpdateLongAppSetting()
+}
 
-
-fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
-    viewModel: ViewModel_MapClients_App2FragID1,
+fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
+    uiState: UiState,
+    viewModel: MapClientsViewModel,
     relatedClientID: Long,
     newEtate: C3_TransactionCommercial.EtateActuellementEst,
 ) {
-    val _0_0_HeadOfRepositorys_Repository = viewModel.groupeRepositorysProtoAvJuin3
-
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
     }
-
-    val repositorysModel =
-        _0_0_HeadOfRepositorys_Repository.repositorys_Model
-
-    val activeIdDeA5Vendeur = repositorysModel.activeIdDeA5Vendeur
+    val activeComptApp = uiState.activeCompt
     val ceComptVendeurInsertBonsAchatAuPeriodID =
-        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-            .find { it.vid == activeIdDeA5Vendeur }
-            ?.ceComptVendeurInsertBonsAchatAuPeriodID
-
+        activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
     val clientId = relatedClients?.id ?: 0L
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {
@@ -107,42 +122,28 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     }
 
     if (existingBonAchat != null) {
-        val updatedTags = addOrIgnorTagCeBonEstOuvertPourComptsIds(existingBonAchat, activeIdDeA5Vendeur, existingBonAchat)
-
         val updatedBonAchat = existingBonAchat.copy(
-            tagCeBonEstOuvertPourComptsIds = updatedTags,
             timestamps = System.currentTimeMillis(),
-           /* heurDebutInString = SimpleDateFormat(
+            heurDebutInString = SimpleDateFormat(
                 "HH:mm",
                 Locale.getDefault()
-            ).format(Date())     */
+            ).format(Date())
         )
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             updatedBonAchat
-        ) { vid ->
-            repositorysModel.activeVId_C3_BonAchate_Repository.value = updatedBonAchat.vid
-        }
-
+        )
     } else {
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             C3_TransactionCommercial(
-                tagCeBonEstOuvertPourComptsIds = activeIdDeA5Vendeur.toString(),
                 clientAcheteurID = clientId,
                 nomClientConcerned = relatedClients?.nom!!,
                 parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
                 etateActuellementEst = newEtate,
-               /* heurDebutInString = SimpleDateFormat(
+                heurDebutInString = SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
-                ).format(Date())   */
+                ).format(Date())
             )
-        ) { vid ->
-            if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-            ) repositorysModel.activeVId_C3_BonAchate_Repository.value = 0
-            else
-                repositorysModel.activeVId_C3_BonAchate_Repository.value = vid
-        }
-
+        )
     }
 }

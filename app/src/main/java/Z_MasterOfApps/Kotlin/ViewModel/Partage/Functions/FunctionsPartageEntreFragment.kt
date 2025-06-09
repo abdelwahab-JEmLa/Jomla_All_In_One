@@ -15,14 +15,14 @@ class FunctionsPartageEntreFragment(
     fun upButton(index: Int) {
         if (index <= 0 || index >= grossistsDataBase.size) return
 
-        // Swap elements and upsertLenceCommandeRepoGroupedProtoAvanJuin3 their indices
+        // Swap elements and upsertLenceCommandeRepoGroupedProtoAvantJuin3 their indices
         grossistsDataBase[index].let { current ->
             grossistsDataBase[index - 1].let { prev ->
                 // Update indices
                 current.statueDeBase.itIndexInParentList = index - 1
                 prev.statueDeBase.itIndexInParentList = index
 
-                // Swap positions and upsertLenceCommandeRepoGroupedProtoAvanJuin3 database
+                // Swap positions and upsertLenceCommandeRepoGroupedProtoAvantJuin3 database
                 grossistsDataBase[index] = prev
                 grossistsDataBase[index - 1] = current
                 current.updateGrossistDataBase(viewModel)
@@ -88,7 +88,7 @@ class FunctionsPartageEntreFragment(
                         updates["/${newRecordRef.key}"] = record
                     }
 
-                    // Perform the upsertLenceCommandeRepoGroupedProtoAvanJuin3
+                    // Perform the upsertLenceCommandeRepoGroupedProtoAvantJuin3
                     soldArticlesRef.updateChildren(updates)
                         .addOnFailureListener { exception ->
                             // Handle any errors

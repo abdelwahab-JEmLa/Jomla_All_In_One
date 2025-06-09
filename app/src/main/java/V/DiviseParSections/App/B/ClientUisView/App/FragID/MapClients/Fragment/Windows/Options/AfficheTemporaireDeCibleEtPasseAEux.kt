@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -29,8 +29,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AfficheTemporaireDeCibleEtPasseAEux(
     showLabels: Boolean,
-    viewModel: ViewModel_MapClients_App2FragID1,
-    onFilterChanged: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
+    viewModel: MapClientsViewModel,
+    onFilterChanged: (MapClientsViewModel.VisibleClientsNow) -> Unit,
 ) {
     var isTemporaryFilterActive by remember { mutableStateOf(false) }
 
@@ -51,14 +51,14 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     isTemporaryFilterActive = true
 
                     // Change to CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX immediately
-                    onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX)
+                    onFilterChanged(MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX)
 
                     // Start 20-second timer
                     timerJob = coroutineScope.launch {
                         delay(20000) // 20 seconds
 
                         // Revert back to AFFICHE_CIBLE_POUR_VENDEUR
-                        onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                        onFilterChanged(MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                         isTemporaryFilterActive = false
                         timerJob = null
                     }
@@ -67,7 +67,7 @@ fun AfficheTemporaireDeCibleEtPasseAEux(
                     timerJob?.cancel() // Cancel the timer
                     timerJob = null
                     isTemporaryFilterActive = false
-                    onFilterChanged(ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
+                    onFilterChanged(MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR)
                 }
                 // Also show the day filter dialog
             },

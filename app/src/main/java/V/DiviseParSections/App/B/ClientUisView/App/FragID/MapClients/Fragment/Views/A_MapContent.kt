@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.updateMapMarkers
@@ -42,15 +42,15 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Composable
 fun MapContent(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.c3_TransactionCommercialList.size}")
-    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.c3_TransactionCommercialList.map { it }}")
+    Log.d("MapClientsViewModel", "${uiState.c3_TransactionCommercialList.size}")
+    Log.d("MapClientsViewModel", "${uiState.c3_TransactionCommercialList.map { it }}")
 
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -61,9 +61,9 @@ fun MapContent(
     var currentFilterMode by remember {
         mutableStateOf(
             if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur == 1L) {
-                ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
             } else {
-                ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                MapClientsViewModel.VisibleClientsNow.showAll
             }
         )
     }

@@ -46,7 +46,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             Log.d(TAG, "Starting repository initialization")
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsertLenceCommandeRepoGroupedProtoAvanJuin3 if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsertLenceCommandeRepoGroupedProtoAvantJuin3 if necessary
             Log.d(TAG, "Repository initialization completed successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize repository: ${e.message}", e)
@@ -366,7 +366,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             val datasList = datas.toList()
 
-            // First, handle Room database upsertLenceCommandeRepoGroupedProtoAvanJuin3
+            // First, handle Room database upsertLenceCommandeRepoGroupedProtoAvantJuin3
             withContext(Dispatchers.IO) {
                 try {
                     appDatabase.I_CategorieProduitsDao().deleteAll()
@@ -376,7 +376,7 @@ class I_CategorieProduitsRepositoryImpl(
                 }
             }
 
-            // Then upsertLenceCommandeRepoGroupedProtoAvanJuin3 Firebase (temporarily remove listener to avoid cycles)
+            // Then upsertLenceCommandeRepoGroupedProtoAvantJuin3 Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
                 val tempListener = valueEventListener
 
@@ -410,7 +410,7 @@ class I_CategorieProduitsRepositoryImpl(
                 }
             }
 
-            // Finally upsertLenceCommandeRepoGroupedProtoAvanJuin3 UI
+            // Finally upsertLenceCommandeRepoGroupedProtoAvantJuin3 UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)

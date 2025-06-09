@@ -21,7 +21,7 @@ class _2_1_ProduitsDataBaseRepositoryLogOperationsExtension(
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: $progressValue")
-        Log.d(TAG, "- Last upsertLenceCommandeRepoGroupedProtoAvanJuin3 timestamp: $lastUpdateTimestamp")
+        Log.d(TAG, "- Last upsertLenceCommandeRepoGroupedProtoAvantJuin3 timestamp: $lastUpdateTimestamp")
         Log.d(
             TAG,
             "- Listeners active: isListenerActive=$isListenerActive, isFlowListenerActive=$isFlowListenerActive"

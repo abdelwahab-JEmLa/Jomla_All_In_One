@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -17,9 +17,9 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 suspend fun updateMapMarkers(
     uiState: UiState,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     mapView: MapView,
-    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
@@ -49,7 +49,7 @@ suspend fun updateMapMarkers(
 fun addMarkersForFilteredClients(
     mapView: MapView,
     clientsToShow: List<B_ClientInfosProtoJuin3>,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
@@ -74,7 +74,7 @@ fun addMarkersForFilteredClients(
 }
 
 fun createAndAddMarker(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     mapView: MapView,
     client: B_ClientInfosProtoJuin3,
     context: Context,
@@ -116,7 +116,7 @@ fun createAndAddMarker(
 
 
 private fun Marker.title(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     client: B_ClientInfosProtoJuin3,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
@@ -146,7 +146,7 @@ fun configureMarkerInfoWindow(
     marker: Marker,
     mapView: MapView,
     context: Context,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     client: B_ClientInfosProtoJuin3,
 ) {
     val markerInfoWindowLayout = xmlResources

@@ -61,7 +61,7 @@ data class D_CouleursEtGoutesProduitsInfos(
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {
-                        // Revert local state if Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3 fails
+                        // Revert local state if Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 fails
                         grossistsList.clear()
                         grossistsList.addAll(
                             if (index != -1) updatedList.toMutableList().apply { this[index] = this@update }
@@ -71,7 +71,7 @@ data class D_CouleursEtGoutesProduitsInfos(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("D_CouleursEtGoutesProduitsInfos", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 ", e)
+                    Log.e("D_CouleursEtGoutesProduitsInfos", "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 ", e)
                 }
             }
         }

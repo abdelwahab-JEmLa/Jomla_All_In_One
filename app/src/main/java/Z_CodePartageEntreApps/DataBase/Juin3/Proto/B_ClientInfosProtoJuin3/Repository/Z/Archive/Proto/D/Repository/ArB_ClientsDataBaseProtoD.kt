@@ -132,7 +132,7 @@ data class ArB_ClientsDataBaseProtoD(
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {
-                        // Revert local state if Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3 fails
+                        // Revert local state if Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3 fails
                         clientsList.clear()
                         clientsList.addAll(
                             if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateClientsDataBase }
@@ -142,7 +142,7 @@ data class ArB_ClientsDataBaseProtoD(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("B_ClientInfosProtoJuin3", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
+                    Log.e("B_ClientInfosProtoJuin3", "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 client", e)
                 }
             }
         }

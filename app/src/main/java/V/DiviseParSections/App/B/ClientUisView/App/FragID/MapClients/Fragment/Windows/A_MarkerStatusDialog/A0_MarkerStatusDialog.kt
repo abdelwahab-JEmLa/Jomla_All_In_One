@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +43,7 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     uiState: UiState,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
@@ -142,18 +142,19 @@ fun MarkerStatusDialog(
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                                        .AutreButtons(
+                                        .ButtonAutreEtates(
+                                            uiState=uiState,
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
-                                            clientId = clientId,
+                                            relaterClientId = clientId,
                                             context = context
-
                                         )
                                 }
 
                                 item {
                                     CommandButton(
                                         modifier = Modifier.height(60.dp),
+                                        uiState=uiState,
                                         viewModel = viewModel,
                                         etateActuellementEst1=C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         coroutineScope = coroutineScope,
@@ -167,19 +168,21 @@ fun MarkerStatusDialog(
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.FERME
-                                        .AutreButtons(
-                                            coroutineScope = coroutineScope,
+                                        .ButtonAutreEtates(
+                                            uiState = uiState,
                                             viewModel = viewModel,
-                                            clientId = clientId,
+                                            coroutineScope = coroutineScope,
+                                            relaterClientId = clientId,
                                             context = context
                                         )
                                 }
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                        .AutreButtons(
-                                            coroutineScope = coroutineScope,
+                                        .ButtonAutreEtates(
+                                            uiState = uiState,
                                             viewModel = viewModel,
-                                            clientId = clientId,
+                                            coroutineScope = coroutineScope,
+                                            relaterClientId = clientId,
                                             context = context
                                         )
 
@@ -195,10 +198,11 @@ fun MarkerStatusDialog(
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.Cible
-                                        .AutreButtons(
-                                            coroutineScope = coroutineScope,
+                                        .ButtonAutreEtates(
+                                            uiState = uiState,
                                             viewModel = viewModel,
-                                            clientId = clientId,
+                                            coroutineScope = coroutineScope,
+                                            relaterClientId = clientId,
                                             context = context
                                         )
                                 }
@@ -206,10 +210,11 @@ fun MarkerStatusDialog(
                                 if (uiState.activeCompt!!.vid==2L) {
                                     item {
                                         C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                                            .AutreButtons(
-                                                coroutineScope = coroutineScope,
+                                            .ButtonAutreEtates(
+                                                uiState = uiState,
                                                 viewModel = viewModel,
-                                                clientId = clientId,
+                                                coroutineScope = coroutineScope,
+                                                relaterClientId = clientId,
                                                 context = context
                                             )
                                     }

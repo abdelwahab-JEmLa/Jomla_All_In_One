@@ -350,7 +350,7 @@ fun DayHeader(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Edit AutreButtons - only show if in admin mode
+                // Edit ButtonAutreEtates - only show if in admin mode
                 if (isAbdelwahabLeGerant) {
                     IconButton(
                         onClick = {

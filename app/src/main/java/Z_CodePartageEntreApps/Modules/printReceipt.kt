@@ -85,7 +85,7 @@ fun printReceipt(
             // Skip products with no quantities
             if (totalQuantity <= 0) return@forEach
 
-            // If product already exists in map, upsertLenceCommandeRepoGroupedProtoAvanJuin3 quantity; otherwise upsert new entry
+            // If product already exists in map, upsertLenceCommandeRepoGroupedProtoAvantJuin3 quantity; otherwise upsert new entry
             productMap[productName]?.let { existingArticle ->
                 productMap[productName] = existingArticle.copy(
                     quantite = existingArticle.quantite + totalQuantity

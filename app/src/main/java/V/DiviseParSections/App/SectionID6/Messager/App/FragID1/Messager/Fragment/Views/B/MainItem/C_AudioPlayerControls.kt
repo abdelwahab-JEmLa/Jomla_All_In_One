@@ -61,7 +61,7 @@ fun AudioPlayerControls(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Play/Pause/Stop AutreButtons
+                // Play/Pause/Stop ButtonAutreEtates
                 PlaybackButton(
                     isCurrentlyPlaying = isCurrentlyPlaying,
                     isCurrentlyDownloading = isCurrentlyDownloading,

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SecteurDialog(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     onDismiss: () -> Unit,
 ) {
     val secteurs by viewModel.secteurs.collectAsState(initial = emptyList())
@@ -175,7 +175,7 @@ fun SecteurItem(
 
 @Composable
 fun AddSecteurDialog(
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     onDismiss: () -> Unit,
 ) {
     var sectorName by remember { mutableStateOf("") }

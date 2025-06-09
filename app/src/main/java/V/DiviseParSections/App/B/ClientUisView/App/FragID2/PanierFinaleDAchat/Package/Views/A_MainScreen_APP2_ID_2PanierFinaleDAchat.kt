@@ -125,7 +125,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                     .repositorys_Model,
                                 onQuantitySelected = {
                                 },
-                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvanJuin3 totalPrice when price changes
+                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvantJuin3 totalPrice when price changes
                                 onDoneupdatePrice = { colorOperations ->
                                     _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
                                 }

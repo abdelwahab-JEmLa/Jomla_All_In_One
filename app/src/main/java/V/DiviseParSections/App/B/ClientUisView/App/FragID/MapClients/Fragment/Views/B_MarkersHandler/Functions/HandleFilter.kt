@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import org.osmdroid.views.MapView
@@ -8,38 +8,38 @@ import org.osmdroid.views.overlay.Marker
 
 fun handleFilterMarkersClick(
     mapView: MapView,
-    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-    onFilterChanged: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    onFilterChanged: (MapClientsViewModel.VisibleClientsNow) -> Unit,
 ) {
     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
     val newMode = when (currentFilterMode) {
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+            MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+            MapClientsViewModel.VisibleClientsNow.showAll
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+        MapClientsViewModel.VisibleClientsNow.showAll ->
+            MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+        MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly ->
+            MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+        MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes ->
+            MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+        MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+            MapClientsViewModel.VisibleClientsNow.showAtayClients
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+        MapClientsViewModel.VisibleClientsNow.showAtayClients ->
+            MapClientsViewModel.VisibleClientsNow.showAlimentionlients
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+        MapClientsViewModel.VisibleClientsNow.showAlimentionlients ->
+            MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+        MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts ->
+            MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
     }
 
     onFilterChanged(newMode)
@@ -47,17 +47,17 @@ fun handleFilterMarkersClick(
 
 fun filterClientsBasedOnMode(
     clientDataBaseSnapList: List<B_ClientInfosProtoJuin3>,
-    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    currentFilterMode: MapClientsViewModel.VisibleClientsNow,
+    viewModel: MapClientsViewModel,
 ): List<B_ClientInfosProtoJuin3> {
     return when (currentFilterMode) {
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
+        MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat != B_ClientInfosProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> {
+        MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.Cible
                         || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2
@@ -69,29 +69,29 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+        MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
             clientDataBaseSnapList.filter {
                 it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> {
+        MapClientsViewModel.VisibleClientsNow.showAtayClients -> {
             clientDataBaseSnapList.filter {
                 it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> {
+        MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> {
             clientDataBaseSnapList.filter {
                 it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> {
+        MapClientsViewModel.VisibleClientsNow.showAll -> {
             clientDataBaseSnapList
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
+        MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> {
             val clientsWithConfirmedProducts =
                 viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
                     .c3TransactionCommercialRepository.modelDatasSnapList
@@ -107,7 +107,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
+        MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -115,7 +115,7 @@ fun filterClientsBasedOnMode(
             }
         }
 
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
+        MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
                 viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
                         || viewModel.getLastTransaction(it)?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

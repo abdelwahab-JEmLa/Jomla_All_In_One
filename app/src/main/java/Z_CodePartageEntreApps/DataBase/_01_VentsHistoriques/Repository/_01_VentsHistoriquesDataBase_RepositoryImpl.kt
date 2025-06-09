@@ -511,7 +511,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
             // Remove listeners temporarily to avoid reentrant updates
             removeFirebaseListener()
 
-            // Execute Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3
+            // Execute Firebase upsertLenceCommandeRepoGroupedProtoAvantJuin3
             firebaseRef.setValue(dataToUpdate)
                 .addOnSuccessListener {
                     attachFirebaseListener() // Re-attach listeners
@@ -520,7 +520,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
                     attachFirebaseListener() // Re-attach listeners even on failure
                 }
 
-            // Also upsertLenceCommandeRepoGroupedProtoAvanJuin3 Realm database
+            // Also upsertLenceCommandeRepoGroupedProtoAvantJuin3 Realm database
             scheduleSafeRealmUpdate()
             notifyUIUpdate()
             _dataChangedEvent.value = System.currentTimeMillis()

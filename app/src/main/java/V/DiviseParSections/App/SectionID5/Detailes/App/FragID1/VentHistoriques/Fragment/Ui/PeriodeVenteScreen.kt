@@ -118,7 +118,7 @@ fun PeriodeVenteScreen(
             // View mode tabs
             if (uiState.viewMode != ViewMode.DETAIL) {
                 val viewModes = listOf(ViewMode.LIST, ViewMode.CALENDAR, ViewMode.ANALYTICS)
-                // And upsertLenceCommandeRepoGroupedProtoAvanJuin3 the TabRow in PeriodeVenteScreen.kt:
+                // And upsertLenceCommandeRepoGroupedProtoAvantJuin3 the TabRow in PeriodeVenteScreen.kt:
                 TabRow(
                     selectedTabIndex = viewModes.indexOf(uiState.viewMode)
                 ) {

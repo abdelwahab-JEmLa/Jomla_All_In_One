@@ -510,7 +510,7 @@ open class HeadViewModel(
                 _onNavigateToSellerProduct(updatedSale.vid)
 
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 sale: ${e.message}") }
+                _uiState.update { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 sale: ${e.message}") }
             }
         }
     }
@@ -521,7 +521,7 @@ open class HeadViewModel(
                 val article = _uiState.value.articlesBasesStatTables
                     .find { it.id.toLong() == sale.idArticle }
 
-                // Find which color slot to upsertLenceCommandeRepoGroupedProtoAvanJuin3 by searching through colorIdPicked fields
+                // Find which color slot to upsertLenceCommandeRepoGroupedProtoAvantJuin3 by searching through colorIdPicked fields
                 val updatedSale = when (colorId) {
                     sale.color1IdPicked -> sale.copy(color1SoldQuantity = quantity)
                     sale.color2IdPicked -> sale.copy(color2SoldQuantity = quantity)
@@ -551,7 +551,7 @@ open class HeadViewModel(
                             )
 
                             else -> {
-                                // If no empty slots, upsertLenceCommandeRepoGroupedProtoAvanJuin3 first slot as fallback
+                                // If no empty slots, upsertLenceCommandeRepoGroupedProtoAvantJuin3 first slot as fallback
                                 sale.copy(
                                     color1IdPicked = colorId,
                                     color1SoldQuantity = quantity
@@ -574,7 +574,7 @@ open class HeadViewModel(
                         _currentSaleInWindows.value = updatedSale
                     }
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 sale: ${e.message}") }
+                    _uiState.update { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 sale: ${e.message}") }
                 }
             }
         }
@@ -602,7 +602,7 @@ open class HeadViewModel(
 //                } else {
 //                    _currentSaleInWindows.value = updatedSale
 //                    // Update UI state to reflect changes
-//                    _uiState.upsertLenceCommandeRepoGroupedProtoAvanJuin3 { currentState ->
+//                    _uiState.upsertLenceCommandeRepoGroupedProtoAvantJuin3 { currentState ->
 //                        currentState.copy(
 //                            selectedColorId = colorId,
 //                            lastUpdatedQuantity = quantity
@@ -610,7 +610,7 @@ open class HeadViewModel(
 //                    }
 //                }
 //            } catch (e: Exception) {
-//                _uiState.upsertLenceCommandeRepoGroupedProtoAvanJuin3 { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 sale: ${e.message}") }
+//                _uiState.upsertLenceCommandeRepoGroupedProtoAvantJuin3 { it.copy(error = "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 sale: ${e.message}") }
 //            }
 //        }
 //    }

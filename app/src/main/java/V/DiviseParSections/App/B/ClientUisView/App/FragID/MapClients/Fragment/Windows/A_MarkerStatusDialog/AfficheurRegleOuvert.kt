@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AfficheurRegleOuvert(
     uiState: UiState,
-    viewModel: ViewModel_MapClients_App2FragID1,
+    viewModel: MapClientsViewModel,
     clientId: Long,
     relatedClients: B_ClientInfosProtoJuin3?,
     coroutineScope: CoroutineScope,
@@ -89,17 +89,19 @@ fun AfficheurRegleOuvert(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                        .AutreButtons(
-                            coroutineScope = coroutineScope,
+                        .ButtonAutreEtates(
+                            uiState = uiState,
                             viewModel = viewModel,
-                            clientId = clientId,
+                            coroutineScope = coroutineScope,
+                            relaterClientId = clientId,
                             context = context
                         )
                     C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                        .AutreButtons(
-                            coroutineScope = coroutineScope,
+                        .ButtonAutreEtates(
+                            uiState = uiState,
                             viewModel = viewModel,
-                            clientId = clientId,
+                            coroutineScope = coroutineScope,
+                            relaterClientId = clientId,
                             context = context
                         )
 
@@ -113,7 +115,7 @@ fun AfficheurRegleOuvert(
                                         updatedTransaction
                                     )
 
-                                    viewModel.updateactiveComptIdClientOuvertPoutCeCompt(0)
+                                    viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
                                 }
                             }
                         },

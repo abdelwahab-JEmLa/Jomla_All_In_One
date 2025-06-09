@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -12,7 +11,6 @@ import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Map
@@ -32,7 +30,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
@@ -47,7 +44,7 @@ data class PanelsGroupeButton(
 }
 
 data class UiState(
-    val activeCompt: _1_5_Vendeur? = null,
+    val activeCompt: _1_5_Vendeur? = _1_5_Vendeur(),
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val c3_TransactionCommercialList: List<C3_TransactionCommercial> = emptyList(),
     val mainLoadingProgress: Float = 0f,
@@ -65,7 +62,7 @@ data class UiState(
 
     )
 
-class ViewModel_MapClients_App2FragID1(
+class MapClientsViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -73,7 +70,7 @@ class ViewModel_MapClients_App2FragID1(
     val groupeRepositorysProtoAvJuin3= a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
 
     val b_ClientDataBaseRepository= a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
-    
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -95,15 +92,9 @@ class ViewModel_MapClients_App2FragID1(
         emptyList()
     )
 
-    // State for sectors
-    private val _secteurs = MutableStateFlow<List<E1SecteurDeClients>>(emptyList())
-    val secteurs: StateFlow<List<E1SecteurDeClients>> = _secteurs
-
-    // Current active sector for polygon creation
     private var _currentActiveSectorId = MutableStateFlow<Long?>(null)
     val currentActiveSectorId: StateFlow<Long?> = _currentActiveSectorId
 
-    // Dialog states
     val showSecteurDialog = mutableStateOf(false)
     val showAddSecteurDialog = mutableStateOf(false)
 
@@ -148,7 +139,7 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-     fun getLastTransaction(
+    fun getLastTransaction(
         client: B_ClientInfosProtoJuin3
     ): C3_TransactionCommercial? {
         val historicalData = groupeRepositorysProtoAvJuin3
@@ -161,159 +152,6 @@ class ViewModel_MapClients_App2FragID1(
         return lastTransaction
     }
 
-    init {
-        loadSecteurs()
-    }
-
-    fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
-        viewModelScope.launch {
-            // Create a new list with the updated panel
-            val currentList = _uiState.value.paneleGroupeButtonList
-            val index = currentList.indexOfFirst { it.key == updatedState.key }
-
-            // Create a new list with the updated item
-            val updatedList = currentList.toMutableList()
-            updatedList[index] = updatedState
-
-            // Emit the new state with the updated list
-            _uiState.emit(_uiState.value.copy(paneleGroupeButtonList = updatedList))
-        }
-    }
-
-    val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
-
-    private fun loadSecteurs() {
-        viewModelScope.launch {
-            _secteurs.value = secteurList
-        }
-    }
-
-    fun showSecteurDialog() {
-        showSecteurDialog.value = true
-    }
-
-    fun hideSecteurDialog() {
-        showSecteurDialog.value = false
-    }
-
-    fun showAddSecteurDialog() {
-        showAddSecteurDialog.value = true
-    }
-
-    fun hideAddSecteurDialog() {
-        showAddSecteurDialog.value = false
-    }
-
-    suspend fun updateSecteurActive(secteurId: Long, active: Boolean) {
-        val secteur = _secteurs.value.find { it.vid == secteurId } ?: return
-        val updatedSecteur = secteur.copy(ouvert = active)
-
-        secteurRepo.insert(updatedSecteur)
-        loadSecteurs() // Refresh the list
-    }
-
-    suspend fun addNewSector(name: String, color: String) {
-        val newSector = E1SecteurDeClients(
-            vid = 0, // Auto-generated
-            nom = name,
-            ouvert = true,
-            sonPolygonOnModeDessine = false,
-            couleur = color
-        )
-
-        val newSectorId = _secteurs.value.maxOf { it.vid } +1
-
-        _currentActiveSectorId.value = newSectorId
-        loadSecteurs() // Refresh the list
-        mapReloadTigger++ // Add this line to trigger map refresh
-
-    }
-    
-    fun addPointToCurrentSector(mapCenter: IGeoPoint) {
-        val sectorId = _currentActiveSectorId.value
-
-        viewModelScope.launch {
-            try {
-                if (sectorId == null) {
-                    Log.e(
-                        "PolygonCreator",
-                        "No active sector selected. Please select or create a sector first."
-                    )
-                    return@launch
-                }
-
-                val sector = _secteurs.value.find { it.vid == sectorId }
-                if (sector == null) {
-                    Log.e("PolygonCreator", "Cannot find sector with ID: $sectorId")
-                    return@launch
-                }
-
-                // Log coordinates being added
-                val latMicroDegrees = (mapCenter.latitude * 1E6).toInt()
-                val lonMicroDegrees = (mapCenter.longitude * 1E6).toInt()
-                Log.d(
-                    "PolygonCreator",
-                    "Adding point to sector ${sector.nom} (ID: $sectorId): lat=$latMicroDegrees, lon=$lonMicroDegrees"
-                )
-
-                // Create a new point for the polygon
-                val newPoint = PolygonGeoLimite(
-                    parentSecteurDeClientsId = sectorId,
-                    parentE1SecteurDeClientsKey = "E1SecteurDeClients.$sectorId(${sector.nom})",
-                    aLatitude = latMicroDegrees,
-                    aLongitude = lonMicroDegrees
-                )
-
-                // Insert the point into the database
-                val pointId = polygonDao.insertAvecRetureNewVid(newPoint)
-                Log.d(
-                    "PolygonCreator",
-                    "Successfully added point with ID: $pointId to sector $sectorId"
-                )
-
-                // Let's also verify if the point was correctly saved
-                val allPointsForSector =
-                    polygonDao.getAll().filter { it.parentSecteurDeClientsId == sectorId }
-                Log.d(
-                    "PolygonCreator",
-                    "Total points for sector $sectorId after adding: ${allPointsForSector.size}"
-                )
-
-                // Refresh the map
-                mapReloadTigger++
-
-                // Log success
-                Log.d(
-                    "PolygonCreator",
-                    "Map refresh triggered. New mapReloadTrigger value: $mapReloadTigger"
-                )
-            } catch (e: Exception) {
-                // Log the error
-                Log.e("PolygonCreator", "Error adding point to sector: ${e.message}", e)
-            }
-        }
-    }
-
-    fun closeCurrentSector() {
-        val sectorId = _currentActiveSectorId.value ?: return
-
-        viewModelScope.launch {
-            val sector = _secteurs.value.find { it.vid == sectorId } ?: return@launch
-
-            // Update the sector to mark it as closed
-            val updatedSector = sector.copy(sonPolygonOnModeDessine = true, ouvert = false)
-            secteurRepo.insert(updatedSector)
-
-            // Clear the current active sector
-            _currentActiveSectorId.value = null
-
-            // Refresh the sectors list
-            loadSecteurs()
-
-            // Refresh the map
-            mapReloadTigger++
-        }
-    }
 
     fun updateData(client: B_ClientInfosProtoJuin3): Unit {
         viewModelScope.launch {
@@ -380,8 +218,6 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-  
-
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
         CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
@@ -395,10 +231,6 @@ class ViewModel_MapClients_App2FragID1(
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 
-    /**
-     * Cleans up all resources used by the ViewModel to prevent memory leaks
-     * and ensure proper resource management when the view is destroyed.
-     */
     fun cleanupResources() {
         viewModelScope.launch {
             try {
@@ -429,13 +261,14 @@ class ViewModel_MapClients_App2FragID1(
             println("Error canceling active operations: ${e.message}")
         }
     }
-    
+
     fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) { b_ClientDataBaseRepository.deleteData(data) }
     fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
-    fun updateactiveComptIdClientOuvertPoutCeCompt(data: Long) {
+
+    fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
+        val currentActiveCompt = _uiState.value.activeCompt ?: return
         _uiState.value = _uiState.value.copy(
-            activeCompt = activeCompt.copy(=data)     //<--
-            //TODO(1): regle
+            activeCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
         )
     }
 }

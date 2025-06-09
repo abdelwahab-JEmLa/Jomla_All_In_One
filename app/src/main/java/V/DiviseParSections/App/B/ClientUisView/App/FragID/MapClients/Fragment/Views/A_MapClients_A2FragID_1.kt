@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.LoadingProgressOverlay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +14,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
-    viewModel: ViewModel_MapClients_App2FragID1 = koinViewModel(),
+    viewModel: MapClientsViewModel = koinViewModel(),
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},

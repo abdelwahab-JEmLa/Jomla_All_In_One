@@ -144,7 +144,7 @@ fun A_OptionsControlsButtons_A1FragID_3(
                         )
                     }
 
-                    // Menu AutreButtons - Inlined from MenuButton function
+                    // Menu ButtonAutreEtates - Inlined from MenuButton function
                     ControlButton(
                         onClick = { showMenu = !showMenu },
                         icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.Warning,
