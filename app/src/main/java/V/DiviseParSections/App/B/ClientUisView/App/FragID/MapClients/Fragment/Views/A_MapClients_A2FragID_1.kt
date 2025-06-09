@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.LoadingProgressOverlay
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -37,7 +36,6 @@ fun A_MapClients_A2FragID_1(
         } else {
             MapContent(
                 viewModel = viewModel,
-                clientEnCourDeVent = clientEnCourDeVent,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,
                 mapReloadTrigger = mapReloadTrigger

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
@@ -17,13 +18,15 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 suspend fun updateMapMarkers(
-    mapView: MapView,
+    uiState: UiState,
     viewModel: ViewModel_MapClients_App2FragID1,
-    clientDataBaseSnapList: List<B_ClientInfosProtoJuin3>,
+    mapView: MapView,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
+  val  clientDataBaseSnapList= uiState.b_ClientInfosProtoJuin3List
+
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
 

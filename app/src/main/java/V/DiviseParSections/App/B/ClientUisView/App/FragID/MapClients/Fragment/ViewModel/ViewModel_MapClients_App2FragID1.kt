@@ -45,7 +45,7 @@ data class PanelsGroupeButton(
     }
 }
 
-data class MapClientsUiState(
+data class UiState(
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
@@ -69,8 +69,8 @@ class ViewModel_MapClients_App2FragID1(
     val recordingHandler: IRecordingHandler
 ) : ViewModel() {
     val b_ClientDataBaseRepository= a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
-    private val _uiState = MutableStateFlow(MapClientsUiState())
-    val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model
         .e1SecteurDeClientsRepository

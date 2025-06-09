@@ -2,9 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.addToMapOsmdroid
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.getNoSqlDisplayer
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleActiveTransaction
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Init.getMapUpdateTriggers
@@ -17,6 +14,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,8 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -49,12 +45,14 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 @Composable
 fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
-    clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.b_ClientInfosProtoJuin3List.size}")
+    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps }}")
 
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -71,62 +69,17 @@ fun MapContent(
             }
         )
     }
-
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
     val activeTransactionId =
         viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-
-    // Collect the current mapReloadTrigger from viewModel for sectors updates
-    val sectorMapReloadTrigger = viewModel.mapReloadTigger
-
     // Handle active transaction by showing the relevant marker
     LaunchedEffect(viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value) {
         handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
             selectedMarker = marker
             showMarkerDialog = true
-        }
-    }
-
-    // Effect to update sectors on map - now responds to viewModel.mapReloadTigger changes
-    LaunchedEffect(mapView, sectorMapReloadTrigger) {
-        // Execute all database operations on Dispatchers.IO
-        withContext(Dispatchers.IO) {
-            // Get sector and polygon DAOs
-            val polygonDao = viewModel.appDatabase.polygonGeoLimiteDaoDao()
-
-            // Check if there are existing sectors
-            if (uiState.e1SecteurDeClientsList.isEmpty()) {
-                // If no sectors exist, create two with their polygons
-                insert2SecteurEtPolygon(
-                    viewModel,
-                    polygonDao = polygonDao
-                )
-            }
-
-            // Get all sectors and polygon points
-            val allSecteurs = uiState.e1SecteurDeClientsList
-            val allPolygonPoints = polygonDao.getAll()
-
-            // Get structured information about sectors and their polygons
-
-            val secteurPolygonInfoList = getNoSqlDisplayer(
-                uiState = uiState,
-                viewModel = viewModel,
-                polygonDao = polygonDao
-            )
-
-            // Back to main thread to update UI
-            withContext(Dispatchers.Main) {
-                // Clear existing sector polygons first to prevent duplicates
-                val sectorsToRemove = mapView.overlays.take(allSecteurs.size)
-                mapView.overlays.removeAll(sectorsToRemove)
-
-                // Add sectors to map
-                addToMapOsmdroid(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
-            }
         }
     }
 
@@ -150,20 +103,18 @@ fun MapContent(
     // Main effect for updating markers on the map when data changes
     val updateTriggers = getMapUpdateTriggers(
         viewModel.c3_BonAchate_List,
-        viewModel,
-        clientDataBaseSnapList.size,
-        clientEnCourDeVent,
         currentFilterMode,
-        mapReloadTrigger
+        mapReloadTrigger,
+        uiState = uiState
     )
 
     LaunchedEffect(updateTriggers) {
         updateMapMarkers(
-            mapView,
-            viewModel,
-            clientDataBaseSnapList,
-            currentFilterMode,
-            showMarkerDetails
+            uiState=uiState,
+            mapView=mapView,
+            viewModel=viewModel,
+            currentFilterMode=currentFilterMode,
+            showMarkerDetails=showMarkerDetails
         ) { marker ->
             selectedMarker = marker
             showMarkerDialog = true
@@ -238,7 +189,7 @@ fun MapContent(
         // Marker status dialog
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
-                uiState=uiState,
+                uiState = uiState,
                 viewModel = viewModel,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
