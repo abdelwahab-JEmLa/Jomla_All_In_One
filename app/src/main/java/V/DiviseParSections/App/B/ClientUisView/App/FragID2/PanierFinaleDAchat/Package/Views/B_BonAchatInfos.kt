@@ -1,13 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -31,33 +29,33 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ColumnScope.BonAchatInfos(
-    composeKeyVID: Long?,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     relativeBonAchate: C3_TransactionCommercial?,
     itemCount: Int,
     formattedTotalPrice: String,
     showOrderSuccess: Boolean,
-    scope: CoroutineScope,
-    onConfirmOrder: () -> Unit,
-    onShowOrderSuccessChange: (Boolean) -> Unit,
-    database: AppDatabase = koinInject(),
-    repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository = koinInject(),
+    viewModel: ViewModelPanierFinaleDAchat_FragIdB2 = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val datasB_ClientInfosProtoJuin3List by remember(uiState.B_ClientInfosProtoJuin3List) { mutableStateOf(uiState.B_ClientInfosProtoJuin3List) }
 
-    ) {
-    val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
+    val _0_0_HeadSQLRepositorysrepositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
+
     val relativeClientDataBase =
-        repositorysModel.repository_3_ClientsDataBase
-            .modelDatasSnapList.find { it.vid == relativeBonAchate?.clientAcheteurID }
+        datasB_ClientInfosProtoJuin3List.find { it.id == relativeBonAchate?.clientAcheteurID }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -75,9 +73,9 @@ fun ColumnScope.BonAchatInfos(
                         printReceipt(
                             context = context,
                             bonAchat = relativeBonAchate,
-                            repositorysModel = repositorysModel,
-                            database = database,
-                            scope = coroutineScope
+                            repositorysModel = _0_0_HeadSQLRepositorysrepositorysModel,
+                            scope = coroutineScope,
+                            datasB_ClientInfosProtoJuin3List=datasB_ClientInfosProtoJuin3List
                         )
                     },
                     modifier = Modifier
@@ -100,7 +98,7 @@ fun ColumnScope.BonAchatInfos(
                                 monPrixVent = 0.0
                             )
 
-                            repositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
+                            _0_0_HeadSQLRepositorysrepositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
                                 val produitOperation = _1_2_ProduitAcheteOperation(
                                     produitAcheterID = productId,
                                     parent_1_3_TransactionCommercial = relativeBonAchate?.vid ?: 0L,
@@ -108,7 +106,7 @@ fun ColumnScope.BonAchatInfos(
                                 )
 
                                 // Add the product operation and get its ID
-                                repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
+                                _0_0_HeadSQLRepositorysrepositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
                                     // Finally upsert a color operation with quantity 1
                                     val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,
@@ -118,7 +116,7 @@ fun ColumnScope.BonAchatInfos(
                                     )
 
                                     // Add color operation
-                                    repositorysModel._1_1_CouleurAcheteOperation_Repository.addDataAndReturnItVID(couleurOperation)
+                                    _0_0_HeadSQLRepositorysrepositorysModel._1_1_CouleurAcheteOperation_Repository.addDataAndReturnItVID(couleurOperation)
                                 }
                             }
                         }

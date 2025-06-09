@@ -1,15 +1,15 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.TimeFormatUtils
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
+    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val mainLoadingProgress: Float = 0f,
+
     val bonAchatList: List<C3_TransactionCommercial> = emptyList(),
 
     val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(vid = 7L),
@@ -33,18 +36,19 @@ data class UiState(
 )
 
 class RecordingViewModel(
+    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
-    val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
     val recordingHandler: IRecordingHandler,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
     val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    val bProto_ClientsDataBase = uiState.value.B_ClientInfosProtoJuin3List
 
     private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
@@ -56,6 +60,31 @@ class RecordingViewModel(
     private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
     private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
     val editingInterval = _editingInterval.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    _uiState.value = _uiState.value.copy(
+                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        mainLoadingProgress = model.progress
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            collectBonAchatRepoModel()
+            collectActiveVendeurId()
+        }
+
+        viewModelScope.launch {
+            suitUiBonAchet()
+        }
+
+        recordingHandler.updateTotalWorkedTime()
+        recordingHandler.setupRecordingStateListener()
+    }
 
     private fun log(list: List<C3_TransactionCommercial>) {
         val map = list.map { bon ->
@@ -93,19 +122,6 @@ class RecordingViewModel(
         }
     }
 
-    init {
-        viewModelScope.launch {
-            collectBonAchatRepoModel()
-            collectActiveVendeurId()
-        }
-
-        viewModelScope.launch {
-            suitUiBonAchet()
-        }
-
-        recordingHandler.updateTotalWorkedTime()
-        recordingHandler.setupRecordingStateListener()
-    }
 
     private suspend fun collectActiveVendeurId() {
         groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect {
@@ -130,7 +146,7 @@ class RecordingViewModel(
         }
     }
 
-    fun getLastTransaction(client: B_ClientDataBaseProtoC): C3_TransactionCommercial? =
+    fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? =
         repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 

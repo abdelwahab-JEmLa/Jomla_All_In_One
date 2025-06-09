@@ -44,4 +44,9 @@ interface B_ClientInfosProtoJuin3Dao {
 
     @Upsert
     suspend fun upsertAllDatas(datas: List<B_ClientInfosProtoJuin3>)
+
+    @Delete
+    suspend fun delete(item: B_ClientInfosProtoJuin3)
+
+
 }

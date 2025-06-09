@@ -2,7 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
@@ -41,7 +41,7 @@ fun A_MainListFragId3(
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: B_ClientsDataBaseProtoD?,
+    currentClient: B_ClientInfosProtoJuin3?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,

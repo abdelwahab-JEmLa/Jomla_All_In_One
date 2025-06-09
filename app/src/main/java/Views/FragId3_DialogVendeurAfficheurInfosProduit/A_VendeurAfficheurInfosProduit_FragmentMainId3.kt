@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
@@ -44,7 +44,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: B_ClientsDataBaseProtoD?,
+    currentClient: B_ClientInfosProtoJuin3?,
     clickedCouleurIndex: Int,
     onFermDialoge: () -> Unit,
 ) {
@@ -82,7 +82,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 @Composable
 fun MainUi(
     currentSale: SoldArticlesTabelle,
-    currentClient: B_ClientsDataBaseProtoD?,
+    currentClient: B_ClientInfosProtoJuin3?,
     viewModelInitApp: ViewModelInitApp,
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,

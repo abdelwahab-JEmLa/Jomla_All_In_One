@@ -7,12 +7,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.Extension.B_ClientDataBaseDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBaseProtoE
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F.B_ClientInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.F.B_ClientInfosDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.D_EtateMessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
@@ -67,7 +61,6 @@ import java.util.Date
         DevicesTypeManager::class,
         DiviseurDeDisplayProductForEachClient::class,
         BaseDonne::class,
-        B_ClientDataBaseProtoC::class,
 
         I_CategorieProduits::class,
         A_Produit::class,
@@ -92,9 +85,7 @@ import java.util.Date
         ArticlesBasesStatsTable::class,
         CategoriesTabelle::class,
 
-        B_ClientInfos::class,
-        B_ClientInfosProtoJuin3 ::class,
-        _3_ClientsDataBaseProtoE::class,
+        B_ClientInfosProtoJuin3::class,
 
     ],
     version = 3, // Increment version number since we're adding new entities
@@ -139,10 +130,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun D_EtateMessageVocaleDao(): D_EtateMessageVocaleDao
 
     abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
-    abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
-    abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
-    abstract fun b_ClientInfosDao(): B_ClientInfosDao
-
 
     object DatabaseModule {
 

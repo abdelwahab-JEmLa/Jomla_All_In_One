@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 
 @Entity
-data class _3_ClientsDataBaseProtoE(
+data class AR_3_ClientsDataBaseProtoE(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 

@@ -4,8 +4,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -45,6 +46,9 @@ data class PanelsGroupeButton(
 }
 
 data class MapClientsUiState(
+    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val mainLoadingProgress: Float = 0f,
+
     val e1SecteurDeClientsList: List<E1SecteurDeClients> = emptyList(),
 
     val paneleGroupeButtonList: List<PanelsGroupeButton> =
@@ -61,10 +65,10 @@ data class MapClientsUiState(
 class ViewModel_MapClients_App2FragID1(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val appDatabase: AppDatabase,
-    val b_ClientDataBaseRepository: B_ClientDataBaseRepository,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler
 ) : ViewModel() {
+    val b_ClientDataBaseRepository= a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     private val _uiState = MutableStateFlow(MapClientsUiState())
     val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
 
@@ -78,9 +82,9 @@ class ViewModel_MapClients_App2FragID1(
     val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model
         .c3_BonAchate_Repository.modelDatasSnapList
 
-    val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
+    val bProto_ClientsDataBase = uiState.value.B_ClientInfosProtoJuin3List
 
-    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBaseProtoC.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
 
     var afficheLesJoursAuNoms by mutableStateOf(true)
@@ -100,8 +104,21 @@ class ViewModel_MapClients_App2FragID1(
     val showSecteurDialog = mutableStateOf(false)
     val showAddSecteurDialog = mutableStateOf(false)
 
+    init {
+        viewModelScope.launch {
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    _uiState.value = _uiState.value.copy(
+                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        mainLoadingProgress = model.progress
+                    )
+                }
+            }
+        }
+    }
+
      fun getLastTransaction(
-        client: B_ClientDataBaseProtoC
+        client: B_ClientInfosProtoJuin3
     ): C3_TransactionCommercial? {
         val historicalData = groupeRepositorysProtoAvJuin3
             .repositorys_Model
@@ -265,9 +282,9 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun updateData(client: B_ClientDataBaseProtoC): Unit {
+    fun updateData(client: B_ClientInfosProtoJuin3): Unit {
         viewModelScope.launch {
-            b_ClientDataBaseRepository.updateUnSeulData(client)
+            b_ClientDataBaseRepository.addOrUpdateData(client)
         }
 
         mapReloadTigger++
@@ -288,7 +305,7 @@ class ViewModel_MapClients_App2FragID1(
 
             val newnom = "ز.$newID"
 
-            val newClientAchteur = B_ClientDataBaseProtoC().apply {
+            val newClientAchteur = B_ClientInfosProtoJuin3().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -300,7 +317,7 @@ class ViewModel_MapClients_App2FragID1(
             }
 
             viewModelScope.launch {
-                b_ClientDataBaseRepository.addData(newClientAchteur)
+                b_ClientDataBaseRepository.addOrUpdateData(newClientAchteur)
             }
         } catch (e: Exception) {
             // Error handling
@@ -330,8 +347,8 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun deleteUnSeulData(data: B_ClientDataBaseProtoC) {
-        b_ClientDataBaseRepository.deleteUnSeulData(data)
+    fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) {
+        b_ClientDataBaseRepository.deleteData(data)
     }
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {

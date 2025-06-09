@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test
+package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.ViewModel
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -14,7 +14,7 @@ data class UiState(
     val mainLoadingProgress: Float = 0f
 )
 
-class B_ClientInfosProtoJuin3PreviewViewModel(
+class CommandeProduitsViewModel(
     val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())

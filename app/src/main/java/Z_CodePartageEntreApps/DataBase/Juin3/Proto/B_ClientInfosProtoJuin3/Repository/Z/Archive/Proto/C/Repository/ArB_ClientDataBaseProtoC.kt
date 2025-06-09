@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 
 @Entity
-data class B_ClientDataBaseProtoC(
+data class ArB_ClientDataBaseProtoC(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 

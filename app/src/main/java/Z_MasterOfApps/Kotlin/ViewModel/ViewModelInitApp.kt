@@ -1,16 +1,14 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.UiState
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
-import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.Partage.Functions.FunctionsPartageEntreFragment
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.ViewModel.Frag_4A1_ExtVM
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.Frag2_A1_ExtVM
@@ -25,21 +23,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+
+data class UiState(
+    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val mainLoadingProgress: Float = 0f,
+)
 
 
 class ViewModelInitApp(
+    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val produitModelRepository: A_ProduitRepository,
-    val i_CategoriesRepository: I_CategoriesRepository,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-    val C3_BonAchate_Repository: C3_BonAchate_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
     val repo_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
-    val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository,
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
@@ -72,6 +77,19 @@ class ViewModelInitApp(
 
     val frag_4A1_ExtVM = Frag_4A1_ExtVM(viewModel)
 
+    init {
+        viewModelScope.launch {
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    _uiState.value = _uiState.value.copy(
+                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        // FIXED: use lowercase 'b' to match the property name in MasterRepositorysModel
+                        mainLoadingProgress = model.progress
+                    )
+                }
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -94,66 +112,4 @@ class ViewModelInitApp(
             }
         }
     }
-
-
-    fun updateStatueClientParID(
-        clientId : Long,
-        statueVente: B_ClientsDataBaseProtoD.GpsLocation.DernierEtatAAffiche
-    ) {
-        clientDataBaseSnapList.toMutableList().forEach { client ->
-            if (client.id == clientId) {
-                // Now works because gpsLocation is part of the data class
-                val updatedClient = client.copy(
-                    gpsLocation = client.gpsLocation.copy(
-                        actuelleEtat = statueVente
-                    )
-                )
-                updateClientsDataBase(updatedClient)
-            }
-        }
-    }
-    fun updateClientsDataBase(data : B_ClientsDataBaseProtoD) {
-        viewModel.viewModelScope.launch {
-            try {
-                // Create a snapshot of the current state
-                val currentState = data.copy()
-
-                // Update local state using clear and addAll
-                val clientsList = viewModel._modelAppsFather.clientDataBase
-                val updatedList = clientsList.toMutableList()
-                val index = updatedList.indexOfFirst { it.id == currentState.id }
-
-                if (index != -1) {
-                    updatedList[index] = currentState
-                } else {
-                    // If client doesn't exist, upsert them
-                    updatedList.add(currentState)
-                }
-
-                // Replace entire list
-                clientsList.clear()
-                clientsList.addAll(updatedList)
-
-                // Update Firebase with error handling
-                try {
-                    B_ClientsDataBaseProtoD.refClientsDataBase.child(currentState.id.toString())
-                        .setValue(currentState)
-                        .await()
-                } catch (e: Exception) {
-                    // Revert local state if Firebase upsertLenceCommandeRepoGroupedProtoAvanJuin3 fails
-                    clientsList.clear()
-                    clientsList.addAll(
-                        if (index != -1) updatedList.toMutableList().apply { this[index] = data }
-                        else updatedList.dropLast(1)
-                    )
-                    throw e
-                }
-
-            } catch (e: Exception) {
-                Log.e("B_ClientsDataBaseProtoD", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
-            }
-        }
-    }
-
-
 }

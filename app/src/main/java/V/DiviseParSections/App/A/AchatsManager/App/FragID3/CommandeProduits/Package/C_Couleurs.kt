@@ -1,8 +1,9 @@
 // C_Couleurs.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.ViewModel.CommandeProduitsViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.LoadingScreenB_ClientProtoJuin3
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
@@ -156,8 +159,9 @@ fun Couleurs(
                 val individualQuantities = colorsForProduct
                     .filter { color ->
                         // Basic match on color index
-                        val colorMatch = color.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
-                                color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                        val colorMatch =
+                            color.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
+                                    color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
 
                         if (!colorMatch) return@filter false
 
@@ -165,8 +169,9 @@ fun Couleurs(
                         if (periodFilter == null) return@filter true
 
                         // If period filter exists, check if this color belongs to the filtered period
-                        val parentProduct = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
-                            .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
+                        val parentProduct =
+                            models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
+                                .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
                         val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
@@ -214,7 +219,8 @@ fun Couleurs(
                 val colorName = remember(Produit.produitAcheterID, Couleur.couleurIndex_ParentVID) {
                     val product = calculeCouleurHandler.findProductById(Produit.produitAcheterID)
                     product?.let {
-                        val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(it)
+                        val productImageInfos =
+                            calculeCouleurHandler.getProduitInfoImageParIndex(it)
                         val colorIndex = Couleur.couleurIndex_ParentVID.toInt()
                         productImageInfos.getOrNull(colorIndex)?.colorName?.takeIf { name -> name.isNotBlank() }
                     }
@@ -239,8 +245,7 @@ fun Couleurs(
                                             .padding(40.dp)
                                             .graphicsLayer(rotationZ = 45f)
                                     )
-                                }
-                                ,qualityImage=1
+                                }, qualityImage = 1
 
                             )
 
@@ -266,7 +271,7 @@ fun Couleurs(
 
                         // Only display buyers if there are any and pass the updated client quantities map
                         if (allClientsMap.isNotEmpty()) {
-                            Acheteurs(allClientsMap, models)
+                            Acheteurs(clientQuantities = allClientsMap)
                         }
                     }
                 }
@@ -300,41 +305,52 @@ fun Couleurs(
 // Completely restructured Acheteurs to use the calculated client quantities
 @Composable
 fun Acheteurs(
+    viewModel: CommandeProduitsViewModel = koinViewModel(),
     clientQuantities: Map<Long, Long>,
-    models: GroupeRepositorysProtoAvJuin3Model,
-    B_ClientDataBaseRepository: B_ClientDataBaseRepository = koinInject(),
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        // Display each client with their quantity
-        clientQuantities.forEach { (clientId, quantity) ->
-            // Skip clientAchteurs with zero quantity
-            if (quantity <= 0) return@forEach
-
-            val clientDataBaseSnapList = B_ClientDataBaseRepository.modelDatas
-
-            val clientAchteurName = clientDataBaseSnapList.find {
-                it.id == clientId
-            }?.nom ?: "ClientAchteur #$clientId"
-
-            Text(
-                text = "$clientAchteurName ",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+        val uiState by viewModel.uiState.collectAsState()
+        val progress = uiState.mainLoadingProgress
+        val datasB_ClientInfosProtoJuin3List by remember(uiState.B_ClientInfosProtoJuin3List) {
+            mutableStateOf(
+                uiState.B_ClientInfosProtoJuin3List
             )
+        }
+        val clientDataBaseSnapList = datasB_ClientInfosProtoJuin3List
 
-            Spacer(modifier = Modifier.width(8.dp))
+        if (progress < 1.0f) {
+            LoadingScreenB_ClientProtoJuin3(progress)
+        } else {
+            // Display each client with their quantity
+            clientQuantities.forEach { (clientId, quantity) ->
+                // Skip clientAchteurs with zero quantity
+                if (quantity <= 0) return@forEach
 
-            Text(
-                text = "Qté: $quantity",
-                fontWeight = FontWeight.Bold
-            )
 
-            // Add spacing between clientAchteurs
-            Spacer(modifier = Modifier.height(4.dp))
+                val clientAchteurName = clientDataBaseSnapList.find {
+                    it.id == clientId
+                }?.nom ?: "ClientAchteur #$clientId"
+
+                Text(
+                    text = "$clientAchteurName ",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "Qté: $quantity",
+                    fontWeight = FontWeight.Bold
+                )
+
+                // Add spacing between clientAchteurs
+                Spacer(modifier = Modifier.height(4.dp))
+            }
         }
     }
 }

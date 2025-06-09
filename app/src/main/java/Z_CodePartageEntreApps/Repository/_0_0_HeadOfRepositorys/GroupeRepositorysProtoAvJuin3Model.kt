@@ -7,7 +7,6 @@ import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
@@ -28,7 +27,6 @@ class GroupeRepositorysProtoAvJuin3Model(
     val repository_1_5_Vendeur: _1_5_Vendeur_Repository,
 
     val _2_1_ProduitsDataBase_Repository: _2_1_ProduitsDataBase_Repository,
-    val repository_3_ClientsDataBase: _3_ClientsDataBase_Repository,
 
     val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
 

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -31,15 +31,14 @@ fun printReceipt(
     context: Context,
     bonAchat: C3_TransactionCommercial?,
     repositorysModel: GroupeRepositorysProtoAvJuin3Model,
-    database: AppDatabase,
-    scope: CoroutineScope? = null
+    scope: CoroutineScope? = null,
+    datasB_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3>
 ) {
     if (bonAchat == null) return
 
     val printFunction = {
         // Get client information
-        val client = repositorysModel.repository_3_ClientsDataBase
-            .modelDatasSnapList.find { it.vid == bonAchat.clientAcheteurID }
+        val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.clientAcheteurID }
 
         // Generate current date string
         val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())

@@ -2,13 +2,13 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
@@ -16,7 +16,6 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_Ve
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import android.util.Log
 import com.google.firebase.database.DatabaseReference
@@ -46,7 +45,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
-    private val _2_2_Repository: _3_ClientsDataBase_Repository,
     private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
     private val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 ) : GroupeRepositorysProtoAvJuin3 {
@@ -62,7 +60,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
         _1_5_Repository,
 
         _2_1_Repository,
-        _2_2_Repository,
 
         _4_CouleurOperationCommand_Repository,
         e1SecteurDeClientsRepository  // Add this parameter here
@@ -89,7 +86,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
             _1_5_Repository.ensureDataIsInitialized()
 
             _2_1_Repository.ensureDataIsInitialized()
-            _2_2_Repository.ensureDataIsInitialized()
             _4_CouleurOperationCommand_Repository.ensureDataIsInitialized()
 
             // Start tracking progress afterward
@@ -680,7 +676,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
 
                 repositoryScope.launch { _2_1_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _4_CouleurOperationCommand_Repository.ensureDataIsInitialized() }
             )
 
@@ -712,7 +707,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
-                    repository_3_ClientsDataBase = _2_2_Repository,
                     _4_CouleurOperationCommand_Repository = _4_CouleurOperationCommand_Repository,
                     e1SecteurDeClientsRepository = e1SecteurDeClientsRepository // Pass the parameter here
                 )
@@ -741,7 +735,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 _1_5_Repository.progressRepo,
 
                 _2_1_Repository.progressRepo,
-                _2_2_Repository.progressRepo,
                 _4_CouleurOperationCommand_Repository.progressRepo
             ) { flowValues ->
                 // flowValues is an Array<Float> containing all the progress values

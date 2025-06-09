@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.material.icons.Icons
@@ -13,14 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @IgnoreExtraProperties
-data class B_ClientsDataBaseProtoD(
+data class ArB_ClientsDataBaseProtoD(
     var id: Long = 1,
     var nom: String = "Non Defini",
     var statueDeBase: StatueDeBase = StatueDeBase(),
@@ -95,52 +95,14 @@ data class B_ClientsDataBaseProtoD(
         }
     }
 
-    // B_ClientsDataBaseProtoD.kt - Updated companion object
+    // B_ClientInfosProtoJuin3.kt - Updated companion object
     companion object {
         val refClientsDataBase = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
-            .child("B_ClientsDataBaseProtoD")
+            .child("B_ClientInfosProtoJuin3")
 
-        fun syncData(
-            data: B_ClientsDataBaseProtoD? = null,
-            dataSnapshot: DataSnapshot? = null
-        ): Any {
-            // Convert from Firebase to model
-            if (dataSnapshot != null) {
-                return dataSnapshot.getValue(B_ClientsDataBaseProtoD::class.java) ?: B_ClientsDataBaseProtoD()
-            }
 
-            // Convert from model to Firebase map
-            val sourceData = data ?: B_ClientsDataBaseProtoD()
-            return mapOf(
-                "id" to sourceData.id,
-                "nom" to sourceData.nom,
-                "statueDeBase" to mapOf(
-                    "numTelephone" to sourceData.statueDeBase.numTelephone,
-                    "couleur" to sourceData.statueDeBase.couleur,
-                    "bonDuClientsSu" to sourceData.statueDeBase.bonDuClientsSu,
-                    "currentCreditBalance" to sourceData.statueDeBase.currentCreditBalance,
-                    "positionDonClientsList" to sourceData.statueDeBase.positionDonClientsList,
-                    "caRefDonAncienDataBase" to sourceData.statueDeBase.caRefDonAncienDataBase,
-                    "cUnClientTemporaire" to sourceData.statueDeBase.cUnClientTemporaire,
-                    "auFilterFAB" to sourceData.statueDeBase.auFilterFAB,
-                    "typeDeSonMagasine" to sourceData.statueDeBase.typeDeSonMagasine?.name
-                ),
-                "gpsLocation" to mapOf(
-                    "latitude" to sourceData.gpsLocation.latitude,
-                    "longitude" to sourceData.gpsLocation.longitude,
-                    "title" to sourceData.gpsLocation.title,
-                    "snippet" to sourceData.gpsLocation.snippet,
-                    "actuelleEtat" to sourceData.gpsLocation.actuelleEtat?.name
-                ),
-                // New addition for clientTypeMode
-                "etatesMutable" to mapOf(
-                    "clientTypeMode" to sourceData.etatesMutable.clientTypeMode.name
-                )
-            )
-        }
-
-        fun B_ClientsDataBaseProtoD.updateClientsDataBase(
+        fun B_ClientInfosProtoJuin3.updateClientsDataBase(
             viewModel: ViewModelInitApp
         ) {
             viewModel.viewModelScope.launch {
@@ -180,21 +142,12 @@ data class B_ClientsDataBaseProtoD(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("B_ClientsDataBaseProtoD", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
+                    Log.e("B_ClientInfosProtoJuin3", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
                 }
             }
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is B_ClientsDataBaseProtoD) return false
-
-        return id == other.id &&
-                nom == other.nom &&
-                statueDeBase == other.statueDeBase &&
-                gpsLocation == other.gpsLocation
-    }
 
     override fun hashCode(): Int {
         var result = id.hashCode()

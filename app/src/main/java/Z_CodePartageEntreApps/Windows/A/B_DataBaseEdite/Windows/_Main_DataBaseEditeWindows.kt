@@ -2,8 +2,6 @@ package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows
 
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit.A_ProduitButtons
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit.ViewModel_AProto_ProduitDataBase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.I_CategorieProduitsButtons
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.ViewModel_I_CategorieProduits
 import androidx.compose.foundation.background
@@ -27,10 +25,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
 val dataBaseEditeWindowsModules = module {
-    viewModel { ViewModel_BProto_ClientsDataBase(
-        get(),
-        get(),
-        ) }
+
     viewModel { ViewModel_I_CategorieProduits(get()) }
     viewModel { ViewModel_AProto_ProduitDataBase(
         get(),
@@ -69,7 +64,6 @@ fun DataBaseEditeWindows(onDissmis: () -> Unit) {
                     HorizontalDivider(thickness = 4.dp)
 
 
-                    BProto_ClientsDataBaseButton()
 
                     I_CategorieProduitsButtons()
                     A_ProduitButtons()

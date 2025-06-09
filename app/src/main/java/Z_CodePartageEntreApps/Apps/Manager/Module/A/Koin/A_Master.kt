@@ -18,8 +18,6 @@ import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_Vents
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
@@ -57,8 +55,6 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBase_Repository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_RepositoryImpl
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
@@ -110,7 +106,6 @@ val commonRepositoriesModule = module {
             get(),
             get(),
             get(),
-            get(),
         )
     }
 
@@ -128,12 +123,10 @@ val commonRepositoriesModule = module {
 
     single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
 
-    single<_3_ClientsDataBase_Repository> { _3_ClientsDataBase_RepositoryImpl(get()) }
     single<_4_CouleurOperationCommand_Repository> {
         _4_CouleurOperationCommand_RepositoryImpl(get())
     }
 
-    single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
@@ -184,6 +177,7 @@ val viewModelModule = module {
     viewModel {
         ViewModelPanierFinaleDAchat_FragIdB2(
             get(),
+            get(),
         )
     }
 
@@ -221,11 +215,12 @@ val viewModelModule = module {
     // Original viewModels
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
-    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(),
+        get(),
+        ) }
     viewModel { VendeursViewModel(get(), get()) }
     viewModel {
         ViewModel_MapClients_App2FragID1(
-            get(),
             get(),
             get(),
             get(),
@@ -237,7 +232,8 @@ val viewModelModule = module {
     viewModel {
         ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             get(),  // The repository
-            get()   // The navigation handler
+            get() ,
+            get() ,
         )
     }
     viewModel {

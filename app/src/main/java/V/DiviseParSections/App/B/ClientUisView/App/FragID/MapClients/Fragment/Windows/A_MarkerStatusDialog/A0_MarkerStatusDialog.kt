@@ -359,7 +359,7 @@ fun MarkerStatusDialog(
                 title = { Text("Numéro de téléphone") },
                 text = {
                     Text(
-                        text = client?.statueDeBase?.numTelephone ?: "",
+                        text = client?.numTelephone ?: "",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 },
@@ -389,7 +389,7 @@ fun MarkerStatusDialog(
                                     }
 
                                 clientToDelete?.let { client ->
-                                    // Find and delete the corresponding B_ClientInfos object
+                                    // Find and delete the corresponding B_ClientInfosProtoJuin3 object
                                     val relatedClient = viewModel.bProto_ClientsDataBase.find {
                                         it.id == client.id
                                     }

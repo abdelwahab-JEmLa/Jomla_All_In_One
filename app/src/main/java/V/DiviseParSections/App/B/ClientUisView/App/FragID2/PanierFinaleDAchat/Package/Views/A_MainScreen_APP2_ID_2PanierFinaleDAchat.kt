@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,15 +96,11 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
             // Only show the order form if in COMMANDE_LENCE state
             if (isOrderMode) {
                 BonAchatInfos(
-                    relativeBonAchate?.clientAcheteurID,
                     _0_0_HeadSQLRepositorys,
                     relativeBonAchate,
                     itemCount,
                     formattedTotalPrice,
-                    showOrderSuccess,
-                    scope,
-                    onConfirmOrder,
-                    onShowOrderSuccessChange = { showOrderSuccess = it }
+                    showOrderSuccess
                 )
 
                 Column(
