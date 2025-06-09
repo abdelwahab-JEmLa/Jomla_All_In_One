@@ -1,9 +1,10 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -24,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 data class SecID5FragID2UiState(
+    val activeCompt: _1_5_Vendeur? = _1_5_Vendeur(),
     val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
@@ -32,13 +34,12 @@ data class SecID5FragID2UiState(
     val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<C3_TransactionCommercial>>> = emptyList(),
 )
 
-class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+class E0AfficheHistoriqueTransactionsViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
     private val navigationHandler: FragmentNavigationHandler
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())
     val uiState: StateFlow<SecID5FragID2UiState> = _uiState.asStateFlow()
 
@@ -47,20 +48,32 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
-                        // FIXED: use lowercase 'b' to match the property name in MasterRepositorysModel
+                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow
+                            ?: emptyList(),
                         mainLoadingProgress = model.progress
                     )
                 }
             }
         }
-    }
 
-    init {
+        viewModelScope.launch {
+            snapshotFlow {
+                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+                    .repositorys_Model
+                    .repository_1_5_Vendeur
+                    .modelDatasSnapList
+                    .toList()
+            }.collect { list ->
+                _uiState.value = _uiState.value.copy(
+                    activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
+                )
+            }
+        }
         viewModelScope.launch {
             loadCollectSnapshotStateList()
         }
     }
+
 
     fun navigateToCartScreen() {
         viewModelScope.launch(Dispatchers.Main) {
@@ -88,7 +101,11 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     }
             }
             .addOnFailureListener { exception ->
-                if (exception.message?.contains("Object does not exist", ignoreCase = true) == true) {
+                if (exception.message?.contains(
+                        "Object does not exist",
+                        ignoreCase = true
+                    ) == true
+                ) {
                     onComplete(true)
                 } else {
                     onComplete(false)
@@ -105,7 +122,10 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
                     r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList.isEmpty()
                 ) {
-                    addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_SQL_Repository)
+                    addTestDataToFireBaseIfEmpty(
+                        viewModelScope,
+                        r_0_0_HeadOfRepositorys_SQL_Repository
+                    )
                     delay(1000)
                 }
 
@@ -195,5 +215,21 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         viewModelScope.launch {
             loadCollectSnapshotStateList()
         }
+    }
+
+    fun openTransaction(data: C3_TransactionCommercial): Unit {
+        updateActiveComptIdClientOuvertPoutCeCompt(data.clientAcheteurID)
+        navigateToCartScreen()
+    }
+
+    fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
+        val currentActiveCompt = _uiState.value.activeCompt ?: return
+        _uiState.value = _uiState.value.copy(
+            activeCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
+        )
+
+        a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+            .repository_1_5_Vendeur
+            .updateUnSeulData(currentActiveCompt.copy(idClientOuvertPoutCeCompt = data))
     }
 }

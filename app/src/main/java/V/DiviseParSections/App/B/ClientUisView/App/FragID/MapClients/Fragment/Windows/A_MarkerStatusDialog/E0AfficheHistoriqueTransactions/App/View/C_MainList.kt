@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.SecID5FragID2UiState
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,9 +22,10 @@ import java.util.Locale
 fun MainList(
     filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<C3_TransactionCommercial>>>,
     dateStringName: DatesHandler,
-    viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
+    viewModel: E0AfficheHistoriqueTransactionsViewModel,
     uiState: SecID5FragID2UiState,
     idClient: Long,
+    onClickToOpenTransaction: (C3_TransactionCommercial) -> Unit,
 ) {
     val groupedByWeek = remember(filteredGroupedTransactions) {
         filteredGroupedTransactions.groupBy { (period, _) ->
@@ -84,9 +85,10 @@ fun MainList(
                     )
 
                     transactions.forEach { transaction ->
-                        B_Item_TransactionItem(
+                        MainItem(
                             viewModel = viewModel,
-                            transaction = transaction
+                            transaction = transaction,
+                            onClickToOpenTransaction = onClickToOpenTransaction
                         )
                     }
                 }

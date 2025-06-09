@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.SecID5FragID2UiState
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
@@ -13,7 +14,8 @@ fun MainFilter(
     uiState: SecID5FragID2UiState,
     dateStringName: DatesHandler,
     idClient: Long,
-    viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+    viewModel: E0AfficheHistoriqueTransactionsViewModel,
+    onClickToOpenTransaction: (C3_TransactionCommercial) -> Unit
 ) {
     val filteredGroupedTransactions = remember(uiState.transactionsDateToList_C_3_BonAchate, idClient) {
         uiState.transactionsDateToList_C_3_BonAchate
@@ -34,5 +36,5 @@ fun MainFilter(
             }
     }
 
-    MainList(filteredGroupedTransactions, dateStringName, viewModel, uiState, idClient)
+    MainList(filteredGroupedTransactions, dateStringName, viewModel, uiState, idClient, onClickToOpenTransaction )
 }

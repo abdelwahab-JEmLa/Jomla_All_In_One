@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -108,13 +108,7 @@ fun AfficheurRegleOuvert(
                     TextButton(
                         onClick = {
                             coroutineScope.launch {
-                                ouvertTransaction?.let { tx ->
-                                    val updatedTransaction =
-                                        tx.copy(tagCeBonEstOuvertPourComptsIds = "false")
-                                    viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-                                        updatedTransaction
-                                    )
-
+                                ouvertTransaction?.let {
                                     viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
                                 }
                             }

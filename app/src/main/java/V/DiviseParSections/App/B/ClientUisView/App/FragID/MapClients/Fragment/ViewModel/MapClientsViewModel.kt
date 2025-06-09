@@ -270,5 +270,9 @@ class MapClientsViewModel(
         _uiState.value = _uiState.value.copy(
             activeCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
         )
+
+        a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+            .repository_1_5_Vendeur
+            .updateUnSeulData(currentActiveCompt.copy(idClientOuvertPoutCeCompt = data))
     }
 }

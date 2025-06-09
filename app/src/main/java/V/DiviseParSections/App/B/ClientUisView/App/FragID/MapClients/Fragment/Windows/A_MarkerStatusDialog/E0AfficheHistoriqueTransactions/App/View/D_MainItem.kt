@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,10 +51,11 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun B_Item_TransactionItem(
+fun MainItem(
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     transaction: C3_TransactionCommercial,
-    viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
+    viewModel: E0AfficheHistoriqueTransactionsViewModel,
+    onClickToOpenTransaction: (C3_TransactionCommercial) -> Unit,
 ) {
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
@@ -65,11 +66,17 @@ fun B_Item_TransactionItem(
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
     val hasVoiceMessage = transaction.vocaleKeyID.isNotEmpty()
 
-    val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
+    val isCurrentlyPlaying = remember(
+        playbackProgress.isPlaying,
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
+    ) {
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isPlaying
     }
 
-    val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID) {
+    val isCurrentlyDownloading = remember(
+        playbackProgress.isDownloading,
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
+    ) {
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isDownloading
     }
 
@@ -130,7 +137,9 @@ fun B_Item_TransactionItem(
                     if (transaction.vocaleKeyID.isNotEmpty()) {
                         viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
                             if (success) {
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
+                                    transaction
+                                )
                             } else {
                                 Toast.makeText(
                                     context,
@@ -165,14 +174,7 @@ fun B_Item_TransactionItem(
                     if (etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                    transaction.copy(
-                                      //  tagCeBonEstOuvertPourComptsIds = !transaction.tagCeBonEstOuvertPourComptsIds
-                                    )
-                                ) {
-                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.value = transaction.vid
-                                    viewModel.navigateToCartScreen()
-                                }
+                                onClickToOpenTransaction(transaction)
                             }
                         ) {
                             Icon(
@@ -214,40 +216,54 @@ fun B_Item_TransactionItem(
                                 coroutineScope.launch {
                                     when {
                                         isCurrentlyPlaying -> {
-                                            val stopResult = audioRecorderAndPlayHandler.stopPlayback()
+                                            val stopResult =
+                                                audioRecorderAndPlayHandler.stopPlayback()
                                             if (stopResult.isFailure) {
-                                                val errorMessage = "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
-                                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                                val errorMessage =
+                                                    "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
+                                                Toast.makeText(
+                                                    context,
+                                                    errorMessage,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         }
+
                                         else -> {
-                                            val playResult = audioRecorderAndPlayHandler.startPlayback(
-                                                context = context,
-                                                parentMessageVID = transaction.vid,
-                                                firebaseUrl = transaction.vocaleKeyID,
-                                                onPlaybackComplete = {
-                                                    if (!transaction.sonVocaleEstEcoute) {
-                                                        val currentTimestamp = datesHandler.getCurrentTimestamps()
-                                                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                                            transaction.copy(
-                                                                sonVocaleEstEcoute = true,
-                                                                sonEcoutementEstFaitAutimestamps = currentTimestamp
-                                                            )
-                                                        ) {}
+                                            val playResult =
+                                                audioRecorderAndPlayHandler.startPlayback(
+                                                    context = context,
+                                                    parentMessageVID = transaction.vid,
+                                                    firebaseUrl = transaction.vocaleKeyID,
+                                                    onPlaybackComplete = {
+                                                        if (!transaction.sonVocaleEstEcoute) {
+                                                            val currentTimestamp =
+                                                                datesHandler.getCurrentTimestamps()
+                                                            viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
+                                                                transaction.copy(
+                                                                    sonVocaleEstEcoute = true,
+                                                                    sonEcoutementEstFaitAutimestamps = currentTimestamp
+                                                                )
+                                                            ) {}
+                                                        }
+                                                    },
+                                                    onPlaybackError = { errorMessage ->
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Erreur de lecture du message vocal: $errorMessage",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
                                                     }
-                                                },
-                                                onPlaybackError = { errorMessage ->
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Erreur de lecture du message vocal: $errorMessage",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
-                                                }
-                                            )
+                                                )
 
                                             if (playResult.isFailure) {
-                                                val errorMessage = "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
-                                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                                val errorMessage =
+                                                    "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
+                                                Toast.makeText(
+                                                    context,
+                                                    errorMessage,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
                                             }
                                         }
                                     }
@@ -282,6 +298,7 @@ fun B_Item_TransactionItem(
                                     trackColor = Color.White.copy(alpha = 0.3f)
                                 )
                             }
+
                             isCurrentlyPlaying && playbackProgress.duration > 0 -> {
                                 LinearProgressIndicator(
                                     progress = { playbackProgress.progress.coerceIn(0f, 1f) },
@@ -294,6 +311,7 @@ fun B_Item_TransactionItem(
                                     trackColor = Color.White.copy(alpha = 0.3f)
                                 )
                             }
+
                             else -> {
                                 LinearProgressIndicator(
                                     progress = { 0f },
@@ -320,13 +338,23 @@ fun B_Item_TransactionItem(
                                         color = Color.White
                                     )
                                 }
+
                                 isCurrentlyPlaying && playbackProgress.duration > 0 -> {
                                     Text(
-                                        text = "${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.currentPosition)} / ${audioRecorderAndPlayHandler.formatTimeFromMillis(playbackProgress.duration)}",
+                                        text = "${
+                                            audioRecorderAndPlayHandler.formatTimeFromMillis(
+                                                playbackProgress.currentPosition
+                                            )
+                                        } / ${
+                                            audioRecorderAndPlayHandler.formatTimeFromMillis(
+                                                playbackProgress.duration
+                                            )
+                                        }",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = Color.White
                                     )
                                 }
+
                                 transaction.sonVocaleEstEcoute -> {
                                     Column {
                                         Icon(
@@ -344,6 +372,7 @@ fun B_Item_TransactionItem(
                                         }
                                     }
                                 }
+
                                 else -> {
                                     Icon(
                                         imageVector = Icons.Default.Warning,

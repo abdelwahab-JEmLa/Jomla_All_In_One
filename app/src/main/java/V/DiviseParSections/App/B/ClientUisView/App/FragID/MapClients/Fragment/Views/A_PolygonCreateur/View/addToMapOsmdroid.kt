@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
@@ -41,7 +41,7 @@ fun addToMapOsmdroid(
             return@forEach
         }
 
-        Log.d("PolygonCreator", "Found sector: ${secteur.nom}, open: ${secteur.ouvert}, closed: ${secteur.sonPolygonOnModeDessine}")
+        Log.d("PolygonCreator", "Found sector: ${secteur.nom}, openTransaction: ${secteur.ouvert}, closed: ${secteur.sonPolygonOnModeDessine}")
 
         // Get polygon points for this sector
         val polygonPoints = allPolygonPoints.filter { it.parentSecteurDeClientsId == secteurId }
@@ -87,7 +87,7 @@ fun addToMapOsmdroid(
         Log.d("PolygonCreator", "Using color for sector ${secteur.nom}: ${Integer.toHexString(sectorColor)}")
 
         if (secteur.ouvert) {
-            Log.d("PolygonCreator", "Processing open sector: ${secteur.nom}")
+            Log.d("PolygonCreator", "Processing openTransaction sector: ${secteur.nom}")
 
             // Create a single polyline for all points
             if (geoPoints.size > 1) {
@@ -171,7 +171,7 @@ fun addToMapOsmdroid(
             mapView.overlays.add(0, polygon)
             Log.d("PolygonCreator", "Added closed polygon with ${pointsList.size} points")
         } else {
-            Log.w("PolygonCreator", "Sector ${secteur.nom} is neither open nor closed")
+            Log.w("PolygonCreator", "Sector ${secteur.nom} is neither openTransaction nor closed")
         }
     }
 

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -242,7 +242,6 @@ fun MarkerStatusDialog(
             }
         }
 
-        // Edit Dialog
         if (showEditDialog) {
             AlertDialog(
                 onDismissRequest = { showEditDialog = false },
@@ -293,7 +292,6 @@ fun MarkerStatusDialog(
             )
         }
 
-        // Phone Dialog
         if (showPhoneDialog) {
             val client =uiState.b_ClientInfosProtoJuin3List.find {
                 it.id.toString() == selectedMarker.id
@@ -315,7 +313,6 @@ fun MarkerStatusDialog(
             )
         }
 
-        // Delete confirmation dialog
         if (showDeleteConfirmationDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteConfirmationDialog = false },
