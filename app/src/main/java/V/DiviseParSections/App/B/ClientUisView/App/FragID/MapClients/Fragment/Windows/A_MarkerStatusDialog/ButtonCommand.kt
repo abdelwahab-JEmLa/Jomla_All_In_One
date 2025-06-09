@@ -51,14 +51,10 @@ fun CommandButton(
                     relatedClientID = clientId,
                     newEtate=etateActuellementEst1
                 )
-
                 updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
-
-                onDismiss()
-
                 viewModel.updateActiveComptIdClientOuvertPoutCeCompt(selectedMarkedID)
-
                 viewModel.startRecordIfNot()
+                onDismiss()
             }
         },
         modifier = modifier.fillMaxWidth(),
