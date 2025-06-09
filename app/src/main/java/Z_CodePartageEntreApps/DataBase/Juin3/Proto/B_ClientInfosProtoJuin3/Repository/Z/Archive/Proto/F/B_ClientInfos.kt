@@ -15,3 +15,4 @@ data class B_ClientInfos(
 
     val needUpdate: Boolean = true
 )
+
