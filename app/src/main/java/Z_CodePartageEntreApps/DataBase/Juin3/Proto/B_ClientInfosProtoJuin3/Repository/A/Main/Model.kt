@@ -18,7 +18,7 @@ import com.google.firebase.database.database
 data class B_ClientInfosProtoJuin3(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-    
+
     //Infos De Base
     var nom: String = "Non Defini",
     var cretionTimestamps: Long = DatesHandler().getCurrentTimestamps(),
@@ -40,12 +40,11 @@ data class B_ClientInfosProtoJuin3(
     var longitude: Double = 0.0,
     var title: String = "",
     var snippet: String = "",
-    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI ,
+    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
     //Etates Mutable
 
-
     // Section Centralization Valeurs Pour Injection a TOu modules
-    var tagCeBonEstOuvertPourComptsIds: String,
+    var tagCeBonEstOuvertPourComptsIds: String = "",
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
@@ -62,7 +61,8 @@ data class B_ClientInfosProtoJuin3(
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
-        A_EVITE(android.R.color.black, "يتجنب")
+        A_EVITE(android.R.color.black, "يتجنب"),
+        CLIENT_ABSENT(android.R.color.darker_gray, "عميل غائب") // Add this line
     }
 
     enum class TypeDeSonMagasine(val color: Int, val nomArabe: String) {
