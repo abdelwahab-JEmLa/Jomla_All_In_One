@@ -1,7 +1,6 @@
-// ComptApp.kt
-// AuthManager.kt
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto.E_GoogleAuth// ComptApp.kt    /*
 // comptAppDao.kt
-import android.os.Build
+/*import android.os.Build
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Insert
@@ -33,7 +32,6 @@ data class ComptApp(
     var startPeriod: Long = 0L
 )
 
-
 class AuthManager(
     private val dao: ComptAppDao,
     private val googleAuth: GoogleAuthHelper? = null
@@ -47,8 +45,8 @@ class AuthManager(
         }
     }
 
-    suspend fun syncWhenPossible() = withContext(Dispatchers.IO) {  //->
-        //TODO(FIXME):Fix erreur Function "syncWhenPossible" is never used 
+    // Function called by background sync service or app lifecycle events
+    suspend fun performBackgroundSync() = withContext(Dispatchers.IO) {
         val compte = dao.getCompte() ?: return@withContext
         if (compte.isGoogleAuth && hasInternet()) {
             googleAuth?.sync(compte)
@@ -56,8 +54,8 @@ class AuthManager(
         }
     }
 
-    suspend fun upgradeToGoogle(): Boolean = withContext(Dispatchers.IO) { //->
-        //TODO(FIXME):Fix erreur Function "upgradeToGoogle" is never used 
+    // Function called when user explicitly wants to upgrade to Google auth
+    suspend fun upgradeAccountToGoogle(): Boolean = withContext(Dispatchers.IO) {
         if (!hasInternet()) return@withContext false
 
         val localCompte = dao.getCompte() ?: return@withContext false
@@ -76,10 +74,22 @@ class AuthManager(
         true
     }
 
-    suspend fun signOut() = withContext(Dispatchers.IO) {     //->
-        //TODO(FIXME):Fix erreur Function "signOut" is never used 
+    // Function called when user wants to sign out
+    suspend fun performSignOut() = withContext(Dispatchers.IO) {
         googleAuth?.signOut()
         dao.deleteAll()
+    }
+
+    // Public method to check if sync is needed and perform it
+    suspend fun syncIfNeeded() {
+        val compte = dao.getCompte() ?: return
+        val lastSyncTime = compte.lastSync
+        val currentTime = System.currentTimeMillis()
+        val syncInterval = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+
+        if (currentTime - lastSyncTime > syncInterval) {
+            performBackgroundSync()
+        }
     }
 
     private suspend fun authenticateGoogle(): AuthResult {
@@ -142,7 +152,6 @@ interface GoogleAuthHelper {
     suspend fun migrateData(compte: ComptApp)
 }
 
-
 @Dao
 interface ComptAppDao {
     @Query("SELECT * FROM ComptApp LIMIT 1")
@@ -157,3 +166,211 @@ interface ComptAppDao {
     @Query("DELETE FROM ComptApp")
     suspend fun deleteAll()
 }
+
+package com.example.clientjetpack
+
+import AuthManager
+import AuthResult
+import P0_MainScreen.Main.MainScreen
+import P6_AiGroupeForSupplier.GenerativeAiViewModel
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
+import android.content.Context
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.clientjetpack.ui.theme.ClientJetPackTheme
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.core.annotation.KoinExperimentalAPI
+
+private const val TAG = "MainActivity"
+
+data class AppViewModels(
+    val generativeAiViewModel: GenerativeAiViewModel,
+)
+
+class ViewModelFactory(
+    private val context: Context,
+    private val database: AppDatabase,
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
+        modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
+            GenerativeAiViewModel() as T
+        else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
+    }
+}
+
+class MainActivity : ComponentActivity() {
+    private val database by lazy { AppDatabase.DatabaseModule.getDatabase(this) }
+    private val permissionHandler by lazy { PermissionHandler(this) }
+    private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
+    private val dao by lazy { database.comptAppDao() }
+
+    private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
+    private val appViewModels by lazy {
+        AppViewModels(generativeAiViewModel)
+    }
+
+    private var permissionsChecked by mutableStateOf(false)
+    private var applicationAfficheProduitsPourCompt by mutableStateOf(false)
+    private var authenticationCompleted by mutableStateOf(false)
+
+    private lateinit var authManager: AuthManager
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: API level ${Build.VERSION.SDK_INT}")
+        setupActivityContent()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @OptIn(KoinExperimentalAPI::class)
+    private fun setupActivityContent() {
+        runCatching {
+            setContent {
+                ClientJetPackTheme {
+                    KoinAndroidContext {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            when {
+                                !permissionsChecked -> {
+                                    // Show loading or permission request screen
+                                }
+                                !authenticationCompleted -> {
+                                    // Show authentication loading
+                                    setupAuth()
+                                }
+                                else -> {
+                                    // Show main screen when both permissions and auth are ready
+                                    MainScreen()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            handlePermissions()
+        }.onFailure { exception ->
+            Log.e(TAG, "Error setting up activity content", exception)
+        }
+    }
+
+    private fun setupAuth() {
+        if (!::authManager.isInitialized) {
+            authManager = AuthManager(dao)
+
+            lifecycleScope.launch {
+                try {
+                    when (val result = authManager.authenticate()) {
+                        is AuthResult.Success -> {
+                            val compte = result.compte
+                            applicationAfficheProduitsPourCompt = true
+                            authenticationCompleted = true
+
+                            // Perform background sync if needed
+                            authManager.syncIfNeeded()
+
+                            Log.d(TAG, "Auth success: ${compte.nom}")
+                        }
+                        is AuthResult.Error -> {
+                            Log.e(TAG, "Auth error: ${result.message}")
+                            // Still allow app to continue with limited functionality
+                            authenticationCompleted = true
+                        }
+                    }
+                } catch (exception: Exception) {
+                    Log.e(TAG, "Authentication failed", exception)
+                    authenticationCompleted = true
+                }
+            }
+        }
+    }
+
+    private fun handlePermissions() {
+        Log.d(TAG, "Checking permissions...")
+
+        if (permissionHandler.arePermissionsGranted()) {
+            Log.d(TAG, "All permissions are already granted")
+            permissionsChecked = true
+            return
+        }
+
+        permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
+            override fun onPermissionsGranted() {
+                Log.d(TAG, "All permissions granted through request")
+                permissionsChecked = true
+            }
+
+            override fun onPermissionsDenied() {
+                Log.d(TAG, "Some permissions denied")
+                showPermissionDeniedMessage()
+                // Still setting permissionsChecked to true to allow the app to run with limited functionality
+                permissionsChecked = true
+            }
+
+            override fun onPermissionRationale(permissions: Array<String>) {
+                Log.d(TAG, "Permission rationale needed for: ${permissions.joinToString()}")
+                // This is handled in PermissionHandler
+            }
+        })
+    }
+
+    private fun showPermissionDeniedMessage() {
+        Toast.makeText(
+            this,
+            "Certaines fonctionnalités seront limitées sans les permissions nécessaires",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    // Public methods to be called from UI components
+    fun upgradeToGoogleAuth() {
+        if (::authManager.isInitialized) {
+            lifecycleScope.launch {
+                val success = authManager.upgradeAccountToGoogle()
+                if (success) {
+                    Log.d(TAG, "Successfully upgraded to Google authentication")
+                } else {
+                    Log.e(TAG, "Failed to upgrade to Google authentication")
+                }
+            }
+        }
+    }
+
+    fun signOut() {
+        if (::authManager.isInitialized) {
+            lifecycleScope.launch {
+                authManager.performSignOut()
+                authenticationCompleted = false
+                applicationAfficheProduitsPourCompt = false
+                Log.d(TAG, "User signed out")
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Trigger sync when app resumes
+        if (::authManager.isInitialized && authenticationCompleted) {
+            lifecycleScope.launch {
+                authManager.syncIfNeeded()
+            }
+        }
+    }
+}
+*/
