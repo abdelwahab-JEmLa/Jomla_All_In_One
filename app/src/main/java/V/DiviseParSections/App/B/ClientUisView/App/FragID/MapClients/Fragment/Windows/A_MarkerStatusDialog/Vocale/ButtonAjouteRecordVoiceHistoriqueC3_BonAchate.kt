@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
@@ -38,15 +38,26 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun ButtonAjouteHistoriqueC3_BonAchate(
+fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
+    modifier: Modifier = Modifier,
+    uiState: UiState,
+    viewModel: ViewModel_MapClients_App2FragID1,
     masterRepositorys: A_MasterRepositorysGrpProtoJuin3 = koinInject(),
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
-    modifier: Modifier = Modifier,
     clientId: Long? = null,
-    onVoiceMessageUploaded: (String) -> Unit = {},
-    currentC3_BonAchate: C3_TransactionCommercial?,
-    findActiveComptVendeur: _1_5_Vendeur?
 ) {
+    val ceComptVendeurInsertBonsAchatAuPeriodID =
+        uiState.activeCompt
+            ?.ceComptVendeurInsertBonsAchatAuPeriodID
+
+    val currentTransaction =
+        viewModel.c3_BonAchate_List
+            .filter {
+                it.clientAcheteurID == clientId &&
+                        it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+            }
+            .maxByOrNull { it.timestamps }
+
     val d_EtateMessageVocaleRepository = masterRepositorys.d_EtateMessageVocaleRepository
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -138,21 +149,34 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
 
                                 // Create and save the voice message record to database
                                 val voiceMessageRecord = D_EtateMessageVocale(
-                                    idParent_1_5_Vendeur = findActiveComptVendeur!!.vid,
-                                    nomParent_1_5_Vendeur = findActiveComptVendeur.nom,
+                                    idParent_1_5_Vendeur = uiState.activeCompt!!.vid,
+                                    nomParent_1_5_Vendeur = uiState.activeCompt.nom,
                                     parentMessageVID = parentMessageVID,
                                     nom = D_EtateMessageVocale.Nom.ENVOYER,
                                     timestamps = DatesHandler().getCurrentTimestamps(),
                                     relativeAuDataBase =
                                         D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate,
-                                    parentC3_BonAchateVID = currentC3_BonAchate?.vid ?: 0
+                                    parentC3_BonAchateVID = currentTransaction?.vid ?: 0
                                 )
 
                                 d_EtateMessageVocaleRepository.addOrUpdateData(
                                     voiceMessageRecord
                                 )
 
-                                onVoiceMessageUploaded(downloadUrl)
+                                coroutineScope.launch {
+                                    clientId?.let {
+                                        currentTransaction?.let { transaction ->
+                                            val updatedTransaction =
+                                                transaction.copy(
+                                                    vocaleKeyID = downloadUrl
+                                                )
+
+                                            viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
+                                                updatedTransaction
+                                            )
+                                        }
+                                    }
+                                }
                                 Toast.makeText(
                                     context,
                                     "Message vocal envoyé avec succès!",
@@ -181,7 +205,7 @@ fun ButtonAjouteHistoriqueC3_BonAchate(
                             val startResult = audioRecorderAndPlayHandler.startRecording(
                                 context,
                                 parentMessageVID,
-                                currentTransaction = currentC3_BonAchate // Pass the transaction for this component
+                                currentTransaction = currentTransaction
                             )
 
                             if (startResult.isFailure) {

@@ -1,9 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,28 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun ClientEdites(
+    viewModel: ViewModel_MapClients_App2FragID1,
     onClickToEditeMarquerPosition: (Long) -> Unit,
     selectedMarker: Marker,
     onDismiss: () -> Unit,
     clientTypeMode: B_ClientInfosProtoJuin3.ClientTypeMode?,
     relatedClients: B_ClientInfosProtoJuin3?,
-    viewModel: ViewModel_MapClients_App2FragID1,
 
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
     onClientTypeModeChange: (B_ClientInfosProtoJuin3.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
-    onUpdateLongAppSetting: () -> Unit = {},
-    coroutineScope: CoroutineScope,
-    existingBonAchat: C3_TransactionCommercial?,
-    repositorysModel: GroupeRepositorysProtoAvJuin3Model,
-    clientId: Long,
-    ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
 ) {
     Row(
         modifier = Modifier

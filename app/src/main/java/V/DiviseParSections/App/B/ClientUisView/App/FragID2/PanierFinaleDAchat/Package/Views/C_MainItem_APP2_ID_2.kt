@@ -308,7 +308,7 @@ fun C_MainItem_APP2_ID_2(
 
                                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                                // Floating Action Button for toggling updateChangePrixDeBase
+                                // Floating Action AutreButtons for toggling updateChangePrixDeBase
                                 Box(
                                     modifier = Modifier
                                         .size(32.dp)

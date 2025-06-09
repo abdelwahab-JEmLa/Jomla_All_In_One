@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.material3.AutreButtons
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
@@ -140,8 +140,8 @@ private fun PeriodeItem(periode: _01_VentsNoSQl) {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // Button to show/hide related periods
-        Button(
+        // AutreButtons to show/hide related periods
+        AutreButtons(
             onClick = { showRelatedPeriods = !showRelatedPeriods },
             modifier = Modifier.align(Alignment.End)
         ) {

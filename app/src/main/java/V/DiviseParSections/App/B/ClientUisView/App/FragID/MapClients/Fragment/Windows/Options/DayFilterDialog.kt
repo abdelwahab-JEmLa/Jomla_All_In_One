@@ -144,7 +144,7 @@ fun DayFilterDialog(
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Button to clear all selections
+                // AutreButtons to clear all selections
                 Button(
                     onClick = {
                         selectedDays = emptyList()

@@ -2,9 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.ButtonAjouteHistoriqueC3_BonAchate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,23 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun MarkerStatusDialog(
+    uiState: UiState,
     viewModel: ViewModel_MapClients_App2FragID1,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
-    uiState: UiState,
-) {            //<--
-    val ceTelephoneEstDeAbdelwahab = _0_0_HeadSQLRepositorys
-        .repositorys_Model
-        .activeIdDeA5Vendeur == 2L
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -68,26 +61,9 @@ fun MarkerStatusDialog(
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
-    var clientTypeMode by remember { mutableStateOf(relatedClients?.clientTypeMode) }
-    val repositorysModel =
-        _0_0_HeadSQLRepositorys.repositorys_Model
-
-    val findActiveComptVendeur = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-        .find { it.vid == repositorysModel.activeIdDeA5Vendeur }
-    val ceComptVendeurInsertBonsAchatAuPeriodID =
-        findActiveComptVendeur
-            ?.ceComptVendeurInsertBonsAchatAuPeriodID
-
     val clientId = relatedClients?.id ?: 0L
-    // Check if a BonAchat already exists for this client in the active period
-    val existingBonAchat = viewModel.c3_BonAchate_List.find {
-        it.clientAcheteurID == clientId
-                && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-    }
+    var clientTypeMode by remember { mutableStateOf(relatedClients?.clientTypeMode) }
 
-    val activeTransactionId by viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
-
-    // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {
         editedName = relatedClients.nom ?: ""
         editedPhone = relatedClients.numTelephone ?: ""
@@ -127,21 +103,14 @@ fun MarkerStatusDialog(
                         onClientTypeModeChange = { clientTypeMode = it },
                         onShowEditDialogChange = { showEditDialog = it },
                         onShowPhoneDialogChange = { showPhoneDialog = it },
-                        coroutineScope = coroutineScope,
-                        existingBonAchat = existingBonAchat,
-                        repositorysModel = repositorysModel,
-                        clientId = clientId,
-                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
                     )
                 }
 
-                // Inside the LazyColumn
                 item {
                     AfficheurRegleOuvert(
-                        repositorysModel = repositorysModel,
-                        clientId = clientId,
-                        activeTransactionId = activeTransactionId,
+                        uiState=uiState,
                         viewModel = viewModel,
+                        clientId = clientId,
                         relatedClients = relatedClients,
                         coroutineScope = coroutineScope,
                         context = context
@@ -173,7 +142,7 @@ fun MarkerStatusDialog(
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                                        .Button(
+                                        .AutreButtons(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
@@ -185,19 +154,20 @@ fun MarkerStatusDialog(
                                 item {
                                     CommandButton(
                                         modifier = Modifier.height(60.dp),
+                                        viewModel = viewModel,
+                                        etateActuellementEst1=C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         coroutineScope = coroutineScope,
                                         clientId = clientId,
                                         selectedMarker = selectedMarker,
-                                        viewModel = viewModel,
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
-                                        context = context,
+                                        context = context
                                     )
                                 }
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.FERME
-                                        .Button(
+                                        .AutreButtons(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
@@ -206,7 +176,7 @@ fun MarkerStatusDialog(
                                 }
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                        .Button(
+                                        .AutreButtons(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
@@ -214,49 +184,18 @@ fun MarkerStatusDialog(
                                         )
 
                                 }
-                                // AFTER (FIXED CODE):
-                                val currentTransaction =
-                                    viewModel.c3_BonAchate_List
-                                        .filter {
-                                            it.clientAcheteurID == clientId &&
-                                                    it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                                        }
-                                        .maxByOrNull { it.timestamps } // Get the latest transaction by timestamp
+
                                 item {
-                                    ButtonAjouteHistoriqueC3_BonAchate(
-                                        findActiveComptVendeur=findActiveComptVendeur,
-                                        currentC3_BonAchate=currentTransaction,
+                                    ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
+                                        uiState=uiState,
+                                        viewModel=viewModel,
                                         clientId = clientId,
-                                        onVoiceMessageUploaded = { voiceMessageId ->
-                                            coroutineScope.launch {
-                                                relatedClients?.let {
-
-
-                                                    currentTransaction?.let { transaction ->
-                                                        // Update the transaction with the voice message ID
-                                                        val updatedTransaction =
-                                                            transaction.copy(
-                                                                vocaleKeyID = voiceMessageId
-                                                            )
-
-                                                        // Update the transaction in the repository
-                                                        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-                                                            updatedTransaction
-                                                        ) { vid ->
-                                                            // Update active transaction ID if needed
-                                                            repositorysModel.activeVId_C3_BonAchate_Repository.value =
-                                                                vid
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
                                     )
                                 }
 
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.Cible
-                                        .Button(
+                                        .AutreButtons(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
@@ -264,10 +203,10 @@ fun MarkerStatusDialog(
                                         )
                                 }
 
-                                if (ceTelephoneEstDeAbdelwahab) {
+                                if (uiState.activeCompt!!.vid==2L) {
                                     item {
                                         C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                                            .Button(
+                                            .AutreButtons(
                                                 coroutineScope = coroutineScope,
                                                 viewModel = viewModel,
                                                 clientId = clientId,

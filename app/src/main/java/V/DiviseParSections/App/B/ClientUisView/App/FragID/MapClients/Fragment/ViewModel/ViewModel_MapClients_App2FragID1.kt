@@ -432,4 +432,10 @@ class ViewModel_MapClients_App2FragID1(
     
     fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) { b_ClientDataBaseRepository.deleteData(data) }
     fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
+    fun updateactiveComptIdClientOuvertPoutCeCompt(data: Long) {
+        _uiState.value = _uiState.value.copy(
+            activeCompt = activeCompt.copy(=data)     //<--
+            //TODO(1): regle
+        )
+    }
 }

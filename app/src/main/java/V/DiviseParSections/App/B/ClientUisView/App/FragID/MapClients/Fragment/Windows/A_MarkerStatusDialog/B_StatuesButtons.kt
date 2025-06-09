@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun C3_TransactionCommercial.EtateActuellementEst.Button(
+fun C3_TransactionCommercial.EtateActuellementEst.AutreButtons(
     coroutineScope: CoroutineScope,
     viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
@@ -41,15 +41,7 @@ fun C3_TransactionCommercial.EtateActuellementEst.Button(
                     clientId,
                     Etate
                 )
-                val data = viewModel.groupeRepositorysProtoAvJuin3
-                    .repositorys_Model
-                    .c3TransactionCommercialRepository
-                    .getOuvert_1_3_TransactionCommercial()
 
-                viewModel.groupeRepositorysProtoAvJuin3
-                    .upsertUneDataEtReturnVID(
-                        data?.copy(tagCeBonEstOuvertPourComptsIds = "false")
-                    )
 
             }
         },

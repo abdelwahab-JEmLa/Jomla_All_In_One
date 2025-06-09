@@ -26,20 +26,18 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
+    viewModel: ViewModel_MapClients_App2FragID1,
+    etateActuellementEst1: C3_TransactionCommercial.EtateActuellementEst,
     coroutineScope: CoroutineScope,
     clientId: Long,
     selectedMarker: Marker,
-    viewModel: ViewModel_MapClients_App2FragID1,
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
-    ) {
-    val etateActuellementEst1=C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-
+) {
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
-
                 upsertLenceCommandeRepoGroupedProtoAvanJuin3(
                     viewModel,
                     clientId,

@@ -168,14 +168,14 @@ fun A_OptionsControlsButtons_Main(
                             }
                         }
 
-                        // Labels Button
+                        // Labels AutreButtons
                         LabelsButton(
                             showLabels = showLabels,
                             onShowLabelsChange = { showLabels = it }
                         )
                     }
 
-                    // Menu Button
+                    // Menu AutreButtons
                     MenuButton(
                         showLabels = showLabels,
                         showMenu = showMenu,

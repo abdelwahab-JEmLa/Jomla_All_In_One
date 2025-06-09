@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Column
@@ -21,17 +21,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AfficheurRegleOuvert(
-    repositorysModel: GroupeRepositorysProtoAvJuin3Model,
-    clientId: Long,
-    activeTransactionId: Long,
+    uiState: UiState,
     viewModel: ViewModel_MapClients_App2FragID1,
+    clientId: Long,
     relatedClients: B_ClientInfosProtoJuin3?,
     coroutineScope: CoroutineScope,
     context: Context,
 ) {
     fun getLatestTransactionForClient(clientId: Long): C3_TransactionCommercial? {
-        return repositorysModel
-            .c3TransactionCommercialRepository.modelDatasSnapList
+        return uiState
+            .c3_TransactionCommercialList
             .filter { it.clientAcheteurID == clientId }
             .maxByOrNull { it.timestamps }
     }
@@ -45,8 +44,8 @@ fun AfficheurRegleOuvert(
         .c3TransactionCommercialRepository.getOuvert_1_3_TransactionCommercial()
 
     if (estOnModeCommandEtate || ouvertTransaction != null) {
-        val transaction = repositorysModel
-            .c3TransactionCommercialRepository.modelDatasSnapList
+        val transaction = uiState
+            .c3_TransactionCommercialList
             .find {
                 it.clientAcheteurID == clientId &&
                         it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -64,10 +63,13 @@ fun AfficheurRegleOuvert(
                     .padding(12.dp)
             ) {
                 // Check if there's an active transaction
-                if (activeTransactionId != 0L) {
+                if (uiState
+                        .activeCompt!!.vid != 0L
+                ) {
                     val relatedClientactiveTransaction =
                         viewModel.bProto_ClientsDataBase.find {
-                            it.id == activeTransactionId
+                            it.id == uiState
+                                .activeCompt.vid
                         }
                     Text(
                         text = "ماهو تقرير الزبون السابق ${
@@ -87,32 +89,31 @@ fun AfficheurRegleOuvert(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                        .Button(
+                        .AutreButtons(
                             coroutineScope = coroutineScope,
                             viewModel = viewModel,
                             clientId = clientId,
                             context = context
                         )
                     C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                        .Button(
+                        .AutreButtons(
                             coroutineScope = coroutineScope,
                             viewModel = viewModel,
                             clientId = clientId,
                             context = context
                         )
 
-                    // Add button to close transaction
                     TextButton(
                         onClick = {
                             coroutineScope.launch {
                                 ouvertTransaction?.let { tx ->
-                                    val updatedTransaction = tx.copy(tagCeBonEstOuvertPourComptsIds = "false")   //<--
-                                    //TODO(1): ici fait de
+                                    val updatedTransaction =
+                                        tx.copy(tagCeBonEstOuvertPourComptsIds = "false")
                                     viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
                                         updatedTransaction
                                     )
 
-                                    repositorysModel.activeVId_C3_BonAchate_Repository.value = 0
+                                    viewModel.updateactiveComptIdClientOuvertPoutCeCompt(0)
                                 }
                             }
                         },

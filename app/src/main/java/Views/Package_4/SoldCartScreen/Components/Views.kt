@@ -274,7 +274,7 @@ private fun ColorItemWithQuantity(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Delete Button
+            // Delete AutreButtons
             IconButton(
                 onClick = {
                     onDelete()

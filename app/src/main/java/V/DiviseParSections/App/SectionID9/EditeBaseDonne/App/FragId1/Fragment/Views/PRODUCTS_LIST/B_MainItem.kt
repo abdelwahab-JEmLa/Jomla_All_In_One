@@ -131,7 +131,7 @@ fun ProductItem(
         Column(
             modifier = Modifier.fillMaxWidth().padding(20.dp)
         ) {
-            // Header: Image + Name + Key Info + Delete Button
+            // Header: Image + Name + Key Info + Delete AutreButtons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
@@ -293,7 +293,7 @@ fun ProductItem(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Prix Achat with Quick Update Button
+                            // Prix Achat with Quick Update AutreButtons
                             Column {
                                 PriceEditor(
                                     currentPrice = produit.prixAchat,
@@ -305,7 +305,7 @@ fun ProductItem(
                                     textColor = MaterialTheme.colorScheme.tertiary
                                 )
 
-                                // Quick Update Button for Prix Achat
+                                // Quick Update AutreButtons for Prix Achat
                                 Spacer(modifier = Modifier.height(4.dp))
                                 FilledTonalButton(
                                     onClick = {

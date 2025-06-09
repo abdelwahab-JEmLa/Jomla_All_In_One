@@ -132,7 +132,7 @@ fun GenerativeAiScreen(
                 }
             }
 
-            // Prompt Input and Submit Button Row
+            // Prompt Input and Submit AutreButtons Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

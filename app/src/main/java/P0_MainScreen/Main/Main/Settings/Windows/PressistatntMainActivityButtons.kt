@@ -158,7 +158,7 @@ fun PressistatntMainActivityButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
-                    // New Row: Messager Button with Telegram icon
+                    // New Row: Messager AutreButtons with Telegram icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
