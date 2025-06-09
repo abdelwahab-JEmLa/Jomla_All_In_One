@@ -117,7 +117,7 @@ fun Couleurs(
             val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
             val bonAchatPeriod = bonAchatId?.let { id ->
-                models.c3_BonAchate_Repository.modelDatasSnapList
+                models.c3TransactionCommercialRepository.modelDatasSnapList
                     .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
             }
 
@@ -176,7 +176,7 @@ fun Couleurs(
                         val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
                         val bonAchatPeriod = bonAchatId?.let { id ->
-                            models.c3_BonAchate_Repository.modelDatasSnapList
+                            models.c3TransactionCommercialRepository.modelDatasSnapList
                                 .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
                         }
 
@@ -199,7 +199,7 @@ fun Couleurs(
 
                     // Find the client
                     if (bonAchatVid != null) {
-                        val bonAchat = models.c3_BonAchate_Repository.modelDatasSnapList
+                        val bonAchat = models.c3TransactionCommercialRepository.modelDatasSnapList
                             .firstOrNull { it.vid == bonAchatVid }
 
                         val clientId = bonAchat?.clientAcheteurID

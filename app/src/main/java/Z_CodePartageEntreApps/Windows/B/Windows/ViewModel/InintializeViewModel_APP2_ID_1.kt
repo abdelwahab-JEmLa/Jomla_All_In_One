@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +15,7 @@ class InintializeViewModel_StartUpScreen {
     suspend fun waitForDataInitialization(
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-        C3_BonAchate_Repository: C3_BonAchate_Repository,
+        C3_BonAchate_Repository: C3TransactionCommercialRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
         viewModelScope: CoroutineScope,
@@ -106,7 +106,7 @@ class InintializeViewModel_StartUpScreen {
     private fun updateDataLoadingState(
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-        C3_BonAchate_Repository: C3_BonAchate_Repository,
+        C3_BonAchate_Repository: C3TransactionCommercialRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>
     ) {
@@ -123,7 +123,7 @@ class InintializeViewModel_StartUpScreen {
     fun checkInitializationComplete(
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-        C3_BonAchate_Repository: C3_BonAchate_Repository,
+        C3_BonAchate_Repository: C3TransactionCommercialRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
     ) {

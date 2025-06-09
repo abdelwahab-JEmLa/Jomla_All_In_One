@@ -18,6 +18,7 @@ data class MasterRepositorysModel(
     val b_ClientInfosProtoJuin3Repository: B_ClientInfosProtoJuin3Repository.RepoState?,
     val repoStateC_CategorieProduitInfos: C_CategorieProduitInfosRepository.RepoState?,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository.RepoState?,
+
     val progress: Float = 0f
 )
 
@@ -38,7 +39,7 @@ class A_MasterRepositorysGrpProtoJuin3(
                 b_ClientInfosProtoJuin3Repository.repoState,
                 repoC_CategorieProduitInfos.repoState,
                 d_EtateMessageVocaleRepository.repoState,
-                e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3_BonAchate_Repository.progressRepo,
+                e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3TransactionCommercialRepository.progressRepo,
             ) { repoA_ProduitInfos,
                 b_ClientInfosProtoJuin3Repository,
                 repoC_CategorieProduitInfos,

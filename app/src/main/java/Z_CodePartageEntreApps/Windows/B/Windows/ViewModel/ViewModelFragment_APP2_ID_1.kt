@@ -9,7 +9,7 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import androidx.compose.runtime.mutableStateListOf
@@ -41,7 +41,7 @@ class ViewModelFragment_StartUpScreen(
     val _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-    val C3_BonAchate_Repository: C3_BonAchate_Repository,
+    val C3_BonAchate_Repository: C3TransactionCommercialRepository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"

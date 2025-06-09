@@ -18,7 +18,7 @@ open class ClientsMapFilterViewModel(
 ) : ViewModel() {
     protected val allListrepo_0_0_HeadSQLRepositorys = repo_0_0_HeadSQLRepositorys
         ?.repositorys_Model
-        ?.c3_BonAchate_Repository
+        ?.c3TransactionCommercialRepository
         ?.modelDatasSnapList
 
     private var allStrNomJourEtSonSemainToStartJourTimeTemp by

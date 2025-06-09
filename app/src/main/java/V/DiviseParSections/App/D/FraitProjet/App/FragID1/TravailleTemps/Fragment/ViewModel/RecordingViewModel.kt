@@ -42,7 +42,7 @@ class RecordingViewModel(
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3_BonAchate_Repository
+    val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
@@ -147,7 +147,7 @@ class RecordingViewModel(
     }
 
     fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? =
-        repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
+        repos.c3TransactionCommercialRepository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 
     // Make this private and use the cached value from UiState instead

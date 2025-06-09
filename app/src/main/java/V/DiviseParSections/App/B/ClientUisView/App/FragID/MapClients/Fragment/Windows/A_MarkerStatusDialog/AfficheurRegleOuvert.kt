@@ -31,7 +31,7 @@ fun AfficheurRegleOuvert(
 ) {
     fun getLatestTransactionForClient(clientId: Long): C3_TransactionCommercial? {
         return repositorysModel
-            .c3_BonAchate_Repository.modelDatasSnapList
+            .c3TransactionCommercialRepository.modelDatasSnapList
             .filter { it.clientAcheteurID == clientId }
             .maxByOrNull { it.timestamps }
     }
@@ -42,11 +42,11 @@ fun AfficheurRegleOuvert(
             C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
     val ouvertTransaction = viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
-        .c3_BonAchate_Repository.getOuvert_1_3_TransactionCommercial()
+        .c3TransactionCommercialRepository.getOuvert_1_3_TransactionCommercial()
 
     if (estOnModeCommandEtate || ouvertTransaction != null) {
         val transaction = repositorysModel
-            .c3_BonAchate_Repository.modelDatasSnapList
+            .c3TransactionCommercialRepository.modelDatasSnapList
             .find {
                 it.clientAcheteurID == clientId &&
                         it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

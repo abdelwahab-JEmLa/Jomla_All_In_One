@@ -47,8 +47,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_RepositoryImp
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial_RepositoryImp
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
@@ -117,7 +117,7 @@ val commonRepositoriesModule = module {
 
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
-    single<C3_BonAchate_Repository> { C3_BonAchate_RepositoryImp(get()) }
+    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
     single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
     single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
 
@@ -221,7 +221,6 @@ val viewModelModule = module {
     viewModel { VendeursViewModel(get(), get()) }
     viewModel {
         ViewModel_MapClients_App2FragID1(
-            get(),
             get(),
             get(),
             get(),

@@ -41,7 +41,7 @@ fun B_ProduitCommande(
 
     // Create a map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {
-        models.c3_BonAchate_Repository.modelDatasSnapList
+        models.c3TransactionCommercialRepository.modelDatasSnapList
             .associate { it.vid to it.parentVID_1_4_PeriodeVent }
     }
 
@@ -108,7 +108,7 @@ fun B_ProduitCommande(
         val bonAchatIds = relevantProductInstances.map { it.parent_1_3_TransactionCommercial }.distinct()
 
         // Get all client IDs from those BonAchat entries
-        models.c3_BonAchate_Repository.modelDatasSnapList
+        models.c3TransactionCommercialRepository.modelDatasSnapList
             .filter { it.vid in bonAchatIds }
             .map { it.clientAcheteurID }
             .distinct()

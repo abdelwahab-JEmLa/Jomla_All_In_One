@@ -8,7 +8,6 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
@@ -21,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,6 +47,7 @@ data class PanelsGroupeButton(
 
 data class UiState(
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val c3_TransactionCommercialList: List<C3_TransactionCommercial> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
     val e1SecteurDeClientsList: List<E1SecteurDeClients> = emptyList(),
@@ -64,11 +65,13 @@ data class UiState(
 
 class ViewModel_MapClients_App2FragID1(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    val appDatabase: AppDatabase,
-    val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
-    val recordingHandler: IRecordingHandler
+    val recordingHandler: IRecordingHandler,
+    val appDatabase: AppDatabase
 ) : ViewModel() {
+    val groupeRepositorysProtoAvJuin3= a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+
     val b_ClientDataBaseRepository= a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
+    
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -77,10 +80,8 @@ class ViewModel_MapClients_App2FragID1(
 
     val secteurList = secteurRepo.listCollected
 
-    val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
-
     val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model
-        .c3_BonAchate_Repository.modelDatasSnapList
+        .c3TransactionCommercialRepository.modelDatasSnapList
 
     val bProto_ClientsDataBase = uiState.value.b_ClientInfosProtoJuin3List
 
@@ -115,6 +116,20 @@ class ViewModel_MapClients_App2FragID1(
                 }
             }
         }
+
+        viewModelScope.launch {
+            snapshotFlow {
+                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+                    .repositorys_Model
+                    .c3TransactionCommercialRepository
+                    .modelDatasSnapList
+                    .toList() // Convert to regular list
+            }.collect { transactionList ->
+                _uiState.value = _uiState.value.copy(
+                    c3_TransactionCommercialList = transactionList
+                )
+            }
+        }
     }
 
      fun getLastTransaction(
@@ -122,7 +137,7 @@ class ViewModel_MapClients_App2FragID1(
     ): C3_TransactionCommercial? {
         val historicalData = groupeRepositorysProtoAvJuin3
             .repositorys_Model
-            .c3_BonAchate_Repository
+            .c3TransactionCommercialRepository
             .modelDatasSnapList
         val lastTransaction = historicalData
             .filter { it.clientAcheteurID == client.id }
@@ -148,6 +163,8 @@ class ViewModel_MapClients_App2FragID1(
             _uiState.emit(_uiState.value.copy(paneleGroupeButtonList = updatedList))
         }
     }
+
+    val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
 
     private fun loadSecteurs() {
         viewModelScope.launch {
@@ -195,7 +212,7 @@ class ViewModel_MapClients_App2FragID1(
         mapReloadTigger++ // Add this line to trigger map refresh
 
     }
-
+    
     fun addPointToCurrentSector(mapCenter: IGeoPoint) {
         val sectorId = _currentActiveSectorId.value
 
@@ -347,9 +364,7 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) {
-        b_ClientDataBaseRepository.deleteData(data)
-    }
+  
 
     enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
@@ -398,6 +413,7 @@ class ViewModel_MapClients_App2FragID1(
             println("Error canceling active operations: ${e.message}")
         }
     }
-
+    
+    fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) { b_ClientDataBaseRepository.deleteData(data) }
     fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
 }

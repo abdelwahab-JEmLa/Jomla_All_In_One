@@ -43,7 +43,7 @@ fun C3_TransactionCommercial.EtateActuellementEst.Button(
                 )
                 val data = viewModel.groupeRepositorysProtoAvJuin3
                     .repositorys_Model
-                    .c3_BonAchate_Repository
+                    .c3TransactionCommercialRepository
                     .getOuvert_1_3_TransactionCommercial()
 
                 viewModel.groupeRepositorysProtoAvJuin3

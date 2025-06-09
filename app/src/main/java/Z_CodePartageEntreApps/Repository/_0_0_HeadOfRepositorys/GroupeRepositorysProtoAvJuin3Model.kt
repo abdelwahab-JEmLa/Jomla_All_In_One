@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
@@ -19,7 +19,7 @@ class GroupeRepositorysProtoAvJuin3Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val repositoryC2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
 
-    val c3_BonAchate_Repository: C3_BonAchate_Repository,
+    val c3TransactionCommercialRepository: C3TransactionCommercialRepository,
     var activeVId_C3_BonAchate_Repository: MutableStateFlow<Long>,
 
     val repository_1_4_PeriodeVent: _1_4_PeriodeVent_Repository,

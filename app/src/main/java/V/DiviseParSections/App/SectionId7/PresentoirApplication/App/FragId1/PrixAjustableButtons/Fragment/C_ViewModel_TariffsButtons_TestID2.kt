@@ -45,7 +45,7 @@ class TariffsButtonsViewModel_TestID2(
 
     private val repoC3_BonVent = repo_0_0_HeadSQLRepositorys
         .repositorys_Model
-        .c3_BonAchate_Repository
+        .c3TransactionCommercialRepository
 
     private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
         .repositorys_Model

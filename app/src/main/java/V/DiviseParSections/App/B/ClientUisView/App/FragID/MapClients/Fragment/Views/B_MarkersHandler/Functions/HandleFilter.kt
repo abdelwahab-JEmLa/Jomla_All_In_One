@@ -94,7 +94,7 @@ fun filterClientsBasedOnMode(
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
             val clientsWithConfirmedProducts =
                 viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
-                    .c3_BonAchate_Repository.modelDatasSnapList
+                    .c3TransactionCommercialRepository.modelDatasSnapList
                     .filter { bonAchat ->
                         bonAchat.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
                                 || bonAchat.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

@@ -14,7 +14,7 @@ fun handleActiveTransaction(
     if (activeTransactionId != 0L) {
         // Find the transaction to get the client ID
         val activeTransaction = viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
-            .c3_BonAchate_Repository.modelDatasSnapList
+            .c3TransactionCommercialRepository.modelDatasSnapList
             .find { it.vid == activeTransactionId }
 
         activeTransaction?.let { transaction ->

@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
@@ -40,7 +40,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
     private val repo_1_1_CouleurAcheteOperation: _1_1_CouleurAcheteOperation_Repository,
     private val repo_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
-    private val repo_1_3_TransactionCommercial: C3_BonAchate_Repository,
+    private val repo_1_3_TransactionCommercial: C3TransactionCommercialRepository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
@@ -107,7 +107,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = C3_BonAchate_Repository.sonDataBaseRef,
+                            databaseRef = C3TransactionCommercialRepository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = onSuccess,
                             onError = onError
@@ -243,7 +243,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = C3_BonAchate_Repository.sonDataBaseRef,
+                            databaseRef = C3TransactionCommercialRepository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = { resultVid ->
                                 Log.d(
@@ -701,7 +701,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 repositorys_Model = GroupeRepositorysProtoAvJuin3Model(
                     _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
                     repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
-                    c3_BonAchate_Repository = repo_1_3_TransactionCommercial,
+                    c3TransactionCommercialRepository = repo_1_3_TransactionCommercial,
                     activeVId_C3_BonAchate_Repository = activeId_1_3_BonAchat,
                     repository_1_4_PeriodeVent = _1_4_Repository,
                     repository_1_5_Vendeur = _1_5_Repository,

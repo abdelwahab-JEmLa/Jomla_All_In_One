@@ -100,10 +100,10 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
-                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.ensureDataIsInitialized()
 
                 if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
-                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.modelDatasSnapList.isEmpty()
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList.isEmpty()
                 ) {
                     addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_SQL_Repository)
                     delay(1000)
@@ -113,7 +113,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                     _uiState.update { currentState ->
                         currentState.copy(
                             sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
-                            sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.modelDatasSnapList,
+                            sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList,
                         )
                     }
                 }
@@ -134,7 +134,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 }
 
                 launch {
-                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3_BonAchate_Repository.let { repo ->
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->

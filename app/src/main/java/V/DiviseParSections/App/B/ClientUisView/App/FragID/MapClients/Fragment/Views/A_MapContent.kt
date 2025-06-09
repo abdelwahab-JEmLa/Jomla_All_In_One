@@ -51,8 +51,8 @@ fun MapContent(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.b_ClientInfosProtoJuin3List.size}")
-    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps }}")
+    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.c3_TransactionCommercialList.size}")
+    Log.d("ViewModel_MapClients_App2FragID1", "${uiState.c3_TransactionCommercialList.map { it }}")
 
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }

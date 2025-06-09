@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface C3_BonAchate_Repository {
+interface C3TransactionCommercialRepository {
     var modelDatasSnapList: SnapshotStateList<C3_TransactionCommercial>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
