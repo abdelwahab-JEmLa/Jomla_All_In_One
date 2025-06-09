@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.C3_BonAchate
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_BonAchate
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import android.content.Context
 import androidx.compose.foundation.layout.Column

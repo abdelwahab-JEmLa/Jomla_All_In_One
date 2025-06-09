@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test
+package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
@@ -40,7 +40,9 @@ data class C3_BonAchate(
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
-) {
+
+
+    ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {
             val parent = "(${parentVID_1_4_PeriodeVent})"
