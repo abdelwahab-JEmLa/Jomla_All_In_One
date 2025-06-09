@@ -133,7 +133,7 @@ fun MapContent(
         Box(
             modifier = Modifier
                 .size(8.dp)
-                .background(ComposeColor.Red, CircleShape)   // Fixed: Using Compose Color
+                .background(ComposeColor.Red, CircleShape)
                 .align(Alignment.Center)
         )
 
