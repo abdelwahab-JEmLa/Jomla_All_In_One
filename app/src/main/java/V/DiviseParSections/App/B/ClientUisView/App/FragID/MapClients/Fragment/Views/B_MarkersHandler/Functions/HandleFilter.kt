@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -46,44 +46,44 @@ fun handleFilterMarkersClick(
 }
 
 fun filterClientsBasedOnMode(
-    clientDataBaseSnapList: List<B_ClientDataBaseProtoJuin3>,
+    clientDataBaseSnapList: List<B_ClientDataBaseProtoC>,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     viewModel: ViewModel_MapClients_App2FragID1,
-): List<B_ClientDataBaseProtoJuin3> {
+): List<B_ClientDataBaseProtoC> {
     return when (currentFilterMode) {
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat != B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat != B_ClientDataBaseProtoC.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.Cible
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.VENDU_A_LUI
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.FERME
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.A_EVITE
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.AVEC_MARCHANDISE
-                        || it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.Cible
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.VENDU_A_LUI
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.FERME
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.A_EVITE
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.AVEC_MARCHANDISE
+                        || it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientDataBaseProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2
+                it.actuelleEtat == B_ClientDataBaseProtoC.DernierEtatAAffiche.CIBLE_POUR_2
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                it.typeDeSonMagasine == B_ClientDataBaseProtoC.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         }
 
         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                it.typeDeSonMagasine == B_ClientDataBaseProtoC.TypeDeSonMagasine.AlIMENTATION_GENERALE
             }
         }
 

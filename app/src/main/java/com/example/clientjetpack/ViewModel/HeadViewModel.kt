@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
@@ -959,7 +959,7 @@ open class HeadViewModel(
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
         val clients = clientsSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(B_ClientsDataBase::class.java)
+            snapshot.getValue(B_ClientsDataBaseProtoD::class.java)
         }
         updateLoadingProgress(fl)
     }

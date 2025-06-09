@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates
@@ -40,7 +40,7 @@ object CurrentModels {
         listeners.forEach { info ->
             when (info.path) {
                 "products" -> _ModelAppsFather.produitsFireBaseRef.removeEventListener(info.listener)
-                "clientAchteurs" -> B_ClientsDataBase.refClientsDataBase.removeEventListener(info.listener)
+                "clientAchteurs" -> B_ClientsDataBaseProtoD.refClientsDataBase.removeEventListener(info.listener)
                 "grossists" -> _ModelAppsFather.ref_HeadOfModels.removeEventListener(info.listener)
                 "couleurs" -> D_CouleursEtGoutesProduitsInfos.caReference.removeEventListener(info.listener)
                 "appInstalle" -> E_AppsOptionsStates.caReference.removeEventListener(info.listener)
@@ -145,29 +145,29 @@ object CurrentModels {
     private fun setupClientsListener(viewModel: ViewModelInitApp) {
         Log.d(TAG, "Setting up clientAchteurs listener")
 
-        B_ClientsDataBase.refClientsDataBase.keepSynced(true)
+        B_ClientsDataBaseProtoD.refClientsDataBase.keepSynced(true)
 
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val clients = mutableListOf<B_ClientsDataBase>()
+                        val clients = mutableListOf<B_ClientsDataBaseProtoD>()
 
                         snapshot.children.forEach { snap ->
                             try {
                                 val map = snap.value as? Map<*, *> ?: return@forEach
                                 val clientId = snap.key?.toLongOrNull() ?: return@forEach
 
-                                B_ClientsDataBase(
+                                B_ClientsDataBaseProtoD(
                                     id = clientId,
                                     nom = map["nom"] as? String ?: ""
                                 ).apply {
                                     snap.child("statueDeBase")
-                                        .getValue(B_ClientsDataBase.StatueDeBase::class.java)?.let {
+                                        .getValue(B_ClientsDataBaseProtoD.StatueDeBase::class.java)?.let {
                                             statueDeBase = it
                                         }
                                     snap.child("gpsLocation")
-                                        .getValue(B_ClientsDataBase.GpsLocation::class.java)?.let {
+                                        .getValue(B_ClientsDataBaseProtoD.GpsLocation::class.java)?.let {
                                             gpsLocation = it
                                         }
                                     clients.add(this)
@@ -195,7 +195,7 @@ object CurrentModels {
         }
 
         listeners.add(ListenerInfo(listener, "clientAchteurs"))
-        B_ClientsDataBase.refClientsDataBase.addValueEventListener(listener)
+        B_ClientsDataBaseProtoD.refClientsDataBase.addValueEventListener(listener)
     }
 
     private fun setupGrossistsListener(viewModel: ViewModelInitApp) {

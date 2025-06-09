@@ -1,0 +1,3 @@
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.Extension
+
+object OthersOperationHandler_Model_B_ClientsDataBase

@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -19,7 +19,7 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 suspend fun updateMapMarkers(
     mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
-    clientDataBaseSnapList: List<B_ClientDataBaseProtoJuin3>,
+    clientDataBaseSnapList: List<B_ClientDataBaseProtoC>,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
@@ -50,7 +50,7 @@ suspend fun updateMapMarkers(
 
 fun addMarkersForFilteredClients(
     mapView: MapView,
-    clientsToShow: List<B_ClientDataBaseProtoJuin3>,
+    clientsToShow: List<B_ClientDataBaseProtoC>,
     viewModel: ViewModel_MapClients_App2FragID1,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
@@ -78,7 +78,7 @@ fun addMarkersForFilteredClients(
 fun createAndAddMarker(
     viewModel: ViewModel_MapClients_App2FragID1,
     mapView: MapView,
-    client: B_ClientDataBaseProtoJuin3,
+    client: B_ClientDataBaseProtoC,
     context: Context,
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
@@ -119,7 +119,7 @@ fun createAndAddMarker(
 
 private fun Marker.title(
     viewModel: ViewModel_MapClients_App2FragID1,
-    client: B_ClientDataBaseProtoJuin3,
+    client: B_ClientDataBaseProtoC,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
@@ -144,7 +144,7 @@ fun configureMarkerInfoWindow(
     mapView: MapView,
     context: Context,
     viewModel: ViewModel_MapClients_App2FragID1,
-    client: B_ClientDataBaseProtoJuin3,
+    client: B_ClientDataBaseProtoC,
 ) {
     val markerInfoWindowLayout = xmlResources
         .find { it.first == "marker_info_window" }?.second

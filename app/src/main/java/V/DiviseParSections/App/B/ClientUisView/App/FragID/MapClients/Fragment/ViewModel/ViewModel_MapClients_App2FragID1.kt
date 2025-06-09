@@ -4,8 +4,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -80,7 +80,7 @@ class ViewModel_MapClients_App2FragID1(
 
     val bProto_ClientsDataBase = b_ClientDataBaseRepository.modelDatas
 
-    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBaseProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBaseProtoC.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
 
     var afficheLesJoursAuNoms by mutableStateOf(true)
@@ -101,7 +101,7 @@ class ViewModel_MapClients_App2FragID1(
     val showAddSecteurDialog = mutableStateOf(false)
 
      fun getLastTransaction(
-        client: B_ClientDataBaseProtoJuin3
+        client: B_ClientDataBaseProtoC
     ): C3_TransactionCommercial? {
         val historicalData = groupeRepositorysProtoAvJuin3
             .repositorys_Model
@@ -265,7 +265,7 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun updateData(client: B_ClientDataBaseProtoJuin3): Unit {
+    fun updateData(client: B_ClientDataBaseProtoC): Unit {
         viewModelScope.launch {
             b_ClientDataBaseRepository.updateUnSeulData(client)
         }
@@ -288,7 +288,7 @@ class ViewModel_MapClients_App2FragID1(
 
             val newnom = "ز.$newID"
 
-            val newClientAchteur = B_ClientDataBaseProtoJuin3().apply {
+            val newClientAchteur = B_ClientDataBaseProtoC().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -330,7 +330,7 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun deleteUnSeulData(data: B_ClientDataBaseProtoJuin3) {
+    fun deleteUnSeulData(data: B_ClientDataBaseProtoC) {
         b_ClientDataBaseRepository.deleteUnSeulData(data)
     }
 

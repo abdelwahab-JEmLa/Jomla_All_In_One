@@ -6,7 +6,7 @@ import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -57,7 +57,7 @@ fun FragmentStartupScreen(
     scrollTiger: Int,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientsDataBase?,
+    currentClient: B_ClientsDataBaseProtoD?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
@@ -131,7 +131,7 @@ fun MainUi(
     scrollTiger: Int,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientsDataBase?,
+    currentClient: B_ClientsDataBaseProtoD?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit

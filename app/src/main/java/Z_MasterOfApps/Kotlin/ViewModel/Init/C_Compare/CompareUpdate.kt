@@ -1,9 +1,9 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.C_Compare
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.A.ClientsListProtoA
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ClientsList
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.ProduitsAncienDataBaseMain
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
@@ -110,7 +110,7 @@ object CompareUpdate {
     }
 
     private suspend fun updateClientsDatabase() {
-        val sourceClientsRef = firebaseDatabase.getReference("0_UiState_3_Host_Package_3_Prototype11Dec/B_ClientsDataBase")
+        val sourceClientsRef = firebaseDatabase.getReference("0_UiState_3_Host_Package_3_Prototype11Dec/B_ClientsDataBaseProtoD")
         val refClientsList = firebaseDatabase.getReference("G_Clients")
 
         try {
@@ -126,16 +126,16 @@ object CompareUpdate {
                 if (clientId in existingClients) return@forEach
 
                 // Convert and save new client
-                val client = snap.getValue(B_ClientsDataBase::class.java) ?: return@forEach
+                val client = snap.getValue(B_ClientsDataBaseProtoD::class.java) ?: return@forEach
 
-                // Convert to ClientsList format
-                val convertedClient = ClientsList(
+                // Convert to ClientsListProtoA format
+                val convertedClient = ClientsListProtoA(
                     vidSu = 0,
                     idClientsSu = client.id,
                     nomClientsSu = client.nom,
-                    bonDuClientsSu = "",  // Default empty string as per ClientsList model
+                    bonDuClientsSu = "",  // Default empty string as per ClientsListProtoA model
                     couleurSu = client.statueDeBase.couleur,
-                    currentCreditBalance = 0.0  // Default to 0 as per ClientsList model
+                    currentCreditBalance = 0.0  // Default to 0 as per ClientsListProtoA model
                 )
 
                 refClientsList.child(clientId).setValue(convertedClient).await()

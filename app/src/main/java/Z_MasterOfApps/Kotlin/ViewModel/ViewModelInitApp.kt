@@ -2,7 +2,7 @@ package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -98,7 +98,7 @@ class ViewModelInitApp(
 
     fun updateStatueClientParID(
         clientId : Long,
-        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
+        statueVente: B_ClientsDataBaseProtoD.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == clientId) {
@@ -112,7 +112,7 @@ class ViewModelInitApp(
             }
         }
     }
-    fun updateClientsDataBase(data : B_ClientsDataBase) {
+    fun updateClientsDataBase(data : B_ClientsDataBaseProtoD) {
         viewModel.viewModelScope.launch {
             try {
                 // Create a snapshot of the current state
@@ -136,7 +136,7 @@ class ViewModelInitApp(
 
                 // Update Firebase with error handling
                 try {
-                    B_ClientsDataBase.refClientsDataBase.child(currentState.id.toString())
+                    B_ClientsDataBaseProtoD.refClientsDataBase.child(currentState.id.toString())
                         .setValue(currentState)
                         .await()
                 } catch (e: Exception) {
@@ -150,7 +150,7 @@ class ViewModelInitApp(
                 }
 
             } catch (e: Exception) {
-                Log.e("B_ClientsDataBase", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
+                Log.e("B_ClientsDataBaseProtoD", "Failed to upsertLenceCommandeRepoGroupedProtoAvanJuin3 client", e)
             }
         }
     }

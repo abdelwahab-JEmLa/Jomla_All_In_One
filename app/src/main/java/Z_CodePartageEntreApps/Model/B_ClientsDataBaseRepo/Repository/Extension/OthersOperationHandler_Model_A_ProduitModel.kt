@@ -1,3 +1,0 @@
-package Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.Extension
-
-object OthersOperationHandler_Model_B_ClientsDataBase

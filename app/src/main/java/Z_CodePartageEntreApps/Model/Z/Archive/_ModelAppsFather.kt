@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates
@@ -42,8 +42,8 @@ open class _ModelAppsFather(
         initial_Produits_Main_DataBase.toMutableStateList()
 
     @get:Exclude
-    var clientDataBase: SnapshotStateList<B_ClientsDataBase> =
-        emptyList<B_ClientsDataBase>().toMutableStateList()
+    var clientDataBase: SnapshotStateList<B_ClientsDataBaseProtoD> =
+        emptyList<B_ClientsDataBaseProtoD>().toMutableStateList()
 
     @get:Exclude
     var grossistsDataBase: SnapshotStateList<C_GrossistsDataBase> =
@@ -73,7 +73,7 @@ open class _ModelAppsFather(
         }
 
 
-    val groupedProductsParClients: List<Map.Entry<B_ClientsDataBase, List<A_ProduitModel>>>
+    val groupedProductsParClients: List<Map.Entry<B_ClientsDataBaseProtoD, List<A_ProduitModel>>>
         get() = clientDataBase.map { client ->
             val matchingProducts = produitsMainDataBase.filter { product ->
                 product.bonsVentDeCetteCota.any { bonVent ->

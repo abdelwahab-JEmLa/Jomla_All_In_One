@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 
@@ -9,7 +9,7 @@ class _SoldCartScreen(val viewModelInitApp: ViewModelInitApp) {
         viewModelInitApp: ViewModelInitApp,
         colorIndex: Int,
         article: ArticlesBasesStatsTable,
-        clientBuyerNow: B_ClientsDataBase
+        clientBuyerNow: B_ClientsDataBaseProtoD
     ) {
         deleteColore(viewModelInitApp,colorIndex, article, clientBuyerNow)
     }

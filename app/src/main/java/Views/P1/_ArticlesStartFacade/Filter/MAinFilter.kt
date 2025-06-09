@@ -4,7 +4,7 @@ import Views.P1._ArticlesStartFacade.ArticlePagingSource
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.DisponibilityEtates
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 
 fun ArticlePagingSource.filterArticles(): List<ArticlesBasesStatsTable> {
         return if (filterText.isEmpty()) {
@@ -14,7 +14,7 @@ fun ArticlePagingSource.filterArticles(): List<ArticlesBasesStatsTable> {
                     .find { it.id == article.id }
 
                 val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
-                        B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU
+                        B_ClientsDataBaseProtoD.EtatesMutable.ClientTypeMode.NEVEAU
 
                 // Check if the product is completely unavailable for all clientAchteurs
                 val isProductUnavailableForAll = productModel?.enumVarNonDispoPourClients ==

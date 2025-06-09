@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,12 +32,12 @@ fun ClientEdites(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     selectedMarker: Marker,
     onDismiss: () -> Unit,
-    clientTypeMode: B_ClientDataBaseProtoJuin3.ClientTypeMode?,
-    relatedClients: B_ClientDataBaseProtoJuin3?,
+    clientTypeMode: B_ClientDataBaseProtoC.ClientTypeMode?,
+    relatedClients: B_ClientDataBaseProtoC?,
     viewModel: ViewModel_MapClients_App2FragID1,
 
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
-    onClientTypeModeChange: (B_ClientDataBaseProtoJuin3.ClientTypeMode?) -> Unit = {},
+    onClientTypeModeChange: (B_ClientDataBaseProtoC.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
     onUpdateLongAppSetting: () -> Unit = {},
@@ -88,10 +88,10 @@ fun ClientEdites(
                 .padding(end = 8.dp)
                 .clickable {
                     val newClientTypeMode = when (clientTypeMode) {
-                        B_ClientDataBaseProtoJuin3.ClientTypeMode.ANCIEN -> B_ClientDataBaseProtoJuin3.ClientTypeMode.NEVEAU
-                        B_ClientDataBaseProtoJuin3.ClientTypeMode.NEVEAU -> B_ClientDataBaseProtoJuin3.ClientTypeMode.EVITE
-                        B_ClientDataBaseProtoJuin3.ClientTypeMode.EVITE -> B_ClientDataBaseProtoJuin3.ClientTypeMode.ANCIEN
-                        null -> B_ClientDataBaseProtoJuin3.ClientTypeMode.NEVEAU
+                        B_ClientDataBaseProtoC.ClientTypeMode.ANCIEN -> B_ClientDataBaseProtoC.ClientTypeMode.NEVEAU
+                        B_ClientDataBaseProtoC.ClientTypeMode.NEVEAU -> B_ClientDataBaseProtoC.ClientTypeMode.EVITE
+                        B_ClientDataBaseProtoC.ClientTypeMode.EVITE -> B_ClientDataBaseProtoC.ClientTypeMode.ANCIEN
+                        null -> B_ClientDataBaseProtoC.ClientTypeMode.NEVEAU
                     }
 
                     // Update the client's type mode

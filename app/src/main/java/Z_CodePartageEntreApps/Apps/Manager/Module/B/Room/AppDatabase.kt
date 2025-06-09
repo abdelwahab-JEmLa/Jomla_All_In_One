@@ -16,8 +16,8 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.Extension.B_ClientDataBaseDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
@@ -44,8 +44,8 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_Ve
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.DataBase._2_1_ProduitsDataBaseDao
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
-import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
-import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.E._3_ClientsDataBase._3_ClientsDataBaseProtoE
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand.Extension.DataBase._4_CouleurOperationCommandDao
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand
 import android.content.Context
@@ -67,7 +67,7 @@ import java.util.Date
         DevicesTypeManager::class,
         DiviseurDeDisplayProductForEachClient::class,
         BaseDonne::class,
-        B_ClientDataBaseProtoJuin3::class,
+        B_ClientDataBaseProtoC::class,
 
         I_CategorieProduits::class,
         A_Produit::class,
@@ -78,7 +78,7 @@ import java.util.Date
         _1_5_Vendeur::class,
 
         _2_1_ProduitsDataBase::class,
-        _3_ClientsDataBase::class,
+        _3_ClientsDataBaseProtoE::class,
         _4_CouleurOperationCommand::class,
 
         E1SecteurDeClients::class,

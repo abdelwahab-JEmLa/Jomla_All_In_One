@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository.B_ClientsDataBaseProtoD
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
@@ -179,7 +179,7 @@ private fun setupDatabaseRefs(): List<DatabaseReference> {
     return listOf(
         _ModelAppsFather.ref_HeadOfModels,
         _ModelAppsFather.produitsFireBaseRef,
-        B_ClientsDataBase.refClientsDataBase
+        B_ClientsDataBaseProtoD.refClientsDataBase
     ).onEach {
         it.keepSynced(true)
         Log.d(TAG, "Database reference synced: ${it.key}")
@@ -337,18 +337,18 @@ private suspend fun _ModelAppsFather.updateClients(snapshot: DataSnapshot?) {
     }
 }
 
-private fun createClient(snap: DataSnapshot): B_ClientsDataBase? {
+private fun createClient(snap: DataSnapshot): B_ClientsDataBaseProtoD? {
     val map = snap.value as? Map<*, *> ?: return null
-    return B_ClientsDataBase(
+    return B_ClientsDataBaseProtoD(
         id = snap.key?.toLongOrNull() ?: return null,
         nom = map["nom"] as? String ?: ""
     ).apply {
         snap.child("statueDeBase")
-            .getValue(B_ClientsDataBase.StatueDeBase::class.java)?.let {
+            .getValue(B_ClientsDataBaseProtoD.StatueDeBase::class.java)?.let {
                 statueDeBase = it
             }
         snap.child("gpsLocation")
-            .getValue(B_ClientsDataBase.GpsLocation::class.java)?.let {
+            .getValue(B_ClientsDataBaseProtoD.GpsLocation::class.java)?.let {
                 gpsLocation = it
             }
     }

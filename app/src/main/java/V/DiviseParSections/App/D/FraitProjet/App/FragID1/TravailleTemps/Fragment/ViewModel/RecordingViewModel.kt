@@ -5,8 +5,8 @@ import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_Transacti
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBaseProtoJuin3
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseProtoC
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.C.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.TimeFormatUtils
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -130,7 +130,7 @@ class RecordingViewModel(
         }
     }
 
-    fun getLastTransaction(client: B_ClientDataBaseProtoJuin3): C3_TransactionCommercial? =
+    fun getLastTransaction(client: B_ClientDataBaseProtoC): C3_TransactionCommercial? =
         repos.c3_BonAchate_Repository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
             .maxByOrNull { it.timestamps }
 
