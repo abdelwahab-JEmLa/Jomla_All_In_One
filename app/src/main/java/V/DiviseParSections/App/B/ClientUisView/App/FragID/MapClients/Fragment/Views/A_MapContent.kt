@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleActiveTransaction
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Init.getMapUpdateTriggers
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.updateMapMarkers
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.initializeMapPosition
@@ -71,23 +70,23 @@ fun MapContent(
     }
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
-    val activeTransactionId =
-        viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value
+
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    LaunchedEffect(viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState().value) {
-        handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
+    LaunchedEffect( uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps }) {
+        handleActiveTransaction(
+            uiState=uiState,
+            viewModel=viewModel,
+            ) { marker ->
             selectedMarker = marker
             showMarkerDialog = true
         }
     }
 
-    // Initialize map with current location or default position
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom)
     }
 
-    // Configure OSMDroid and handle cleanup
     DisposableEffect(context, mapReloadTrigger) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -99,14 +98,11 @@ fun MapContent(
         }
     }
 
-    val updateTriggers = getMapUpdateTriggers(
-        viewModel.c3_BonAchate_List,
-        currentFilterMode,
-        mapReloadTrigger,
-        uiState = uiState
-    )
+    LaunchedEffect(  uiState.c3_TransactionCommercialList.map { it.dernierFireBaseUpdateTimestamps },
+        uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps },
 
-    LaunchedEffect(updateTriggers) {
+        currentFilterMode,
+        mapReloadTrigger,) {
         updateMapMarkers(
             uiState=uiState,
             mapView=mapView,

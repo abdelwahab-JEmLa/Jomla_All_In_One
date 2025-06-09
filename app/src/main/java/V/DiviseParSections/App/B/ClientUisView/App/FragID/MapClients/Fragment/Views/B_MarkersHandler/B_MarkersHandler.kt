@@ -3,8 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -25,7 +23,7 @@ suspend fun updateMapMarkers(
     showMarkerDetails: Boolean,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-  val  clientDataBaseSnapList= uiState.b_ClientInfosProtoJuin3List
+    val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
 
     val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
     existingMarkers.forEach { it.closeInfoWindow() }
@@ -46,9 +44,6 @@ suspend fun updateMapMarkers(
         showMarkerDetails,
         onMarkerSelected
     )
-
-    displayOpenTransactions(mapView, viewModel, onMarkerSelected)
-    displayLatestTransactions(mapView, viewModel, onMarkerSelected)
 }
 
 fun addMarkersForFilteredClients(
@@ -101,7 +96,7 @@ fun createAndAddMarker(
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
         try {
-            configureMarkerInfoWindow(this, mapView, context, viewModel,client)
+            configureMarkerInfoWindow(this, mapView, context, viewModel, client)
         } catch (_: Exception) {
         }
 
@@ -126,9 +121,14 @@ private fun Marker.title(
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
-        val timeStr = viewModel.getLastTransaction(client)?.timestamps?.let { dateHandler.getDateAndTimString(it).time }
-        val dayName = dateHandler.getArabicDayNameFromTimestamp(viewModel.getLastTransaction(client)?.timestamps ?: 0)
-        val distanceSemain = dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.timestamps)
+        val timeStr = viewModel.getLastTransaction(client)?.timestamps?.let {
+            dateHandler.getDateAndTimString(it).time
+        }
+        val dayName = dateHandler.getArabicDayNameFromTimestamp(
+            viewModel.getLastTransaction(client)?.timestamps ?: 0
+        )
+        val distanceSemain =
+            dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.timestamps)
 
         if (viewModel.getLastTransaction(client) != null) {
             "$distanceSemain.$dayName (${timeStr})" +
@@ -168,7 +168,10 @@ fun configureMarkerInfoWindow(
     val container = marker.infoWindow.view.findViewById<LinearLayout>(containerResourceId)
     container?.let {
         val backgroundColor = viewModel.getLastTransaction(client)?.let {
-            ContextCompat.getColor(context, viewModel.getLastTransaction(client)!!.etateActuellementEst.color)
+            ContextCompat.getColor(
+                context,
+                viewModel.getLastTransaction(client)!!.etateActuellementEst.color
+            )
         }
 
         if (backgroundColor != null) {

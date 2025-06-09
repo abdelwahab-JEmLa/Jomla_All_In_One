@@ -1,33 +1,25 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 // Helper functions to support the refactored MapContent
 fun handleActiveTransaction(
-    activeTransactionId: Long,
+    uiState: UiState,
     viewModel: ViewModel_MapClients_App2FragID1,
-    mapView: MapView,
     onMarkerFound: (Marker) -> Unit,
 ) {
-    if (activeTransactionId != 0L) {
-        val activeTransaction = viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
-            .c3TransactionCommercialRepository.modelDatasSnapList
-            .find { it.vid == activeTransactionId }
+   val clients = uiState.b_ClientInfosProtoJuin3List
 
-        activeTransaction?.let { transaction ->
-            // Find the marker for this client
-            val clientMarker = mapView.overlays.filterIsInstance<Marker>()
-                .find { it.id == transaction.clientAcheteurID.toString() }
+
 
             clientMarker?.let { marker ->
                 onMarkerFound(marker)
-                marker.showInfoWindow()
-
-                // Animate to the marker position
-                mapView.controller.animateTo(marker.position)
             }
         }
     }
 }
+
