@@ -91,6 +91,10 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.generativeai)
     implementation(libs.material)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // Test dependencies
     testImplementation(libs.junit)

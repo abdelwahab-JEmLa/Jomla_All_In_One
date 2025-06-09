@@ -1,6 +1,8 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 
+import ComptApp
+import ComptAppDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
@@ -92,6 +94,7 @@ import java.util.Date
 
         ArticlesBasesStatsTable::class,
         CategoriesTabelle::class,
+        ComptApp::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -136,6 +139,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun D_EtateMessageVocaleDao(): D_EtateMessageVocaleDao
+    abstract fun comptAppDao(): ComptAppDao
 
     object DatabaseModule {
 

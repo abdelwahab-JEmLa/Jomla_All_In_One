@@ -1,5 +1,7 @@
 package com.example.clientjetpack
 
+import AuthManager
+import AuthResult
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -21,7 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
     private val database by lazy { AppDatabase.DatabaseModule.getDatabase(this) }
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
+    private val dao by lazy { database.comptAppDao() }  // Correction ici
 
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
     private val appViewModels by lazy {
@@ -58,6 +63,8 @@ class MainActivity : ComponentActivity() {
     private var permissionsChecked by mutableStateOf(false)
 
     private var applicationAfficheProduitsPourCompt by mutableStateOf(false)
+
+    private lateinit var authManager: AuthManager
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,24 +82,37 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-
-                                    MainScreen()
-
-                            } else {}
+                                // Auth setup une seule fois
+                                setupAuth()
+                                MainScreen()
+                            }
                         }
                     }
                 }
             }
-
-            // Handle permissions for all API levels
             handlePermissions()
-        }.onFailure {
-            Log.e(TAG, "Error in setupActivityContent", it)
-            Toast.makeText(
-                this,
-                "Une erreur s'est produite. Veuillez redémarrer l'application.",
-                Toast.LENGTH_LONG
-            ).show()
+        }.onFailure { }
+    }
+
+    private fun setupAuth() {
+        if (!::authManager.isInitialized) {
+            // Correction : utilisez dao au lieu de database
+            authManager = AuthManager(dao)  // Retirez la virgule vide
+
+            lifecycleScope.launch {
+                when (val result = authManager.authenticate()) {
+                    is AuthResult.Success -> {
+                        val compte = result.compte
+                        applicationAfficheProduitsPourCompt = true
+                        Log.d(TAG, "Auth success: ${compte.nom}")
+                    }
+                    is AuthResult.Error -> {
+                        Log.e(TAG, "Auth error: ${result.message}")
+                    }
+                    // Plus besoin d'else avec sealed class
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -132,6 +152,5 @@ class MainActivity : ComponentActivity() {
             Toast.LENGTH_LONG
         ).show()
     }
-
-
 }
+
