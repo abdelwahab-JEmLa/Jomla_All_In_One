@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repo
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.triggerUpdateFbParTimestampsListener
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Preview.setupLocalDbUpdateTracker
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +33,12 @@ class B_ClientInfosProtoJuin3Repository(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
+            // 1. Initialiser les données
             val initializedData = initializeDataReturn()
             updateRepoState(initializedData)
+
+            // 2. Configurer le suivi des mises à jour de la BD locale
+            setupLocalDbUpdateTracker()
         }
     }
 
