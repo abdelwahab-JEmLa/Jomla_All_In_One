@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur.Extension.Update
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_VendeurRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener

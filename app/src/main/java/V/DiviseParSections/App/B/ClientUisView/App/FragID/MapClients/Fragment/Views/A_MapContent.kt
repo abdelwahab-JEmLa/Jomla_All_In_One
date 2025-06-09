@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleActiveTransaction
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.updateMapMarkers
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
@@ -71,15 +70,19 @@ fun MapContent(
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
-    val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
+    LaunchedEffect(uiState.activeCompt?.dernierTimeTampsSynchronisationAvecFireBase) {
+        if (uiState.activeCompt?.dernierTimeTampsSynchronisationAvecFireBase != 0L) {
+            val clientMarker = mapView.overlays.filterIsInstance<Marker>()
+                .find { marker ->
+                    uiState.activeCompt?.let {
+                        marker.id == it.idClientOuvertPoutCeCompt.toString()
+                    } == true
+                }
 
-    LaunchedEffect( uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps }) {
-        handleActiveTransaction(
-            uiState=uiState,
-            viewModel=viewModel,
-            ) { marker ->
-            selectedMarker = marker
-            showMarkerDialog = true
+            clientMarker?.let { marker ->
+                selectedMarker = marker
+                showMarkerDialog = true
+            }
         }
     }
 
@@ -87,6 +90,7 @@ fun MapContent(
         initializeMapPosition(context, mapView, currentZoom)
     }
 
+    // Configure OSMDroid and handle cleanup
     DisposableEffect(context, mapReloadTrigger) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -169,10 +173,10 @@ fun MapContent(
                 },
                 onConfirm = {
                     handleMarkerPositionUpdate(
-                        clientDataBaseSnapList,
-                        editingMarkerId,
+                        uiState =uiState,
+                        viewModel =viewModel,
                         mapView,
-                        viewModel
+                        editingMarkerId,
                     )
                     showEditMarkerMode = false
                     editingMarkerId = 0L

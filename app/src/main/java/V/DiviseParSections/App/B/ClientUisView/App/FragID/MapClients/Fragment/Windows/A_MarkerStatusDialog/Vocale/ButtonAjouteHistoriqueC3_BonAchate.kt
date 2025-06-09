@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposito
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast

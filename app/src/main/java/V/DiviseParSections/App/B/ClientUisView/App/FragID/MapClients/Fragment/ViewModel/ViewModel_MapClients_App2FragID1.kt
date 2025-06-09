@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
@@ -46,6 +47,7 @@ data class PanelsGroupeButton(
 }
 
 data class UiState(
+    val activeCompt: _1_5_Vendeur? = null,
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val c3_TransactionCommercialList: List<C3_TransactionCommercial> = emptyList(),
     val mainLoadingProgress: Float = 0f,
@@ -127,6 +129,20 @@ class ViewModel_MapClients_App2FragID1(
             }.collect { transactionList ->
                 _uiState.value = _uiState.value.copy(
                     c3_TransactionCommercialList = transactionList
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow {
+                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+                    .repositorys_Model
+                    .repository_1_5_Vendeur
+                    .modelDatasSnapList
+                    .toList()
+            }.collect { list ->
+                _uiState.value = _uiState.value.copy(
+                    activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
                 )
             }
         }

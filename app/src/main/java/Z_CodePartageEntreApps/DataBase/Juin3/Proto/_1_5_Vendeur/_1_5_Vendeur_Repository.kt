@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Repository._1_5_Vendeur
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.runtime.snapshots.SnapshotStateList

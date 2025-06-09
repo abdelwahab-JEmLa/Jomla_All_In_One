@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.Repository._1_5_Vendeur
+package Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GroupeRepositorysProtoAvJuin3 {
