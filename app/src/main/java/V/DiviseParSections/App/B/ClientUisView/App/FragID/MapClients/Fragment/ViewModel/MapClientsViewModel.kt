@@ -143,12 +143,6 @@ class MapClientsViewModel(
         }
     }
 
-
-
-    // ===============================================
-    // BUSINESS LOGIC METHODS
-    // ===============================================
-
     fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? {
         return transactionsState.getLastTransactionForClient(client.id)
     }
