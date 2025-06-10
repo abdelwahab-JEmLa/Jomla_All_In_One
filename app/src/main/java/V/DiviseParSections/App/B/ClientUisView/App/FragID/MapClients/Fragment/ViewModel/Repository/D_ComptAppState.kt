@@ -54,7 +54,27 @@ class D_ComptAppState(
         }
     }
 
+    fun updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt: Long) {
+        val updatedCompt = activeCompt?.copy(idClientOuvertPoutCeCompt = idClientOuvertPoutCeCompt)
+        addOrUpdateData(updatedCompt)
+    }
+
+    fun addOrUpdateData(data: _1_5_Vendeur?) {
+        data?.let { newData ->
+            val currentList = _datas.value.toMutableList()
+            val existingIndex = currentList.indexOfFirst { it.vid == newData.vid }
+
+            if (existingIndex != -1) {
+                currentList[existingIndex] = newData
+            } else {
+                currentList.add(newData)
+            }
+
+            _datas.value = currentList
+        }
+    }
+
     fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
+
     fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
 }
-

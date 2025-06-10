@@ -218,27 +218,7 @@ class MapClientsViewModel(
         }
     }
 
-    fun updateActiveComptIdClientOuvertPoutCeComptT(
-        newEtate: C3_TransactionCommercial.EtateActuellementEst,
-        data: Long
-    ) {
-        val dataOriented =
-            if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI)
-                0 else data
-        val currentActiveCompt = appState.activeCompt ?: return
-        val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = dataOriented)
 
-        appState.updateActiveCompt(updatedCompt)
-        updateUiState()
-    }
-
-    fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
-        val currentActiveCompt = appState.activeCompt ?: return
-        val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
-
-        appState.updateActiveCompt(updatedCompt)
-        updateUiState()
-    }
 
     // ===============================================
     // FILTER AND VISIBILITY METHODS
@@ -289,28 +269,13 @@ class MapClientsViewModel(
         recordingHandler.startRecordIfNot()
     }
 
-    // ===============================================
-    // COMPOSE UTILITIES
-    // ===============================================
-
     @Composable
     fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? {
         val clients by clientsState.clients
         return remember(clients, clientId) { clients.find { it.id == clientId } }
     }
 
-    @Composable
-    fun rememberClientsCount(): Int {
-        val clients by clientsState.clients
-        return remember(clients) { clients.size }
-    }
-
-    @Composable
-    fun rememberIsLoading(): Boolean {
-        val isInitialized by clientsState.isInitialized
-        val clients by clientsState.clients
-        return remember(isInitialized, clients) {
-            !isInitialized && clients.isEmpty()
-        }
+    fun updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt: Long) {
+        centralDatasHandler.comptAppState.updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt)
     }
 }

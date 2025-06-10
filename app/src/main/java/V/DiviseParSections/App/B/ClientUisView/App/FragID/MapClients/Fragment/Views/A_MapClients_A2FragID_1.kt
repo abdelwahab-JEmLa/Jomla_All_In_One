@@ -38,7 +38,7 @@ fun A_MapClients_A2FragID_1(
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,
                 mapReloadTrigger = mapReloadTrigger,
-                onClickToFerme =viewModel::updateActiveComptIdClientOuvertPoutCeComptT
+                onClickToFerme ={_,_->}
             )
         }
     }
