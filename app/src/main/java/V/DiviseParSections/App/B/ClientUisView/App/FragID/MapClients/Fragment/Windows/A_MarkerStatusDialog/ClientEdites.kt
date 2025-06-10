@@ -27,17 +27,16 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun ClientEdites(
     viewModel: MapClientsViewModel,
-    onClickToEditeMarquerPosition: (Long) -> Unit,
-    selectedMarker: Marker,
+    marqueClick: Marker,
+    marqueClickRelativeClient: B_ClientInfosProtoJuin3?,
     onDismiss: () -> Unit,
-    clientTypeMode: B_ClientInfosProtoJuin3.ClientTypeMode?,
-    relatedClients: B_ClientInfosProtoJuin3?,
-
+    onClickToEditeMarquerPosition: (Long) -> Unit,
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
     onClientTypeModeChange: (B_ClientInfosProtoJuin3.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
 ) {
+    val clientTypeMode = marqueClickRelativeClient?.clientTypeMode
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,12 +57,11 @@ fun ClientEdites(
                 contentDescription = "Delete client",
             )
         }
-        // Location Edit Icon
         Card(
             modifier = Modifier
                 .padding(end = 8.dp)
                 .clickable {
-                    onClickToEditeMarquerPosition(selectedMarker.id.toLong())
+                    onClickToEditeMarquerPosition(marqueClick.id.toLong())
                     onDismiss()
                 }
         ) {
@@ -73,7 +71,6 @@ fun ClientEdites(
             )
         }
 
-        // ClientAchteur Type Mode Toggle
         Card(
             modifier = Modifier
                 .padding(end = 8.dp)
@@ -86,7 +83,7 @@ fun ClientEdites(
                     }
 
                     // Update the client's type mode
-                    relatedClients?.let { client ->
+                    marqueClickRelativeClient?.let { client ->
                         client.clientTypeMode = newClientTypeMode
                         viewModel.updateData(client)
                     }
@@ -113,14 +110,14 @@ fun ClientEdites(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = relatedClients?.nom ?: "ClientAchteur",
+                text = marqueClickRelativeClient?.nom ?: "ClientAchteur",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
-            if (!relatedClients?.numTelephone.isNullOrEmpty()) {
+            if (!marqueClickRelativeClient?.numTelephone.isNullOrEmpty()) {
                 Text(
-                    text = relatedClients?.numTelephone ?: "",
+                    text = marqueClickRelativeClient?.numTelephone ?: "",
                     modifier = Modifier.clickable { onShowPhoneDialogChange(true) },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary

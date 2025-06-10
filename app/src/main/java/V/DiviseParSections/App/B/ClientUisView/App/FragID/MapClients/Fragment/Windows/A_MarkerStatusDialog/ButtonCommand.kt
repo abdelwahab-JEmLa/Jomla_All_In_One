@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -33,7 +31,6 @@ fun CommandButton(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     etateActuellementEst1: C3_TransactionCommercial.EtateActuellementEst,
-    coroutineScope: CoroutineScope,
     clientId: Long,
     selectedMarker: Marker,
     onUpdateLongAppSetting: () -> Unit,
@@ -44,18 +41,16 @@ fun CommandButton(
 
     FilledTonalButton(
         onClick = {
-            coroutineScope.launch {
-                upsertLenceCommandeRepoGroupedProtoAvantJuin3(
-                    uiState=uiState,
-                    viewModel=viewModel,
-                    relatedClientID = clientId,
-                    newEtate=etateActuellementEst1
-                )
-                updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
-                viewModel.updateActiveComptIdClientOuvertPoutCeCompt(selectedMarkedID)
-                viewModel.startRecordIfNot()
-                onDismiss()
-            }
+            upsertLenceCommandeRepoGroupedProtoAvantJuin3(
+                uiState = uiState,
+                viewModel = viewModel,
+                relatedClientID = clientId,
+                newEtate = etateActuellementEst1
+            )
+            updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
+            viewModel.updateActiveComptIdClientOuvertPoutCeCompt(selectedMarkedID)
+            viewModel.startRecordIfNot()
+            onDismiss()
         },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(

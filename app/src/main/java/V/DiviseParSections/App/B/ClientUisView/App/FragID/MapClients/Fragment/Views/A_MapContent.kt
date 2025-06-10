@@ -101,17 +101,18 @@ fun MapContent(
         }
     }
 
-    LaunchedEffect(  uiState.c3_TransactionCommercialList.map { it.dernierFireBaseUpdateTimestamps },
+    LaunchedEffect(
+        uiState.c3_TransactionCommercialList.map { it.dernierFireBaseUpdateTimestamps },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps },
-
         currentFilterMode,
-        mapReloadTrigger,) {
+        mapReloadTrigger,
+    ) {
         updateMapMarkers(
-            uiState=uiState,
-            mapView=mapView,
-            viewModel=viewModel,
-            currentFilterMode=currentFilterMode,
-            showMarkerDetails=showMarkerDetails
+            uiState = uiState,
+            mapView = mapView,
+            viewModel = viewModel,
+            currentFilterMode = currentFilterMode,
+            showMarkerDetails = showMarkerDetails
         ) { marker ->
             selectedMarker = marker
             showMarkerDialog = true
@@ -145,7 +146,7 @@ fun MapContent(
             ?.isVisible ?: false
 
         if (isSecteursButtonVisible) {
-           // MapSecteursPolygenHandelButtons(mapView, viewModel)
+            // MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
         A_GlobalOptionsControlsFloatingActionButtons_FragId1(
@@ -172,8 +173,8 @@ fun MapContent(
                 },
                 onConfirm = {
                     handleMarkerPositionUpdate(
-                        uiState =uiState,
-                        viewModel =viewModel,
+                        uiState = uiState,
+                        viewModel = viewModel,
                         mapView,
                         editingMarkerId,
                     )
@@ -183,12 +184,11 @@ fun MapContent(
             )
         }
 
-        // Marker status dialog
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
                 uiState = uiState,
                 viewModel = viewModel,
-                selectedMarker = selectedMarker,
+                marqueClick = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->

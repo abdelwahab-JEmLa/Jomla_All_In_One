@@ -15,7 +15,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
-suspend fun updateMapMarkers(
+fun updateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     mapView: MapView,

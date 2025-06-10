@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,39 +36,37 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun MarkerStatusDialog(
     uiState: UiState,
     viewModel: MapClientsViewModel,
-    selectedMarker: Marker?,
+    marqueClick: Marker?,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
-    // Early return if selectedMarker is null
-    if (selectedMarker == null) return
+    if (marqueClick == null) return
 
-    val relatedClients = viewModel.bProto_ClientsDataBase.find {
-        it.id == (selectedMarker.id?.toLong() ?: 0)
+    val marqueClickRelativeClient = viewModel.bProto_ClientsDataBase.find {
+        it.id == (marqueClick.id?.toLong() ?: 0)
     }
-    val clientId = relatedClients?.id ?: 0L
-    var clientTypeMode by remember { mutableStateOf(relatedClients?.clientTypeMode) }
 
-    if (editedName.isEmpty() && relatedClients != null) {
-        editedName = relatedClients.nom ?: ""
-        editedPhone = relatedClients.numTelephone ?: ""
+    val clientId = marqueClickRelativeClient?.id ?: 0L
+    var clientTypeMode by remember { mutableStateOf(marqueClickRelativeClient?.clientTypeMode) }
+
+    if (editedName.isEmpty() && marqueClickRelativeClient != null) {
+        editedName = marqueClickRelativeClient.nom ?: ""
+        editedPhone = marqueClickRelativeClient.numTelephone ?: ""
     }
 
     Dialog(
@@ -86,20 +83,17 @@ fun MarkerStatusDialog(
                 .fillMaxHeight(0.95f)
                 .padding(16.dp)
         ) {
-            // Replaced Column with LazyColumn for scrollable content
             LazyColumn(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // First show client info regardless of transaction status
                 item {
                     ClientEdites(
-                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
-                        selectedMarker = selectedMarker,
-                        onDismiss = onDismiss,
-                        clientTypeMode = clientTypeMode,
-                        relatedClients = relatedClients,
                         viewModel = viewModel,
+                        marqueClick = marqueClick,
+                        marqueClickRelativeClient = marqueClickRelativeClient,
+                        onDismiss = onDismiss,
+                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                         onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
                         onClientTypeModeChange = { clientTypeMode = it },
                         onShowEditDialogChange = { showEditDialog = it },
@@ -107,14 +101,13 @@ fun MarkerStatusDialog(
                     )
                 }
 
-                // Check if activeCompt is not null before accessing its properties
                 uiState.activeCompt?.let { activeCompt ->
                     if (activeCompt.idClientOuvertPoutCeCompt != 0L) {
                         item {
                             AfficheurRegleOuvert(
                                 uiState = uiState,
                                 viewModel = viewModel,
-                                relatedClients = relatedClients,
+                                relatedClients = marqueClickRelativeClient,
                             )
                         }
                     }
@@ -132,7 +125,6 @@ fun MarkerStatusDialog(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // Use a LazyVerticalGrid with 2 columns
                             LazyVerticalGrid(
                                 columns = GridCells.Fixed(2),
                                 contentPadding = PaddingValues(vertical = 4.dp),
@@ -158,9 +150,8 @@ fun MarkerStatusDialog(
                                         uiState = uiState,
                                         viewModel = viewModel,
                                         etateActuellementEst1 = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                        coroutineScope = coroutineScope,
                                         clientId = clientId,
-                                        selectedMarker = selectedMarker,
+                                        selectedMarker = marqueClick,
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
                                         context = context
@@ -263,18 +254,16 @@ fun MarkerStatusDialog(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            coroutineScope.launch {
-                                relatedClients?.apply {
-                                    nom = editedName
-                                    numTelephone = editedPhone
-                                }
-
-                                relatedClients?.let { client ->
-                                    viewModel.updateData(client)
-                                }
-
-                                showEditDialog = false
+                            marqueClickRelativeClient?.apply {
+                                nom = editedName
+                                numTelephone = editedPhone
                             }
+
+                            marqueClickRelativeClient?.let { client ->
+                                viewModel.updateData(client)
+                            }
+
+                            showEditDialog = false
                         }
                     ) {
                         Text("OK")
@@ -290,7 +279,7 @@ fun MarkerStatusDialog(
 
         if (showPhoneDialog) {
             val client = uiState.b_ClientInfosProtoJuin3List.find {
-                it.id.toString() == selectedMarker.id
+                it.id.toString() == marqueClick.id
             }
             AlertDialog(
                 onDismissRequest = { showPhoneDialog = false },
@@ -319,29 +308,27 @@ fun MarkerStatusDialog(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            coroutineScope.launch {
-                                val clientToDelete =
-                                    uiState.b_ClientInfosProtoJuin3List.find {
-                                        it.id.toString() == selectedMarker.id
-                                    }
-
-                                clientToDelete?.let { client ->
-                                    // Find and delete the corresponding B_ClientInfosProtoJuin3 object
-                                    val relatedClient = viewModel.bProto_ClientsDataBase.find {
-                                        it.id == client.id
-                                    }
-
-                                    // Delete the client from repository
-                                    relatedClient?.let {
-                                        viewModel.deleteUnSeulData(it)
-                                    }
-
-                                    // Remove the marker from the map
-                                    onRemoveMark(selectedMarker)
-                                    onDismiss()
+                            val clientToDelete =
+                                uiState.b_ClientInfosProtoJuin3List.find {
+                                    it.id.toString() == marqueClick.id
                                 }
-                                showDeleteConfirmationDialog = false
+
+                            clientToDelete?.let { client ->
+                                // Find and delete the corresponding B_ClientInfosProtoJuin3 object
+                                val relatedClient = viewModel.bProto_ClientsDataBase.find {
+                                    it.id == client.id
+                                }
+
+                                // Delete the client from repository
+                                relatedClient?.let {
+                                    viewModel.deleteUnSeulData(it)
+                                }
+
+                                // Remove the marker from the map
+                                onRemoveMark(marqueClick)
+                                onDismiss()
                             }
+                            showDeleteConfirmationDialog = false
                         }
                     ) {
                         Text("Supprimer", color = MaterialTheme.colorScheme.error)
