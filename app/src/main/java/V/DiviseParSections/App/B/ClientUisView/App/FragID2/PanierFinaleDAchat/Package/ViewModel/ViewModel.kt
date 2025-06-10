@@ -78,6 +78,14 @@ class TransactionCommercialState(
 
     init {
         composScope.launch {
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    updateLoadingProgress(model.progress)
+                }
+            }
+        }
+
+        composScope.launch {
             snapshotFlow {
                 a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
                     .repositorys_Model
@@ -86,10 +94,13 @@ class TransactionCommercialState(
                     .toList()
             }.collect { list ->
                 updateDatas(list)
+
             }
         }
     }
-
+    fun updateLoadingProgress(progress: Float) {
+        _loadingProgress.value = progress
+    }
     fun updateDatas(newDatas: List<C3_TransactionCommercial>) {
         _datas.value = newDatas
     }
