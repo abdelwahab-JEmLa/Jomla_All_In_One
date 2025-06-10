@@ -82,7 +82,9 @@ class MapClientsViewModel(
     val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model
         .c3TransactionCommercialRepository.modelDatasSnapList
 
-    val bProto_ClientsDataBase = uiState.value.b_ClientInfosProtoJuin3List
+    // FIXED: Use the current UI state's client list instead of a stale snapshot
+    val bProto_ClientsDataBase: List<B_ClientInfosProtoJuin3>
+        get() = _uiState.value.b_ClientInfosProtoJuin3List
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)

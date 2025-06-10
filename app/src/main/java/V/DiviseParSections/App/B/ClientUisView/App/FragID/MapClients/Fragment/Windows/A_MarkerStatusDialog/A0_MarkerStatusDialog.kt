@@ -62,8 +62,9 @@ fun MarkerStatusDialog(
         it.id == (marqueClick.id?.toLong() ?: 0)
     }
 
-    Log.d("MarkerStatusDialog","$marqueClick")
-    Log.d("MarkerStatusDialog","$marqueClickRelativeClient")
+    Log.d("MarkerStatusDialog","${marqueClick.id}")
+    Log.d("MarkerStatusDialog","${viewModel.bProto_ClientsDataBase.size}")
+    Log.d("MarkerStatusDialog","${uiState.b_ClientInfosProtoJuin3List.size}")
 
     val clientId = marqueClickRelativeClient?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(marqueClickRelativeClient?.clientTypeMode) }
