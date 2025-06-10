@@ -1,4 +1,4 @@
-package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -20,7 +20,9 @@ class C_TransactionCommercialState(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
-    val datas: State<List<C3_TransactionCommercial>> = _datas
+    val datasState: State<List<C3_TransactionCommercial>> = _datas
+    val datasValue by derivedStateOf { _datas.value }
+
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
@@ -50,10 +52,12 @@ class C_TransactionCommercialState(
         }
     }
 
-    fun updateLoadingProgress(progress: Float) {
-        _loadingProgress.value = progress
+    fun getLastTransactionForClient(clientId: Long): C3_TransactionCommercial? {
+        return _datas.value
+            .filter { it.clientAcheteurID == clientId }
+            .maxByOrNull { it.timestamps }
     }
-    fun updateDatas(newDatas: List<C3_TransactionCommercial>) {
-        _datas.value = newDatas
-    }
+
+    fun updateLoadingProgress(progress: Float) { _loadingProgress.value = progress }
+    fun updateDatas(newDatas: List<C3_TransactionCommercial>) { _datas.value = newDatas }
 }

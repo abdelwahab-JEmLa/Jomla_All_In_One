@@ -1,4 +1,4 @@
-package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
@@ -6,7 +6,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CoroutineScope
@@ -21,17 +20,12 @@ class D_ComptAppState(
 
     private val _datas = mutableStateOf<List<_1_5_Vendeur>>(emptyList())
     val datas: State<List<_1_5_Vendeur>> = _datas
+    val datasValue by derivedStateOf { _datas.value }
 
-    private val _loadingProgress = mutableFloatStateOf(0f)
-    val loadingProgress: State<Float> = _loadingProgress
+    private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
+    val activeCompt by derivedStateOf { getActiveComptPourCeTelephone() }
 
-    val activeComptPourCeTelephone: _1_5_Vendeur? by derivedStateOf {
-        getActiveComptPourCeTelephone(_datas.value)
-    }
-
-    val activeClientPourCeCompt by derivedStateOf {
-        activeComptPourCeTelephone?.idClientOuvertPoutCeCompt ?: 0
-    }
+    val activeClientPourCeCompt by derivedStateOf { activeCompt?.idClientOuvertPoutCeCompt ?: 0 }
 
     val size: Int by derivedStateOf { _datas.value.size }
     val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
@@ -50,6 +44,17 @@ class D_ComptAppState(
         }
     }
 
+    fun updateActiveCompt(newActiveCompt: _1_5_Vendeur?) {
+        _activeCompt.value = newActiveCompt
+
+        _activeCompt.value?.let {
+            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+                .repository_1_5_Vendeur
+                .updateUnSeulData(it)
+        }
+    }
+
     fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
-    fun getActiveComptPourCeTelephone(datas: List<_1_5_Vendeur>): _1_5_Vendeur? { return datas.find { it.vid == 1L } }
+    fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
 }
+

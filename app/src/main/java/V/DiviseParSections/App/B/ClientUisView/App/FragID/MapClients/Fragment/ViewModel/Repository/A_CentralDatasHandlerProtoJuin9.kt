@@ -1,4 +1,4 @@
-package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -11,11 +11,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class A_CentralDatasHandler(
+class A_CentralDatasHandlerProtoJuin9(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val clientsState: B_ClientsState,
     val comptAppState: D_ComptAppState,
     val transactionCommercialState: C_TransactionCommercialState,
+    val autreStates: Z_AutreStates,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -32,7 +33,7 @@ class A_CentralDatasHandler(
     }
 
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
-        transactionCommercialState.datas.value.lastOrNull {
+        transactionCommercialState.datasState.value.lastOrNull {
             it.clientAcheteurID == comptAppState.activeClientPourCeCompt
                     && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         }

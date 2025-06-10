@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.Z_AutreStates
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.B_ClientsState
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -18,10 +19,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,107 +38,20 @@ import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.MapView
 import java.util.Date
 
-// ===============================================
-// UI STATE DATA CLASS
-// ===============================================
-
 @Stable
 data class UiState(
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val c3_TransactionCommercialList: List<C3_TransactionCommercial> = emptyList(),
     val activeCompt: _1_5_Vendeur? = null,
     val secteursList: List<E1SecteurDeClients> = emptyList(),
-    val panelsGroupeList: List<PanelsGroupeButton> = emptyList(),
+    val panelsGroupeList: List<Z_AutreStates.PanelsGroupeButton> = emptyList(),
     val mainLoadingProgress: Float = 0f,
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-// ===============================================
-// COMPOSE STATE CLASSES
-// ===============================================
-
-@Stable
-data class PanelsGroupeButton(
-    val key: Keys,
-    val isVisible: Boolean = false,
-) {
-    enum class Keys {
-        MapSecteursPolygenHandelButtons,
-        autres,
-    }
-}
-
-@Stable
-class TransactionsState {
-    private val _transactions = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
-    val transactions: State<List<C3_TransactionCommercial>> = _transactions
-
-    val size: Int by derivedStateOf { _transactions.value.size }
-    val isEmpty: Boolean by derivedStateOf { _transactions.value.isEmpty() }
-
-    fun updateTransactions(newTransactions: List<C3_TransactionCommercial>) {
-        _transactions.value = newTransactions
-    }
-
-    fun getLastTransactionForClient(clientId: Long): C3_TransactionCommercial? {
-        return _transactions.value
-            .filter { it.clientAcheteurID == clientId }
-            .maxByOrNull { it.timestamps }
-    }
-}
-
-
-@Stable
-class AppState(
-    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
-) {
-    private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
-    val activeCompt: State<_1_5_Vendeur?> = _activeCompt
-
-    private val _loadingProgress = mutableFloatStateOf(0f)
-    val loadingProgress: State<Float> = _loadingProgress
-
-    private val _secteursList = mutableStateOf<List<E1SecteurDeClients>>(emptyList())
-    val secteursList: State<List<E1SecteurDeClients>> = _secteursList
-
-    private val _panelsGroupeList = mutableStateOf(
-        listOf(
-            PanelsGroupeButton(PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, false),
-            PanelsGroupeButton(PanelsGroupeButton.Keys.autres, false),
-        )
-    )
-    val panelsGroupeList: State<List<PanelsGroupeButton>> = _panelsGroupeList
-
-    fun updateActiveCompt(newActiveCompt: _1_5_Vendeur?) {
-        _activeCompt.value = newActiveCompt
-
-        _activeCompt.value?.let {
-            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
-                .repository_1_5_Vendeur
-                .updateUnSeulData(it)
-        }
-    }
-
-    fun updateLoadingProgress(progress: Float) {
-        _loadingProgress.value = progress
-    }
-
-    fun updateSecteursList(newSecteurs: List<E1SecteurDeClients>) {
-        _secteursList.value = newSecteurs
-    }
-
-    fun updatePanelsGroupe(newPanels: List<PanelsGroupeButton>) {
-        _panelsGroupeList.value = newPanels
-    }
-}
-
-// ===============================================
-// MAIN VIEWMODEL WITH COMPOSE STATE
-// ===============================================
-
 class MapClientsViewModel(
-    val clientsState: B_ClientsState,
+    val centralDatasHandler: A_CentralDatasHandlerProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -156,21 +67,15 @@ class MapClientsViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val transactionsState = TransactionsState()
-    val appState = AppState(a_MasterRepositorysGrpProtoJuin3)
-
-    // ===============================================
-    // UI STATE FLOW - THIS IS WHAT WAS MISSING!
-    // ===============================================
+    val transactionsState =centralDatasHandler.transactionCommercialState
+    val clientsState=centralDatasHandler.clientsState
+    val appState =centralDatasHandler.comptAppState
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    // Backward compatibility - delegates to compose state
     val bProto_ClientsDataBase: List<B_ClientInfosProtoJuin3>
         get() = clientsState.clients.value
-
-    val secteurList = secteurRepo.listCollected
 
     // UI State variables
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
@@ -180,11 +85,34 @@ class MapClientsViewModel(
         emptyList()
     )
 
+    private fun updateUiState() {
+        _uiState.value = UiState(
+            b_ClientInfosProtoJuin3List = clientsState.clients.value,
+            c3_TransactionCommercialList = transactionsState.datasState.value,
+            activeCompt = appState.activeCompt,
+            mainLoadingProgress = centralDatasHandler.loadingProgress!!,
+            isLoading = clientsState.isLoading,
+            error = null
+        )
+    }
+
     init {
         initializeDataObservers()
     }
 
     private fun initializeDataObservers() {
+        viewModelScope.launch {
+            snapshotFlow { transactionsState.datasState.value }.collect { transactionsList ->
+                updateUiState()
+            }
+        }
+
+        viewModelScope.launch {
+            snapshotFlow { centralDatasHandler.comptAppState.activeCompt }.collect { transactionsList ->
+                updateUiState()
+            }
+        }
+
         // Observe clients data
         viewModelScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
@@ -192,25 +120,10 @@ class MapClientsViewModel(
                     val clients =
                         model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
                     clientsState.updateClients(clients)
-                    appState.updateLoadingProgress(model.progress)
 
                     // Update UI State
                     updateUiState()
                 }
-            }
-        }
-
-        // Observe transactions data
-        viewModelScope.launch {
-            snapshotFlow {
-                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
-                    .repositorys_Model
-                    .c3TransactionCommercialRepository
-                    .modelDatasSnapList
-                    .toList()
-            }.collect { transactionList ->
-                transactionsState.updateTransactions(transactionList)
-                updateUiState()
             }
         }
 
@@ -228,28 +141,9 @@ class MapClientsViewModel(
                 updateUiState()
             }
         }
-
-        // Observe secteurs data
-        viewModelScope.launch {
-            snapshotFlow { secteurList.toList() }.collect { secteurs ->
-                appState.updateSecteursList(secteurs)
-                updateUiState()
-            }
-        }
     }
 
-    private fun updateUiState() {
-        _uiState.value = UiState(
-            b_ClientInfosProtoJuin3List = clientsState.clients.value,
-            c3_TransactionCommercialList = transactionsState.transactions.value,
-            activeCompt = appState.activeCompt.value,
-            secteursList = appState.secteursList.value,
-            panelsGroupeList = appState.panelsGroupeList.value,
-            mainLoadingProgress = appState.loadingProgress.value,
-            isLoading = clientsState.isLoading,
-            error = null
-        )
-    }
+
 
     // ===============================================
     // BUSINESS LOGIC METHODS
@@ -337,7 +231,7 @@ class MapClientsViewModel(
         val dataOriented =
             if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI)
                 0 else data
-        val currentActiveCompt = appState.activeCompt.value ?: return
+        val currentActiveCompt = appState.activeCompt ?: return
         val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = dataOriented)
 
         appState.updateActiveCompt(updatedCompt)
@@ -345,7 +239,7 @@ class MapClientsViewModel(
     }
 
     fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
-        val currentActiveCompt = appState.activeCompt.value ?: return
+        val currentActiveCompt = appState.activeCompt ?: return
         val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
 
         appState.updateActiveCompt(updatedCompt)
@@ -368,41 +262,6 @@ class MapClientsViewModel(
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 
-    @Composable
-    fun getFilteredClients(filter: VisibleClientsNow): List<B_ClientInfosProtoJuin3> {
-        val clients by clientsState.clients
-        val transactions by transactionsState.transactions
-        val activeCompt by appState.activeCompt
-
-        return remember(clients, transactions, activeCompt, filter) {
-            when (filter) {
-                VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
-                    clients.filter { client ->
-                        val lastTransaction = transactions
-                            .filter { it.clientAcheteurID == client.id }
-                            .maxByOrNull { it.timestamps }
-                        lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
-                    }
-                }
-
-                VisibleClientsNow.showAtayClients -> {
-                    clients.filter { it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT }
-                }
-
-                VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
-                    clients.filter { client ->
-                        val lastTransaction = transactions
-                            .filter { it.clientAcheteurID == client.id }
-                            .maxByOrNull { it.timestamps }
-                        lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                    }
-                }
-
-                VisibleClientsNow.showAll -> clients
-                else -> clients
-            }
-        }
-    }
 
     // ===============================================
     // CLEANUP METHODS
