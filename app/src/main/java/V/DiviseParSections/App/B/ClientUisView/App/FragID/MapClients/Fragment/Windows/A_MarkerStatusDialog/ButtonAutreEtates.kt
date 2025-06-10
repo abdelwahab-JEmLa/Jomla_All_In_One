@@ -89,11 +89,15 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     val activeComptApp = uiState.activeCompt
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
+
+    // Use safe values with defaults
     val clientId = relatedClients?.id ?: 0L
+    val clientName = relatedClients?.nom ?: "Unknown Client"
+    val periodId = ceComptVendeurInsertBonsAchatAuPeriodID ?: return
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {
         it.clientAcheteurID == clientId
-                && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+                && it.parentVID_1_4_PeriodeVent == periodId
                 && it.etateActuellementEst == newEtate
     }
 
@@ -104,13 +108,12 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             updatedBonAchat
         )
-
     } else {
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             C3_TransactionCommercial(
                 clientAcheteurID = clientId,
-                nomClientConcerned = relatedClients?.nom!!,
-                parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
+                nomClientConcerned = clientName,
+                parentVID_1_4_PeriodeVent = periodId,
                 etateActuellementEst = newEtate,
             )
         )
