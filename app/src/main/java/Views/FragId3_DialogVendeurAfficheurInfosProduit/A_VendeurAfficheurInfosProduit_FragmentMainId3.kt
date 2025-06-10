@@ -63,11 +63,12 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     currentSale?.let {
         MainUi(
             viewModelFragment=viewModelFragment,
+            currentSale = it,
+            currentClient = currentClient,
             viewModelInitApp = viewModelInitApp,
             modifier = modifier,
             articlesBaseStats = articlesBaseStats,
             colorsArticlesTabelleModel = uiState.colorsArticlesTabelleModel,
-            currentSale = it,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
@@ -75,7 +76,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             uiState = uiState,
             lockExpandedPrices = lockExpandedPrices,
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
             clickedCouleurIndex = clickedCouleurIndex,
             onPourFermeWindows = onFermDialoge,
@@ -85,6 +85,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
 @Composable
 fun MainUi(
+    viewModelFragment: VendeurAfficheurInfosProduitViewModel,
     currentSale: SoldArticlesTabelle,
     currentClient: B_ClientInfosProtoJuin3?,
     viewModelInitApp: ViewModelInitApp,
@@ -102,7 +103,6 @@ fun MainUi(
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
     clickedCouleurIndex: Int,
     onPourFermeWindows: () -> Unit,
-    viewModelFragment: VendeurAfficheurInfosProduitViewModel,
 ) {
     val idProduitActuelle = currentSale.idArticle
     val centralDatasHandler = viewModelFragment.centralDatasHandler

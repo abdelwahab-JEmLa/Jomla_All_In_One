@@ -1,11 +1,13 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.A_CentralDatasHandler
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.D_ComptAppState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.C_TransactionCommercialState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.A_CentralDatasHandler
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.B_ClientsState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.C_TransactionCommercialState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.D_ComptAppState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
@@ -21,7 +23,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val moduleRepositorys = module {
-
     single {
         B_ClientInfosProtoJuin3Repository(
             androidContext(),
@@ -63,6 +64,11 @@ val moduleRepositorys = module {
 
 val moduleComposRepositorys = module {
     single {
+        B_ClientsState(
+            get(),
+        )
+    }
+    single {
         D_ComptAppState(
             get(),
         )
@@ -76,10 +82,17 @@ val moduleComposRepositorys = module {
         A_CentralDatasHandler(
             get(),
             get(),
+            get(),
+            get(),
         )
     }
 }
 val moduleViewModels = module {
+    viewModel {
+        VendeurAfficheurInfosProduitViewModel(
+            get(),
+        )
+    }
     viewModel {
         PanierFinaleDAchatViewModel(
             get(),

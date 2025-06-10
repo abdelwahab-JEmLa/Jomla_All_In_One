@@ -32,7 +32,7 @@ class A_CentralDatasHandler(
     }
 
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
-        transactionCommercialState.datas.value.last {
+        transactionCommercialState.datas.value.lastOrNull {
             it.clientAcheteurID == comptAppState.activeClientPourCeCompt
                     && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         }
