@@ -130,7 +130,9 @@ class TransactionsState {
 }
 
 @Stable
-class AppState {
+class AppState(
+    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
+) {
     private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
     val activeCompt: State<_1_5_Vendeur?> = _activeCompt
 
@@ -150,6 +152,12 @@ class AppState {
 
     fun updateActiveCompt(newActiveCompt: _1_5_Vendeur?) {
         _activeCompt.value = newActiveCompt
+
+        _activeCompt.value?.let {
+            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+                .repository_1_5_Vendeur
+                .updateUnSeulData(it)
+        }
     }
 
     fun updateLoadingProgress(progress: Float) {
@@ -176,15 +184,18 @@ class MapClientsViewModel(
 ) : ViewModel() {
 
     // Repository references
-    val groupeRepositorysProtoAvJuin3 = a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
-    val b_ClientDataBaseRepository = a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
+    val groupeRepositorysProtoAvJuin3 =
+        a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+    val b_ClientDataBaseRepository =
+        a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model.e1SecteurDeClientsRepository
-    val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
+    val c3_BonAchate_List =
+        groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
     val clientsState = ClientsState()
     val transactionsState = TransactionsState()
-    val appState = AppState()
+    val appState = AppState(a_MasterRepositorysGrpProtoJuin3)
 
     // ===============================================
     // UI STATE FLOW - THIS IS WHAT WAS MISSING!
@@ -203,7 +214,9 @@ class MapClientsViewModel(
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
-    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
+    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
+        emptyList()
+    )
 
     init {
         initializeDataObservers()
@@ -214,7 +227,8 @@ class MapClientsViewModel(
         viewModelScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
-                    val clients = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
+                    val clients =
+                        model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
                     clientsState.updateClients(clients)
                     appState.updateLoadingProgress(model.progress)
 
@@ -354,16 +368,26 @@ class MapClientsViewModel(
         }
     }
 
+    fun updateActiveComptIdClientOuvertPoutCeComptT(
+        newEtate: C3_TransactionCommercial.EtateActuellementEst,
+        data: Long
+    ) {
+        val dataOriented =
+            if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI)
+                0 else data
+        val currentActiveCompt = appState.activeCompt.value ?: return
+        val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = dataOriented)
+
+        appState.updateActiveCompt(updatedCompt)
+        updateUiState()
+    }
+
     fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
         val currentActiveCompt = appState.activeCompt.value ?: return
         val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
 
         appState.updateActiveCompt(updatedCompt)
         updateUiState()
-
-        a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
-            .repository_1_5_Vendeur
-            .updateUnSeulData(updatedCompt)
     }
 
     // ===============================================
@@ -398,9 +422,11 @@ class MapClientsViewModel(
                         lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
                     }
                 }
+
                 VisibleClientsNow.showAtayClients -> {
                     clients.filter { it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT }
                 }
+
                 VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                     clients.filter { client ->
                         val lastTransaction = transactions
@@ -409,6 +435,7 @@ class MapClientsViewModel(
                         lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
                     }
                 }
+
                 VisibleClientsNow.showAll -> clients
                 else -> clients
             }
@@ -452,8 +479,10 @@ class MapClientsViewModel(
     // ===============================================
 
     @Composable
-    fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? { val clients by clientsState.clients
-        return remember(clients, clientId) { clients.find { it.id == clientId } } }
+    fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? {
+        val clients by clientsState.clients
+        return remember(clients, clientId) { clients.find { it.id == clientId } }
+    }
 
     @Composable
     fun rememberClientsCount(): Int {

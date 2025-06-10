@@ -10,6 +10,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
+    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -201,7 +203,8 @@ fun MapContent(
                         mapView.overlays.remove(it)
                         mapView.invalidate()
                     }
-                }
+                },
+                onClickToFerme = onClickToFerme
             )
         }
     }

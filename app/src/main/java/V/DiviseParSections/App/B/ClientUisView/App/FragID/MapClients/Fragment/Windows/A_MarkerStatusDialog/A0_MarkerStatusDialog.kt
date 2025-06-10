@@ -48,6 +48,7 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
+    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
@@ -113,6 +114,7 @@ fun MarkerStatusDialog(
                                 uiState = uiState,
                                 viewModel = viewModel,
                                 relatedClients = marqueClickRelativeClient,
+                                onClickToFerme = onClickToFerme
                             )
                         }
                     }

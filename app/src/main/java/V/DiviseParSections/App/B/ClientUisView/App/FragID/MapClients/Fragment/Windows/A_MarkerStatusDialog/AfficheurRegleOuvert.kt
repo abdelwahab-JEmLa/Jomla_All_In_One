@@ -21,6 +21,7 @@ fun AfficheurRegleOuvert(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClients: B_ClientInfosProtoJuin3?,
+    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
     val clientId = relatedClients?.id ?: 0L
 
@@ -67,12 +68,14 @@ fun AfficheurRegleOuvert(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                    .ButtonAutreEtates(
-                        uiState = uiState,
-                        viewModel = viewModel,
-                        clickedClient = clientId,
-                    )
+                ButtonAutreEtatesFun(
+                    uiState = uiState,
+                    viewModel = viewModel,
+                    clickedClient = clientId,
+                    etateActuellementEst =C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE,
+                    onClickToFerme = onClickToFerme
+                )
+
                 C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         uiState = uiState,
