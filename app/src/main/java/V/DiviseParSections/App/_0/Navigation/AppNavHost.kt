@@ -197,18 +197,7 @@ fun AppNavHost(
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
-                            A_MainScreen_APP2_ID_2PanierFinaleDAchat(
-                                onConfirmOrder = {
-                                    headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
-                                    // Navigate back to the main screen after confirming order
-                                    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-                                        popUpTo(Screen.SoldCart.route) {
-                                            inclusive = true
-                                        }
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
+                            A_MainScreen_APP2_ID_2PanierFinaleDAchat()
                         }
                     }
                 }

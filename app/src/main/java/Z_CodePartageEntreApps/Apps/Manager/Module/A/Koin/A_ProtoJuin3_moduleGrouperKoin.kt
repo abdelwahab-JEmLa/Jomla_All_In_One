@@ -1,5 +1,9 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.CentralDatasHandler
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.ComptAppState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.TransactionCommercialState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -16,8 +20,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-
 val moduleRepositorys = module {
+
     single {
         B_ClientInfosProtoJuin3Repository(
             androidContext(),
@@ -57,7 +61,33 @@ val moduleRepositorys = module {
 
 }
 
+val moduleComposRepositorys = module {
+    single {
+        ComptAppState(
+            get(),
+        )
+    }
+    single {
+        TransactionCommercialState(
+            get(),
+        )
+    }
+    single {
+        CentralDatasHandler(
+            get(),
+            get(),
+        )
+    }
+}
 val moduleViewModels = module {
+    viewModel {
+        PanierFinaleDAchatViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
     viewModel {
         B_ClientInfosProtoJuin3PreviewViewModel(
             get(),
@@ -100,6 +130,7 @@ val moduleHandlersClasses = module {
 
 val moduleGrouperKoinProtoJuin3 = module {
     includes(
+        moduleComposRepositorys,
         moduleRepositorys,
         moduleViewModels,
         moduleHandlersClasses

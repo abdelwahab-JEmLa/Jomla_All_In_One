@@ -129,6 +129,9 @@ class TransactionsState {
     }
 }
 
+
+
+
 @Stable
 class AppState(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3

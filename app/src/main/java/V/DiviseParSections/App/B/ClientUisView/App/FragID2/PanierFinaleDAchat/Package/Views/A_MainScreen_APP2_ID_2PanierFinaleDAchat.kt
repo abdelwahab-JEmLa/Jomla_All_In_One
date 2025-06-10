@@ -1,56 +1,52 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     modifier: Modifier = Modifier,
-    onConfirmOrder: () -> Unit,
-    _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
+    viewModel: PanierFinaleDAchatViewModel = koinViewModel(),
 ) {
-    val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
-    val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadSQLRepositorys
-        .repositorys_Model
+    val eGroupeddatabasesrepositoryprotoavant3juin = viewModel.a_MasterRepositorysGrpProtoJuin3
+        .e_GroupedDataBasesRepositoryProtoAvant3Juin
 
-    val composeKeyVID by _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
+    val groupeRepositorysProtoAvJuin3Repositorys_Model = eGroupeddatabasesrepositoryprotoavant3juin.repositorys_Model
 
-    // Fix 1: Using the collected value directly, which is now a Long
-    val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
-        .c3TransactionCommercialRepository
-        .modelDatasSnapList.find { it.vid == composeKeyVID }
+    val progressValue = viewModel.centralDatasHandler.loadingProgress
 
-    val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
+    val ouvertc3Transactioncommercial = viewModel.centralDatasHandler.ouvertC3_TransactionCommercial
+
+    val idOuvertC3_TransactionCommercial = ouvertc3Transactioncommercial?.vid
+
+    val produitsBonAchatIDs = groupeRepositorysProtoAvJuin3Repositorys_Model
         .repositoryC2_ProduitAcheteOperation
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_TransactionCommercial == composeKeyVID
+            produitOpe.parent_1_3_TransactionCommercial == idOuvertC3_TransactionCommercial
                     && produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
                 .EtateActuellementEst
                 .CONFIRME
-                    && _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
+                    && groupeRepositorysProtoAvJuin3Repositorys_Model._1_1_CouleurAcheteOperation_Repository
                 .modelDatasSnapList
                 .any {
                     it.parentProduitAchateOperationVID == produitOpe.vid &&
@@ -58,8 +54,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                 }
         }
 
-    // Calculate total items count
-    val itemCount = _0_HeadOfRepositorys_Repository_Model
+    val itemCount = groupeRepositorysProtoAvJuin3Repositorys_Model
         ._1_1_CouleurAcheteOperation_Repository
         .modelDatasSnapList
         .filter { couleurOpe ->
@@ -68,20 +63,10 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
         }
         .sumOf { it.totaleQuantity }
 
-    val totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
+    val totalPrice = calcule_totalPrice(produitsBonAchatIDs, groupeRepositorysProtoAvJuin3Repositorys_Model)
 
-
-    // Format the total price
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
     val formattedTotalPrice = formatter.format(totalPrice).replace("€", "دج")
-
-    // Check if the BonAchat is in COMMANDE_LENCE state
-    val isOrderMode =
-        relativeBonAchate?.etateActuellementEst ==
-                C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                ||       relativeBonAchate?.etateActuellementEst ==
-                C3_TransactionCommercial.EtateActuellementEst.PourVoirPanie
-
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -91,13 +76,11 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             var showOrderSuccess by remember { mutableStateOf(false) }
-            val scope = rememberCoroutineScope()
 
-            // Only show the order form if in COMMANDE_LENCE state
-            if (isOrderMode) {
+            ouvertc3Transactioncommercial?.let {
                 BonAchatInfos(
-                    _0_0_HeadSQLRepositorys,
-                    relativeBonAchate,
+                    eGroupeddatabasesrepositoryprotoavant3juin,
+                    ouvertc3Transactioncommercial,
                     itemCount,
                     formattedTotalPrice,
                     showOrderSuccess
@@ -110,26 +93,28 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                         modifier = Modifier.weight(1f),
                     ) {
                         // Show loading indicator while data is being loaded
-                        if (progressValue < 1.0f) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                LoadingContent(message = "Loading data...")
-                            }
-                        } else {
-                            // Always show the list of items, regardless of order mode
-                            B_MainList_APP2_ID_2(
-                                composeKeyVID = composeKeyVID,
-                                _0_HeadOfRepositorys_Repository_Model = _0_0_HeadSQLRepositorys
-                                    .repositorys_Model,
-                                onQuantitySelected = {
-                                },
-                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvantJuin3 totalPrice when price changes
-                                onDoneupdatePrice = { colorOperations ->
-                                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
+                        if (progressValue != null) {
+                            if (progressValue < 1.0f) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    LoadingContent(message = "Loading data...")
                                 }
-                            )
+                            } else {
+                                // Always show the list of items, regardless of order mode
+                                B_MainList_APP2_ID_2(
+                                    composeKeyVID = idOuvertC3_TransactionCommercial,
+                                    _0_HeadOfRepositorys_Repository_Model = eGroupeddatabasesrepositoryprotoavant3juin
+                                        .repositorys_Model,
+                                    onQuantitySelected = {
+                                    },
+                                    // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvantJuin3 totalPrice when price changes
+                                    onDoneupdatePrice = { colorOperations ->
+                                        groupeRepositorysProtoAvJuin3Repositorys_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
+                                    }
+                                )
+                            }
                         }
                     }
                 }
