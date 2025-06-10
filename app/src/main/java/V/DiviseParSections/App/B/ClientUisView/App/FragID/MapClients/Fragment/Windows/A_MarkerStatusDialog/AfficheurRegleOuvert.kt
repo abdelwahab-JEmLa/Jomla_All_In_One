@@ -67,14 +67,12 @@ fun AfficheurRegleOuvert(
                     text = "الحالة الحالية: ${latestTransaction?.etateActuellementEst?.nomArabe ?: ""}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-
-                ButtonAutreEtatesFun(
-                    uiState = uiState,
-                    viewModel = viewModel,
-                    clickedClient = clientId,
-                    etateActuellementEst =C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE,
-                    onClickToFerme = onClickToFerme
-                )
+                C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                    .ButtonAutreEtates(
+                        uiState = uiState,
+                        viewModel = viewModel,
+                        clickedClient = clientId,
+                    )
 
                 C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
