@@ -45,16 +45,11 @@ class D_ComptAppState(
                     .modelDatasSnapList
                     .toList()
             }.collect { list ->
-                updateDatas(list)
+                addOrUpdateDatas(list)
             }
         }
     }
 
-    fun updateDatas(newDatas: List<_1_5_Vendeur>) {
-        _datas.value = newDatas
-    }
-
-    fun getActiveComptPourCeTelephone(datas: List<_1_5_Vendeur>): _1_5_Vendeur? {
-        return datas.find { it.vid == 1L }
-    }
+    fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
+    fun getActiveComptPourCeTelephone(datas: List<_1_5_Vendeur>): _1_5_Vendeur? { return datas.find { it.vid == 1L } }
 }
