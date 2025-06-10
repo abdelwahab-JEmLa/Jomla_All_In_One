@@ -43,7 +43,6 @@ fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
             ) {
                 viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
             }
-
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -85,14 +84,17 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
     }
-    val activeComptApp = uiState.activeCompt
+
+    val activeComptApp = viewModel.appState.activeCompt.value
+
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
 
-    // Use safe values with defaults
     val clientId = relatedClients?.id ?: 0L
     val clientName = relatedClients?.nom ?: "Unknown Client"
-    val periodId = ceComptVendeurInsertBonsAchatAuPeriodID ?: return
+    val periodId = ceComptVendeurInsertBonsAchatAuPeriodID ?: run {
+        return
+    }
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {
         it.clientAcheteurID == clientId
@@ -108,13 +110,14 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
             updatedBonAchat
         )
     } else {
+        val newTransaction = C3_TransactionCommercial(
+            clientAcheteurID = clientId,
+            nomClientConcerned = clientName,
+            parentVID_1_4_PeriodeVent = periodId,
+            etateActuellementEst = newEtate,
+        )
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-            C3_TransactionCommercial(
-                clientAcheteurID = clientId,
-                nomClientConcerned = clientName,
-                parentVID_1_4_PeriodeVent = periodId,
-                etateActuellementEst = newEtate,
-            )
+            newTransaction
         )
     }
 }

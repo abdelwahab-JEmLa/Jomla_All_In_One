@@ -38,7 +38,7 @@ data class _1_5_Vendeur(
     ) {
     companion object {
         fun getActiveComptPourCeTelephone(datas: List<_1_5_Vendeur>): _1_5_Vendeur? {
-            return datas.find { it.deviceModelNom == Build.MODEL }
+            return datas.find { it.vid == 1L}
         }
     }
 }
