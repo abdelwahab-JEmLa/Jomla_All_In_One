@@ -58,8 +58,11 @@ fun MarkerStatusDialog(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
+    // Early return if selectedMarker is null
+    if (selectedMarker == null) return
+
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
-        it.id == (selectedMarker?.id?.toLong() ?: 0)
+        it.id == (selectedMarker.id?.toLong() ?: 0)
     }
     val clientId = relatedClients?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(relatedClients?.clientTypeMode) }
@@ -68,8 +71,6 @@ fun MarkerStatusDialog(
         editedName = relatedClients.nom ?: ""
         editedPhone = relatedClients.numTelephone ?: ""
     }
-
-    if (selectedMarker == null) return
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -106,15 +107,17 @@ fun MarkerStatusDialog(
                     )
                 }
 
-                item {
-                    AfficheurRegleOuvert(
-                        uiState=uiState,
-                        viewModel = viewModel,
-                        clientId = clientId,
-                        relatedClients = relatedClients,
-                        coroutineScope = coroutineScope,
-                        context = context
-                    )
+                // Check if activeCompt is not null before accessing its properties
+                uiState.activeCompt?.let { activeCompt ->
+                    if (activeCompt.idClientOuvertPoutCeCompt != 0L) {
+                        item {
+                            AfficheurRegleOuvert(
+                                uiState = uiState,
+                                viewModel = viewModel,
+                                relatedClients = relatedClients,
+                            )
+                        }
+                    }
                 }
 
                 item {
@@ -143,20 +146,18 @@ fun MarkerStatusDialog(
                                 item {
                                     C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
                                         .ButtonAutreEtates(
-                                            uiState=uiState,
-                                            coroutineScope = coroutineScope,
+                                            uiState = uiState,
                                             viewModel = viewModel,
                                             relaterClientId = clientId,
-                                            context = context
                                         )
                                 }
 
                                 item {
                                     CommandButton(
                                         modifier = Modifier.height(60.dp),
-                                        uiState=uiState,
+                                        uiState = uiState,
                                         viewModel = viewModel,
-                                        etateActuellementEst1=C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        etateActuellementEst1 = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         coroutineScope = coroutineScope,
                                         clientId = clientId,
                                         selectedMarker = selectedMarker,
@@ -171,9 +172,7 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            coroutineScope = coroutineScope,
                                             relaterClientId = clientId,
-                                            context = context
                                         )
                                 }
                                 item {
@@ -181,17 +180,15 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            coroutineScope = coroutineScope,
                                             relaterClientId = clientId,
-                                            context = context
                                         )
 
                                 }
 
                                 item {
                                     ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
-                                        uiState=uiState,
-                                        viewModel=viewModel,
+                                        uiState = uiState,
+                                        viewModel = viewModel,
                                         clientId = clientId,
                                     )
                                 }
@@ -201,22 +198,21 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            coroutineScope = coroutineScope,
                                             relaterClientId = clientId,
-                                            context = context
                                         )
                                 }
 
-                                if (uiState.activeCompt!!.vid==2L) {
-                                    item {
-                                        C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                                            .ButtonAutreEtates(
-                                                uiState = uiState,
-                                                viewModel = viewModel,
-                                                coroutineScope = coroutineScope,
-                                                relaterClientId = clientId,
-                                                context = context
-                                            )
+                                // Add null check for activeCompt before accessing vid property
+                                uiState.activeCompt?.let { activeCompt ->
+                                    if (activeCompt.vid == 2L) {
+                                        item {
+                                            C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                                .ButtonAutreEtates(
+                                                    uiState = uiState,
+                                                    viewModel = viewModel,
+                                                    relaterClientId = clientId,
+                                                )
+                                        }
                                     }
                                 }
                             }
@@ -293,7 +289,7 @@ fun MarkerStatusDialog(
         }
 
         if (showPhoneDialog) {
-            val client =uiState.b_ClientInfosProtoJuin3List.find {
+            val client = uiState.b_ClientInfosProtoJuin3List.find {
                 it.id.toString() == selectedMarker.id
             }
             AlertDialog(
@@ -360,4 +356,3 @@ fun MarkerStatusDialog(
         }
     }
 }
-

@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,25 +17,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
 
 @Composable
 fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
     uiState: UiState,
     viewModel: MapClientsViewModel,
-    coroutineScope: CoroutineScope,
     relaterClientId: Long,
-    context: Context,
 ) {
+    val context = LocalContext.current
+
     val newEtate =
         this
     FilledTonalButton(
         onClick = {
-            coroutineScope.launch {
                 upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
                     uiState=uiState,
                     viewModel=viewModel,
@@ -49,7 +45,6 @@ fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
                     viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
                 }
 
-            }
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
