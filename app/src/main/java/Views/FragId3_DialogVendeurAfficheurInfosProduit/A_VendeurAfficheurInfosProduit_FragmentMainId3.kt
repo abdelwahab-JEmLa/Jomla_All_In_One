@@ -1,15 +1,16 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import P0_MainScreen.Main.Main.Settings.Windows.PressistatntMainActivityButtons
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,11 +34,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.Repositorys.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     uiState: UiState,
+    viewModelFragment: VendeurAfficheurInfosProduitViewModel = koinViewModel(),
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
     reloadTrigger: Int,
@@ -59,6 +62,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
     currentSale?.let {
         MainUi(
+            viewModelFragment=viewModelFragment,
             viewModelInitApp = viewModelInitApp,
             modifier = modifier,
             articlesBaseStats = articlesBaseStats,
@@ -98,26 +102,21 @@ fun MainUi(
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
     clickedCouleurIndex: Int,
     onPourFermeWindows: () -> Unit,
+    viewModelFragment: VendeurAfficheurInfosProduitViewModel,
 ) {
     val idProduitActuelle = currentSale.idArticle
-    val parentCompose_1_3_BonAchatVid by
-    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
+    val centralDatasHandler = viewModelFragment.centralDatasHandler
+    val ouvertTransactionalCommercial = centralDatasHandler.ouvertTransactionCommercial
+    val idOuvertTransactionalCommercial = centralDatasHandler.ouvertTransactionCommercial!!.vid
 
-    // Fixed access to progress value
-    val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
-    val isLoading = progressValue < 1.0f
+    val progressValue = centralDatasHandler.loadingProgress
+
+    val isLoading = progressValue!! < 1.0f
+    val idClientActuelleDepui1_3 = centralDatasHandler.ouvertClient!!.id
 
     val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
-
-    val find = repositorysModel.c3TransactionCommercialRepository
-        .modelDatasSnapList.find {
-            it.vid == parentCompose_1_3_BonAchatVid
-        }
-
-    val idClientActuelleDepui1_3 =
-        find?.clientAcheteurID
-
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
+
 
     LaunchedEffect(
         key1 = currentSale.idArticle,
@@ -127,7 +126,7 @@ fun MainUi(
         val existing_1_2_ProduitAcheteOperation =
             repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.find {
                 it.produitAcheterID == produitActuelle
-                        && it.parent_1_3_TransactionCommercial == parentCompose_1_3_BonAchatVid
+                        && it.parent_1_3_TransactionCommercial == idOuvertTransactionalCommercial
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
@@ -143,13 +142,12 @@ fun MainUi(
                     repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
 
-                // No need for null check since we're using 'by' to unwrap the State
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentIdClient=idClientActuelleDepui1_3?:0,
-                    provisoireMonPrix =articlesBaseStats?.prixVent ?:0.0,
-                    parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
+                    parentIdClient = idClientActuelleDepui1_3 ?: 0,
+                    provisoireMonPrix = articlesBaseStats?.prixVent ?: 0.0,
+                    parent_1_3_TransactionCommercial = idOuvertTransactionalCommercial
                 ).let {
                     repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(
                         it
@@ -160,7 +158,7 @@ fun MainUi(
     }
 
     Dialog(
-        onDismissRequest = {  onDismiss() }, properties = DialogProperties(
+        onDismissRequest = { onDismiss() }, properties = DialogProperties(
             usePlatformDefaultWidth = false, decorFitsSystemWindows = true
         )
     ) {
@@ -185,7 +183,7 @@ fun MainUi(
                     ) {
                         articlesBaseStats?.let { stats ->
                             item {
-                            //    Text(parentCompose_1_3_BonAchatVid.toString())
+                                //    Text(parentCompose_1_3_BonAchatVid.toString())
                                 ProductNameSection3(
                                     stats, onToggleLockExpandedPricex
                                 )
@@ -207,7 +205,7 @@ fun MainUi(
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                     parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                                     clickedCouleurIndex = clickedCouleurIndex,
-                                    )
+                                )
                             }
 
                             item {
@@ -227,13 +225,13 @@ fun MainUi(
                 }
 
                 PressistatntMainActivityButtons(
-                    cLenceDepuitDialogeAchate=  true,
+                    cLenceDepuitDialogeAchate = true,
                     onPourFermeWindows = {
                         updateState(
                             viewModelInitApp,
                             parentCompose_1_2_ProduitAcheteOperationVid,
                             _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME,
-                            newProvisoirePrix =it.prixCurrency
+                            newProvisoirePrix = it.prixCurrency
                         )
 
                         viewModel.saveSaleTransactionToSoldAriclesList()
@@ -242,7 +240,7 @@ fun MainUi(
                         onPourFermeWindows()
                     },
                     idProduitActuelle = idProduitActuelle,
-                    parentCompose_1_3_BonAchatVid= parentCompose_1_3_BonAchatVid,
+                    parentCompose_1_3_BonAchatVid = idOuvertTransactionalCommercial,
                     onClickAnulationButton = {
                         updateState(
                             viewModelInitApp,
@@ -260,13 +258,13 @@ fun updateState(
     viewModelInitApp: ViewModelInitApp,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     neveauEtateActuellementEst: _1_2_ProduitAcheteOperation.EtateActuellementEst,
-    newProvisoirePrix: Double=0.0,
+    newProvisoirePrix: Double = 0.0,
 ) {
     val rep = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
     rep.modelDatasSnapList.find {
         it.vid == parentCompose_1_2_ProduitAcheteOperationVid
     }?.apply {
         etateActuellementEst = neveauEtateActuellementEst
-        provisoireMonPrix=newProvisoirePrix
+        provisoireMonPrix = newProvisoirePrix
     }?.let { rep.updateUnSeulData(it) }
 }

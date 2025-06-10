@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.CentralDatasHandler
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.ComptAppState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.A_CentralDatasHandler
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.D_ComptAppState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.TransactionCommercialState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.C_TransactionCommercialState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -63,17 +63,17 @@ val moduleRepositorys = module {
 
 val moduleComposRepositorys = module {
     single {
-        ComptAppState(
+        D_ComptAppState(
             get(),
         )
     }
     single {
-        TransactionCommercialState(
+        C_TransactionCommercialState(
             get(),
         )
     }
     single {
-        CentralDatasHandler(
+        A_CentralDatasHandler(
             get(),
             get(),
         )

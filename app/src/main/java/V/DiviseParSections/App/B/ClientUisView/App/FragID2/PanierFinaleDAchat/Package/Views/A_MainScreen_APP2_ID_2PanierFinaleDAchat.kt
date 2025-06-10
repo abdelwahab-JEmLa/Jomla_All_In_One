@@ -34,7 +34,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
 
     val progressValue = viewModel.centralDatasHandler.loadingProgress
 
-    val ouvertc3Transactioncommercial = viewModel.centralDatasHandler.ouvertC3_TransactionCommercial
+    val ouvertc3Transactioncommercial = viewModel.centralDatasHandler.ouvertTransactionCommercial
 
     val idOuvertC3_TransactionCommercial = ouvertc3Transactioncommercial?.vid
 

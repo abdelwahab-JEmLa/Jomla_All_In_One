@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.B_ClientsState
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -71,46 +72,6 @@ data class PanelsGroupeButton(
 }
 
 @Stable
-class ClientsState {
-    private val _clients = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
-    val clients: State<List<B_ClientInfosProtoJuin3>> = _clients
-
-    // Propriétés dérivées calculées automatiquement
-    val isEmpty: Boolean by derivedStateOf { _clients.value.isEmpty() }
-    val size: Int by derivedStateOf { _clients.value.size }
-    val maxId: Long by derivedStateOf {
-        _clients.value.maxOfOrNull { it.id } ?: 0L
-    }
-    val isLoading: Boolean by derivedStateOf { _clients.value.isEmpty() && !_isInitialized.value }
-
-    private val _isInitialized = mutableStateOf(false)
-    val isInitialized: State<Boolean> = _isInitialized
-
-    fun updateClients(newClients: List<B_ClientInfosProtoJuin3>) {
-        _clients.value = newClients
-        _isInitialized.value = true
-    }
-
-    fun addClient(client: B_ClientInfosProtoJuin3) {
-        _clients.value += client
-    }
-
-    fun updateClient(updatedClient: B_ClientInfosProtoJuin3) {
-        _clients.value = _clients.value.map { client ->
-            if (client.id == updatedClient.id) updatedClient else client
-        }
-    }
-
-    fun removeClient(clientId: Long) {
-        _clients.value = _clients.value.filter { it.id != clientId }
-    }
-
-    fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
-        return _clients.value.find { it.id == id }
-    }
-}
-
-@Stable
 class TransactionsState {
     private val _transactions = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
     val transactions: State<List<C3_TransactionCommercial>> = _transactions
@@ -128,8 +89,6 @@ class TransactionsState {
             .maxByOrNull { it.timestamps }
     }
 }
-
-
 
 
 @Stable
@@ -181,6 +140,7 @@ class AppState(
 // ===============================================
 
 class MapClientsViewModel(
+    val clientsState: B_ClientsState,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -196,7 +156,6 @@ class MapClientsViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val clientsState = ClientsState()
     val transactionsState = TransactionsState()
     val appState = AppState(a_MasterRepositorysGrpProtoJuin3)
 

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel
+package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class TransactionCommercialState(
+class C_TransactionCommercialState(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -46,10 +46,10 @@ class TransactionCommercialState(
                     .toList()
             }.collect { list ->
                 updateDatas(list)
-
             }
         }
     }
+
     fun updateLoadingProgress(progress: Float) {
         _loadingProgress.value = progress
     }

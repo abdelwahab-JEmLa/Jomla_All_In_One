@@ -1,13 +1,13 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel
+package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.A_CentralDatasHandler
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.D_ComptAppState
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.C_TransactionCommercialState
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.Repository.D_ComptAppState
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import androidx.lifecycle.ViewModel
 
 
-class PanierFinaleDAchatViewModel(
+class VendeurAfficheurInfosProduitViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val centralDatasHandler: A_CentralDatasHandler,
