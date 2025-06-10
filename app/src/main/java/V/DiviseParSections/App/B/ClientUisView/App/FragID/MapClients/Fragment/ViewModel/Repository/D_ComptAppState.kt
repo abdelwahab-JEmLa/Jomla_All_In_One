@@ -61,16 +61,14 @@ class D_ComptAppState(
 
     fun addOrUpdateData(data: _1_5_Vendeur?) {
         data?.let { newData ->
-            val currentList = _datas.value.toMutableList()
-            val existingIndex = currentList.indexOfFirst { it.vid == newData.vid }
-
-            if (existingIndex != -1) {
-                currentList[existingIndex] = newData
-            } else {
-                currentList.add(newData)
+            _datas.value = _datas.value.map {
+                if (it.vid == newData.vid) newData else it
+            }.let { list ->
+                if (list.none { it.vid == newData.vid }) list + newData else list
             }
-
-            _datas.value = currentList
+            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
+                .repository_1_5_Vendeur
+                .updateUnSeulData(newData)
         }
     }
 
