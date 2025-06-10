@@ -25,25 +25,24 @@ import androidx.core.content.ContextCompat
 fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
     uiState: UiState,
     viewModel: MapClientsViewModel,
-    relaterClientId: Long,
+    clickedClient: Long,
 ) {
     val context = LocalContext.current
+    val newEtate = this
 
-    val newEtate =
-        this
     FilledTonalButton(
         onClick = {
-                upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
-                    uiState=uiState,
-                    viewModel=viewModel,
-                    relatedClientID=relaterClientId,
-                    newEtate= newEtate,
-                )
-                if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                    || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                ) {
-                    viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
-                }
+            upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
+                uiState = uiState,
+                viewModel = viewModel,
+                relatedClientID = clickedClient,
+                newEtate = newEtate,
+            )
+            if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            ) {
+                viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
+            }
 
         },
         modifier = Modifier.fillMaxWidth(),

@@ -71,13 +71,13 @@ fun AfficheurRegleOuvert(
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,
-                        relaterClientId = clientId,
+                        clickedClient = clientId,
                     )
                 C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,
-                        relaterClientId = clientId,
+                        clickedClient = clientId,
                     )
 
                 TextButton(

@@ -145,7 +145,7 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            relaterClientId = clientId,
+                                            clickedClient = clientId,
                                         )
                                 }
 
@@ -168,7 +168,7 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            relaterClientId = clientId,
+                                            clickedClient = clientId,
                                         )
                                 }
                                 item {
@@ -176,7 +176,7 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            relaterClientId = clientId,
+                                            clickedClient = clientId,
                                         )
 
                                 }
@@ -194,7 +194,7 @@ fun MarkerStatusDialog(
                                         .ButtonAutreEtates(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            relaterClientId = clientId,
+                                            clickedClient = clientId,
                                         )
                                 }
 
@@ -206,7 +206,7 @@ fun MarkerStatusDialog(
                                                 .ButtonAutreEtates(
                                                     uiState = uiState,
                                                     viewModel = viewModel,
-                                                    relaterClientId = clientId,
+                                                    clickedClient = clientId,
                                                 )
                                         }
                                     }
