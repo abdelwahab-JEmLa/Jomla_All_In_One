@@ -380,7 +380,6 @@ fun NavGraphBuilder.app2(
 
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
-                clientEnCourDeVent = clientEnCourDeVent,
                 onUpdateLongAppSetting = {
                     navigateToMainScreen(navController)
                 },

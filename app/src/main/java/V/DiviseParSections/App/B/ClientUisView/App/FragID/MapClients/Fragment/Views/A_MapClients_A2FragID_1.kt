@@ -15,7 +15,6 @@ import org.koin.androidx.compose.koinViewModel
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: MapClientsViewModel = koinViewModel(),
-    clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
     mapReloadTrigger: Int = 0,

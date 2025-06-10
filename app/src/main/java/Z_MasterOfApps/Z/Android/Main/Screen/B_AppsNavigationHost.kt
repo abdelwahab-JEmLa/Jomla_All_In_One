@@ -85,8 +85,7 @@ fun AppNavigationHost(
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
                             }
                             composable(InfosDatas_FramgmentId6.route) {
-                                A_MapClients_A2FragID_1(
-                                )
+                                A_MapClients_A2FragID_1()
                             }
                             composable(StartupIcon_Start.route) {
                                 A_StartupScreen(viewModelInitApp, { route ->

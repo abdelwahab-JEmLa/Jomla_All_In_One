@@ -137,7 +137,6 @@ fun DayFilterDialog(
                             showDayNames = isChecked
                             viewModel.afficheLesJoursAuNoms = isChecked
                             // Trigger map reload
-                            viewModel.mapReloadTigger++
                         }
                     )
                 }
@@ -149,7 +148,6 @@ fun DayFilterDialog(
                     onClick = {
                         selectedDays = emptyList()
                         viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
-                        viewModel.mapReloadTigger++ // Trigger map reload
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -174,7 +172,6 @@ fun DayFilterDialog(
 
                                 // Update viewModel's filter list
                                 viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = selectedDays
-                                viewModel.mapReloadTigger++ // Trigger map reload
                             }
                         )
 

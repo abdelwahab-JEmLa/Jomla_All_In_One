@@ -33,34 +33,17 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.MapView
 import java.util.Date
 
 // ===============================================
-// UI STATE DATA CLASS
-// ===============================================
-
-@Stable
-data class UiState(
-    val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
-    val c3_TransactionCommercialList: List<C3_TransactionCommercial> = emptyList(),
-    val activeCompt: _1_5_Vendeur? = null,
-    val secteursList: List<E1SecteurDeClients> = emptyList(),
-    val panelsGroupeList: List<PanelsGroupeButton> = emptyList(),
-    val mainLoadingProgress: Float = 0f,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
-// ===============================================
 // COMPOSE STATE CLASSES
 // ===============================================
 
 @Stable
-data class PanelsGroupeButton(
+data class PanelsGroupeButtonT(
     val key: Keys,
     val isVisible: Boolean = false,
 ) {
@@ -71,7 +54,7 @@ data class PanelsGroupeButton(
 }
 
 @Stable
-class ClientsState {
+class ClientsStateT {
     private val _clients = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
     val clients: State<List<B_ClientInfosProtoJuin3>> = _clients
 
@@ -92,7 +75,7 @@ class ClientsState {
     }
 
     fun addClient(client: B_ClientInfosProtoJuin3) {
-        _clients.value += client
+        _clients.value = _clients.value + client
     }
 
     fun updateClient(updatedClient: B_ClientInfosProtoJuin3) {
@@ -111,7 +94,7 @@ class ClientsState {
 }
 
 @Stable
-class TransactionsState {
+class TransactionsStateT {
     private val _transactions = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
     val transactions: State<List<C3_TransactionCommercial>> = _transactions
 
@@ -130,7 +113,7 @@ class TransactionsState {
 }
 
 @Stable
-class AppState {
+class AppStateT{
     private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
     val activeCompt: State<_1_5_Vendeur?> = _activeCompt
 
@@ -169,7 +152,7 @@ class AppState {
 // MAIN VIEWMODEL WITH COMPOSE STATE
 // ===============================================
 
-class MapClientsViewModel(
+class MapClientsViewModelT(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -182,16 +165,9 @@ class MapClientsViewModel(
     val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val clientsState = ClientsState()
-    val transactionsState = TransactionsState()
-    val appState = AppState()
-
-    // ===============================================
-    // UI STATE FLOW - THIS IS WHAT WAS MISSING!
-    // ===============================================
-
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val clientsState = ClientsStateT()
+    val transactionsState = TransactionsStateT()
+    val appState = AppStateT()
 
     // Backward compatibility - delegates to compose state
     val bProto_ClientsDataBase: List<B_ClientInfosProtoJuin3>
@@ -205,6 +181,19 @@ class MapClientsViewModel(
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
+    // StateFlow for reactive updates
+    private var _currentActiveSectorId = MutableStateFlow<Long?>(null)
+    val currentActiveSectorId: StateFlow<Long?> = _currentActiveSectorId
+
+    // Dialog states
+    val showSecteurDialog = mutableStateOf(false)
+    val showAddSecteurDialog = mutableStateOf(false)
+
+    // Derived properties using compose state
+    val isClientsLoading: Boolean by derivedStateOf { clientsState.isLoading }
+    val clientsCount: Int by derivedStateOf { clientsState.size }
+    val hasClients: Boolean by derivedStateOf { !clientsState.isEmpty }
+
     init {
         initializeDataObservers()
     }
@@ -217,9 +206,6 @@ class MapClientsViewModel(
                     val clients = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList()
                     clientsState.updateClients(clients)
                     appState.updateLoadingProgress(model.progress)
-
-                    // Update UI State
-                    updateUiState()
                 }
             }
         }
@@ -234,7 +220,6 @@ class MapClientsViewModel(
                     .toList()
             }.collect { transactionList ->
                 transactionsState.updateTransactions(transactionList)
-                updateUiState()
             }
         }
 
@@ -249,30 +234,8 @@ class MapClientsViewModel(
             }.collect { list ->
                 val activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
                 appState.updateActiveCompt(activeCompt)
-                updateUiState()
             }
         }
-
-        // Observe secteurs data
-        viewModelScope.launch {
-            snapshotFlow { secteurList.toList() }.collect { secteurs ->
-                appState.updateSecteursList(secteurs)
-                updateUiState()
-            }
-        }
-    }
-
-    private fun updateUiState() {
-        _uiState.value = UiState(
-            b_ClientInfosProtoJuin3List = clientsState.clients.value,
-            c3_TransactionCommercialList = transactionsState.transactions.value,
-            activeCompt = appState.activeCompt.value,
-            secteursList = appState.secteursList.value,
-            panelsGroupeList = appState.panelsGroupeList.value,
-            mainLoadingProgress = appState.loadingProgress.value,
-            isLoading = clientsState.isLoading,
-            error = null
-        )
     }
 
     // ===============================================
@@ -287,7 +250,6 @@ class MapClientsViewModel(
         viewModelScope.launch {
             b_ClientDataBaseRepository.addOrUpdateData(client)
             clientsState.updateClient(client)
-            updateUiState()
         }
         mapReloadTrigger++
     }
@@ -319,7 +281,6 @@ class MapClientsViewModel(
             viewModelScope.launch {
                 b_ClientDataBaseRepository.addOrUpdateData(newClientAchteur)
                 clientsState.addClient(newClientAchteur)
-                updateUiState()
             }
         } catch (e: Exception) {
             // Error handling
@@ -330,7 +291,6 @@ class MapClientsViewModel(
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
             clientsState.removeClient(data.id)
-            updateUiState()
         }
     }
 
@@ -359,7 +319,6 @@ class MapClientsViewModel(
         val updatedCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
 
         appState.updateActiveCompt(updatedCompt)
-        updateUiState()
 
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
             .repository_1_5_Vendeur
@@ -425,7 +384,7 @@ class MapClientsViewModel(
                 cancelActiveOperations()
                 mapReloadTrigger = 0
                 filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
-                updateUiState()
+                _currentActiveSectorId.value = null
                 println("Map resources cleaned up successfully")
             } catch (e: Exception) {
                 println("Error during resource cleanup: ${e.message}")
@@ -437,6 +396,7 @@ class MapClientsViewModel(
         try {
             mapReloadTrigger++
             afficheLesJoursAuNoms = true
+            _currentActiveSectorId.value = null
             println("Active operations canceled successfully")
         } catch (e: Exception) {
             println("Error canceling active operations: ${e.message}")
@@ -452,8 +412,12 @@ class MapClientsViewModel(
     // ===============================================
 
     @Composable
-    fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? { val clients by clientsState.clients
-        return remember(clients, clientId) { clients.find { it.id == clientId } } }
+    fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? {
+        val clients by clientsState.clients
+        return remember(clients, clientId) {
+            clients.find { it.id == clientId }
+        }
+    }
 
     @Composable
     fun rememberClientsCount(): Int {
