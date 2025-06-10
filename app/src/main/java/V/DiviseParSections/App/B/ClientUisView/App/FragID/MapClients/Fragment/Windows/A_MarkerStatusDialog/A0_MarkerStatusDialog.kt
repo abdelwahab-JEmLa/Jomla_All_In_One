@@ -5,6 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -60,6 +61,9 @@ fun MarkerStatusDialog(
     val marqueClickRelativeClient = viewModel.bProto_ClientsDataBase.find {
         it.id == (marqueClick.id?.toLong() ?: 0)
     }
+
+    Log.d("MarkerStatusDialog","$marqueClick")
+    Log.d("MarkerStatusDialog","$marqueClickRelativeClient")
 
     val clientId = marqueClickRelativeClient?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(marqueClickRelativeClient?.clientTypeMode) }
