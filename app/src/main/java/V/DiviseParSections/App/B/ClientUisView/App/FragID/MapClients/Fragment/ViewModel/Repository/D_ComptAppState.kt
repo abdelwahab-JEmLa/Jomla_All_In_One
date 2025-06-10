@@ -72,7 +72,6 @@ class D_ComptAppState(
         }
     }
 
-    fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
-
     fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
+    fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
 }

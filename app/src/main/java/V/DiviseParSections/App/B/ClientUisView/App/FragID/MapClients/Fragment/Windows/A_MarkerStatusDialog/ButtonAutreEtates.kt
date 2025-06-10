@@ -84,8 +84,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
     }
-
-    val activeComptApp = viewModel.appState.activeCompt.value
+    val activeComptApp = viewModel.appState.activeCompt
 
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
