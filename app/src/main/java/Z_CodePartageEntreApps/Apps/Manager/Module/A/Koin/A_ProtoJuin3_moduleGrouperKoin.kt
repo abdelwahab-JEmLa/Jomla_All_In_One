@@ -4,22 +4,14 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.B_ClientsState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.C_TransactionCommercialState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.D_ComptAppState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.Z_AutreStates
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val moduleRepositorys = module {
@@ -64,6 +56,12 @@ val moduleRepositorys = module {
 
 val moduleComposRepositorys = module {
     single {
+        Z_AutreStates(
+            get(),
+        )
+    }
+
+    single {
         B_ClientsState(
             get(),
         )
@@ -88,55 +86,6 @@ val moduleComposRepositorys = module {
         )
     }
 }
-val moduleViewModels = module {
-    viewModel {
-        VendeurAfficheurInfosProduitViewModel(
-            get(),
-        )
-    }
-    viewModel {
-        PanierFinaleDAchatViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-    viewModel {
-        B_ClientInfosProtoJuin3PreviewViewModel(
-            get(),
-        )
-    }
-    viewModel {
-        ViewModelMessageur(
-            get(),
-            get(),
-        )
-    }
-    viewModel {
-        D_EtateMessageVocalePreviewViewModel(
-            get(),
-        )
-    }
-
-    viewModel {
-        A_ProduitInfosViewModel(
-            get()
-        )
-    }
-
-    viewModel {
-        CategoriePrevViewModel(
-            get()
-        )
-    }
-
-    viewModel {
-        EditeBaseDonneMainScreenIdS9ViewModel(
-            get(),
-        )
-    }
-}
 
 val moduleHandlersClasses = module {
     single { CalculeCouleurHandler(get()) }
@@ -146,7 +95,6 @@ val moduleGrouperKoinProtoJuin3 = module {
     includes(
         moduleComposRepositorys,
         moduleRepositorys,
-        moduleViewModels,
         moduleHandlersClasses
     )
 }

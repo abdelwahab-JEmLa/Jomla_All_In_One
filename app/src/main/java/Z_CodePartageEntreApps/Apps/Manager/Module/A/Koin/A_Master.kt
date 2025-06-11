@@ -7,14 +7,21 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepositoryImpl
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.ViewModelPanierFinaleDAchat_FragIdB2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsViewModel_TestID2
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
@@ -170,6 +177,52 @@ val classesHandlersModule = module {
 
 val viewModelModule = module {
     viewModel {
+        PanierFinaleDAchatViewModel(
+            get(),
+            get(),
+            get(),
+        )
+    }
+    viewModel {
+        VendeurAfficheurInfosProduitViewModel(
+            get(),
+        )
+    }
+    viewModel {
+        B_ClientInfosProtoJuin3PreviewViewModel(
+            get(),
+        )
+    }
+    viewModel {
+        ViewModelMessageur(
+            get(),
+            get(),
+        )
+    }
+    viewModel {
+        D_EtateMessageVocalePreviewViewModel(
+            get(),
+        )
+    }
+
+    viewModel {
+        A_ProduitInfosViewModel(
+            get()
+        )
+    }
+
+    viewModel {
+        CategoriePrevViewModel(
+            get()
+        )
+    }
+
+    viewModel {
+        EditeBaseDonneMainScreenIdS9ViewModel(
+            get(),
+        )
+    }
+    viewModel {
         CommandeProduitsViewModel(
             get(),
         )
@@ -180,12 +233,6 @@ val viewModelModule = module {
         )
     }
 
-    viewModel {
-        ViewModelPanierFinaleDAchat_FragIdB2(
-            get(),
-            get(),
-        )
-    }
 
     viewModel {
         TariffsButtonsViewModel_TestID2(
@@ -193,7 +240,6 @@ val viewModelModule = module {
             get(),
         )
     }
-
 
     factory { (viewModel: HeadViewModel, context: Context) ->
         ConnectionManager(
@@ -212,13 +258,12 @@ val viewModelModule = module {
     // Updated to inject the RecordingHandler
     viewModel {
         RecordingViewModel(
-            get(), // K_TempTravailleRepository
             get(),
-            get(), // RecordingHandler
+            get(),
+            get(),
         )
     }
 
-    // Original viewModels
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(),

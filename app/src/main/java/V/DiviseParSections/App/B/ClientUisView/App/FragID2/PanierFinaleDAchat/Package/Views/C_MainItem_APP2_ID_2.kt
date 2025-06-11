@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +44,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
@@ -52,13 +52,13 @@ private const val TAG = "C_MainItem_APP2_ID_2"
 
 @Composable
 fun C_MainItem_APP2_ID_2(
+    viewModel: PanierFinaleDAchatViewModel,
     modifier: Modifier = Modifier,
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (String) -> Unit,
-    headRepository: GroupeRepositorysProtoAvJuin3= koinInject(),
-    viewModel: ViewModelPanierFinaleDAchat_FragIdB2 = koinViewModel()
+    headRepository: GroupeRepositorysProtoAvJuin3= koinInject()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         .repositoryC2_ProduitAcheteOperation

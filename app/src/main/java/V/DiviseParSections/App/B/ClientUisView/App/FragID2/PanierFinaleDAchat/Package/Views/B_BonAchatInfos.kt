@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -42,12 +43,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ColumnScope.BonAchatInfos(
+    viewModel: PanierFinaleDAchatViewModel ,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     relativeBonAchate: C3_TransactionCommercial?,
     itemCount: Int,
     formattedTotalPrice: String,
-    showOrderSuccess: Boolean,
-    viewModel: ViewModelPanierFinaleDAchat_FragIdB2 = koinViewModel()
+    showOrderSuccess: Boolean
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val datasB_ClientInfosProtoJuin3List by remember(uiState.B_ClientInfosProtoJuin3List) { mutableStateOf(uiState.B_ClientInfosProtoJuin3List) }

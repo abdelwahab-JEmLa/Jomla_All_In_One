@@ -24,8 +24,8 @@ import java.util.Locale
 
 @Composable
 fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
-    modifier: Modifier = Modifier,
     viewModel: PanierFinaleDAchatViewModel = koinViewModel(),
+    modifier: Modifier = Modifier,
 ) {
     val eGroupeddatabasesrepositoryprotoavant3juin = viewModel.a_MasterRepositorysGrpProtoJuin3
         .e_GroupedDataBasesRepositoryProtoAvant3Juin
@@ -79,11 +79,12 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
 
             ouvertc3Transactioncommercial?.let {
                 BonAchatInfos(
-                    eGroupeddatabasesrepositoryprotoavant3juin,
-                    ouvertc3Transactioncommercial,
-                    itemCount,
-                    formattedTotalPrice,
-                    showOrderSuccess
+                    viewModel=viewModel,
+                    _0_0_HeadSQLRepositorys = eGroupeddatabasesrepositoryprotoavant3juin,
+                    relativeBonAchate = ouvertc3Transactioncommercial,
+                    itemCount = itemCount,
+                    formattedTotalPrice = formattedTotalPrice,
+                    showOrderSuccess = showOrderSuccess,
                 )
 
                 Column(
@@ -112,7 +113,8 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                     // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsertLenceCommandeRepoGroupedProtoAvantJuin3 totalPrice when price changes
                                     onDoneupdatePrice = { colorOperations ->
                                         groupeRepositorysProtoAvJuin3Repositorys_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
-                                    }
+                                    },
+                                    viewModel=viewModel,
                                 )
                             }
                         }

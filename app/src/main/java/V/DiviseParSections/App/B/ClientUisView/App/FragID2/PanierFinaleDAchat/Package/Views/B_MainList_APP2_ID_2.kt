@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun B_MainList_APP2_ID_2(
+    viewModel: PanierFinaleDAchatViewModel,
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
@@ -45,6 +47,7 @@ fun B_MainList_APP2_ID_2(
         items(produitOperations) { produitOperation ->
             // Pass the product operation ID to the item component
             C_MainItem_APP2_ID_2(
+                viewModel=viewModel,
                 composeKeyVID = produitOperation.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                 onQuantitySelected = onQuantitySelected,
