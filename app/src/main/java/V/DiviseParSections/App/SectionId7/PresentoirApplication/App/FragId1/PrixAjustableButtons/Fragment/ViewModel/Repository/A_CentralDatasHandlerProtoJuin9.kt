@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -32,14 +32,10 @@ class A_CentralDatasHandlerProtoJuin9(
         }
     }
 
-    val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
-        transactionCommercialState.datasState.value.lastOrNull {
-            it.clientAcheteurID == comptAppState.activeClientPourCeCompt
-                    && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        }
-    }
-
     val ouvertClient by derivedStateOf {
-        clientsState.findClientById(comptAppState.activeClientPourCeCompt)
+        clientsState.findClientById(comptAppState.comptIdActiveClient)
+    }
+    val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
+        ouvertClient?.let { transactionCommercialState.getLastTransactionForClientOnCommand(it.id) }
     }
 }

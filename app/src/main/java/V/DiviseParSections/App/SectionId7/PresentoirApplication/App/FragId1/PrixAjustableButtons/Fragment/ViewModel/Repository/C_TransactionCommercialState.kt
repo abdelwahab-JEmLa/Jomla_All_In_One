@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -52,12 +52,12 @@ class C_TransactionCommercialState(
         }
     }
 
-    fun getLastTransactionForClient(clientId: Long): C3_TransactionCommercial? {
-        return _datas.value
+    fun getLastTransactionForClientOnCommand(clientId: Long): C3_TransactionCommercial? {
+        return datasValue
             .filter { it.clientAcheteurID == clientId }
             .maxByOrNull { it.timestamps }
     }
 
-    fun updateLoadingProgress(progress: Float) { _loadingProgress.value = progress }
+    fun updateLoadingProgress(progress: Float) { _loadingProgress.floatValue = progress }
     fun updateDatas(newDatas: List<C3_TransactionCommercial>) { _datas.value = newDatas }
 }

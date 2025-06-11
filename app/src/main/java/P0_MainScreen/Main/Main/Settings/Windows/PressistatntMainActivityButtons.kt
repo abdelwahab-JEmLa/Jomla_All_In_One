@@ -51,8 +51,8 @@ fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
-    idProduitActuelle: Long = 0,
     parentCompose_1_3_BonAchatVid: Long = 0,
+    idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
 ) {
     val TAG ="PressistatntMainActivityButtons"

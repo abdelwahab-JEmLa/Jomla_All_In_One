@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
@@ -25,7 +25,7 @@ class D_ComptAppState(
     private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
     val activeCompt by derivedStateOf { getActiveComptPourCeTelephone() }
 
-    val activeClientPourCeCompt by derivedStateOf { activeCompt?.idClientOuvertPoutCeCompt ?: 0 }
+    val comptIdActiveClient by derivedStateOf { activeCompt?.idClientOuvertPoutCeCompt ?: 0 }
 
     val size: Int by derivedStateOf { _datas.value.size }
     val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
