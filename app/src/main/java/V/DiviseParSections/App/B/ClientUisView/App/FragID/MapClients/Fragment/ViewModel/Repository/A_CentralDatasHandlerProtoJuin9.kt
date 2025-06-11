@@ -35,6 +35,7 @@ class A_CentralDatasHandlerProtoJuin9(
     val ouvertClient by derivedStateOf {
         clientsState.findClientById(comptAppState.comptIdActiveClient)
     }
+
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
         ouvertClient?.let { transactionCommercialState.getLastTransactionForClientOnCommand(it.id) }
     }
