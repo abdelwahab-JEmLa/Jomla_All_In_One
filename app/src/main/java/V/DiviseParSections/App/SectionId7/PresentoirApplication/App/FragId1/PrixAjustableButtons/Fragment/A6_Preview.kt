@@ -72,7 +72,7 @@ fun TariffsButtonsPrev() {
                                 val idProduitChahrazed = 849L
                                 val idTP2 = 859L
 
-                                TariffsButtons_TestID2(
+                                TariffsButtonsSec7ID2(
                                     filterProductId = idProduitChahrazed,
                                     filterBonId = 1,
                                     fermeDialog = { showDialog = false },

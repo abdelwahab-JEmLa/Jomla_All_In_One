@@ -2,7 +2,7 @@ package P0_MainScreen.Main.Main.Settings.Windows
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtons_TestID2
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -229,7 +229,7 @@ fun PressistatntMainActivityButtons(
                     }
                 }
 
-                TariffsButtons_TestID2(
+                TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     filterProductId = idProduitActuelle,
                     filterBonId = parentCompose_1_3_BonAchatVid,

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
@@ -31,8 +32,8 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun TariffsButtons_TestID2(
-    viewModel: TariffsButtonsViewModel_TestID2 = koinViewModel(),
+fun TariffsButtonsSec7ID2(
+    viewModel: TariffsButtonsViewModelSec7ID2 = koinViewModel(),
     showLabels: Boolean = true,
     filterProductId: Long = 0,
     filterBonId: Long = 0,
@@ -143,7 +144,7 @@ fun TariffsButtons_TestID2(
 @Composable
 private fun suspendFunction1(
     produitInfosList: SnapshotStateList<A_ProduitInfos>,
-    viewModel: TariffsButtonsViewModel_TestID2
+    viewModel: TariffsButtonsViewModelSec7ID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {
         delay(500)
