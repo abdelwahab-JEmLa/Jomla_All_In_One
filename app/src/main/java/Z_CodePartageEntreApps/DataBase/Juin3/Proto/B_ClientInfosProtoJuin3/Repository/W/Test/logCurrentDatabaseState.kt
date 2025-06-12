@@ -209,7 +209,7 @@ private fun B_ClientInfosProtoJuin3Repository.syncRecentChangesToFirebase(
     data: List<B_ClientInfosProtoJuin3>
 ) {
     val recentChanges = data.filter {
-        System.currentTimeMillis() - it.dernierFireBaseUpdateTimestamps < 60000 // 1 minute
+        System.currentTimeMillis() - it.dernierTimeTampsSynchronisationAvecFireBase < 60000 // 1 minute
     }
 
     if (recentChanges.isNotEmpty()) {
@@ -260,7 +260,7 @@ fun B_ClientInfosProtoJuin3Repository.testTriggerUpdateFbParTimestampsListener()
 
                 // Update existing test entity with new timestamp
                 val updatedTestEntity = existingTestEntity.copy(
-                    dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                 ).withProperKeyFireBaseAndTimeTamp()
 
                 // Push update to Firebase to trigger listener

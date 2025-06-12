@@ -17,12 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SettingsBackupRestore
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
@@ -67,15 +65,15 @@ class MapClientsViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val transactionsState =centralDatasHandler.transactionCommercialState
-    val clientsState=centralDatasHandler.clientsState
-    val appState =centralDatasHandler.comptAppState
+    val transactionsState = centralDatasHandler.transactionCommercialState
+    val clientsState = centralDatasHandler.clientsState
+    val appState = centralDatasHandler.comptAppState
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     val bProto_ClientsDataBase: List<B_ClientInfosProtoJuin3>
-        get() = clientsState.clients.value
+        get() = clientsState.datasState.value
 
     // UI State variables
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
@@ -87,7 +85,7 @@ class MapClientsViewModel(
 
     private fun updateUiState() {
         _uiState.value = UiState(
-            b_ClientInfosProtoJuin3List = clientsState.clients.value,
+            b_ClientInfosProtoJuin3List = clientsState.datasState.value,
             c3_TransactionCommercialList = transactionsState.datasState.value,
             activeCompt = appState.activeCompt,
             mainLoadingProgress = centralDatasHandler.loadingProgress!!,
@@ -127,24 +125,10 @@ class MapClientsViewModel(
             }
         }
 
-        // Observe vendeur data
-        viewModelScope.launch {
-            snapshotFlow {
-                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
-                    .repositorys_Model
-                    .repository_1_5_Vendeur
-                    .modelDatasSnapList
-                    .toList()
-            }.collect { list ->
-                val activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
-                appState.updateActiveCompt(activeCompt)
-                updateUiState()
-            }
-        }
     }
 
     fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? {
-        return transactionsState.getLastTransactionForClientOnCommand(client.id)
+        return transactionsState.getClientLastTransactionOnCommandActuellement(client.id)
     }
 
     fun updateData(client: B_ClientInfosProtoJuin3) {
@@ -219,7 +203,6 @@ class MapClientsViewModel(
     }
 
 
-
     // ===============================================
     // FILTER AND VISIBILITY METHODS
     // ===============================================
@@ -269,13 +252,9 @@ class MapClientsViewModel(
         recordingHandler.startRecordIfNot()
     }
 
-    @Composable
-    fun rememberClientById(clientId: Long): B_ClientInfosProtoJuin3? {
-        val clients by clientsState.clients
-        return remember(clients, clientId) { clients.find { it.id == clientId } }
-    }
-
     fun updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt: Long) {
-        centralDatasHandler.comptAppState.updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt)
+        centralDatasHandler.comptAppState.updateActiveComptIdClientOuSonMarqueMapEstOuvert(
+            idClientOuvertPoutCeCompt
+        )
     }
 }

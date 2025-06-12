@@ -282,7 +282,8 @@ val viewModelModule = module {
     // Update this ViewModel to use the navigation handler
     viewModel {
         E0AfficheHistoriqueTransactionsViewModel(
-            get(),  // The repository
+            get(),
+            get() ,
             get() ,
             get() ,
         )

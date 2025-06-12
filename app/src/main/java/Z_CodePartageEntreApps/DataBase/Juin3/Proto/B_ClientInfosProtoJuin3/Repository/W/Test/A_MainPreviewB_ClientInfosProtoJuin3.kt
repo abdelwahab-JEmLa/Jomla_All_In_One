@@ -106,7 +106,7 @@ fun MainPreviewB_ClientInfosProtoJuin3(
                             }
 
                             Text(
-                                text = "🔄 Dernière MAJ: ${data.dernierFireBaseUpdateTimestamps}",
+                                text = "🔄 Dernière MAJ: ${data.dernierTimeTampsSynchronisationAvecFireBase}",
                                 color = Color.Gray
                             )
 

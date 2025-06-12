@@ -401,7 +401,7 @@ class MapClientsViewModelss(
     fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) { b_ClientDataBaseRepository.deleteData(data) }
     fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
 
-    fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
+    fun updateActiveComptIdClientOuSonMarqueMapEstOuvert(data: Long) {
         val currentActiveCompt = _uiState.value.activeCompt ?: return
         _uiState.value = _uiState.value.copy(
             activeCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)

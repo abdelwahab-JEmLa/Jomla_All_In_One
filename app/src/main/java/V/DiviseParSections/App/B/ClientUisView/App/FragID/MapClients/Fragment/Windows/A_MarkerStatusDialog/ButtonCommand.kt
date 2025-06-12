@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +29,9 @@ import java.util.Locale
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
-    uiState: UiState,
     viewModel: MapClientsViewModel,
+    clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
+    uiState: UiState,
     etateActuellementEst1: C3_TransactionCommercial.EtateActuellementEst,
     clientId: Long,
     selectedMarker: Marker,
@@ -49,7 +51,10 @@ fun CommandButton(
             )
             updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 
-            viewModel.updateActiveComptIdClientOuvertPoutCeCompt(selectedMarkedID)
+            if (clientOuCaMarqueGpsEstOuvert != null) {
+                viewModel.centralDatasHandler.comptAppState
+                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clientOuCaMarqueGpsEstOuvert.id)
+            }
 
             viewModel.startRecordIfNot()
             onDismiss()

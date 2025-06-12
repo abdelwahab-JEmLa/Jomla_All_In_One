@@ -52,12 +52,20 @@ class C_TransactionCommercialState(
         }
     }
 
-    fun getLastTransactionForClientOnCommand(clientId: Long): C3_TransactionCommercial? {
+    fun getClientLastTransactionOnCommandActuellement(clientId: Long): C3_TransactionCommercial? {
         return datasValue
-            .filter { it.clientAcheteurID == clientId }
+            .filter {
+                it.clientAcheteurID == clientId
+                        && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            }
             .maxByOrNull { it.timestamps }
     }
 
-    fun updateLoadingProgress(progress: Float) { _loadingProgress.floatValue = progress }
-    fun updateDatas(newDatas: List<C3_TransactionCommercial>) { _datas.value = newDatas }
+    fun updateLoadingProgress(progress: Float) {
+        _loadingProgress.floatValue = progress
+    }
+
+    fun updateDatas(newDatas: List<C3_TransactionCommercial>) {
+        _datas.value = newDatas
+    }
 }

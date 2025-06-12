@@ -22,10 +22,8 @@ class D_ComptAppState(
     val datas: State<List<_1_5_Vendeur>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    private val _activeCompt = mutableStateOf<_1_5_Vendeur?>(_1_5_Vendeur())
     val activeCompt by derivedStateOf { getActiveComptPourCeTelephone() }
-
-    val comptIdActiveClient by derivedStateOf { activeCompt?.idClientOuvertPoutCeCompt ?: 0 }
+    val idClientOuSonMarqueMapEstOuvert by derivedStateOf { activeCompt?.idClientOuSonMarqueMapEstOuvert ?: 0 }
 
     val size: Int by derivedStateOf { _datas.value.size }
     val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
@@ -39,39 +37,37 @@ class D_ComptAppState(
                     .modelDatasSnapList
                     .toList()
             }.collect { list ->
-                addOrUpdateDatas(list)
+                addOrUpdateDatasComposClass(list)
             }
         }
     }
+    fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
 
-    fun updateActiveCompt(newActiveCompt: _1_5_Vendeur?) {
-        _activeCompt.value = newActiveCompt
-
-        _activeCompt.value?.let {
-            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
-                .repository_1_5_Vendeur
-                .updateUnSeulData(it)
-        }
-    }
-
-    fun updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt: Long) {
-        val updatedCompt = activeCompt?.copy(idClientOuvertPoutCeCompt = idClientOuvertPoutCeCompt)
+    fun updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert: Long) {
+        val updatedCompt = activeCompt?.copy(idClientOuSonMarqueMapEstOuvert = idClientOuSonMarqueMapEstOuvert)
         addOrUpdateData(updatedCompt)
     }
 
     fun addOrUpdateData(data: _1_5_Vendeur?) {
-        data?.let { newData ->
+        data?.let { dataSansProper ->
+            val newData= dataSansProper.withProperKeyFireBaseAndTimeTamp()
             _datas.value = _datas.value.map {
-                if (it.vid == newData.vid) newData else it
+                if (it.vid == newData.vid)
+                    newData
+                else it
             }.let { list ->
                 if (list.none { it.vid == newData.vid }) list + newData else list
             }
-            a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
-                .repository_1_5_Vendeur
-                .updateUnSeulData(newData)
+            update_a_MasterRepositorysGrpProtoJuin3(newData)
         }
     }
 
-    fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
-    fun addOrUpdateDatas(datas: List<_1_5_Vendeur>) { _datas.value = datas }
+    private fun update_a_MasterRepositorysGrpProtoJuin3(newData: _1_5_Vendeur) {
+        a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
+            .repositorys_Model
+            .repository_1_5_Vendeur
+            .updateUnSeulData(newData)
+    }
+
+    fun addOrUpdateDatasComposClass(datas: List<_1_5_Vendeur>) { _datas.value = datas }
 }

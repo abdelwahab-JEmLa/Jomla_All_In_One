@@ -36,6 +36,7 @@ data class B_ClientInfosProtoJuin3(
     var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,
 
     // Section GpsLocation
+    var caMarqueGpsEstOuvert: Boolean = false,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     var title: String = "",
@@ -48,7 +49,7 @@ data class B_ClientInfosProtoJuin3(
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
-    var dernierFireBaseUpdateTimestamps: Long = 0,
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
@@ -88,12 +89,11 @@ data class B_ClientInfosProtoJuin3(
         )
     }
 
-
     fun withProperKeyFireBaseAndTimeTamp(): B_ClientInfosProtoJuin3 {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
             keyFireBase = safeKey,
-            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 

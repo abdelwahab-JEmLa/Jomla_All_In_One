@@ -21,7 +21,6 @@ fun AfficheurRegleOuvert(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClients: B_ClientInfosProtoJuin3?,
-    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
     val clientId = relatedClients?.id ?: 0L
 
@@ -83,8 +82,8 @@ fun AfficheurRegleOuvert(
 
                 TextButton(
                     onClick = {
-                        viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
-                    },
+                        viewModel.centralDatasHandler.comptAppState
+                            .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("إغلاق الفاتورة مع عدم وضع اي تقرير")

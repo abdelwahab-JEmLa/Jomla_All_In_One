@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur
 
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.os.Build
 import androidx.room.Entity
@@ -27,18 +28,19 @@ data class _1_5_Vendeur(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     // Section Centralization Valeurs Pour Injection a TOu modules
-    var idClientOuvertPoutCeCompt: Long = 0L,
+    var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
-    var dernierFireBaseUpdateTimestamps: Long = 0,
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
     ) {
-    companion object {
-        fun getActiveComptPourCeTelephone(datas: List<_1_5_Vendeur>): _1_5_Vendeur? {
-            return datas.find { it.vid == 1L}
-        }
+    fun withProperKeyFireBaseAndTimeTamp(): _1_5_Vendeur {
+        val safeKey = keyFireBase.ifEmpty { getKeyFireBase(vid, nom) }
+        return this.copy(
+            keyFireBase = safeKey,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
     }
 }

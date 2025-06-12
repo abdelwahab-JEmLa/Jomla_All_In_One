@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.updateMapMarkers
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.addOuUpdateMapMarkers
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.cleanupMapResources
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Functions.initializeMapPosition
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.MarkerEditModeOverlay
@@ -56,7 +56,7 @@ fun MapContent(
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
-    var selectedMarker by remember { mutableStateOf<Marker?>(null) }
+    var clientSelectione by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
@@ -71,21 +71,6 @@ fun MapContent(
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.activeCompt?.dernierTimeTampsSynchronisationAvecFireBase) {
-        if (uiState.activeCompt?.dernierTimeTampsSynchronisationAvecFireBase != 0L) {
-            val clientMarker = mapView.overlays.filterIsInstance<Marker>()
-                .find { marker ->
-                    uiState.activeCompt?.let {
-                        marker.id == it.idClientOuvertPoutCeCompt.toString()
-                    } == true
-                }
-
-            clientMarker?.let { marker ->
-                selectedMarker = marker
-                showMarkerDialog = true
-            }
-        }
-    }
 
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom)
@@ -104,24 +89,22 @@ fun MapContent(
     }
 
     LaunchedEffect(
+        viewModel.centralDatasHandler.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierFireBaseUpdateTimestamps },
-        uiState.b_ClientInfosProtoJuin3List.map { it.dernierFireBaseUpdateTimestamps },
         currentFilterMode,
         mapReloadTrigger,
     ) {
-        updateMapMarkers(
+        addOuUpdateMapMarkers(
             uiState = uiState,
             mapView = mapView,
             viewModel = viewModel,
             currentFilterMode = currentFilterMode,
             showMarkerDetails = showMarkerDetails
-        ) { marker ->
-            selectedMarker = marker
-            showMarkerDialog = true
-        }
+        )
     }
 
-    // Main UI layout with map and controls
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Map view
         AndroidView(
@@ -185,12 +168,15 @@ fun MapContent(
                 }
             )
         }
-
-        if (showMarkerDialog && selectedMarker != null) {
+        val clientOuCaMarqueGpsEstOuvert = viewModel.centralDatasHandler
+            .clientsState
+            .clientOuCaMarqueGpsEstOuvert
+        if (clientOuCaMarqueGpsEstOuvert != null) {
             MarkerStatusDialog(
-                uiState = uiState,
                 viewModel = viewModel,
-                marqueClick = selectedMarker,
+                clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
+                mapView=mapView,
+                uiState = uiState,
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->
@@ -204,7 +190,6 @@ fun MapContent(
                         mapView.invalidate()
                     }
                 },
-                onClickToFerme = onClickToFerme
             )
         }
     }

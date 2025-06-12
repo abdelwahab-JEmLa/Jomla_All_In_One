@@ -18,20 +18,21 @@ class B_ClientsState (
 ){
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _clients = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
-    val clients: State<List<B_ClientInfosProtoJuin3>> = _clients
+    private val _datas = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
+    val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
+    val datasValue by derivedStateOf { this._datas.value }
 
-    val clientsVal by derivedStateOf { _clients.value }
+    val clientsVal by derivedStateOf { this._datas.value }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
 
-    val isEmpty: Boolean by derivedStateOf { _clients.value.isEmpty() }
-    val size: Int by derivedStateOf { _clients.value.size }
+    val isEmpty: Boolean by derivedStateOf { this._datas.value.isEmpty() }
+    val size: Int by derivedStateOf { this._datas.value.size }
     val maxId: Long by derivedStateOf {
-        _clients.value.maxOfOrNull { it.id } ?: 0L
+        this._datas.value.maxOfOrNull { it.id } ?: 0L
     }
-    val isLoading: Boolean by derivedStateOf { _clients.value.isEmpty() && !_isInitialized.value }
+    val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
 
     private val _isInitialized = mutableStateOf(false)
     val isInitialized: State<Boolean> = _isInitialized
@@ -48,23 +49,30 @@ class B_ClientsState (
         }
 
     }
+
+    val clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3? by derivedStateOf {
+        datasValue.find{ it.caMarqueGpsEstOuvert }
+    }
+
     fun updateClients(newClients: List<B_ClientInfosProtoJuin3>) {
-        _clients.value = newClients
+        this._datas.value = newClients
         _isInitialized.value = true
     }
 
     fun addClient(client: B_ClientInfosProtoJuin3) {
-        _clients.value += client
+        this._datas.value += client
     }
 
     fun updateClient(updatedClient: B_ClientInfosProtoJuin3) {
-        _clients.value = _clients.value.map { client ->
-            if (client.id == updatedClient.id) updatedClient else client }
+        this._datas.value = this._datas.value.map { client ->
+            if (client.id == updatedClient.id)
+                updatedClient.withProperKeyFireBaseAndTimeTamp()
+            else client
+        }
     }
 
     fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
-        return _clients.value.find { it.id == id }
+        return this._datas.value.find { it.id == id }
     }
-    fun removeClient(clientId: Long) { _clients.value = _clients.value.filter { it.id != clientId } }
-
+    fun removeClient(clientId: Long) { this._datas.value = this._datas.value.filter { it.id != clientId } }
 }

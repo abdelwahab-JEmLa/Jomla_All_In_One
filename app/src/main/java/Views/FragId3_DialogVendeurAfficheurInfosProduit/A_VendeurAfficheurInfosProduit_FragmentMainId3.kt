@@ -112,7 +112,7 @@ fun MainUi(
     val progressValue = centralDatasHandler.loadingProgress
 
     val isLoading = progressValue!! < 1.0f
-    val idClientActuelleDepui1_3 = centralDatasHandler.ouvertClient!!.id
+    val idClientActuelleDepui1_3 = centralDatasHandler.clientOuSonMarqueMapEstOuvert!!.id
 
     val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }

@@ -22,6 +22,20 @@ class A_CentralDatasHandlerProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    val clientOuSonMarqueMapEstOuvert by derivedStateOf {
+        clientsState.findClientById(
+            comptAppState.idClientOuSonMarqueMapEstOuvert
+        )
+    }
+
+    val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
+        clientOuSonMarqueMapEstOuvert?.let {
+            transactionCommercialState.getClientLastTransactionOnCommandActuellement(
+                it.id
+            )
+        }
+    }
+
     init {
         composScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
@@ -30,13 +44,5 @@ class A_CentralDatasHandlerProtoJuin9(
                 }
             }
         }
-    }
-
-    val ouvertClient by derivedStateOf {
-        clientsState.findClientById(comptAppState.comptIdActiveClient)
-    }
-
-    val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
-        ouvertClient?.let { transactionCommercialState.getLastTransactionForClientOnCommand(it.id) }
     }
 }

@@ -4,8 +4,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,19 +37,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun MarkerStatusDialog(
-    uiState: UiState,
     viewModel: MapClientsViewModel,
-    marqueClick: Marker?,
+    clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
+    mapView: MapView,
+    uiState: UiState,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
+    val marqueClick = mapView.overlays
+        .filterIsInstance<Marker>()
+        .find { marker ->
+            marker.id == clientOuCaMarqueGpsEstOuvert?.id.toString()
+        }?: return
+
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
@@ -57,22 +64,12 @@ fun MarkerStatusDialog(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
-    if (marqueClick == null) return
+    val clientId = clientOuCaMarqueGpsEstOuvert?.id ?: 0L
+    var clientTypeMode by remember { mutableStateOf(clientOuCaMarqueGpsEstOuvert?.clientTypeMode) }
 
-    val marqueClickRelativeClient = viewModel.bProto_ClientsDataBase.find {
-        it.id == (marqueClick.id?.toLong() ?: 0)
-    }
-
-    Log.d("MarkerStatusDialog","${marqueClick.id}")
-    Log.d("MarkerStatusDialog","${viewModel.bProto_ClientsDataBase.size}")
-    Log.d("MarkerStatusDialog","${uiState.b_ClientInfosProtoJuin3List.size}")
-
-    val clientId = marqueClickRelativeClient?.id ?: 0L
-    var clientTypeMode by remember { mutableStateOf(marqueClickRelativeClient?.clientTypeMode) }
-
-    if (editedName.isEmpty() && marqueClickRelativeClient != null) {
-        editedName = marqueClickRelativeClient.nom ?: ""
-        editedPhone = marqueClickRelativeClient.numTelephone ?: ""
+    if (editedName.isEmpty() && clientOuCaMarqueGpsEstOuvert != null) {
+        editedName = clientOuCaMarqueGpsEstOuvert.nom ?: ""
+        editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
     }
 
     Dialog(
@@ -97,7 +94,7 @@ fun MarkerStatusDialog(
                     ClientEdites(
                         viewModel = viewModel,
                         marqueClick = marqueClick,
-                        marqueClickRelativeClient = marqueClickRelativeClient,
+                        marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
                         onDismiss = onDismiss,
                         onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                         onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
@@ -108,13 +105,12 @@ fun MarkerStatusDialog(
                 }
 
                 uiState.activeCompt?.let { activeCompt ->
-                    if (activeCompt.idClientOuvertPoutCeCompt != 0L) {
+                    if (activeCompt.idClientOuSonMarqueMapEstOuvert != 0L) {
                         item {
                             AfficheurRegleOuvert(
                                 uiState = uiState,
                                 viewModel = viewModel,
-                                relatedClients = marqueClickRelativeClient,
-                                onClickToFerme = onClickToFerme
+                                relatedClients = clientOuCaMarqueGpsEstOuvert,
                             )
                         }
                     }
@@ -154,8 +150,9 @@ fun MarkerStatusDialog(
                                 item {
                                     CommandButton(
                                         modifier = Modifier.height(60.dp),
-                                        uiState = uiState,
                                         viewModel = viewModel,
+                                        clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
+                                        uiState = uiState,
                                         etateActuellementEst1 = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         clientId = clientId,
                                         selectedMarker = marqueClick,
@@ -261,12 +258,12 @@ fun MarkerStatusDialog(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            marqueClickRelativeClient?.apply {
+                            clientOuCaMarqueGpsEstOuvert?.apply {
                                 nom = editedName
                                 numTelephone = editedPhone
                             }
 
-                            marqueClickRelativeClient?.let { client ->
+                            clientOuCaMarqueGpsEstOuvert?.let { client ->
                                 viewModel.updateData(client)
                             }
 

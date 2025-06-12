@@ -15,13 +15,12 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
-fun updateMapMarkers(
+fun addOuUpdateMapMarkers(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     mapView: MapView,
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     showMarkerDetails: Boolean,
-    onMarkerSelected: (Marker) -> Unit,
 ) {
     val clientDataBaseSnapList = uiState.b_ClientInfosProtoJuin3List
 
@@ -42,7 +41,6 @@ fun updateMapMarkers(
         clientsToShow,
         viewModel,
         showMarkerDetails,
-        onMarkerSelected
     )
 }
 
@@ -51,7 +49,6 @@ fun addMarkersForFilteredClients(
     clientsToShow: List<B_ClientInfosProtoJuin3>,
     viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
-    onMarkerSelected: (Marker) -> Unit,
 ) {
     val context = mapView.context
 
@@ -63,7 +60,6 @@ fun addMarkersForFilteredClients(
                 client,
                 context,
                 showMarkerDetails,
-                onMarkerSelected
             )
         } catch (e: Exception) {
             // Error handling
@@ -79,7 +75,6 @@ fun createAndAddMarker(
     client: B_ClientInfosProtoJuin3,
     context: Context,
     showMarkerDetails: Boolean,
-    onMarkerSelected: (Marker) -> Unit,
 ) {
 
     val marker = Marker(mapView).apply {
@@ -101,7 +96,9 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            onMarkerSelected(clickedMarker)
+            viewModel.centralDatasHandler.comptAppState
+                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clickedMarker.id.toLong())
+
             if (showMarkerDetails) clickedMarker.showInfoWindow()
             true
         }
@@ -113,7 +110,6 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
-
 
 private fun Marker.title(
     viewModel: MapClientsViewModel,

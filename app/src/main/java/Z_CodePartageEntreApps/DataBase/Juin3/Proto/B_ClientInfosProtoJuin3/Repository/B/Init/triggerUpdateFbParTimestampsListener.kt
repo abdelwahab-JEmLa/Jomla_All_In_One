@@ -28,7 +28,7 @@ fun B_ClientInfosProtoJuin3Repository.triggerUpdateFbParTimestampsListener() {
                                     if (localEntity == null) {
                                         true
                                     } else {
-                                        entityWithKey.dernierFireBaseUpdateTimestamps > localEntity.dernierFireBaseUpdateTimestamps
+                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
                                     }
                                 } catch (e: Exception) {
                                     true

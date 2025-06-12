@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -35,6 +36,7 @@ data class SecID5FragID2UiState(
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
+    val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
@@ -65,7 +67,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
                     .toList()
             }.collect { list ->
                 _uiState.value = _uiState.value.copy(
-                    activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
+                    activeCompt = a_CentralDatasHandlerProtoJuin9.comptAppState.activeCompt
                 )
             }
         }
@@ -225,11 +227,11 @@ class E0AfficheHistoriqueTransactionsViewModel(
     fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
         val currentActiveCompt = _uiState.value.activeCompt ?: return
         _uiState.value = _uiState.value.copy(
-            activeCompt = currentActiveCompt.copy(idClientOuvertPoutCeCompt = data)
+            activeCompt = currentActiveCompt.copy(idClientOuSonMarqueMapEstOuvert = data)
         )
 
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
             .repository_1_5_Vendeur
-            .updateUnSeulData(currentActiveCompt.copy(idClientOuvertPoutCeCompt = data))
+            .updateUnSeulData(currentActiveCompt.copy(idClientOuSonMarqueMapEstOuvert = data))
     }
 }

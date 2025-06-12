@@ -38,10 +38,12 @@ fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
                 relatedClientID = clickedClient,
                 newEtate = newEtate,
             )
+
             if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.updateActiveComptIdClientOuvertPoutCeCompt(0)
+                viewModel.centralDatasHandler.comptAppState
+                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
             }
         },
         modifier = Modifier.fillMaxWidth(),
