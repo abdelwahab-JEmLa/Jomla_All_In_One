@@ -73,8 +73,6 @@ fun MarkerStatusDialog(
 
     Dialog(
         onDismissRequest = {
-            viewModel
-                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
 
         },
         properties = DialogProperties(
@@ -163,10 +161,6 @@ fun MarkerStatusDialog(
                                         clientId = clientId,
                                         selectedMarker = marqueClick,
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                        onDismiss = {
-                                            viewModel
-                                                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
-                                        },
                                         context = context
                                     )
                                 }

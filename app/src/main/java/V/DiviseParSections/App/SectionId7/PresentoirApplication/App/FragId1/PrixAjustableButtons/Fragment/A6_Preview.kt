@@ -74,7 +74,6 @@ fun TariffsButtonsPrev() {
 
                                 TariffsButtonsSec7ID2(
                                     filterProductId = idProduitChahrazed,
-                                    filterBonId = 1,
                                     fermeDialog = { showDialog = false },
                                     onFermDialogeAvecAnllation = { showDialog = false },
                                     cLenceDepuitDialogeAchate = true,

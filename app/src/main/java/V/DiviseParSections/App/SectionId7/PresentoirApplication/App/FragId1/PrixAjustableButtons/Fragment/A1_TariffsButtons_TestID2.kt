@@ -36,11 +36,13 @@ fun TariffsButtonsSec7ID2(
     viewModel: TariffsButtonsViewModelSec7ID2 = koinViewModel(),
     showLabels: Boolean = true,
     filterProductId: Long = 0,
-    filterBonId: Long = 0,
     fermeDialog: (D_TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
+    val transactionComQuiFilterButtons =
+        viewModel.a_CentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
+
     val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
@@ -54,9 +56,8 @@ fun TariffsButtonsSec7ID2(
 
     //Text("${produitInfosList.map { it.nomArticleFinale } }")
 
-    val shouldShowLoading = uiState.isDataSyncing ||
-            (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) ||
-            (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
+    val shouldShowLoading =
+        uiState.isDataSyncing || (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) || (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
     val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
@@ -108,17 +109,19 @@ fun TariffsButtonsSec7ID2(
                 }
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    MainFilter(
-                        tarificationList = tarificationList,
-                        bonAchatList = bonAchatList,
-                        produitAcheteOperationList = produitAcheteOperationList,
-                        produitInfosList = produitInfosList,
-                        showLabels = showLabels,
-                        filterProduitID = filterProductId.toInt(),
-                        filterBonID = filterBonId,
-                        onClickPrixButton = onClickPrixButton,
-                        onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
-                    )
+                    if (transactionComQuiFilterButtons != null) {
+                        MainFilter(
+                            tarificationList = tarificationList,
+                            bonAchatList = bonAchatList,
+                            produitAcheteOperationList = produitAcheteOperationList,
+                            produitInfosList = produitInfosList,
+                            showLabels = showLabels,
+                            filterProduitID = filterProductId.toInt(),
+                            filterBonID = transactionComQuiFilterButtons.vid,
+                            onClickPrixButton = onClickPrixButton,
+                            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
+                        )
+                    }
                 }
             } else {
                 val dataStatus = when {
@@ -143,8 +146,7 @@ fun TariffsButtonsSec7ID2(
 
 @Composable
 private fun suspendFunction1(
-    produitInfosList: SnapshotStateList<A_ProduitInfos>,
-    viewModel: TariffsButtonsViewModelSec7ID2
+    produitInfosList: SnapshotStateList<A_ProduitInfos>, viewModel: TariffsButtonsViewModelSec7ID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {
         delay(500)

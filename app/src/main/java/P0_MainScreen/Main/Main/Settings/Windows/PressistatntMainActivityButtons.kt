@@ -232,7 +232,6 @@ fun PressistatntMainActivityButtons(
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     filterProductId = idProduitActuelle,
-                    filterBonId = parentCompose_1_3_BonAchatVid,
                     fermeDialog = onPourFermeWindows,
                     cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
                     onFermDialogeAvecAnllation = onClickAnulationButton

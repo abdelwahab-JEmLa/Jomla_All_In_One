@@ -36,7 +36,6 @@ fun CommandButton(
     clientId: Long,
     selectedMarker: Marker,
     onUpdateLongAppSetting: () -> Unit,
-    onDismiss: () -> Unit,
     context: Context,
 ) {
     val selectedMarkedID = selectedMarker.id.toLong()
@@ -57,7 +56,6 @@ fun CommandButton(
             }
 
             viewModel.startRecordIfNot()
-            onDismiss()
         },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(

@@ -234,12 +234,9 @@ val viewModelModule = module {
     }
 
 
-    viewModel {
-        TariffsButtonsViewModelSec7ID2(
+    viewModel { TariffsButtonsViewModelSec7ID2(get(),
             get(),
-            get(),
-        )
-    }
+            get(),) }
 
     factory { (viewModel: HeadViewModel, context: Context) ->
         ConnectionManager(
