@@ -128,7 +128,10 @@ class MapClientsViewModel(
     }
 
     fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? {
-        return transactionsState.getClientLastTransactionOnCommandActuellement(client.id)
+        return transactionsState.getClientLastTransactionParEtate(
+            client.id,
+            C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        )
     }
 
     fun updateData(client: B_ClientInfosProtoJuin3) {

@@ -26,7 +26,7 @@ class A_CentralDatasHandlerProtoJuin9(
     val clientOuSonMarqueMapEstOuvert by derivedStateOf {
         clientsState.findClientById(
             comptAppState.idClientOuSonMarqueMapEstOuvert
-        ) .also { transaction ->
+        ) .also {  transaction ->
             Log.d("ouvertTransactionCommercial", "comptAppState.idClientOuSonMarqueMapEstOuvert" +
                     " ${comptAppState.idClientOuSonMarqueMapEstOuvert}")
         }
@@ -34,8 +34,9 @@ class A_CentralDatasHandlerProtoJuin9(
 
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
-            transactionCommercialState.getClientLastTransactionOnCommandActuellement(
-                it.id
+            transactionCommercialState.getClientLastTransactionParEtate(
+                it.id,
+                C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             ).also { transaction ->
                 Log.d("ouvertTransactionCommercial", "Transaction ID: ${transaction?.vid}")
             }

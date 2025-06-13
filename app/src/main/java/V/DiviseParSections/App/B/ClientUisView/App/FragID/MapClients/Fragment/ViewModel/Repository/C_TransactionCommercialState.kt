@@ -52,11 +52,14 @@ class C_TransactionCommercialState(
         }
     }
 
-    fun getClientLastTransactionOnCommandActuellement(clientId: Long): C3_TransactionCommercial? {
+    fun getClientLastTransactionParEtate(
+        clientId: Long, etateActuellementEst: C3_TransactionCommercial.EtateActuellementEst =
+            C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    ): C3_TransactionCommercial? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
-                        && it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        && it.etateActuellementEst == etateActuellementEst
             }
             .maxByOrNull { it.timestamps }
     }

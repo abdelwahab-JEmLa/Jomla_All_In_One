@@ -67,7 +67,6 @@ fun TariffsButtonsSec7ID2(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (transactionComQuiFilterButtons != null) {
-
                     MainFilter(
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,

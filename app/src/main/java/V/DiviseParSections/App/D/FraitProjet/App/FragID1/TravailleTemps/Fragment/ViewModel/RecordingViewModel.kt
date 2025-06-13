@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
@@ -36,13 +37,15 @@ data class UiState(
 )
 
 class RecordingViewModel(
+    val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList = groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository
+    val reposBonAchatList =
+        groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
@@ -66,7 +69,8 @@ class RecordingViewModel(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     _uiState.value = _uiState.value.copy(
-                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow ?: emptyList(),
+                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow
+                            ?: emptyList(),
                         mainLoadingProgress = model.progress
                     )
                 }
@@ -104,7 +108,7 @@ class RecordingViewModel(
                 })
                 Log.i(TAG, "LencePrint")
 
-          //  recordingHandler.toggleRecording()
+            //  recordingHandler.toggleRecording()
         }
     }
 
@@ -146,19 +150,15 @@ class RecordingViewModel(
         }
     }
 
-    fun getLastTransaction(client: B_ClientInfosProtoJuin3): C3_TransactionCommercial? =
-        repos.c3TransactionCommercialRepository.modelDatasSnapList.filter { it.clientAcheteurID == client.id }
-            .maxByOrNull { it.timestamps }
-
-    // Make this private and use the cached value from UiState instead
-    private fun calculateNombreClientAvecCible(): Int {
-        val count = bProto_ClientsDataBase.count { client ->
-            val lastTransaction = getLastTransaction(client)
-            val isCible = lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible
-            Log.d(TAG, "Client ${client.id}: last transaction state = ${lastTransaction?.etateActuellementEst}, is Cible = $isCible")
-            isCible
-        }
-        Log.d(TAG, "Calculating nombre clients avec cible: total clients = ${bProto_ClientsDataBase.size}, clients with Cible = $count")
+    fun calculateNombreClientAvecCible(): Int {
+        val count = a_CentralDatasHandlerProtoJuin9.clientsState.datasValue
+            .count { client ->
+                a_CentralDatasHandlerProtoJuin9.transactionCommercialState
+                    .getClientLastTransactionParEtate(
+                        client.id,
+                        C3_TransactionCommercial.EtateActuellementEst.Cible
+                    ) != null
+            }
         return count
     }
 
