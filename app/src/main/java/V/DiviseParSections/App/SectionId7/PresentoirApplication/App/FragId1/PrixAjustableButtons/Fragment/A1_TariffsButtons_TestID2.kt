@@ -5,6 +5,7 @@ import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ fun TariffsButtonsSec7ID2(
 ) {
     val transactionComQuiFilterButtons =
         viewModel.a_CentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
+    Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
 
     val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
@@ -110,6 +112,8 @@ fun TariffsButtonsSec7ID2(
             } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     if (transactionComQuiFilterButtons != null) {
+                        Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
+
                         MainFilter(
                             tarificationList = tarificationList,
                             bonAchatList = bonAchatList,
@@ -121,6 +125,8 @@ fun TariffsButtonsSec7ID2(
                             onClickPrixButton = onClickPrixButton,
                             onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
                         )
+                        Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
+
                     }
                 }
             } else {

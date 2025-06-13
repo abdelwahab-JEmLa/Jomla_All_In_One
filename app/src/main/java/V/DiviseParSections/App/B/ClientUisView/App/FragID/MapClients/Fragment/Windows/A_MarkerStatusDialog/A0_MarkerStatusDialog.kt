@@ -73,7 +73,8 @@ fun MarkerStatusDialog(
 
     Dialog(
         onDismissRequest = {
-
+            viewModel
+                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
         },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
