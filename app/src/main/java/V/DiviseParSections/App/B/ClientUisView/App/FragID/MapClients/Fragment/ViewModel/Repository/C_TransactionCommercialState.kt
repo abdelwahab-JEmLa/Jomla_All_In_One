@@ -27,7 +27,6 @@ class C_TransactionCommercialState(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
 
-
     val size: Int by derivedStateOf { _datas.value.size }
     val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
 
