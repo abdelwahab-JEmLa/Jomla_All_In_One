@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import com.example.clientjetpack.R
 
@@ -53,16 +52,11 @@ fun NavigationBarWithFab(
     onNavigate: (String) -> Unit,
     isFabVisible: Boolean,
     onToggleFabVisibility: () -> Unit,
-    navController: NavController,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
 ) {
-    // Dialog state
     var showCatalogDialog by remember { mutableStateOf(false) }
-
-    // Track first navigation state
-    var isFirstNavigation by remember { mutableStateOf(true) }
 
     Box(
         modifier = modifier.fillMaxWidth(),

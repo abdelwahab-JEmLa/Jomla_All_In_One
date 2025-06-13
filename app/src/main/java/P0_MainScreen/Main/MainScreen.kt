@@ -268,7 +268,6 @@ fun MainScreen(
                         onCatalogSelected = {
                             targetCategoryId.value = it
                         },
-                        navController = navController,
                         modifier = Modifier.padding(bottom = 8.dp),
                         viewModelInitApp = viewModelInitApp
                     )

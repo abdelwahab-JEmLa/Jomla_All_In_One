@@ -220,15 +220,12 @@ fun AppNavHost(
                     }
                 }
 
-                // Product ordering screen
                 composable(
                     route = Screen.CommandeProduits.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
 
-                    // Clean up resources when leaving screen
                     CleanupEffect {
-                        // Any cleanup needed for this screen
                     }
 
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -242,12 +239,6 @@ fun AppNavHost(
                     route = Screen.EditeProduitsBaseDonneS9.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
-
-                    // Clean up resources when leaving screen
-                    CleanupEffect {
-                        // Any cleanup needed for this screen
-                    }
-
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
                             EditeBaseDonneMainScreenIdS9()
