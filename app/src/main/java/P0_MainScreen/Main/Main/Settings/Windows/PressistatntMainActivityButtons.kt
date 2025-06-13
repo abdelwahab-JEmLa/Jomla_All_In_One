@@ -51,7 +51,6 @@ fun PressistatntMainActivityButtons(
     cLenceDepuitDialogeAchate: Boolean = false,
     viewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
-    parentCompose_1_3_BonAchatVid: Long = 0,
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
 ) {

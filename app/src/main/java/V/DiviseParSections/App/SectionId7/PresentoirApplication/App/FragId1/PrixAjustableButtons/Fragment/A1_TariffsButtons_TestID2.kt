@@ -5,16 +5,10 @@ import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,11 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -43,23 +34,18 @@ fun TariffsButtonsSec7ID2(
 ) {
     val transactionComQuiFilterButtons =
         viewModel.a_CentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
-    Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
 
     val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
 
+    val bonAchatList =
+        viewModel.a_CentralDatasHandlerProtoJuin9.transactionCommercialState.datasValue
     val tarificationList = uiState.tariffsList
-    val bonAchatList = uiState.bonAchatList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
-
-    //Text("${produitInfosList.map { it.nomArticleFinale } }")
-
-    val shouldShowLoading =
-        uiState.isDataSyncing || (uiState.loadingProgress > 0f && uiState.loadingProgress < 1f) || (bonAchatList.isEmpty() && produitInfosList.isEmpty() && uiState.loadingProgress == 0f)
 
     val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
@@ -79,73 +65,23 @@ fun TariffsButtonsSec7ID2(
 
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            if (shouldShowLoading) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (uiState.loadingProgress > 0f) {
-                        CircularProgressIndicator(
-                            progress = { uiState.loadingProgress },
-                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                        )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                if (transactionComQuiFilterButtons != null) {
 
-                        val progressPercentage = (uiState.loadingProgress * 100).toInt()
-                        val syncStatus = viewModel.getSyncStatus()
-
-                        Text(
-                            text = "$syncStatus $progressPercentage%",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        CircularProgressIndicator()
-                        Text(
-                            text = "Initializing...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    MainFilter(
+                        tarificationList = tarificationList,
+                        bonAchatList = bonAchatList,
+                        produitAcheteOperationList = produitAcheteOperationList,
+                        produitInfosList = produitInfosList,
+                        showLabels = showLabels,
+                        filterProduitID = filterProductId.toInt(),
+                        filterBonID = transactionComQuiFilterButtons.vid,
+                        onClickPrixButton = onClickPrixButton,
+                        onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
+                    )
                 }
-            } else if (bonAchatList.isNotEmpty() && produitInfosList.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    if (transactionComQuiFilterButtons != null) {
-                        Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
-
-                        MainFilter(
-                            tarificationList = tarificationList,
-                            bonAchatList = bonAchatList,
-                            produitAcheteOperationList = produitAcheteOperationList,
-                            produitInfosList = produitInfosList,
-                            showLabels = showLabels,
-                            filterProduitID = filterProductId.toInt(),
-                            filterBonID = transactionComQuiFilterButtons.vid,
-                            onClickPrixButton = onClickPrixButton,
-                            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
-                        )
-                        Log.d("ouvertTransactionCommercial", "Transaction ID: ${transactionComQuiFilterButtons}")
-
-                    }
-                }
-            } else {
-                val dataStatus = when {
-                    produitInfosList.isEmpty() && bonAchatList.isEmpty() -> "Loading initial data..."
-                    produitInfosList.isEmpty() -> "Loading products..."
-                    bonAchatList.isEmpty() -> "Loading purchase orders..."
-                    else -> "Preparing data..."
-                }
-
-                Text(
-                    text = "$dataStatus\nProducts: ${produitInfosList.size}, Orders: ${bonAchatList.size}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.Center),
-                    textAlign = TextAlign.Center
-                )
             }
+
         }
     }
 }

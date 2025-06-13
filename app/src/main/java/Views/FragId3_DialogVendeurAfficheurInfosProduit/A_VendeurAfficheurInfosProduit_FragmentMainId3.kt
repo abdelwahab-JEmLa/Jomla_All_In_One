@@ -296,7 +296,6 @@ fun MainUi(
                         onPourFermeWindows()
                     },
                     idProduitActuelle = idProduitActuelle,
-                    parentCompose_1_3_BonAchatVid = ouvertTransactionalCommercial.vid,
                     onClickAnulationButton = {
                         updateState(
                             viewModelInitApp = viewModelInitApp,
