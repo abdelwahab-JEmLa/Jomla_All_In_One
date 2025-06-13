@@ -23,6 +23,14 @@ class A_CentralDatasHandlerProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
+        clientsState.datasValue.count { client ->
+            val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
+            lastTransaction?.etateActuellementEst in listOf(
+                C3_TransactionCommercial.EtateActuellementEst.Cible,
+            )
+        }
+    }
     val clientOuSonMarqueMapEstOuvert by derivedStateOf {
         clientsState.findClientById(
             comptAppState.idClientOuSonMarqueMapEstOuvert

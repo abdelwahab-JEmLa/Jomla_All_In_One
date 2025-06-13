@@ -42,7 +42,7 @@ data class C3_TransactionCommercial(
 
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
-    var dernierFireBaseUpdateTimestamps: Long = 0,
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {

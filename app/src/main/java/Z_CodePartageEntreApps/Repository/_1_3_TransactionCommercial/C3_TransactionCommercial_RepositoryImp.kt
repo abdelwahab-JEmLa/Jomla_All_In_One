@@ -108,7 +108,7 @@ class C3_TransactionCommercial_RepositoryImp(
                                         if (localEntity == null) {
                                             true
                                         } else {
-                                            entityWithKey.dernierFireBaseUpdateTimestamps > localEntity.dernierFireBaseUpdateTimestamps
+                                            entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
                                         }
                                     } catch (e: Exception) {
                                         true

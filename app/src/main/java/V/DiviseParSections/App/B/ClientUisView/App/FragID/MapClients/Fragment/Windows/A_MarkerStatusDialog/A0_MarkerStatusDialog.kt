@@ -62,6 +62,7 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+    var showExitConfirmationDialog by remember { mutableStateOf(false) }
 
     val clientId = clientOuCaMarqueGpsEstOuvert?.id ?: 0L
     var clientTypeMode by remember { mutableStateOf(clientOuCaMarqueGpsEstOuvert?.clientTypeMode) }
@@ -71,15 +72,29 @@ fun MarkerStatusDialog(
         editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
     }
 
+    val isClientInCommandMode = remember(clientId, uiState) {
+        val lastTransaction = viewModel.centralDatasHandler.transactionCommercialState.getClientLastTransaction(clientId)
+        lastTransaction?.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    }
+
+    fun dismissDialog() {
+        viewModel.updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+    }
+
     Dialog(
         onDismissRequest = {
-            viewModel
-                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+            // Only show exit confirmation dialog if client is in command mode
+            if (isClientInCommandMode) {
+                showExitConfirmationDialog = true
+            } else {
+                // Direct dismiss if not in command mode
+                dismissDialog()
+            }
         },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
         )
     ) {
         ElevatedCard(
@@ -98,8 +113,12 @@ fun MarkerStatusDialog(
                         marqueClick = marqueClick,
                         marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
                         onDismiss = {
-                            viewModel
-                                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+                            // Apply same logic for the dismiss button
+                            if (isClientInCommandMode) {
+                                showExitConfirmationDialog = true
+                            } else {
+                                dismissDialog()
+                            }
                         },
                         onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                         onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
@@ -237,6 +256,33 @@ fun MarkerStatusDialog(
             }
         }
 
+        // Exit confirmation dialog - only shows when client is in command mode
+        if (showExitConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = { showExitConfirmationDialog = false },
+                title = { Text("تأكيد الخروج") },
+                text = { Text("العميل في وضع الطلب حاليا. هل أنت متأكد من أنك تريد إغلاق هذا الحوار؟") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showExitConfirmationDialog = false
+                            dismissDialog()
+                        }
+                    ) {
+                        Text("نعم")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showExitConfirmationDialog = false }
+                    ) {
+                        Text("إلغاء")
+                    }
+                }
+            )
+        }
+
+        // Rest of the dialogs remain the same...
         if (showEditDialog) {
             AlertDialog(
                 onDismissRequest = { showEditDialog = false },

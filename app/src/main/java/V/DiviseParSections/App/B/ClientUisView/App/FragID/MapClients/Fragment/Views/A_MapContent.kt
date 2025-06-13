@@ -79,15 +79,17 @@ fun MapContent(
 
     LaunchedEffect(
         viewModel.centralDatasHandler.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.centralDatasHandler.transactionCommercialState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.centralDatasHandler.clientsState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        uiState.c3_TransactionCommercialList.map { it.dernierFireBaseUpdateTimestamps },
+        uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
         mapReloadTrigger,
     ) {
         addOuUpdateMapMarkers(
+            viewModel = viewModel,
             uiState = uiState,
             mapView = mapView,
-            viewModel = viewModel,
             currentFilterMode = currentFilterMode,
             showMarkerDetails = showMarkerDetails
         )

@@ -27,6 +27,7 @@ class C_TransactionCommercialState(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
 
+
     val size: Int by derivedStateOf { _datas.value.size }
     val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
 
@@ -51,7 +52,6 @@ class C_TransactionCommercialState(
             }
         }
     }
-
     fun getClientLastTransactionParEtate(
         clientId: Long, etateActuellementEst: C3_TransactionCommercial.EtateActuellementEst =
             C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -60,6 +60,14 @@ class C_TransactionCommercialState(
             .filter {
                 it.clientAcheteurID == clientId
                         && it.etateActuellementEst == etateActuellementEst
+            }
+            .maxByOrNull { it.timestamps }
+    }
+
+    fun getClientLastTransaction(clientId: Long): C3_TransactionCommercial? {
+        return datasValue
+            .filter {
+                it.clientAcheteurID == clientId
             }
             .maxByOrNull { it.timestamps }
     }

@@ -68,7 +68,7 @@ fun PressistatntMainActivityButtons(
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     // Cache the client count to avoid multiple reads
-    val remainingClients = uiState.nombreClientsAvecCible
+    val remainingClients = viewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
 
     // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
