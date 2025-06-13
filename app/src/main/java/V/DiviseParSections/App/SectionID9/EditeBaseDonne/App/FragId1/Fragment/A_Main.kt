@@ -95,11 +95,9 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePetiteProbability) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
-            // Filter for products with prixAchat > 0 (hide products without purchase price)
             if (filterState.hidePrixAchatZero) {
                 filtered = filtered.filter { it.prixAchat > 0.0 }
             }
-            // Filter for products with prixAchat <= 0 (hide products with purchase price)
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
