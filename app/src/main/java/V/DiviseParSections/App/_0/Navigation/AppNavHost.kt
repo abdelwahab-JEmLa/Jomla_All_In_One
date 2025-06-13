@@ -328,7 +328,6 @@ fun AppNavHost(
                             WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                         )
                     },
-                    reloadTrigger = reloadTrigger,
                     modifier = Modifier.padding(horizontal = 3.dp),
                     lockExpandedPrices = lockExpandedPrices,
                     onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },

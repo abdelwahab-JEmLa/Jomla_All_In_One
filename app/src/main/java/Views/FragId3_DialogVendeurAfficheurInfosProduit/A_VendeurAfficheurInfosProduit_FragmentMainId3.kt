@@ -50,7 +50,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     viewModelFragment: VendeurAfficheurInfosProduitViewModel = koinViewModel(),
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
-    reloadTrigger: Int,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
@@ -304,6 +303,7 @@ fun MainUi(
                             parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                             neveauEtateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK,
                         )
+                        onPourFermeWindows()
                     }
                 )
             }
