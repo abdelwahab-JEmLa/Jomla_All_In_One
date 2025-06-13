@@ -219,7 +219,6 @@ class MapClientsViewModel(
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 
-
     // ===============================================
     // CLEANUP METHODS
     // ===============================================
@@ -252,9 +251,4 @@ class MapClientsViewModel(
         recordingHandler.startRecordIfNot()
     }
 
-    fun updateActiveComptIdClientOuvertPoutCeCompt(idClientOuvertPoutCeCompt: Long) {
-        centralDatasHandler.comptAppState.updateActiveComptIdClientOuSonMarqueMapEstOuvert(
-            idClientOuvertPoutCeCompt
-        )
-    }
 }

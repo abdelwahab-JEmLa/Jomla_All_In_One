@@ -10,9 +10,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,7 +35,6 @@ import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 @Composable
@@ -46,17 +43,11 @@ fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
-    onClickToFerme: (C3_TransactionCommercial.EtateActuellementEst, Long) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    Log.d("MapClientsViewModel", "${uiState.c3_TransactionCommercialList.size}")
-    Log.d("MapClientsViewModel", "${uiState.c3_TransactionCommercialList.map { it }}")
-
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
-    var clientSelectione by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
@@ -70,7 +61,6 @@ fun MapContent(
     }
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(Unit) {
         initializeMapPosition(context, mapView, currentZoom)
@@ -169,8 +159,8 @@ fun MapContent(
             )
         }
         val clientOuCaMarqueGpsEstOuvert = viewModel.centralDatasHandler
-            .clientsState
-            .clientOuCaMarqueGpsEstOuvert
+            .clientOuSonMarqueMapEstOuvert
+
         if (clientOuCaMarqueGpsEstOuvert != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,

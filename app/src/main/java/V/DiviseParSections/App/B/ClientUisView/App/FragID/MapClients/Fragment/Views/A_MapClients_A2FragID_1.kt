@@ -37,8 +37,7 @@ fun A_MapClients_A2FragID_1(
                 viewModel = viewModel,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,
-                mapReloadTrigger = mapReloadTrigger,
-                onClickToFerme ={_,_->}
+                mapReloadTrigger = mapReloadTrigger
             )
         }
     }

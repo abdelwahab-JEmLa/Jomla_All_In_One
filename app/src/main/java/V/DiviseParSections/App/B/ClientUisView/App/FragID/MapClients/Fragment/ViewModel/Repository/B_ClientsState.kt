@@ -22,20 +22,17 @@ class B_ClientsState (
     val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
-    val clientsVal by derivedStateOf { this._datas.value }
-
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
+    val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
+    private val _isInitialized = mutableStateOf(false)
+    val isInitialized: State<Boolean> = _isInitialized
 
     val isEmpty: Boolean by derivedStateOf { this._datas.value.isEmpty() }
     val size: Int by derivedStateOf { this._datas.value.size }
     val maxId: Long by derivedStateOf {
         this._datas.value.maxOfOrNull { it.id } ?: 0L
     }
-    val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
-
-    private val _isInitialized = mutableStateOf(false)
-    val isInitialized: State<Boolean> = _isInitialized
 
     init {
         composScope.launch {
@@ -50,9 +47,10 @@ class B_ClientsState (
 
     }
 
-    val clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3? by derivedStateOf {
-        datasValue.find{ it.caMarqueGpsEstOuvert }
+    fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
+        return this._datas.value.find { it.id == id }
     }
+    fun removeClient(clientId: Long) { this._datas.value = this._datas.value.filter { it.id != clientId } }
 
     fun updateClients(newClients: List<B_ClientInfosProtoJuin3>) {
         this._datas.value = newClients
@@ -70,9 +68,4 @@ class B_ClientsState (
             else client
         }
     }
-
-    fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
-        return this._datas.value.find { it.id == id }
-    }
-    fun removeClient(clientId: Long) { this._datas.value = this._datas.value.filter { it.id != clientId } }
 }
