@@ -7,21 +7,29 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -81,178 +89,199 @@ fun MarkerStatusDialog(
         viewModel.updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
     }
 
+    fun handleDismiss() {
+        // Only show exit confirmation dialog if client is in command mode
+        if (isClientInCommandMode) {
+            showExitConfirmationDialog = true
+        } else {
+            // Direct dismiss if not in command mode
+            dismissDialog()
+        }
+    }
+
     Dialog(
-        onDismissRequest = {
-            // Only show exit confirmation dialog if client is in command mode
-            if (isClientInCommandMode) {
-                showExitConfirmationDialog = true
-            } else {
-                // Direct dismiss if not in command mode
-                dismissDialog()
-            }
-        },
+        onDismissRequest = { handleDismiss() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
         )
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.95f)
-                .padding(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.95f)
+                    .padding(16.dp)
             ) {
-                item {
-                    ClientEdites(
-                        viewModel = viewModel,
-                        marqueClick = marqueClick,
-                        marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
-                        onDismiss = {
-                            // Apply same logic for the dismiss button
-                            if (isClientInCommandMode) {
-                                showExitConfirmationDialog = true
-                            } else {
-                                dismissDialog()
-                            }
-                        },
-                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
-                        onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
-                        onClientTypeModeChange = { clientTypeMode = it },
-                        onShowEditDialogChange = { showEditDialog = it },
-                        onShowPhoneDialogChange = { showPhoneDialog = it },
-                    )
-                }
+                LazyColumn(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    item {
+                        ClientEdites(
+                            viewModel = viewModel,
+                            marqueClick = marqueClick,
+                            marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
+                            onDismiss = { handleDismiss() },
+                            onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
+                            onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
+                            onClientTypeModeChange = { clientTypeMode = it },
+                            onShowEditDialogChange = { showEditDialog = it },
+                            onShowPhoneDialogChange = { showPhoneDialog = it },
+                        )
+                    }
 
-                uiState.activeCompt?.let { activeCompt ->
-                    if (activeCompt.idClientOuSonMarqueMapEstOuvert != 0L) {
-                        item {
-                            AfficheurRegleOuvert(
-                                uiState = uiState,
-                                viewModel = viewModel,
-                                relatedClients = clientOuCaMarqueGpsEstOuvert,
-                            )
+                    uiState.activeCompt?.let { activeCompt ->
+                        if (activeCompt.idClientOuSonMarqueMapEstOuvert != 0L) {
+                            item {
+                                AfficheurRegleOuvert(
+                                    uiState = uiState,
+                                    viewModel = viewModel,
+                                    relatedClients = clientOuCaMarqueGpsEstOuvert,
+                                )
+                            }
                         }
                     }
-                }
 
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(
+                    item {
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(vertical = 4.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                contentPadding = PaddingValues(vertical = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(max = 600.dp)
+                                    .padding(16.dp)
                             ) {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(2),
+                                    contentPadding = PaddingValues(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(max = 600.dp)
+                                ) {
 
-                                item {
-                                    C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                                        .ButtonAutreEtates(
+                                    item {
+                                        C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                                            .ButtonAutreEtates(
+                                                uiState = uiState,
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+                                    }
+
+                                    item {
+                                        CommandButton(
+                                            modifier = Modifier.height(60.dp),
+                                            viewModel = viewModel,
+                                            clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
+                                            uiState = uiState,
+                                            etateActuellementEst1 = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            clientId = clientId,
+                                            selectedMarker = marqueClick,
+                                            onUpdateLongAppSetting = onUpdateLongAppSetting,
+                                            context = context
+                                        )
+                                    }
+
+                                    item {
+                                        C3_TransactionCommercial.EtateActuellementEst.FERME
+                                            .ButtonAutreEtates(
+                                                uiState = uiState,
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+                                    }
+                                    item {
+                                        C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                            .ButtonAutreEtates(
+                                                uiState = uiState,
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+
+                                    }
+
+                                    item {
+                                        ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
                                             uiState = uiState,
                                             viewModel = viewModel,
-                                            clickedClient = clientId,
+                                            clientId = clientId,
                                         )
-                                }
+                                    }
 
-                                item {
-                                    CommandButton(
-                                        modifier = Modifier.height(60.dp),
-                                        viewModel = viewModel,
-                                        clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
-                                        uiState = uiState,
-                                        etateActuellementEst1 = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                        clientId = clientId,
-                                        selectedMarker = marqueClick,
-                                        onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                        context = context
-                                    )
-                                }
+                                    item {
+                                        C3_TransactionCommercial.EtateActuellementEst.Cible
+                                            .ButtonAutreEtates(
+                                                uiState = uiState,
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+                                    }
 
-                                item {
-                                    C3_TransactionCommercial.EtateActuellementEst.FERME
-                                        .ButtonAutreEtates(
-                                            uiState = uiState,
-                                            viewModel = viewModel,
-                                            clickedClient = clientId,
-                                        )
-                                }
-                                item {
-                                    C3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                        .ButtonAutreEtates(
-                                            uiState = uiState,
-                                            viewModel = viewModel,
-                                            clickedClient = clientId,
-                                        )
-
-                                }
-
-                                item {
-                                    ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
-                                        uiState = uiState,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                    )
-                                }
-
-                                item {
-                                    C3_TransactionCommercial.EtateActuellementEst.Cible
-                                        .ButtonAutreEtates(
-                                            uiState = uiState,
-                                            viewModel = viewModel,
-                                            clickedClient = clientId,
-                                        )
-                                }
-
-                                // Add null check for activeCompt before accessing vid property
-                                uiState.activeCompt?.let { activeCompt ->
-                                    if (activeCompt.vid == 2L) {
-                                        item {
-                                            C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                                                .ButtonAutreEtates(
-                                                    uiState = uiState,
-                                                    viewModel = viewModel,
-                                                    clickedClient = clientId,
-                                                )
+                                    // Add null check for activeCompt before accessing vid property
+                                    uiState.activeCompt?.let { activeCompt ->
+                                        if (activeCompt.vid == 2L) {
+                                            item {
+                                                C3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                                    .ButtonAutreEtates(
+                                                        uiState = uiState,
+                                                        viewModel = viewModel,
+                                                        clickedClient = clientId,
+                                                    )
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+
+                    // Always show transaction history
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "سجل المعاملات",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+
+                        A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+                            modifier = Modifier.fillMaxWidth(),
+                            idClient = clientId
+                        )
+                    }
+
+                    // Add bottom padding to avoid overlap with floating button
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
                 }
+            }
 
-                // Always show transaction history
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "سجل المعاملات",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-
-                    A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-                        modifier = Modifier.fillMaxWidth(),
-                        idClient = clientId
-                    )
-                }
+            // Floating dismiss button at bottom end
+            FloatingActionButton(
+                onClick = { handleDismiss() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+                    .size(56.dp),
+                shape = CircleShape,
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = "إغلاق",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
 
