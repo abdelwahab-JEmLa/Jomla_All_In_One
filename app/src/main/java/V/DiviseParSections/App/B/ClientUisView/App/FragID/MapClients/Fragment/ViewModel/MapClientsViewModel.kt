@@ -250,5 +250,8 @@ class MapClientsViewModel(
     fun startRecordIfNot() {
         recordingHandler.startRecordIfNot()
     }
-
+    fun updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert: Long): Unit {
+        centralDatasHandler.comptAppState
+            .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
+    }
 }

@@ -46,7 +46,6 @@ fun MarkerStatusDialog(
     clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
     mapView: MapView,
     uiState: UiState,
-    onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
@@ -55,7 +54,7 @@ fun MarkerStatusDialog(
         .filterIsInstance<Marker>()
         .find { marker ->
             marker.id == clientOuCaMarqueGpsEstOuvert?.id.toString()
-        }?: return
+        } ?: return
 
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
@@ -73,7 +72,10 @@ fun MarkerStatusDialog(
     }
 
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            viewModel
+                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+        },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             dismissOnBackPress = true,
@@ -95,7 +97,10 @@ fun MarkerStatusDialog(
                         viewModel = viewModel,
                         marqueClick = marqueClick,
                         marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
-                        onDismiss = onDismiss,
+                        onDismiss = {
+                            viewModel
+                                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+                        },
                         onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                         onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
                         onClientTypeModeChange = { clientTypeMode = it },
@@ -157,7 +162,10 @@ fun MarkerStatusDialog(
                                         clientId = clientId,
                                         selectedMarker = marqueClick,
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                        onDismiss = onDismiss,
+                                        onDismiss = {
+                                            viewModel
+                                                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+                                        },
                                         context = context
                                     )
                                 }
@@ -330,7 +338,10 @@ fun MarkerStatusDialog(
 
                                 // Remove the marker from the map
                                 onRemoveMark(marqueClick)
-                                onDismiss()
+
+                                viewModel
+                                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+
                             }
                             showDeleteConfirmationDialog = false
                         }

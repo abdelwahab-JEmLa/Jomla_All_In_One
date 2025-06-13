@@ -48,7 +48,6 @@ fun MapContent(
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
-    var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
         mutableStateOf(
@@ -167,10 +166,9 @@ fun MapContent(
                 clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
                 mapView=mapView,
                 uiState = uiState,
-                onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->
-                    showMarkerDialog = false
+                   //showMarkerDialog = false
                     editingMarkerId = clientId
                     showEditMarkerMode = true
                 },
