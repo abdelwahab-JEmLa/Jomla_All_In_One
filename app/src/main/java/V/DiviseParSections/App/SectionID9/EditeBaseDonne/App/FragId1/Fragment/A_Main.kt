@@ -43,8 +43,8 @@ enum class ModeAffichage {
 @Preview
 @Composable
 fun EditeBaseDonneMainScreenIdS9(
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
     modifier: Modifier = Modifier,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgressPJuin3
@@ -69,7 +69,7 @@ fun EditeBaseDonneMainScreenIdS9(
     }
 
     // Updated filter logic for A_Main.kt
-// Replace the filteredProduitList derivedStateOf block with this:
+    // Replace the filteredProduitList derivedStateOf block with this:
 
     val filteredProduitList by remember(produitListLocal, filterState) {
         derivedStateOf {
