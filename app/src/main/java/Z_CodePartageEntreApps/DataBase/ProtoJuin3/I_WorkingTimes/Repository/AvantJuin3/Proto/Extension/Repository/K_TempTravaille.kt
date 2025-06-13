@@ -49,6 +49,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
         var idClientSiAchat by mutableStateOf(0L)
         var enCoureDEnregestrement by mutableStateOf(false)
         var tempDepart by mutableStateOf("HH:mm")
+        var tempArreteTimeTamp by mutableStateOf(0L)
         var temparrete by mutableStateOf("HH:mm")
 
         companion object {
