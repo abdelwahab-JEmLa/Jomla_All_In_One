@@ -89,15 +89,19 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hideNonDispo) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
+
             if (filterState.hideDispoOnly) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.DISPO }
             }
+
             if (filterState.hidePetiteProbability) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
+
             if (filterState.hidePrixAchatZero) {
                 filtered = filtered.filter { it.prixAchat > 0.0 }
             }
+
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
