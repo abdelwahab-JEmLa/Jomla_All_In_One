@@ -38,10 +38,8 @@ internal fun MainList(
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
-    // Get catalogues data
     val catalogues = remember { startupeDatas() }
 
-    // Group categories by catalogue (same logic as in CategorySelectionDialog)
     val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
 
@@ -57,7 +55,6 @@ internal fun MainList(
             }
         }
 
-        // Add categories that don't belong to any catalogue
         val uncategorizedCategories = categoriesListLocal.filter { category ->
             !catalogues.any { catalogue ->
                 category.id >= catalogue.premierCategorieId &&
@@ -86,9 +83,7 @@ internal fun MainList(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Add catalogue sections with headers
             categoriesByCatalogue.forEach { (catalogue, categories) ->
-                // Add catalogue header
                 item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                     CatalogHeaderCard(
                         catalogue = catalogue,
