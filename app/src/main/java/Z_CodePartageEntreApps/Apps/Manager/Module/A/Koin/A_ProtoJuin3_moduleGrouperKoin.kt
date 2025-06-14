@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B3CategoriesCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B_ClientsState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.C_TransactionCommercialState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.D_ComptAppState
@@ -15,6 +16,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val moduleRepositorys = module {
+
     single {
         B_ClientInfosProtoJuin3Repository(
             androidContext(),
@@ -56,6 +58,11 @@ val moduleRepositorys = module {
 
 val moduleComposRepositorys = module {
     single {
+        B3CategoriesCompoRepository(
+            get(),
+        )
+    }
+    single {
         Z_AutreStates(
             get(),
         )
@@ -78,6 +85,7 @@ val moduleComposRepositorys = module {
     }
     single {
         A_CentralDatasHandlerProtoJuin9(
+            get(),
             get(),
             get(),
             get(),

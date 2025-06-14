@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,32 +42,11 @@ internal fun MainList(
 
     val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-
-        catalogues.forEach { catalogue ->
-            val catalogueCategories = categoriesListLocal.filter { category ->
-                category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                            category.id < nextCatalogue.premierCategorieId
-                        } ?: true)
-            }
-            if (catalogueCategories.isNotEmpty()) {
-                grouped[catalogue] = catalogueCategories
-            }
+        catalogues.forEach { cat ->
+            categoriesListLocal.filter { it.catalogueParentId == cat.id }.let { if (it.isNotEmpty()) grouped[cat] = it }
         }
-
-        val uncategorizedCategories = categoriesListLocal.filter { category ->
-            !catalogues.any { catalogue ->
-                category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                            category.id < nextCatalogue.premierCategorieId
-                        } ?: true)
-            }
-        }
-
-        if (uncategorizedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(0, "Autres", 0)] = uncategorizedCategories
-        }
-
+        categoriesListLocal.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
+            .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
         grouped
     }
 
@@ -85,13 +64,8 @@ internal fun MainList(
         ) {
             categoriesByCatalogue.forEach { (catalogue, categories) ->
                 item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
-                    CatalogHeaderCard(
-                        catalogue = catalogue,
-                        modifier = Modifier
-                    )
+                    CatalogHeaderCard(catalogue = catalogue, modifier = Modifier)
                 }
-
-                // Add categories for this catalogue
                 items(categories, key = { it.id }) { category ->
                     MainItem(
                         productsByCategory = productsByCategory,
@@ -99,12 +73,8 @@ internal fun MainList(
                         selectedCategories = selectedCategories,
                         categoriesListLocal = categoriesListLocal,
                         onCategoriesReordered = onCategoriesReordered,
-                        onSelectionChanged = { newSelection ->
-                            selectedCategories = newSelection
-                        },
-                        onCategoriesUpdated = { newCategories ->
-                            categoriesListLocal = newCategories
-                        }
+                        onSelectionChanged = { selectedCategories = it },
+                        onCategoriesUpdated = { categoriesListLocal = it }
                     )
                 }
             }

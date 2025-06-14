@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateDatasList
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ data class UiState(
 )
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
+    val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
@@ -28,6 +30,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     init {
         collecteMasterRepositorysDatasAuUiState()
+        collecteCategoriesDataAuUiState()
     }
 
     private fun collecteMasterRepositorysDatasAuUiState() {
@@ -37,11 +40,19 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
                     _uiState.value = _uiState.value.copy(
                         a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
                             ?: emptyList(),
-                        c_CategorieProduitInfosList = model.repoStateC_CategorieProduitInfos?.modelListFlow
-                            ?: emptyList(),
                         mainLoadingProgressPJuin3 = model.progress
                     )
                 }
+            }
+        }
+    }
+
+    private fun collecteCategoriesDataAuUiState() {
+        viewModelScope.launch {
+            a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasState.let { categoriesState ->
+                _uiState.value = _uiState.value.copy(
+                    c_CategorieProduitInfosList = categoriesState.value
+                )
             }
         }
     }

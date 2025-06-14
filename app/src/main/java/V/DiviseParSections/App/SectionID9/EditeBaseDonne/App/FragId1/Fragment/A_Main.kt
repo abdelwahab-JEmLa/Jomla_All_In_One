@@ -42,6 +42,11 @@ enum class ModeAffichage {
 
 @Preview
 @Composable
+private fun EditeBaseDonneMainScreenIdS9Prev() {
+    EditeBaseDonneMainScreenIdS9()
+}
+
+@Composable
 fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),

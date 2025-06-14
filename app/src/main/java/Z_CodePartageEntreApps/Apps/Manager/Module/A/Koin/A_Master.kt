@@ -220,6 +220,7 @@ val viewModelModule = module {
     viewModel {
         EditeBaseDonneMainScreenIdS9ViewModel(
             get(),
+            get(),
         )
     }
     viewModel {

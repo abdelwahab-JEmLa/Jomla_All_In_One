@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

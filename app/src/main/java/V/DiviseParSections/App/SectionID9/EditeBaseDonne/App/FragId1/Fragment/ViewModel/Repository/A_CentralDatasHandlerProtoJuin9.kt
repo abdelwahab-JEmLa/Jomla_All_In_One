@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 @Stable
 class A_CentralDatasHandlerProtoJuin9(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
+    val b3CategoriesCompoRepository: B3CategoriesCompoRepository,
     val clientsState: B_ClientsState,
     val comptAppState: D_ComptAppState,
     val transactionCommercialState: C_TransactionCommercialState,

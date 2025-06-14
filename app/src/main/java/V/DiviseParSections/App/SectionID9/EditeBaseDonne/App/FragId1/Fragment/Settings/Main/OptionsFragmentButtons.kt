@@ -2,6 +2,8 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import android.util.Log
@@ -11,17 +13,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +44,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
@@ -49,21 +60,24 @@ fun OptionsFragmentButtons(
     onToggleMasque: (Set<AfficheElements>) -> Unit = {},
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onShowBulkMoveDialog: () -> Unit = {},
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    selectedCategories: Set<Long> = emptySet(),
+    onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
 
-    // Get screen configuration to position at the right edge
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp
 
-    // Initialize offset to start at the right edge of the screen
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
     var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
+    var showCatalogueDialog by remember { mutableStateOf(false) }
+
+    val catalogues = remember { startupeDatas() }
 
     val onToggle = {
         maskedElements = if (maskedElements.contains(AfficheElements.APP_BAR)) {
@@ -74,6 +88,7 @@ fun OptionsFragmentButtons(
         onToggleMasque(maskedElements)
     }
 
+    // Update categories dialog
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -81,7 +96,6 @@ fun OptionsFragmentButtons(
             text = { Text("Update Datas? This action cannot be undone.") },
             confirmButton = {
                 TextButton(onClick = {
-
                     viewModelScope.launch {
                         E_JetPackAncienProduitDabase.getFirebaseData { ancDatas ->
                             val newPrdList = viewModel.uiState.value.a_ProduitInfosList.toMutableList()
@@ -120,14 +134,144 @@ fun OptionsFragmentButtons(
                             val totalCount = newPrdList.size
                             val notFoundCount = totalCount - updatedCount
                             Log.d("DataSync", "Synchronization completed: $updatedCount updated, $notFoundCount not found in legacy data")
-
                         }
                         showDialog = false
-
                     }
                 }) { Text("Confirm") }
             },
             dismissButton = { TextButton(onClick = { showDialog = false }) { Text("Cancel") } }
+        )
+    }
+
+    // Catalogue selection dialog
+    if (showCatalogueDialog) {
+        AlertDialog(
+            onDismissRequest = { showCatalogueDialog = false },
+            title = {
+                Text(
+                    "Move Categories to Catalogue",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        "Select a catalogue to move ${selectedCategories.size} selected categories:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    LazyColumn {
+                        items(catalogues) { catalogue ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                onClick = {
+                                    // Move selected categories to this catalogue
+                                    val currentCategories = viewModel.uiState.value.c_CategorieProduitInfosList
+                                    val updatedCategories = currentCategories.map { category ->
+                                        if (selectedCategories.contains(category.id)) {
+                                            category.copy(catalogueParentId = catalogue.id)
+                                        } else {
+                                            category
+                                        }
+                                    }
+
+                                    // Update the categories
+                                    viewModel.addOrUpdateCategs(updatedCategories)
+                                    onCategoriesUpdated(updatedCategories)
+
+                                    showCatalogueDialog = false
+
+                                    Log.d("CatalogueMove", "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}")
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Category,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = catalogue.nom,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Start
+                                    )
+                                }
+                            }
+                        }
+
+                        // Add "Autres" option for uncategorized
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                onClick = {
+                                    // Move selected categories to "Autres" (catalogueParentId = 0)
+                                    val currentCategories = viewModel.uiState.value.c_CategorieProduitInfosList
+                                    val updatedCategories = currentCategories.map { category ->
+                                        if (selectedCategories.contains(category.id)) {
+                                            category.copy(catalogueParentId = 0L)
+                                        } else {
+                                            category
+                                        }
+                                    }
+
+                                    // Update the categories
+                                    viewModel.addOrUpdateCategs(updatedCategories)
+                                    onCategoriesUpdated(updatedCategories)
+
+                                    showCatalogueDialog = false
+
+                                    Log.d("CatalogueMove", "Moved ${selectedCategories.size} categories to Autres")
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Category,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                    Text(
+                                        text = "Autres",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Start
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showCatalogueDialog = false }) {
+                    Text("Cancel")
+                }
+            }
         )
     }
 
@@ -158,6 +302,13 @@ fun OptionsFragmentButtons(
                         showLabels = showLabels,
                         selectedCount = selectedProducts.size,
                         onBulkMove = onShowBulkMoveDialog
+                    )
+
+                    // But3 - Move Categories to Catalogue
+                    But3(
+                        showLabels = showLabels,
+                        selectedCount = selectedCategories.size,
+                        onCatalogueMove = { showCatalogueDialog = true }
                     )
 
                     Row(
@@ -221,6 +372,23 @@ private fun But2(showLabels: Boolean, selectedCount: Int, onBulkMove: () -> Unit
             containerColor = if (selectedCount > 0) Color.Green else Color.Gray
         ) {
             Icon(Icons.Default.SwapHoriz, "Bulk Move Products", tint = Color.Black)
+        }
+    }
+}
+
+@Composable
+private fun But3(showLabels: Boolean, selectedCount: Int, onCatalogueMove: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        if (showLabels) Text("Catalogue ($selectedCount)")
+        FloatingActionButton(
+            onClick = onCatalogueMove,
+            modifier = Modifier.size(40.dp),
+            containerColor = if (selectedCount > 0) Color.Blue else Color.Gray
+        ) {
+            Icon(Icons.Default.Category, "Move Categories to Catalogue", tint = Color.White)
         }
     }
 }
