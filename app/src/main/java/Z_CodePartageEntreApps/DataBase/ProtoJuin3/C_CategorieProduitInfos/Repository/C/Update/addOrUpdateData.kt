@@ -7,7 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-fun C_CategorieProduitInfosRepository.addOrUpdateData(data: CategoriesTabelle) {
+fun C_CategorieProduitInfosRepository.addOrUpdateData(
+    data: CategoriesTabelle,
+    avecFireBase: Boolean = false
+) {
     CoroutineScope(Dispatchers.IO).launch {
 
         val preparedData = data.withDernierTimeTampsSynchronisationAvecFireBase()
@@ -17,15 +20,17 @@ fun C_CategorieProduitInfosRepository.addOrUpdateData(data: CategoriesTabelle) {
         val allData = dao.getAll()
         updateRepoState(allData)
 
-        batchFireBaseUpdate(listOf(preparedData))
+        avecFireBase.batchFireBaseUpdate(listOf(preparedData))
     }
 }
 
-suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
+suspend fun Boolean.batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
     val updates = mutableMapOf<String, Any>()
-    datas.forEach { data ->
-        updates[data.id.toString()] = data
+    if (this) {
+        datas.forEach { data ->
+            updates[data.id.toString()] = data
+        }
+        val firebaseRef = CategoriesTabelle.caRef
+        firebaseRef.updateChildren(updates).await()
     }
-    val firebaseRef = CategoriesTabelle.caRef
-    firebaseRef.updateChildren(updates).await()
 }
