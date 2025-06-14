@@ -23,9 +23,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
-    val b3CategoriesCompoRepository = a_CentralDatasHandlerProtoJuin9
-        .b3CategoriesCompoRepository
-    val b3Categories= b3CategoriesCompoRepository.datasValue
+    val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -38,47 +36,60 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         viewModelScope.launch {
             masterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
+                    val newProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
+                    val newProgress = model.progress
+
                     _uiState.value = _uiState.value.copy(
-                        a_ProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow
-                            ?: emptyList(),
-                        mainLoadingProgressPJuin3 = model.progress
+                        a_ProduitInfosList = newProduitInfosList,
+                        mainLoadingProgressPJuin3 = newProgress
                     )
                 }
             }
         }
     }
 
-
     fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
-        val updatedCategories = b3Categories
-            .filter { it.cSelectionePourDeplace }
-            .map { categorie ->
-                categorie.copy(
-                    catalogueParentId = targetCatalogueId,
-                    cSelectionePourDeplace = false
-                )
-            }
-        b3CategoriesCompoRepository.logCategoriesSelectionForDisplacementIfNeeded(updatedCategories,true)
+        val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+
+        if (categoriesToMove.isEmpty()) {
+            return
+        }
+
+        val updatedCategories = categoriesToMove.map { categorie ->
+            categorie.copy(
+                catalogueParentId = targetCatalogueId,
+                cSelectionePourDeplace = false
+            )
+        }
+
+        categoriesCompoRepository.logCategoriesSelectionForDisplacementIfNeeded(updatedCategories, true)
 
         // Update all modified categories in batch
-        if (updatedCategories.isNotEmpty()) {
-            b3CategoriesCompoRepository.addOrUpdateDatas(updatedCategories)
-        }
+        addOrUpdateCategories(updatedCategories)
     }
 
-    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle, newValeur: Boolean) {
-        val newData = categorie.copy(cSelectionePourDeplace = newValeur)
+    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle) {
+        val newData = categorie.copy(cSelectionePourDeplace = !categorie.cSelectionePourDeplace)
         addOrUpdateCategorie(newData)
     }
 
-    fun addOrUpdateCategorie(categorie: CategoriesTabelle) { b3CategoriesCompoRepository.addOrUpdateData(categorie) }
-    fun addOrUpdateCategories(categories: List<CategoriesTabelle>) { b3CategoriesCompoRepository.addOrUpdateDatas(categories) }
+    fun addOrUpdateCategorie(categorie: CategoriesTabelle) {
+        categoriesCompoRepository.addOrUpdateData(categorie)
+    }
+
+    fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
+        categoriesCompoRepository.addOrUpdateDatas(categories)
+    }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
-        masterRepositorys.repoA_ProduitInfos.addOrUpdateData(
-            data
-        )
+        masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data)
     }
-    fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
-    fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.deleteData(data) }
+
+    fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) {
+        masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas)
+    }
+
+    fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
+        masterRepositorys.repoA_ProduitInfos.deleteData(data)
+    }
 }

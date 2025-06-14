@@ -6,7 +6,6 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,8 +25,8 @@ class B3CategoriesCompoRepository(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
-    val datasState: State<List<CategoriesTabelle>> = _datas
     val datasValue by derivedStateOf { _datas.value }
+    val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 
     init {
         composScope.launch {
@@ -45,9 +44,6 @@ class B3CategoriesCompoRepository(
         data.let { dataSansProper ->
             val newData = dataSansProper.withDernierTimeTampsSynchronisationAvecFireBase()
 
-            // Log tracking for categories selected for displacement
-            logCategorySelectionForDisplacementIfNeeded(newData)
-
             _datas.value = _datas.value.map {
                 if (it.id == newData.id)
                     newData
@@ -59,13 +55,12 @@ class B3CategoriesCompoRepository(
         }
     }
 
-    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) { parentRepo.addOrUpdateData(newData) }
+    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) {
+        parentRepo.addOrUpdateData(newData)
+    }
 
     fun addOrUpdateDatas(datas: List<CategoriesTabelle>) {
         val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
-
-        // Log tracking for categories selected for displacement in batch operations
-        logCategoriesSelectionForDisplacementIfNeeded(processedDatas)
 
         val currentList = _datas.value.toMutableList()
         processedDatas.forEach { newData ->
@@ -85,39 +80,11 @@ class B3CategoriesCompoRepository(
         parentRepo.addOrUpdateDatas(newDatas)
     }
 
-    /**
-     * Logs when a category with cSelectionePourDeplace = true is processed
-     */
-    private fun logCategorySelectionForDisplacementIfNeeded(category: CategoriesTabelle) {
-        if (category.cSelectionePourDeplace) {
-            Log.d(TAG, "Category selected for displacement processed: " +
-                    "ID=${category.id}, Name='${category.nom}', " +
-                    "CatalogueParentId=${category.catalogueParentId}, " +
-                    "Position=${category.position}, " +
-                    "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}")
-        }
-    }
-
-    /**
-     * Logs when categories with cSelectionePourDeplace = true are processed in batch
-     */
-     fun logCategoriesSelectionForDisplacementIfNeeded(
-        categories: List<CategoriesTabelle>,
-        cLenceDepuitViemModel:Boolean=false
-    ) {
-        val selectedCategories = categories.filter { it.cSelectionePourDeplace }
-        if (selectedCategories.isNotEmpty()) {
-            val cLenceDepuitViemModelTag=if(cLenceDepuitViemModel)"cLenceDepuitViemModel"  else ""
-            Log.d(TAG, "$cLenceDepuitViemModelTag Batch operation: ${selectedCategories.size} categories selected for displacement processed")
-            selectedCategories.forEach { category ->
-                Log.d(TAG, "  - Category: ID=${category.id}, Name='${category.nom}', " +
-                        "CatalogueParentId=${category.catalogueParentId}, Position=${category.position}")
-            }
-        }
-    }
 
     companion object {
         private const val TAG = "B3CategoriesCompoRepository"
+
+
     }
 }
 
@@ -154,5 +121,17 @@ data class CategoriesTabelle(
     companion object {
         val caRef =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
+
+        fun logCategorySelectionForDisplacementIfNeeded(category: CategoriesTabelle, TAG: String) {
+            if (category.cSelectionePourDeplace) {
+                Log.d(
+                    TAG, "Category selected for displacement processed: " +
+                            "ID=${category.id}, Name='${category.nom}', " +
+                            "CatalogueParentId=${category.catalogueParentId}, " +
+                            "Position=${category.position}, " +
+                            "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}"
+                )
+            }
+        }
     }
 }

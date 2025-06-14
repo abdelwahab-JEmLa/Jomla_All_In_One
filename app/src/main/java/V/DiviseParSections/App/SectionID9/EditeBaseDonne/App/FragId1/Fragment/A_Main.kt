@@ -51,10 +51,12 @@ fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
-    val progress = uiState.mainLoadingProgressPJuin3
+    val progress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
-    val categoriesList = viewModel.b3Categories
+    val categoriesList =  viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
+        .datasValue
 
     var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
 
@@ -115,123 +117,125 @@ fun EditeBaseDonneMainScreenIdS9(
         }
     }
 
-    if (progress < 1.0f) {
-        LoadingScreen(progress)
-    } else {
-        Box {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // AppBar - can be masked/hidden
-                if (!maskedElements.contains(AfficheElements.APP_BAR)) {
-                    AppBar(
-                        onCreateProductAndCapture = {
-                            createTestProduct()
-                        },
-                        onProductCreated = { viewModel.addOrUpdateProduit(it) },
-                        currentMode = currentMode,
-                        onModeChanged = { currentMode = it },
+    if (progress != null) {
+        if (progress < 1.0f) {
+            LoadingScreen(progress)
+        } else {
+            Box {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    // AppBar - can be masked/hidden
+                    if (!maskedElements.contains(AfficheElements.APP_BAR)) {
+                        AppBar(
+                            onCreateProductAndCapture = {
+                                createTestProduct()
+                            },
+                            onProductCreated = { viewModel.addOrUpdateProduit(it) },
+                            currentMode = currentMode,
+                            onModeChanged = { currentMode = it },
+                            filterState = filterState,
+                            onFilterChanged = { filterState = it },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    MainFilter(
                         filterState = filterState,
                         onFilterChanged = { filterState = it },
+                        totalCount = produitListLocal.size,
+                        filteredCount = filteredProduitList.size,
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    when (currentMode) {
+                        ModeAffichage.CATEGORIES_LIST -> {
+                            EditeCategoriesMainList(
+                                categoriesList = categoriesList,
+                                produitList = filteredProduitList,
+                                onProductCategoryChanged = { updatedProduct ->
+                                    produitListLocal = produitListLocal.map { product ->
+                                        if (product.id == updatedProduct.id) {
+                                            updatedProduct
+                                        } else {
+                                            product
+                                        }
+                                    }
+                                    viewModel.addOrUpdateProduit(updatedProduct)
+                                },
+                                onCategoriesEdite = { updatedCategories ->
+                                    viewModel.addOrUpdateCategories(updatedCategories)
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                selectedProducts = selectedProducts,
+                                onProductSelectionToggle = { product ->
+                                    selectedProducts = if (selectedProducts.contains(product)) {
+                                        selectedProducts - product
+                                    } else {
+                                        selectedProducts + product
+                                    }
+                                },
+                                showBulkMoveDialog = showBulkMoveDialog,
+                                onShowBulkMoveDialog = { show ->
+                                    showBulkMoveDialog = show
+                                    if (!show) {
+                                        selectedProducts = emptySet()
+                                    }
+                                }
+                            )
+                        }
+
+                        ModeAffichage.PRODUCTS_LIST -> {
+                            EditeInfosMainList(
+                                produitList = filteredProduitList,
+                                onPrixUpdate = { updatedProduct ->
+                                    produitListLocal = produitListLocal.map { product ->
+                                        if (product.id == updatedProduct.id) {
+                                            updatedProduct
+                                        } else {
+                                            product
+                                        }
+                                    }
+                                    viewModel.addOrUpdateProduit(updatedProduct)
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        ModeAffichage.REORDER_GRID -> {
+                            ReorderMultiCategories(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = viewModel,
+                                categoriesList = categoriesList,
+                                onCategoriesReordered = { updatedCategories ->
+                                    viewModel.addOrUpdateCategories(updatedCategories)
+                                },
+                                produitList = produitList
+                            )
+                        }
+                    }
                 }
 
-                MainFilter(
-                    filterState = filterState,
-                    onFilterChanged = { filterState = it },
-                    totalCount = produitListLocal.size,
-                    filteredCount = filteredProduitList.size,
-                    modifier = Modifier.fillMaxWidth()
+                OptionsFragmentButtons(
+                    viewModel = viewModel,
+                    viewModelScope = viewModel.viewModelScope,
+                    onToggleMasque = { newMaskedElements ->
+                        maskedElements = newMaskedElements
+                    },
+                    selectedProducts = selectedProducts,
+                    onShowBulkMoveDialog = {
+                        showBulkMoveDialog = true
+                    },
+                    selectedCategories = selectedCategories,
+                    onCategoriesUpdated = { updatedCategories ->
+                        viewModel.addOrUpdateCategories(updatedCategories)
+                    }
                 )
-
-                when (currentMode) {
-                    ModeAffichage.CATEGORIES_LIST -> {
-                        EditeCategoriesMainList(
-                            categoriesList = categoriesList,
-                            produitList = filteredProduitList,
-                            onProductCategoryChanged = { updatedProduct ->
-                                produitListLocal = produitListLocal.map { product ->
-                                    if (product.id == updatedProduct.id) {
-                                        updatedProduct
-                                    } else {
-                                        product
-                                    }
-                                }
-                                viewModel.addOrUpdateProduit(updatedProduct)
-                            },
-                            onCategoriesEdite = { updatedCategories ->
-                                viewModel.addOrUpdateCategories(updatedCategories)
-                            },
-                            modifier = Modifier.fillMaxSize(),
-                            selectedProducts = selectedProducts,
-                            onProductSelectionToggle = { product ->
-                                selectedProducts = if (selectedProducts.contains(product)) {
-                                    selectedProducts - product
-                                } else {
-                                    selectedProducts + product
-                                }
-                            },
-                            showBulkMoveDialog = showBulkMoveDialog,
-                            onShowBulkMoveDialog = { show ->
-                                showBulkMoveDialog = show
-                                if (!show) {
-                                    selectedProducts = emptySet()
-                                }
-                            }
-                        )
-                    }
-
-                    ModeAffichage.PRODUCTS_LIST -> {
-                        EditeInfosMainList(
-                            produitList = filteredProduitList,
-                            onPrixUpdate = { updatedProduct ->
-                                produitListLocal = produitListLocal.map { product ->
-                                    if (product.id == updatedProduct.id) {
-                                        updatedProduct
-                                    } else {
-                                        product
-                                    }
-                                }
-                                viewModel.addOrUpdateProduit(updatedProduct)
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-
-                    ModeAffichage.REORDER_GRID -> {
-                        ReorderMultiCategories(
-                            modifier = Modifier.fillMaxSize(),
-                            viewModel = viewModel,
-                            categoriesList = categoriesList,
-                            onCategoriesReordered = { updatedCategories ->
-                                viewModel.addOrUpdateCategories(updatedCategories)
-                            },
-                            produitList = produitList
-                        )
-                    }
-                }
             }
-
-            OptionsFragmentButtons(
-                viewModel = viewModel,
-                viewModelScope = viewModel.viewModelScope,
-                onToggleMasque = { newMaskedElements ->
-                    maskedElements = newMaskedElements
-                },
-                selectedProducts = selectedProducts,
-                onShowBulkMoveDialog = {
-                    showBulkMoveDialog = true
-                },
-                selectedCategories = selectedCategories,
-                onCategoriesUpdated = { updatedCategories ->
-                    viewModel.addOrUpdateCategories(updatedCategories)
-                }
-            )
         }
     }
 }

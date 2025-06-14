@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 internal fun MainItem(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     category: CategoriesTabelle,
-    selectedCategories: Set<Long>,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
     categoriesListLocal: List<CategoriesTabelle>,
     onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
@@ -44,22 +43,22 @@ internal fun MainItem(
     val categoryProducts = productsByCategory[category.id] ?: emptyList()
     val displayProducts = categoryProducts.take(3)
 
+    val selectedCategories = categoriesListLocal.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+
     Card(
         modifier = Modifier
             .aspectRatio(0.7f)
             .clickable {
-                // Toggle selection state in ViewModel
-                val isCurrentlySelected = selectedCategories.contains(category.id)
-                viewModel.updateCate_cSelectionePourDeplace(category, !isCurrentlySelected)
+                viewModel.updateCate_cSelectionePourDeplace(category)
             },
         colors = CardDefaults.cardColors(
-            containerColor = if (selectedCategories.contains(category.id))
+            containerColor = if (category.cSelectionePourDeplace)
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
             else
                 MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (selectedCategories.contains(category.id)) 6.dp else 2.dp
+            defaultElevation = if (category.cSelectionePourDeplace) 6.dp else 2.dp
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -70,7 +69,7 @@ internal fun MainItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            if (selectedCategories.isNotEmpty() && !selectedCategories.contains(category.id)) {
+            if (selectedCategories.isNotEmpty() && !category.cSelectionePourDeplace) {
                 IconButton(
                     onClick = {
                         val updated = moveSelectedCategories(
@@ -84,7 +83,7 @@ internal fun MainItem(
                         // Clear selection state for moved categories using ViewModel
                         selectedCategories.forEach { selectedId ->
                             categoriesListLocal.find { it.id == selectedId }?.let { cat ->
-                                viewModel.updateCate_cSelectionePourDeplace(cat, false)
+                                viewModel.updateCate_cSelectionePourDeplace(cat)
                             }
                         }
                     },
@@ -110,16 +109,16 @@ internal fun MainItem(
                 Text(
                     text = category.nom,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (selectedCategories.contains(category.id))
+                    fontWeight = if (category.cSelectionePourDeplace)
                         FontWeight.Bold else FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    color = if (selectedCategories.contains(category.id))
+                    color = if (category.cSelectionePourDeplace)
                         MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                if (selectedCategories.contains(category.id)) {
+                if (category.cSelectionePourDeplace) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(
                         modifier = Modifier
@@ -139,7 +138,7 @@ internal fun MainItem(
                 }
             }
 
-            if (selectedCategories.isNotEmpty() && !selectedCategories.contains(category.id)) {
+            if (selectedCategories.isNotEmpty() && !category.cSelectionePourDeplace) {
                 IconButton(
                     onClick = {
                         val updated = moveSelectedCategories(
@@ -153,7 +152,7 @@ internal fun MainItem(
                         // Clear selection state for moved categories using ViewModel
                         selectedCategories.forEach { selectedId ->
                             categoriesListLocal.find { it.id == selectedId }?.let { cat ->
-                                viewModel.updateCate_cSelectionePourDeplace(cat, false)
+                                viewModel.updateCate_cSelectionePourDeplace(cat)
                             }
                         }
                     },

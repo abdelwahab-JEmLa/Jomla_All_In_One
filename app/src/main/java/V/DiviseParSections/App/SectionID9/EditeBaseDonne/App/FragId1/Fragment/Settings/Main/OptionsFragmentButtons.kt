@@ -172,7 +172,8 @@ fun OptionsFragmentButtons(
                                 onClick = {
                                     viewModel.moveCategoriesAuCatalogue(catalogue.id)
 
-                                    onCategoriesUpdated(viewModel.b3Categories)
+                                    onCategoriesUpdated( viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
+                                        .datasValue)
 
                                     showCatalogueDialog = false
 

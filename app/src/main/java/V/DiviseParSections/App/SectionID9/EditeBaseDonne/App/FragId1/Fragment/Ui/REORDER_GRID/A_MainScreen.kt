@@ -14,7 +14,7 @@ fun ReorderMultiCategories(
     onCategoriesReordered: (List<CategoriesTabelle>) -> Unit = {},
     produitList: List<ArticlesBasesStatsTable> = emptyList()
 ) {
-    MainList(modifier, viewModel, categoriesList, produitList, onCategoriesReordered)
+    MainList(modifier, viewModel, produitList, onCategoriesReordered)
 }
 
 fun moveSelectedCategories(

@@ -24,28 +24,28 @@ import androidx.compose.ui.unit.dp
 internal fun MainList(
     modifier: Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
-    categoriesListLocal: List<CategoriesTabelle>,
     produitList: List<ArticlesBasesStatsTable>,
-    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit ,
 ) {
-    // Get selected categories from ViewModel state instead of local state
-    val selectedCategories = remember(categoriesListLocal) {
-        categoriesListLocal.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
-    }
+    val categoriesCompoRepository = viewModel.categoriesCompoRepository
+    val currentCategories = categoriesCompoRepository.datasValue
 
-    val productsByCategory = remember(produitList) {
+    val productsByCategory = remember(produitList, categoriesCompoRepository.tigerDataRecompose ) {
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
     val catalogues = remember { startupeDatas() }
 
-    val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
+    val categoriesByCatalogue = remember(
+        categoriesCompoRepository.tigerDataRecompose,
+        catalogues
+    ) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
         catalogues.forEach { cat ->
-            categoriesListLocal.filter { it.catalogueParentId == cat.id }
+            currentCategories.filter { it.catalogueParentId == cat.id }
                 .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
-        categoriesListLocal.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
+        currentCategories.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
             .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
         grouped
     }
@@ -70,8 +70,7 @@ internal fun MainList(
                     MainItem(
                         productsByCategory = productsByCategory,
                         category = category,
-                        selectedCategories = selectedCategories,
-                        categoriesListLocal = categoriesListLocal,
+                        categoriesListLocal = currentCategories, // Use current categories instead of local parameter
                         onCategoriesReordered = onCategoriesReordered,
                         viewModel = viewModel
                     )
