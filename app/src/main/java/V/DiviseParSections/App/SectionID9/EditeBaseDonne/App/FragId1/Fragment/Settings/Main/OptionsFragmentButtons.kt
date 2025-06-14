@@ -170,8 +170,8 @@ fun OptionsFragmentButtons(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 ),
                                 onClick = {
-                                    // Move selected categories to this catalogue using ViewModel method
-                                    viewModel.moveCategoriesAuCatalogue(selectedCategories, catalogue.id)
+                                    viewModel.moveCategoriesAuCatalogue(catalogue.id)
+
                                     onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
 
                                     showCatalogueDialog = false
@@ -201,46 +201,6 @@ fun OptionsFragmentButtons(
                             }
                         }
 
-                        // Add "Autres" option for uncategorized
-                        item {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                                onClick = {
-                                    // Move selected categories to "Autres" (catalogueParentId = 0) and clear selection
-                                    viewModel.moveCategoriesAuCatalogue(selectedCategories, 0L)
-                                    onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
-
-                                    showCatalogueDialog = false
-
-                                    Log.d("CatalogueMove", "Moved ${selectedCategories.size} categories to Autres")
-                                }
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Category,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.secondary
-                                    )
-                                    Text(
-                                        text = "Autres",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium,
-                                        textAlign = TextAlign.Start
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             },

@@ -26,6 +26,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 ) : ViewModel() {
     val b3CategoriesCompoRepository = a_CentralDatasHandlerProtoJuin9
         .b3CategoriesCompoRepository
+    val b3Categories= b3CategoriesCompoRepository.datasValue
+
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -61,25 +63,22 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     /**
      * Moves selected categories to a specific catalogue and clears their selection state
-     * @param selectedCategoryIds Set of category IDs to move
      * @param targetCatalogueId ID of the target catalogue (0L for "Autres")
      */
-    fun moveCategoriesAuCatalogue(selectedCategoryIds: Set<Long>, targetCatalogueId: Long) {
-        val currentCategories = _uiState.value.c_CategorieProduitInfosList
-        val updatedCategories = currentCategories.map { category ->
-            if (selectedCategoryIds.contains(category.id)) {
-                // Move to new catalogue and clear selection state
-                category.copy(
+    fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
+        val updatedCategories = b3Categories
+            .filter { it.cSelectionePourDeplace }
+            .map { categorie ->
+                categorie.copy(
                     catalogueParentId = targetCatalogueId,
                     cSelectionePourDeplace = false
                 )
-            } else {
-                category
             }
-        }
 
         // Update all modified categories in batch
-        addOrUpdateCategories(updatedCategories)
+        if (updatedCategories.isNotEmpty()) {
+            b3CategoriesCompoRepository.addOrUpdateDatas(updatedCategories)
+        }
     }
 
     fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle, newValeur: Boolean) {

@@ -7,6 +7,8 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -25,6 +27,7 @@ class B3CategoriesCompoRepository(
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
     val datasState: State<List<CategoriesTabelle>> = _datas
+    val datasValue by derivedStateOf { _datas.value }
 
     init {
         composScope.launch {
