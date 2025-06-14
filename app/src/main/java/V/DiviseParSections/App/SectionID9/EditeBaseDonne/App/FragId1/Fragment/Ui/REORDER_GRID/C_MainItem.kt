@@ -37,13 +37,11 @@ internal fun MainItem(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
-    categoriesListLocal: List<CategoriesTabelle>,
-    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
 ) {
     val categoryProducts = productsByCategory[category.id] ?: emptyList()
     val displayProducts = categoryProducts.take(3)
 
-    val selectedCategories = categoriesListLocal.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+    val selectedCategoryIds = viewModel.getSelectedCategoryIds()
 
     Card(
         modifier = Modifier
@@ -69,23 +67,14 @@ internal fun MainItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            if (selectedCategories.isNotEmpty() && !category.cSelectionePourDeplace) {
+            // Move Before Button
+            if (selectedCategoryIds.isNotEmpty() && !category.cSelectionePourDeplace) {
                 IconButton(
                     onClick = {
-                        val updated = moveSelectedCategories(
-                            categoriesListLocal,
-                            selectedCategories,
-                            category.id,
-                            true
+                        viewModel.moveSelectedCategoriesRelativeToTarget(
+                            targetCategoryId = category.id,
+                            moveBefore = true
                         )
-                        onCategoriesReordered(updated)
-
-                        // Clear selection state for moved categories using ViewModel
-                        selectedCategories.forEach { selectedId ->
-                            categoriesListLocal.find { it.id == selectedId }?.let { cat ->
-                                viewModel.updateCate_cSelectionePourDeplace(cat)
-                            }
-                        }
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
@@ -138,23 +127,14 @@ internal fun MainItem(
                 }
             }
 
-            if (selectedCategories.isNotEmpty() && !category.cSelectionePourDeplace) {
+            // Move After Button
+            if (selectedCategoryIds.isNotEmpty() && !category.cSelectionePourDeplace) {
                 IconButton(
                     onClick = {
-                        val updated = moveSelectedCategories(
-                            categoriesListLocal,
-                            selectedCategories,
-                            category.id,
-                            false
+                        viewModel.moveSelectedCategoriesRelativeToTarget(
+                            targetCategoryId = category.id,
+                            moveBefore = false
                         )
-                        onCategoriesReordered(updated)
-
-                        // Clear selection state for moved categories using ViewModel
-                        selectedCategories.forEach { selectedId ->
-                            categoriesListLocal.find { it.id == selectedId }?.let { cat ->
-                                viewModel.updateCate_cSelectionePourDeplace(cat)
-                            }
-                        }
                     },
                     modifier = Modifier.size(28.dp)
                 ) {

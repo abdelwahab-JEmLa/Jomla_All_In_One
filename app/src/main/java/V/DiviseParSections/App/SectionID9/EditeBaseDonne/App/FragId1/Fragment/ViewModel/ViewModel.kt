@@ -48,26 +48,124 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         }
     }
 
+    enum class MoveOperation {
+        TO_CATALOGUE,
+        RELATIVE_TO_TARGET,
+        REORDER_WITH_CLEAR
+    }
+
+    fun moveCategories(
+        operation: MoveOperation,
+        targetId: Long = 0L,
+        moveBefore: Boolean = false,
+        newCategoriesList: List<CategoriesTabelle> = emptyList()
+    ) {
+        when (operation) {
+            MoveOperation.TO_CATALOGUE -> {
+                val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+                if (categoriesToMove.isEmpty()) return
+
+                val updatedCategories = categoriesToMove.map { categorie ->
+                    categorie.copy(
+                        catalogueParentId = targetId,
+                        cSelectionePourDeplace = false
+                    )
+                }
+                addOrUpdateCategories(updatedCategories)
+            }
+
+            MoveOperation.RELATIVE_TO_TARGET -> {
+                val currentCategories = categoriesCompoRepository.datasValue
+                val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
+
+                if (selectedCategories.isEmpty() || selectedCategories.any { it.id == targetId }) return
+
+                val reorderedCategories = performCategoryReorder(
+                    categories = currentCategories,
+                    selectedIds = selectedCategories.map { it.id }.toSet(),
+                    targetId = targetId,
+                    moveBefore = moveBefore
+                )
+
+                val finalCategories = reorderedCategories.map { category ->
+                    if (selectedCategories.any { it.id == category.id }) {
+                        category.copy(cSelectionePourDeplace = false)
+                    } else {
+                        category
+                    }
+                }
+                addOrUpdateCategories(finalCategories)
+            }
+
+            MoveOperation.REORDER_WITH_CLEAR -> {
+                val updatedCategories = newCategoriesList.mapIndexed { index, category ->
+                    category.copy(
+                        position = index + 1,
+                        cSelectionePourDeplace = false
+                    )
+                }
+                addOrUpdateCategories(updatedCategories)
+            }
+        }
+    }
+
+    private fun performCategoryReorder(
+        categories: List<CategoriesTabelle>,
+        selectedIds: Set<Long>,
+        targetId: Long,
+        moveBefore: Boolean
+    ): List<CategoriesTabelle> {
+        if (selectedIds.isEmpty() || selectedIds.contains(targetId)) return categories
+
+        val selected = categories.filter { selectedIds.contains(it.id) }
+        val remaining = categories.filter { !selectedIds.contains(it.id) }
+        val targetIndex = remaining.indexOfFirst { it.id == targetId }
+
+        if (targetIndex == -1) return categories
+
+        val insertIndex = if (moveBefore) targetIndex else targetIndex + 1
+        val newList = remaining.toMutableList()
+
+        selected.forEachIndexed { i, cat -> newList.add(insertIndex + i, cat) }
+
+        return newList.mapIndexed { i, cat -> cat.copy(position = i + 1) }
+    }
+
     fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
-        val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+        moveCategories(MoveOperation.TO_CATALOGUE, targetCatalogueId)
+    }
 
-        if (categoriesToMove.isEmpty()) {
-            return
-        }
+    fun moveSelectedCategoriesRelativeToTarget(targetCategoryId: Long, moveBefore: Boolean) {
+        moveCategories(MoveOperation.RELATIVE_TO_TARGET, targetCategoryId, moveBefore)
+    }
 
-        val updatedCategories = categoriesToMove.map { categorie ->
-            categorie.copy(
-                catalogueParentId = targetCatalogueId,
-                cSelectionePourDeplace = false
-            )
-        }
-
-        addOrUpdateCategories(updatedCategories)
+    fun reorderCategoriesAndClearSelections(newCategoriesList: List<CategoriesTabelle>) {
+        moveCategories(MoveOperation.REORDER_WITH_CLEAR, newCategoriesList = newCategoriesList)
     }
 
     fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle) {
         val newData = categorie.copy(cSelectionePourDeplace = !categorie.cSelectionePourDeplace)
         addOrUpdateCategorie(newData)
+    }
+
+    fun clearAllCategorySelections() {
+        val currentCategories = categoriesCompoRepository.datasValue
+        val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
+
+        if (selectedCategories.isNotEmpty()) {
+            val clearedCategories = selectedCategories.map { category ->
+                category.copy(cSelectionePourDeplace = false)
+            }
+            addOrUpdateCategories(clearedCategories)
+        }
+    }
+
+    fun getSelectedCategories(): List<CategoriesTabelle> {
+        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+    }
+
+    fun getSelectedCategoryIds(): Set<Long> {
+        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
 
     fun addOrUpdateCategorie(categorie: CategoriesTabelle) {

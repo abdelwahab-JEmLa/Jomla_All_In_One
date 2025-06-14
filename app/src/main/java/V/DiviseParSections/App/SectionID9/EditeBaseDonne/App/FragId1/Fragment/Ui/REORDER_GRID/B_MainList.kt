@@ -25,8 +25,8 @@ internal fun MainList(
     modifier: Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     produitList: List<ArticlesBasesStatsTable>,
-    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit ,
 ) {
+    val TAG ="MainList"
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val currentCategories = categoriesCompoRepository.datasValue
 
@@ -48,6 +48,11 @@ internal fun MainList(
         currentCategories.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
             .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
         grouped
+    }.also {
+        val cate=  currentCategories.find { it.nom.contains("huil") }
+        if (cate != null) {
+            CategoriesTabelle.logCategory(cate, TAG)
+        }
     }
 
     Column(
@@ -70,8 +75,6 @@ internal fun MainList(
                     MainItem(
                         productsByCategory = productsByCategory,
                         category = category,
-                        categoriesListLocal = currentCategories, // Use current categories instead of local parameter
-                        onCategoriesReordered = onCategoriesReordered,
                         viewModel = viewModel
                     )
                 }

@@ -210,10 +210,6 @@ fun EditeBaseDonneMainScreenIdS9(
                             ReorderMultiCategories(
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = viewModel,
-                                categoriesList = categoriesList,
-                                onCategoriesReordered = { updatedCategories ->
-                                    viewModel.addOrUpdateCategories(updatedCategories)
-                                },
                                 produitList = produitList
                             )
                         }

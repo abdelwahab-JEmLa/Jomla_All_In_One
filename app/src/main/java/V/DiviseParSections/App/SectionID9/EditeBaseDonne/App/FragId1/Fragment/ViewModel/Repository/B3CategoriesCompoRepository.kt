@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 class B3CategoriesCompoRepository(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ) {
+    val TAG = "B3CategoriesCompoRepository"
     val parentRepo = a_MasterRepositorysGrpProtoJuin3.repoC_CategorieProduitInfos
     private val composScope = CoroutineScope(Dispatchers.IO)
 
@@ -35,7 +36,8 @@ class B3CategoriesCompoRepository(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     model.repoStateC_CategorieProduitInfos?.modelListFlow
-                    val newDataList = model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList()
+                    val newDataList =
+                        model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList()
                     _datas.value = newDataList
                 }
             }
@@ -50,10 +52,8 @@ class B3CategoriesCompoRepository(
                 if (it.id == newData.id)
                     newData
                 else it
-            }.let { list ->
-                if (list.none { it.id == newData.id }) list + newData else list
             }
-
+            CategoriesTabelle.logCategory(newData, TAG)
             _datas.value = updatedList
 
             composScope.launch {
@@ -123,16 +123,15 @@ data class CategoriesTabelle(
         val caRef =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
 
-        fun logCategorySelectionForDisplacementIfNeeded(category: CategoriesTabelle, TAG: String) {
-            if (category.cSelectionePourDeplace) {
-                Log.d(
-                    TAG, "Category selected for displacement processed: " +
-                            "ID=${category.id}, Name='${category.nom}', " +
-                            "CatalogueParentId=${category.catalogueParentId}, " +
-                            "Position=${category.position}, " +
-                            "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}"
-                )
-            }
+        fun logCategory(category: CategoriesTabelle, TAG: String) {
+            Log.d(
+                TAG, "Category selected for displacement processed: " +
+                        "ID=${category.id}, Name='${category.nom}', " +
+                        "CatalogueParentId=${category.catalogueParentId}, " +
+                        "Position=${category.position}, " +
+                        "${category.cSelectionePourDeplace}, " +
+                        "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}"
+            )
         }
     }
 }
