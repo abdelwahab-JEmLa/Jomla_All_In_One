@@ -265,6 +265,14 @@ fun OptionsFragmentButtons(
                             )
                         }
                     }
+                    ButtonId4(
+                        viewModel=viewModel,
+                        showLabels = showLabels,
+                    )
+                    ButtonId5(
+                        viewModel=viewModel,
+                        showLabels = showLabels,
+                    )
                 }
 
                 LabelEtShowButtonsButtons(
