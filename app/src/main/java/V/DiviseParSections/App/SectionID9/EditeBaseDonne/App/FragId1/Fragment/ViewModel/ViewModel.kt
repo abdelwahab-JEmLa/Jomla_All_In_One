@@ -82,24 +82,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         addOrUpdateCategories(updatedCategories)
     }
 
-    /**
-     * Clears the selection state for all selected categories
-     * @param selectedCategoryIds Set of category IDs to deselect
-     */
-    fun clearCategoriesSelection(selectedCategoryIds: Set<Long>) {
-        val currentCategories = _uiState.value.c_CategorieProduitInfosList
-        val updatedCategories = currentCategories.map { category ->
-            if (selectedCategoryIds.contains(category.id)) {
-                category.copy(cSelectionePourDeplace = false)
-            } else {
-                category
-            }
-        }
-
-        // Update all modified categories in batch
-        addOrUpdateCategories(updatedCategories)
-    }
-
     fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle, newValeur: Boolean) {
         val newData = categorie.copy(cSelectionePourDeplace = newValeur)
         addOrUpdateCategorie(newData)

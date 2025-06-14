@@ -170,19 +170,8 @@ fun OptionsFragmentButtons(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 ),
                                 onClick = {
-                                    // Move selected categories to this catalogue
-                                    val currentCategories = viewModel.uiState.value.c_CategorieProduitInfosList
-                                    val updatedCategories = currentCategories.map { category ->
-                                        if (selectedCategories.contains(category.id)) {
-                                            category.copy(catalogueParentId = catalogue.id)
-                                        } else {
-                                            category
-                                        }
-                                    }
-
-                                    // Update the categories and clear selection
-                                    viewModel.addOrUpdateCategories(updatedCategories)
-                                    viewModel.clearCategoriesSelection(selectedCategories)
+                                    // Move selected categories to this catalogue using ViewModel method
+                                    viewModel.moveCategoriesAuCatalogue(selectedCategories, catalogue.id)
                                     onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
 
                                     showCatalogueDialog = false
@@ -222,19 +211,8 @@ fun OptionsFragmentButtons(
                                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 ),
                                 onClick = {
-                                    // Move selected categories to "Autres" (catalogueParentId = 0)
-                                    val currentCategories = viewModel.uiState.value.c_CategorieProduitInfosList
-                                    val updatedCategories = currentCategories.map { category ->
-                                        if (selectedCategories.contains(category.id)) {
-                                            category.copy(catalogueParentId = 0L)
-                                        } else {
-                                            category
-                                        }
-                                    }
-
-                                    // Update the categories and clear selection
-                                    viewModel.addOrUpdateCategories(updatedCategories)
-                                    viewModel.clearCategoriesSelection(selectedCategories)
+                                    // Move selected categories to "Autres" (catalogueParentId = 0) and clear selection
+                                    viewModel.moveCategoriesAuCatalogue(selectedCategories, 0L)
                                     onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
 
                                     showCatalogueDialog = false
