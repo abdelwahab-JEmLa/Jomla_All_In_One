@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -182,9 +180,10 @@ fun OptionsFragmentButtons(
                                         }
                                     }
 
-                                    // Update the categories
+                                    // Update the categories and clear selection
                                     viewModel.addOrUpdateCategories(updatedCategories)
-                                    onCategoriesUpdated(updatedCategories)
+                                    viewModel.clearCategoriesSelection(selectedCategories)
+                                    onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
 
                                     showCatalogueDialog = false
 
@@ -233,9 +232,10 @@ fun OptionsFragmentButtons(
                                         }
                                     }
 
-                                    // Update the categories
+                                    // Update the categories and clear selection
                                     viewModel.addOrUpdateCategories(updatedCategories)
-                                    onCategoriesUpdated(updatedCategories)
+                                    viewModel.clearCategoriesSelection(selectedCategories)
+                                    onCategoriesUpdated(viewModel.uiState.value.c_CategorieProduitInfosList)
 
                                     showCatalogueDialog = false
 
@@ -294,18 +294,16 @@ fun OptionsFragmentButtons(
                 horizontalAlignment = Alignment.End
             ) {
                 if (showButtons) {
-                    // But1 - Update Categories
                     But1(showDialog = showDialog, showLabels = showLabels) { showDialog = true }
 
-                    // But2 - Bulk Move Products
                     But2(
                         showLabels = showLabels,
                         selectedCount = selectedProducts.size,
                         onBulkMove = onShowBulkMoveDialog
                     )
 
-                    // But3 - Move Categories to Catalogue
-                    But3(
+                    ButtonId3(
+                        viewModel=viewModel,
                         showLabels = showLabels,
                         selectedCount = selectedCategories.size,
                         onCatalogueMove = { showCatalogueDialog = true }
@@ -338,57 +336,6 @@ fun OptionsFragmentButtons(
                     modifier = Modifier
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun But1(showDialog: Boolean, showLabels: Boolean, onShowDialog: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        if (showLabels) Text("Update")
-        FloatingActionButton(
-            onClick = onShowDialog,
-            modifier = Modifier.size(40.dp),
-            containerColor = Color.Yellow
-        ) {
-            Icon(Icons.Default.Refresh, "Update Categories", tint = Color.Black)
-        }
-    }
-}
-
-@Composable
-private fun But2(showLabels: Boolean, selectedCount: Int, onBulkMove: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        if (showLabels) Text("Move ($selectedCount)")
-        FloatingActionButton(
-            onClick = onBulkMove,
-            modifier = Modifier.size(40.dp),
-            containerColor = if (selectedCount > 0) Color.Green else Color.Gray
-        ) {
-            Icon(Icons.Default.SwapHoriz, "Bulk Move Products", tint = Color.Black)
-        }
-    }
-}
-
-@Composable
-private fun But3(showLabels: Boolean, selectedCount: Int, onCatalogueMove: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        if (showLabels) Text("Catalogue ($selectedCount)")
-        FloatingActionButton(
-            onClick = onCatalogueMove,
-            modifier = Modifier.size(40.dp),
-            containerColor = if (selectedCount > 0) Color.Blue else Color.Gray
-        ) {
-            Icon(Icons.Default.Category, "Move Categories to Catalogue", tint = Color.White)
         }
     }
 }

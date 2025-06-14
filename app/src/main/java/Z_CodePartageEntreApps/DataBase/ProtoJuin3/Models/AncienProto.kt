@@ -63,7 +63,7 @@ data class AncienProto(
                                         position = protoB2Data.indexDonsParentList.toInt(), // Map indexDonsParentList to position
                                         displayedHeader = protoB2Data.afficheSonHeader, // Map afficheSonHeader to displayedHeader
                                         itsHeldPourDeplacement = false, // Default value as it doesn't exist in ProtoB2
-                                        dernierFireBaseUpdateTimestamps = System.currentTimeMillis(), // Set current time
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(), // Set current time
                                         keyFireBase = dataSnapshot.key ?: "" // Use the Firebase key as keyFireBase
                                     )
 

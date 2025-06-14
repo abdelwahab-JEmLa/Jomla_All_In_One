@@ -4,6 +4,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -90,16 +91,19 @@ data class CategoriesTabelle(
     val itsHeldPourDeplacement: Boolean = false,
 
     // Section Etates Mutable
-    var dernierFireBaseUpdateTimestamps: Long = 0,
 
-    // Section keyFireBase
+    // Section Centralization Valeurs Pour Injection a TOu modules
+    var cSelectionePourDeplace: Boolean = false,
+
+    // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
     ) {
     fun withProperKeyFireBaseAndTimeTamp(): CategoriesTabelle {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
             keyFireBase = safeKey,
-            dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 

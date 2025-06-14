@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +34,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun MainItem(
-    productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     category: CategoriesTabelle,
     selectedCategories: Set<Long>,
+    productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
     categoriesListLocal: List<CategoriesTabelle>,
     onCategoriesReordered: (List<CategoriesTabelle>) -> Unit,
     onSelectionChanged: (Set<Long>) -> Unit,
@@ -48,11 +50,15 @@ internal fun MainItem(
         modifier = Modifier
             .aspectRatio(0.7f)
             .clickable {
-                val newSelection = if (selectedCategories.contains(category.id)) {
+                val isCurrentlySelected = selectedCategories.contains(category.id)
+                val newSelection = if (isCurrentlySelected) {
                     selectedCategories - category.id
                 } else {
                     selectedCategories + category.id
                 }
+
+                viewModel.updateCate_cSelectionePourDeplace(category, !isCurrentlySelected)
+
                 onSelectionChanged(newSelection)
             },
         colors = CardDefaults.cardColors(
@@ -85,6 +91,13 @@ internal fun MainItem(
                         onCategoriesUpdated(updated)
                         onSelectionChanged(emptySet())
                         onCategoriesReordered(updated)
+
+                        // Clear selection state for moved categories
+                        selectedCategories.forEach { selectedId ->
+                            categoriesListLocal.find { it.id == selectedId }?.let { cat ->
+                                viewModel.updateCate_cSelectionePourDeplace(cat, false)
+                            }
+                        }
                     },
                     modifier = Modifier.size(28.dp)
                 ) {
@@ -149,6 +162,13 @@ internal fun MainItem(
                         onCategoriesUpdated(updated)
                         onSelectionChanged(emptySet())
                         onCategoriesReordered(updated)
+
+                        // Clear selection state for moved categories
+                        selectedCategories.forEach { selectedId ->
+                            categoriesListLocal.find { it.id == selectedId }?.let { cat ->
+                                viewModel.updateCate_cSelectionePourDeplace(cat, false)
+                            }
+                        }
                     },
                     modifier = Modifier.size(28.dp)
                 ) {

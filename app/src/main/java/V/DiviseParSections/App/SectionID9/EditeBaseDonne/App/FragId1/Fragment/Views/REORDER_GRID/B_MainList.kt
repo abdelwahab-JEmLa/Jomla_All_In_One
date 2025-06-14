@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
@@ -27,7 +28,8 @@ internal fun MainList(
     categoriesList: List<CategoriesTabelle>,
     produitList: List<ArticlesBasesStatsTable>,
     modifier: Modifier,
-    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
     var categoriesListLocal by remember(categoriesList) {
         mutableStateOf(categoriesList.sortedBy { it.position })
@@ -43,12 +45,14 @@ internal fun MainList(
     val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
         catalogues.forEach { cat ->
-            categoriesListLocal.filter { it.catalogueParentId == cat.id }.let { if (it.isNotEmpty()) grouped[cat] = it }
+            categoriesListLocal.filter { it.catalogueParentId == cat.id }
+                .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
         categoriesListLocal.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
             .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
         grouped
     }
+
 
     Column(
         modifier = modifier
@@ -74,7 +78,9 @@ internal fun MainList(
                         categoriesListLocal = categoriesListLocal,
                         onCategoriesReordered = onCategoriesReordered,
                         onSelectionChanged = { selectedCategories = it },
-                        onCategoriesUpdated = { categoriesListLocal = it }
+                        onCategoriesUpdated = { categoriesListLocal = it },
+                        viewModel = viewModel
+
                     )
                 }
             }

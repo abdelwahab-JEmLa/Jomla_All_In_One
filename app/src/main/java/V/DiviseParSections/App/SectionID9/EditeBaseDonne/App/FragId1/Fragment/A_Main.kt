@@ -211,7 +211,8 @@ fun EditeBaseDonneMainScreenIdS9(
                                 viewModel.addOrUpdateCategories(updatedCategories)
                             },
                             modifier = Modifier.fillMaxSize(),
-                            produitList = produitList
+                            produitList = produitList,
+                            viewModel = viewModel
                         )
                     }
                 }

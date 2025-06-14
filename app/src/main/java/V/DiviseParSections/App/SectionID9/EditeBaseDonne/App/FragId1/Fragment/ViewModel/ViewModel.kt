@@ -59,6 +59,53 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         }
     }
 
+    /**
+     * Moves selected categories to a specific catalogue and clears their selection state
+     * @param selectedCategoryIds Set of category IDs to move
+     * @param targetCatalogueId ID of the target catalogue (0L for "Autres")
+     */
+    fun moveCategoriesAuCatalogue(selectedCategoryIds: Set<Long>, targetCatalogueId: Long) {
+        val currentCategories = _uiState.value.c_CategorieProduitInfosList
+        val updatedCategories = currentCategories.map { category ->
+            if (selectedCategoryIds.contains(category.id)) {
+                // Move to new catalogue and clear selection state
+                category.copy(
+                    catalogueParentId = targetCatalogueId,
+                    cSelectionePourDeplace = false
+                )
+            } else {
+                category
+            }
+        }
+
+        // Update all modified categories in batch
+        addOrUpdateCategories(updatedCategories)
+    }
+
+    /**
+     * Clears the selection state for all selected categories
+     * @param selectedCategoryIds Set of category IDs to deselect
+     */
+    fun clearCategoriesSelection(selectedCategoryIds: Set<Long>) {
+        val currentCategories = _uiState.value.c_CategorieProduitInfosList
+        val updatedCategories = currentCategories.map { category ->
+            if (selectedCategoryIds.contains(category.id)) {
+                category.copy(cSelectionePourDeplace = false)
+            } else {
+                category
+            }
+        }
+
+        // Update all modified categories in batch
+        addOrUpdateCategories(updatedCategories)
+    }
+
+    fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle, newValeur: Boolean) {
+        val newData = categorie.copy(cSelectionePourDeplace = newValeur)
+        addOrUpdateCategorie(newData)
+    }
+
+    fun addOrUpdateCategorie(categorie: CategoriesTabelle) { b3CategoriesCompoRepository.addOrUpdateData(categorie) }
     fun addOrUpdateCategories(categories: List<CategoriesTabelle>) { b3CategoriesCompoRepository.addOrUpdateDatas(categories) }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
@@ -66,6 +113,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             data
         )
     }
-    fun addOrUpdateProduits(datas:List<ArticlesBasesStatsTable> ) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
-    fun deleteArticlesBasesStatsTable(data:ArticlesBasesStatsTable ) { masterRepositorys.repoA_ProduitInfos.deleteData(data) }
+    fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) { masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas) }
+    fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) { masterRepositorys.repoA_ProduitInfos.deleteData(data) }
 }
