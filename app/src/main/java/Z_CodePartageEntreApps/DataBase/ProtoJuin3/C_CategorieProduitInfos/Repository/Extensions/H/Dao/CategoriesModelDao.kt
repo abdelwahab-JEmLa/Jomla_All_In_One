@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoriesModelDao {
+    @Upsert
+    suspend fun upsert(data: CategoriesTabelle)
+
     @Query("SELECT * FROM CategoriesTabelle ORDER BY position")
     suspend fun getAll(): MutableList<CategoriesTabelle>
 

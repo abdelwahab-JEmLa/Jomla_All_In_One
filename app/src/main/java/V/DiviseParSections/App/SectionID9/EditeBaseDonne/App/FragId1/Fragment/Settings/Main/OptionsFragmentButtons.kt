@@ -56,11 +56,11 @@ enum class AfficheElements { APP_BAR, DOCUMENTATION_TEXT }
 
 @Composable
 fun OptionsFragmentButtons(
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     viewModelScope: CoroutineScope,
     onToggleMasque: (Set<AfficheElements>) -> Unit = {},
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onShowBulkMoveDialog: () -> Unit = {},
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
 ) {
@@ -183,7 +183,7 @@ fun OptionsFragmentButtons(
                                     }
 
                                     // Update the categories
-                                    viewModel.addOrUpdateCategs(updatedCategories)
+                                    viewModel.addOrUpdateCategories(updatedCategories)
                                     onCategoriesUpdated(updatedCategories)
 
                                     showCatalogueDialog = false
@@ -234,7 +234,7 @@ fun OptionsFragmentButtons(
                                     }
 
                                     // Update the categories
-                                    viewModel.addOrUpdateCategs(updatedCategories)
+                                    viewModel.addOrUpdateCategories(updatedCategories)
                                     onCategoriesUpdated(updatedCategories)
 
                                     showCatalogueDialog = false

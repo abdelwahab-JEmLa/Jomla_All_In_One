@@ -7,7 +7,6 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Mo
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateDatasList
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +24,9 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
+    val b3CategoriesCompoRepository = a_CentralDatasHandlerProtoJuin9
+        .b3CategoriesCompoRepository
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -57,11 +59,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         }
     }
 
-    fun addOrUpdateCategs(categories: List<CategoriesTabelle>) {
-        masterRepositorys.repoC_CategorieProduitInfos.addOrUpdateDatas(
-            categories
-        )
-    }
+    fun addOrUpdateCategories(categories: List<CategoriesTabelle>) { b3CategoriesCompoRepository.addOrUpdateDatas(categories) }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
         masterRepositorys.repoA_ProduitInfos.addOrUpdateData(

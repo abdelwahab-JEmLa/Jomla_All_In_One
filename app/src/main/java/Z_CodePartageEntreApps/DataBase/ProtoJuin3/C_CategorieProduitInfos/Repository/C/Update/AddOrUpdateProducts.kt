@@ -13,7 +13,7 @@ fun C_CategorieProduitInfosRepository.addOrUpdateDatas(datas: List<CategoriesTab
         dao.upsertAllDatas(preparedDatas)
 
         preparedDatas.forEach { data ->
-            ref.child(data.keyFireBase).setValue(data)
+            repoRef.child(data.keyFireBase).setValue(data)
         }
 
         updateRepoState(preparedDatas)

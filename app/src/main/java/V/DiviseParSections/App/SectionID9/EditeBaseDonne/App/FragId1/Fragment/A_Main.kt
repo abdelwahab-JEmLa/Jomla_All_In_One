@@ -165,7 +165,7 @@ fun EditeBaseDonneMainScreenIdS9(
                             },
                             onCategoriesEdite = { updatedCategories ->
                                 categoriesListLocal = updatedCategories
-                                viewModel.addOrUpdateCategs(updatedCategories)
+                                viewModel.addOrUpdateCategories(updatedCategories)
                             },
                             modifier = Modifier.fillMaxSize(),
                             selectedProducts = selectedProducts,
@@ -208,7 +208,7 @@ fun EditeBaseDonneMainScreenIdS9(
                             categoriesList = categoriesListLocal,
                             onCategoriesReordered = { updatedCategories ->
                                 categoriesListLocal = updatedCategories
-                                viewModel.addOrUpdateCategs(updatedCategories)
+                                viewModel.addOrUpdateCategories(updatedCategories)
                             },
                             modifier = Modifier.fillMaxSize(),
                             produitList = produitList

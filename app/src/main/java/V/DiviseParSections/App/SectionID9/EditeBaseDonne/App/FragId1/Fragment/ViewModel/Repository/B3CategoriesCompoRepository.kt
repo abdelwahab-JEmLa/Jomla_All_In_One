@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -19,11 +19,11 @@ import kotlinx.coroutines.launch
 class B3CategoriesCompoRepository(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ) {
+    val parentRepo = a_MasterRepositorysGrpProtoJuin3.repoC_CategorieProduitInfos
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
     val datasState: State<List<CategoriesTabelle>> = _datas
-    val datasValue by derivedStateOf { _datas.value }
 
     init {
         composScope.launch {
@@ -37,8 +37,8 @@ class B3CategoriesCompoRepository(
         }
     }
 
-    fun addOrUpdateData(data: CategoriesTabelle?) {
-        data?.let { dataSansProper ->
+    fun addOrUpdateData(data: CategoriesTabelle) {
+        data.let { dataSansProper ->
             val newData = dataSansProper.withProperKeyFireBaseAndTimeTamp()
             _datas.value = _datas.value.map {
                 if (it.id == newData.id)
@@ -50,8 +50,27 @@ class B3CategoriesCompoRepository(
             updateSonRepositoryProtoJuin3(newData)
         }
     }
+    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) { parentRepo.addOrUpdateData(newData) }
 
-    private fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) {
+    fun addOrUpdateDatas(datas: List<CategoriesTabelle>) {
+        val processedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
+
+        val currentList = _datas.value.toMutableList()
+        processedDatas.forEach { newData ->
+            val existingIndex = currentList.indexOfFirst { it.id == newData.id }
+            if (existingIndex >= 0) {
+                currentList[existingIndex] = newData
+            } else {
+                currentList.add(newData)
+            }
+        }
+        _datas.value = currentList
+
+        updateDatasDonSonRepositoryProtoJuin3(processedDatas)
+    }
+
+    fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
+        parentRepo.addOrUpdateDatas(newDatas)
     }
 }
 

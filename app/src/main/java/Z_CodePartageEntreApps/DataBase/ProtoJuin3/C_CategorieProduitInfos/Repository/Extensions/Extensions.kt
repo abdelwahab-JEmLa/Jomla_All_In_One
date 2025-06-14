@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 
 fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<CategoriesTabelle>) -> Unit) {
     updateProgress(0.1f)
-    ref.get()
+    repoRef.get()
         .addOnSuccessListener { snapshot ->
             val dataList = mutableListOf<CategoriesTabelle>()
             snapshot.children.forEach { child ->

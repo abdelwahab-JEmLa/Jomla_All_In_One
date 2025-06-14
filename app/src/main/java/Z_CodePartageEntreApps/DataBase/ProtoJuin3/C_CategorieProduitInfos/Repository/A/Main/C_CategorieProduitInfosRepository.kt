@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init.initializeDataReturn
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +28,7 @@ class C_CategorieProduitInfosRepository(
     )
 
     val dao = appDatabase.categoriesModelDao()
-    val ref = CategoriesTabelle.caRef
+    val repoRef = CategoriesTabelle.caRef
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
