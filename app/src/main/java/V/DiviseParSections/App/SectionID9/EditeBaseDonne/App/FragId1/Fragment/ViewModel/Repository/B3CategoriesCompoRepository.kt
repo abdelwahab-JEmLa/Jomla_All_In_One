@@ -6,6 +6,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +26,7 @@ class B3CategoriesCompoRepository(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
+    val datasState: State<List<CategoriesTabelle>> = _datas
     val datasValue by derivedStateOf { _datas.value }
     val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 
@@ -33,8 +35,8 @@ class B3CategoriesCompoRepository(
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
                     model.repoStateC_CategorieProduitInfos?.modelListFlow
-                    _datas.value =
-                        model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList()
+                    val newDataList = model.repoStateC_CategorieProduitInfos?.modelListFlow ?: emptyList()
+                    _datas.value = newDataList
                 }
             }
         }
@@ -44,14 +46,19 @@ class B3CategoriesCompoRepository(
         data.let { dataSansProper ->
             val newData = dataSansProper.withDernierTimeTampsSynchronisationAvecFireBase()
 
-            _datas.value = _datas.value.map {
+            val updatedList = _datas.value.map {
                 if (it.id == newData.id)
                     newData
                 else it
             }.let { list ->
                 if (list.none { it.id == newData.id }) list + newData else list
             }
-            updateSonRepositoryProtoJuin3(newData)
+
+            _datas.value = updatedList
+
+            composScope.launch {
+                updateSonRepositoryProtoJuin3(newData)
+            }
         }
     }
 
@@ -63,28 +70,26 @@ class B3CategoriesCompoRepository(
         val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
 
         val currentList = _datas.value.toMutableList()
+
         processedDatas.forEach { newData ->
             val existingIndex = currentList.indexOfFirst { it.id == newData.id }
+
             if (existingIndex >= 0) {
                 currentList[existingIndex] = newData
             } else {
                 currentList.add(newData)
             }
         }
+
         _datas.value = currentList
 
-        updateDatasDonSonRepositoryProtoJuin3(processedDatas)
+        composScope.launch {
+            updateDatasDonSonRepositoryProtoJuin3(processedDatas)
+        }
     }
 
     fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
         parentRepo.addOrUpdateDatas(newDatas)
-    }
-
-
-    companion object {
-        private const val TAG = "B3CategoriesCompoRepository"
-
-
     }
 }
 
@@ -94,7 +99,6 @@ data class CategoriesTabelle(
     val id: Long = System.currentTimeMillis(),
 //    val idObjectId: ObjectId = ObjectId(),
 
-    //Parent Forging Ids
     val catalogueParentId: Long = 0,
 
     var nom: String = "",
@@ -105,12 +109,8 @@ data class CategoriesTabelle(
 
     val itsHeldPourDeplacement: Boolean = false,
 
-    // Section Etates Mutable
-
-    // Section Centralization Valeurs Pour Injection a TOu modules
     var cSelectionePourDeplace: Boolean = false,
 
-    // Section dernierFireBaseUpdateTimestamps
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): CategoriesTabelle {
