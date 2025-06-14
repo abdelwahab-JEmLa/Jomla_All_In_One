@@ -5,25 +5,27 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 fun C_CategorieProduitInfosRepository.addOrUpdateData(data: CategoriesTabelle) {
     CoroutineScope(Dispatchers.IO).launch {
-        val _repoState = _repoState.value?.modelListFlow ?: emptyList()
-        val getMaxIdPlus1 = if (_repoState.isEmpty()) {
-            1L
-        } else {
-            (_repoState.maxOfOrNull { it.id } ?: 0L) + 1L
-        }
 
-        val dataWhithId = if (data.id == 0L) data.copy(id = getMaxIdPlus1) else data
-
-        val preparedData = dataWhithId.withProperKeyFireBaseAndTimeTamp()
+        val preparedData = data.withDernierTimeTampsSynchronisationAvecFireBase()
 
         dao.upsert(preparedData)
 
         val allData = dao.getAll()
         updateRepoState(allData)
-        repoRef.child(preparedData.keyFireBase).setValue(preparedData)
+
+        batchFireBaseUpdate(listOf(preparedData))
     }
 }
 
+suspend fun batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
+    val updates = mutableMapOf<String, Any>()
+    datas.forEach { data ->
+        updates[data.id.toString()] = data
+    }
+    val firebaseRef = CategoriesTabelle.caRef
+    firebaseRef.updateChildren(updates).await()
+}

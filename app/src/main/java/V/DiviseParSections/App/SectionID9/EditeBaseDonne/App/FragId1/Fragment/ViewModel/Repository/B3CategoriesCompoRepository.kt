@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -44,7 +43,7 @@ class B3CategoriesCompoRepository(
 
     fun addOrUpdateData(data: CategoriesTabelle) {
         data.let { dataSansProper ->
-            val newData = dataSansProper.withProperKeyFireBaseAndTimeTamp()
+            val newData = dataSansProper.withDernierTimeTampsSynchronisationAvecFireBase()
 
             // Log tracking for categories selected for displacement
             logCategorySelectionForDisplacementIfNeeded(newData)
@@ -60,12 +59,10 @@ class B3CategoriesCompoRepository(
         }
     }
 
-    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) {
-        parentRepo.addOrUpdateData(newData)
-    }
+    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) { parentRepo.addOrUpdateData(newData) }
 
     fun addOrUpdateDatas(datas: List<CategoriesTabelle>) {
-        val processedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
+        val processedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
 
         // Log tracking for categories selected for displacement in batch operations
         logCategoriesSelectionForDisplacementIfNeeded(processedDatas)
@@ -97,7 +94,6 @@ class B3CategoriesCompoRepository(
                     "ID=${category.id}, Name='${category.nom}', " +
                     "CatalogueParentId=${category.catalogueParentId}, " +
                     "Position=${category.position}, " +
-                    "KeyFireBase='${category.keyFireBase}', " +
                     "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}")
         }
     }
@@ -127,8 +123,9 @@ class B3CategoriesCompoRepository(
 
 @Entity
 data class CategoriesTabelle(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: Long = System.currentTimeMillis(),
+
     //Parent Forging Ids
     val catalogueParentId: Long = 0,
 
@@ -145,14 +142,11 @@ data class CategoriesTabelle(
     // Section Centralization Valeurs Pour Injection a TOu modules
     var cSelectionePourDeplace: Boolean = false,
 
-    // Section keyFireBase et dernierFireBaseUpdateTimestamps
-    var keyFireBase: String = "",
+    // Section dernierFireBaseUpdateTimestamps
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 ) {
-    fun withProperKeyFireBaseAndTimeTamp(): CategoriesTabelle {
-        val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
+    fun withDernierTimeTampsSynchronisationAvecFireBase(): CategoriesTabelle {
         return this.copy(
-            keyFireBase = safeKey,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }

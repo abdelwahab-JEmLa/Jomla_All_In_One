@@ -1,19 +1,19 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update
 
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 fun C_CategorieProduitInfosRepository.addOrUpdateDatas(datas: List<CategoriesTabelle>) {
     CoroutineScope(Dispatchers.IO).launch {
-        val preparedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
+        val preparedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
 
         dao.upsertAllDatas(preparedDatas)
 
         preparedDatas.forEach { data ->
-            repoRef.child(data.keyFireBase).setValue(data)
+            repoRef.child(data.id.toString()).setValue(data)
         }
 
         updateRepoState(preparedDatas)

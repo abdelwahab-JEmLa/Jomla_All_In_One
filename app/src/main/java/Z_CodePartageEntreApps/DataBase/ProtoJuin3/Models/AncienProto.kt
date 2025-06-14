@@ -64,7 +64,6 @@ data class AncienProto(
                                         displayedHeader = protoB2Data.afficheSonHeader, // Map afficheSonHeader to displayedHeader
                                         itsHeldPourDeplacement = false, // Default value as it doesn't exist in ProtoB2
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(), // Set current time
-                                        keyFireBase = dataSnapshot.key ?: "" // Use the Firebase key as keyFireBase
                                     )
 
                                     result.add(categorieProduitInfo)
