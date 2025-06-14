@@ -74,6 +74,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
                     cSelectionePourDeplace = false
                 )
             }
+        b3CategoriesCompoRepository.logCategoriesSelectionForDisplacementIfNeeded(updatedCategories,true)
 
         // Update all modified categories in batch
         if (updatedCategories.isNotEmpty()) {

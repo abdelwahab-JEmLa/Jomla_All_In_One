@@ -5,6 +5,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -44,6 +45,10 @@ class B3CategoriesCompoRepository(
     fun addOrUpdateData(data: CategoriesTabelle) {
         data.let { dataSansProper ->
             val newData = dataSansProper.withProperKeyFireBaseAndTimeTamp()
+
+            // Log tracking for categories selected for displacement
+            logCategorySelectionForDisplacementIfNeeded(newData)
+
             _datas.value = _datas.value.map {
                 if (it.id == newData.id)
                     newData
@@ -54,10 +59,16 @@ class B3CategoriesCompoRepository(
             updateSonRepositoryProtoJuin3(newData)
         }
     }
-    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) { parentRepo.addOrUpdateData(newData) }
+
+    fun updateSonRepositoryProtoJuin3(newData: CategoriesTabelle) {
+        parentRepo.addOrUpdateData(newData)
+    }
 
     fun addOrUpdateDatas(datas: List<CategoriesTabelle>) {
         val processedDatas = datas.map { it.withProperKeyFireBaseAndTimeTamp() }
+
+        // Log tracking for categories selected for displacement in batch operations
+        logCategoriesSelectionForDisplacementIfNeeded(processedDatas)
 
         val currentList = _datas.value.toMutableList()
         processedDatas.forEach { newData ->
@@ -75,6 +86,42 @@ class B3CategoriesCompoRepository(
 
     fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
         parentRepo.addOrUpdateDatas(newDatas)
+    }
+
+    /**
+     * Logs when a category with cSelectionePourDeplace = true is processed
+     */
+    private fun logCategorySelectionForDisplacementIfNeeded(category: CategoriesTabelle) {
+        if (category.cSelectionePourDeplace) {
+            Log.d(TAG, "Category selected for displacement processed: " +
+                    "ID=${category.id}, Name='${category.nom}', " +
+                    "CatalogueParentId=${category.catalogueParentId}, " +
+                    "Position=${category.position}, " +
+                    "KeyFireBase='${category.keyFireBase}', " +
+                    "Timestamp=${category.dernierTimeTampsSynchronisationAvecFireBase}")
+        }
+    }
+
+    /**
+     * Logs when categories with cSelectionePourDeplace = true are processed in batch
+     */
+     fun logCategoriesSelectionForDisplacementIfNeeded(
+        categories: List<CategoriesTabelle>,
+        cLenceDepuitViemModel:Boolean=false
+    ) {
+        val selectedCategories = categories.filter { it.cSelectionePourDeplace }
+        if (selectedCategories.isNotEmpty()) {
+            val cLenceDepuitViemModelTag=if(cLenceDepuitViemModel)"cLenceDepuitViemModel"  else ""
+            Log.d(TAG, "$cLenceDepuitViemModelTag Batch operation: ${selectedCategories.size} categories selected for displacement processed")
+            selectedCategories.forEach { category ->
+                Log.d(TAG, "  - Category: ID=${category.id}, Name='${category.nom}', " +
+                        "CatalogueParentId=${category.catalogueParentId}, Position=${category.position}")
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "B3CategoriesCompoRepository"
     }
 }
 
@@ -101,7 +148,7 @@ data class CategoriesTabelle(
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
     var keyFireBase: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
-    ) {
+) {
     fun withProperKeyFireBaseAndTimeTamp(): CategoriesTabelle {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
