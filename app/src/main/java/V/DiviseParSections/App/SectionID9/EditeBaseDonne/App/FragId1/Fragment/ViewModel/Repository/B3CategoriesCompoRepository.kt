@@ -92,6 +92,7 @@ class B3CategoriesCompoRepository(
 data class CategoriesTabelle(
     @PrimaryKey
     val id: Long = System.currentTimeMillis(),
+//    val idObjectId: ObjectId = ObjectId(),
 
     //Parent Forging Ids
     val catalogueParentId: Long = 0,

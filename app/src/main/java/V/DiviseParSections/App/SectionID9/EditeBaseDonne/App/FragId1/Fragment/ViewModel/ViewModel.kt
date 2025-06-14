@@ -62,9 +62,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             )
         }
 
-        categoriesCompoRepository.logCategoriesSelectionForDisplacementIfNeeded(updatedCategories, true)
-
-        // Update all modified categories in batch
         addOrUpdateCategories(updatedCategories)
     }
 
