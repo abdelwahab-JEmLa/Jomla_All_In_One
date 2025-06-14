@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.Shared.Module.Catalogue.startupeDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,26 +15,23 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun MainList(
-    categoriesList: List<CategoriesTabelle>,
-    produitList: List<ArticlesBasesStatsTable>,
     modifier: Modifier,
-    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit,
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    categoriesListLocal: List<CategoriesTabelle>,
+    produitList: List<ArticlesBasesStatsTable>,
+    onCategoriesReordered: (List<CategoriesTabelle>) -> Unit
 ) {
-    var categoriesListLocal by remember(categoriesList) {
-        mutableStateOf(categoriesList.sortedBy { it.position })
+    // Get selected categories from ViewModel state instead of local state
+    val selectedCategories = remember(categoriesListLocal) {
+        categoriesListLocal.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
-    var selectedCategories by remember { mutableStateOf(setOf<Long>()) }
 
     val productsByCategory = remember(produitList) {
         produitList.groupBy { it.idParentCategorie ?: 0L }
@@ -52,7 +49,6 @@ internal fun MainList(
             .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
         grouped
     }
-
 
     Column(
         modifier = modifier
@@ -77,10 +73,7 @@ internal fun MainList(
                         selectedCategories = selectedCategories,
                         categoriesListLocal = categoriesListLocal,
                         onCategoriesReordered = onCategoriesReordered,
-                        onSelectionChanged = { selectedCategories = it },
-                        onCategoriesUpdated = { categoriesListLocal = it },
                         viewModel = viewModel
-
                     )
                 }
             }

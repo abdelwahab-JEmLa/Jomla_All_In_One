@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 
 data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
-    val c_CategorieProduitInfosList: List<CategoriesTabelle> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
 )
 
@@ -33,7 +32,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     init {
         collecteMasterRepositorysDatasAuUiState()
-        collecteCategoriesDataAuUiState()
     }
 
     private fun collecteMasterRepositorysDatasAuUiState() {
@@ -50,15 +48,6 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         }
     }
 
-    private fun collecteCategoriesDataAuUiState() {
-        viewModelScope.launch {
-            a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasState.let { categoriesState ->
-                _uiState.value = _uiState.value.copy(
-                    c_CategorieProduitInfosList = categoriesState.value
-                )
-            }
-        }
-    }
 
     fun moveCategoriesAuCatalogue(targetCatalogueId: Long) {
         val updatedCategories = b3Categories

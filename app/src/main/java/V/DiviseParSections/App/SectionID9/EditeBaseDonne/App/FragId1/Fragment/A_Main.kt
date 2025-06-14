@@ -6,11 +6,11 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Pr
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.AppBar.AppBar
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.AfficheElements
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.OptionsFragmentButtons
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.EditeCategoriesMainList
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.EditeInfosMainList
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.CATEGORIES_LIST.EditeCategoriesMainList
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.PRODUCTS_LIST.EditeInfosMainList
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Views.REORDER_GRID.ReorderMultiCategories
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.DisponibilityEtates
 import androidx.compose.foundation.layout.Box
@@ -54,10 +54,9 @@ fun EditeBaseDonneMainScreenIdS9(
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgressPJuin3
     val produitList = uiState.a_ProduitInfosList
-    val categoriesList = uiState.c_CategorieProduitInfosList
+    val categoriesList = viewModel.b3Categories
 
     var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
-    var categoriesListLocal by remember(categoriesList) { mutableStateOf(categoriesList) }
 
     var currentMode by remember { mutableStateOf(ModeAffichage.REORDER_GRID) }
     var filterState by remember { mutableStateOf(FilterState()) }
@@ -68,14 +67,16 @@ fun EditeBaseDonneMainScreenIdS9(
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
     var showBulkMoveDialog by remember { mutableStateOf(false) }
 
+    // Get selected categories from ViewModel state
+    val selectedCategories = remember(categoriesList) {
+        categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+    }
+
     LaunchedEffect(produitList, categoriesList) {
         produitListLocal = produitList
-        categoriesListLocal = categoriesList
     }
 
     // Updated filter logic for A_Main.kt
-    // Replace the filteredProduitList derivedStateOf block with this:
-
     val filteredProduitList by remember(produitListLocal, filterState) {
         derivedStateOf {
             var filtered = produitListLocal
@@ -151,7 +152,7 @@ fun EditeBaseDonneMainScreenIdS9(
                 when (currentMode) {
                     ModeAffichage.CATEGORIES_LIST -> {
                         EditeCategoriesMainList(
-                            categoriesList = categoriesListLocal,
+                            categoriesList = categoriesList,
                             produitList = filteredProduitList,
                             onProductCategoryChanged = { updatedProduct ->
                                 produitListLocal = produitListLocal.map { product ->
@@ -164,7 +165,6 @@ fun EditeBaseDonneMainScreenIdS9(
                                 viewModel.addOrUpdateProduit(updatedProduct)
                             },
                             onCategoriesEdite = { updatedCategories ->
-                                categoriesListLocal = updatedCategories
                                 viewModel.addOrUpdateCategories(updatedCategories)
                             },
                             modifier = Modifier.fillMaxSize(),
@@ -205,21 +205,20 @@ fun EditeBaseDonneMainScreenIdS9(
 
                     ModeAffichage.REORDER_GRID -> {
                         ReorderMultiCategories(
-                            categoriesList = categoriesListLocal,
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = viewModel,
+                            categoriesList = categoriesList,
                             onCategoriesReordered = { updatedCategories ->
-                                categoriesListLocal = updatedCategories
                                 viewModel.addOrUpdateCategories(updatedCategories)
                             },
-                            modifier = Modifier.fillMaxSize(),
-                            produitList = produitList,
-                            viewModel = viewModel
+                            produitList = produitList
                         )
                     }
                 }
             }
 
             OptionsFragmentButtons(
-                viewModel=viewModel,
+                viewModel = viewModel,
                 viewModelScope = viewModel.viewModelScope,
                 onToggleMasque = { newMaskedElements ->
                     maskedElements = newMaskedElements
@@ -227,6 +226,10 @@ fun EditeBaseDonneMainScreenIdS9(
                 selectedProducts = selectedProducts,
                 onShowBulkMoveDialog = {
                     showBulkMoveDialog = true
+                },
+                selectedCategories = selectedCategories,
+                onCategoriesUpdated = { updatedCategories ->
+                    viewModel.addOrUpdateCategories(updatedCategories)
                 }
             )
         }
