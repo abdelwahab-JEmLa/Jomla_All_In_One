@@ -30,7 +30,8 @@ fun EditeCategoriesMainList(
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {}
-) {
+) {                 //<--
+//TODO(1): fait que les produits san categorie  soit au top 
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesListLocal = categoriesCompoRepository.datasValue
 

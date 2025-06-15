@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun E_StickyHeader(
+fun E_StickyHeader(        //<--
+//TODO(1): fait au click d affiche un dialoge contien un lazy grid de 4 affiche les produit d cate au click il update cSelectionePourDeplacesEntreMemeCategorieAmis 
+
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
     categoryId: Long?,
     category: CategoriesTabelle? = null,
 ) {

@@ -27,6 +27,8 @@ fun LazyListScope.categorieSection(
     groupedProducts.forEach { (id, products) ->
         item(key = "header_$id") {
             E_StickyHeader(
+                viewModel=viewModel,
+                groupedProducts=groupedProducts,
                 categoryId = id,
                 category = categoryMap[id],
             )
