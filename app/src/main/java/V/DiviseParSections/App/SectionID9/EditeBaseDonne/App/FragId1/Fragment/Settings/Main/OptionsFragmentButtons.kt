@@ -265,6 +265,12 @@ fun OptionsFragmentButtons(
                             )
                         }
                     }
+                    ButtonId3(
+                        viewModel=viewModel,
+                        showLabels = showLabels,
+                        selectedCount = selectedCategories.size,
+                        onCatalogueMove = { }
+                    )
                     ButtonId4(
                         viewModel=viewModel,
                         showLabels = showLabels,

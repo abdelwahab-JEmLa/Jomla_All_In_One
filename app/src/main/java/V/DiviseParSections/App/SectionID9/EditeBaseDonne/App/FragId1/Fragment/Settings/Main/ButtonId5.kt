@@ -4,10 +4,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.content.Context
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -27,8 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import java.io.File
 
 @Composable
 fun ButtonId5(
@@ -39,17 +35,7 @@ fun ButtonId5(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            coroutineScope.launch {
-                importCategoriesFromCsv(context, AppDatabase, it, onImportSuccess)
-            }
-        }
-    }
-    
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -57,8 +43,9 @@ fun ButtonId5(
         if (showLabels) Text("Import Categories")
         FloatingActionButton(
             onClick = {
-                // Launch file picker for CSV files
-                filePickerLauncher.launch("text/*")
+                coroutineScope.launch {
+                    importCategoriesFromCsv(context, AppDatabase, onImportSuccess)
+                }
             },
             modifier = Modifier.size(40.dp),
             containerColor = Color.Green
@@ -71,34 +58,47 @@ fun ButtonId5(
 private suspend fun importCategoriesFromCsv(
     context: Context,
     appDatabase: AppDatabase,
-    uri: Uri,
     onImportSuccess: () -> Unit
 ) {
     withContext(Dispatchers.IO) {
         try {
             val categoriesDao = appDatabase.categoriesModelDao()
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            
+
+            // Use the same path as ButtonId4
+            val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
+            val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "CategoriesTabelle.csv")
+
+            // Check if file exists
+            if (!csvFile.exists()) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "CSV file not found at: ${csvFile.absolutePath}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                return@withContext
+            }
+
             val categories = mutableListOf<CategoriesTabelle>()
             var lineNumber = 0
             var isFirstLine = true
-            
-            reader.useLines { lines ->
+
+            csvFile.useLines { lines ->
                 lines.forEach { line ->
                     lineNumber++
-                    
+
                     // Skip header line
                     if (isFirstLine) {
                         isFirstLine = false
                         return@forEach
                     }
-                    
+
                     // Skip empty lines
                     if (line.trim().isEmpty()) {
                         return@forEach
                     }
-                    
+
                     try {
                         val category = parseCsvLine(line)
                         categories.add(category)
@@ -108,16 +108,16 @@ private suspend fun importCategoriesFromCsv(
                     }
                 }
             }
-            
+
             if (categories.isNotEmpty()) {
                 // Clear existing data and insert new data
                 categoriesDao.deleteAll()
                 categoriesDao.insertAll(categories)
-                
+
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        "Successfully imported ${categories.size} categories",
+                        "Successfully imported ${categories.size} categories from ${csvFile.absolutePath}",
                         Toast.LENGTH_LONG
                     ).show()
                     onImportSuccess()
@@ -131,7 +131,7 @@ private suspend fun importCategoriesFromCsv(
                     ).show()
                 }
             }
-            
+
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
@@ -147,11 +147,11 @@ private suspend fun importCategoriesFromCsv(
 
 private fun parseCsvLine(line: String): CategoriesTabelle {
     val values = parseCsvValues(line)
-    
+
     if (values.size < 8) {
         throw IllegalArgumentException("Invalid CSV format: expected 8 columns, got ${values.size}")
     }
-    
+
     return CategoriesTabelle(
         id = values[0].toLongOrNull() ?: System.currentTimeMillis(),
         catalogueParentId = values[1].toLongOrNull() ?: 0L,
@@ -169,10 +169,10 @@ private fun parseCsvValues(line: String): List<String> {
     val currentValue = StringBuilder()
     var insideQuotes = false
     var i = 0
-    
+
     while (i < line.length) {
         val char = line[i]
-        
+
         when {
             char == '"' -> {
                 if (insideQuotes && i + 1 < line.length && line[i + 1] == '"') {
@@ -195,9 +195,9 @@ private fun parseCsvValues(line: String): List<String> {
         }
         i++
     }
-    
+
     // Add the last value
     values.add(currentValue.toString())
-    
+
     return values
 }

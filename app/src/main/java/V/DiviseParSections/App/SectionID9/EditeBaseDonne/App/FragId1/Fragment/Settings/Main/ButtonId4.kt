@@ -3,8 +3,6 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.content.Context
-import android.content.Intent
-import android.os.Environment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -20,16 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileWriter
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ButtonId4(
@@ -44,7 +38,7 @@ fun ButtonId4(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (showLabels) Text("Export Categories")
+        if (showLabels) Text("Export Categories ")
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
@@ -52,7 +46,7 @@ fun ButtonId4(
                 }
             },
             modifier = Modifier.size(40.dp),
-            containerColor =  Color.Blue
+            containerColor =Color.Blue
         ) {
             Icon(Icons.Default.Download, "Export Categories to CSV", tint = Color.White)
         }
@@ -83,58 +77,45 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
                 csvContent.append("${category.dernierTimeTampsSynchronisationAvecFireBase}\n")
             }
 
-            // Create file name with timestamp
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-            val fileName = "categories_export_$timestamp.csv"
+            // Create the specific directory path
+            val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
+            val exportDir = File(imagesProduitsLocalExternalStorageBasePath)
 
-            // Save to Downloads folder
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val file = File(downloadsDir, fileName)
+            // Create directory if it doesn't exist
+            if (!exportDir.exists()) {
+                exportDir.mkdirs()
+            }
+
+            // Create file with fixed name
+            val fileName = "CategoriesTabelle.csv"
+            val file = File(exportDir, fileName)
 
             // Write CSV content to file
             FileWriter(file).use { writer ->
                 writer.write(csvContent.toString())
             }
 
-            // Show success message and open file
+            // Show success message
             withContext(Dispatchers.Main) {
-                shareFile(context, file)
+                android.widget.Toast.makeText(
+                    context,
+                    "Categories exported successfully to: ${file.absolutePath}",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
             }
 
         } catch (e: Exception) {
+            // Log error and show error toast
             e.printStackTrace()
-            // Handle error - you might want to show a Toast or Snackbar here
+            android.util.Log.e("ButtonId4", "Error exporting categories to CSV", e)
+
+            withContext(Dispatchers.Main) {
+                android.widget.Toast.makeText(
+                    context,
+                    "Error exporting CSV: ${e.message}",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
         }
-    }
-}
-
-private fun shareFile(context: Context, file: File) {
-    try {
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        val shareIntent = Intent.createChooser(intent, "Export Categories CSV")
-        context.startActivity(shareIntent)
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-        // Fallback: try to open the file directly
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(
-                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file),
-                "text/csv"
-            )
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(intent)
     }
 }
