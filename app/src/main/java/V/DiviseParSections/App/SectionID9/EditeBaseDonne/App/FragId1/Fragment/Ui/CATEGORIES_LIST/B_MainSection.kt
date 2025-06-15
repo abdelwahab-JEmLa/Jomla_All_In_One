@@ -15,23 +15,18 @@ fun LazyListScope.categorieSection(
     availableCategories: List<Long>,
     onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
     categoryMap: Map<Long, CategoriesTabelle> = emptyMap(),
-    onHeldPourDeplacement: (Long, Boolean) -> Unit,
-    onClickPourChangeDeplaceApre: (Long, Boolean) -> Unit,
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {},
-    produitList: List<ArticlesBasesStatsTable>
 ) {
     groupedProducts.forEach { (id, products) ->
         item(key = "header_$id") {
             E_StickyHeader(
                 categoryId = id,
                 category = categoryMap[id],
-                onHeldPourDeplacement = { onHeldPourDeplacement(id ?: 0L, it) },
-                onClickPourChangeDeplaceApre = { onClickPourChangeDeplaceApre(id ?: 0L, it) }
             )
         }
         item(key = "products_$id") {

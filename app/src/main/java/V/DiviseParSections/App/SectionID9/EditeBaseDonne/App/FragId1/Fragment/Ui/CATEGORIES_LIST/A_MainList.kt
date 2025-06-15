@@ -33,26 +33,6 @@ fun EditeCategoriesMainList(
 ) {
     var categoriesListLocal by remember(categoriesList) { mutableStateOf(categoriesList) }
 
-    val onHeldPourDeplacement: (Long, Boolean) -> Unit = { id, held ->
-        categoriesListLocal = categoriesListLocal.map { it.copy(itsHeldPourDeplacement = it.id == id && held) }
-    }
-
-    val onClickPourChangeDeplaceApre: (Long, Boolean) -> Unit = { targetId, after ->
-        val held = categoriesListLocal.find { it.itsHeldPourDeplacement }
-        val target = categoriesListLocal.find { it.id == targetId }
-        if (held != null && target != null && held.id != targetId) {
-            val newPos = if (after) target.position + 1 else target.position
-            categoriesListLocal = categoriesListLocal.map { cat ->
-                when {
-                    cat.id == held.id -> cat.copy(position = newPos, itsHeldPourDeplacement = false)
-                    cat.position >= newPos && cat.id != held.id -> cat.copy(position = cat.position + 1)
-                    else -> cat
-                }
-            }.sortedBy { it.position }.mapIndexed { i, cat -> cat.copy(position = i + 1) }
-            onCategoriesEdite?.invoke(categoriesListLocal)
-        }
-    }
-
     val handleAddCategory: (String) -> Unit = { name ->
         val newId = (categoriesListLocal.maxOfOrNull { it.id } ?: 0L) + 1
 
@@ -93,13 +73,10 @@ fun EditeCategoriesMainList(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             categorieSection(
-                produitList=produitList,
                 groupedProducts = groupedProducts,
                 availableCategories = availableCategories,
                 onProductCategoryChanged = onProductCategoryChanged,
                 categoryMap = categoryMap,
-                onHeldPourDeplacement = onHeldPourDeplacement,
-                onClickPourChangeDeplaceApre = onClickPourChangeDeplaceApre,
                 onAddCategory = handleAddCategory,
                 onUpdateCategory = handleUpdateCategory,
                 selectedProducts = selectedProducts,
