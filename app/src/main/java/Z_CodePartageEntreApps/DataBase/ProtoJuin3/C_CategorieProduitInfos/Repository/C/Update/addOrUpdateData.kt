@@ -5,7 +5,6 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 fun C_CategorieProduitInfosRepository.addOrUpdateData(
     data: CategoriesTabelle,
@@ -24,13 +23,3 @@ fun C_CategorieProduitInfosRepository.addOrUpdateData(
     }
 }
 
-suspend fun Boolean.batchFireBaseUpdate(datas: List<CategoriesTabelle>) {
-    val updates = mutableMapOf<String, Any>()
-    if (this) {
-        datas.forEach { data ->
-            updates[data.id.toString()] = data
-        }
-        val firebaseRef = CategoriesTabelle.caRef
-        firebaseRef.updateChildren(updates).await()
-    }
-}

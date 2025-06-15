@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -23,12 +22,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.compose.koinInject
 import java.io.File
 
 @Composable
 fun ButtonId5(
-    AppDatabase: AppDatabase = koinInject(),
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     showLabels: Boolean,
     onImportSuccess: () -> Unit = {}
@@ -44,7 +41,16 @@ fun ButtonId5(
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
-                    importCategoriesFromCsv(context, AppDatabase, onImportSuccess)
+                    val importedCategories = importCategoriesFromCsv(context)
+                    if (importedCategories.isNotEmpty()) {
+                        viewModel.addOrUpdateCategories(importedCategories)
+                        Toast.makeText(
+                            context,
+                            "Successfully imported ${importedCategories.size} categories",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        onImportSuccess()
+                    }
                 }
             },
             modifier = Modifier.size(40.dp),
@@ -56,14 +62,10 @@ fun ButtonId5(
 }
 
 private suspend fun importCategoriesFromCsv(
-    context: Context,
-    appDatabase: AppDatabase,
-    onImportSuccess: () -> Unit
-) {
-    withContext(Dispatchers.IO) {
+    context: Context
+): List<CategoriesTabelle> {
+    return withContext(Dispatchers.IO) {
         try {
-            val categoriesDao = appDatabase.categoriesModelDao()
-
             // Use the same path as ButtonId4
             val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
             val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "CategoriesTabelle.csv")
@@ -77,7 +79,7 @@ private suspend fun importCategoriesFromCsv(
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                return@withContext
+                return@withContext emptyList<CategoriesTabelle>()
             }
 
             val categories = mutableListOf<CategoriesTabelle>()
@@ -109,20 +111,7 @@ private suspend fun importCategoriesFromCsv(
                 }
             }
 
-            if (categories.isNotEmpty()) {
-                // Clear existing data and insert new data
-                categoriesDao.deleteAll()
-                categoriesDao.insertAll(categories)
-
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        "Successfully imported ${categories.size} categories from ${csvFile.absolutePath}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    onImportSuccess()
-                }
-            } else {
+            if (categories.isEmpty()) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -131,6 +120,8 @@ private suspend fun importCategoriesFromCsv(
                     ).show()
                 }
             }
+
+            categories
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -141,6 +132,7 @@ private suspend fun importCategoriesFromCsv(
                     Toast.LENGTH_LONG
                 ).show()
             }
+            emptyList<CategoriesTabelle>()
         }
     }
 }

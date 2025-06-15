@@ -6,15 +6,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun C_CategorieProduitInfosRepository.addOrUpdateDatas(datas: List<CategoriesTabelle>) {
+fun C_CategorieProduitInfosRepository.addOrUpdateDatas(
+    datas: List<CategoriesTabelle>,
+    avecFireBase: Boolean = false
+) {
     CoroutineScope(Dispatchers.IO).launch {
         val preparedDatas = datas.map { it.withDernierTimeTampsSynchronisationAvecFireBase() }
 
         dao.upsertAllDatas(preparedDatas)
 
-        preparedDatas.forEach { data ->
-            repoRef.child(data.id.toString()).setValue(data)
-        }
+        avecFireBase.batchFireBaseUpdate(preparedDatas)
 
         updateRepoState(preparedDatas)
     }
