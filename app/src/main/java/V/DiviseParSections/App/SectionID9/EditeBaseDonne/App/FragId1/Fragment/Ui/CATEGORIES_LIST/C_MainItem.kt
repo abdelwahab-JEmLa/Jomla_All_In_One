@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
@@ -49,6 +50,7 @@ fun MainItemEditeCategories(
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {},
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val isSelected = selectedProducts.contains(produit)
@@ -97,6 +99,7 @@ fun MainItemEditeCategories(
 
                 // Add availability toggle button
                 DisponibilityToggleButton(
+                    viewModel=viewModel,
                     currentState = produit.disponibilityEtates,
                     onToggle = {
                         val updatedProduct = produit.toggleDisponibilityEtates()
@@ -133,6 +136,7 @@ fun MainItemEditeCategories(
     // Show dialog only when bulk move dialog is triggered
     if (showBulkMoveDialog && selectedProducts.isNotEmpty()) {
         BulkCategorySelectionDialog(
+            viewModel=viewModel,
             products = selectedProducts.toList(),
             onCategorySelected = { newId ->
                 selectedProducts.forEach { product ->
@@ -151,13 +155,13 @@ fun MainItemEditeCategories(
     // Individual product dialog (if needed for single product operations)
     if (showDialog) {
         CategorySelectionDialog(
+            viewModel = viewModel,
             product = produit,
             onCategorySelected = { newId ->
                 onCategoryChanged(produit.copy(idParentCategorie = newId))
                 showDialog = false
             },
             onDismiss = { showDialog = false },
-            onAddCategory = onAddCategory,
             onUpdateCategory = onUpdateCategory,
             categoriesMap = categoriesMap,
             availableCategories = availableCategories
@@ -173,22 +177,24 @@ fun BulkCategorySelectionDialog(
     onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
-    availableCategories: List<Long> = emptyList()
+    availableCategories: List<Long> = emptyList(),
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
     // Use the same CategorySelectionDialog but with modified title and text
     CategorySelectionDialog(
-        product = products.first(), // Use first product as reference
+        viewModel = viewModel, // Use first product as reference
+        product = products.first(),
         onCategorySelected = onCategorySelected,
         onDismiss = onDismiss,
-        onAddCategory = onAddCategory,
         onUpdateCategory = onUpdateCategory,
         categoriesMap = categoriesMap,
-        availableCategories = availableCategories
+        availableCategories = availableCategories,
     )
 }
 
 @Composable
 fun DisponibilityToggleButton(
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     currentState: DisponibilityEtates,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier

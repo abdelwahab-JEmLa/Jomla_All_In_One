@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,10 +30,21 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun AddCategoryDialog(
-    onCategoryAdded: (String) -> Unit,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
+
+    val addCategory = {
+        if (name.trim().isNotEmpty()) {
+            val newCategory = CategoriesTabelle(
+                nom = name.trim(),
+                position = viewModel.categoriesCompoRepository.datasValue.size + 1
+            )
+            viewModel.addOrUpdateCategorie(newCategory)
+            onDismiss()
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -62,9 +75,7 @@ fun AddCategoryDialog(
                     label = { Text("Nom") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (name.trim().isNotEmpty()) onCategoryAdded(name.trim())
-                        }
+                        onDone = { addCategory() }
                     ),
                     singleLine = true
                 )
@@ -76,9 +87,7 @@ fun AddCategoryDialog(
                 ) {
                     TextButton(onClick = onDismiss) { Text("Annuler") }
                     TextButton(
-                        onClick = {
-                            if (name.trim().isNotEmpty()) onCategoryAdded(name.trim())
-                        },
+                        onClick = addCategory,
                         enabled = name.trim().isNotEmpty()
                     ) {
                         Text("Ajouter")

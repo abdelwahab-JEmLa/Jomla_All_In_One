@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,15 +37,15 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun EditCategoryDialog(
-    currentName: String,
-    onCategoryUpdated: (String) -> Unit,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    categoryToEdit: CategoriesTabelle,
     onDismiss: () -> Unit
 ) {
-    var textFieldValue by remember { 
+    var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
-                text = currentName,
-                selection = TextRange(currentName.length) // Place cursor at end
+                text = categoryToEdit.nom,
+                selection = TextRange(categoryToEdit.nom.length) // Place cursor at end
             )
         )
     }
@@ -56,7 +58,16 @@ fun EditCategoryDialog(
         focusRequester.requestFocus()
         keyboard?.show()
         // Select all text for easy editing
-        textFieldValue = textFieldValue.copy(selection = TextRange(0, currentName.length))
+        textFieldValue = textFieldValue.copy(selection = TextRange(0, categoryToEdit.nom.length))
+    }
+
+    val updateCategory = {
+        val trimmedName = textFieldValue.text.trim()
+        if (trimmedName.isNotEmpty()) {
+            val updatedCategory = categoryToEdit.copy(nom = trimmedName)
+            viewModel.addOrUpdateCategorie(updatedCategory)
+            onDismiss()
+        }
     }
 
     Dialog(
@@ -90,10 +101,7 @@ fun EditCategoryDialog(
                     label = { Text("Nom") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            val trimmedName = textFieldValue.text.trim()
-                            if (trimmedName.isNotEmpty()) onCategoryUpdated(trimmedName)
-                        }
+                        onDone = { updateCategory() }
                     ),
                     singleLine = true
                 )
@@ -105,10 +113,7 @@ fun EditCategoryDialog(
                 ) {
                     TextButton(onClick = onDismiss) { Text("Annuler") }
                     TextButton(
-                        onClick = {
-                            val trimmedName = textFieldValue.text.trim()
-                            if (trimmedName.isNotEmpty()) onCategoryUpdated(trimmedName)
-                        },
+                        onClick = updateCategory,
                         enabled = textFieldValue.text.trim().isNotEmpty()
                     ) {
                         Text("Modifier")

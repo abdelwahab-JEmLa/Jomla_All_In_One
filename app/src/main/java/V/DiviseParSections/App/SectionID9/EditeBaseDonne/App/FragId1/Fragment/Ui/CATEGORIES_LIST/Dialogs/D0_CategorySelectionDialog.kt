@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,18 +54,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.delay
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategorySelectionDialog(
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     product: ArticlesBasesStatsTable,
     onCategorySelected: (Long?) -> Unit,
     onDismiss: () -> Unit,
-    onAddCategory: ((String) -> Unit)? = null,
     onUpdateCategory: ((Long, String) -> Unit)? = null,
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(), // Added viewModel parameter
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var showSearch by remember { mutableStateOf(false) }
@@ -87,11 +85,13 @@ fun CategorySelectionDialog(
     val catalogues = remember { startupeDatas() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
 
-    // FIXED: Create productsByCategory map from uiState
-    val productsByCategory by remember(uiState.a_ProduitInfosList) {
-        derivedStateOf {
-            uiState.a_ProduitInfosList.groupBy { it.idParentCategorie }
-        }
+    // Create a dummy category for "Sans Catégorie" option
+    val sansCategorieCategory = remember {
+        CategoriesTabelle(
+            id = 0L,
+            nom = "Sans Catégorie",
+            position = 0
+        )
     }
 
     // Group categories by catalogue
@@ -101,9 +101,10 @@ fun CategorySelectionDialog(
         catalogues.forEach { catalogue ->
             val catalogueCategories = allCategories.filter { category ->
                 category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                            category.id < nextCatalogue.premierCategorieId
-                        } ?: true)
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }
+                            ?.let { nextCatalogue ->
+                                category.id < nextCatalogue.premierCategorieId
+                            } ?: true)
             }
             if (catalogueCategories.isNotEmpty()) {
                 grouped[catalogue] = catalogueCategories
@@ -114,9 +115,10 @@ fun CategorySelectionDialog(
         val uncategorizedCategories = allCategories.filter { category ->
             !catalogues.any { catalogue ->
                 category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }?.let { nextCatalogue ->
-                            category.id < nextCatalogue.premierCategorieId
-                        } ?: true)
+                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }
+                            ?.let { nextCatalogue ->
+                                category.id < nextCatalogue.premierCategorieId
+                            } ?: true)
             }
         }
 
@@ -127,12 +129,19 @@ fun CategorySelectionDialog(
         grouped
     }
 
-    val filteredCategoriesByCatalogue by remember(categoriesByCatalogue, searchText, filterWithProducts, availableCategories) {
+    val filteredCategoriesByCatalogue by remember(
+        categoriesByCatalogue,
+        searchText,
+        filterWithProducts,
+        availableCategories
+    ) {
         derivedStateOf {
             categoriesByCatalogue.mapValues { (_, categories) ->
                 var filtered = categories
-                if (filterWithProducts) filtered = filtered.filter { availableCategories.contains(it.id) }
-                if (searchText.isNotBlank()) filtered = filtered.filter { it.nom.contains(searchText, true) }
+                if (filterWithProducts) filtered =
+                    filtered.filter { availableCategories.contains(it.id) }
+                if (searchText.isNotBlank()) filtered =
+                    filtered.filter { it.nom.contains(searchText, true) }
                 filtered
             }.filterValues { it.isNotEmpty() }
         }
@@ -221,25 +230,23 @@ fun CategorySelectionDialog(
                                 }
                             }
                         }
-                        if (onAddCategory != null) {
-                            IconButton(onClick = { showAddDialog = true }) {
-                                Card(
-                                    modifier = Modifier.size(48.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primary
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
+                        IconButton(onClick = { showAddDialog = true }) {
+                            Card(
+                                modifier = Modifier.size(48.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "Ajouter",
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Ajouter",
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             }
                         }
@@ -294,12 +301,13 @@ fun CategorySelectionDialog(
                         }
                         item {
                             CategoryOptionGridCard(
+                                viewModel = viewModel,
+                                categorie = sansCategorieCategory,
                                 categoryId = null,
                                 categoryName = "Sans Catégorie",
                                 isSelected = product.idParentCategorie == null,
                                 onClick = { onCategorySelected(null) },
                                 onEditName = null
-                                // FIXED: Pass products for null category
                             )
                         }
                     }
@@ -314,12 +322,18 @@ fun CategorySelectionDialog(
                         }
                         items(categories) { cat ->
                             CategoryOptionGridCard(
+                                viewModel = viewModel,
+                                categorie = cat,
                                 categoryId = cat.id,
                                 categoryName = cat.nom,
                                 isSelected = product.idParentCategorie == cat.id,
                                 onClick = { onCategorySelected(cat.id) },
-                                onEditName = if (onUpdateCategory != null) { name -> onUpdateCategory(cat.id, name) } else null
-                                // FIXED: Pass products for this category
+                                onEditName = if (onUpdateCategory != null) { name ->
+                                    onUpdateCategory(
+                                        cat.id,
+                                        name
+                                    )
+                                } else null
                             )
                         }
                     }
@@ -337,13 +351,10 @@ fun CategorySelectionDialog(
         }
     }
 
-    if (showAddDialog && onAddCategory != null) {
+    if (showAddDialog ) {
         AddCategoryDialog(
-            onCategoryAdded = { name ->
-                onAddCategory(name)
-                showAddDialog = false
-            },
-            onDismiss = { showAddDialog = false }
+            viewModel = viewModel,
+            onDismiss = { showAddDialog = false },
         )
     }
 }

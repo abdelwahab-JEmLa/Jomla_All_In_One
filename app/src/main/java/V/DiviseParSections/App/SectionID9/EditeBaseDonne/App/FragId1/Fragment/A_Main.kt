@@ -51,16 +51,15 @@ fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
     val progress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
-    val categoriesList =  viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
-        .datasValue
+    val categoriesCompoRepository = viewModel.categoriesCompoRepository
+    val categoriesList = categoriesCompoRepository.datasValue
 
     var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
 
-    var currentMode by remember { mutableStateOf(ModeAffichage.REORDER_GRID) }
+    var currentMode by remember { mutableStateOf(ModeAffichage.CATEGORIES_LIST) }
     var filterState by remember { mutableStateOf(FilterState()) }
 
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
@@ -69,7 +68,6 @@ fun EditeBaseDonneMainScreenIdS9(
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
     var showBulkMoveDialog by remember { mutableStateOf(false) }
 
-    // Get selected categories from ViewModel state
     val selectedCategories = remember(categoriesList) {
         categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
@@ -155,7 +153,7 @@ fun EditeBaseDonneMainScreenIdS9(
                     when (currentMode) {
                         ModeAffichage.CATEGORIES_LIST -> {
                             EditeCategoriesMainList(
-                                categoriesList = categoriesList,
+                                viewModel=viewModel,
                                 produitList = filteredProduitList,
                                 onProductCategoryChanged = { updatedProduct ->
                                     produitListLocal = produitListLocal.map { product ->
@@ -167,10 +165,10 @@ fun EditeBaseDonneMainScreenIdS9(
                                     }
                                     viewModel.addOrUpdateProduit(updatedProduct)
                                 },
+                                modifier = Modifier.fillMaxSize(),
                                 onCategoriesEdite = { updatedCategories ->
                                     viewModel.addOrUpdateCategories(updatedCategories)
                                 },
-                                modifier = Modifier.fillMaxSize(),
                                 selectedProducts = selectedProducts,
                                 onProductSelectionToggle = { product ->
                                     selectedProducts = if (selectedProducts.contains(product)) {

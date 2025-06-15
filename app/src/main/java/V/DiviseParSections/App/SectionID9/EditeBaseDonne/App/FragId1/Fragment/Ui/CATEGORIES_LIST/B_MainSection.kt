@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 fun LazyListScope.categorieSection(
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
     availableCategories: List<Long>,
     onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
@@ -43,7 +45,8 @@ fun LazyListScope.categorieSection(
                         selectedProducts = selectedProducts,
                         onProductSelectionToggle = onProductSelectionToggle,
                         showBulkMoveDialog = showBulkMoveDialog,
-                        onShowBulkMoveDialog = onShowBulkMoveDialog
+                        onShowBulkMoveDialog = onShowBulkMoveDialog,
+                        viewModel = viewModel
                     )
                 }
             }

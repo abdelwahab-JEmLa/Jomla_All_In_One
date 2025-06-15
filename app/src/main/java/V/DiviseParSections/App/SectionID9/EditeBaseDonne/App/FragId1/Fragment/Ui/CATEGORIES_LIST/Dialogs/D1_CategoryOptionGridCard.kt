@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,16 +37,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CategoryOptionGridCard(
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    categorie: CategoriesTabelle,
     categoryId: Long?,
     categoryName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     onEditName: ((String) -> Unit)?,
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -181,11 +182,8 @@ fun CategoryOptionGridCard(
     // Show edit dialog when requested
     if (showEditDialog && onEditName != null) {
         EditCategoryDialog(
-            currentName = categoryName,
-            onCategoryUpdated = { newName ->
-                onEditName(newName)
-                showEditDialog = false
-            },
+            viewModel=viewModel,
+            categoryToEdit = categorie,
             onDismiss = { showEditDialog = false }
         )
     }
