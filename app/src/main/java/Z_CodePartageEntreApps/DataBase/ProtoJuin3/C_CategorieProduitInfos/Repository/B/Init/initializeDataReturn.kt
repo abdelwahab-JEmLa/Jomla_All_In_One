@@ -16,6 +16,8 @@ suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<Categ
         val hasInternetConnection = isInternetAvailable(context)
 
         if (hasInternetConnection) {
+
+
             val firebaseData = suspendCancellableCoroutine { continuation ->
                 getFirebaseData { dataFB ->
                     continuation.resume(dataFB)
@@ -23,6 +25,8 @@ suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<Categ
             }
 
             if (firebaseData.isNotEmpty()) {
+
+
                 dao.insertAll(firebaseData)
                 firebaseData
             } else {
@@ -45,7 +49,8 @@ suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<Categ
 }
 
 private fun loadCategoriesFromCsv(): List<CategoriesTabelle> {
-    val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
+    val imagesProduitsLocalExternalStorageBasePath =
+        "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "CategoriesTabelle.csv")
 
     if (!csvFile.exists()) {
@@ -100,7 +105,8 @@ private fun parseCsvLine(line: String): CategoriesTabelle {
         displayedHeader = values[4].toBoolean(),
         itsHeldPourDeplacement = values[5].toBoolean(),
         cSelectionePourDeplace = values[6].toBoolean(),
-        dernierTimeTampsSynchronisationAvecFireBase = values[7].toLongOrNull() ?: System.currentTimeMillis()
+        dernierTimeTampsSynchronisationAvecFireBase = values[7].toLongOrNull()
+            ?: System.currentTimeMillis()
     )
 }
 
@@ -122,10 +128,12 @@ private fun parseCsvValues(line: String): List<String> {
                     insideQuotes = !insideQuotes
                 }
             }
+
             char == ',' && !insideQuotes -> {
                 values.add(currentValue.toString())
                 currentValue.clear()
             }
+
             else -> {
                 currentValue.append(char)
             }
@@ -138,7 +146,8 @@ private fun parseCsvValues(line: String): List<String> {
 }
 
 private fun isInternetAvailable(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     val network = connectivityManager.activeNetwork ?: return false
     val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false

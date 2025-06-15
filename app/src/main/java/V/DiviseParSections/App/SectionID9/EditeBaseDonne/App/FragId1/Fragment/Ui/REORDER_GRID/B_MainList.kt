@@ -54,7 +54,8 @@ internal fun MainList(
             CategoriesTabelle.logCategory(cate, TAG)
         }
     }
-
+    //<--
+    //TODO(1): cree un lunche effect qui verifie si un item avec mem id il delete celuit le pls ancien 
     Column(
         modifier = modifier
             .fillMaxSize()

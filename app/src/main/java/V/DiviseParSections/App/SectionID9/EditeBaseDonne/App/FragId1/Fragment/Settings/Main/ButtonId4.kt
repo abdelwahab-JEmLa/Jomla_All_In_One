@@ -38,22 +38,22 @@ fun ButtonId4(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (showLabels) Text("Export Categories & Articles ")
+        if (showLabels) Text("Export Categories, Articles & Clients ")
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
-                    exportDataToCsv(context, AppDatabase)
+                    exportAllDataToCsv(context, AppDatabase)
                 }
             },
             modifier = Modifier.size(40.dp),
             containerColor = Color.Blue
         ) {
-            Icon(Icons.Default.Download, "Export Data to CSV", tint = Color.White)
+            Icon(Icons.Default.Download, "Export All Data to CSV", tint = Color.White)
         }
     }
 }
 
-private suspend fun exportDataToCsv(context: Context, appDatabase: AppDatabase) {
+private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabase) {
     withContext(Dispatchers.IO) {
         try {
             // Create the specific directory path
@@ -71,11 +71,14 @@ private suspend fun exportDataToCsv(context: Context, appDatabase: AppDatabase) 
             // Export Articles
             exportArticlesToCsv(context, appDatabase, exportDir)
 
+            // Export Clients
+            exportClientsToCsv(context, appDatabase, exportDir)
+
             // Show success message
             withContext(Dispatchers.Main) {
                 android.widget.Toast.makeText(
                     context,
-                    "Categories and Articles exported successfully to: ${exportDir.absolutePath}",
+                    "Categories, Articles, and Clients exported successfully to: ${exportDir.absolutePath}",
                     android.widget.Toast.LENGTH_LONG
                 ).show()
             }
@@ -127,6 +130,7 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
         writer.write(csvContent.toString())
     }
 }
+
 private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
     // Get all articles from database
     val articles = appDatabase.articlesBasesStatsModelDao().getAll()
@@ -191,6 +195,51 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
 
     // Create file with fixed name
     val fileName = "ArticlesBasesStatsTable.csv"
+    val file = File(exportDir, fileName)
+
+    // Write CSV content to file
+    FileWriter(file).use { writer ->
+        writer.write(csvContent.toString())
+    }
+}
+
+private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+    // Get all clients from database
+    val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll() // Adjust DAO method name as needed
+
+    // Create CSV content
+    val csvContent = StringBuilder()
+
+    // Add CSV header for B_ClientInfosProtoJuin3
+    csvContent.append("id,nom,cretionTimestamps,numTelephone,couleur,bonDuClientsSu,currentCreditBalance,positionDonClientsList,cUnClientTemporaire,auFilterFAB,typeDeSonMagasine,clientTypeMode,caMarqueGpsEstOuvert,latitude,longitude,title,snippet,actuelleEtat,tagCeBonEstOuvertPourComptsIds,keyFireBase,dernierTimeTampsSynchronisationAvecFireBase\n")
+
+    // Add client data
+    clients.forEach { client ->
+        csvContent.append("${client.id},")
+        csvContent.append("\"${client.nom.replace("\"", "\"\"")}\",")
+        csvContent.append("${client.cretionTimestamps},")
+        csvContent.append("\"${client.numTelephone.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${client.couleur.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${client.bonDuClientsSu.replace("\"", "\"\"")}\",")
+        csvContent.append("${client.currentCreditBalance},")
+        csvContent.append("${client.positionDonClientsList},")
+        csvContent.append("${client.cUnClientTemporaire},")
+        csvContent.append("${client.auFilterFAB},")
+        csvContent.append("${client.typeDeSonMagasine},")
+        csvContent.append("${client.clientTypeMode},")
+        csvContent.append("${client.caMarqueGpsEstOuvert},")
+        csvContent.append("${client.latitude},")
+        csvContent.append("${client.longitude},")
+        csvContent.append("\"${client.title.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${client.snippet.replace("\"", "\"\"")}\",")
+        csvContent.append("${client.actuelleEtat},")
+        csvContent.append("\"${client.tagCeBonEstOuvertPourComptsIds.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${client.keyFireBase.replace("\"", "\"\"")}\",")
+        csvContent.append("${client.dernierTimeTampsSynchronisationAvecFireBase}\n")
+    }
+
+    // Create file with fixed name
+    val fileName = "B_ClientInfosProtoJuin3.csv"
     val file = File(exportDir, fileName)
 
     // Write CSV content to file

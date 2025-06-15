@@ -31,10 +31,15 @@ class C_CategorieProduitInfosRepository(
     val repoRef = CategoriesTabelle.caRef
 
     init {
+
+
         CoroutineScope(Dispatchers.IO).launch {
             val initializedData = initializeDataReturn()
             updateRepoState(initializedData)
+
+
         }
+
     }
 
     suspend fun updateRepoState(data: List<CategoriesTabelle>) {
