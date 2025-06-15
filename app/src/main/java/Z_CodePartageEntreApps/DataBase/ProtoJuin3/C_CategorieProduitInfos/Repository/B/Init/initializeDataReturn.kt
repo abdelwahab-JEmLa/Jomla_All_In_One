@@ -26,27 +26,21 @@ suspend fun C_CategorieProduitInfosRepository.initializeDataReturn(): List<Categ
                 dao.insertAll(firebaseData)
                 firebaseData
             } else {
-                loadFromCsvFallback()
+                val csvData = loadCategoriesFromCsv()
+                if (csvData.isNotEmpty()) {
+                    dao.insertAll(csvData)
+                }
+                csvData
             }
         } else {
-            loadFromCsvFallback()
+            val csvData = loadCategoriesFromCsv()
+            if (csvData.isNotEmpty()) {
+                dao.insertAll(csvData)
+            }
+            csvData
         }
     } else {
         dao.getAll()
-    }
-}
-
-private suspend fun C_CategorieProduitInfosRepository.loadFromCsvFallback(): List<CategoriesTabelle> {
-    return try {
-        val csvData = loadCategoriesFromCsv()
-        if (csvData.isNotEmpty()) {
-            dao.insertAll(csvData)
-            csvData
-        } else {
-            emptyList()
-        }
-    } catch (e: Exception) {
-        emptyList()
     }
 }
 
