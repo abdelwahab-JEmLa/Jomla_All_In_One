@@ -95,8 +95,10 @@ internal fun MainItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
+                val id = category.id
+                val text = category.nom
                 Text(
-                    text = category.nom,
+                    text ="$text-$id",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (category.cSelectionePourDeplace)
                         FontWeight.Bold else FontWeight.Medium,

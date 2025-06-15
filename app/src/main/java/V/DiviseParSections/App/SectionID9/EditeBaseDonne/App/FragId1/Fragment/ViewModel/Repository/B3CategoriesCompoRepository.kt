@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.deleteAddMultiDatas
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -91,6 +92,9 @@ class B3CategoriesCompoRepository(
     fun updateDatasDonSonRepositoryProtoJuin3(newDatas: List<CategoriesTabelle>) {
         parentRepo.addOrUpdateDatas(newDatas)
     }
+    fun deleteAddMultiDatas(newDatas: List<CategoriesTabelle>) {
+        parentRepo.deleteAddMultiDatas(newDatas)
+    }
 }
 
 @Entity
@@ -122,7 +126,9 @@ data class CategoriesTabelle(
     companion object {
         val caRef =
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_CategorieProduitInfos")
-
+        fun safeRemoveRef(): Unit {
+            caRef.removeValue()
+        }
         fun logCategory(category: CategoriesTabelle, TAG: String) {
             Log.d(
                 TAG, "Category selected for displacement processed: " +

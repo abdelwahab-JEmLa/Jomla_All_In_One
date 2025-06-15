@@ -139,29 +139,9 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         moveCategories(MoveOperation.RELATIVE_TO_TARGET, targetCategoryId, moveBefore)
     }
 
-    fun reorderCategoriesAndClearSelections(newCategoriesList: List<CategoriesTabelle>) {
-        moveCategories(MoveOperation.REORDER_WITH_CLEAR, newCategoriesList = newCategoriesList)
-    }
-
     fun updateCate_cSelectionePourDeplace(categorie: CategoriesTabelle) {
         val newData = categorie.copy(cSelectionePourDeplace = !categorie.cSelectionePourDeplace)
         addOrUpdateCategorie(newData)
-    }
-
-    fun clearAllCategorySelections() {
-        val currentCategories = categoriesCompoRepository.datasValue
-        val selectedCategories = currentCategories.filter { it.cSelectionePourDeplace }
-
-        if (selectedCategories.isNotEmpty()) {
-            val clearedCategories = selectedCategories.map { category ->
-                category.copy(cSelectionePourDeplace = false)
-            }
-            addOrUpdateCategories(clearedCategories)
-        }
-    }
-
-    fun getSelectedCategories(): List<CategoriesTabelle> {
-        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
     }
 
     fun getSelectedCategoryIds(): Set<Long> {
@@ -174,6 +154,9 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
         categoriesCompoRepository.addOrUpdateDatas(categories)
+    }
+    fun deleteAddMultiCategories(categories: List<CategoriesTabelle>) {
+        categoriesCompoRepository.deleteAddMultiDatas(categories)
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {

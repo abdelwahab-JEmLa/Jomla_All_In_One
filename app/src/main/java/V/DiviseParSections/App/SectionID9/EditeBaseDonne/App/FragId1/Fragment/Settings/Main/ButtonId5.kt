@@ -43,7 +43,7 @@ fun ButtonId5(
                 coroutineScope.launch {
                     val importedCategories = importCategoriesFromCsv(context)
                     if (importedCategories.isNotEmpty()) {
-                        viewModel.addOrUpdateCategories(importedCategories)
+                        viewModel.deleteAddMultiCategories(importedCategories)
                         Toast.makeText(
                             context,
                             "Successfully imported ${importedCategories.size} categories",
