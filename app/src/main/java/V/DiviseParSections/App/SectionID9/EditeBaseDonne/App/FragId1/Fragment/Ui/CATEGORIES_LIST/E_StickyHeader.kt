@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun E_StickyHeader(        //<--
 //TODO(1): fait au click d affiche un dialoge contien un lazy grid de 4 affiche les produit d cate au click il update cSelectionePourDeplacesEntreMemeCategorieAmis 
-
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
     categoryId: Long?,
