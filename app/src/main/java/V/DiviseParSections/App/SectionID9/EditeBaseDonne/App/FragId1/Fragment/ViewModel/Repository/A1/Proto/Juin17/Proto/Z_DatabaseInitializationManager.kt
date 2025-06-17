@@ -1,11 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBasePJ17
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init.onLoadFromFireBaseD_AchatOperation
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +31,7 @@ class Z_DatabaseInitializationManager(
         val jobs = listOf(
             scope.launch {
                 initRepo(Repository.D_ACHAT_OPERATION.name, context) {
-                    achatOperationRepository.init(context) { name, progress ->
+                    achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
@@ -65,22 +61,6 @@ class Z_DatabaseInitializationManager(
         } catch (e: Exception) {
             markComplete(name)
         }
-    }
-
-
-    private suspend fun initAchatOperation(context: Context, appDatabase: AppDatabase) {
-        val dao = appDatabase.D_AchatOperationDao()
-        if (!dao.isTableEmpty()) return
-
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.4f)
-        val data: List<D_AchatOperation> = if (isInternetAvailable(context)) {
-            updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.6f)
-            onLoadFromFireBaseD_AchatOperation()
-        } else {
-            onLoadCategoriesFromCsvD_AchatOperation()
-        }
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.8f)
-        dao.insertAll(data)
     }
 
     private suspend fun initAppCompt() {
