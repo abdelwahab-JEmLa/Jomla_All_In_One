@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class B_ClientsState (
+class B_ClientsStateCompoRepository (
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ){
     private val composScope = CoroutineScope(Dispatchers.IO)

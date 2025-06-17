@@ -19,10 +19,10 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class B3CategoriesCompoRepository(
+class C_CategoriesCompoRepository(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ) {
-    val TAG = "B3CategoriesCompoRepository"
+    val TAG = "C_CategoriesCompoRepository"
     val parentRepo = a_MasterRepositorysGrpProtoJuin3.repoC_CategorieProduitInfos
     private val composScope = CoroutineScope(Dispatchers.IO)
 

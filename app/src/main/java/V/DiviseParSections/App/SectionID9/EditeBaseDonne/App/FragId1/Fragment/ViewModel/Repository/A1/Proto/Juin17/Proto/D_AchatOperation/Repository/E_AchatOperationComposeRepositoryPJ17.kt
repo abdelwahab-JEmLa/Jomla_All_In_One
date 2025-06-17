@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class D_AchatOperationComposeRepositoryPJ17(
+class E_AchatOperationComposeRepositoryPJ17(
     private val ancienRepo: D_AchatOperationDataBasePJ17,
 ) {
     val dao = ancienRepo.dao
