@@ -10,6 +10,7 @@ import com.google.firebase.database.database
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+    var bsonObjectId: String = BsonObjectId().toHexString(),
     //S P Ids
     var idParentCategorie: Long? = null,
 

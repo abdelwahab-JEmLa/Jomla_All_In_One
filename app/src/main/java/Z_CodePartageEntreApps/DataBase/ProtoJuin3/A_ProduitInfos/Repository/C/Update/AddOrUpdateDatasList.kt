@@ -12,9 +12,7 @@ fun A_ProduitInfosRepository.addOrUpdateDatasList(datas: List<ArticlesBasesStats
 
         dao.upsertAllDatas(preparedDatas)
 
-        preparedDatas.forEach { data ->
-            ref.child(data.keyFireBase).setValue(data)
-        }
+        batchFireBaseUpdateA_ProduitInfos(preparedDatas)
 
         updateRepoState(preparedDatas)
     }

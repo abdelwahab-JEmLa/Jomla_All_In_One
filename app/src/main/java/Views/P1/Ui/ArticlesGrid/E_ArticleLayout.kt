@@ -238,6 +238,7 @@ private fun DemiDisplayerMultiColor(
     }
 }
 
+
 @Composable
 private fun DemiDisplayerDualColor(
     article: ArticlesBasesStatsTable,

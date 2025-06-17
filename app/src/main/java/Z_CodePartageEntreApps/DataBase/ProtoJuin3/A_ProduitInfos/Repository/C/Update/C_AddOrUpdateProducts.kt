@@ -12,7 +12,7 @@ fun A_ProduitInfosRepository.addOrUpdateData(data: ArticlesBasesStatsTable) {
 
         dao.upsertData(preparedData)
 
-        ref.child(preparedData.keyFireBase).setValue(preparedData)
+        batchFireBaseUpdateA_ProduitInfos(listOf(preparedData))
 
         // Fixed: Refresh the repository state with all current data from the database
         val allData = dao.getAll()
