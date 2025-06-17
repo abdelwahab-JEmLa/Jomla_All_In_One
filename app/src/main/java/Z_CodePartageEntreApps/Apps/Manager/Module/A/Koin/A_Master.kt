@@ -39,6 +39,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.Avan
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -63,6 +64,7 @@ import Z_CodePartageEntreApps.Modules.ConnectionManager
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
+import Z_CodePartageEntreApps.Proto.B.Par.App.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.ViewModel.ViewModel_A4FragID1
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.F0_FireBaseOperationsHandler
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL.G_RoomOperationsHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -98,7 +100,21 @@ val centralDataBasesModule = module {
 }
 
 val composRepositorysModule = module {
-    single { A_CentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    // Fix: Explicitly specify all 9 dependencies for A_CentralCompoRepositoryProtoJuin9
+    single {
+        A_CentralCompoRepositoryProtoJuin9(
+            context = androidContext(),
+            databaseInitializationManager = get<Z_DatabaseInitializationManager>(),
+            comptAppState = get<Z_ComptAppStateCompoRepositoryProtoAvanJuin17>(),
+            appComptComposeRepositoryProtoJuin17 = get<Z_AppComptComposeRepositoryProtoJuin17>(),
+            a_MasterRepositorysGrpProtoJuin3 = get<A_MasterRepositorysGrpProtoJuin3>(),
+            b3CategoriesCompoRepository = get<C_CategoriesCompoRepository>(),
+            clientsState = get<B_ClientsStateCompoRepository>(),
+            transactionCommercialState = get<D_TransactionCommercialCompoRepository>(),
+            d_AchatOperationComposeRepositoryPJ17 = get<E_AchatOperationComposeRepositoryPJ17>()
+        )
+    }
+
     single { B_ClientsStateCompoRepository(get()) }
     single { C_CategoriesCompoRepository(get()) }
     single { D_TransactionCommercialCompoRepository(get()) }
@@ -108,47 +124,8 @@ val composRepositorysModule = module {
     single { Z_AutreStatesCompoRepository(get()) }
 }
 
-val dataBaseProtoAvantJuin3Module = module {
-    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
-    single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
-    single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
-    single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
-    single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
-    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
-    single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
-    single { A_ProduitInfosRepository(androidContext(), get()) }
-    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
-    single { B_ClientInfosProtoJuin3Repository(androidContext(), get()) }
-    single { C_CategorieProduitInfosRepository(androidContext(), get()) }
-    single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
-    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
-    single { D_EtateMessageVocaleRepository(androidContext(), get()) }
-    single { D_AchatOperationDataBasePJ17(get<AppDatabase>().D_AchatOperationDao()) }
-    single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
-    single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
-    single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
-    single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
-    single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
-    single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
-    single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
-}
-
-val classesHandlersModule = module {
-    single { Z_DatabaseInitializationManager(get(),get(),) }
-    single { CalculeCouleurHandler(get()) }
-    single { PanelsGroupeButtonHandler() }
-    single { FragmentNavigationHandler() }
-    single { AppDatabase.DatabaseModule.getDatabase(get()) }
-    single { G_RoomOperationsHandler(get()) }
-    single { F0_FireBaseOperationsHandler() }
-    single { CalculeCouleurHandler(get()) }
-    single { A_FirebaseAudioStorageHelper() }
-    single { AudioRecorderAndPlayHandler(get()) }
-    single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-    single<IRecordingHandler> { RecordingHandler(repository = get<K_TempTravailleRepository>(), coroutineScope = get<CoroutineScope>()) }
-}
-
 val viewModelModule = module {
+    viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
     viewModel { VendeurAfficheurInfosProduitViewModel(get()) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
@@ -172,15 +149,83 @@ val viewModelModule = module {
     viewModel { ClientsMapFilterViewModel(get()) }
 }
 
+val classesHandlersModule = module {
+    single { CalculeCouleurHandler(get()) }
+    single { PanelsGroupeButtonHandler() }
+    single { FragmentNavigationHandler() }
+    single { G_RoomOperationsHandler(get()) }
+    single { F0_FireBaseOperationsHandler() }
+    single { A_FirebaseAudioStorageHelper() }
+    single { AudioRecorderAndPlayHandler(get()) }
+    single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+    single<IRecordingHandler> { RecordingHandler(repository = get<K_TempTravailleRepository>(), coroutineScope = get<CoroutineScope>()) }
+}
 
+val dataBaseProtoAvantJuin3Module = module {
+    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
+    single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
+    single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
+    single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
+    single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
+    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
+    single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
+    single { A_ProduitInfosRepository(androidContext(), get()) }
+    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
+    single { B_ClientInfosProtoJuin3Repository(androidContext(), get()) }
+    single { C_CategorieProduitInfosRepository(androidContext(), get()) }
+    single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
+    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
+    single { D_EtateMessageVocaleRepository(androidContext(), get()) }
+    // Moved D_AchatOperationDataBasePJ17 to classesHandlersModule to fix dependency order
+    single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
+    single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
+    single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
+    single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
+    single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
+    single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
+    single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
+    single { Z_AppComptRepositoryProtoJuin17(get<AppDatabase>().Z_AppComptDao()) }
+}
 
-// Updated appModule to include classesHandlersModule
+// Alternative approach: Create a separate database module to ensure proper dependency resolution
+val databaseModule = module {
+    single { AppDatabase.DatabaseModule.getDatabase(get()) }
+    single { D_AchatOperationDataBasePJ17(get<AppDatabase>().D_AchatOperationDao()) }
+}
+
+val managersModule = module {
+    single {
+        Z_DatabaseInitializationManager(
+            achatOperationRepository = get<D_AchatOperationDataBasePJ17>(),
+            appComptComposeRepositoryPJ17 = get<Z_AppComptComposeRepositoryProtoJuin17>()
+        )
+    }
+}
+
+// Updated appModule with proper dependency order and error handling
 val appModule = module {
     includes(
-        centralDataBasesModule,
-        composRepositorysModule,
-        dataBaseProtoAvantJuin3Module,
-        viewModelModule,
-        classesHandlersModule
+        databaseModule,                // 1. Database and DAOs first
+        dataBaseProtoAvantJuin3Module, // 2. Basic repositories
+        centralDataBasesModule,        // 3. Master repositories
+        composRepositorysModule,   // 4. Basic compose repositories
+        managersModule,                // 6. Managers (Z_DatabaseInitializationManager)
+        classesHandlersModule,         // 8. Handlers and utilities
+        viewModelModule                // 9. ViewModels last
     )
+}
+
+// Debug module to help identify which dependency is failing
+val debugModule = module {
+    single {
+        try {
+            println("Creating Z_AppComptComposeRepositoryProtoJuin17...")
+            Z_AppComptComposeRepositoryProtoJuin17(get()).also {
+                println("Successfully created Z_AppComptComposeRepositoryProtoJuin17")
+            }
+        } catch (e: Exception) {
+            println("Failed to create Z_AppComptComposeRepositoryProtoJuin17: ${e.message}")
+            throw e
+        }
+    }
 }

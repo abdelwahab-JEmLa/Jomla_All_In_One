@@ -1,9 +1,6 @@
 package com.example.clientjetpack
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
-import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
 import android.app.Application
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
@@ -15,10 +12,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // Configure Firebase FIRST before any other Firebase operations
         try {
-            // Get reference to database ONCE and configure it
             FirebaseDatabase.getInstance().apply {
                 setPersistenceEnabled(true)
                 setPersistenceCacheSizeBytes(100L * 1024L * 1024L) // 100MB
@@ -30,14 +24,7 @@ class MyApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
-            modules(appModule) // Add viewModelModule here
-
-            // Conditionally load app-specific modules
-            if (isManagerApp(this@MyApplication)) {
-                modules(appManagerModules)
-            } else {
-                modules(appClientModules)
-            }
+            modules(appModule)
         }
     }
 }

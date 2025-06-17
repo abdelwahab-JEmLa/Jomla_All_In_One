@@ -17,6 +17,8 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Exte
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao.CategoriesModelDao
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto.Extension.DataBase._1_5_VendeurDao
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.A.Model.Z_AppCompt
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.SQL.Z_AppComptDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
@@ -90,7 +92,7 @@ import java.util.Date
         B_ClientInfosProtoJuin3::class,
 
         D_AchatOperation::class,
-        D_AchatOperationDao::class,
+        Z_AppCompt::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -136,6 +138,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
 
     abstract fun D_AchatOperationDao(): D_AchatOperationDao
+    abstract fun Z_AppComptDao(): Z_AppComptDao
 
     object DatabaseModule {
 
