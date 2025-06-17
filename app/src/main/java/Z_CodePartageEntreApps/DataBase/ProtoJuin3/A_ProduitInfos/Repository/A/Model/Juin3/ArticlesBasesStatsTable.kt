@@ -5,12 +5,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import org.mongodb.kbson.BsonObjectId
 
 @Entity
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var bsonObjectId: String = BsonObjectId().toHexString(),
+
     //S P Ids
     var idParentCategorie: Long? = null,
 
