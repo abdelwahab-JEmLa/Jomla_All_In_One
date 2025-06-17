@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +71,6 @@ fun CategorySelectionDialog(
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-    val uiState by viewModel.uiState.collectAsState()
 
     if (showSearch) {
         LaunchedEffect(Unit) {
@@ -94,36 +92,26 @@ fun CategorySelectionDialog(
         )
     }
 
-    // Group categories by catalogue
+    // Group categories by catalogue (improved organization like EditeCategoriesMainList)
     val categoriesByCatalogue = remember(allCategories, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
 
+        // Group categories by their catalogue parent
         catalogues.forEach { catalogue ->
-            val catalogueCategories = allCategories.filter { category ->
-                category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }
-                            ?.let { nextCatalogue ->
-                                category.id < nextCatalogue.premierCategorieId
-                            } ?: true)
+            val categoriesInCatalogue = allCategories.filter {
+                it.catalogueParentId == catalogue.id
             }
-            if (catalogueCategories.isNotEmpty()) {
-                grouped[catalogue] = catalogueCategories
+            if (categoriesInCatalogue.isNotEmpty()) {
+                grouped[catalogue] = categoriesInCatalogue.sortedBy { it.position }
             }
         }
 
-        // Add categories that don't belong to any catalogue
-        val uncategorizedCategories = allCategories.filter { category ->
-            !catalogues.any { catalogue ->
-                category.id >= catalogue.premierCategorieId &&
-                        (catalogues.find { it.premierCategorieId > catalogue.premierCategorieId }
-                            ?.let { nextCatalogue ->
-                                category.id < nextCatalogue.premierCategorieId
-                            } ?: true)
-            }
+        // Handle categories without a valid catalogue (orphaned categories)
+        val orphanedCategories = allCategories.filter {
+            it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
         }
-
-        if (uncategorizedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = uncategorizedCategories
+        if (orphanedCategories.isNotEmpty()) {
+            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = orphanedCategories.sortedBy { it.position }
         }
 
         grouped
@@ -138,15 +126,16 @@ fun CategorySelectionDialog(
         derivedStateOf {
             categoriesByCatalogue.mapValues { (_, categories) ->
                 var filtered = categories
-                if (filterWithProducts) filtered =
-                    filtered.filter { availableCategories.contains(it.id) }
-                if (searchText.isNotBlank()) filtered =
-                    filtered.filter { it.nom.contains(searchText, true) }
+                if (filterWithProducts) {
+                    filtered = filtered.filter { availableCategories.contains(it.id) }
+                }
+                if (searchText.isNotBlank()) {
+                    filtered = filtered.filter { it.nom.contains(searchText, true) }
+                }
                 filtered
             }.filterValues { it.isNotEmpty() }
         }
     }
-
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -169,6 +158,7 @@ fun CategorySelectionDialog(
                     .fillMaxSize()
                     .padding(24.dp)
             ) {
+                // Header with title and action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,6 +170,7 @@ fun CategorySelectionDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        // Search toggle button
                         IconButton(
                             onClick = {
                                 showSearch = !showSearch
@@ -209,6 +200,8 @@ fun CategorySelectionDialog(
                                 }
                             }
                         }
+
+                        // Filter toggle button
                         IconButton(onClick = { filterWithProducts = !filterWithProducts }) {
                             Card(
                                 modifier = Modifier.size(48.dp),
@@ -230,6 +223,8 @@ fun CategorySelectionDialog(
                                 }
                             }
                         }
+
+                        // Add category button
                         IconButton(onClick = { showAddDialog = true }) {
                             Card(
                                 modifier = Modifier.size(48.dp),
@@ -253,6 +248,7 @@ fun CategorySelectionDialog(
                     }
                 }
 
+                // Search field
                 if (showSearch) {
                     OutlinedTextField(
                         value = searchText,
@@ -283,8 +279,9 @@ fun CategorySelectionDialog(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
+                // Main grid content - organized like EditeCategoriesMainList
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
+                    columns = GridCells.Fixed(4), // Increased to 4 columns for better grid layout
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
@@ -293,7 +290,7 @@ fun CategorySelectionDialog(
                 ) {
                     // Add "Sans Catégorie" option at the top
                     if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                             CatalogHeaderCard(
                                 catalogue = CataloguesCaegorie(
                                     id = 0,
@@ -316,46 +313,50 @@ fun CategorySelectionDialog(
                         }
                     }
 
-                    // Add catalogue sections with sticky headers
+                    // Add catalogue sections with headers (improved organization)
                     filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
+                        // Catalogue header spanning full width
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                             CatalogHeaderCard(
                                 catalogue = catalogue,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
-                        items(categories) { cat ->
+
+                        // Categories in this catalogue
+                        items(categories) { category ->
                             CategoryOptionGridCard(
                                 viewModel = viewModel,
-                                categorie = cat,
-                                categoryId = cat.id,
-                                categoryName = cat.nom,
-                                isSelected = product.idParentCategorie == cat.id,
-                                onClick = { onCategorySelected(cat.id) },
+                                categorie = category,
+                                categoryId = category.id,
+                                categoryName = category.nom,
+                                isSelected = product.idParentCategorie == category.id,
+                                onClick = { onCategorySelected(category.id) },
                                 onEditName = if (onUpdateCategory != null) { name ->
-                                    onUpdateCategory(
-                                        cat.id,
-                                        name
-                                    )
+                                    onUpdateCategory(category.id, name)
                                 } else null
                             )
                         }
                     }
                 }
 
+                // Footer with close button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) { Text("Fermer") }
+                    TextButton(onClick = onDismiss) {
+                        Text("Fermer")
+                    }
                 }
             }
         }
     }
 
-    if (showAddDialog ) {
+    // Add category dialog
+    if (showAddDialog) {
         AddCategoryDialog(
             viewModel = viewModel,
             onDismiss = { showAddDialog = false },

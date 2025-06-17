@@ -39,7 +39,7 @@ fun AddCategoryDialog(
         if (name.trim().isNotEmpty()) {
             val newCategory = CategoriesTabelle(
                 nom = name.trim(),
-                position = viewModel.categoriesCompoRepository.datasValue.size + 1
+                position = 0
             )
             viewModel.addOrUpdateCategorie(newCategory)
             onDismiss()
