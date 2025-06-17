@@ -7,7 +7,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
         CataloguesCaegorie(
             bsonObjectId = "t4",
             id = 4,
-            nom = "San Categories",
+            nom = "San Catalogue",
             premierCategorieId = 0,
             position = 0
         ),

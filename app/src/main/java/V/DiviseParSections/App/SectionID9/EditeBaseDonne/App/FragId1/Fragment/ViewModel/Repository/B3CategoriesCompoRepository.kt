@@ -4,7 +4,6 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.deleteAddMultiDatas
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -17,6 +16,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class B3CategoriesCompoRepository(
@@ -99,9 +99,11 @@ class B3CategoriesCompoRepository(
 data class CategoriesTabelle(
     @PrimaryKey
     val id: Long = System.currentTimeMillis(),
-//    val idObjectId: ObjectId = ObjectId(),
+    var bsonObjectId: String = BsonObjectId().toHexString(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     val catalogueParentId: Long = 0,
+    val parentCatalogueIdObject: String = "",
 
     var nom: String = "",
 
@@ -112,8 +114,6 @@ data class CategoriesTabelle(
     val itsHeldPourDeplacement: Boolean = false,
 
     var cSelectionePourDeplace: Boolean = false,
-
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): CategoriesTabelle {
         return this.copy(
