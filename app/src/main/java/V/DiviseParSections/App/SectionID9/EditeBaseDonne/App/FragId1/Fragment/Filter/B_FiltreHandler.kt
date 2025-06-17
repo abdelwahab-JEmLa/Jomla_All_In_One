@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -181,186 +182,222 @@ fun FilterDropdownMenu(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Filtres et tri",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Search field
-            OutlinedTextField(
-                value = filterState.searchText,
-                onValueChange = {
-                    onFilterChanged(filterState.copy(searchText = it))
-                },
-                label = { Text("Rechercher par nom") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Rechercher"
-                    )
-                },
-                trailingIcon = {
-                    if (filterState.searchText.isNotEmpty()) {
-                        IconButton(
-                            onClick = {
-                                onFilterChanged(filterState.copy(searchText = ""))
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Effacer"
-                            )
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
-
-            // Sorting options section
-            Text(
-                text = "Options de tri",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
-
-            FilterOption(
-                label = "Grouper par catégories (comme EditeCategoriesMainList)",
-                checked = filterState.enableCategoryGrouping,
-                onCheckedChange = {
-                    onFilterChanged(
-                        filterState.copy(
-                            enableCategoryGrouping = it,
-                            sortOrder = if (it) SortOrder.CATEGORY_GROUPED else SortOrder.ID_DESC
-                        )
-                    )
-                }
-            )
-
-            // Sort order options (only show when not grouping by categories)
-            if (!filterState.enableCategoryGrouping) {
+            item {
                 Text(
-                    text = "Ordre de tri:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-
-                SortOption(
-                    label = "ID décroissant (plus récent)",
-                    selected = filterState.sortOrder == SortOrder.ID_DESC,
-                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_DESC)) }
-                )
-
-                SortOption(
-                    label = "ID croissant (plus ancien)",
-                    selected = filterState.sortOrder == SortOrder.ID_ASC,
-                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_ASC)) }
-                )
-
-                SortOption(
-                    label = "Nom A-Z",
-                    selected = filterState.sortOrder == SortOrder.NAME_ASC,
-                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_ASC)) }
-                )
-
-                SortOption(
-                    label = "Nom Z-A",
-                    selected = filterState.sortOrder == SortOrder.NAME_DESC,
-                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_DESC)) }
+                    text = "Filtres et tri",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            item {
+                // Search field
+                OutlinedTextField(
+                    value = filterState.searchText,
+                    onValueChange = {
+                        onFilterChanged(filterState.copy(searchText = it))
+                    },
+                    label = { Text("Rechercher par nom") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Rechercher"
+                        )
+                    },
+                    trailingIcon = {
+                        if (filterState.searchText.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    onFilterChanged(filterState.copy(searchText = ""))
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Effacer"
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
-            Text(
-                text = "Filtres de disponibilité",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
 
-            FilterOption(
-                label = "Masquer produits non disponibles",
-                checked = filterState.hideNonDispo,
-                onCheckedChange = {
-                    onFilterChanged(filterState.copy(hideNonDispo = it))
-                }
-            )
+            item {
+                // Sorting options section
+                Text(
+                    text = "Options de tri",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            FilterOption(
-                label = "Masquer produits disponibles",
-                checked = filterState.hideDispoOnly,
-                onCheckedChange = {
-                    onFilterChanged(filterState.copy(hideDispoOnly = it))
-                }
-            )
-
-            FilterOption(
-                label = "Masquer produits possibles",
-                checked = filterState.hidePetiteProbability,
-                onCheckedChange = {
-                    onFilterChanged(filterState.copy(hidePetiteProbability = it))
-                }
-            )
-
-            FilterOption(
-                label = "Masquer produits sans prix d'achat",
-                checked = filterState.hidePrixAchatZero,
-                onCheckedChange = {
-                    onFilterChanged(filterState.copy(hidePrixAchatZero = it))
-                }
-            )
-
-            FilterOption(
-                label = "Masquer produits avec prix d'achat",
-                checked = filterState.hidePrixAchatPositif,
-                onCheckedChange = {
-                    onFilterChanged(filterState.copy(hidePrixAchatPositif = it))
-                }
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                androidx.compose.material3.TextButton(
-                    onClick = {
-                        onFilterChanged(FilterState())
-                        onDismiss()
-                    }
-                ) {
-                    Text("Réinitialiser")
-                }
-
-                androidx.compose.material3.TextButton(
-                    onClick = {
+            item {
+                FilterOption(
+                    label = "Grouper par catégories (comme EditeCategoriesMainList)",
+                    checked = filterState.enableCategoryGrouping,
+                    onCheckedChange = {
                         onFilterChanged(
-                            FilterState(
-                                hideNonDispo = true,
-                                hideDispoOnly = true,
-                                hidePetiteProbability = true,
-                                hidePrixAchatZero = true,
-                                hidePrixAchatPositif = true,
-                                searchText = filterState.searchText,
-                                sortOrder = filterState.sortOrder,
-                                enableCategoryGrouping = filterState.enableCategoryGrouping
+                            filterState.copy(
+                                enableCategoryGrouping = it,
+                                sortOrder = if (it) SortOrder.CATEGORY_GROUPED else SortOrder.ID_DESC
                             )
                         )
                     }
-                ) {
-                    Text("Tout Activer")
+                )
+            }
+
+            // Sort order options (only show when not grouping by categories)
+            if (!filterState.enableCategoryGrouping) {
+                item {
+                    Text(
+                        text = "Ordre de tri:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
 
-                androidx.compose.material3.TextButton(
-                    onClick = onDismiss
+                item {
+                    SortOption(
+                        label = "ID décroissant (plus récent)",
+                        selected = filterState.sortOrder == SortOrder.ID_DESC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_DESC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "ID croissant (plus ancien)",
+                        selected = filterState.sortOrder == SortOrder.ID_ASC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_ASC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Nom A-Z",
+                        selected = filterState.sortOrder == SortOrder.NAME_ASC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_ASC)) }
+                    )
+                }
+
+                item {
+                    SortOption(
+                        label = "Nom Z-A",
+                        selected = filterState.sortOrder == SortOrder.NAME_DESC,
+                        onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_DESC)) }
+                    )
+                }
+            }
+
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            item {
+                Text(
+                    text = "Filtres de disponibilité",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits non disponibles",
+                    checked = filterState.hideNonDispo,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hideNonDispo = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits disponibles",
+                    checked = filterState.hideDispoOnly,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hideDispoOnly = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits possibles",
+                    checked = filterState.hidePetiteProbability,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hidePetiteProbability = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits sans prix d'achat",
+                    checked = filterState.hidePrixAchatZero,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hidePrixAchatZero = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits avec prix d'achat",
+                    checked = filterState.hidePrixAchatPositif,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hidePrixAchatPositif = it))
+                    }
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Fermer")
+                    androidx.compose.material3.TextButton(
+                        onClick = {
+                            onFilterChanged(FilterState())
+                            onDismiss()
+                        }
+                    ) {
+                        Text("Réinitialiser")
+                    }
+
+                    androidx.compose.material3.TextButton(
+                        onClick = {
+                            onFilterChanged(
+                                FilterState(
+                                    hideNonDispo = true,
+                                    hideDispoOnly = true,
+                                    hidePetiteProbability = true,
+                                    hidePrixAchatZero = true,
+                                    hidePrixAchatPositif = true,
+                                    searchText = filterState.searchText,
+                                    sortOrder = filterState.sortOrder,
+                                    enableCategoryGrouping = filterState.enableCategoryGrouping
+                                )
+                            )
+                        }
+                    ) {
+                        Text("Tout Activer")
+                    }
+
+                    androidx.compose.material3.TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text("Fermer")
+                    }
                 }
             }
         }
