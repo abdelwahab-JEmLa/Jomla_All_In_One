@@ -13,17 +13,29 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.C_TransactionCommercialState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.Z_AutreStates
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B3CategoriesCompoRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.D_ComptAppState
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBasePJ17
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
-import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_VendeurRepositoryImpl
-import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_VendeurRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.AvantJuin3._1_5_Vendeur.Proto._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -72,267 +84,97 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-const val itsProductionMode = false
-
-val commonRepositoriesModule = module {
-    single { AppDatabase.DatabaseModule.getDatabase(get()) }
-
-
-    single {
-        E_GroupedDataBasesRepositoryNonConnue(
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-
-    single {
-        F0_FireBaseOperationsHandler()
-    }
-
-    single {
-        G_RoomOperationsHandler(
-            get(),
-        )
-    }
-    single<_01_VentsHistoriquesDataBase_Repository> {
-        _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode)
-    }
-
-    single<GroupeRepositorysProtoAvJuin3> {
-        GroupeRepositorysProtoAvJuin3Impl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-
-    single<E1SecteurDeClientsRepository> {
-        E1SecteurDeClientsRepositoryImpl(
-            get(),
-        )
-    }
-
-    single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
-    single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
-    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
-    single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
-    single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
-
-    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
-
-    single<_4_CouleurOperationCommand_Repository> {
-        _4_CouleurOperationCommand_RepositoryImpl(get())
-    }
-
-    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
-    single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
-    single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
-    single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
-    single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
-    single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
-    single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
-    single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
+val centralDataBasesModule = module {
+    single { A_MasterRepositorysGrpProtoJuin3(get(), get(), get(), get(), get()) }
+    single { E_GroupedDataBasesRepositoryNonConnue(get(), get(), get(), get()) }
+    single<GroupeRepositorysProtoAvJuin3> { GroupeRepositorysProtoAvJuin3Impl(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
-val navigationModule = module {
-    single { FragmentNavigationHandler() }
+val composRepositorysModule = module {
+    single { A_CentralDatasHandlerProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { B_ClientsState(get()) }
+    single { B3CategoriesCompoRepository(get()) }
+    single { C_TransactionCommercialState(get()) }
+    single { D_ComptAppState(get()) }
+    single { Z_AutreStates(get()) }
+}
+
+val dataBaseProtoAvantJuin3Module = module {
+    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
+    single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
+    single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
+    single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
+    single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
+    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
+    single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
+    single { A_ProduitInfosRepository(androidContext(), get()) }
+    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
+    single { B_ClientInfosProtoJuin3Repository(androidContext(), get()) }
+    single { C_CategorieProduitInfosRepository(androidContext(), get()) }
+    single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
+    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
+    single { D_EtateMessageVocaleRepository(androidContext(), get()) }
+    single { D_AchatOperationDataBasePJ17(get<AppDatabase>().D_AchatOperationDao()) }
+    single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
+    single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
+    single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
+    single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
+    single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
+    single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
+    single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
 }
 
 val classesHandlersModule = module {
-    single {
-        A_FirebaseAudioStorageHelper(
-            )
-    }
-    single {
-        AudioRecorderAndPlayHandler(
-            get(),
-            )
-    }
-    single<CoroutineScope> {
-        CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    }
-
-    // Recording Handler
-    single<IRecordingHandler> {
-        RecordingHandler(
-            repository = get<K_TempTravailleRepository>(),
-            coroutineScope = get<CoroutineScope>()
-        )
-    }
-
-    // Add other handlers here as needed
-    // single<IAnotherHandler> { AnotherHandlerImpl(get()) }
+    single { CalculeCouleurHandler(get()) }
+    single { PanelsGroupeButtonHandler() }
+    single { FragmentNavigationHandler() }
+    single { AppDatabase.DatabaseModule.getDatabase(get()) }
+    single { G_RoomOperationsHandler(get()) }
+    single { F0_FireBaseOperationsHandler() }
+    single { CalculeCouleurHandler(get()) }
+    single { A_FirebaseAudioStorageHelper() }
+    single { AudioRecorderAndPlayHandler(get()) }
+    single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
+    single<IRecordingHandler> { RecordingHandler(repository = get<K_TempTravailleRepository>(), coroutineScope = get<CoroutineScope>()) }
 }
 
 val viewModelModule = module {
-    viewModel {
-        PanierFinaleDAchatViewModel(
-            get(),
-            get(),
-            get(),
-        )
-    }
-    viewModel {
-        VendeurAfficheurInfosProduitViewModel(
-            get(),
-        )
-    }
-    viewModel {
-        B_ClientInfosProtoJuin3PreviewViewModel(
-            get(),
-        )
-    }
-    viewModel {
-        ViewModelMessageur(
-            get(),
-            get(),
-        )
-    }
-    viewModel {
-        D_EtateMessageVocalePreviewViewModel(
-            get(),
-        )
-    }
-
-    viewModel {
-        A_ProduitInfosViewModel(
-            get()
-        )
-    }
-
-    viewModel {
-        CategoriePrevViewModel(
-            get()
-        )
-    }
-
-    viewModel {
-        EditeBaseDonneMainScreenIdS9ViewModel(
-            get(),
-            get(),
-        )
-    }
-    viewModel {
-        CommandeProduitsViewModel(
-            get(),
-        )
-    }
-    viewModel {
-        ViewModelT2(
-            get(),
-        )
-    }
-
-
-    viewModel { TariffsButtonsViewModelSec7ID2(get(),
-            get(),
-            get(),) }
-
-    factory { (viewModel: HeadViewModel, context: Context) ->
-        ConnectionManager(
-            context = context,
-        )
-    }
-
-    viewModel { (context: Context) ->
-        HeadViewModel(
-            get(),
-            AppDatabase.DatabaseModule.getDatabase(get()),
-            get(),
-        )
-    }
-
-    // Updated to inject the RecordingHandler
-    viewModel {
-        RecordingViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-
+    viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
+    viewModel { VendeurAfficheurInfosProduitViewModel(get()) }
+    viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
+    viewModel { ViewModelMessageur(get(), get()) }
+    viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
+    viewModel { A_ProduitInfosViewModel(get()) }
+    viewModel { CategoriePrevViewModel(get()) }
+    viewModel { EditeBaseDonneMainScreenIdS9ViewModel(get(), get()) }
+    viewModel { CommandeProduitsViewModel(get()) }
+    viewModel { ViewModelT2(get()) }
+    viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
+    factory { (viewModel: HeadViewModel, context: Context) -> ConnectionManager(context = context) }
+    viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get()), get()) }
+    viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
-    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(),
-        get(),
-        ) }
+    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get()) }
     viewModel { VendeursViewModel(get(), get()) }
-    viewModel {
-        MapClientsViewModel(
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-
-    // Update this ViewModel to use the navigation handler
-    viewModel {
-        E0AfficheHistoriqueTransactionsViewModel(
-            get(),
-            get() ,
-            get() ,
-            get() ,
-        )
-    }
-    viewModel {
-        ClientsMapFilterViewModel(
-            get(),  // The repository
-        )
-    }
+    viewModel { MapClientsViewModel(get(), get(), get(), get()) }
+    viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
+    viewModel { ClientsMapFilterViewModel(get()) }
 }
 
-// Function to determine the application type
-fun isManagerApp(context: Context): Boolean {
-    return context.packageName == "com.example.abdelwahabjemlajetpack.serveur"
-}
 
-val appTypeModule = module {
-    single {
-        val appType = if (isManagerApp(get())) "manager" else "client"
-        appType
-    }
-}
-
-val uiHandlersModule = module {
-    single { CalculeCouleurHandler(get()) } // Injects ViewModel_TestID2
-
-    single { PanelsGroupeButtonHandler() }
-}
 
 // Updated appModule to include classesHandlersModule
 val appModule = module {
     includes(
-        moduleGrouperKoinProtoJuin3,
-        commonRepositoriesModule,
-        appTypeModule,
+        centralDataBasesModule,
+        composRepositorysModule,
+        dataBaseProtoAvantJuin3Module,
         viewModelModule,
-        navigationModule,
-        uiHandlersModule,
-        classesHandlersModule  // Added the new module
+        classesHandlersModule
     )
-
-    // Rest of the code remains the same
-    single {
-        val context = get<Context>()
-        if (isManagerApp(context)) {
-            // Return some manager-specific instance if needed
-            "manager-context"
-        } else {
-            // Return some client-specific instance if needed
-            "client-context"
-        }
-    }
 }
