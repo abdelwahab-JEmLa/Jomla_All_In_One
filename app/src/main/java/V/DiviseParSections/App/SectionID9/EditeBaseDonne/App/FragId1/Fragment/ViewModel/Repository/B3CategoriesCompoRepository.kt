@@ -7,7 +7,6 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.util.Log
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +27,6 @@ class B3CategoriesCompoRepository(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<CategoriesTabelle>>(emptyList())
-    val datasState: State<List<CategoriesTabelle>> = _datas
     val datasValue by derivedStateOf { _datas.value }
     val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 

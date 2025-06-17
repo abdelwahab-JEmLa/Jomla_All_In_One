@@ -29,15 +29,15 @@ fun EditeCategoriesMainList(
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {}
-) {        //<--
-//TODO(1): fait que les produits sans cate soit au top      
+) {
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesListLocal = categoriesCompoRepository.datasValue
 
-    // Group products by category (same as before)
+    // Group products by category
     val categoryMap = remember(categoriesListLocal) {
         categoriesListLocal.associateBy { it.id }
     }
+
     val groupedProducts = remember(produitList, categoriesListLocal) {
         produitList.groupBy { it.idParentCategorie ?: 0L }
             .toList().sortedBy { (id, _) ->
@@ -78,6 +78,11 @@ fun EditeCategoriesMainList(
         produitList.mapNotNull { it.idParentCategorie }.distinct().sorted()
     }
 
+    // Separate products without categories (idParentCategorie == null or 0)
+    val productsWithoutCategory = remember(groupedProducts) {
+        groupedProducts[0L] ?: emptyList()
+    }
+
     Box(
         modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(12.dp))
@@ -87,9 +92,31 @@ fun EditeCategoriesMainList(
             modifier = Modifier.fillMaxSize().padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // NEW: Iterate through catalogues first, then categories within each catalogue
-            categoriesByCatalogue.forEach { (catalogue, categoriesInCatalogue) ->
+            // FIXED: Show products without categories at the top first
+            if (productsWithoutCategory.isNotEmpty()) {
+                item(key = "no_category_header") {
+                    CatalogueHeader(catalogue = CataloguesCaegorie(
+                        id = -1, // Use -1 to distinguish from regular catalogues
+                        nom = "Produits sans catégorie",
+                        premierCategorieId = 0
+                    ))
+                }
 
+                categorieSection(
+                    viewModel = viewModel,
+                    groupedProducts = mapOf(0L to productsWithoutCategory),
+                    availableCategories = availableCategories,
+                    onProductCategoryChanged = onProductCategoryChanged,
+                    categoryMap = categoryMap,
+                    selectedProducts = selectedProducts,
+                    onProductSelectionToggle = onProductSelectionToggle,
+                    showBulkMoveDialog = showBulkMoveDialog,
+                    onShowBulkMoveDialog = onShowBulkMoveDialog,
+                )
+            }
+
+            // Then iterate through catalogues and their categories
+            categoriesByCatalogue.forEach { (catalogue, categoriesInCatalogue) ->
                 // Add catalogue header
                 item(key = "catalogue_header_${catalogue.id}") {
                     CatalogueHeader(catalogue = catalogue)
