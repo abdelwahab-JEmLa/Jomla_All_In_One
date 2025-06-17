@@ -19,7 +19,6 @@ class Z_AppComptComposeRepositoryProtoJuin17(
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-    val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 
      val currentAppCompt by derivedStateOf { datasValue.find { it.bsonObjectId == "b1" } }
 
