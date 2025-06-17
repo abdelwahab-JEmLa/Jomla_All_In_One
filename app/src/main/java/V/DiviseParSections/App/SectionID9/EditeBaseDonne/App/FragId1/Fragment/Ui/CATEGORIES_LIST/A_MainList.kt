@@ -33,7 +33,6 @@ fun EditeCategoriesMainList(
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesListLocal = categoriesCompoRepository.datasValue
 
-    // Group products by category
     val categoryMap = remember(categoriesListLocal) {
         categoriesListLocal.associateBy { it.id }
     }
@@ -45,27 +44,18 @@ fun EditeCategoriesMainList(
             }.toMap()
     }
 
-    // Get catalogues and sort them by position
     val catalogues = remember {
         B4CatalogueCategoriesRepository().sortedBy { it.position }
     }
 
-    val categoriesByCatalogue = remember(
-        categoriesListLocal,
-        catalogues
-    ) {
-        // Use LinkedHashMap to preserve order
+    val categoriesByCatalogue = remember(categoriesListLocal, catalogues) {
         val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-
-        // Group categories by their catalogue parent - iterate through sorted catalogues
         catalogues.forEach { catalogue ->
             val categoriesInCatalogue = categoriesListLocal.filter {
                 it.catalogueParentId == catalogue.id.toLong()
             }
-
             grouped[catalogue] = categoriesInCatalogue.sortedBy { it.position }
         }
-
         grouped
     }
 
@@ -73,7 +63,6 @@ fun EditeCategoriesMainList(
         produitList.mapNotNull { it.idParentCategorie }.distinct().sorted()
     }
 
-    // Separate products without categories (idParentCategorie == null or 0)
     val productsWithoutCategory = remember(groupedProducts) {
         groupedProducts[0L] ?: emptyList()
     }
@@ -90,9 +79,8 @@ fun EditeCategoriesMainList(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Show products without categories at the top first (before catalogues)
             if (productsWithoutCategory.isNotEmpty()) {
-                item(key = "no_category_header_top") { // FIXED: Unique key
+                item(key = "no_category_header_top") {
                     CatalogueHeader(
                         catalogue = CataloguesCaegorie(
                             id = -1,
@@ -103,7 +91,7 @@ fun EditeCategoriesMainList(
                 }
 
                 categorieSection(
-                    keyPrefix = "no_category_top", // FIXED: Add unique prefix
+                    keyPrefix = "no_category_top",
                     viewModel = viewModel,
                     groupedProducts = mapOf(0L to productsWithoutCategory),
                     availableCategories = availableCategories,
@@ -116,20 +104,19 @@ fun EditeCategoriesMainList(
                 )
             }
 
-            // Then iterate through catalogues in sorted order (by position)
-            catalogues.forEachIndexed { catalogueIndex, catalogue -> // FIXED: Use forEachIndexed for unique keys
+            catalogues.forEachIndexed { catalogueIndex, catalogue ->
                 val categoriesInCatalogue = categoriesByCatalogue[catalogue] ?: emptyList()
 
-                item(key = "catalogue_header_${catalogue.id}_${catalogueIndex}") { // FIXED: More unique key
+                item(key = "catalogue_header_${catalogue.id}_${catalogueIndex}") {
                     CatalogueHeader(catalogue = catalogue)
                 }
 
-                categoriesInCatalogue.forEachIndexed { categoryIndex, category -> // FIXED: Use forEachIndexed
+                categoriesInCatalogue.forEachIndexed { categoryIndex, category ->
                     val productsInCategory = groupedProducts[category.id] ?: emptyList()
 
                     if (productsInCategory.isNotEmpty()) {
                         categorieSection(
-                            keyPrefix = "catalogue_${catalogue.id}_category_${category.id}_${categoryIndex}", // FIXED: Unique prefix
+                            keyPrefix = "catalogue_${catalogue.id}_category_${category.id}_${categoryIndex}",
                             viewModel = viewModel,
                             groupedProducts = mapOf(category.id to productsInCategory),
                             availableCategories = availableCategories,
@@ -144,14 +131,13 @@ fun EditeCategoriesMainList(
                 }
             }
 
-            // Handle categories that have products but aren't in any catalogue
             val uncategorizedProducts = groupedProducts.filterKeys { categoryId ->
                 categoryId != 0L && !categoriesByCatalogue.values.flatten()
                     .any { it.id == categoryId }
             }
 
             if (uncategorizedProducts.isNotEmpty()) {
-                item(key = "uncategorized_header_bottom") { // FIXED: Unique key
+                item(key = "uncategorized_header_bottom") {
                     CatalogueHeader(
                         catalogue = CataloguesCaegorie(
                             id = 0,
@@ -162,7 +148,7 @@ fun EditeCategoriesMainList(
                 }
 
                 categorieSection(
-                    keyPrefix = "uncategorized_bottom", // FIXED: Unique prefix
+                    keyPrefix = "uncategorized_bottom",
                     viewModel = viewModel,
                     groupedProducts = uncategorizedProducts,
                     availableCategories = availableCategories,

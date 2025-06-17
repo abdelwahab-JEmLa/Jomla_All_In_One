@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,13 +24,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+enum class SortOrder {
+    ID_DESC,
+    ID_ASC,
+    NAME_ASC,
+    NAME_DESC,
+    CATEGORY_GROUPED
+}
+
 data class FilterState(
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,
     val hidePrixAchatZero: Boolean = false,
     val hidePrixAchatPositif: Boolean = false,
-    val searchText: String = ""
+    val searchText: String = "",
+    val sortOrder: SortOrder = SortOrder.CATEGORY_GROUPED,
+    val enableCategoryGrouping: Boolean = true
 )
 
 @Composable
@@ -175,7 +186,7 @@ fun FilterDropdownMenu(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Filtres de disponibilité",
+                text = "Filtres et tri",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -209,6 +220,69 @@ fun FilterDropdownMenu(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
+            )
+
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Sorting options section
+            Text(
+                text = "Options de tri",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            FilterOption(
+                label = "Grouper par catégories (comme EditeCategoriesMainList)",
+                checked = filterState.enableCategoryGrouping,
+                onCheckedChange = {
+                    onFilterChanged(
+                        filterState.copy(
+                            enableCategoryGrouping = it,
+                            sortOrder = if (it) SortOrder.CATEGORY_GROUPED else SortOrder.ID_DESC
+                        )
+                    )
+                }
+            )
+
+            // Sort order options (only show when not grouping by categories)
+            if (!filterState.enableCategoryGrouping) {
+                Text(
+                    text = "Ordre de tri:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                SortOption(
+                    label = "ID décroissant (plus récent)",
+                    selected = filterState.sortOrder == SortOrder.ID_DESC,
+                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_DESC)) }
+                )
+
+                SortOption(
+                    label = "ID croissant (plus ancien)",
+                    selected = filterState.sortOrder == SortOrder.ID_ASC,
+                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.ID_ASC)) }
+                )
+
+                SortOption(
+                    label = "Nom A-Z",
+                    selected = filterState.sortOrder == SortOrder.NAME_ASC,
+                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_ASC)) }
+                )
+
+                SortOption(
+                    label = "Nom Z-A",
+                    selected = filterState.sortOrder == SortOrder.NAME_DESC,
+                    onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_DESC)) }
+                )
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+            Text(
+                text = "Filtres de disponibilité",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
             )
 
             FilterOption(
@@ -264,7 +338,6 @@ fun FilterDropdownMenu(
                     Text("Réinitialiser")
                 }
 
-                // Added: ButtonAutreEtates to activate all filters
                 androidx.compose.material3.TextButton(
                     onClick = {
                         onFilterChanged(
@@ -274,7 +347,9 @@ fun FilterDropdownMenu(
                                 hidePetiteProbability = true,
                                 hidePrixAchatZero = true,
                                 hidePrixAchatPositif = true,
-                                searchText = filterState.searchText // Keep current search text
+                                searchText = filterState.searchText,
+                                sortOrder = filterState.sortOrder,
+                                enableCategoryGrouping = filterState.enableCategoryGrouping
                             )
                         )
                     }
@@ -313,6 +388,31 @@ private fun FilterOption(
         androidx.compose.material3.Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+private fun SortOption(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        androidx.compose.material3.RadioButton(
+            selected = selected,
+            onClick = onClick
         )
     }
 }

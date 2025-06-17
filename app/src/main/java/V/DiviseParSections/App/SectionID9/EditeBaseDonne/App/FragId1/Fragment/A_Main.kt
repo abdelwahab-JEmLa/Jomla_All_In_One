@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.MainFilter
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.SortOrder
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test.createTestProduct
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.AppBar.AppBar
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.AfficheElements
@@ -59,7 +60,7 @@ fun EditeBaseDonneMainScreenIdS9(
 
     var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
 
-    var currentMode by remember { mutableStateOf(ModeAffichage.CATEGORIES_LIST) }
+    var currentMode by remember { mutableStateOf(ModeAffichage.PRODUCTS_LIST) }
     var filterState by remember { mutableStateOf(FilterState()) }
 
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
@@ -76,22 +77,22 @@ fun EditeBaseDonneMainScreenIdS9(
         produitListLocal = produitList
     }
 
-    // Updated filter logic for A_Main.kt
-    val filteredProduitList by remember(produitListLocal, filterState) {
+    // Enhanced filter and sort logic
+    val filteredAndSortedProduitList by remember(produitListLocal, filterState) {
         derivedStateOf {
             var filtered = produitListLocal
 
-            // Search filter by product name
+            // Apply search filter by product name
             if (filterState.searchText.isNotEmpty()) {
                 val searchQuery = filterState.searchText.lowercase()
                 filtered = filtered.filter { product ->
                     product.nom.lowercase().contains(searchQuery) ||
-                            product.nom.lowercase().contains(searchQuery) ||
                             product.nomArab.lowercase().contains(searchQuery) ||
                             (product.autreNomDarticle?.lowercase()?.contains(searchQuery) == true)
                 }
             }
 
+            // Apply availability filters
             if (filterState.hideNonDispo) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
@@ -111,7 +112,25 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
-            filtered
+
+            // Apply sorting based on filterState
+            val sorted = when {
+                filterState.enableCategoryGrouping -> {
+                    // When category grouping is enabled, don't sort here as EditeCategoriesMainList handles it
+                    filtered
+                }
+                else -> {
+                    when (filterState.sortOrder) {
+                        SortOrder.ID_DESC -> filtered.sortedByDescending { it.id }
+                        SortOrder.ID_ASC -> filtered.sortedBy { it.id }
+                        SortOrder.NAME_ASC -> filtered.sortedBy { it.nom.lowercase() }
+                        SortOrder.NAME_DESC -> filtered.sortedByDescending { it.nom.lowercase() }
+                        SortOrder.CATEGORY_GROUPED -> filtered // This case is handled above
+                    }
+                }
+            }
+
+            sorted
         }
     }
 
@@ -146,16 +165,17 @@ fun EditeBaseDonneMainScreenIdS9(
                         filterState = filterState,
                         onFilterChanged = { filterState = it },
                         totalCount = produitListLocal.size,
-                        filteredCount = filteredProduitList.size,
+                        filteredCount = filteredAndSortedProduitList.size,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     when (currentMode) {
                         ModeAffichage.CATEGORIES_LIST -> {
+                            // Use category grouping regardless of sort settings when in CATEGORIES_LIST mode
                             EditeCategoriesMainList(
                                 modifier = Modifier.fillMaxSize(),
-                                viewModel=viewModel,
-                                produitList = filteredProduitList,
+                                viewModel = viewModel,
+                                produitList = filteredAndSortedProduitList,
                                 onProductCategoryChanged = { updatedProduct ->
                                     produitListLocal = produitListLocal.map { product ->
                                         if (product.id == updatedProduct.id) {
@@ -185,8 +205,9 @@ fun EditeBaseDonneMainScreenIdS9(
                         }
 
                         ModeAffichage.PRODUCTS_LIST -> {
+                            // In PRODUCTS_LIST mode, respect the sort order settings
                             EditeInfosMainList(
-                                produitList = filteredProduitList,
+                                produitList = filteredAndSortedProduitList,
                                 onPrixUpdate = { updatedProduct ->
                                     produitListLocal = produitListLocal.map { product ->
                                         if (product.id == updatedProduct.id) {
