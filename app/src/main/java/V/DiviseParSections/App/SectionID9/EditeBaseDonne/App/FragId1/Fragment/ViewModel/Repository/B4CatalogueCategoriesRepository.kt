@@ -4,7 +4,8 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 
 fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
     return listOf(
-        CataloguesCaegorie(
+        CataloguesCaegorie(    //<--
+        //TODO(1): pk ca ne s affiche pas avant cosmitique catalogigue
             bsonObjectId = "t4",
             id = 4,
             nom = "San Catalogue",
