@@ -45,15 +45,19 @@ fun EditeCategoriesMainList(
             }.toMap()
     }
 
-    val catalogues = remember { B4CatalogueCategoriesRepository() }
+    // Get catalogues and sort them by position
+    val catalogues = remember {
+        B4CatalogueCategoriesRepository().sortedBy { it.position }
+    }
 
     val categoriesByCatalogue = remember(
         categoriesListLocal,
         catalogues
     ) {
-        val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
+        // Use LinkedHashMap to preserve order
+        val grouped = linkedMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
 
-        // Group categories by their catalogue parent
+        // Group categories by their catalogue parent - iterate through sorted catalogues
         catalogues.forEach { catalogue ->
             val categoriesInCatalogue = categoriesListLocal.filter {
                 it.catalogueParentId == catalogue.id
@@ -63,14 +67,6 @@ fun EditeCategoriesMainList(
             }
         }
 
-        // Handle categories without a valid catalogue (orphaned categories)
-        val orphanedCategories = categoriesListLocal.filter {
-            it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
-        }
-        if (orphanedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = orphanedCategories.sortedBy { it.position }
-        }
-
         grouped
     }
 
@@ -78,7 +74,6 @@ fun EditeCategoriesMainList(
         produitList.mapNotNull { it.idParentCategorie }.distinct().sorted()
     }
 
-    // Separate products without categories (idParentCategorie == null or 0)
     val productsWithoutCategory = remember(groupedProducts) {
         groupedProducts[0L] ?: emptyList()
     }
@@ -92,44 +87,16 @@ fun EditeCategoriesMainList(
             modifier = Modifier.fillMaxSize().padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // FIXED: Show products without categories at the top first
-            if (productsWithoutCategory.isNotEmpty()) {
-                item(key = "no_category_header") {
-                    CatalogueHeader(catalogue = CataloguesCaegorie(
-                        id = -1, // Use -1 to distinguish from regular catalogues
-                        nom = "Produits sans catégorie",
-                        premierCategorieId = 0
-                    ))
-                }
+            catalogues.forEach { catalogue ->
+                if (catalogue.position == 0 && catalogue.nom.contains("Sans", ignoreCase = true)) {
+                    if (productsWithoutCategory.isNotEmpty()) {
+                        item(key = "catalogue_header_${catalogue.id}") {
+                            CatalogueHeader(catalogue = catalogue)
+                        }
 
-                categorieSection(
-                    viewModel = viewModel,
-                    groupedProducts = mapOf(0L to productsWithoutCategory),
-                    availableCategories = availableCategories,
-                    onProductCategoryChanged = onProductCategoryChanged,
-                    categoryMap = categoryMap,
-                    selectedProducts = selectedProducts,
-                    onProductSelectionToggle = onProductSelectionToggle,
-                    showBulkMoveDialog = showBulkMoveDialog,
-                    onShowBulkMoveDialog = onShowBulkMoveDialog,
-                )
-            }
-
-            // Then iterate through catalogues and their categories
-            categoriesByCatalogue.forEach { (catalogue, categoriesInCatalogue) ->
-                // Add catalogue header
-                item(key = "catalogue_header_${catalogue.id}") {
-                    CatalogueHeader(catalogue = catalogue)
-                }
-
-                // For each category in this catalogue, show its products
-                categoriesInCatalogue.forEach { category ->
-                    val productsInCategory = groupedProducts[category.id] ?: emptyList()
-
-                    if (productsInCategory.isNotEmpty()) {
                         categorieSection(
                             viewModel = viewModel,
-                            groupedProducts = mapOf(category.id to productsInCategory),
+                            groupedProducts = mapOf(0L to productsWithoutCategory),
                             availableCategories = availableCategories,
                             onProductCategoryChanged = onProductCategoryChanged,
                             categoryMap = categoryMap,
@@ -138,6 +105,35 @@ fun EditeCategoriesMainList(
                             showBulkMoveDialog = showBulkMoveDialog,
                             onShowBulkMoveDialog = onShowBulkMoveDialog,
                         )
+                    }
+                } else {
+                    // Handle regular catalogues
+                    val categoriesInCatalogue = categoriesByCatalogue[catalogue] ?: emptyList()
+
+                    if (categoriesInCatalogue.isNotEmpty()) {
+                        // Add catalogue header
+                        item(key = "catalogue_header_${catalogue.id}") {
+                            CatalogueHeader(catalogue = catalogue)
+                        }
+
+                        // For each category in this catalogue, show its products
+                        categoriesInCatalogue.forEach { category ->
+                            val productsInCategory = groupedProducts[category.id] ?: emptyList()
+
+                            if (productsInCategory.isNotEmpty()) {
+                                categorieSection(
+                                    viewModel = viewModel,
+                                    groupedProducts = mapOf(category.id to productsInCategory),
+                                    availableCategories = availableCategories,
+                                    onProductCategoryChanged = onProductCategoryChanged,
+                                    categoryMap = categoryMap,
+                                    selectedProducts = selectedProducts,
+                                    onProductSelectionToggle = onProductSelectionToggle,
+                                    showBulkMoveDialog = showBulkMoveDialog,
+                                    onShowBulkMoveDialog = onShowBulkMoveDialog,
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -60,7 +60,10 @@ fun E_StickyHeader(        //<--
             Text(
                 when {
                     isUncategorized -> "Sans Catégorie"
-                    category != null -> category.nom
+                    category != null -> {
+                        val text = "${category.nom} ${category.position}"
+                        text
+                    }
                     else -> "Catégorie $categoryId"
                 },
                 style = MaterialTheme.typography.titleMedium,
