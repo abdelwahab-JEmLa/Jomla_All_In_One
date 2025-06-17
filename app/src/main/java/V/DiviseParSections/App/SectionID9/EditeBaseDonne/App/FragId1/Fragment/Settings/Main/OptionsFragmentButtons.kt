@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
@@ -70,7 +70,7 @@ fun OptionsFragmentButtons(
     val screenHeightDp = configuration.screenHeightDp.dp
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value + 100f) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value ) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
