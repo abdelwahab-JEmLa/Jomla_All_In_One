@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 fun LazyListScope.categorieSection(
+    keyPrefix: String, // FIXED: Added keyPrefix parameter to ensure unique keys
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     groupedProducts: Map<Long, List<ArticlesBasesStatsTable>>,
     availableCategories: List<Long>,
@@ -25,17 +26,20 @@ fun LazyListScope.categorieSection(
     onShowBulkMoveDialog: (Boolean) -> Unit = {},
 ) {
     groupedProducts.forEach { (id, products) ->
-        item(key = "header_$id") {
+        // FIXED: Use keyPrefix to ensure unique keys across different sections
+        item(key = "${keyPrefix}_header_$id") {
             E_StickyHeader(
-                viewModel=viewModel,
-                groupedProducts=groupedProducts,
+                viewModel = viewModel,
+                groupedProducts = groupedProducts,
                 categoryId = id,
                 category = categoryMap[id],
             )
         }
-        item(key = "products_$id") {
+
+        // FIXED: Use keyPrefix to ensure unique keys across different sections
+        item(key = "${keyPrefix}_products_$id") {
             LazyRow(contentPadding = PaddingValues(12.dp, 8.dp)) {
-                items(products, key = { "product_${it.id}" }) { produit ->
+                items(products, key = { "${keyPrefix}_product_${it.id}" }) { produit -> // FIXED: Unique product keys
                     MainItemEditeCategories(
                         produit = produit,
                         availableCategories = availableCategories,
