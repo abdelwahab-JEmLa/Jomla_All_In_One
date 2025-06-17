@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
-import Z_CodePartageEntreApps.Repository.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.Repository.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,7 @@ internal fun MainList(
         produitList.groupBy { it.idParentCategorie ?: 0L }
     }
 
-    val catalogues = remember { startupeDatas() }
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
 
     val categoriesByCatalogue = remember(
         categoriesCompoRepository.tigerDataRecompose,
@@ -46,7 +46,11 @@ internal fun MainList(
                 .let { if (it.isNotEmpty()) grouped[cat] = it }
         }
         currentCategories.filter { it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId } }
-            .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(0, "Autres", 0)] = it }
+            .let { if (it.isNotEmpty()) grouped[CataloguesCaegorie(
+                id = 0,
+                nom = "Autres",
+                premierCategorieId = 0
+            )] = it }
         grouped
     }.also {
         val cate=  currentCategories.find { it.nom.contains("huil") }

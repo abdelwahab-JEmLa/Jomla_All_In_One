@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.Component.LabelEtShowButtonsButtons
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
-import Z_CodePartageEntreApps.Repository.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.Repository.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import android.util.Log
@@ -75,7 +75,7 @@ fun OptionsFragmentButtons(
     var showDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
 
-    val catalogues = remember { startupeDatas() }
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
 
     val onToggle = {
         maskedElements = if (maskedElements.contains(AfficheElements.APP_BAR)) {

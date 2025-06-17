@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.Glide
 
-import Z_CodePartageEntreApps.Repository.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope

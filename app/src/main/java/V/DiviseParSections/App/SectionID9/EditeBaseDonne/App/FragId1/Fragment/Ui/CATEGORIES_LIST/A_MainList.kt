@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
-import Z_CodePartageEntreApps.Repository.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.Repository.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,13 +25,12 @@ fun EditeCategoriesMainList(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     produitList: List<ArticlesBasesStatsTable>,
     onProductCategoryChanged: (ArticlesBasesStatsTable) -> Unit,
-    onCategoriesEdite: ((List<CategoriesTabelle>) -> Unit)? = null,
     selectedProducts: Set<ArticlesBasesStatsTable> = emptySet(),
     onProductSelectionToggle: (ArticlesBasesStatsTable) -> Unit = {},
     showBulkMoveDialog: Boolean = false,
     onShowBulkMoveDialog: (Boolean) -> Unit = {}
-) {                 //<--
-//TODO(1): fait que les produits san categorie  soit au top 
+) {        //<--
+//TODO(1): fait que les produits sans cate soit au top      
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesListLocal = categoriesCompoRepository.datasValue
 
@@ -46,8 +45,7 @@ fun EditeCategoriesMainList(
             }.toMap()
     }
 
-    // NEW: Group categories by catalogue (like in REORDER_GRID)
-    val catalogues = remember { startupeDatas() }
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
 
     val categoriesByCatalogue = remember(
         categoriesListLocal,
@@ -70,7 +68,7 @@ fun EditeCategoriesMainList(
             it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
         }
         if (orphanedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(0, "Autres", 0)] = orphanedCategories.sortedBy { it.position }
+            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = orphanedCategories.sortedBy { it.position }
         }
 
         grouped
@@ -124,7 +122,11 @@ fun EditeCategoriesMainList(
 
             if (uncategorizedProducts.isNotEmpty()) {
                 item(key = "uncategorized_header") {
-                    CatalogueHeader(catalogue = CataloguesCaegorie(0, "Produits non classés", 0))
+                    CatalogueHeader(catalogue = CataloguesCaegorie(
+                        id = 0,
+                        nom = "Produits non classés",
+                        premierCategorieId = 0
+                    ))
                 }
 
                 categorieSection(

@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.startupeDatas
-import Z_CodePartageEntreApps.Repository.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.Repository.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -82,7 +82,7 @@ fun CategorySelectionDialog(
         }
     }
 
-    val catalogues = remember { startupeDatas() }
+    val catalogues = remember { B4CatalogueCategoriesRepository() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
 
     // Create a dummy category for "Sans Catégorie" option
@@ -123,7 +123,7 @@ fun CategorySelectionDialog(
         }
 
         if (uncategorizedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(0, "Autres", 0)] = uncategorizedCategories
+            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = uncategorizedCategories
         }
 
         grouped
@@ -295,7 +295,11 @@ fun CategorySelectionDialog(
                     if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
                         item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(3) }) {
                             CatalogHeaderCard(
-                                catalogue = CataloguesCaegorie(0, "Sans Catégorie", 0),
+                                catalogue = CataloguesCaegorie(
+                                    id = 0,
+                                    nom = "Sans Catégorie",
+                                    premierCategorieId = 0
+                                ),
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }

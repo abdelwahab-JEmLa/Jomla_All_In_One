@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import Z_CodePartageEntreApps.Repository.Repository.A_CentralDatasHandlerProtoJuin9
-import Z_CodePartageEntreApps.Repository.Repository.B3CategoriesCompoRepository
-import Z_CodePartageEntreApps.Repository.Repository.B_ClientsState
-import Z_CodePartageEntreApps.Repository.Repository.C_TransactionCommercialState
-import Z_CodePartageEntreApps.Repository.Repository.D_ComptAppState
-import Z_CodePartageEntreApps.Repository.Repository.Z_AutreStates
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralDatasHandlerProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B3CategoriesCompoRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B_ClientsState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.C_TransactionCommercialState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.D_ComptAppState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.Z_AutreStates
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
