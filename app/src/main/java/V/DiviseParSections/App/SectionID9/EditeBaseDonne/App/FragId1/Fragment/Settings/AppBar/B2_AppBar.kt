@@ -116,10 +116,7 @@ fun AppBar(
                 )
             }
 
-            CameraFABProtoJuin3(
-                onProductCreated = onProductCreated,
-                webPQuality = 85
-            )
+            CameraFABProtoJuin3()
         }
     }
 

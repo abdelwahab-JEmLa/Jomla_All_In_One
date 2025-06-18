@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import android.net.Uri
 import android.widget.Toast
@@ -35,11 +35,10 @@ import java.io.FileOutputStream
 
 @Composable
 fun CameraFABProtoJuin3(
-    aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17 = koinInject(),
+    a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9 = koinInject(),
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     webPQuality: Int = 85,
-    onProductCreated: (ArticlesBasesStatsTable) -> Unit ={}
 ) {
     val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -83,7 +82,7 @@ fun CameraFABProtoJuin3(
                                 cUnNeveauArrivage = true,
                             )
 
-                            aProduitdatabasecomposerepositorypj17.addOrUpdateData(updatedProduct)
+                            a_CentralCompoRepositoryProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17.addOrUpdateData(updatedProduct)
 
 
                             Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
