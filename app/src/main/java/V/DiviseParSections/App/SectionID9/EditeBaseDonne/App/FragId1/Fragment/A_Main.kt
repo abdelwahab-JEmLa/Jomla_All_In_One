@@ -73,8 +73,10 @@ fun EditeBaseDonneMainScreenIdS9(
         categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
 
-    val filteredAndSortedProduitList by remember(produitList, filterState, categoriesList,
-        groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts) {
+    val filteredAndSortedProduitList by remember(
+        produitList, filterState, categoriesList,
+        groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts
+    ) {
         derivedStateOf {
             var filtered = produitList
 
@@ -92,13 +94,15 @@ fun EditeBaseDonneMainScreenIdS9(
             }
 
             if (filterState.hideNonDispo) {
-                filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
+                filtered =
+                    filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
             if (filterState.hideDispoOnly) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.DISPO }
             }
             if (filterState.hidePetiteProbability) {
-                filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
+                filtered =
+                    filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
             if (filterState.hidePrixAchatZero) {
                 filtered = filtered.filter { it.prixAchat > 0.0 }
@@ -121,9 +125,11 @@ fun EditeBaseDonneMainScreenIdS9(
                                 filtered.contains(product)
                             }
                         }
+
                         else -> applySortOrder(filtered, filterState.sortOrder)
                     }
                 }
+
                 else -> applySortOrder(filtered, filterState.sortOrder)
             }
         }
@@ -149,8 +155,7 @@ fun EditeBaseDonneMainScreenIdS9(
                                 onCreateProductAndCapture = { createTestProduct() },
                                 onProductCreated = {
                                     viewModel.addOrUpdateProduit(it)
-
-                                                   },
+                                },
                                 currentMode = currentMode,
                                 onModeChanged = { currentMode = it },
                                 filterState = filterState,
@@ -188,14 +193,16 @@ fun EditeBaseDonneMainScreenIdS9(
                                     }
                                 )
                             }
+
                             ModeAffichage.PRODUCTS_LIST -> {
                                 EditeInfosMainList(
-                                    filterState=filterState,
+                                    filterState = filterState,
                                     modifier = Modifier.fillMaxSize(),
-                                    filteredAndSortedProduitList=filteredAndSortedProduitList,
-                                    aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17
+                                    filteredAndSortedProduitList = filteredAndSortedProduitList,
+                                    aProduitdatabasecomposerepositorypj17 = aProduitdatabasecomposerepositorypj17
                                 )
                             }
+
                             ModeAffichage.REORDER_GRID -> {
                                 ReorderMultiCategories(
                                     modifier = Modifier.fillMaxSize(),

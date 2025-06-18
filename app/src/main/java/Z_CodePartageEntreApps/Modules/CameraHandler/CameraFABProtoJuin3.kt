@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import android.net.Uri
 import android.widget.Toast
@@ -28,16 +29,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
 fun CameraFABProtoJuin3(
-    onCreateProductAndCapture: () -> ArticlesBasesStatsTable,
-    onProductCreated: (ArticlesBasesStatsTable) -> Unit,
+    aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17 = koinInject(),
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
-    webPQuality: Int = 85
+    webPQuality: Int = 85,
+    onProductCreated: (ArticlesBasesStatsTable) -> Unit ={}
 ) {
     val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -81,7 +83,7 @@ fun CameraFABProtoJuin3(
                                 cUnNeveauArrivage = true,
                             )
 
-                            onProductCreated(updatedProduct)
+                            aProduitdatabasecomposerepositorypj17.addOrUpdateData(updatedProduct)
 
 
                             Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
@@ -103,7 +105,7 @@ fun CameraFABProtoJuin3(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            pendingProduct = onCreateProductAndCapture()
+            pendingProduct = ArticlesBasesStatsTable()
             showCameraDialog = true
         } else {
             Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()
