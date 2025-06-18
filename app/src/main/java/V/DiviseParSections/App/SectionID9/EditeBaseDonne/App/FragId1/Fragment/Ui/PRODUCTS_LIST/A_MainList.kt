@@ -23,7 +23,7 @@ fun EditeInfosMainList(
             key = { it.id }
         ) { produit ->
             ProductItem(
-                aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17,
+                mainComposRepository=aProduitdatabasecomposerepositorypj17,
                 produit = produit
             )
         }

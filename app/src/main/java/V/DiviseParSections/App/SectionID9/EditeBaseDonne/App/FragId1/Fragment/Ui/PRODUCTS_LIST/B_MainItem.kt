@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.StringEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.UnitEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
@@ -50,14 +51,22 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
-    aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
+    mainComposRepository: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showNameEditor by remember { mutableStateOf(false) }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
-        aProduitdatabasecomposerepositorypj17
-            .addOrUpdateData(updatedProduct)
+        // Calculer automatiquement le prix de vente unitaire basé sur prix de vente et prix d'achat
+        val finalProduct = if (updatedProduct.nombreUniteInt > 0) {
+            val prixVenteUnitaire = kotlin.math.round((updatedProduct.prixVent / updatedProduct.nombreUniteInt) * 100.0) / 100.0
+            updatedProduct.copy(clientPrixVentUnite = prixVenteUnitaire)
+        } else {
+            updatedProduct.copy(clientPrixVentUnite = 0.0)
+        }
+
+        mainComposRepository.addOrUpdateData(finalProduct)
     }
 
     // Delete confirmation dialog
@@ -78,7 +87,7 @@ fun ProductItem(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        aProduitdatabasecomposerepositorypj17.deleteData(produit)
+                        mainComposRepository.deleteData(produit)
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.textButtonColors(
@@ -103,6 +112,26 @@ fun ProductItem(
         )
     }
 
+    // Name editor dialog
+    if (showNameEditor) {
+        AlertDialog(
+            onDismissRequest = { showNameEditor = false },
+            title = { Text("Modifier le nom du produit") },
+            text = {
+                StringEditor(
+                    currentValue = produit.nom,
+                    label = "Nom du produit",
+                    onValueUpdate = { newName ->
+                        updateProduct(produit.copy(nom = newName))
+                        showNameEditor = false
+                    },
+                    onCancel = { showNameEditor = false }
+                )
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -114,7 +143,6 @@ fun ProductItem(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            // Header: Image + Name + Key Info + Delete ButtonAutreEtates
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
@@ -145,13 +173,25 @@ fun ProductItem(
                 // Product info with key metrics at top
                 Column(modifier = Modifier.weight(1f)) {
                     val s = if (false) "id>${produit.id}" else ""
-                    Text(
-                        text = " ${produit.nom}$s",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+
+                    // Clickable product name that opens StringEditor
+                    TextButton(
+                        onClick = { showNameEditor = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        Text(
+                            text = " ${produit.nom}$s",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
                     if (produit.nomArab.isNotEmpty()) {
                         Text(
@@ -161,44 +201,6 @@ fun ProductItem(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Key metrics row: Units + Client Price
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        if (produit.nombreUniteInt > 0) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = "${produit.nombreUniteInt} unités",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                            }
-                        }
-
-                        if (produit.clientPrixVentUnite > 0) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.tertiaryContainer,
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = "${produit.clientPrixVentUnite} DA/u",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                            }
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -244,7 +246,6 @@ fun ProductItem(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pricing section (rest remains the same...)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -272,9 +273,7 @@ fun ProductItem(
                                 onClick = {
                                     val updatedProduct =
                                         produit.copy(cachePrixVent = !produit.cachePrixVent)
-                                    aProduitdatabasecomposerepositorypj17.addOrUpdateData(
-                                        updatedProduct
-                                    )
+                                    updateProduct(updatedProduct)
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(8.dp),
@@ -311,9 +310,24 @@ fun ProductItem(
                                 textColor = MaterialTheme.colorScheme.primary
                             )
 
+                            // Prix unitaire de vente directement sous prix total
+                            if (produit.nombreUniteInt > 0) {
+                                val prixUnitVente =
+                                    kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+                                PriceEditor(
+                                    currentPrice = prixUnitVente,
+                                    label = "Vente/unité",
+                                    onPriceUpdate = { newPrixUnit ->
+                                        val newPrixVent = newPrixUnit * produit.nombreUniteInt
+                                        updateProduct(produit.copy(prixVent = newPrixVent))
+                                    },
+                                    textColor = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Prix Achat with Quick Update ButtonAutreEtates
+                            // Prix Achat with Quick Update Button
                             Column {
                                 PriceEditor(
                                     currentPrice = produit.prixAchat,
@@ -323,19 +337,33 @@ fun ProductItem(
                                             prixAchat = newPrix,
                                             prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
                                         )
-                                        aProduitdatabasecomposerepositorypj17.addOrUpdateData(newPrd)
+                                        updateProduct(newPrd)
                                     },
                                     showOnlyWhenPositive = true,
                                     textColor = MaterialTheme.colorScheme.tertiary
                                 )
 
+                                // Prix unitaire d'achat directement sous prix total
+                                if (produit.nombreUniteInt > 0) {
+                                    val prixUnitAchat =
+                                        kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
+                                    PriceEditor(
+                                        currentPrice = prixUnitAchat,
+                                        label = "Achat/unité",
+                                        onPriceUpdate = { newPrixAchatUnit ->
+                                            val newPrixAchat = newPrixAchatUnit * produit.nombreUniteInt
+                                            updateProduct(produit.copy(prixAchat = newPrixAchat))
+                                        },
+                                        showOnlyWhenPositive = true,
+                                        textColor = MaterialTheme.colorScheme.tertiary
+                                    )
+                                }
 
-
-                                // Quick Update ButtonAutreEtates for Prix Achat
+                                // Quick Update Button for Prix Achat
                                 Spacer(modifier = Modifier.height(4.dp))
                                 FilledTonalButton(
                                     onClick = {
-                                        aProduitdatabasecomposerepositorypj17.addOrUpdateData(
+                                        updateProduct(
                                             produit.copy(
                                                 prixAchat = 0.1,
                                                 prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
@@ -386,57 +414,11 @@ fun ProductItem(
                         }
                     }
 
-                    // Unit pricing (only show if units > 0)
+                    // Prix client unitaire seulement (si nécessaire)
                     if (produit.nombreUniteInt > 0) {
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "Prix Unitaires",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            // Unit sale price
-                            Column(modifier = Modifier.weight(1f)) {
-                                val prixUnitVente =
-                                    kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
-                                PriceEditor(
-                                    currentPrice = prixUnitVente,
-                                    label = "Vente/unité",
-                                    onPriceUpdate = { newPrixUnit ->
-                                        val newPrixVent = newPrixUnit * produit.nombreUniteInt
-                                        updateProduct(produit.copy(prixVent = newPrixVent))
-                                    },
-                                    textColor = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-
-                            // Unit purchase price
-                            Column(modifier = Modifier.weight(1f)) {
-                                val prixUnitAchat =
-                                    kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
-                                PriceEditor(
-                                    currentPrice = prixUnitAchat,
-                                    label = "Achat/unité",
-                                    onPriceUpdate = { newPrixAchatUnit ->
-                                        val newPrixAchat = newPrixAchatUnit * produit.nombreUniteInt
-                                        updateProduct(produit.copy(prixAchat = newPrixAchat))
-                                    },
-                                    showOnlyWhenPositive = true,
-                                    textColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Client unit price with total calculation
+                        // Prix client unitaire
                         PriceEditor(
                             currentPrice = produit.clientPrixVentUnite,
                             label = "Prix Client/unité",
@@ -477,8 +459,7 @@ fun ProductItem(
                 onClick = {
                     val updatedProduct =
                         produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                    aProduitdatabasecomposerepositorypj17
-                        .addOrUpdateData(updatedProduct)
+                    updateProduct(updatedProduct)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
