@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
@@ -15,6 +15,7 @@ data class ArticlesBasesStatsTable(
 
     //S P Ids
     var idParentCategorie: Long? = null,
+    var positionDonSonCesFrereCategorieProduits: Int = 0,
 
     // Section InfosDeBase
     var nom: String = "",
@@ -119,6 +120,29 @@ data class ArticlesBasesStatsTable(
             preparedData: ArticlesBasesStatsTable
         ) {
             ref.child(preparedData.keyFireBase).removeValue()
+        }
+    }
+}
+
+enum class DisponibilityEtates(val nomArabe: String = "") {
+    DISPO("متوفر"),
+    NON_DISPO("غير متوفر"),
+    PETITE_PROBABILITY("احتمال كبير");
+
+    fun toggleEntreEtates(): DisponibilityEtates = when (this) {
+        DISPO -> NON_DISPO
+        NON_DISPO -> PETITE_PROBABILITY
+        PETITE_PROBABILITY -> DISPO
+    }
+
+    companion object {
+        fun fromString(value: String): DisponibilityEtates {
+            return when (value) {
+                "DISPO" -> DISPO
+                "NON_DISPO" -> NON_DISPO
+                "PETITE_PROBABILITY" -> PETITE_PROBABILITY
+                else -> DISPO // default value
+            }
         }
     }
 }

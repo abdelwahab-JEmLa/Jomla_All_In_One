@@ -12,8 +12,10 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.Juin3.DisponibilityEtates
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,9 +37,7 @@ import androidx.lifecycle.viewModelScope
 import org.koin.androidx.compose.koinViewModel
 
 enum class ModeAffichage {
-    CATEGORIES_LIST,
-    PRODUCTS_LIST,
-    REORDER_GRID
+    CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID
 }
 
 @Preview
@@ -52,21 +51,16 @@ fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
-    val progress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress
+    val aCentraldatashandlerprotojuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
+    val progress = aCentraldatashandlerprotojuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
-    var produitListLocal by remember(produitList) { mutableStateOf(produitList) }
-
     var currentMode by remember { mutableStateOf(ModeAffichage.PRODUCTS_LIST) }
     var filterState by remember { mutableStateOf(FilterState()) }
-
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
-
-    // State for bulk product selection
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
     var showBulkMoveDialog by remember { mutableStateOf(false) }
 
@@ -74,70 +68,57 @@ fun EditeBaseDonneMainScreenIdS9(
         categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
 
-    LaunchedEffect(produitList, categoriesList) {
-        produitListLocal = produitList
-    }
-
-    // Enhanced filter and sort logic
-    val filteredAndSortedProduitList by remember(produitListLocal, filterState) {
+    // Fixed: Corrected the filteredAndSortedProduitList derivedStateOf
+    val filteredAndSortedProduitList by remember(produitList, filterState, categoriesList,
+        aCentraldatashandlerprotojuin9.categoryGroupedSortedProducts) {
         derivedStateOf {
-            var filtered = produitListLocal
+            var filtered = produitList
 
-            // Apply search filter by product name
-            if (filterState.searchText.isNotEmpty()) {
-                val searchQuery = filterState.searchText.lowercase()
+            filterState.searchText.takeIf { it.isNotEmpty() }?.let { searchQuery ->
+                val query = searchQuery.lowercase()
                 filtered = filtered.filter { product ->
-                    product.nom.lowercase().contains(searchQuery) ||
-                            product.nomArab.lowercase().contains(searchQuery) ||
-                            (product.autreNomDarticle?.lowercase()?.contains(searchQuery) == true)
+                    product.nom.lowercase().contains(query) ||
+                            product.nomArab.lowercase().contains(query) ||
+                            (product.autreNomDarticle?.lowercase()?.contains(query) == true)
                 }
             }
 
-            // Apply availability filters
             if (filterState.hideNonDispo) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
-
             if (filterState.hideDispoOnly) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.DISPO }
             }
-
             if (filterState.hidePetiteProbability) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.PETITE_PROBABILITY }
             }
-
             if (filterState.hidePrixAchatZero) {
                 filtered = filtered.filter { it.prixAchat > 0.0 }
             }
-
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
 
-            // Apply sorting based on filterState
-            val sorted = when {
+            when {
                 filterState.enableCategoryGrouping -> {
-                    // When category grouping is enabled, don't sort here as EditeCategoriesMainList handles it
-                    filtered
-                }
-                else -> {
                     when (filterState.sortOrder) {
-                        SortOrder.ID_DESC -> filtered.sortedByDescending { it.id }
-                        SortOrder.ID_ASC -> filtered.sortedBy { it.id }
-                        SortOrder.NAME_ASC -> filtered.sortedBy { it.nom.lowercase() }
-                        SortOrder.NAME_DESC -> filtered.sortedByDescending { it.nom.lowercase() }
-                        SortOrder.CATEGORY_GROUPED -> filtered // This case is handled above
+                        SortOrder.CATEGORY_GROUPED -> {
+                            // Fixed: Explicitly specify the type for the lambda parameter
+                            aCentraldatashandlerprotojuin9.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
+                                filtered.contains(product)
+                            }
+                        }
+                        else -> applySortOrder(filtered, filterState.sortOrder)
                     }
                 }
+                else -> applySortOrder(filtered, filterState.sortOrder, categoriesList)
             }
-
-            sorted
         }
     }
 
-    if (progress != null) {
-        if (progress < 1.0f) {
-            LoadingScreen(progress)
+    progress?.let { prog ->
+        if (prog < 1.0f) {
+            LoadingScreen(prog)
         } else {
             Box {
                 Column(
@@ -145,12 +126,9 @@ fun EditeBaseDonneMainScreenIdS9(
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    // AppBar - can be masked/hidden
                     if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                         AppBar(
-                            onCreateProductAndCapture = {
-                                createTestProduct()
-                            },
+                            onCreateProductAndCapture = { createTestProduct() },
                             onProductCreated = { viewModel.addOrUpdateProduit(it) },
                             currentMode = currentMode,
                             onModeChanged = { currentMode = it },
@@ -158,71 +136,46 @@ fun EditeBaseDonneMainScreenIdS9(
                             onFilterChanged = { filterState = it },
                             modifier = Modifier.fillMaxWidth()
                         )
-
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     MainFilter(
                         filterState = filterState,
                         onFilterChanged = { filterState = it },
-                        totalCount = produitListLocal.size,
+                        totalCount = produitList.size,
                         filteredCount = filteredAndSortedProduitList.size,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     when (currentMode) {
                         ModeAffichage.CATEGORIES_LIST -> {
-                            // Use category grouping regardless of sort settings when in CATEGORIES_LIST mode
                             EditeCategoriesMainList(
                                 modifier = Modifier.fillMaxSize(),
                                 viewModel = viewModel,
                                 produitList = filteredAndSortedProduitList,
                                 onProductCategoryChanged = { updatedProduct ->
-                                    produitListLocal = produitListLocal.map { product ->
-                                        if (product.id == updatedProduct.id) {
-                                            updatedProduct
-                                        } else {
-                                            product
-                                        }
-                                    }
                                     viewModel.addOrUpdateProduit(updatedProduct)
                                 },
                                 selectedProducts = selectedProducts,
                                 onProductSelectionToggle = { product ->
-                                    selectedProducts = if (selectedProducts.contains(product)) {
-                                        selectedProducts - product
-                                    } else {
-                                        selectedProducts + product
-                                    }
+                                    selectedProducts = selectedProducts.toggleProduct(product)
                                 },
                                 showBulkMoveDialog = showBulkMoveDialog,
                                 onShowBulkMoveDialog = { show ->
                                     showBulkMoveDialog = show
-                                    if (!show) {
-                                        selectedProducts = emptySet()
-                                    }
+                                    if (!show) selectedProducts = emptySet()
                                 }
                             )
                         }
-
                         ModeAffichage.PRODUCTS_LIST -> {
-                            // In PRODUCTS_LIST mode, respect the sort order settings
                             EditeInfosMainList(
                                 produitList = filteredAndSortedProduitList,
                                 onPrixUpdate = { updatedProduct ->
-                                    produitListLocal = produitListLocal.map { product ->
-                                        if (product.id == updatedProduct.id) {
-                                            updatedProduct
-                                        } else {
-                                            product
-                                        }
-                                    }
                                     viewModel.addOrUpdateProduit(updatedProduct)
                                 },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
-
                         ModeAffichage.REORDER_GRID -> {
                             ReorderMultiCategories(
                                 modifier = Modifier.fillMaxSize(),
@@ -236,19 +189,57 @@ fun EditeBaseDonneMainScreenIdS9(
                 OptionsFragmentButtons(
                     viewModel = viewModel,
                     viewModelScope = viewModel.viewModelScope,
-                    onToggleMasque = { newMaskedElements ->
-                        maskedElements = newMaskedElements
-                    },
+                    onToggleMasque = { maskedElements = it },
                     selectedProducts = selectedProducts,
-                    onShowBulkMoveDialog = {
-                        showBulkMoveDialog = true
-                    },
+                    onShowBulkMoveDialog = { showBulkMoveDialog = true },
                     selectedCategories = selectedCategories,
-                    onCategoriesUpdated = { updatedCategories ->
-                        viewModel.addOrUpdateCategories(updatedCategories)
-                    }
+                    onCategoriesUpdated = { viewModel.addOrUpdateCategories(it) }
                 )
             }
+        }
+    }
+}
+
+private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
+    return if (contains(product)) this - product else this + product
+}
+
+private fun applySortOrder(
+    products: List<ArticlesBasesStatsTable>,
+    sortOrder: SortOrder,
+    categoriesList: List<CategoriesTabelle> = emptyList()
+): List<ArticlesBasesStatsTable> {
+    return when (sortOrder) {
+        SortOrder.ID_DESC -> products.sortedByDescending { it.id }
+        SortOrder.ID_ASC -> products.sortedBy { it.id }
+        SortOrder.NAME_ASC -> products.sortedBy { it.nom.lowercase() }
+        SortOrder.NAME_DESC -> products.sortedByDescending { it.nom.lowercase() }
+        SortOrder.CATEGORY_GROUPED -> {
+            val categoryMap = categoriesList.associateBy { it.id }
+            val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
+
+            products.sortedWith(
+                compareBy<ArticlesBasesStatsTable> { product ->
+                    val categoryId = product.idParentCategorie ?: 0L
+                    val category = categoryMap[categoryId]
+                    val catalogueId = category?.catalogueParentId ?: 4L
+
+                    if (catalogueId == 4L || category?.nom == "NONE" || category == null) {
+                        Int.MAX_VALUE - 1000
+                    } else {
+                        catalogues[catalogueId]?.position ?: (Int.MAX_VALUE - 2000)
+                    }
+                }.thenBy { product ->
+                    val categoryId = product.idParentCategorie ?: 0L
+                    val category = categoryMap[categoryId]
+                    if (category?.nom == "NONE" || category == null) {
+                        Int.MAX_VALUE - 1000
+                    } else {
+                        category.position
+                    }
+                }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+                    .thenBy { it.nom.lowercase() }
+            )
         }
     }
 }

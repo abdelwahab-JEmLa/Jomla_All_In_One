@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,8 +34,57 @@ class A_CentralCompoRepositoryProtoJuin9(
     val d_AchatOperationComposeRepositoryPJ17: E_AchatOperationComposeRepositoryPJ17,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
+
+    private val _datasArticlesBasesStatsTable =
+        mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
+    val datasValueArticlesBasesStatsTable by derivedStateOf { _datasArticlesBasesStatsTable.value }
+
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
+
+
+    private val categoriesList: List<CategoriesTabelle>
+        get() = b3CategoriesCompoRepository.datasValue
+
+    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
+        val categoryMap = categoriesList.associateBy { it.id }
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
+
+        val (regularProducts, orphanProducts) = datasValueArticlesBasesStatsTable.partition { product ->
+            val categoryId = product.idParentCategorie ?: 0L
+            val category = categoryMap[categoryId]
+            val catalogueId = category?.catalogueParentId ?: 4L
+
+            category != null &&
+                    catalogueId != 4L &&
+                    !category.nom.equals("NONE", ignoreCase = true)
+        }
+
+        val sortedRegular = regularProducts.sortedWith(
+            compareBy<ArticlesBasesStatsTable> { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                val category = categoryMap[categoryId]
+                val catalogueId = category?.catalogueParentId ?: 4L
+                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
+            }.thenBy { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
+            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+                .thenBy { it.nom.lowercase() }
+        )
+
+        val sortedOrphan = orphanProducts.sortedWith(
+            compareBy<ArticlesBasesStatsTable> { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                val category = categoryMap[categoryId]
+                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
+                    ?: "ZZZZZ_NO_CATEGORY"
+            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+                .thenBy { it.nom.lowercase() }
+        )
+
+        sortedRegular + sortedOrphan
+    }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
@@ -78,9 +129,23 @@ class A_CentralCompoRepositoryProtoJuin9(
         composScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
+
                     _loadingProgress.floatValue = model.progress
                 }
             }
         }
+        composScope.launch {
+
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    val newProduitInfosList =
+                        model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
+
+                    // Fixed: Update the list with new data instead of calling copy() on the list
+                    _datasArticlesBasesStatsTable.value = newProduitInfosList
+                }
+            }
+        }
+
     }
 }
