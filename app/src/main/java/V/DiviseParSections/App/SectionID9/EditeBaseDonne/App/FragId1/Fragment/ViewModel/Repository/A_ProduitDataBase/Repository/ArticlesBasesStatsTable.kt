@@ -27,7 +27,7 @@ data class ArticlesBasesStatsTable(
     var nombreProduitDonSonCarton: Int = 0,
 
     // Section Etates Mutable
-    val heldPrioriteDemandAuGrossist: Boolean = false,
+    val heldPrioriteDemandAuGrossist: Boolean = true,
 
     // Section InfosCoutes
     var prixVent: Double = 0.0,
