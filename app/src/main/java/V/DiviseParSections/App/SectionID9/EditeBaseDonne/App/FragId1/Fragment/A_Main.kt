@@ -91,7 +91,7 @@ fun EditeBaseDonneMainScreenIdS9(
 
             if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
                 filtered = filtered.filter {
-                    it.etateActuelleOnFusionAvecBaseDonne !=
+                    it.etateActuelleOnFusionAvecBaseDonne ==
                         EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                 }
             }
