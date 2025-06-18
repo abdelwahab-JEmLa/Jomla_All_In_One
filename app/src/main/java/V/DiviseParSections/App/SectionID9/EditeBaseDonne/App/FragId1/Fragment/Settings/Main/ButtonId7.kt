@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -8,26 +9,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ButtonId6(
-    viewModelPRODUCTS_LIST: PRODUCTS_LIST_ViewModel = koinViewModel(),
+fun ButtonId7(
     showLabels: Boolean,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
 ) {
-    val uiState by viewModelPRODUCTS_LIST.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val catalogues = B4CatalogueCategoriesRepository()
+    val currentCatalogueIndex = catalogues.indexOfFirst { it.id == uiState.activeCatalogue.id }
+    val nextCatalogueIndex = if (currentCatalogueIndex >= catalogues.size - 1) 0 else currentCatalogueIndex + 1
+    val nextCatalogue = catalogues[nextCatalogueIndex]
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -35,11 +37,11 @@ fun ButtonId6(
     ) {
         if (showLabels) {
             Text(
-                text = if (uiState.showDetailsExpanded) "Hide Details" else "Show Details",
-                color = Color.Black,
+                text = "Current: ${uiState.activeCatalogue.nom}",
+                color = Color.White,
                 modifier = Modifier
                     .background(
-                        color = if (uiState.showDetailsExpanded) Color.Red else Color.Green,
+                        color = Color.Blue,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -47,18 +49,18 @@ fun ButtonId6(
         }
         FloatingActionButton(
             onClick = {
-                viewModelPRODUCTS_LIST.update_showDetailsExpanded()
+                // Toggle to the next catalogue in the list (cycles through all catalogues)
+                viewModel.toggleToCatalogue(nextCatalogue.id)
             },
             modifier = Modifier.size(48.dp),
-            containerColor = if (uiState.showDetailsExpanded) Color.Red else Color.Green
+            containerColor = Color.Blue
         ) {
             Icon(
-                imageVector = if (uiState.showDetailsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                contentDescription = "Toggle product details expansion",
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Switch to next catalogue: ${nextCatalogue.nom}",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )
         }
     }
 }
-

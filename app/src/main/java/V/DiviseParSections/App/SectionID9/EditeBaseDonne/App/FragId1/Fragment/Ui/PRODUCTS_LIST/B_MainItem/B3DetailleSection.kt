@@ -39,6 +39,12 @@ fun DetailleSection(
                 modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Unit section with better styling
+                PriceAndUnitSection(
+                    produit = produit,
+                    updateProduct = updateProduct
+                )
+
                 // Improved cards layout with better spacing
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -62,11 +68,7 @@ fun DetailleSection(
                     )
                 }
 
-                // Unit section with better styling
-                PriceAndUnitSection(
-                    produit = produit,
-                    updateProduct = updateProduct
-                )
+
             }
         }
     }

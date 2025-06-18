@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
+    val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
 )
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
@@ -46,6 +49,18 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
             }
         }
     }
+
+    fun updateActiveCatalogue(catalogue: CataloguesCaegorie) {
+        _uiState.value = _uiState.value.copy(activeCatalogue = catalogue)
+    }
+
+    // Function to toggle between catalogues
+    fun toggleToCatalogue(catalogueId: Long) {
+        val catalogues = B4CatalogueCategoriesRepository()
+        val newCatalogue = catalogues.find { it.id == catalogueId } ?: catalogues.first()
+        updateActiveCatalogue(newCatalogue)
+    }
+
 
     enum class MoveOperation {
         TO_CATALOGUE,
@@ -154,6 +169,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     fun addOrUpdateCategories(categories: List<CategoriesTabelle>) {
         categoriesCompoRepository.addOrUpdateDatas(categories)
     }
+
     fun deleteAddMultiCategories(categories: List<CategoriesTabelle>) {
         categoriesCompoRepository.deleteAddMultiDatas(categories)
     }

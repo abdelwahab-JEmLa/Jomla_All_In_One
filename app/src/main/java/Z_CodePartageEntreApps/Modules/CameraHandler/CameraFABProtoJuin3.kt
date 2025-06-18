@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import android.net.Uri
@@ -39,6 +40,7 @@ fun CameraFABProtoJuin3(
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     webPQuality: Int = 85,
+    activeCatalogue: CataloguesCaegorie,
 ) {
     val storageRef = Firebase.storage.reference.child("Images Articles Data Base").child("produits")
     val localPath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -80,6 +82,7 @@ fun CameraFABProtoJuin3(
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
                                  dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
                                 cUnNeveauArrivage = true,
+                                idParentCategorie = activeCatalogue.premierCategorieId
                             )
 
                             a_CentralCompoRepositoryProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17.addOrUpdateData(updatedProduct)

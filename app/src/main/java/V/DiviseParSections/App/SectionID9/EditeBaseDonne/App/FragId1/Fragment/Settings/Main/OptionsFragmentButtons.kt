@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +64,8 @@ fun OptionsFragmentButtons(
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
 
@@ -234,7 +237,11 @@ fun OptionsFragmentButtons(
                 horizontalAlignment = Alignment.End
             ) {
                 if (showButtons) {
-                    CameraFABProtoJuin3()
+                    ButtonId7(
+                        viewModel=viewModel,
+                        showLabels = showLabels,
+                    )
+                    CameraFABProtoJuin3(activeCatalogue=uiState.activeCatalogue)
 
                     ButtonId6(
                         showLabels = showLabels,

@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.V
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 
+// Static repository function that provides catalogues list
 fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
     return listOf(
         CataloguesCaegorie(
@@ -9,7 +10,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             id = 4,
             nom = "Sans Catalogue",
             premierCategorieId = 0,
-            position = 0  // Changed from 1 to 0 to make it appear first
+            position = 0
         ),
         CataloguesCaegorie(
             bsonObjectId = "t2",
