@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.room.Dao
 import androidx.room.Delete
@@ -20,6 +19,15 @@ interface ArticlesBasesStatsModelDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(category: ArticlesBasesStatsTable)
 
+    @Delete
+    suspend fun delete(article: ArticlesBasesStatsTable)
+
+    @Query("SELECT * FROM ArticlesBasesStatsTable WHERE bsonObjectId = :bsonObjectId")
+    suspend fun getByBsonObjectId(bsonObjectId: String): ArticlesBasesStatsTable?
+
+    @Query("DELETE FROM ArticlesBasesStatsTable WHERE bsonObjectId = :bsonObjectId")
+    suspend fun deleteByBsonObjectId(bsonObjectId: String)
+
     @Query("SELECT * FROM ArticlesBasesStatsTable")
     suspend fun getAll(): MutableList<ArticlesBasesStatsTable>
 
@@ -32,7 +40,6 @@ interface ArticlesBasesStatsModelDao {
     suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)
 
     @Query("DELETE FROM ArticlesBasesStatsTable")
-
     suspend fun deleteAll()
 
     @Update

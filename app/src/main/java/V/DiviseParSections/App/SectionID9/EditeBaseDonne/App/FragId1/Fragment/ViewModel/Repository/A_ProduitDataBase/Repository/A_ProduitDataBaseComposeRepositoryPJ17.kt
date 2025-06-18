@@ -39,7 +39,14 @@ class A_ProduitDataBaseComposeRepositoryPJ17(
             datasValue + data
         }
 
-       addOrUpdatedAncienRepo(existingIndex, data)
+        addOrUpdatedAncienRepo(existingIndex, data)
+    }
+
+    fun deleteData(data: ArticlesBasesStatsTable) {
+        _datas.value = datasValue.filter { existing ->
+            !ArticlesBasesStatsTable.compareEntre(ancien = existing, newData = data)
+        }
+        deleteDataAncienRepo(data)
     }
 
     private fun addOrUpdatedAncienRepo(
@@ -47,8 +54,15 @@ class A_ProduitDataBaseComposeRepositoryPJ17(
         data: ArticlesBasesStatsTable
     ) {
         composScope.launch {
-            ancienRepo.addOrUpdatedAncienRepo(existingIndex,data)
+            ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+        }
+    }
+
+    private fun deleteDataAncienRepo(
+        data: ArticlesBasesStatsTable
+    ) {
+        composScope.launch {
+            ancienRepo.deleteDataAncienRepo(data)
         }
     }
 }
-

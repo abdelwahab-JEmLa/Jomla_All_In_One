@@ -13,7 +13,7 @@ class A_ProduitDataBaseProtoJuin17(
     val repoTAG = "A_ProduitDataBase"
     val repoRef = ArticlesBasesStatsTable.ref
     private val composScope = CoroutineScope(Dispatchers.IO)
-    
+
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
         dataAvecTigerUpdate: ArticlesBasesStatsTable
@@ -29,6 +29,12 @@ class A_ProduitDataBaseProtoJuin17(
         }
     }
 
+    fun deleteDataAncienRepo(data: ArticlesBasesStatsTable) {
+        composScope.launch {
+            dao.deleteByBsonObjectId(data.bsonObjectId)
+            deleteFromFireBase(data)
+        }
+    }
 
     private suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
         val updates = mutableMapOf<String, Any>()
@@ -37,5 +43,12 @@ class A_ProduitDataBaseProtoJuin17(
         }
         val firebaseRef = ArticlesBasesStatsTable.ref
         firebaseRef.updateChildren(updates).await()
+    }
+
+    private suspend fun deleteFromFireBase(data: ArticlesBasesStatsTable) {
+        val keyToDelete = data.keyFireBase.ifEmpty {
+            data.bsonObjectId
+        }
+        repoRef.child(keyToDelete).removeValue().await()
     }
 }
