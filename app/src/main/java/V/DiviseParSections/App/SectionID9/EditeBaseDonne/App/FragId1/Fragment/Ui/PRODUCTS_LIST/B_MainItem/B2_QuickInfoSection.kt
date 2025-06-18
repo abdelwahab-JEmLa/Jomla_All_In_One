@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun QuickInfoSection(
     produit: ArticlesBasesStatsTable,
@@ -58,31 +57,29 @@ fun QuickInfoSection(
                 }
             }
 
-            // Time since last price update
-            if (produit.prixAchatDernierTimeTempUpdate > 0) {
-                Spacer(modifier = Modifier.height(12.dp))
+            // Time since last price update - Always show section
+            Spacer(modifier = Modifier.height(12.dp))
 
-                val timeDifference = getTimeDifferenceInArabic(produit.prixAchatDernierTimeTempUpdate)
+            val timeDifference = getTimeDifferenceInArabic(produit.prixAchatDernierTimeTempUpdate)
 
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(8.dp),
-                    onClick = {
-                        // Toggle cachePrixVent on click
-                        updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
-                    }
-                ) {
-                    Text(
-                        text = "آخر تحديث للسعر: $timeDifference",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(12.dp),
-                        textAlign = TextAlign.End,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(8.dp),
+                onClick = {
+                    // Toggle cachePrixVent on click
+                    updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
                 }
+            ) {
+                Text(
+                    text = "آخر تحديث للسعر: $timeDifference",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.padding(12.dp),
+                    textAlign = TextAlign.End,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -131,9 +128,9 @@ fun QuickInfoCard(
  * Example: "قبل أسبوع و 3 أيام" (a week and 3 days ago)
  * Returns "غير محدد" if timestamp is null, 0, or undefined
  */
-fun getTimeDifferenceInArabic(timestamp: Long?): String {
-    // Handle null or undefined timestamp
-    if (timestamp == null || timestamp <= 0) {
+fun getTimeDifferenceInArabic(timestamp: Long): String {
+    // Handle null or undefined timestamp (0 or negative values)
+    if (timestamp <= 0) {
         return "غير محدد" // Undefined
     }
 
