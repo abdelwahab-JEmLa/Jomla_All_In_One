@@ -90,7 +90,12 @@ fun CardDroitPrixAchatEtBenVendeur(
                 onPriceUpdate = { newPrix ->
                     val newPrd = produit.copy(
                         prixAchat = newPrix,
-                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis(),
+                        etateActuelleOnFusionAvecBaseDonne= if(produit.prixAchat==0.0)
+                            ArticlesBasesStatsTable
+                            .EtateActuelleOnFusionAvecBaseDonne.PrixAchatPriseDepuitGrossist else
+                            ArticlesBasesStatsTable
+                                .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                     )
                     updateProduct(newPrd)
                 },

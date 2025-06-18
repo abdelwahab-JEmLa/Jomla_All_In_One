@@ -92,7 +92,14 @@ fun CardGauchePrixVentEtBClient(
                 currentPrice = produit.prixVent,
                 label = "Prix Pack",
                 onPriceUpdate = { newPrix ->
-                    updateProduct(produit.copy(prixVent = newPrix))
+                    updateProduct(produit.copy(
+                        prixVent = newPrix,
+                        etateActuelleOnFusionAvecBaseDonne= if(produit.prixAchat==0.0)
+                            ArticlesBasesStatsTable
+                                .EtateActuelleOnFusionAvecBaseDonne.PrixDeVentDefinie else
+                            ArticlesBasesStatsTable
+                                .EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                    ))
                 },
                 textColor = Color.Red
             )
