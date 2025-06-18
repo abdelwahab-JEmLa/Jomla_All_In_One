@@ -1,0 +1,41 @@
+package Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto
+
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+
+class A_ProduitDataBaseProtoJuin17(
+    val dao: ArticlesBasesStatsModelDao,
+) {
+    val repoTAG = "A_ProduitDataBase"
+    val repoRef = ArticlesBasesStatsTable.ref
+    private val composScope = CoroutineScope(Dispatchers.IO)
+    
+    fun addOrUpdatedAncienRepo(
+        existingIndex: Int,
+        dataAvecTigerUpdate: ArticlesBasesStatsTable
+    ) {
+        composScope.launch {
+            if (existingIndex >= 0) {
+                dao.update(dataAvecTigerUpdate)
+                batchFireBaseUpdateArticlesBasesStatsTable(listOf(dataAvecTigerUpdate))
+            } else {
+                dao.insert(dataAvecTigerUpdate)
+                batchFireBaseUpdateArticlesBasesStatsTable(listOf(dataAvecTigerUpdate))
+            }
+        }
+    }
+
+
+    private suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+        val updates = mutableMapOf<String, Any>()
+        datas.forEach { data ->
+            updates[data.bsonObjectId] = data
+        }
+        val firebaseRef = ArticlesBasesStatsTable.ref
+        firebaseRef.updateChildren(updates).await()
+    }
+}

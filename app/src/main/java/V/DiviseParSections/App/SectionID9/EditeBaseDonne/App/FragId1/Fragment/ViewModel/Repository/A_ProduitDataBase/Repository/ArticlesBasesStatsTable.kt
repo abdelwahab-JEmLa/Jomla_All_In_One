@@ -12,6 +12,8 @@ data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var bsonObjectId: String = BsonObjectId().toHexString(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+    var dernierFireBaseUpdateTimestamps: Long = 0,
 
     //S P Ids
     var idParentCategorie: Long? = null,
@@ -20,12 +22,11 @@ data class ArticlesBasesStatsTable(
     // Section InfosDeBase
     var nom: String = "",
 
-    //
     var nombreUniteInt: Int = 0,
     var nombreProduitDonSonCarton: Int = 0,
 
     // Section Etates Mutable
-    var dernierFireBaseUpdateTimestamps: Long = 0,
+    val heldPrioriteDemandAuGrossist :Boolean=false,
 
     // Section InfosCoutes
     var prixVent: Double = 0.0,
@@ -83,6 +84,13 @@ data class ArticlesBasesStatsTable(
 
     )
 {
+    fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
+        return this.copy(
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
+
+
 
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
@@ -120,6 +128,14 @@ data class ArticlesBasesStatsTable(
             preparedData: ArticlesBasesStatsTable
         ) {
             ref.child(preparedData.keyFireBase).removeValue()
+        }
+        fun compareEntre(
+            ancien: ArticlesBasesStatsTable,
+            newData: ArticlesBasesStatsTable
+        ): Boolean {
+            val delimiterExistence =
+                ancien.id == newData.id
+            return delimiterExistence
         }
     }
 }

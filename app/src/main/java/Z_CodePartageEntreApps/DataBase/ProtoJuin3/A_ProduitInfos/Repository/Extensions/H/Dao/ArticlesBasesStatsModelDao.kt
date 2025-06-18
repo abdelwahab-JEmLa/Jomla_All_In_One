@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.room.Dao
 import androidx.room.Delete
@@ -13,6 +14,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArticlesBasesStatsModelDao {
+    @Update
+    suspend fun update(data: ArticlesBasesStatsTable)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insert(category: ArticlesBasesStatsTable)
+
     @Query("SELECT * FROM ArticlesBasesStatsTable")
     suspend fun getAll(): MutableList<ArticlesBasesStatsTable>
 
@@ -20,9 +27,6 @@ interface ArticlesBasesStatsModelDao {
     suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
         block()
     }
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: ArticlesBasesStatsTable)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)

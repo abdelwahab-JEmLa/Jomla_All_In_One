@@ -13,19 +13,21 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryPJ17
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.C_CategoriesCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBasePJ17
+import Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto.A_ProduitDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
@@ -100,13 +102,16 @@ val centralDataBasesModule = module {
 }
 
 val composRepositorysModule = module {
-    single { A_CentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { A_CentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { A_ProduitDataBaseComposeRepositoryPJ17(get()) }
     single { B_ClientsStateCompoRepository(get()) }
     single { C_CategoriesCompoRepository(get()) }
     single { D_TransactionCommercialCompoRepository(get()) }
-    single { E_AchatOperationComposeRepositoryPJ17(get()) }
+    single { E_AchatOperationComposeRepositoryProtoJuin17(get()) }
+
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AppComptComposeRepositoryProtoJuin17(get()) }
+
     single { Z_AutreStatesCompoRepository(get()) }
 }
 
@@ -118,14 +123,17 @@ val dataBaseProtoAvantJuin3Module = module {
     single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
     single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
     single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
+
     single { A_ProduitInfosRepository(androidContext(), get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
+    single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().ArticlesBasesStatsModelDao()) }
+
     single { B_ClientInfosProtoJuin3Repository(androidContext(), get()) }
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
     single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
     single { D_EtateMessageVocaleRepository(androidContext(), get()) }
-    single { D_AchatOperationDataBasePJ17(get<AppDatabase>().D_AchatOperationDao()) }
+    single { D_AchatOperationDataBaseProtoJuin17(get<AppDatabase>().D_AchatOperationDao()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }

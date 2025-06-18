@@ -56,7 +56,7 @@ fun D_ColorDetails_APP2_ID_2(
         _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation
             .repositoryScope
             .launch {
-                articlesBasesStatsModel = database.articlesBasesStatsModelDao().getAll()
+                articlesBasesStatsModel = database.ArticlesBasesStatsModelDao().getAll()
             }
     }
 

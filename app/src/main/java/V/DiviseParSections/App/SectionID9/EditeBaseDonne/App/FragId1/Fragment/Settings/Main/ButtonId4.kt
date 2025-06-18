@@ -133,7 +133,7 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
 
 private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
     // Get all articles from database
-    val articles = appDatabase.articlesBasesStatsModelDao().getAll()
+    val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()

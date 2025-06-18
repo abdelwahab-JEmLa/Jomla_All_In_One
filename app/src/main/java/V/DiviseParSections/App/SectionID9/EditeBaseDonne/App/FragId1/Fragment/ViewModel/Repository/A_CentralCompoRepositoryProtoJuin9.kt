@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryPJ17
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,22 +26,19 @@ class A_CentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
     val appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
 
+    val a_ProduitDataBaseComposeRepositoryPJ17: A_ProduitDataBaseComposeRepositoryPJ17,
+
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val b3CategoriesCompoRepository: C_CategoriesCompoRepository,
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
 
-    val d_AchatOperationComposeRepositoryPJ17: E_AchatOperationComposeRepositoryPJ17,
+    val d_AchatOperationComposeRepositoryPJ17: E_AchatOperationComposeRepositoryProtoJuin17,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datasArticlesBasesStatsTable =
-        mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
-    val datasValueArticlesBasesStatsTable by derivedStateOf { _datasArticlesBasesStatsTable.value }
-
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
-
 
     private val categoriesList: List<CategoriesTabelle>
         get() = b3CategoriesCompoRepository.datasValue
@@ -50,7 +47,7 @@ class A_CentralCompoRepositoryProtoJuin9(
         val categoryMap = categoriesList.associateBy { it.id }
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
 
-        val (regularProducts, orphanProducts) = datasValueArticlesBasesStatsTable.partition { product ->
+        val (regularProducts, orphanProducts) = a_ProduitDataBaseComposeRepositoryPJ17.datasValue.partition { product ->
             val categoryId = product.idParentCategorie ?: 0L
             val category = categoryMap[categoryId]
             val catalogueId = category?.catalogueParentId ?: 4L
@@ -134,18 +131,5 @@ class A_CentralCompoRepositoryProtoJuin9(
                 }
             }
         }
-        composScope.launch {
-
-            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
-                masterModel?.let { model ->
-                    val newProduitInfosList =
-                        model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
-
-                    // Fixed: Update the list with new data instead of calling copy() on the list
-                    _datasArticlesBasesStatsTable.value = newProduitInfosList
-                }
-            }
-        }
-
     }
 }

@@ -120,7 +120,7 @@ private fun setupProductFirebaseListener(
         scope = scope,
         ref = ArticlesBasesStatsTable.ref,
         upsertFunction = { product: ArticlesBasesStatsTable ->
-            appDatabase.articlesBasesStatsModelDao().upsertData(product)
+            appDatabase.ArticlesBasesStatsModelDao().upsertData(product)
         },
         callback = {
             Log.d("Repository", "Product Firebase listener callback executed")

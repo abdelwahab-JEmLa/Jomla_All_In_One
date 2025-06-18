@@ -399,7 +399,7 @@ open class HeadViewModel(
             refDBJetPackExport.child(newArticle.id.toString()).setValue(newArticle)
 
             // Add to Room database
-            database.articlesBasesStatsModelDao().insert(newArticle)
+            database.ArticlesBasesStatsModelDao().insert(newArticle)
             newArticle
 
         } catch (exception: Exception) {
@@ -1012,7 +1012,7 @@ open class HeadViewModel(
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
                     snapshot.getValue(ArticlesBasesStatsTable::class.java)
                 }
-          //      database.articlesBasesStatsModelDao().insertAll(articles)        */
+          //      database.ArticlesBasesStatsModelDao().insertAll(articles)        */
                 updateLoadingProgress(100f)
 
                 loadDataCollectOfUiStateFromRoom()
@@ -1026,7 +1026,7 @@ open class HeadViewModel(
 
     init {
         viewModelScope.launch {
-            if (database.articlesBasesStatsModelDao().getAll().size == 0) {
+            if (database.ArticlesBasesStatsModelDao().getAll().size == 0) {
                 importFromFirebase()
             }
             loadDataCollectOfUiStateFromRoom()

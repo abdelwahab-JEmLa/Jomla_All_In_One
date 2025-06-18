@@ -71,7 +71,7 @@ fun Couleurs(
         models.repositoryC2_ProduitAcheteOperation
             .repositoryScope
             .launch {
-                articlesBasesStatsModel = database.articlesBasesStatsModelDao().getAll()
+                articlesBasesStatsModel = database.ArticlesBasesStatsModelDao().getAll()
             }
     }
 
