@@ -22,7 +22,7 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosDeBase
     var nom: String = "",
-    val cUnNeveauArrivage: Boolean = false,
+    val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
 
     var nombreUniteInt: Int = 1,
     var nombreProduitDonSonCarton: Int = 1,
@@ -87,6 +87,13 @@ data class ArticlesBasesStatsTable(
     var idForSearchArticles: Long = 0,
 
     ) {
+    enum class EtateActuelleOnFusionAvecBaseDonne {
+        CaprtureSonImage,
+        PrixAchatPriseDepuitGrossist,
+        PrixDeVentDefinie,
+        CategorieOriginaleDefinie,
+        PositionAvecCesFrereDefinie,
+    }
     fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()

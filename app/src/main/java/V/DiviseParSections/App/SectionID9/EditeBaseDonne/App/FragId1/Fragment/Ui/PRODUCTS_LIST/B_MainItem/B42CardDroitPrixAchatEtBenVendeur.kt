@@ -17,9 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.math.round
 
-// Fixed B3DetailleSection.kt - Remove local focus requesters and use passed onNextField
 @Composable
- fun CardDroitPrixAchatEtBenVendeur(
+fun CardDroitPrixAchatEtBenVendeur(
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     onNextField: (() -> Unit)? = null,

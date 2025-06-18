@@ -85,7 +85,7 @@ fun CameraFABProtoJuin3(
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-                                cUnNeveauArrivage = true,
+                                etateActuelleOnFusionAvecBaseDonne = true,
                                 idParentCategorie = activeCatalogue.premierCategorieId
                             )
 

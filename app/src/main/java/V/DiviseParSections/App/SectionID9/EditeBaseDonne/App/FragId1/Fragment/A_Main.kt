@@ -12,6 +12,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,10 @@ fun EditeBaseDonneMainScreenIdS9(
             }
 
             if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
-                filtered = filtered.filter { it.cUnNeveauArrivage }
+                filtered = filtered.filter {
+                    it.etateActuelleOnFusionAvecBaseDonne !=
+                        EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                }
             }
 
             if (filterState.hideNonDispo) {
