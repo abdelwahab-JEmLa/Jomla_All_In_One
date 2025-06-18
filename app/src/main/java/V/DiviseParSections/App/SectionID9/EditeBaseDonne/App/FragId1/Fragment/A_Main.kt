@@ -14,8 +14,6 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ut
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,8 +50,8 @@ fun EditeBaseDonneMainScreenIdS9(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val aCentraldatashandlerprotojuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
-    val progress = aCentraldatashandlerprotojuin9.loadingProgress
+    val a_CentralDatasHandlerProtoJuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
+    val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
@@ -68,9 +66,8 @@ fun EditeBaseDonneMainScreenIdS9(
         categoriesList.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
     }
 
-    // Fixed: Corrected the filteredAndSortedProduitList derivedStateOf
     val filteredAndSortedProduitList by remember(produitList, filterState, categoriesList,
-        aCentraldatashandlerprotojuin9.categoryGroupedSortedProducts) {
+        a_CentralDatasHandlerProtoJuin9.categoryGroupedSortedProducts) {
         derivedStateOf {
             var filtered = produitList
 
@@ -103,15 +100,14 @@ fun EditeBaseDonneMainScreenIdS9(
                 filterState.enableCategoryGrouping -> {
                     when (filterState.sortOrder) {
                         SortOrder.CATEGORY_GROUPED -> {
-                            // Fixed: Explicitly specify the type for the lambda parameter
-                            aCentraldatashandlerprotojuin9.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
+                            a_CentralDatasHandlerProtoJuin9.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
                                 filtered.contains(product)
                             }
                         }
                         else -> applySortOrder(filtered, filterState.sortOrder)
                     }
                 }
-                else -> applySortOrder(filtered, filterState.sortOrder, categoriesList)
+                else -> applySortOrder(filtered, filterState.sortOrder)
             }
         }
     }
@@ -203,11 +199,10 @@ fun EditeBaseDonneMainScreenIdS9(
 private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
     return if (contains(product)) this - product else this + product
 }
-
 private fun applySortOrder(
     products: List<ArticlesBasesStatsTable>,
     sortOrder: SortOrder,
-    categoriesList: List<CategoriesTabelle> = emptyList()
+    categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> = emptyList()
 ): List<ArticlesBasesStatsTable> {
     return when (sortOrder) {
         SortOrder.ID_DESC -> products.sortedByDescending { it.id }
@@ -215,31 +210,9 @@ private fun applySortOrder(
         SortOrder.NAME_ASC -> products.sortedBy { it.nom.lowercase() }
         SortOrder.NAME_DESC -> products.sortedByDescending { it.nom.lowercase() }
         SortOrder.CATEGORY_GROUPED -> {
-            val categoryMap = categoriesList.associateBy { it.id }
-            val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
-
-            products.sortedWith(
-                compareBy<ArticlesBasesStatsTable> { product ->
-                    val categoryId = product.idParentCategorie ?: 0L
-                    val category = categoryMap[categoryId]
-                    val catalogueId = category?.catalogueParentId ?: 4L
-
-                    if (catalogueId == 4L || category?.nom == "NONE" || category == null) {
-                        Int.MAX_VALUE - 1000
-                    } else {
-                        catalogues[catalogueId]?.position ?: (Int.MAX_VALUE - 2000)
-                    }
-                }.thenBy { product ->
-                    val categoryId = product.idParentCategorie ?: 0L
-                    val category = categoryMap[categoryId]
-                    if (category?.nom == "NONE" || category == null) {
-                        Int.MAX_VALUE - 1000
-                    } else {
-                        category.position
-                    }
-                }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                    .thenBy { it.nom.lowercase() }
-            )
+            categoryGroupedSortedProducts.filter { categoryProduct ->
+                products.any { it.id == categoryProduct.id }
+            }
         }
     }
 }
