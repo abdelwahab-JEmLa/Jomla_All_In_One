@@ -22,7 +22,7 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosDeBase
     var nom: String = "",
-    val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
+    val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
     var nombreUniteInt: Int = 1,
     var nombreProduitDonSonCarton: Int = 1,
