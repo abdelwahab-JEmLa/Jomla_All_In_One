@@ -103,9 +103,7 @@ fun PriceEditor(
                     shape = RoundedCornerShape(12.dp)
                 )
             } else {
-                // Check if we should show outlined text field directly when shouldHideQuickInfoCards is true
                 if (shouldHideQuickInfoCards) {
-                    // Show outlined text field directly when shouldHideQuickInfoCards is true
                     OutlinedTextField(
                         value = tempText,
                         onValueChange = { newValue ->

@@ -41,15 +41,7 @@ fun ProductItem(
     var showNameEditor by remember { mutableStateOf(false) }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
-        val finalProduct = if (updatedProduct.nombreUniteInt > 0) {
-            val prixVenteUnitaire =
-                kotlin.math.round((updatedProduct.prixVent / updatedProduct.nombreUniteInt) * 100.0) / 100.0
-            updatedProduct.copy(clientPrixVentUnite = prixVenteUnitaire)
-        } else {
-            updatedProduct.copy(clientPrixVentUnite = 0.0)
-        }
-
-        mainComposRepository.addOrUpdateData(finalProduct)
+        mainComposRepository.addOrUpdateData(updatedProduct)
     }
 
     // Delete confirmation dialog

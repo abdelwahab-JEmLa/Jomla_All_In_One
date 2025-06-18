@@ -98,14 +98,20 @@ private fun CardGauchePrixVentEtBClient(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-
+            // Client benefit calculation with proper logic
+            val beneficeClient = produit.clientPrixVentUnite * produit.nombreUniteInt
             PriceEditor(
-                currentPrice = produit.prixVent,
-                label = "Total",
-                onPriceUpdate = { newPrix ->
-                    updateProduct(produit.copy(prixVent = newPrix))
+                currentPrice = beneficeClient,
+                label = "Bénéfice Client",
+                onPriceUpdate = { newBenefice ->
+                    // Calculate new client unit price based on desired total benefit
+                    if (produit.nombreUniteInt > 0) {
+                        val newClientPrixUnite = newBenefice / produit.nombreUniteInt
+                        updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
+                    }
                 },
-                textColor = MaterialTheme.colorScheme.primary
+                textColor = if (beneficeClient > 0) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.error
             )
 
             // Unit sale price (if units > 0)
@@ -122,22 +128,18 @@ private fun CardGauchePrixVentEtBClient(
                     textColor = MaterialTheme.colorScheme.secondary
                 )
             }
-
-            // Client benefit calculation with proper logic
-            val beneficeClient = produit.clientPrixVentUnite * produit.nombreUniteInt
             PriceEditor(
-                currentPrice = beneficeClient,
-                label = "Bénéfice",
-                onPriceUpdate = { newBenefice ->
-                    // Calculate new client unit price based on desired total benefit
-                    if (produit.nombreUniteInt > 0) {
-                        val newClientPrixUnite = newBenefice / produit.nombreUniteInt
-                        updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
-                    }
+                currentPrice = produit.prixVent,
+                label = "Prix Pack",
+                onPriceUpdate = { newPrix ->
+                    updateProduct(produit.copy(prixVent = newPrix))
                 },
-                textColor = if (beneficeClient > 0) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.error
+                textColor = MaterialTheme.colorScheme.primary
             )
+
+
+
+
         }
     }
 }
@@ -176,7 +178,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
             val benefice = produit.prixVent - produit.prixAchat
             PriceEditor(
                 currentPrice = benefice,
-                label = "Profit",
+                label = "vendeur Benefice",
                 onPriceUpdate = { newBenefice ->
                     val newPrixVent = produit.prixAchat + newBenefice
                     updateProduct(produit.copy(prixVent = newPrixVent))
@@ -208,7 +210,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
             // Total purchase price
             PriceEditor(
                 currentPrice = produit.prixAchat,
-                label = "Total",
+                label = "Prix Pack",
                 onPriceUpdate = { newPrix ->
                     val newPrd = produit.copy(
                         prixAchat = newPrix,

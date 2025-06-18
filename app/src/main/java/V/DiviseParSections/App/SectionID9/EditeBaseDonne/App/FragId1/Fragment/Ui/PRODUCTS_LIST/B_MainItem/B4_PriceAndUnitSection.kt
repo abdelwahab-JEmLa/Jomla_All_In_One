@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
             if (produit.nombreUniteInt > 0) {
                 PriceEditor(
                     currentPrice = produit.clientPrixVentUnite,
-                    label = "Prix/unité",
+                    label = "clientPrixVentUnite",
                     onPriceUpdate = { newClientPrixUnite ->
                         updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
                     },
