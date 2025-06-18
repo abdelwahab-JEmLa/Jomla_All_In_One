@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class PRODUCTS_LIST_ViewModel: ViewModel() {
-    data class UiState(var showDetailsExpanded: Boolean = false)
+    data class UiState(var showDetailsExpanded: Boolean = true)
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

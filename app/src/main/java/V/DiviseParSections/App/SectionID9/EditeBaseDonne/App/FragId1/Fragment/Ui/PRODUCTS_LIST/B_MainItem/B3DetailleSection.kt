@@ -187,14 +187,14 @@ private fun CardDroitPrixAchatEtBenVendeur(
                     updateProduct(newPrd)
                 },
                 showOnlyWhenPositive = true,
-                textColor = MaterialTheme.colorScheme.tertiary
-                , shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                textColor = MaterialTheme.colorScheme.tertiary,
+                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 onNextField = if (shouldHideQuickInfoCards && produit.nombreUniteInt > 1) {
                     { focusRequester2.requestFocus() }
-                } else if (shouldHideQuickInfoCards) {
+                } else if (shouldHideQuickInfoCards && produit.clientPrixVentUnite > 0.0) {
                     { focusRequester3.requestFocus() }
                 } else null,
-                modifier = if (shouldHideQuickInfoCards) Modifier.focusRequester(focusRequester1) else Modifier
+                modifier = Modifier.focusRequester(focusRequester1)
             )
 
             // Unit purchase price (if units > 0)
@@ -213,12 +213,16 @@ private fun CardDroitPrixAchatEtBenVendeur(
                             )
                         )
                     },
-                    textColor = MaterialTheme.colorScheme.secondary
+                    textColor = MaterialTheme.colorScheme.secondary,
+                    shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                    onNextField = if (shouldHideQuickInfoCards && produit.clientPrixVentUnite > 0.0) {
+                        { focusRequester3.requestFocus() }
+                    } else null,
+                    modifier = Modifier.focusRequester(focusRequester2)
                 )
             }
 
             if (produit.clientPrixVentUnite > 0.0) {
-
                 // Seller profit calculation
                 val benefice = produit.prixVent - produit.prixAchat
                 PriceEditor(
@@ -229,7 +233,9 @@ private fun CardDroitPrixAchatEtBenVendeur(
                         updateProduct(produit.copy(prixVent = newPrixVent))
                     },
                     textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.error,
+                    shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                    modifier = Modifier.focusRequester(focusRequester3)
                 )
             }
         }

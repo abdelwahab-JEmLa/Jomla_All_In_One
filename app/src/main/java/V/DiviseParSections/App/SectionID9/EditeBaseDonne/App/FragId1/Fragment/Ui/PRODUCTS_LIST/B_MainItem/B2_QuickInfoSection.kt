@@ -66,50 +66,53 @@ fun QuickInfoSection(
                         modifier = Modifier.weight(1f)
                     )
                 }
-
-                // Combined Visibility and Last Update Card - Always show this one
-                Surface(
-                    modifier = Modifier.weight(1f),
-                    color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(12.dp),
-                    onClick = {
-                        updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
+                    if (!shouldHideQuickInfoCards) {
+                        // Combined Visibility and Last Update Card - Always show this one
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(
+                                alpha = 0.1f
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            onClick = {
+                                updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
+                            }
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp)
+                            ) {
+                                Text(
+                                    text = if (produit.cachePrixVent) "🔒" else "👁️",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Visibilité",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = if (produit.cachePrixVent) "Caché" else "Visible",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "آخر تحديث: $timeDifference",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Start,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        Text(
-                            text = if (produit.cachePrixVent) "🔒" else "👁️",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Visibilité",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = if (produit.cachePrixVent) "Caché" else "Visible",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "آخر تحديث: $timeDifference",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Start,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
             }
         }
     }
