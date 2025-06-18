@@ -56,7 +56,7 @@ fun CameraFABProtoJuin3(
 
         try {
             pendingProduct?.let { product ->
-                val fileName = "${product.id}_1.webp"
+                val fileName = "${product.bsonObjectId}_1.webp"
                 val localDir = File(localPath).apply { if (!exists()) mkdirs() }
                 val localFile = File(localDir, fileName)
 
@@ -76,7 +76,11 @@ fun CameraFABProtoJuin3(
                         }
 
                         withContext(Dispatchers.Main) {
+                            val bsonObjectId = pendingProduct!!.bsonObjectId.takeLast(4)
+                            val catalogue = activeCatalogue.nom
+
                             val updatedProduct = product.copy(
+                                nom = "Produit $catalogue $bsonObjectId",
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
