@@ -56,7 +56,7 @@ fun CameraFABProtoJuin3(
 
         try {
             pendingProduct?.let { product ->
-                val fileName = "${product.bsonObjectId}_1.webp"
+                val fileName = "${product.id}_1.webp"
                 val localDir = File(localPath).apply { if (!exists()) mkdirs() }
                 val localFile = File(localDir, fileName)
 
@@ -77,14 +77,14 @@ fun CameraFABProtoJuin3(
 
                         withContext(Dispatchers.Main) {
                             val bsonObjectId = pendingProduct!!.bsonObjectId.takeLast(4).uppercase()
-                            val catalogue = activeCatalogue.nom
+                            val catalogue = activeCatalogue.nom.takeLast(3)
 
                             val updatedProduct = product.copy(
-                                nom = "Produit $catalogue $bsonObjectId",
+                                nom = "Produit $catalogue id${pendingProduct!!.id} $bsonObjectId",
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
-                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
                                 cUnNeveauArrivage = true,
                                 idParentCategorie = activeCatalogue.premierCategorieId
                             )
@@ -111,7 +111,9 @@ fun CameraFABProtoJuin3(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            pendingProduct = ArticlesBasesStatsTable()
+            pendingProduct = ArticlesBasesStatsTable(
+                id = a_CentralCompoRepositoryProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17.datasValue.maxOf { it.id } + 1
+            )
             showCameraDialog = true
         } else {
             Toast.makeText(context, "Permission caméra requise", Toast.LENGTH_SHORT).show()

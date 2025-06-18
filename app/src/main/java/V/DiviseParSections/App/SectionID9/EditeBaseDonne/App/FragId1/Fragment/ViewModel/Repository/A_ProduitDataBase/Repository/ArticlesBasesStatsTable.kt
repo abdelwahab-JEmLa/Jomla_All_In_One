@@ -24,8 +24,8 @@ data class ArticlesBasesStatsTable(
     var nom: String = "",
     val cUnNeveauArrivage: Boolean = false,
 
-    var nombreUniteInt: Int = 0,
-    var nombreProduitDonSonCarton: Int = 0,
+    var nombreUniteInt: Int = 1,
+    var nombreProduitDonSonCarton: Int = 1,
 
     // Section Etates Mutable
     val heldPrioriteDemandAuGrossist: Boolean = false,

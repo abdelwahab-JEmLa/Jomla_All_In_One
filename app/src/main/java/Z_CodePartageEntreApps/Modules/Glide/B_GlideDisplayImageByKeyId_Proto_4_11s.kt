@@ -47,8 +47,9 @@ fun A_GlideDisplayImageByKeyId_Proto_5(
 
     val imageKey by remember(produitVID, product?.id, refreshImage) {
         derivedStateOf {
-            val baseKey = produitVID ?: product?.id ?: 0L
-            "$baseKey-$refreshImage-${System.currentTimeMillis()}"
+            val l = produitVID ?: product?.id ?: 0L
+            val id =if (l ==0L ) product?.bsonObjectId else product?.id  ?: 0L
+            "$id-$refreshImage-${System.currentTimeMillis()}"
         }
     }
 

@@ -48,7 +48,10 @@ fun GlidDisplaye(
     var isLoading by remember { mutableStateOf(true) }
     var imageFileName by remember { mutableStateOf("") }
 
-    val keyImageId = if (mainItem == null) "logo" else "${mainItem.id}_${colorIndex + 1}"
+    val keyImageId = if (mainItem == null) "logo" else {
+        val id = if (mainItem.id==0L) mainItem.bsonObjectId else mainItem.id
+        "${id}_${colorIndex + 1}"
+    }
 
     val imageKey by remember(keyImageId, imageGlidReloadTigger) {
         derivedStateOf { "$keyImageId-$imageGlidReloadTigger-${System.currentTimeMillis()}" }
