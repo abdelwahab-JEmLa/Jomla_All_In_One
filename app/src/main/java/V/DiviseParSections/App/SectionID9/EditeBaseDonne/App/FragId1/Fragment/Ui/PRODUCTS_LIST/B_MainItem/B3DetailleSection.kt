@@ -138,8 +138,6 @@ private fun CardGauchePrixVentEtBClient(
             )
 
 
-
-
         }
     }
 }
@@ -173,19 +171,20 @@ private fun CardDroitPrixAchatEtBenVendeur(
                 color = MaterialTheme.colorScheme.tertiary
             )
 
-
-            // Seller profit calculation
             val benefice = produit.prixVent - produit.prixAchat
-            PriceEditor(
-                currentPrice = benefice,
-                label = "vendeur Benefice",
-                onPriceUpdate = { newBenefice ->
-                    val newPrixVent = produit.prixAchat + newBenefice
-                    updateProduct(produit.copy(prixVent = newPrixVent))
-                },
-                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.error,
-            )
+
+            if (produit.prixVent > 0.0) {
+                PriceEditor(
+                    currentPrice = benefice,
+                    label = "vendeur Benefice",
+                    onPriceUpdate = { newBenefice ->
+                        val newPrixVent = produit.prixAchat + newBenefice
+                        updateProduct(produit.copy(prixVent = newPrixVent))
+                    },
+                    textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error,
+                )
+            }
 
             // Unit purchase price (if units > 0)
             if (produit.nombreUniteInt > 1) {
