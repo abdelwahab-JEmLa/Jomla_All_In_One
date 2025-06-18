@@ -29,6 +29,7 @@ fun ProductItem(
     mainComposRepository: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
 ) {
+    val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showNameEditor by remember { mutableStateOf(false) }
     var showDetailsExpanded by remember { mutableStateOf(false) }
@@ -111,9 +112,8 @@ fun ProductItem(
     }
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifierWithDefinedPadding
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -121,7 +121,7 @@ fun ProductItem(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifierWithDefinedPadding.fillMaxWidth()
         ) {
             // Header Section with Image, Name, Status and Delete
             HeaderSection(
@@ -133,6 +133,7 @@ fun ProductItem(
 
             // Action Buttons - Fixed parameter passing
             ActionButtons(
+                modifier=modifierWithDefinedPadding,
                 onShowDetailsExpandedChange = { showDetailsExpanded = it },
                 showDetailsExpanded = showDetailsExpanded,
                 produit = produit,
@@ -144,6 +145,7 @@ fun ProductItem(
 
             // Details Section
             DetailleSection(
+                modifier=modifierWithDefinedPadding,
                 showDetailsExpanded = showDetailsExpanded,
                 produit = produit,
                 updateProduct = ::updateProduct

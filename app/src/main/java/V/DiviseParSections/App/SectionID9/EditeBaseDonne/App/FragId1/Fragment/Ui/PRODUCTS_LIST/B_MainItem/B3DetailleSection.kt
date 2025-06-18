@@ -30,6 +30,7 @@ import kotlin.math.round
 
 @Composable
 fun DetailleSection(
+    modifier: Modifier,
     showDetailsExpanded: Boolean,
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
@@ -38,33 +39,14 @@ fun DetailleSection(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                ,
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
-                modifier = Modifier.padding(12.dp),
+                modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Section Header with improved styling
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "💰 Prix et Calculs",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-
                 // Improved cards layout with better spacing
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -180,7 +162,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             // Section header
             Text(

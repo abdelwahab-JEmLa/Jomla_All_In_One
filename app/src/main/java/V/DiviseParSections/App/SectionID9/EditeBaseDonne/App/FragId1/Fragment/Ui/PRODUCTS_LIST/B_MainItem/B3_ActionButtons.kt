@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,15 +26,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ActionButtons(
+    modifier: Modifier,
     onShowDetailsExpandedChange: (Boolean) -> Unit,
     showDetailsExpanded: Boolean,
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         // Expandable Details Button
         FilledTonalButton(
@@ -57,10 +56,9 @@ fun ActionButtons(
 
         // Row for Priority and other action buttons
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             // Priority Toggle Button
             FilledTonalButton(

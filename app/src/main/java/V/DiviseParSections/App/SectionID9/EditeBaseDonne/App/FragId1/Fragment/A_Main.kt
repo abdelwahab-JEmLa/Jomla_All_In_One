@@ -138,7 +138,7 @@ fun EditeBaseDonneMainScreenIdS9(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(4.dp)
                     ) {
                         if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                             AppBar(
