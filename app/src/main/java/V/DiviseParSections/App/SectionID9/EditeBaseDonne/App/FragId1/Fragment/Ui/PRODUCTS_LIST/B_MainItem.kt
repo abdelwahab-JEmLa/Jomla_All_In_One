@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -98,7 +100,7 @@ fun ProductItem(
             confirmButton = {
                 TextButton(
                     onClick = {
-                       viewModel.deleteArticlesBasesStatsTable(produit)
+                        viewModel.deleteArticlesBasesStatsTable(produit)
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.textButtonColors(
@@ -256,9 +258,7 @@ fun ProductItem(
                         contentDescription = "Supprimer le produit",
                         modifier = Modifier.size(20.dp)
                     )
-                }   //<--
-                //TODO(1): ajout au botom de ca 
-                //un button au click toggle   heldPrioriteDemandAuGrossist
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -435,6 +435,43 @@ fun ProductItem(
                         )
                     }
                 }
+            }
+
+            // Priority Toggle Button - Added at the bottom
+            Spacer(modifier = Modifier.height(16.dp))
+            FilledTonalButton(
+                onClick = {
+                    val updatedProduct = produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
+                    viewModel.addOrUpdateProduit(updatedProduct)
+                    updateProduct(updatedProduct)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = if (produit.heldPrioriteDemandAuGrossist)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (produit.heldPrioriteDemandAuGrossist)
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            ) {
+                Icon(
+                    imageVector = if (produit.heldPrioriteDemandAuGrossist) Icons.Filled.Star else Icons.Outlined.Star,
+                    contentDescription = "Toggle Priority",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (produit.heldPrioriteDemandAuGrossist)
+                        "Priorité Grossiste: Activée"
+                    else
+                        "Priorité Grossiste: Désactivée",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
