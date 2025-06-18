@@ -94,7 +94,6 @@ fun CardDroitPrixAchatEtBenVendeur(
                     )
                     updateProduct(newPrd)
                 },
-                showOnlyWhenPositive = true,
                 textColor = vertTurq,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 onNextField = onNextField
