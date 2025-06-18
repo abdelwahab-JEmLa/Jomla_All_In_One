@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,10 +32,8 @@ class A_CentralCompoRepositoryProtoJuin9(
     val d_AchatOperationComposeRepositoryPJ17: E_AchatOperationComposeRepositoryPJ17,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-
-    val loadingProgress: Float? by derivedStateOf {
-        appComptComposeRepositoryProtoJuin17.currentAppCompt?.mainInitDataBaseProgressEtate
-    }
+    private val _loadingProgress = mutableFloatStateOf(0f)
+    val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
@@ -73,6 +72,14 @@ class A_CentralCompoRepositoryProtoJuin9(
                 databaseInitializationManager.initializeAllRepositories(context)
             } catch (e: Exception) {
                 databaseInitializationManager.updateMainInitDataBaseProgressEtate(1.0f)
+            }
+        }
+
+        composScope.launch {
+            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
+                masterModel?.let { model ->
+                    _loadingProgress.floatValue = model.progress
+                }
             }
         }
     }

@@ -52,6 +52,7 @@ fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
     val progress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
