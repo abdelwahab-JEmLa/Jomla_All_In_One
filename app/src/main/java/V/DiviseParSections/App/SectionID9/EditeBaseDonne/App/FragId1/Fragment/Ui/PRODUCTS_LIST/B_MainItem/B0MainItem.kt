@@ -133,7 +133,7 @@ fun ProductItem(
 
             // Action Buttons - Fixed parameter passing
             ActionButtons(
-                modifier=modifierWithDefinedPadding,
+                modifier = modifierWithDefinedPadding,
                 onShowDetailsExpandedChange = { showDetailsExpanded = it },
                 showDetailsExpanded = showDetailsExpanded,
                 produit = produit,
@@ -141,11 +141,14 @@ fun ProductItem(
             )
 
             // Quick Info Section
-            QuickInfoSection(produit)
+            QuickInfoSection(
+                produit,
+                updateProduct = ::updateProduct
+            )
 
             // Details Section
             DetailleSection(
-                modifier=modifierWithDefinedPadding,
+                modifier = modifierWithDefinedPadding,
                 showDetailsExpanded = showDetailsExpanded,
                 produit = produit,
                 updateProduct = ::updateProduct

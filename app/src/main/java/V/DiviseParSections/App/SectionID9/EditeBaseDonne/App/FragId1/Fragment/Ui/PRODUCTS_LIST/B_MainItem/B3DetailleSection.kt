@@ -92,7 +92,7 @@ private fun CardGauchePrixVentEtBClient(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             // Section header
@@ -161,7 +161,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             // Section header

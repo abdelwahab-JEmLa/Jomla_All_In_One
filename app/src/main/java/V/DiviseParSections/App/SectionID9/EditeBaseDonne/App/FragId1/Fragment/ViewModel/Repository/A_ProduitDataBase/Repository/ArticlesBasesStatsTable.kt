@@ -17,6 +17,7 @@ data class ArticlesBasesStatsTable(
 
     //S P Ids
     var idParentCategorie: Long? = null,
+
     var positionDonSonCesFrereCategorieProduits: Int = 0,
 
     // Section InfosDeBase
