@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.UnitEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
@@ -50,14 +51,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
-    onUpdate: (ArticlesBasesStatsTable) -> Unit = {},
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
-    val aProduitdatabasecomposerepositorypj17 =viewModel.a_ProduitDataBaseComposeRepositoryPJ17
-
     var showDeleteDialog by remember { mutableStateOf(false) }
-
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
         aProduitdatabasecomposerepositorypj17
