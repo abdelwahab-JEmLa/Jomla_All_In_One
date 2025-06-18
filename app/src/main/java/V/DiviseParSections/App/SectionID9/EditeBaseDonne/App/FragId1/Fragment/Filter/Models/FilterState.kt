@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models
 
 data class FilterState(
-    val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,     //<--
-    //TODO(1): ajout ca au filterr et il filter les prodit ou !cUnNeveauArrivage 
+    val hideQuiNeSontPas_cUnNeveauArrivage: Boolean = false,
     val hideNonDispo: Boolean = false,
     val hideDispoOnly: Boolean = false,
     val hidePetiteProbability: Boolean = false,

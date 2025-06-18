@@ -21,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -31,6 +33,8 @@ fun ProductItem(
     produit: ArticlesBasesStatsTable,
     uiState: PRODUCTS_LIST_ViewModel.UiState,
     shouldHideQuickInfoCards: Boolean,
+    onNextField: (() -> Unit)? = null,
+    focusRequester: FocusRequester? = null
 ) {
     val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -114,7 +118,8 @@ fun ProductItem(
 
     Card(
         modifier = modifierWithDefinedPadding
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .let { if (focusRequester != null) it.focusRequester(focusRequester) else it },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -150,11 +155,12 @@ fun ProductItem(
 
             // Details Section
             DetailleSection(
-                shouldHideQuickInfoCards=shouldHideQuickInfoCards,
+                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 modifier = modifierWithDefinedPadding,
                 showDetailsExpanded = uiState.showDetailsExpanded,
                 produit = produit,
-                updateProduct = ::updateProduct
+                updateProduct = ::updateProduct,
+                onNextField = onNextField
             )
         }
     }
