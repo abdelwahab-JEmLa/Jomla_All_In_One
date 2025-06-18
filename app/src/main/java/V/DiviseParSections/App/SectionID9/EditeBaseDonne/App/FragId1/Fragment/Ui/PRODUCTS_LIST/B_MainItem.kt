@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,8 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AlertDialog
@@ -56,11 +58,13 @@ fun ProductItem(
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showNameEditor by remember { mutableStateOf(false) }
+    var showDetailsExpanded by remember { mutableStateOf(false) }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
         // Calculer automatiquement le prix de vente unitaire basé sur prix de vente et prix d'achat
         val finalProduct = if (updatedProduct.nombreUniteInt > 0) {
-            val prixVenteUnitaire = kotlin.math.round((updatedProduct.prixVent / updatedProduct.nombreUniteInt) * 100.0) / 100.0
+            val prixVenteUnitaire =
+                kotlin.math.round((updatedProduct.prixVent / updatedProduct.nombreUniteInt) * 100.0) / 100.0
             updatedProduct.copy(clientPrixVentUnite = prixVenteUnitaire)
         } else {
             updatedProduct.copy(clientPrixVentUnite = 0.0)
@@ -134,201 +138,248 @@ fun ProductItem(
     }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        shape = RoundedCornerShape(16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
+            // Header Section with Image, Name, Status and Delete
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
             ) {
-                // Image with camera
-                Box(modifier = Modifier.size(100.dp)) {
-                    Surface(
-                        modifier = Modifier.size(100.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                    ) {
-                        A_GlideDisplayImageByKeyId_Proto_5(
-                            product = produit,
-                            produitVID = produit.id,
-                            refreshImage = produit.actualiseSonImageTest2,
-                            size = 100.dp,
-                        )
-                    }
-                    ProductImageCaptureButton(
-                        product = produit,
-                        onImageCaptured = ::updateProduct,
-                        modifier = Modifier.align(Alignment.TopEnd),
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Product info with key metrics at top
-                Column(modifier = Modifier.weight(1f)) {
-                    val s = if (false) "id>${produit.id}" else ""
-
-                    // Clickable product name that opens StringEditor
-                    TextButton(
-                        onClick = { showNameEditor = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    ) {
-                        Text(
-                            text = " ${produit.nom}$s",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    if (produit.nomArab.isNotEmpty()) {
-                        Text(
-                            text = produit.nomArab,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Availability status
-                    Surface(
-                        modifier = Modifier.clip(RoundedCornerShape(20.dp)),
-                        color = when (produit.disponibilityEtates) {
-                            DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
-                            DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
-                            DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
-                        }
-                    ) {
-                        Text(
-                            text = produit.disponibilityEtates.nomArabe,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = when (produit.disponibilityEtates) {
-                                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
-                                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
-                                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
-                            },
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                        )
-                    }
-                }
-
-                // Delete button in top-right corner
-                IconButton(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier.padding(start = 8.dp),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Supprimer le produit",
-                        modifier = Modifier.size(20.dp)
-                    )
+                    // Product Image with Camera Overlay
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            shadowElevation = 4.dp
+                        ) {
+                            A_GlideDisplayImageByKeyId_Proto_5(
+                                product = produit,
+                                produitVID = produit.id,
+                                refreshImage = produit.actualiseSonImageTest2,
+                                size = 80.dp,
+                            )
+                        }
+
+                        // Camera button overlay
+                        ProductImageCaptureButton(
+                            product = produit,
+                            onImageCaptured = ::updateProduct,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(24.dp),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Product Name and Status
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        // Clickable Product Name
+                        Surface(
+                            onClick = { showNameEditor = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                        ) {
+                            Text(
+                                text = produit.nom,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(12.dp),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        if (produit.nomArab.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = produit.nomArab,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Availability Status Badge
+                        Surface(
+                            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                            color = when (produit.disponibilityEtates) {
+                                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
+                                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
+                                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
+                            },
+                            shadowElevation = 2.dp
+                        ) {
+                            Text(
+                                text = produit.disponibilityEtates.nomArabe,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                color = when (produit.disponibilityEtates) {
+                                    DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
+                                    DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                                },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
+
+                    // Delete Button
+                    IconButton(
+                        onClick = { showDeleteDialog = true },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Supprimer le produit",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            // Quick Info Section
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp)),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Prix et Calculs",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Prix de Vente
+                    QuickInfoCard(
+                        title = "Prix Vente",
+                        value = "${produit.prixVent} DA",
+                        icon = "💰",
+                        color = MaterialTheme.colorScheme.primary
                     )
 
-                    // Main prices and units
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Left column
-                        Column(modifier = Modifier.weight(1f)) {
+                    // Unités
+                    if (produit.nombreUniteInt > 0) {
+                        QuickInfoCard(
+                            title = "Unités",
+                            value = "${produit.nombreUniteInt}",
+                            icon = "📦",
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
 
-                            FilledTonalButton(
-                                onClick = {
-                                    val updatedProduct =
-                                        produit.copy(cachePrixVent = !produit.cachePrixVent)
-                                    updateProduct(updatedProduct)
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.filledTonalButtonColors(
-                                    containerColor = if (produit.cachePrixVent)
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                    contentColor = if (produit.cachePrixVent)
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = if (produit.cachePrixVent) Icons.Filled.Star else Icons.Outlined.Star,
-                                    contentDescription = "Toggle Cache Prix",
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = if (produit.cachePrixVent) "Prix Caché" else "Prix Visible",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
+                    // Bénéfice
+                    val benefice = produit.prixVent - produit.prixAchat
+                    if (benefice != 0.0) {
+                        QuickInfoCard(
+                            title = "Bénéfice",
+                            value = "${benefice} DA",
+                            icon = if (benefice > 0) "📈" else "📉",
+                            color = if (benefice > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
 
-                            PriceEditor(
-                                currentPrice = produit.prixVent,
-                                label = "Prix Vente Total",
-                                onPriceUpdate = { newPrix ->
-                                    updateProduct(produit.copy(prixVent = newPrix))
-                                },
-                                textColor = MaterialTheme.colorScheme.primary
-                            )
+            // Expandable Details Section
+            FilledTonalButton(
+                onClick = { showDetailsExpanded = !showDetailsExpanded },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = if (showDetailsExpanded) "Masquer les détails" else "Afficher les détails",
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = if (showDetailsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
 
-                            // Prix unitaire de vente directement sous prix total
-                            if (produit.nombreUniteInt > 0) {
-                                val prixUnitVente =
-                                    kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+            // Detailed Editing Section (Expandable)
+            if (showDetailsExpanded) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        // Prix Section
+                        Text(
+                            text = "💰 Prix et Calculs",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Left column
+                            Column(modifier = Modifier.weight(1f)) {
                                 PriceEditor(
-                                    currentPrice = prixUnitVente,
-                                    label = "Vente/unité",
-                                    onPriceUpdate = { newPrixUnit ->
-                                        val newPrixVent = newPrixUnit * produit.nombreUniteInt
-                                        updateProduct(produit.copy(prixVent = newPrixVent))
+                                    currentPrice = produit.prixVent,
+                                    label = "Prix Vente Total",
+                                    onPriceUpdate = { newPrix ->
+                                        updateProduct(produit.copy(prixVent = newPrix))
                                     },
-                                    textColor = MaterialTheme.colorScheme.secondary
+                                    textColor = MaterialTheme.colorScheme.primary
                                 )
-                            }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                if (produit.nombreUniteInt > 0) {
+                                    val prixUnitVente =
+                                        kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+                                    PriceEditor(
+                                        currentPrice = prixUnitVente,
+                                        label = "Vente/unité",
+                                        onPriceUpdate = { newPrixUnit ->
+                                            val newPrixVent = newPrixUnit * produit.nombreUniteInt
+                                            updateProduct(produit.copy(prixVent = newPrixVent))
+                                        },
+                                        textColor = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
 
-                            // Prix Achat with Quick Update Button
-                            Column {
                                 PriceEditor(
                                     currentPrice = produit.prixAchat,
                                     label = "Prix Achat Total",
@@ -342,153 +393,145 @@ fun ProductItem(
                                     showOnlyWhenPositive = true,
                                     textColor = MaterialTheme.colorScheme.tertiary
                                 )
+                            }
 
-                                // Prix unitaire d'achat directement sous prix total
+                            // Right column
+                            Column(modifier = Modifier.weight(1f)) {
+                                UnitEditor(
+                                    currentUnits = produit.nombreUniteInt,
+                                    label = "Nombre Unités",
+                                    onUnitsUpdate = { newUnits ->
+                                        updateProduct(produit.copy(nombreUniteInt = newUnits))
+                                    }
+                                )
+
                                 if (produit.nombreUniteInt > 0) {
-                                    val prixUnitAchat =
-                                        kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
                                     PriceEditor(
-                                        currentPrice = prixUnitAchat,
-                                        label = "Achat/unité",
-                                        onPriceUpdate = { newPrixAchatUnit ->
-                                            val newPrixAchat = newPrixAchatUnit * produit.nombreUniteInt
-                                            updateProduct(produit.copy(prixAchat = newPrixAchat))
+                                        currentPrice = produit.clientPrixVentUnite,
+                                        label = "Prix Client/unité",
+                                        onPriceUpdate = { newClientPrixUnite ->
+                                            updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
                                         },
-                                        showOnlyWhenPositive = true,
-                                        textColor = MaterialTheme.colorScheme.tertiary
+                                        textColor = MaterialTheme.colorScheme.inversePrimary
                                     )
                                 }
 
-                                // Quick Update Button for Prix Achat
-                                Spacer(modifier = Modifier.height(4.dp))
-                                FilledTonalButton(
-                                    onClick = {
-                                        updateProduct(
-                                            produit.copy(
-                                                prixAchat = 0.1,
-                                                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
-                                            )
-                                        )
+                                val benefice = produit.prixVent - produit.prixAchat
+                                PriceEditor(
+                                    currentPrice = benefice,
+                                    label = "Bénéfice Total",
+                                    onPriceUpdate = { newBenefice ->
+                                        val newPrixVent = produit.prixAchat + newBenefice
+                                        updateProduct(produit.copy(prixVent = newPrixVent))
                                     },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Ajouter 0.1 DA",
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "+0.1 DA",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
+                                    textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.error
+                                )
                             }
                         }
 
-                        // Right column
-                        Column(modifier = Modifier.weight(1f)) {
-                            UnitEditor(
-                                currentUnits = produit.nombreUniteInt,
-                                label = "Nombre Unités",
-                                onUnitsUpdate = { newUnits ->
-                                    updateProduct(produit.copy(nombreUniteInt = newUnits))
-                                }
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            val benefice = produit.prixVent - produit.prixAchat
-                            PriceEditor(
-                                currentPrice = benefice,
-                                label = "Bénéfice Total",
-                                onPriceUpdate = { newBenefice ->
-                                    val newPrixVent = produit.prixAchat + newBenefice
-                                    updateProduct(produit.copy(prixVent = newPrixVent))
-                                },
-                                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-
-                    // Prix client unitaire seulement (si nécessaire)
-                    if (produit.nombreUniteInt > 0) {
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Prix client unitaire
-                        PriceEditor(
-                            currentPrice = produit.clientPrixVentUnite,
-                            label = "Prix Client/unité",
-                            onPriceUpdate = { newClientPrixUnite ->
-                                updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
-                            },
-                            textColor = MaterialTheme.colorScheme.inversePrimary,
-                            additionalInfo = {
-                                val totalClientPrice =
-                                    produit.clientPrixVentUnite * produit.nombreUniteInt
-                                if (totalClientPrice > 0) {
-                                    Surface(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 4.dp),
-                                        color = MaterialTheme.colorScheme.primaryContainer.copy(
-                                            alpha = 0.3f
-                                        ),
-                                        shape = RoundedCornerShape(6.dp)
-                                    ) {
-                                        Text(
-                                            text = "💰 Total Client: $totalClientPrice DA",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            fontWeight = FontWeight.SemiBold,
-                                            modifier = Modifier.padding(8.dp)
-                                        )
-                                    }
-                                }
+                        // Action Buttons
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            FilledTonalButton(
+                                onClick = {
+                                    val updatedProduct =
+                                        produit.copy(cachePrixVent = !produit.cachePrixVent)
+                                    updateProduct(updatedProduct)
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = if (produit.cachePrixVent)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = if (produit.cachePrixVent) Icons.Filled.Star else Icons.Outlined.Star,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = if (produit.cachePrixVent) "Prix Caché" else "Prix Visible",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
-                        )
+
+                            FilledTonalButton(
+                                onClick = {
+                                    val updatedProduct =
+                                        produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
+                                    updateProduct(updatedProduct)
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = if (produit.heldPrioriteDemandAuGrossist)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = if (produit.heldPrioriteDemandAuGrossist) Icons.Filled.Star else Icons.Outlined.Star,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Priorité",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(16.dp))
-            FilledTonalButton(
-                onClick = {
-                    val updatedProduct =
-                        produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                    updateProduct(updatedProduct)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = if (produit.heldPrioriteDemandAuGrossist)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (produit.heldPrioriteDemandAuGrossist)
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            ) {
-                Icon(
-                    imageVector = if (produit.heldPrioriteDemandAuGrossist) Icons.Filled.Star else Icons.Outlined.Star,
-                    contentDescription = "Toggle Priority",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (produit.heldPrioriteDemandAuGrossist)
-                        "Priorité Grossiste: Activée"
-                    else
-                        "Priorité Grossiste: Désactivée",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+@Composable
+private fun QuickInfoCard(
+    title: String,
+    value: String,
+    icon: String,
+    color: androidx.compose.ui.graphics.Color
+) {
+    Surface(
+        modifier = Modifier.width(100.dp),
+        color = color.copy(alpha = 0.1f),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = icon,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = color,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
