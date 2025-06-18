@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A.Model.AvJuin3.Proto.E_JetPackAncienProduitDabase
+import Z_CodePartageEntreApps.Modules.CameraHandler.CameraFABProtoJuin3
 import android.util.Log
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -233,6 +234,8 @@ fun OptionsFragmentButtons(
                 horizontalAlignment = Alignment.End
             ) {
                 if (showButtons) {
+                    CameraFABProtoJuin3()
+
                     ButtonId6(
                         showLabels = showLabels,
                     )
