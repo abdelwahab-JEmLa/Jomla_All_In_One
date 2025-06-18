@@ -169,21 +169,18 @@ private fun CardDroitPrixAchatEtBenVendeur(
                 color = MaterialTheme.colorScheme.tertiary
             )
 
-            // Total purchase price
+
+            // Seller profit calculation
+            val benefice = produit.prixVent - produit.prixAchat
             PriceEditor(
-                currentPrice = produit.prixAchat,
-                label = "Total",
-                onPriceUpdate = { newPrix ->
-                    val newPrd = produit.copy(
-                        prixAchat = newPrix,
-                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
-                    )
-                    updateProduct(newPrd)
+                currentPrice = benefice,
+                label = "Profit",
+                onPriceUpdate = { newBenefice ->
+                    val newPrixVent = produit.prixAchat + newBenefice
+                    updateProduct(produit.copy(prixVent = newPrixVent))
                 },
-                showOnlyWhenPositive = true,
-                textColor = MaterialTheme.colorScheme.tertiary,
-                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
-                onNextField = onNextField
+                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.error,
             )
 
             // Unit purchase price (if units > 0)
@@ -203,27 +200,25 @@ private fun CardDroitPrixAchatEtBenVendeur(
                         )
                     },
                     textColor = MaterialTheme.colorScheme.secondary,
-                    shouldHideQuickInfoCards = shouldHideQuickInfoCards,
-                    onNextField = onNextField
                 )
             }
 
-            if (produit.clientPrixVentUnite > 0.0) {
-                // Seller profit calculation
-                val benefice = produit.prixVent - produit.prixAchat
-                PriceEditor(
-                    currentPrice = benefice,
-                    label = "Profit",
-                    onPriceUpdate = { newBenefice ->
-                        val newPrixVent = produit.prixAchat + newBenefice
-                        updateProduct(produit.copy(prixVent = newPrixVent))
-                    },
-                    textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.error,
-                    shouldHideQuickInfoCards = shouldHideQuickInfoCards,
-                    onNextField = onNextField
-                )
-            }
+            // Total purchase price
+            PriceEditor(
+                currentPrice = produit.prixAchat,
+                label = "Total",
+                onPriceUpdate = { newPrix ->
+                    val newPrd = produit.copy(
+                        prixAchat = newPrix,
+                        prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                    )
+                    updateProduct(newPrd)
+                },
+                showOnlyWhenPositive = true,
+                textColor = MaterialTheme.colorScheme.tertiary,
+                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                onNextField = onNextField
+            )
         }
     }
 }
