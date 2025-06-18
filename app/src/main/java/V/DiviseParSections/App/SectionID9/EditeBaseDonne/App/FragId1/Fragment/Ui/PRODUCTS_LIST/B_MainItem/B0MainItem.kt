@@ -30,13 +30,13 @@ fun ProductItem(
     mainComposRepository: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
     uiState: PRODUCTS_LIST_ViewModel.UiState,
+    shouldHideQuickInfoCards: Boolean,
 ) {
     val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showNameEditor by remember { mutableStateOf(false) }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
-        // Calculer automatiquement le prix de vente unitaire basé sur prix de vente et prix d'achat
         val finalProduct = if (updatedProduct.nombreUniteInt > 0) {
             val prixVenteUnitaire =
                 kotlin.math.round((updatedProduct.prixVent / updatedProduct.nombreUniteInt) * 100.0) / 100.0
@@ -132,22 +132,25 @@ fun ProductItem(
                 updateProduct = ::updateProduct
             )
 
-            // Action Buttons - Fixed parameter passing
-            ActionButtons(
-                modifier = modifierWithDefinedPadding,
-                produit = produit,
-                updateProduct = ::updateProduct
-            )
+            if (!shouldHideQuickInfoCards) {
+                // Action Buttons - Fixed parameter passing
+                ActionButtons(
+                    modifier = modifierWithDefinedPadding,
+                    produit = produit,
+                    updateProduct = ::updateProduct
+                )
+            }
 
-            // Quick Info Section
             QuickInfoSection(
-                modifier=modifier,
-                produit=produit,
-                updateProduct = ::updateProduct
+                shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                modifier = modifier,
+                produit = produit,
+                updateProduct = ::updateProduct,
             )
 
             // Details Section
             DetailleSection(
+                shouldHideQuickInfoCards=shouldHideQuickInfoCards,
                 modifier = modifierWithDefinedPadding,
                 showDetailsExpanded = uiState.showDetailsExpanded,
                 produit = produit,

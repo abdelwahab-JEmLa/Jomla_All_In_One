@@ -25,7 +25,8 @@ fun A_MainFilter(
     modifier: Modifier = Modifier
 ) {
     val hasActiveFilters =
-        filterState.hideNonDispo ||
+        filterState.hideQuiNeSontPas_cUnNeveauArrivage ||
+                filterState.hideNonDispo ||
                 filterState.hideDispoOnly ||
                 filterState.hidePetiteProbability ||
                 filterState.hidePrixAchatZero ||
@@ -67,6 +68,13 @@ fun A_MainFilter(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
+                        FilterChip(
+                            label = "Masquer Sans Niveau Arrivage",
+                            onRemove = { onFilterChanged(filterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = false)) }
+                        )
+                    }
+
                     if (filterState.hideNonDispo) {
                         FilterChip(
                             label = "Masquer Non Dispo",

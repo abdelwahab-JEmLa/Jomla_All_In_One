@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.ProductItem
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
@@ -20,8 +21,11 @@ fun EditeInfosMainList(
     filteredAndSortedProduitList: List<ArticlesBasesStatsTable>,
     aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
     viewModel: PRODUCTS_LIST_ViewModel = koinViewModel(),
+    filterState: FilterState,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val shouldHideQuickInfoCards = filterState.hideQuiNeSontPas_cUnNeveauArrivage
+
 
     LazyColumn(
         modifier = modifier,
@@ -32,6 +36,7 @@ fun EditeInfosMainList(
             key = { it.id }
         ) { produit ->
             ProductItem(
+                shouldHideQuickInfoCards=shouldHideQuickInfoCards,
                 uiState=uiState,
                 mainComposRepository=aProduitdatabasecomposerepositorypj17,
                 produit = produit

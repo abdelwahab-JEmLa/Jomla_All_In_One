@@ -14,7 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.math.round
@@ -22,6 +25,7 @@ import kotlin.math.round
 @Composable
 fun DetailleSection(
     modifier: Modifier,
+    shouldHideQuickInfoCards: Boolean,
     showDetailsExpanded: Boolean,
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
@@ -42,15 +46,18 @@ fun DetailleSection(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    // Left Card - Client Sales
-                    CardGauchePrixVentEtBClient(
-                        produit = produit,
-                        updateProduct = updateProduct,
-                        modifier = Modifier.weight(1f)
-                    )
-
+                    if (!shouldHideQuickInfoCards) {
+                        // Left Card - Client Sales
+                        CardGauchePrixVentEtBClient(
+                            shouldHideQuickInfoCards=shouldHideQuickInfoCards,
+                            produit = produit,
+                            updateProduct = updateProduct,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                     // Right Card - Purchase & Profit
                     CardDroitPrixAchatEtBenVendeur(
+                        shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                         produit = produit,
                         updateProduct = updateProduct,
                         modifier = Modifier.weight(1f)
@@ -71,7 +78,8 @@ fun DetailleSection(
 private fun CardGauchePrixVentEtBClient(
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shouldHideQuickInfoCards: Boolean
 ) {
     Card(
         modifier = modifier,
@@ -85,7 +93,6 @@ private fun CardGauchePrixVentEtBClient(
             modifier = Modifier.padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            // Section header
             Text(
                 text = "📊 Vente",
                 style = MaterialTheme.typography.labelMedium,
@@ -93,7 +100,6 @@ private fun CardGauchePrixVentEtBClient(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // Total sale price
             PriceEditor(
                 currentPrice = produit.prixVent,
                 label = "Total",
@@ -141,8 +147,14 @@ private fun CardGauchePrixVentEtBClient(
 private fun CardDroitPrixAchatEtBenVendeur(
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shouldHideQuickInfoCards: Boolean
 ) {
+    // Create focus requesters for field navigation
+    val focusRequester1 = remember { FocusRequester() }
+    val focusRequester2 = remember { FocusRequester() }
+    val focusRequester3 = remember { FocusRequester() }
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -176,6 +188,13 @@ private fun CardDroitPrixAchatEtBenVendeur(
                 },
                 showOnlyWhenPositive = true,
                 textColor = MaterialTheme.colorScheme.tertiary
+                , shouldHideQuickInfoCards = shouldHideQuickInfoCards,
+                onNextField = if (shouldHideQuickInfoCards && produit.nombreUniteInt > 1) {
+                    { focusRequester2.requestFocus() }
+                } else if (shouldHideQuickInfoCards) {
+                    { focusRequester3.requestFocus() }
+                } else null,
+                modifier = if (shouldHideQuickInfoCards) Modifier.focusRequester(focusRequester1) else Modifier
             )
 
             // Unit purchase price (if units > 0)

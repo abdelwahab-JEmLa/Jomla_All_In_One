@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Price Editor (only show if units > 0)
             if (produit.nombreUniteInt > 0) {
                 PriceEditor(
                     currentPrice = produit.clientPrixVentUnite,

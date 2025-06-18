@@ -37,7 +37,9 @@ fun PriceEditor(
     modifier: Modifier = Modifier,
     showOnlyWhenPositive: Boolean = false,
     additionalInfo: (@Composable () -> Unit)? = null,
-    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    shouldHideQuickInfoCards: Boolean = false,
+    onNextField: (() -> Unit)? = null // New parameter for navigation to next field
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var tempText by remember { mutableStateOf("") }
@@ -59,7 +61,13 @@ fun PriceEditor(
         onPriceUpdate(newPrice)
         isEditing = false
         tempText = ""
-        keyboardController?.hide()
+
+        if (shouldHideQuickInfoCards && onNextField != null) {
+            // Navigate to next field instead of hiding keyboard
+            onNextField()
+        } else {
+            keyboardController?.hide()
+        }
     }
 
     if (!showOnlyWhenPositive || currentPrice > 0 || isEditing) {
@@ -84,37 +92,77 @@ fun PriceEditor(
                         keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(onDone = { savePrice() }),
+                    keyboardActions = KeyboardActions(onDone = {
+                        savePrice()
+                        if (shouldHideQuickInfoCards && onNextField != null) {
+                            onNextField()
+                        }
+                    }),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     shape = RoundedCornerShape(12.dp)
                 )
             } else {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            isEditing = true
-                            tempText = ""
+                // Check if we should show outlined text field directly when shouldHideQuickInfoCards is true
+                if (shouldHideQuickInfoCards) {
+                    // Show outlined text field directly when shouldHideQuickInfoCards is true
+                    OutlinedTextField(
+                        value = tempText,
+                        onValueChange = { newValue ->
+                            val filtered = newValue.filter { char ->
+                                char.isDigit() || char == '.' || char == ','
+                            }
+                            val dotCount = filtered.count { it == '.' }
+                            val commaCount = filtered.count { it == ',' }
+                            if (dotCount <= 1 && commaCount <= 1 && (dotCount + commaCount) <= 1) {
+                                tempText = filtered
+                            }
                         },
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = textColor.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = "$currentPrice DA",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = textColor,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
+                        label = { Text("$label: $currentPrice DA") },
+                        placeholder = { Text("Nouveau prix") },
+                        suffix = { Text("DA") },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            savePrice()
+                            if (shouldHideQuickInfoCards && onNextField != null) {
+                                onNextField()
+                            }
+                        }),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                } else {
+                    // Normal surface display mode
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                isEditing = true
+                                tempText = ""
+                            },
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = textColor.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = "$currentPrice DA",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = textColor,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
                     }
                 }
             }

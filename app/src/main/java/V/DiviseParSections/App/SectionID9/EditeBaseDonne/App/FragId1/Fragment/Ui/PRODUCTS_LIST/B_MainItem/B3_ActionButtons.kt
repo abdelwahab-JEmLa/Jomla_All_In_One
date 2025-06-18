@@ -32,23 +32,6 @@ fun ActionButtons(
         modifier = modifier
             .fillMaxWidth()
     ) {
-      /*  // Expandable Details Button
-        FilledTonalButton(
-            onClick = { onShowDetailsExpandedChange(!showDetailsExpanded) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = if (showDetailsExpanded) "Masquer les détails" else "Afficher les détails",
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = if (showDetailsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-        }         */
 
         // Row for Priority and other action buttons
         Row(
@@ -56,6 +39,7 @@ fun ActionButtons(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+
             // Priority Toggle Button
             FilledTonalButton(
                 onClick = {

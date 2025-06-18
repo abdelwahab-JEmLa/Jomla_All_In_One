@@ -161,6 +161,28 @@ fun FilterDropdownMenu(
 
             item {
                 Text(
+                    text = "Filtres de niveau d'arrivage",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits sans niveau d'arrivage",
+                    checked = filterState.hideQuiNeSontPas_cUnNeveauArrivage,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = it))
+                    }
+                )
+            }
+
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            item {
+                Text(
                     text = "Filtres de disponibilité",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
@@ -267,6 +289,7 @@ fun FilterDropdownMenu(
                         onClick = {
                             onFilterChanged(
                                 FilterState(
+                                    hideQuiNeSontPas_cUnNeveauArrivage = true,
                                     hideNonDispo = true,
                                     hideDispoOnly = true,
                                     hidePetiteProbability = true,

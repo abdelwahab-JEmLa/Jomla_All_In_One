@@ -61,7 +61,6 @@ fun OptionsFragmentButtons(
     onShowBulkMoveDialog: () -> Unit = {},
     selectedCategories: Set<Long> = emptySet(),
     onCategoriesUpdated: (List<CategoriesTabelle>) -> Unit = {}
-
 ) {
     var showButtons by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }

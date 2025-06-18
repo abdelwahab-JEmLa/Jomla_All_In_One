@@ -77,6 +77,8 @@ fun CameraFABProtoJuin3(
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
+                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
+                                cUnNeveauArrivage = true,
                             )
 
                             onProductCreated(updatedProduct)

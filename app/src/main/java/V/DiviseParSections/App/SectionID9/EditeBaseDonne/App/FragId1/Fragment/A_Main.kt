@@ -87,6 +87,10 @@ fun EditeBaseDonneMainScreenIdS9(
                 }
             }
 
+            if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
+                filtered = filtered.filter { it.cUnNeveauArrivage }
+            }
+
             if (filterState.hideNonDispo) {
                 filtered = filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
             }
@@ -143,7 +147,10 @@ fun EditeBaseDonneMainScreenIdS9(
                         if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                             AppBar(
                                 onCreateProductAndCapture = { createTestProduct() },
-                                onProductCreated = { viewModel.addOrUpdateProduit(it) },
+                                onProductCreated = {
+                                    viewModel.addOrUpdateProduit(it)
+
+                                                   },
                                 currentMode = currentMode,
                                 onModeChanged = { currentMode = it },
                                 filterState = filterState,
@@ -183,6 +190,7 @@ fun EditeBaseDonneMainScreenIdS9(
                             }
                             ModeAffichage.PRODUCTS_LIST -> {
                                 EditeInfosMainList(
+                                    filterState=filterState,
                                     modifier = Modifier.fillMaxSize(),
                                     filteredAndSortedProduitList=filteredAndSortedProduitList,
                                     aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17

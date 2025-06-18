@@ -22,6 +22,7 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosDeBase
     var nom: String = "",
+    val cUnNeveauArrivage: Boolean = false,
 
     var nombreUniteInt: Int = 0,
     var nombreProduitDonSonCarton: Int = 0,

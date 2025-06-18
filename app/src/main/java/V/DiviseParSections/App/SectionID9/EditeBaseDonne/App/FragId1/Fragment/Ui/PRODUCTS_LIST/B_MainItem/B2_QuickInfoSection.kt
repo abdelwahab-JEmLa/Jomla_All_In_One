@@ -25,7 +25,8 @@ import androidx.compose.ui.unit.dp
 fun QuickInfoSection(
     modifier: Modifier,
     produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit
+    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    shouldHideQuickInfoCards: Boolean,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -44,17 +45,19 @@ fun QuickInfoSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Prix de Vente
-                QuickInfoCard(
-                    title = "Prix Vente",
-                    value = "${produit.prixVent} DA",
-                    icon = "💰",
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f)
-                )
+                // Prix de Vente - Hide when filter is active
+                if (!shouldHideQuickInfoCards) {
+                    QuickInfoCard(
+                        title = "Prix Vente",
+                        value = "${produit.prixVent} DA",
+                        icon = "💰",
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
-                // Bénéfice (only show if not zero)
-                if (benefice != 0.0) {
+                // Bénéfice (only show if not zero) - Hide when filter is active
+                if (benefice != 0.0 && !shouldHideQuickInfoCards) {
                     QuickInfoCard(
                         title = "Bénéfice",
                         value = "$benefice DA",
@@ -64,7 +67,7 @@ fun QuickInfoSection(
                     )
                 }
 
-                // Combined Visibility and Last Update Card
+                // Combined Visibility and Last Update Card - Always show this one
                 Surface(
                     modifier = Modifier.weight(1f),
                     color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(alpha = 0.1f),
