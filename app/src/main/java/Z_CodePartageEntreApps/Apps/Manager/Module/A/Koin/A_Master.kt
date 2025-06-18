@@ -20,6 +20,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.C_CategoriesCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
@@ -102,7 +103,9 @@ val centralDataBasesModule = module {
 }
 
 val composRepositorysModule = module {
-    single { A_CentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { A_CentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get()) }
+    single { A_GroupeValuesA_ProduitsToB_Categories(get(),get(),) }
+
     single { A_ProduitDataBaseComposeRepositoryPJ17(get()) }
     single { B_ClientsStateCompoRepository(get()) }
     single { C_CategoriesCompoRepository(get()) }

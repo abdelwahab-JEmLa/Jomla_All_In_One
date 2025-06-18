@@ -1,11 +1,9 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateData
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.addOrUpdateDatasList
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +22,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
+    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -160,11 +159,13 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
-        masterRepositorys.repoA_ProduitInfos.addOrUpdateData(data)
+        a_ProduitDataBaseComposeRepositoryPJ17.addOrUpdateData(data)
     }
 
     fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) {
-        masterRepositorys.repoA_ProduitInfos.addOrUpdateDatasList(datas)
+        datas.forEach {
+            addOrUpdateProduit(it)
+        }
     }
 
     fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {

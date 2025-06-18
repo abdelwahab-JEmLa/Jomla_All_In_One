@@ -51,6 +51,11 @@ fun EditeBaseDonneMainScreenIdS9(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val a_CentralDatasHandlerProtoJuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
+
+    val groupeOrientationToRepositorysA_ProduitsToB_Categories =
+        a_CentralDatasHandlerProtoJuin9
+        .a_GroupeValuesA_ProduitsToB_Categories
+
     val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = uiState.a_ProduitInfosList
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
@@ -67,7 +72,7 @@ fun EditeBaseDonneMainScreenIdS9(
     }
 
     val filteredAndSortedProduitList by remember(produitList, filterState, categoriesList,
-        a_CentralDatasHandlerProtoJuin9.categoryGroupedSortedProducts) {
+        groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts) {
         derivedStateOf {
             var filtered = produitList
 
@@ -100,7 +105,7 @@ fun EditeBaseDonneMainScreenIdS9(
                 filterState.enableCategoryGrouping -> {
                     when (filterState.sortOrder) {
                         SortOrder.CATEGORY_GROUPED -> {
-                            a_CentralDatasHandlerProtoJuin9.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
+                            groupeOrientationToRepositorysA_ProduitsToB_Categories.categoryGroupedSortedProducts.filter { product: ArticlesBasesStatsTable ->
                                 filtered.contains(product)
                             }
                         }

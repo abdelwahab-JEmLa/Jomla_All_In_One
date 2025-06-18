@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -26,6 +25,9 @@ class A_CentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
     val appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
 
+    val a_GroupeValuesA_ProduitsToB_Categories:
+    A_GroupeValuesA_ProduitsToB_Categories,
+
     val a_ProduitDataBaseComposeRepositoryPJ17: A_ProduitDataBaseComposeRepositoryPJ17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -40,48 +42,6 @@ class A_CentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    private val categoriesList: List<CategoriesTabelle>
-        get() = b3CategoriesCompoRepository.datasValue
-
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
-        val categoryMap = categoriesList.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
-
-        val (regularProducts, orphanProducts) = a_ProduitDataBaseComposeRepositoryPJ17.datasValue.partition { product ->
-            val categoryId = product.idParentCategorie ?: 0L
-            val category = categoryMap[categoryId]
-            val catalogueId = category?.catalogueParentId ?: 4L
-
-            category != null &&
-                    catalogueId != 4L &&
-                    !category.nom.equals("NONE", ignoreCase = true)
-        }
-
-        val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                val catalogueId = category?.catalogueParentId ?: 4L
-                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
-            }.thenBy { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
-                    ?: "ZZZZZ_NO_CATEGORY"
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        sortedRegular + sortedOrphan
-    }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
@@ -133,3 +93,4 @@ class A_CentralCompoRepositoryProtoJuin9(
         }
     }
 }
+
