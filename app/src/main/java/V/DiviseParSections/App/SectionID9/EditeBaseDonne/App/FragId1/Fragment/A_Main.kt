@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterState
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.MainFilter
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.SortOrder
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.A_MainFilter
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.SortOrder
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test.createTestProduct
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.AppBar.AppBar
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.AfficheElements
@@ -52,7 +52,7 @@ fun EditeBaseDonneMainScreenIdS9(
 
     val groupeOrientationToRepositorysA_ProduitsToB_Categories =
         a_CentralDatasHandlerProtoJuin9
-        .a_GroupeValuesA_ProduitsToB_Categories
+            .a_GroupeValuesA_ProduitsToB_Categories
 
     val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
     val produitList = viewModel.a_ProduitDataBaseComposeRepositoryPJ17.datasValue
@@ -98,6 +98,12 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
+            if (filterState.hideHeldPrioriteDemandAuGrossist) {
+                filtered = filtered.filter { !it.heldPrioriteDemandAuGrossist }
+            }
+            if (filterState.hideNonHeldPrioriteDemandAuGrossist) {
+                filtered = filtered.filter { it.heldPrioriteDemandAuGrossist }
+            }
 
             when {
                 filterState.enableCategoryGrouping -> {
@@ -138,7 +144,7 @@ fun EditeBaseDonneMainScreenIdS9(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    MainFilter(
+                    A_MainFilter(
                         filterState = filterState,
                         onFilterChanged = { filterState = it },
                         totalCount = produitList.size,

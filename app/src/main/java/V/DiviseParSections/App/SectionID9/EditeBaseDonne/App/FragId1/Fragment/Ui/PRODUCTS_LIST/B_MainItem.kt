@@ -423,7 +423,7 @@ fun ProductItem(
                                         shape = RoundedCornerShape(6.dp)
                                     ) {
                                         Text(
-                                            text = "💰 Total Client: ${totalClientPrice} DA",
+                                            text = "💰 Total Client: $totalClientPrice DA",
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                                             fontWeight = FontWeight.SemiBold,
