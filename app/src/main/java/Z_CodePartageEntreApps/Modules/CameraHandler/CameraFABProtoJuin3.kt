@@ -76,7 +76,7 @@ fun CameraFABProtoJuin3(
                         }
 
                         withContext(Dispatchers.Main) {
-                            val bsonObjectId = pendingProduct!!.bsonObjectId.takeLast(4)
+                            val bsonObjectId = pendingProduct!!.bsonObjectId.takeLast(4).uppercase()
                             val catalogue = activeCatalogue.nom
 
                             val updatedProduct = product.copy(
