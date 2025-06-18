@@ -437,13 +437,14 @@ fun ProductItem(
                 }
             }
 
-            // Priority Toggle Button - Added at the bottom
             Spacer(modifier = Modifier.height(16.dp))
             FilledTonalButton(
                 onClick = {
                     val updatedProduct = produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                    viewModel.addOrUpdateProduit(updatedProduct)
-                    updateProduct(updatedProduct)
+                    viewModel
+                        .a_CentralDatasHandlerProtoJuin9
+                        .a_ProduitDataBaseComposeRepositoryPJ17
+                        .addOrUpdateData(updatedProduct)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
