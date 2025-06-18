@@ -70,7 +70,7 @@ fun A_MainFilter(
                 ) {
                     if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
                         FilterChip(
-                            label = "Masquer Sans Niveau Arrivage",
+                            label = "Masquer Sans Neveau Arrivage",
                             onRemove = { onFilterChanged(filterState.copy(hideQuiNeSontPas_cUnNeveauArrivage = false)) }
                         )
                     }
