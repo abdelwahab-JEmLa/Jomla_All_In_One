@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.UnitEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
@@ -18,8 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,130 +28,186 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun HeaderSection(
+fun HeaderSection(
     produit: ArticlesBasesStatsTable,
     onShowNameEditorChange: (Boolean) -> Unit,
     onShowDeleteDialogChange: (Boolean) -> Unit,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
-            // Product Image with Camera Overlay
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 4.dp
-                ) {
-                    A_GlideDisplayImageByKeyId_Proto_5(
-                        product = produit,
-                        produitVID = produit.id,
-                        refreshImage = produit.actualiseSonImageTest2,
-                        size = 80.dp,
-                    )
-                }
-
-                // Camera button overlay
-                ProductImageCaptureButton(
-                    product = produit,
-                    onImageCaptured = updateProduct,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(24.dp),
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Product Name and Status
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
-                // Clickable Product Name
-                Surface(
-                    onClick = { onShowNameEditorChange(true) },
+                // Top Row: Image and Product Info
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 48.dp), // Space for delete button
+                    verticalAlignment = Alignment.Top
+                ) {
+                    // Product Image with Camera Overlay
+                    Box(
+                        modifier = Modifier
+                            .size(90.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                    ) {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            shape = RoundedCornerShape(20.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            shadowElevation = 6.dp
+                        ) {
+                            A_GlideDisplayImageByKeyId_Proto_5(
+                                product = produit,
+                                produitVID = produit.id,
+                                refreshImage = produit.actualiseSonImageTest2,
+                                size = 90.dp,
+                            )
+                        }
+
+                        // Camera button overlay
+                        ProductImageCaptureButton(
+                            product = produit,
+                            onImageCaptured = updateProduct,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(28.dp),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Product Info Column
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        // Product Name (Primary)
+                        Surface(
+                            onClick = { onShowNameEditorChange(true) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                        ) {
+                            Text(
+                                text = produit.nom,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(16.dp),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = if (produit.nom.any { it.code > 127 }) TextAlign.End else TextAlign.Start
+                            )
+                        }
+
+                        // Arabic Name (if different and available)
+                        if (produit.nomArab.isNotEmpty() && produit.nomArab != produit.nom) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = produit.nomArab,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Availability Status Badge
+                        Surface(
+                            modifier = Modifier.clip(RoundedCornerShape(25.dp)),
+                            color = when (produit.disponibilityEtates) {
+                                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
+                                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
+                                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
+                            },
+                            shadowElevation = 3.dp
+                        ) {
+                            Text(
+                                text = produit.disponibilityEtates.nomArabe,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = when (produit.disponibilityEtates) {
+                                    DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
+                                    DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Price and Unit Editors Row
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = produit.nom,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(12.dp),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                    // Price Editor (only show if units > 0)
+                    if (produit.nombreUniteInt > 0) {
+                        PriceEditor(
+                            currentPrice = produit.clientPrixVentUnite,
+                            label = "Prix/unité",
+                            onPriceUpdate = { newClientPrixUnite ->
+                                updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
+                            },
+                            textColor = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(1f)
+                        )
 
-                if (produit.nomArab.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = produit.nomArab,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Availability Status Badge
-                Surface(
-                    modifier = Modifier.clip(RoundedCornerShape(20.dp)),
-                    color = when (produit.disponibilityEtates) {
-                        DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
-                        DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
-                        DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
-                    },
-                    shadowElevation = 2.dp
-                ) {
-                    Text(
-                        text = produit.disponibilityEtates.nomArabe,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = when (produit.disponibilityEtates) {
-                            DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
-                            DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
-                            DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                    // Unit Editor
+                    UnitEditor(
+                        currentUnits = produit.nombreUniteInt,
+                        label = "Unités",
+                        onUnitsUpdate = { newUnits ->
+                            updateProduct(produit.copy(nombreUniteInt = newUnits))
                         },
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
+        }
 
-            // Delete Button
-            IconButton(
-                onClick = { onShowDeleteDialogChange(true) },
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                )
+        // Floating Delete Button - positioned at top end
+        Surface(
+            onClick = { onShowDeleteDialogChange(true) },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(12.dp)
+                .size(40.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.errorContainer,
+            shadowElevation = 8.dp
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Supprimer le produit",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
         }

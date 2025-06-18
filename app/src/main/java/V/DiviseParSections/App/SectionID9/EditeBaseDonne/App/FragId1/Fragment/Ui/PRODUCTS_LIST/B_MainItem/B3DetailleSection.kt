@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.UnitEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -122,24 +121,9 @@ import kotlin.math.round
 
                     // Right column
                     Column(modifier = Modifier.weight(1f)) {
-                        UnitEditor(
-                            currentUnits = produit.nombreUniteInt,
-                            label = "Nombre Unités",
-                            onUnitsUpdate = { newUnits ->
-                                updateProduct(produit.copy(nombreUniteInt = newUnits))
-                            }
-                        )
 
-                        if (produit.nombreUniteInt > 0) {
-                            PriceEditor(
-                                currentPrice = produit.clientPrixVentUnite,
-                                label = "Prix Client/unité",
-                                onPriceUpdate = { newClientPrixUnite ->
-                                    updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
-                                },
-                                textColor = MaterialTheme.colorScheme.inversePrimary
-                            )
-                        }
+
+
 
                         val benefice = produit.prixVent - produit.prixAchat
                         PriceEditor(

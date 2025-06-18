@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun QuickInfoSection(produit: ArticlesBasesStatsTable) {
+fun QuickInfoSection(produit: ArticlesBasesStatsTable) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface
@@ -39,15 +39,6 @@ import androidx.compose.ui.unit.dp
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // Unités
-            if (produit.nombreUniteInt > 0) {
-                QuickInfoCard(
-                    title = "Unités",
-                    value = "${produit.nombreUniteInt}",
-                    icon = "📦",
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
 
             // Bénéfice
             val benefice = produit.prixVent - produit.prixAchat
@@ -62,6 +53,7 @@ import androidx.compose.ui.unit.dp
         }
     }
 }
+
 @Composable
 fun QuickInfoCard(
     title: String,
