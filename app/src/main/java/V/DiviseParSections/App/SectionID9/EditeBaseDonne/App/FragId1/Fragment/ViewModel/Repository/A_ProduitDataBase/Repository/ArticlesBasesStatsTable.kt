@@ -53,8 +53,8 @@ data class ArticlesBasesStatsTable(
 
     var nomArab: String = "",
     var autreNomDarticle: String? = null,
-    var couleur1: String? = null,
-    var idcolor1: Long = 0,
+    var couleur1: String? = "couleur1",
+    var idcolor1: Long = 1,
     var couleur2: String? = null,
     var idcolor2: Long = 0,
     var couleur3: String? = null,

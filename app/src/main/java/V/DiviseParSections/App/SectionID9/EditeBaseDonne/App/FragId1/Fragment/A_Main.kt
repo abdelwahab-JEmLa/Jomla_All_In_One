@@ -151,6 +151,8 @@ fun EditeBaseDonneMainScreenIdS9(
                     ) {
                         if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                             AppBar(
+                            //    onCreateProductAndCapture = { createTestProduct() },
+
                                 currentMode = currentMode,
                                 onModeChanged = { currentMode = it },
                                 filterState = filterState,
