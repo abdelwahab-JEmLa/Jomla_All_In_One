@@ -73,10 +73,9 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-
-                                    MainScreen()
-
-                            } else {}
+                                MainScreen()
+                            } else {
+                            }
                         }
                     }
                 }

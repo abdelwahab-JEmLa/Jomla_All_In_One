@@ -16,11 +16,13 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -47,6 +49,7 @@ private fun EditeBaseDonneMainScreenIdS9Prev() {
 fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
+    innerPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val a_CentralDatasHandlerProtoJuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
 
@@ -126,79 +129,85 @@ fun EditeBaseDonneMainScreenIdS9(
         if (prog < 1.0f) {
             LoadingScreen(prog)
         } else {
-            Box {
-                Column(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+            Surface(
+                modifier = modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier.padding(innerPadding)
                 ) {
-                    if (!maskedElements.contains(AfficheElements.APP_BAR)) {
-                        AppBar(
-                            onCreateProductAndCapture = { createTestProduct() },
-                            onProductCreated = { viewModel.addOrUpdateProduit(it) },
-                            currentMode = currentMode,
-                            onModeChanged = { currentMode = it },
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        if (!maskedElements.contains(AfficheElements.APP_BAR)) {
+                            AppBar(
+                                onCreateProductAndCapture = { createTestProduct() },
+                                onProductCreated = { viewModel.addOrUpdateProduit(it) },
+                                currentMode = currentMode,
+                                onModeChanged = { currentMode = it },
+                                filterState = filterState,
+                                onFilterChanged = { filterState = it },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+
+                        A_MainFilter(
                             filterState = filterState,
                             onFilterChanged = { filterState = it },
+                            totalCount = produitList.size,
+                            filteredCount = filteredAndSortedProduitList.size,
                             modifier = Modifier.fillMaxWidth()
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+
+                        when (currentMode) {
+                            ModeAffichage.CATEGORIES_LIST -> {
+                                EditeCategoriesMainList(
+                                    modifier = Modifier.fillMaxSize(),
+                                    viewModel = viewModel,
+                                    produitList = filteredAndSortedProduitList,
+                                    onProductCategoryChanged = { updatedProduct ->
+                                        viewModel.addOrUpdateProduit(updatedProduct)
+                                    },
+                                    selectedProducts = selectedProducts,
+                                    onProductSelectionToggle = { product ->
+                                        selectedProducts = selectedProducts.toggleProduct(product)
+                                    },
+                                    showBulkMoveDialog = showBulkMoveDialog,
+                                    onShowBulkMoveDialog = { show ->
+                                        showBulkMoveDialog = show
+                                        if (!show) selectedProducts = emptySet()
+                                    }
+                                )
+                            }
+                            ModeAffichage.PRODUCTS_LIST -> {
+                                EditeInfosMainList(
+                                    modifier = Modifier.fillMaxSize(),
+                                    filteredAndSortedProduitList=filteredAndSortedProduitList,
+                                    aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17
+                                )
+                            }
+                            ModeAffichage.REORDER_GRID -> {
+                                ReorderMultiCategories(
+                                    modifier = Modifier.fillMaxSize(),
+                                    viewModel = viewModel,
+                                    produitList = produitList
+                                )
+                            }
+                        }
                     }
 
-                    A_MainFilter(
-                        filterState = filterState,
-                        onFilterChanged = { filterState = it },
-                        totalCount = produitList.size,
-                        filteredCount = filteredAndSortedProduitList.size,
-                        modifier = Modifier.fillMaxWidth()
+                    OptionsFragmentButtons(
+                        viewModel = viewModel,
+                        viewModelScope = viewModel.viewModelScope,
+                        onToggleMasque = { maskedElements = it },
+                        selectedProducts = selectedProducts,
+                        onShowBulkMoveDialog = { showBulkMoveDialog = true },
+                        selectedCategories = selectedCategories,
+                        onCategoriesUpdated = { viewModel.addOrUpdateCategories(it) }
                     )
-
-                    when (currentMode) {
-                        ModeAffichage.CATEGORIES_LIST -> {
-                            EditeCategoriesMainList(
-                                modifier = Modifier.fillMaxSize(),
-                                viewModel = viewModel,
-                                produitList = filteredAndSortedProduitList,
-                                onProductCategoryChanged = { updatedProduct ->
-                                    viewModel.addOrUpdateProduit(updatedProduct)
-                                },
-                                selectedProducts = selectedProducts,
-                                onProductSelectionToggle = { product ->
-                                    selectedProducts = selectedProducts.toggleProduct(product)
-                                },
-                                showBulkMoveDialog = showBulkMoveDialog,
-                                onShowBulkMoveDialog = { show ->
-                                    showBulkMoveDialog = show
-                                    if (!show) selectedProducts = emptySet()
-                                }
-                            )
-                        }
-                        ModeAffichage.PRODUCTS_LIST -> {
-                            EditeInfosMainList(
-                                modifier = Modifier.fillMaxSize(),
-                                filteredAndSortedProduitList=filteredAndSortedProduitList,
-                                aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17
-                            )
-                        }
-                        ModeAffichage.REORDER_GRID -> {
-                            ReorderMultiCategories(
-                                modifier = Modifier.fillMaxSize(),
-                                viewModel = viewModel,
-                                produitList = produitList
-                            )
-                        }
-                    }
                 }
-
-                OptionsFragmentButtons(
-                    viewModel = viewModel,
-                    viewModelScope = viewModel.viewModelScope,
-                    onToggleMasque = { maskedElements = it },
-                    selectedProducts = selectedProducts,
-                    onShowBulkMoveDialog = { showBulkMoveDialog = true },
-                    selectedCategories = selectedCategories,
-                    onCategoriesUpdated = { viewModel.addOrUpdateCategories(it) }
-                )
             }
         }
     }
@@ -207,6 +216,7 @@ fun EditeBaseDonneMainScreenIdS9(
 private fun Set<ArticlesBasesStatsTable>.toggleProduct(product: ArticlesBasesStatsTable): Set<ArticlesBasesStatsTable> {
     return if (contains(product)) this - product else this + product
 }
+
 private fun applySortOrder(
     products: List<ArticlesBasesStatsTable>,
     sortOrder: SortOrder,

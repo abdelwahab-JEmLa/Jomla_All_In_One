@@ -18,7 +18,7 @@ fun EditeInfosMainList(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             items = filteredAndSortedProduitList,
