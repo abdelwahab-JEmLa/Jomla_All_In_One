@@ -35,7 +35,6 @@ fun PriceEditor(
     label: String,
     onPriceUpdate: (Double) -> Unit,
     modifier: Modifier = Modifier,
-    showOnlyWhenPositive: Boolean = false,
     additionalInfo: (@Composable () -> Unit)? = null,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     shouldHideQuickInfoCards: Boolean = false,
@@ -70,7 +69,7 @@ fun PriceEditor(
         }
     }
 
-    if (!showOnlyWhenPositive || currentPrice > 0 || isEditing) {
+    if ( currentPrice > 0 || isEditing) {
         Column(modifier = modifier) {
             if (isEditing) {
                 OutlinedTextField(
