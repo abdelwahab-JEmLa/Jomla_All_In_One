@@ -9,7 +9,7 @@ data class FilterState(
     val hidePrixAchatPositif: Boolean = false,
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
-    val searchText: String = "liy",
+    val searchText: String = "",
     val sortOrder: SortOrder = SortOrder.CATEGORY_GROUPED,
     val enableCategoryGrouping: Boolean = true
 )

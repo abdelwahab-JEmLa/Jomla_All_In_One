@@ -69,7 +69,7 @@ fun PriceEditor(
         }
     }
 
-    if ( currentPrice > 0 || isEditing) {
+    if (isEditing) {
         Column(modifier = modifier) {
             if (isEditing) {
                 OutlinedTextField(
