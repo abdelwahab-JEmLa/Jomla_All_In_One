@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.ProductItem
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LISTViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,7 @@ fun EditeInfosMainList(
     modifier: Modifier = Modifier,
     filteredAndSortedProduitList: List<ArticlesBasesStatsTable>,
     aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
-    viewModel: PRODUCTS_LISTViewModel = koinViewModel(),
+    viewModel: PRODUCTS_LIST_ViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

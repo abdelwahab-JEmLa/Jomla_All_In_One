@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LISTViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,7 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ButtonId6(
-    viewModelPRODUCTS_LIST: PRODUCTS_LISTViewModel = koinViewModel(),
+    viewModelPRODUCTS_LIST: PRODUCTS_LIST_ViewModel = koinViewModel(),
     showLabels: Boolean,
 ) {
     val uiState by viewModelPRODUCTS_LIST.uiState.collectAsState()

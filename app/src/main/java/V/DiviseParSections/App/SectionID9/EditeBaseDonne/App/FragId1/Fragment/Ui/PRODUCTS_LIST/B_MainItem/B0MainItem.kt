@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LISTViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.StringEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
@@ -29,7 +29,7 @@ fun ProductItem(
     modifier: Modifier = Modifier,
     mainComposRepository: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
-    uiState: PRODUCTS_LISTViewModel.UiState,
+    uiState: PRODUCTS_LIST_ViewModel.UiState,
 ) {
     val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
