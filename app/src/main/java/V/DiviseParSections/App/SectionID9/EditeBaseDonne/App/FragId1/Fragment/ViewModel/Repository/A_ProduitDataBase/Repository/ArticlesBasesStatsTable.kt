@@ -94,6 +94,7 @@ data class ArticlesBasesStatsTable(
         CategorieOriginaleDefinie,
         PositionAvecCesFrereDefinie,
     }
+
     fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
