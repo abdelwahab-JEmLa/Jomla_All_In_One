@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -36,6 +37,18 @@ import androidx.compose.ui.unit.dp
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (produit.nombreUniteInt > 0 && produit.clientPrixVentUnite>0) {
+                PriceEditor(
+                    currentPrice = produit.clientPrixVentUnite*produit.nombreUniteInt,
+                    label = "تخرج",
+                    onPriceUpdate = { newClientPrixUnite -> },
+                    textColor = Color.Gray,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+
             if (produit.nombreUniteInt > 0) {
                 PriceEditor(
                     currentPrice = produit.clientPrixVentUnite,

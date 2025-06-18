@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FireTruck
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlin.math.round
@@ -50,14 +55,6 @@ fun DetailleSection(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    if (!shouldHideQuickInfoCards) {
-                        // Left Card - Client Sales
-                        CardGauchePrixVentEtBClient(
-                            produit = produit,
-                            updateProduct = updateProduct,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
                     // Right Card - Purchase & Profit
                     CardDroitPrixAchatEtBenVendeur(
                         shouldHideQuickInfoCards = shouldHideQuickInfoCards,
@@ -66,9 +63,16 @@ fun DetailleSection(
                         onNextField = onNextField,
                         modifier = Modifier.weight(1f)
                     )
+
+                    if (!shouldHideQuickInfoCards) {
+                        // Left Card - Client Sales
+                        CardGauchePrixVentEtBClient(
+                            produit = produit,
+                            updateProduct = updateProduct,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
-
-
             }
         }
     }
@@ -92,22 +96,31 @@ private fun CardGauchePrixVentEtBClient(
             modifier = Modifier.padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(
-                text = "📊 Vente",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row {
+                Text(
+                    text = "📊 بيع",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+                Icon(
+                    imageVector = Icons.Default.FireTruck,
+                    contentDescription = "Supprimer le produit",
+                    modifier = Modifier.size(22.dp),
+                    tint = Color.Green
+                )
+            }
             // Client benefit calculation with proper logic
-            val beneficeClient = produit.clientPrixVentUnite * produit.nombreUniteInt
+            val beneficeClient =
+                (produit.clientPrixVentUnite * produit.nombreUniteInt) - produit.prixVent
             PriceEditor(
                 currentPrice = beneficeClient,
                 label = "Bénéfice Client",
-                onPriceUpdate = { newBenefice ->
-                    // Calculate new client unit price based on desired total benefit
+                onPriceUpdate = { newBenClient ->
                     if (produit.nombreUniteInt > 0) {
-                        val newClientPrixUnite = newBenefice / produit.nombreUniteInt
-                        updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
+                        val newPrixVent =
+                            (produit.clientPrixVentUnite * produit.nombreUniteInt) - newBenClient
+                        updateProduct(produit.copy(prixVent = newPrixVent))
                     }
                 },
                 textColor = if (beneficeClient > 0) MaterialTheme.colorScheme.primary
@@ -134,7 +147,7 @@ private fun CardGauchePrixVentEtBClient(
                 onPriceUpdate = { newPrix ->
                     updateProduct(produit.copy(prixVent = newPrix))
                 },
-                textColor = MaterialTheme.colorScheme.primary
+                textColor = Color.Red
             )
 
 
@@ -165,7 +178,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
         ) {
             // Section header
             Text(
-                text = "🏪 Achat",
+                text = "🏪 شراء",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.tertiary
@@ -218,7 +231,7 @@ private fun CardDroitPrixAchatEtBenVendeur(
                     updateProduct(newPrd)
                 },
                 showOnlyWhenPositive = true,
-                textColor = MaterialTheme.colorScheme.tertiary,
+                textColor = Color.DarkGray,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 onNextField = onNextField
             )

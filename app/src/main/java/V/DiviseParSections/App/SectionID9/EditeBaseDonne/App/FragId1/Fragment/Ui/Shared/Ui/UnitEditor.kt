@@ -97,7 +97,7 @@ fun UnitEditor(
                         Text(
                             text = "$currentUnits unités",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = textColor,
+                            color = Color.Red,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.Start,
                             modifier = Modifier.padding(top = 2.dp)
