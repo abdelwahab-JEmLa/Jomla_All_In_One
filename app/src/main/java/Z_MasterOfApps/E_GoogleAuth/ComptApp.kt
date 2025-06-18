@@ -50,7 +50,7 @@ class AuthManager(
         val compte = dao.getCompte() ?: return@withContext
         if (compte.isGoogleAuth && hasInternet()) {
             googleAuth?.sync(compte)
-            dao.update(compte.copy(lastSync = System.currentTimeMillis()))
+            dao.update_showDetailsExpanded(compte.copy(lastSync = System.currentTimeMillis()))
         }
     }
 
@@ -69,7 +69,7 @@ class AuthManager(
             lastSync = System.currentTimeMillis()
         )
 
-        dao.update(updatedCompte)
+        dao.update_showDetailsExpanded(updatedCompte)
         googleAuth.migrateData(localCompte)
         true
     }
@@ -161,7 +161,7 @@ interface ComptAppDao {
     suspend fun insert(compte: ComptApp): Long
 
     @Update
-    suspend fun update(compte: ComptApp)
+    suspend fun update_showDetailsExpanded(compte: ComptApp)
 
     @Query("DELETE FROM ComptApp")
     suspend fun deleteAll()

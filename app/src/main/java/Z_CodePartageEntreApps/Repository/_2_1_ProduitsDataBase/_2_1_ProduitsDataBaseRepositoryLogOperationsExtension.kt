@@ -20,7 +20,7 @@ class _2_1_ProduitsDataBaseRepositoryLogOperationsExtension(
             Log.d(TAG, "Data size: $modelDatasSize")
             Log.d(TAG, "Initial data loaded: $initialDataLoaded")
             Log.d(TAG, "Progress value: $progressValue")
-            Log.d(TAG, "Last update timestamp: $lastUpdateTimestamp")
+            Log.d(TAG, "Last update_showDetailsExpanded timestamp: $lastUpdateTimestamp")
             Log.d(TAG, "Listener active: $isListenerActive")
             Log.d(TAG, "Flow listener active: $isFlowListenerActive")
             

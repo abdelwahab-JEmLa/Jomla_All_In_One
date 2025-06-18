@@ -140,7 +140,7 @@ class G_RoomOperationsHandler(
         }
     }
 
-    // FIXED: Changed from insert to proper update logic
+    // FIXED: Changed from insert to proper update_showDetailsExpanded logic
     suspend fun update(data: Any, dataType: KClass<*>): Pair<Long, Any> = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.2f)
@@ -150,7 +150,7 @@ class G_RoomOperationsHandler(
                     val produitData = data as A_ProduitInfos
                     val dataWithDefaults = produitData.withProperKeyFireBase()
 
-                    // FIXED: Check if item exists first, then update or insert accordingly
+                    // FIXED: Check if item exists first, then update_showDetailsExpanded or insert accordingly
                     val existingId = dataWithDefaults.id
                     val finalId = if (existingId > 0 && database.a_ProduitInfosDao().exists(existingId)) {
                         // Update existing record
@@ -168,7 +168,7 @@ class G_RoomOperationsHandler(
                     val tarificationData = data as D_TarificationInfos
                     val dataWithDefaults = tarificationData.withProperDefaults()
 
-                    // FIXED: Check if item exists first, then update or insert accordingly
+                    // FIXED: Check if item exists first, then update_showDetailsExpanded or insert accordingly
                     val existingId = dataWithDefaults.id
                     val finalId = if (existingId > 0 && database.dTarificationInfosDao().exists(existingId)) {
                         // Update existing record

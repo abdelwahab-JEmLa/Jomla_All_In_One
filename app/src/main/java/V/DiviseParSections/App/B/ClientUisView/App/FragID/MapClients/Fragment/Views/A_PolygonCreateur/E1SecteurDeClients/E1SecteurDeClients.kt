@@ -18,7 +18,7 @@ data class E1SecteurDeClients(
     val sonPolygonOnModeDessine: Boolean = false,
 )
 
-/* // Effect to update sectors on map - now responds to viewModel.mapReloadTigger changes
+/* // Effect to update_showDetailsExpanded sectors on map - now responds to viewModel.mapReloadTigger changes
 LaunchedEffect(mapView, sectorMapReloadTrigger) {
 // Execute all database operations on Dispatchers.IO
 withContext(Dispatchers.IO) {
@@ -46,7 +46,7 @@ val secteurPolygonInfoList = getNoSqlDisplayer(
   polygonDao = polygonDao
 )
 
-// Back to main thread to update UI
+// Back to main thread to update_showDetailsExpanded UI
 withContext(Dispatchers.Main) {
   // Clear existing sector polygons first to prevent duplicates
   val sectorsToRemove = mapView.overlays.take(allSecteurs.size)

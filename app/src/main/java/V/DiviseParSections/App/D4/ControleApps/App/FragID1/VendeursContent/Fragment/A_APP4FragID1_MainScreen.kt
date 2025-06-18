@@ -245,7 +245,7 @@ fun VendeurItem(
             // Visibility toggle button
             IconButton(
                 onClick = {
-                    // Toggle hideAppScreen property and update the vendeur
+                    // Toggle hideAppScreen property and update_showDetailsExpanded the vendeur
                     val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
                     onVendeurUpdate(updatedVendeur)
                 }
@@ -344,7 +344,7 @@ fun PeriodeItem(
 
             IconButton(
                 onClick = {
-                    // Call function to update comptVendeurInsertBonsAchatAuPeriodID
+                    // Call function to update_showDetailsExpanded comptVendeurInsertBonsAchatAuPeriodID
                     onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
                 }
             ) {

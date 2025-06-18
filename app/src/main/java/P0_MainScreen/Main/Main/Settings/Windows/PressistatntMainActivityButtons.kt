@@ -70,7 +70,7 @@ fun PressistatntMainActivityButtons(
     // Cache the client count to avoid multiple reads
     val remainingClients = viewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
 
-    // Set up a timer to update the elapsed time every second when recording
+    // Set up a timer to update_showDetailsExpanded the elapsed time every second when recording
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)

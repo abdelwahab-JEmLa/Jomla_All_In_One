@@ -22,7 +22,7 @@ interface A_ProduitInfosDao {
     @Query("DELETE FROM A_ProduitInfos")
     suspend fun deleteAll()
 
-    // For single update - use IGNORE to let auto-increment work properly
+    // For single update_showDetailsExpanded - use IGNORE to let auto-increment work properly
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(produit: A_ProduitInfos): Long
     @Query("SELECT EXISTS(SELECT 1 FROM A_ProduitInfos WHERE id = :id)")

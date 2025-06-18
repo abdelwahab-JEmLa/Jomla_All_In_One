@@ -5,18 +5,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class UiState(
-    var showDetailsExpanded: Boolean = false
-)
 
-class PRODUCTS_LISTViewModel(
-) : ViewModel() {
+class PRODUCTS_LISTViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun update(): Unit {
-        _uiState.value = _uiState.value.copy(
-            showDetailsExpanded = !uiState.value.showDetailsExpanded,
-        )
-    }
+    fun update_showDetailsExpanded(): Unit { _uiState.value = _uiState.value.copy(showDetailsExpanded = !uiState.value.showDetailsExpanded,) }
+    data class UiState(var showDetailsExpanded: Boolean = false)
 }

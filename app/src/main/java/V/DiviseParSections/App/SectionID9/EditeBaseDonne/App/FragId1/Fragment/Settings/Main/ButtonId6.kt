@@ -47,7 +47,7 @@ fun ButtonId6(
         }
         FloatingActionButton(
             onClick = {
-                viewModelPRODUCTS_LIST.update()
+                viewModelPRODUCTS_LIST.update_showDetailsExpanded()
             },
             modifier = Modifier.size(48.dp),
             containerColor = if (uiState.showDetailsExpanded) Color.Red else Color.Green

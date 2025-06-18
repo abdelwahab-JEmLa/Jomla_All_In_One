@@ -147,7 +147,7 @@ class F0_FireBaseOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            // Create batch update map for all items
+            // Create batch update_showDetailsExpanded map for all items
             val batchUpdateMap = mutableMapOf<String, Any>()
 
             // Process each data item and add to batch
@@ -185,7 +185,7 @@ class F0_FireBaseOperationsHandler(
                         }
                     }
 
-                    // Add to batch update map
+                    // Add to batch update_showDetailsExpanded map
                     batchUpdateMap[keyFireBase] = data
 
                 } catch (e: Exception) {
@@ -196,7 +196,7 @@ class F0_FireBaseOperationsHandler(
 
             onProgressUpdate(0.7f)
 
-            // Perform batch update using updateChildren
+            // Perform batch update_showDetailsExpanded using updateChildren
             suspendCancellableCoroutine<Unit> { continuation ->
                 childRef.updateChildren(batchUpdateMap)
                     .addOnSuccessListener {

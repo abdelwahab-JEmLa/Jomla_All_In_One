@@ -263,13 +263,13 @@ fun B_ClientInfosProtoJuin3Repository.testTriggerUpdateFbParTimestampsListener()
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                 ).withProperKeyFireBaseAndTimeTamp()
 
-                // Push update to Firebase to trigger listener
+                // Push update_showDetailsExpanded to Firebase to trigger listener
                 repoRef.child(updatedTestEntity.keyFireBase).setValue(updatedTestEntity)
                     .addOnSuccessListener {
                         Log.d(repoTAG, "Test entity updated successfully in Firebase")
                     }
                     .addOnFailureListener { exception ->
-                        Log.e(repoTAG, "Failed to update test entity in Firebase", exception)
+                        Log.e(repoTAG, "Failed to update_showDetailsExpanded test entity in Firebase", exception)
                     }
             } else {
                 Log.d(repoTAG, "Creating new test entity")

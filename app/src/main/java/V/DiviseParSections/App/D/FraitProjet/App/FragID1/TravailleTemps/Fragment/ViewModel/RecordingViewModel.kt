@@ -162,7 +162,7 @@ class RecordingViewModel(
         return count
     }
 
-    // Helper method to update the client count cache
+    // Helper method to update_showDetailsExpanded the client count cache
     private fun updateClientCountCache() {
         val count = calculateNombreClientAvecCible()
         updateUiState { it.copy(nombreClientsAvecCible = count) }
