@@ -55,7 +55,8 @@ fun EditeBaseDonneMainScreenIdS9(
             .a_GroupeValuesA_ProduitsToB_Categories
 
     val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
-    val produitList = viewModel.a_ProduitDataBaseComposeRepositoryPJ17.datasValue
+    val aProduitdatabasecomposerepositorypj17 = viewModel.a_ProduitDataBaseComposeRepositoryPJ17
+    val produitList = aProduitdatabasecomposerepositorypj17.datasValue
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
@@ -174,7 +175,7 @@ fun EditeBaseDonneMainScreenIdS9(
                         }
                         ModeAffichage.PRODUCTS_LIST -> {
                             EditeInfosMainList(
-                                produitList = filteredAndSortedProduitList,
+                                viewModel=viewModel,
                                 onPrixUpdate = { updatedProduct ->
                                     viewModel.addOrUpdateProduit(updatedProduct)
                                 },

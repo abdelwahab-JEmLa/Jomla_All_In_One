@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,11 +12,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun EditeInfosMainList(
     modifier: Modifier = Modifier,
-    produitList: List<ArticlesBasesStatsTable> = emptyList(),
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     onPrixUpdate: (ArticlesBasesStatsTable) -> Unit = {}
 ) {
-
-
+    val aProduitdatabasecomposerepositorypj17 = viewModel.a_ProduitDataBaseComposeRepositoryPJ17
+    val produitList = aProduitdatabasecomposerepositorypj17.datasValue
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -25,7 +26,8 @@ fun EditeInfosMainList(
             key = { it.id }
         ) { produit ->
             ProductItem(
-                produitInit = produit,
+                viewModel=viewModel,
+                produit = produit,
                 onUpdate = onPrixUpdate
             )
         }

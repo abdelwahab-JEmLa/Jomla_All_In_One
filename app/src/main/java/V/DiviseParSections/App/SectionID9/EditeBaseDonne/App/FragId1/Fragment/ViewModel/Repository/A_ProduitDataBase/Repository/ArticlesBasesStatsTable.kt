@@ -26,11 +26,14 @@ data class ArticlesBasesStatsTable(
     var nombreProduitDonSonCarton: Int = 0,
 
     // Section Etates Mutable
-    val heldPrioriteDemandAuGrossist :Boolean=false,
+    val heldPrioriteDemandAuGrossist: Boolean = false,
 
     // Section InfosCoutes
     var prixVent: Double = 0.0,
+    var cachePrixVent: Boolean = false,
+
     var prixAchat: Double = 0.0,
+    var prixAchatDernierTimeTempUpdate: Long = 0L,
     var clientPrixVentUnite: Double = 0.0,
 
 
@@ -44,7 +47,6 @@ data class ArticlesBasesStatsTable(
 
     // Section keyFireBase
     var keyFireBase: String = "",
-
 
 
     var nomArab: String = "",
@@ -82,14 +84,12 @@ data class ArticlesBasesStatsTable(
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 
-    )
-{
+    ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
-
 
 
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {
@@ -115,10 +115,12 @@ data class ArticlesBasesStatsTable(
 
     companion object {
         val ref =
-            Firebase.database.getReference("00_DataPrototype-04-02" +
-                    "/_1_developingRef" +
-                    "/C_InfosSqlDataBases" +
-                    "/A_ProduitInfos")
+            Firebase.database.getReference(
+                "00_DataPrototype-04-02" +
+                        "/_1_developingRef" +
+                        "/C_InfosSqlDataBases" +
+                        "/A_ProduitInfos"
+            )
 
         fun securedRemoveFireBaseDB() {
             ref.removeValue()
@@ -129,6 +131,7 @@ data class ArticlesBasesStatsTable(
         ) {
             ref.child(preparedData.keyFireBase).removeValue()
         }
+
         fun compareEntre(
             ancien: ArticlesBasesStatsTable,
             newData: ArticlesBasesStatsTable

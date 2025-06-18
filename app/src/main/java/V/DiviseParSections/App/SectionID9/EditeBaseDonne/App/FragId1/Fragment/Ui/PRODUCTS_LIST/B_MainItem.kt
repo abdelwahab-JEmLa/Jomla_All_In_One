@@ -7,7 +7,6 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,9 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,37 +46,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
-    produitInit: ArticlesBasesStatsTable,
+    produit: ArticlesBasesStatsTable,
     onUpdate: (ArticlesBasesStatsTable) -> Unit = {},
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinInject()
+    viewModel: EditeBaseDonneMainScreenIdS9ViewModel
 ) {
-    val TAG = "ProductItem"
-    var produit by remember(produitInit.id, produitInit.actualiseSonImageTest2, produitInit.dernierFireBaseUpdateTimestamps) {
-        mutableStateOf(produitInit)
-    }
-    var imageRefreshKey by remember(produitInit.id) { mutableIntStateOf(0) }
+    val aProduitdatabasecomposerepositorypj17 =viewModel.a_ProduitDataBaseComposeRepositoryPJ17
 
-    // State for delete dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(produitInit.actualiseSonImageTest2, produitInit.dernierFireBaseUpdateTimestamps) {
-        if (produitInit.id == produit.id &&
-            (produitInit.actualiseSonImageTest2 != produit.actualiseSonImageTest2 ||
-                    produitInit.dernierFireBaseUpdateTimestamps != produit.dernierFireBaseUpdateTimestamps)) {
-            Log.d(TAG, "Updating product ${produitInit.nom}")
-            produit = produitInit
-            imageRefreshKey++
-        }
-    }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
-        produit = updatedProduct
-        onUpdate(updatedProduct)
+        aProduitdatabasecomposerepositorypj17
+            .addOrUpdateData(updatedProduct)
     }
 
     // Delete confirmation dialog
@@ -125,13 +107,16 @@ fun ProductItem(
         )
     }
 
+
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(20.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
             // Header: Image + Name + Key Info + Delete ButtonAutreEtates
             Row(
@@ -165,7 +150,7 @@ fun ProductItem(
                 Column(modifier = Modifier.weight(1f)) {
                     val s = if (false) "id>${produit.id}" else ""
                     Text(
-                        text =" ${produit.nom}$s",
+                        text = " ${produit.nom}$s",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         maxLines = 2,
@@ -265,7 +250,9 @@ fun ProductItem(
 
             // Pricing section (rest remains the same...)
             Surface(
-                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp)),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -284,6 +271,41 @@ fun ProductItem(
                     ) {
                         // Left column
                         Column(modifier = Modifier.weight(1f)) {
+
+                            FilledTonalButton(
+                                onClick = {
+                                    val updatedProduct =
+                                        produit.copy(cachePrixVent = !produit.cachePrixVent)
+                                    aProduitdatabasecomposerepositorypj17.addOrUpdateData(
+                                        updatedProduct
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = if (produit.cachePrixVent)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                    contentColor = if (produit.cachePrixVent)
+                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = if (produit.cachePrixVent) Icons.Filled.Star else Icons.Outlined.Star,
+                                    contentDescription = "Toggle Cache Prix",
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = if (produit.cachePrixVent) "Prix Caché" else "Prix Visible",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
                             PriceEditor(
                                 currentPrice = produit.prixVent,
                                 label = "Prix Vente Total",
@@ -301,18 +323,28 @@ fun ProductItem(
                                     currentPrice = produit.prixAchat,
                                     label = "Prix Achat Total",
                                     onPriceUpdate = { newPrix ->
-                                        updateProduct(produit.copy(prixAchat = newPrix))
+                                        val newPrd = produit.copy(
+                                            prixAchat = newPrix,
+                                            prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                                        )
+                                        aProduitdatabasecomposerepositorypj17.addOrUpdateData(newPrd)
                                     },
                                     showOnlyWhenPositive = true,
                                     textColor = MaterialTheme.colorScheme.tertiary
                                 )
 
+
+
                                 // Quick Update ButtonAutreEtates for Prix Achat
                                 Spacer(modifier = Modifier.height(4.dp))
                                 FilledTonalButton(
                                     onClick = {
-                                        val newPrixAchat = 0.1
-                                        updateProduct(produit.copy(prixAchat = newPrixAchat))
+                                        aProduitdatabasecomposerepositorypj17.addOrUpdateData(
+                                            produit.copy(
+                                                prixAchat = 0.1,
+                                                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                                            )
+                                        )
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(8.dp)
@@ -376,7 +408,8 @@ fun ProductItem(
                         ) {
                             // Unit sale price
                             Column(modifier = Modifier.weight(1f)) {
-                                val prixUnitVente = kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+                                val prixUnitVente =
+                                    kotlin.math.round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
                                 PriceEditor(
                                     currentPrice = prixUnitVente,
                                     label = "Vente/unité",
@@ -390,7 +423,8 @@ fun ProductItem(
 
                             // Unit purchase price
                             Column(modifier = Modifier.weight(1f)) {
-                                val prixUnitAchat = kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
+                                val prixUnitAchat =
+                                    kotlin.math.round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
                                 PriceEditor(
                                     currentPrice = prixUnitAchat,
                                     label = "Achat/unité",
@@ -415,11 +449,16 @@ fun ProductItem(
                             },
                             textColor = MaterialTheme.colorScheme.inversePrimary,
                             additionalInfo = {
-                                val totalClientPrice = produit.clientPrixVentUnite * produit.nombreUniteInt
+                                val totalClientPrice =
+                                    produit.clientPrixVentUnite * produit.nombreUniteInt
                                 if (totalClientPrice > 0) {
                                     Surface(
-                                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 4.dp),
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(
+                                            alpha = 0.3f
+                                        ),
                                         shape = RoundedCornerShape(6.dp)
                                     ) {
                                         Text(
@@ -440,10 +479,9 @@ fun ProductItem(
             Spacer(modifier = Modifier.height(16.dp))
             FilledTonalButton(
                 onClick = {
-                    val updatedProduct = produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                    viewModel
-                        .a_CentralDatasHandlerProtoJuin9
-                        .a_ProduitDataBaseComposeRepositoryPJ17
+                    val updatedProduct =
+                        produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
+                    aProduitdatabasecomposerepositorypj17
                         .addOrUpdateData(updatedProduct)
                 },
                 modifier = Modifier.fillMaxWidth(),
