@@ -176,11 +176,7 @@ fun EditeBaseDonneMainScreenIdS9(
                         ModeAffichage.PRODUCTS_LIST -> {
                             EditeInfosMainList(
                                 modifier = Modifier.fillMaxSize(),
-                                viewModel=viewModel,
-                                aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17,
-                                onPrixUpdate = { updatedProduct ->
-                                    viewModel.addOrUpdateProduit(updatedProduct)
-                                }
+                                aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17
                             )
                         }
                         ModeAffichage.REORDER_GRID -> {

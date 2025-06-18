@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProductItem(
     modifier: Modifier = Modifier,
-    viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
     produit: ArticlesBasesStatsTable,
 ) {
