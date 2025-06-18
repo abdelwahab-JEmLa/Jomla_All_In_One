@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.PriceEditor
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Ui.UnitEditor
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Modules.CameraHandler.ProductImageCaptureButton
@@ -153,38 +151,6 @@ fun HeaderSection(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Price and Unit Editors Row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Price Editor (only show if units > 0)
-                    if (produit.nombreUniteInt > 0) {
-                        PriceEditor(
-                            currentPrice = produit.clientPrixVentUnite,
-                            label = "Prix/unité",
-                            onPriceUpdate = { newClientPrixUnite ->
-                                updateProduct(produit.copy(clientPrixVentUnite = newClientPrixUnite))
-                            },
-                            textColor = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
-
-                    // Unit Editor
-                    UnitEditor(
-                        currentUnits = produit.nombreUniteInt,
-                        label = "Unités",
-                        onUnitsUpdate = { newUnits ->
-                            updateProduct(produit.copy(nombreUniteInt = newUnits))
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
             }
         }
 
@@ -213,3 +179,4 @@ fun HeaderSection(
         }
     }
 }
+

@@ -131,6 +131,14 @@ fun ProductItem(
                 updateProduct = ::updateProduct
             )
 
+            // Action Buttons - Fixed parameter passing
+            ActionButtons(
+                onShowDetailsExpandedChange = { showDetailsExpanded = it },
+                showDetailsExpanded = showDetailsExpanded,
+                produit = produit,
+                updateProduct = ::updateProduct
+            )
+
             // Quick Info Section
             QuickInfoSection(produit)
 
@@ -144,4 +152,3 @@ fun ProductItem(
         }
     }
 }
-

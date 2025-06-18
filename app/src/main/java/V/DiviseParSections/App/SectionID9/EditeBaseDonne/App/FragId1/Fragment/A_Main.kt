@@ -176,6 +176,7 @@ fun EditeBaseDonneMainScreenIdS9(
                         ModeAffichage.PRODUCTS_LIST -> {
                             EditeInfosMainList(
                                 modifier = Modifier.fillMaxSize(),
+                                filteredAndSortedProduitList=filteredAndSortedProduitList,
                                 aProduitdatabasecomposerepositorypj17=aProduitdatabasecomposerepositorypj17
                             )
                         }

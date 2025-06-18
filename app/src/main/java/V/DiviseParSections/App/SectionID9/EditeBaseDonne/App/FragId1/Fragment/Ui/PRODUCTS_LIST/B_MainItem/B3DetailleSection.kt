@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
@@ -30,31 +28,12 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.round
 
 @Composable
- fun DetailleSection(
+fun DetailleSection(
     showDetailsExpanded: Boolean,
     produit: ArticlesBasesStatsTable,
     onShowDetailsExpandedChange: (Boolean) -> Unit,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
-    // Expandable Details Section
-    FilledTonalButton(
-        onClick = { onShowDetailsExpandedChange(!showDetailsExpanded) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = if (showDetailsExpanded) "Masquer les détails" else "Afficher les détails",
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            imageVector = if (showDetailsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = null,
-            modifier = Modifier.size(20.dp)
-        )
-    }
 
     // Detailed Editing Section (Expandable)
     if (showDetailsExpanded) {
@@ -123,8 +102,6 @@ import kotlin.math.round
                     Column(modifier = Modifier.weight(1f)) {
 
 
-
-
                         val benefice = produit.prixVent - produit.prixAchat
                         PriceEditor(
                             currentPrice = benefice,
@@ -172,33 +149,15 @@ import kotlin.math.round
                         )
                     }
 
-                    FilledTonalButton(
-                        onClick = {
-                            val updatedProduct =
-                                produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                            updateProduct(updatedProduct)
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = if (produit.heldPrioriteDemandAuGrossist)
-                                MaterialTheme.colorScheme.primaryContainer
-                            else
-                                MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Icon(
-                            imageVector = if (produit.heldPrioriteDemandAuGrossist) Icons.Filled.Star else Icons.Outlined.Star,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Priorité",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                    // Extracted Price and Unit Section
+                    PriceAndUnitSection(
+                        produit = produit,
+                        updateProduct = updateProduct
+                    )
+
                 }
             }
         }
     }
 }
+
