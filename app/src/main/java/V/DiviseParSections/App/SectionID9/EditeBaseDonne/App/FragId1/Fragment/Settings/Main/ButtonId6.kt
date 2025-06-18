@@ -1,15 +1,21 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.PRODUCTS_LISTViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LISTViewModel
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LeakAdd
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,19 +27,37 @@ fun ButtonId6(
     viewModelPRODUCTS_LIST: PRODUCTS_LISTViewModel = koinViewModel(),
     showLabels: Boolean,
 ) {
+    val uiState by viewModelPRODUCTS_LIST.uiState.collectAsState()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (showLabels) Text("viewModelPRODUCTS_LIST.update()")
+        if (showLabels) {
+            Text(
+                text = if (uiState.showDetailsExpanded) "Hide Details" else "Show Details",
+                color = Color.Black,
+                modifier = Modifier
+                    .background(
+                        color = if (uiState.showDetailsExpanded) Color.Red else Color.Green,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
         FloatingActionButton(
             onClick = {
                 viewModelPRODUCTS_LIST.update()
             },
-            modifier = Modifier.size(40.dp),
-            containerColor = Color.Green
+            modifier = Modifier.size(48.dp),
+            containerColor = if (uiState.showDetailsExpanded) Color.Red else Color.Green
         ) {
-            Icon(Icons.Default.LeakAdd, "Move Categories to Catalogue", tint = Color.White)
+            Icon(
+                imageVector = if (uiState.showDetailsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = "Toggle product details expansion",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
