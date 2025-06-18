@@ -146,7 +146,6 @@ fun ProductItem(
             DetailleSection(
                 showDetailsExpanded = showDetailsExpanded,
                 produit = produit,
-                onShowDetailsExpandedChange = { showDetailsExpanded = it },
                 updateProduct = ::updateProduct
             )
         }
