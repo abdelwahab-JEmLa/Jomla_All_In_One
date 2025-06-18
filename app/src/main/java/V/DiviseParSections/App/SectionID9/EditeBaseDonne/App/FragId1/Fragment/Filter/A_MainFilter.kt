@@ -31,6 +31,8 @@ fun A_MainFilter(
                 filterState.hidePetiteProbability ||
                 filterState.hidePrixAchatZero ||
                 filterState.hidePrixAchatPositif ||
+                filterState.hidePrixVenteZero ||           // New
+                filterState.hidePrixVentePositif ||       // New
                 filterState.hideHeldPrioriteDemandAuGrossist ||
                 filterState.hideNonHeldPrioriteDemandAuGrossist ||
                 filterState.searchText.isNotEmpty()
@@ -107,6 +109,21 @@ fun A_MainFilter(
                         FilterChip(
                             label = "Masquer Prix Achat > 0",
                             onRemove = { onFilterChanged(filterState.copy(hidePrixAchatPositif = false)) }
+                        )
+                    }
+
+                    // New selling price filter chips
+                    if (filterState.hidePrixVenteZero) {
+                        FilterChip(
+                            label = "Masquer Prix Vente = 0",
+                            onRemove = { onFilterChanged(filterState.copy(hidePrixVenteZero = false)) }
+                        )
+                    }
+
+                    if (filterState.hidePrixVentePositif) {
+                        FilterChip(
+                            label = "Masquer Prix Vente > 0",
+                            onRemove = { onFilterChanged(filterState.copy(hidePrixVentePositif = false)) }
                         )
                     }
 

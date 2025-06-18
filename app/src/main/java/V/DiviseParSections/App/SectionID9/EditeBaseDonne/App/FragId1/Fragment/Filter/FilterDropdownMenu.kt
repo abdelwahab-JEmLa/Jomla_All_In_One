@@ -220,6 +220,18 @@ fun FilterDropdownMenu(
             }
 
             item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            item {
+                Text(
+                    text = "Filtres de prix d'achat",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
                 FilterOption(
                     label = "Masquer produits sans prix d'achat",
                     checked = filterState.hidePrixAchatZero,
@@ -235,6 +247,39 @@ fun FilterDropdownMenu(
                     checked = filterState.hidePrixAchatPositif,
                     onCheckedChange = {
                         onFilterChanged(filterState.copy(hidePrixAchatPositif = it))
+                    }
+                )
+            }
+
+            item {
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            }
+
+            // New selling price filters section
+            item {
+                Text(
+                    text = "Filtres de prix de vente",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits sans prix de vente",
+                    checked = filterState.hidePrixVenteZero,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hidePrixVenteZero = it))
+                    }
+                )
+            }
+
+            item {
+                FilterOption(
+                    label = "Masquer produits avec prix de vente",
+                    checked = filterState.hidePrixVentePositif,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(hidePrixVentePositif = it))
                     }
                 )
             }
@@ -295,6 +340,8 @@ fun FilterDropdownMenu(
                                     hidePetiteProbability = true,
                                     hidePrixAchatZero = true,
                                     hidePrixAchatPositif = true,
+                                    hidePrixVenteZero = true,        // New
+                                    hidePrixVentePositif = true,     // New
                                     hideHeldPrioriteDemandAuGrossist = true,
                                     hideNonHeldPrioriteDemandAuGrossist = true,
                                     searchText = filterState.searchText,

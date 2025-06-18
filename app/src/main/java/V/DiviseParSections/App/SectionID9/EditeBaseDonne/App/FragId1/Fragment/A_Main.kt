@@ -95,7 +95,6 @@ fun EditeBaseDonneMainScreenIdS9(
                         EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                 }
             }
-
             if (filterState.hideNonDispo) {
                 filtered =
                     filtered.filter { it.disponibilityEtates != DisponibilityEtates.NON_DISPO }
@@ -112,6 +111,12 @@ fun EditeBaseDonneMainScreenIdS9(
             }
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
+            }
+            if (filterState.hidePrixVenteZero) {
+                filtered = filtered.filter { it.prixVent > 0.0 }
+            }
+            if (filterState.hidePrixVentePositif) {
+                filtered = filtered.filter { it.prixVent <= 0.0 }
             }
             if (filterState.hideHeldPrioriteDemandAuGrossist) {
                 filtered = filtered.filter { !it.heldPrioriteDemandAuGrossist }

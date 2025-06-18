@@ -7,6 +7,8 @@ data class FilterState(
     val hidePetiteProbability: Boolean = false,
     val hidePrixAchatZero: Boolean = false,
     val hidePrixAchatPositif: Boolean = false,
+    val hidePrixVenteZero: Boolean = false,
+    val hidePrixVentePositif: Boolean = false,
     val hideHeldPrioriteDemandAuGrossist: Boolean = false,
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
     val searchText: String = "",
