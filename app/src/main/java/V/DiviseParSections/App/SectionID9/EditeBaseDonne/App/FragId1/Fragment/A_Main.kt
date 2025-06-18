@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +48,6 @@ fun EditeBaseDonneMainScreenIdS9(
     modifier: Modifier = Modifier,
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val a_CentralDatasHandlerProtoJuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
 
     val groupeOrientationToRepositorysA_ProduitsToB_Categories =
@@ -57,7 +55,7 @@ fun EditeBaseDonneMainScreenIdS9(
         .a_GroupeValuesA_ProduitsToB_Categories
 
     val progress = a_CentralDatasHandlerProtoJuin9.loadingProgress
-    val produitList = uiState.a_ProduitInfosList
+    val produitList = viewModel.a_ProduitDataBaseComposeRepositoryPJ17.datasValue
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
