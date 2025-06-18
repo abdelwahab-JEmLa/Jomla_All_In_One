@@ -15,12 +15,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun QuickInfoSection(
+    modifier: Modifier,
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit
 ) {
@@ -33,53 +36,77 @@ fun QuickInfoSection(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // All items in a single row with proper spacing
+            val timeDifference = getTimeDifferenceInArabic(produit.prixAchatDernierTimeTempUpdate)
+            val benefice = produit.prixVent - produit.prixAchat
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 // Prix de Vente
                 QuickInfoCard(
                     title = "Prix Vente",
                     value = "${produit.prixVent} DA",
                     icon = "💰",
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
                 )
 
-                // Bénéfice
-                val benefice = produit.prixVent - produit.prixAchat
+                // Bénéfice (only show if not zero)
                 if (benefice != 0.0) {
                     QuickInfoCard(
                         title = "Bénéfice",
                         value = "$benefice DA",
                         icon = if (benefice > 0) "📈" else "📉",
-                        color = if (benefice > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                        color = if (benefice > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        modifier = Modifier.weight(1f)
                     )
                 }
-            }
 
-            // Time since last price update - Always show section
-            Spacer(modifier = Modifier.height(12.dp))
-
-            val timeDifference = getTimeDifferenceInArabic(produit.prixAchatDernierTimeTempUpdate)
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(8.dp),
-                onClick = {
-                    // Toggle cachePrixVent on click
-                    updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
+                // Combined Visibility and Last Update Card
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = {
+                        updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text(
+                            text = if (produit.cachePrixVent) "🔒" else "👁️",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Visibilité",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = if (produit.cachePrixVent) "Caché" else "Visible",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "آخر تحديث: $timeDifference",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Start,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
-            ) {
-                Text(
-                    text = "آخر تحديث للسعر: $timeDifference",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(12.dp),
-                    textAlign = TextAlign.End,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
         }
     }
@@ -87,15 +114,18 @@ fun QuickInfoSection(
 
 @Composable
 fun QuickInfoCard(
+    modifier: Modifier,
     title: String,
     value: String,
     icon: String,
-    color: androidx.compose.ui.graphics.Color
+    color: Color,
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
         modifier = Modifier.width(100.dp),
         color = color.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        onClick = onClick ?: {}
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -123,6 +153,7 @@ fun QuickInfoCard(
         }
     }
 }
+
 /**
  * Calculates time difference from timestamp and returns formatted Arabic string
  * Example: "قبل أسبوع و 3 أيام" (a week and 3 days ago)

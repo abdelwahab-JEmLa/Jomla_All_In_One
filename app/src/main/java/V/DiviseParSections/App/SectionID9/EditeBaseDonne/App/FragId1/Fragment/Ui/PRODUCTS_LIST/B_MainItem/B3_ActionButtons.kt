@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
@@ -27,16 +25,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ActionButtons(
     modifier: Modifier,
-    onShowDetailsExpandedChange: (Boolean) -> Unit,
-    showDetailsExpanded: Boolean,
     produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit
+    updateProduct: (ArticlesBasesStatsTable) -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        // Expandable Details Button
+      /*  // Expandable Details Button
         FilledTonalButton(
             onClick = { onShowDetailsExpandedChange(!showDetailsExpanded) },
             modifier = Modifier.fillMaxWidth(),
@@ -52,7 +48,7 @@ fun ActionButtons(
                 contentDescription = null,
                 modifier = Modifier.size(20.dp)
             )
-        }
+        }         */
 
         // Row for Priority and other action buttons
         Row(

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,7 +45,7 @@ fun HeaderSection(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(4.dp)
             ) {
                 // Top Row: Image and Product Info
                 Row(
@@ -81,7 +80,7 @@ fun HeaderSection(
                             onImageCaptured = updateProduct,
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .size(28.dp),
+                                .size(35.dp),
                         )
                     }
 
@@ -112,40 +111,14 @@ fun HeaderSection(
 
                         // Arabic Name (if different and available)
                         if (produit.nomArab.isNotEmpty() && produit.nomArab != produit.nom) {
-                            Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = produit.nomArab,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 textAlign = TextAlign.End,
                                 modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Availability Status Badge
-                        Surface(
-                            modifier = Modifier.clip(RoundedCornerShape(25.dp)),
-                            color = when (produit.disponibilityEtates) {
-                                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
-                                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
-                                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
-                            },
-                            shadowElevation = 3.dp
-                        ) {
-                            Text(
-                                text = produit.disponibilityEtates.nomArabe,
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = when (produit.disponibilityEtates) {
-                                    DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
-                                    DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
-                                    DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
-                                },
-                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                             )
                         }
                     }
@@ -154,12 +127,38 @@ fun HeaderSection(
             }
         }
 
-        // Floating Delete Button - positioned at top end
+        // Small Availability Status Badge - positioned above delete button
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 8.dp, end = 8.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            color = when (produit.disponibilityEtates) {
+                DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
+                DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.errorContainer
+                DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.tertiaryContainer
+            },
+            shadowElevation = 3.dp
+        ) {
+            Text(
+                text = produit.disponibilityEtates.nomArabe,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = when (produit.disponibilityEtates) {
+                    DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.onPrimaryContainer
+                    DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
+                    DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
+                },
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+
+        // Floating Delete Button - positioned below the availability badge
         Surface(
             onClick = { onShowDeleteDialogChange(true) },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(12.dp)
+                .padding(top = 42.dp, end = 12.dp)
                 .size(40.dp),
             shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colorScheme.errorContainer,
@@ -179,4 +178,3 @@ fun HeaderSection(
         }
     }
 }
-

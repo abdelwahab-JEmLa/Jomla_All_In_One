@@ -7,15 +7,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EditeInfosMainList(
     modifier: Modifier = Modifier,
     filteredAndSortedProduitList: List<ArticlesBasesStatsTable>,
     aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
+    viewModel: PRODUCTS_LISTViewModel= koinViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -25,6 +31,7 @@ fun EditeInfosMainList(
             key = { it.id }
         ) { produit ->
             ProductItem(
+                uiState=uiState,
                 mainComposRepository=aProduitdatabasecomposerepositorypj17,
                 produit = produit
             )
