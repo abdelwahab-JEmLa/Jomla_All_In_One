@@ -26,6 +26,8 @@ import kotlin.math.round
     modifier: Modifier = Modifier,
     shouldHideQuickInfoCards: Boolean
 ) {
+    val vertTurq = Color(0xFF066C62)
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -43,7 +45,7 @@ import kotlin.math.round
                 text = "🏪 شراء",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.tertiary
+                color = vertTurq
             )
 
             val benefice = produit.prixVent - produit.prixAchat
@@ -56,9 +58,9 @@ import kotlin.math.round
                         val newPrixVent = produit.prixAchat + newBenefice
                         updateProduct(produit.copy(prixVent = newPrixVent))
                     },
-                    textColor = if (benefice > 0)
-                        Color(0xFF066C62)
-                    else MaterialTheme.colorScheme.error,
+                    textColor = if (benefice > 0) {
+                        vertTurq
+                    } else MaterialTheme.colorScheme.error,
                 )
             }
 
@@ -94,7 +96,7 @@ import kotlin.math.round
                     updateProduct(newPrd)
                 },
                 showOnlyWhenPositive = true,
-                textColor = Color.DarkGray,
+                textColor = vertTurq,
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 onNextField = onNextField
             )
