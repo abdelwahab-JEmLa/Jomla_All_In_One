@@ -5,20 +5,11 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Vi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,8 +29,7 @@ fun DetailleSection(
     if (showDetailsExpanded) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                ,
+                .fillMaxWidth(),
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -114,8 +104,9 @@ private fun CardGauchePrixVentEtBClient(
             )
 
             // Unit sale price (if units > 0)
-            if (produit.nombreUniteInt > 0) {
-                val prixUnitVente = round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
+            if (produit.nombreUniteInt > 1) {
+                val prixUnitVente =
+                    round((produit.prixVent / produit.nombreUniteInt) * 100.0) / 100.0
                 PriceEditor(
                     currentPrice = prixUnitVente,
                     label = "Unité",
@@ -188,8 +179,9 @@ private fun CardDroitPrixAchatEtBenVendeur(
             )
 
             // Unit purchase price (if units > 0)
-            if (produit.nombreUniteInt > 0) {
-                val prixUnitAchat = round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
+            if (produit.nombreUniteInt > 1) {
+                val prixUnitAchat =
+                    round((produit.prixAchat / produit.nombreUniteInt) * 100.0) / 100.0
                 PriceEditor(
                     currentPrice = prixUnitAchat,
                     label = "Unité",
@@ -206,46 +198,21 @@ private fun CardDroitPrixAchatEtBenVendeur(
                 )
             }
 
-            // Price visibility toggle with improved styling
-            FilledTonalButton(
-                onClick = {
-                    val updatedProduct = produit.copy(cachePrixVent = !produit.cachePrixVent)
-                    updateProduct(updatedProduct)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = if (produit.cachePrixVent)
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Icon(
-                    imageVector = if (produit.cachePrixVent) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = if (produit.cachePrixVent) "Caché" else "Visible",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Medium
+            if (produit.clientPrixVentUnite > 0.0) {
+
+                // Seller profit calculation
+                val benefice = produit.prixVent - produit.prixAchat
+                PriceEditor(
+                    currentPrice = benefice,
+                    label = "Profit",
+                    onPriceUpdate = { newBenefice ->
+                        val newPrixVent = produit.prixAchat + newBenefice
+                        updateProduct(produit.copy(prixVent = newPrixVent))
+                    },
+                    textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error
                 )
             }
-
-            // Seller profit calculation
-            val benefice = produit.prixVent - produit.prixAchat
-            PriceEditor(
-                currentPrice = benefice,
-                label = "Profit",
-                onPriceUpdate = { newBenefice ->
-                    val newPrixVent = produit.prixAchat + newBenefice
-                    updateProduct(produit.copy(prixVent = newPrixVent))
-                },
-                textColor = if (benefice > 0) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.error
-            )
         }
     }
 }
