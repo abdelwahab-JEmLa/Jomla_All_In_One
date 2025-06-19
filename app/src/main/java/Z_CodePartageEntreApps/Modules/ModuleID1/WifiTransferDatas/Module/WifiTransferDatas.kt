@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -36,9 +37,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas(
     private val context: Context,
-    private val onPayloadReceiveRaw: (String) -> Unit={},
+    val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
-
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
@@ -59,6 +60,35 @@ class WifiTransferDatas(
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
+
+    fun sendOrderToClientDisplayerT(
+        orderName: WifiUpdateClientDisplayerStats,
+        data: Any? = null
+    ) {
+        viewModelScope.launch {
+            sendData("${orderName.prefix}$data")
+        }
+    }
+
+    val currentCompt =
+        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+
+    private fun handlePayload(payload: String) {
+        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+            when (messageType) {
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID ->
+                    currentCompt?.let {
+                        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
+                            .addOrUpdateData(
+                                it.copy(presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content)
+                            )
+                    }
+
+                else -> {}
+            }
+        } ?: Log.d("", "📩 Unhandled message received: $payload")
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initiateReconnection() {
         if (isReconnecting.compareAndSet(false, true)) {
@@ -75,10 +105,12 @@ class WifiTransferDatas(
                         delay(backoffDelay)
 
                         // Update UI state to show reconnection attempt
-                        _connectionUiState.update { it.copy(
-                            connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
-                            reconnectionAttempts = retryCount + 1
-                        )}
+                        _connectionUiState.update {
+                            it.copy(
+                                connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
+                                reconnectionAttempts = retryCount + 1
+                            )
+                        }
 
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> startAsHost()
@@ -92,9 +124,11 @@ class WifiTransferDatas(
                         retryCount++
 
                         // Update last attempt timestamp
-                        _connectionUiState.update { it.copy(
-                            lastSuccessfulConnection = System.currentTimeMillis()
-                        )}
+                        _connectionUiState.update {
+                            it.copy(
+                                lastSuccessfulConnection = System.currentTimeMillis()
+                            )
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "💥 Erreur lors de la tentative de reconnexion", e)
@@ -119,10 +153,12 @@ class WifiTransferDatas(
         if (endpointId == disconnectedEndpointId) {
             this.endpointId = null
             updateConnectionStatus("Déconnecté")
-            _connectionUiState.update { it.copy(
-                isConnected = false,
-                lastSuccessfulConnection = System.currentTimeMillis()
-            )}
+            _connectionUiState.update {
+                it.copy(
+                    isConnected = false,
+                    lastSuccessfulConnection = System.currentTimeMillis()
+                )
+            }
 
             if (shouldAttemptReconnection()) {
                 initiateReconnection()
@@ -131,6 +167,7 @@ class WifiTransferDatas(
             }
         }
     }
+
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             Log.d(TAG, "🌟 Connexion initiée avec: ${info.endpointName}")
@@ -149,14 +186,17 @@ class WifiTransferDatas(
                     startConnectionMonitoring()
                     sendData("Connection established")
                 }
+
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                     Log.e(TAG, "🚫 Connexion rejetée")
                     handleConnectionFailure("Connexion rejetée")
                 }
+
                 ConnectionsStatusCodes.STATUS_ERROR -> {
                     Log.e(TAG, "💥 Erreur de connexion")
                     handleConnectionFailure("Erreur de connexion")
                 }
+
                 else -> {
                     Log.e(TAG, "❓ Statut de connexion inconnu: ${result.status.statusCode}")
                     handleConnectionFailure("Erreur inconnue")
@@ -176,6 +216,7 @@ class WifiTransferDatas(
                 try {
                     val rawMessage = String(payload.asBytes()!!)
                     onPayloadReceiveRaw(rawMessage)
+                    handlePayload(rawMessage)
                     Log.d(TAG, "✉️ Message reçu et traité")
                 } catch (e: Exception) {
                     Log.e(TAG, "❌ Erreur lors du traitement du payload", e)
@@ -188,16 +229,19 @@ class WifiTransferDatas(
                 PayloadTransferUpdate.Status.SUCCESS -> {
                     Log.d(TAG, "✅ Transfert réussi")
                 }
+
                 PayloadTransferUpdate.Status.FAILURE -> {
                     Log.e(TAG, "❌ Échec du transfert")
                     handleTransferFailure()
                 }
+
                 PayloadTransferUpdate.Status.IN_PROGRESS -> {
                     val progress = if (update.totalBytes > 0) {
                         (update.bytesTransferred * 100 / update.totalBytes)
                     } else 0
                     Log.d(TAG, "⏳ Transfert: $progress%")
                 }
+
                 PayloadTransferUpdate.Status.CANCELED -> {
                     Log.d(TAG, "🚫 Transfert annulé")
                     handleTransferFailure()
@@ -246,7 +290,6 @@ class WifiTransferDatas(
             handleFinalDisconnection()
         }
     }
-
 
 
     private fun calculateBackoffDelay(): Long {
@@ -431,6 +474,7 @@ class WifiTransferDatas(
                 Manifest.permission.NEARBY_WIFI_DEVICES
             )
         }
+
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
             arrayOf(
                 Manifest.permission.BLUETOOTH,
@@ -439,6 +483,7 @@ class WifiTransferDatas(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         }
+
         else -> {
             arrayOf(
                 Manifest.permission.BLUETOOTH,
@@ -471,18 +516,22 @@ class WifiTransferDatas(
 
     private fun updateConnectionStatus(status: String) {
         Log.d(TAG, "📊 Status: $status")
-        _connectionUiState.update { it.copy(
-            connectionStatus = status,
-            error = null  // Réinitialise l'erreur lors de la mise à jour du statut
-        )}
+        _connectionUiState.update {
+            it.copy(
+                connectionStatus = status,
+                error = null  // Réinitialise l'erreur lors de la mise à jour du statut
+            )
+        }
     }
 
     private fun handleError(error: String) {
         Log.e(TAG, "⚠️ Erreur: $error")
-        _connectionUiState.update { it.copy(
-            error = error,
-            connectionStatus = "Erreur: $error"
-        )}
+        _connectionUiState.update {
+            it.copy(
+                error = error,
+                connectionStatus = "Erreur: $error"
+            )
+        }
     }
 
     override fun onCleared() {
@@ -515,7 +564,8 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
     WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
     SearchWindowsDisplaye("SearchWindowsDisplaye"),
-    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"),
+    FilterProduitsParCatalogueBsonID("FilterProduitsParCatalogueBsonID")
     ;
 
     companion object {

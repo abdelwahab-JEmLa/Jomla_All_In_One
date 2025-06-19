@@ -1,5 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -68,7 +69,8 @@ data class UiState(
 open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
-    val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
+    val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
+    a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
@@ -77,21 +79,24 @@ open class HeadViewModel(
     open val uiState = _uiState.asStateFlow()
 
     private val connectionManager = WifiTransferDatas(
-        context = context, onPayloadReceiveRaw = { payload -> handlePayload(payload) })
+        context = context,
+        a_CentralDatasHandlerProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
+    )
+    { payload -> handlePayload(payload) }
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
             // Setup real-time listener for price changes
             firestore.collection("HistoriqueDesFactures").addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        Log.e(tag, "Listen failed.", e)
-                        return@addSnapshotListener
-                    }
-
-                    if (snapshot != null) {
-                        processHistoricalData(snapshot.documents)
-                    }
+                if (e != null) {
+                    Log.e(tag, "Listen failed.", e)
+                    return@addSnapshotListener
                 }
+
+                if (snapshot != null) {
+                    processHistoricalData(snapshot.documents)
+                }
+            }
         }
     }
 
@@ -168,6 +173,8 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
                     copy(newArregmentColorsJsonStruct = content)
                 }
+
+                else -> {}
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
@@ -739,8 +746,8 @@ open class HeadViewModel(
                 val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
 
                 val currentSetting = existingSettings.find { it.name == name }?.copy(
-                        valueLong = value, date = Date()
-                    ) ?: AppSettingsSaverModel(
+                    valueLong = value, date = Date()
+                ) ?: AppSettingsSaverModel(
                     id = maxId + 1, name = name, valueLong = value, date = Date()
                 )
 

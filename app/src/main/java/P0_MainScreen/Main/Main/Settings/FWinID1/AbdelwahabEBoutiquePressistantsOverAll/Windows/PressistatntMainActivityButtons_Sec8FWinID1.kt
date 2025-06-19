@@ -71,11 +71,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     // Cache the client count to avoid multiple reads
-    val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
+    val remainingClients =
+        recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
 
     // Get current selected catalogue
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
-    val currentSelectedCatalogueId = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+    val currentSelectedCatalogueId =
+        currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
     // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
@@ -114,7 +116,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job = null
                 }
 
-                else -> { /* do nothing */ }
+                else -> { /* do nothing */
+                }
             }
         }
 
@@ -153,6 +156,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )
                 appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
+
+                viewModel.sendOrderAuPresentoireDevice(catalogueId)
             }
         }
     )
@@ -179,7 +184,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             ) {
                 if (showButtons) {
                     Button1(
-                        appComptComposeRepositoryProtoJuin17=appComptComposeRepositoryProtoJuin17,
+                        appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
                         showLabels = showLabels,
                     ) {
                         // Fixed: Show catalogue selection dialog

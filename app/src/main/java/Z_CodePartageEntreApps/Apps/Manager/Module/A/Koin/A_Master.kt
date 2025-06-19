@@ -150,7 +150,7 @@ val dataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
-    single { WifiTransferDatas(androidContext(),) }
+    single { WifiTransferDatas(androidContext(),get(),) }
     single { Z_DatabaseInitializationManager(get(),get(),get(),) }
 
     single { CalculeCouleurHandler(get()) }
@@ -192,7 +192,7 @@ val viewModelModule = module {
     viewModel { MapClientsViewModel(get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
-    viewModel { HeadViewModel(androidContext(), get(), get()) }
+    viewModel { HeadViewModel(androidContext(), get(),get(),get(),) }
 }
 
 val appModule = module {
