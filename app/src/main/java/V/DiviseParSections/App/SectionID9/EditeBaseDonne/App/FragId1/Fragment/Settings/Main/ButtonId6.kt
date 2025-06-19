@@ -27,7 +27,6 @@ fun ButtonId6(
     viewModelPRODUCTS_LIST: PRODUCTS_LIST_ViewModel = koinViewModel(),
     showLabels: Boolean,
 ) {
-    
     val uiState by viewModelPRODUCTS_LIST.uiState.collectAsState()
 
     Row(
