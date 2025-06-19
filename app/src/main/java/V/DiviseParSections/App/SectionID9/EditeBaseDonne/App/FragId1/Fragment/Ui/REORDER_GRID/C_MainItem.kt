@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,7 +40,7 @@ internal fun MainItem(
     category: CategoriesTabelle,
     productsByCategory: Map<Long, List<ArticlesBasesStatsTable>>,
 ) {
-    val height = 45.dp
+    val height = 150.dp
 
     val categoryProducts = productsByCategory[category.id] ?: emptyList()
     val displayProducts = categoryProducts.take(3)
@@ -51,7 +50,8 @@ internal fun MainItem(
     Box {
         Card(
             modifier = Modifier
-                .aspectRatio(0.7f)
+                .height(height) // Use fixed height instead of aspectRatio
+                .fillMaxWidth()
                 .clickable {
                     viewModel.updateCate_cSelectionePourDeplace(category)
                 },
@@ -69,7 +69,7 @@ internal fun MainItem(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(6.dp),
+                    .padding(2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -82,47 +82,47 @@ internal fun MainItem(
                                 moveBefore = true
                             )
                         },
-                        modifier = Modifier.size(height)
+                        modifier = Modifier.size(25.dp) // Reduced size to fit better in 55.dp height
                     ) {
                         Icon(
                             Icons.Default.KeyboardArrowUp,
                             contentDescription = "Move selected categories before this one",
                             tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(25.dp) // Reduced icon size
                         )
                     }
                 } else {
-                    Spacer(modifier = Modifier.height(height))
+                    Spacer(modifier = Modifier.height(4.dp)) // Reduced spacer height
                 }
 
                 RowProduitImages(displayProducts)
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 2.dp) // Reduced padding
                 ) {
                     val id = category.id
                     val text = category.nom
                     Text(
                         text ="$text-$id",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall, // Smaller text for compact layout
                         fontWeight = if (category.cSelectionePourDeplace)
                             FontWeight.Bold else FontWeight.Medium,
                         textAlign = TextAlign.Center,
                         color = if (category.cSelectionePourDeplace)
                             MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                        maxLines = 2,
+                        maxLines = 1, // Reduced to 1 line for compact layout
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     if (category.cSelectionePourDeplace) {
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(2.dp)) // Reduced spacer
                         Box(
                             modifier = Modifier
-                                .size(16.dp)
+                                .size(12.dp) // Smaller checkmark box
                                 .background(
                                     MaterialTheme.colorScheme.primary,
-                                    RoundedCornerShape(8.dp)
+                                    RoundedCornerShape(6.dp)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -136,7 +136,7 @@ internal fun MainItem(
                 }
 
                 // Empty spacer to maintain card structure
-                Spacer(modifier = Modifier.height(height))
+                Spacer(modifier = Modifier.height(4.dp)) // Reduced spacer height
             }
         }
 
@@ -151,19 +151,19 @@ internal fun MainItem(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .offset(y = 16.dp) // Offset to appear below the card
-                    .size(32.dp)
+                    .offset(y = 0.dp) // Reduced offset to match smaller card height
+                    .size(28.dp) // Slightly smaller button
                     .background(
                         MaterialTheme.colorScheme.secondary,
                         CircleShape
                     )
-                    .zIndex(1f) // Ensure it appears above other elements
+                    .zIndex(1f)
             ) {
                 Icon(
                     Icons.Default.KeyboardArrowDown,
                     contentDescription = "Move selected categories after this one",
                     tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp) // Reduced icon size
                 )
             }
         }
