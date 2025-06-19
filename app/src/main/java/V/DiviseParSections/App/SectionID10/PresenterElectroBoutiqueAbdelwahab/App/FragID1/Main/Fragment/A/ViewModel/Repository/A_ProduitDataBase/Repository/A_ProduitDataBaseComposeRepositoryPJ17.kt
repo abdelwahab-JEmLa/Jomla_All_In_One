@@ -22,7 +22,7 @@ class A_ProduitDataBaseComposeRepositoryPJ17(
     private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
+    val sortedDatasValue: List<ArticlesBasesStatsTable> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
 
@@ -61,6 +61,7 @@ class A_ProduitDataBaseComposeRepositoryPJ17(
 
         sortedRegular + sortedOrphan
     }
+
     init {
         composScope.launch {
             dao.getAllFlow().collect { _datas.value = it }
