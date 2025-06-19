@@ -18,6 +18,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SuppliersTabelle
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -63,9 +64,9 @@ data class UiState(
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null,
-
 )
 
+@SuppressLint("StaticFieldLeak")
 open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
