@@ -64,7 +64,7 @@ fun EditeBaseDonneMainScreenIdS9(
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
-    var currentMode by remember { mutableStateOf(ModeAffichage.PRODUCTS_LIST) }
+    var currentMode by remember { mutableStateOf(ModeAffichage.REORDER_GRID) }
     var filterState by remember { mutableStateOf(FilterState()) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
