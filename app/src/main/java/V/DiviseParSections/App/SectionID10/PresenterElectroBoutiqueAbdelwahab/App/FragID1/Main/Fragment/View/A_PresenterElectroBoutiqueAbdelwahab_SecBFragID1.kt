@@ -2,12 +2,12 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.ArticleGridWithScrollbar
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.Scrollbar
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -36,15 +36,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 
 @Composable
 fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
@@ -65,6 +65,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
+    val produits = viewModel.a_CentralDatasHandlerProtoJuin9.filteredA_ProduitsParCatalogueBsonId
     val uiState by viewModel.uiState.collectAsState()
 
     val DevMode = false
@@ -88,6 +89,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         }
     }
     MainUi(
+        produits=produits,
         uiState = uiStateHeadViewModel,
         gridColumns = gridColumns,
         filterText = filterText,
@@ -101,23 +103,20 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible = isFabVisible,
-        onClickDonne = {
-            filterText = ""
-            onClickDonne()
-        },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-        scrollTiger = scrollTiger,
         onToggleLockHost = onToggleLockHost,
         onToggleLockExpandedPricex = onToggleLockExpandedPricex,
         currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
         targetCategoryId = targetCategoryId,
-        lockHost = lockHost, onClickImageToShowControles = onClickImageToShowControles
+        lockHost = lockHost,
+        onClickImageToShowControles = onClickImageToShowControles
     )
 }
 
 @Composable
 fun MainUi(
+    produits: List<ArticlesBasesStatsTable>,
     uiState: UiState,
     gridColumns: Int,
     filterText: String,
@@ -131,15 +130,14 @@ fun MainUi(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
-    onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    scrollTiger: Int,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientInfosProtoJuin3?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean, onClickImageToShowControles: () -> Unit
+    lockHost: Boolean,
+    onClickImageToShowControles: () -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
@@ -197,7 +195,6 @@ fun MainUi(
         }
     }
 
-
     HandleScrollBroadcast(
         isHostPhone = uiState.productDisplayController.isHostPhone,
         isConnected = uiState.productDisplayController.isConnected,
@@ -214,7 +211,6 @@ fun MainUi(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
         Column(
             modifier = Modifier
@@ -233,6 +229,7 @@ fun MainUi(
 
                 Box(modifier = Modifier.weight(1f)) {
                     ArticleGridWithScrollbar(
+                        produits=produits,
                         uiState = uiState,
                         gridColumns = gridColumns,
                         filterText = filterText,
@@ -430,3 +427,47 @@ private fun Int.toScrollUpdate(): ScrollUpdate {
 }
 
 
+@Composable
+fun ArticleGridWithScrollbar(
+    produits: List<ArticlesBasesStatsTable>,
+    uiState: UiState,
+    gridColumns: Int,
+    filterText: String,
+    showFilter: Boolean,
+    gridState: LazyStaggeredGridState,
+    viewModel: HeadViewModel,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    currentClient: B_ClientInfosProtoJuin3?,
+    viewModelInitApp: ViewModelInitApp,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    lockHost: Boolean,
+    onClickImageToShowControles: () -> Unit
+) {
+    Box(modifier = modifier) {
+        Scrollbar(
+            state = gridState,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 2.dp)
+                .alpha(0.8f)
+        )
+
+        MainList(
+            produits=produits,
+            uiState = uiState,
+            filterText = filterText,
+            showFilter = showFilter,
+            gridState = gridState,
+            headViewModelViewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            modifier = Modifier.fillMaxSize(),
+            onClickToOpenWindos = onClickToOpenWindos,
+            currentClient = currentClient,
+            lockHost = lockHost,
+            viewModelInitApp = viewModelInitApp,
+            onClickImageToShowControles = onClickImageToShowControles
+        )
+    }
+}

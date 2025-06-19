@@ -1,18 +1,15 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.Scrollbar
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -22,87 +19,38 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.UiState
 import kotlinx.coroutines.delay
 
 @Composable
-fun ArticleGridWithScrollbar(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    showFilter: Boolean,
-    gridState: LazyStaggeredGridState,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
-    viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean,
-    onClickImageToShowControles: () -> Unit
-) {
-    Box(modifier = modifier) {
-        Scrollbar(
-            state = gridState,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 2.dp)
-                .alpha(0.8f)
-        )
-
-        MainList(
-            uiState = uiState,
-            filterText = filterText,
-            showFilter = showFilter,
-            gridState = gridState,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            modifier = Modifier.fillMaxSize(),
-            onClickToOpenWindos = onClickToOpenWindos,
-            currentClient = currentClient,
-            lockHost = lockHost,
-            viewModelInitApp = viewModelInitApp,
-            onClickImageToShowControles = onClickImageToShowControles
-        )
-    }
-}
-
-@Composable
 fun MainList(
+    produits: List<ArticlesBasesStatsTable> ,
     uiState: UiState,
+    headViewModelViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientInfosProtoJuin3?,
     lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp,
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
 ) {
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
 
-  //  Log.d("Filter","Filtred ${uiState.articlesBasesStatTables.size}")
-
-    val filteredArticles = remember(uiState.articlesBasesStatTables, filterText, currentClient) {
-        filterArticles(uiState.articlesBasesStatTables, filterText, )
-    }
+    val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
     val articlesByCategory = remember(filteredArticles, uiState.categories) {
         val sortedCategories = uiState.categories.sortedWith(
@@ -188,7 +136,7 @@ fun MainList(
 
                 ArticleItem(
                     article = article,
-                    viewModel = viewModel,
+                    viewModel = headViewModelViewModel,
                     reloadTrigger = reloadTrigger,
                     onClickToOpenWindos = onClickToOpenWindos,
                     uiState = uiState,

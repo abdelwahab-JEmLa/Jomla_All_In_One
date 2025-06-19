@@ -45,18 +45,19 @@ class A_CentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val filteredA_ProduitsParCatalogueBsonId by derivedStateOf { 
-        a_ProduitDataBaseComposeRepositoryPJ17.
-        sortedDatasValue.filteredParCatalogueBsonId()
+    val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
+        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
-      val catalogue_bsonObjectId= appComptComposeRepositoryProtoJuin17.currentAppCompt?.bsonObjectId
-             //<--
-             //TODO(1): regle 
-        return emptyList()
+        val catalogue_bsonObjectId =
+            appComptComposeRepositoryProtoJuin17.currentAppCompt?.bsonObjectId
+        //<--
+        //TODO(1): regle
+
+        return this
     }
-    
+
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
