@@ -127,8 +127,13 @@ fun HeaderSection(
             }
         }
 
-        // Small Availability Status Badge - positioned above delete button
+        // Clickable Availability Status Badge - positioned above delete button
         Surface(
+            onClick = {
+                // Toggle availability state and update product
+                val updatedProduct = produit.toggleDisponibilityEtates()
+                updateProduct(updatedProduct)
+            },
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 8.dp)
