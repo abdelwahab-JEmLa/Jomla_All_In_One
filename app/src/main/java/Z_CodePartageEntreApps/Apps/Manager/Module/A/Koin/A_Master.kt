@@ -65,7 +65,7 @@ import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
-import Z_CodePartageEntreApps.Modules.ConnectionManager
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
@@ -149,7 +149,7 @@ val dataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
-    single { ConnectionManager(androidContext(),) }
+    single { WifiTransferDatas(androidContext(),) }
     single { Z_DatabaseInitializationManager(get(),get(),) }
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

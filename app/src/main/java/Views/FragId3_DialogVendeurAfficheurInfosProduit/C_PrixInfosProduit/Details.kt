@@ -23,8 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Repositorys.PriceRecord
-import com.example.clientjetpack.Repositorys.UiState
+import com.example.clientjetpack.ViewModel.PriceRecord
+import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @SuppressLint("DefaultLocale")

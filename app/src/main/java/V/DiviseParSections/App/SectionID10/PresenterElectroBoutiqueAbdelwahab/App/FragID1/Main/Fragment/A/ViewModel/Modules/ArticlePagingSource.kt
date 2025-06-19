@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repos
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.clientjetpack.Repositorys.UiState
+import com.example.clientjetpack.ViewModel.UiState
 import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 

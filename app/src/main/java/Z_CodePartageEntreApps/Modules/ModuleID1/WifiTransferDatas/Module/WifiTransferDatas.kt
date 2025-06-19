@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Modules
+package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -33,7 +33,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ConnectionManager(
+@SuppressLint("StaticFieldLeak")
+class WifiTransferDatas(
     private val context: Context,
     private val onPayloadReceiveRaw: (String) -> Unit={},
 ) : ViewModel() {
@@ -141,7 +142,7 @@ class ConnectionManager(
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     Log.d(TAG, "✅ Connexion établie avec succès!")
-                    this@ConnectionManager.endpointId = endpointId
+                    this@WifiTransferDatas.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
                     retryCount = 0 // Réinitialisation du compteur de tentatives
@@ -493,7 +494,7 @@ class ConnectionManager(
     }
 
     companion object {
-        private const val TAG = "ConnectionManager"
+        private const val TAG = "WifiTransferDatas"
     }
 }
 

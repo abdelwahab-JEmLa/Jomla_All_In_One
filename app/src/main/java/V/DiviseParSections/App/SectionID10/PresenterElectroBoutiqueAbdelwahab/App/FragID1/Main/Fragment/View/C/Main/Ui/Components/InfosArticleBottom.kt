@@ -13,7 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Repositorys.UiState
+import com.example.clientjetpack.ViewModel.UiState
 import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Currency

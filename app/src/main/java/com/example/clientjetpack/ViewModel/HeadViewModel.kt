@@ -1,10 +1,11 @@
 package com.example.clientjetpack.ViewModel
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
@@ -14,16 +15,15 @@ import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Modules.ConnectionManager
-import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
+import Z_CodePartageEntreApps.Model.Z.Archive.SuppliersTabelle
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.Repositorys.PriceRecord
-import com.example.clientjetpack.Repositorys.UiState
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -45,6 +45,27 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+data class UiState(
+    val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
+    val categories: List<CategoriesTabelle> = emptyList(),
+
+    val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
+    val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
+    val newProduitsList: List<A_ProduitModel> = emptyList(),
+    val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
+    val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
+    val suppliers: List<SuppliersTabelle> = emptyList(),
+
+    val diviseurDeDisplayProductForEachClient: List<DiviseurDeDisplayProductForEachClient> = emptyList(),
+
+    val productDisplayController: ProductDisplayController,
+    val maxPriceMap: Map<Pair<Long, Long>, List<PriceRecord>> = emptyMap(),
+    val isLoading: Boolean = false,
+    val loadingProgress: Float = 0f,
+    val error: String? = null,
+
+)
+
 open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
@@ -65,17 +86,14 @@ open class HeadViewModel(
         I_CategorieProduitsRepositoryImpl(database)
 
 
-    private val connectionManager = ConnectionManager(
-        context = context,
-        onPayloadReceiveRaw = { payload -> handlePayload(payload) }
-    )
+    private val connectionManager = WifiTransferDatas(
+        context = context, onPayloadReceiveRaw = { payload -> handlePayload(payload) })
 
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
             // Setup real-time listener for price changes
-            firestore.collection("HistoriqueDesFactures")
-                .addSnapshotListener { snapshot, e ->
+            firestore.collection("HistoriqueDesFactures").addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         Log.e(tag, "Listen failed.", e)
                         return@addSnapshotListener
@@ -99,10 +117,7 @@ open class HeadViewModel(
 
                     Triple(productId, clientId, PriceRecord(price, clientId, date))
                 }
-            }.groupBy(
-                keySelector = { Pair(it.first, it.second) },
-                valueTransform = { it.third }
-            )
+            }.groupBy(keySelector = { Pair(it.first, it.second) }, valueTransform = { it.third })
 
             _uiState.update { currentState ->
                 currentState.copy(maxPriceMap = priceHistory)
@@ -113,10 +128,7 @@ open class HeadViewModel(
     }
 
     open fun getMaxPrice(productId: Long): Double {
-        return uiState.value.maxPriceMap
-            .filter { it.key.first == productId.toLong() }
-            .values
-            .flatten()
+        return uiState.value.maxPriceMap.filter { it.key.first == productId.toLong() }.values.flatten()
             .maxOfOrNull { it.price } ?: 0.0
     }
 
@@ -140,8 +152,7 @@ open class HeadViewModel(
 
                 WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
                     copy(
-                        clientWindowsDisplayedProductId = null,
-                        searchWindowsDisplaye = ""
+                        clientWindowsDisplayedProductId = null, searchWindowsDisplaye = ""
                     )
                 }
 
@@ -151,8 +162,7 @@ open class HeadViewModel(
 
                 WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
                     copy(
-                        clientWindowsPickerDisplayedQuantity = if (content == "0")
-                            1 else {
+                        clientWindowsPickerDisplayedQuantity = if (content == "0") 1 else {
                             content.toInt()
                         }
                     )
@@ -202,8 +212,8 @@ open class HeadViewModel(
 
     fun addHostDevice(deviceName: String) {
         viewModelScope.launch {
-            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
-                ?: return@launch
+            val device =
+                uiState.value.devicesTypeManager.find { it.name == deviceName } ?: return@launch
 
             val updatedDevice = device.copy(isHost = true)
 
@@ -211,13 +221,10 @@ open class HeadViewModel(
             database.devicesTypeManagerDao().insert(updatedDevice)
 
             // Update Firebase
-            refDevicesTypeManager
-                .child(updatedDevice.id.toString())
-                .setValue(updatedDevice)
+            refDevicesTypeManager.child(updatedDevice.id.toString()).setValue(updatedDevice)
                 .addOnSuccessListener {
                     Log.d(tag, "Host device added successfully: $deviceName")
-                }
-                .addOnFailureListener { e ->
+                }.addOnFailureListener { e ->
                     Log.e(tag, "Error adding host device", e)
                 }
 
@@ -226,16 +233,15 @@ open class HeadViewModel(
                 currentState.copy(
                     devicesTypeManager = currentState.devicesTypeManager.map {
                         if (it.id == updatedDevice.id) updatedDevice else it
-                    }
-                )
+                    })
             }
         }
     }
 
     fun removeHostDevice(deviceName: String) {
         viewModelScope.launch {
-            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
-                ?: return@launch
+            val device =
+                uiState.value.devicesTypeManager.find { it.name == deviceName } ?: return@launch
 
             val updatedDevice = device.copy(isHost = false)
 
@@ -243,13 +249,10 @@ open class HeadViewModel(
             database.devicesTypeManagerDao().insert(updatedDevice)
 
             // Update Firebase
-            refDevicesTypeManager
-                .child(updatedDevice.id.toString())
-                .setValue(updatedDevice)
+            refDevicesTypeManager.child(updatedDevice.id.toString()).setValue(updatedDevice)
                 .addOnSuccessListener {
                     Log.d(tag, "Host device removed successfully: $deviceName")
-                }
-                .addOnFailureListener { e ->
+                }.addOnFailureListener { e ->
                     Log.e(tag, "Error removing host device", e)
                 }
 
@@ -258,16 +261,13 @@ open class HeadViewModel(
                 currentState.copy(
                     devicesTypeManager = currentState.devicesTypeManager.map {
                         if (it.id == updatedDevice.id) updatedDevice else it
-                    }
-                )
+                    })
             }
         }
     }
 
     private fun getHostDevices(): List<String> {
-        return uiState.value.devicesTypeManager
-            .filter { it.isHost }
-            .map { it.name }
+        return uiState.value.devicesTypeManager.filter { it.isHost }.map { it.name }
     }
 
     fun updateTypePhone(type: Boolean = false) {
@@ -322,13 +322,10 @@ open class HeadViewModel(
         firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
 
 
-  
-
     private fun setLoading(isLoading: Boolean) {
         _uiState.update {
             it.copy(
-                isLoading = isLoading,
-                loadingProgress = if (!isLoading) 0f else it.loadingProgress
+                isLoading = isLoading, loadingProgress = if (!isLoading) 0f else it.loadingProgress
             )
         }
     }
@@ -376,11 +373,10 @@ open class HeadViewModel(
             val formattedDate = now.format(formatter)
 
             // Calculate new ID (max existing ID + 1)
-            val maxIdArticle = currentState.articlesBasesStatTables
-                .maxOfOrNull { it.id } ?: 0
+            val maxIdArticle = currentState.articlesBasesStatTables.maxOfOrNull { it.id } ?: 0
             // Calculate new ID (max existing ID + 1)
-            val maxidForSearchArticles = currentState.articlesBasesStatTables
-                .maxOfOrNull { it.idForSearchArticles } ?: 0
+            val maxidForSearchArticles =
+                currentState.articlesBasesStatTables.maxOfOrNull { it.idForSearchArticles } ?: 0
             // Create new article with incremented ID
             val newArticle = ArticlesBasesStatsTable(
                 id = maxIdArticle + 1,
@@ -432,14 +428,13 @@ open class HeadViewModel(
                 val currentState = _uiState.value
 
                 // Find the maximum VID from existing sales
-                val maxId = currentState.soldArticlesModel
-                    .filterNotNull()
-                    .maxOfOrNull { it.vid } ?: 0
+                val maxId =
+                    currentState.soldArticlesModel.filterNotNull().maxOfOrNull { it.vid } ?: 0
 
                 // Find the related article
-                val article = currentState.articlesBasesStatTables
-                    .find { it.id.toLong() == relatedArticleDataBaseId }
-                    ?: throw IllegalStateException("Article not found with ID: $relatedArticleDataBaseId")
+                val article =
+                    currentState.articlesBasesStatTables.find { it.id.toLong() == relatedArticleDataBaseId }
+                        ?: throw IllegalStateException("Article not found with ID: $relatedArticleDataBaseId")
 
                 // Create base sale object
                 val newSale = SoldArticlesTabelle(
@@ -518,8 +513,8 @@ open class HeadViewModel(
     fun updateColorSelection(colorId: Long, quantity: Int) {
         viewModelScope.launch {
             _currentSaleInWindows.value?.let { sale ->
-                val article = _uiState.value.articlesBasesStatTables
-                    .find { it.id.toLong() == sale.idArticle }
+                val article =
+                    _uiState.value.articlesBasesStatTables.find { it.id.toLong() == sale.idArticle }
 
                 // Find which color slot to upsertLenceCommandeRepoGroupedProtoAvantJuin3 by searching through colorIdPicked fields
                 val updatedSale = when (colorId) {
@@ -531,30 +526,25 @@ open class HeadViewModel(
                         // If color not found in existing slots, find first empty slot (0L)
                         when {
                             sale.color1IdPicked == 0L -> sale.copy(
-                                color1IdPicked = colorId,
-                                color1SoldQuantity = quantity
+                                color1IdPicked = colorId, color1SoldQuantity = quantity
                             )
 
                             sale.color2IdPicked == 0L -> sale.copy(
-                                color2IdPicked = colorId,
-                                color2SoldQuantity = quantity
+                                color2IdPicked = colorId, color2SoldQuantity = quantity
                             )
 
                             sale.color3IdPicked == 0L -> sale.copy(
-                                color3IdPicked = colorId,
-                                color3SoldQuantity = quantity
+                                color3IdPicked = colorId, color3SoldQuantity = quantity
                             )
 
                             sale.color4IdPicked == 0L -> sale.copy(
-                                color4IdPicked = colorId,
-                                color4SoldQuantity = quantity
+                                color4IdPicked = colorId, color4SoldQuantity = quantity
                             )
 
                             else -> {
                                 // If no empty slots, upsertLenceCommandeRepoGroupedProtoAvantJuin3 first slot as fallback
                                 sale.copy(
-                                    color1IdPicked = colorId,
-                                    color1SoldQuantity = quantity
+                                    color1IdPicked = colorId, color1SoldQuantity = quantity
                                 )
                             }
                         }
@@ -563,8 +553,7 @@ open class HeadViewModel(
 
                 try {
                     val totalQuantity = updatedSale.run {
-                        color1SoldQuantity + color2SoldQuantity +
-                                color3SoldQuantity + color4SoldQuantity
+                        color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
                     }
 
                     if (totalQuantity == 0) {
@@ -673,15 +662,12 @@ open class HeadViewModel(
                     state.copy(
                         soldArticlesModel = state.soldArticlesModel.map { article ->
                             if (article?.vid == updatedSale.vid) updatedSale else article
-                        }
-                    )
+                        })
                 }
 
                 // Update Firebase
                 firebaseDatabase.getReference("O_SoldArticlesTabelle")
-                    .child(updatedSale.vid.toString())
-                    .setValue(updatedSale)
-                    .await()
+                    .child(updatedSale.vid.toString()).setValue(updatedSale).await()
 
 
             } catch (e: Exception) {
@@ -713,8 +699,7 @@ open class HeadViewModel(
                         state.copy(
                             soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
                                 it.vid != vid
-                            }
-                        )
+                            })
                     }
                 }
             } catch (e: Exception) {
@@ -747,9 +732,7 @@ open class HeadViewModel(
 
                     // Update Firebase
                     firebaseDatabase.getReference("O_SoldArticlesTabelle")
-                        .child(sale.vid.toString())
-                        .setValue(sale)
-                        .await()
+                        .child(sale.vid.toString()).setValue(sale).await()
 
                 } catch (e: Exception) {
                     _uiState.update { it.copy(error = "Failed to save sale: ${e.message}") }
@@ -766,24 +749,16 @@ open class HeadViewModel(
                 val existingSettings = _uiState.value.appSettingsSaverModel
                 val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
 
-                val currentSetting = existingSettings.find { it.name == name }
-                    ?.copy(
-                        valueLong = value,
-                        date = Date()
-                    )
-                    ?: AppSettingsSaverModel(
-                        id = maxId + 1,
-                        name = name,
-                        valueLong = value,
-                        date = Date()
-                    )
+                val currentSetting = existingSettings.find { it.name == name }?.copy(
+                        valueLong = value, date = Date()
+                    ) ?: AppSettingsSaverModel(
+                    id = maxId + 1, name = name, valueLong = value, date = Date()
+                )
 
 
                 // Update Firebase
                 firebaseDatabase.getReference("A_AppSettingsSaverModel")
-                    .child(currentSetting.id.toString())
-                    .setValue(currentSetting)
-                    .await()
+                    .child(currentSetting.id.toString()).setValue(currentSetting).await()
 
 
             } catch (e: Exception) {
@@ -803,10 +778,7 @@ open class HeadViewModel(
             } ?: 0
 
             val newArrivaleCategory = CategoriesTabelle(
-                id = maxId + 1,
-                nom = "NewArrivale",
-                position = 1,
-                displayedHeader = true
+                id = maxId + 1, nom = "NewArrivale", position = 1, displayedHeader = true
             )
 
             database.categoriesModelDao().insert(newArrivaleCategory)
@@ -835,8 +807,7 @@ open class HeadViewModel(
                     "suppliers" to _uiState.value.suppliers,
                     "backupTimestamp" to timestamp,
                     "backupDate" to SimpleDateFormat(
-                        "yyyy-MM-dd HH:mm:ss",
-                        Locale.getDefault()
+                        "yyyy-MM-dd HH:mm:ss", Locale.getDefault()
                     ).format(Date(timestamp))
                 )
 
@@ -885,10 +856,7 @@ open class HeadViewModel(
 
                 _uiState.value.articlesBasesStatTables.forEach { article ->
                     try {
-                        refDBJetPackExport
-                            .child(article.id.toString())
-                            .setValue(article)
-                            .await()
+                        refDBJetPackExport.child(article.id.toString()).setValue(article).await()
 
                         currentArticle++
                         updateLoadingProgress(currentArticle.toFloat() / totalArticles)
@@ -987,7 +955,6 @@ open class HeadViewModel(
     }
 
 
-
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
@@ -1008,11 +975,11 @@ open class HeadViewModel(
                 diviseurDeDisplayProductForEachClientInit(85f)
 
 
-           /*     val articlesSnapshot = refDBJetPackExport.get().await()
-                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStatsTable::class.java)
-                }
-          //      database.ArticlesBasesStatsModelDao().insertAll(articles)        */
+                /*     val articlesSnapshot = refDBJetPackExport.get().await()
+                     val articles = articlesSnapshot.children.mapNotNull { snapshot ->
+                         snapshot.getValue(ArticlesBasesStatsTable::class.java)
+                     }
+               //      database.ArticlesBasesStatsModelDao().insertAll(articles)        */
                 updateLoadingProgress(100f)
 
                 loadDataCollectOfUiStateFromRoom()
@@ -1034,6 +1001,7 @@ open class HeadViewModel(
         observeConnectionState()
         setupMaxPriceObserver()
     }
+
     fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
     }
@@ -1101,3 +1069,8 @@ open class HeadViewModel(
     }
 
 }
+
+// Update the price mapping to include client ID
+data class PriceRecord(
+    val price: Double, val clientId: Long, val date: Long
+)
