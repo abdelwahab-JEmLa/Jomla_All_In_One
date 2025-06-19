@@ -1,7 +1,7 @@
 package Views.P1.Ui.ArticlesGrid.B.Main.Filter
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import android.util.Log
 
 fun filterArticles(

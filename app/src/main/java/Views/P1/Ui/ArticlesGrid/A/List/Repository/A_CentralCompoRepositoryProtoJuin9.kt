@@ -1,11 +1,11 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository
+package Views.P1.Ui.ArticlesGrid.A.List.Repository
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A2_Passive.B_ClientsStateCompoRepository
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A2_Passive.D_TransactionCommercialCompoRepository
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context

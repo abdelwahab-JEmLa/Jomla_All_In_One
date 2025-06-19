@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init.isInternetAvailable
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.A.Model.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadCategoriesFromCsv

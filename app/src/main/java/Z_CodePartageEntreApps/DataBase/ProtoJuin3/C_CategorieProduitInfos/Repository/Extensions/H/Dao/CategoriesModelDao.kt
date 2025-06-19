@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Extensions.H.Dao
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

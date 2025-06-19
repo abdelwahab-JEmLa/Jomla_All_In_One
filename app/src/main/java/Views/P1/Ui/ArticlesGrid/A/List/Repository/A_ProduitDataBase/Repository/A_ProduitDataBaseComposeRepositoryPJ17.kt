@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository
+package Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository
 
 import Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto.A_ProduitDataBaseProtoJuin17
 import androidx.compose.runtime.Stable

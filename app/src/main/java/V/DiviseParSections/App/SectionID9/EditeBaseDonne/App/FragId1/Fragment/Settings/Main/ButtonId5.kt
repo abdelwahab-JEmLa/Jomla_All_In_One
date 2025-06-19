@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

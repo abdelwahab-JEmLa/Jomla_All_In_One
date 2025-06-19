@@ -1,6 +1,6 @@
 package Views.P1.Ui.Objects
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

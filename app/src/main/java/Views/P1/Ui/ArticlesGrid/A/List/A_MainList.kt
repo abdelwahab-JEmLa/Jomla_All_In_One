@@ -1,12 +1,12 @@
 package Views.P1.Ui.ArticlesGrid.A.List
 
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
 import Views.P1.Ui.ArticlesGrid.B.Main.Filter.filterArticles
 import Views.P1.Ui.ArticlesGrid.C.Ui.ArticleItem
 import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.CategoriesTabelle
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement

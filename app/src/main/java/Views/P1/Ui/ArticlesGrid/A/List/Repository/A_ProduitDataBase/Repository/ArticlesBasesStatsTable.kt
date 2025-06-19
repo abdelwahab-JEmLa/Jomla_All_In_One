@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository
+package Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository
 
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity

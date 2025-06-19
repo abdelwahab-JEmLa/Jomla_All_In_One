@@ -4,7 +4,7 @@ import Views.P1.Ui.ArticlesGrid.E_ArticleLayout
 import Views.P1.Ui.ArticlesGrid.ImageDisplayerProtoAvantJuin3
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

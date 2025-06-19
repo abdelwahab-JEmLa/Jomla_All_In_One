@@ -1,8 +1,8 @@
 package Views.P1._ArticlesStartFacade.Filter
 
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 
 fun ArticlePagingSource.filterArticles(): List<ArticlesBasesStatsTable> {
