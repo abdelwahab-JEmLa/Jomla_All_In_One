@@ -74,7 +74,7 @@ fun OptionsFragmentButtons(
     val screenHeightDp = configuration.screenHeightDp.dp
 
     var offsetX by remember { mutableFloatStateOf((screenWidth.value - 180f)) }
-    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value ) }
+    var offsetY by remember { mutableFloatStateOf(screenHeightDp.value) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var showDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
@@ -100,7 +100,8 @@ fun OptionsFragmentButtons(
                 TextButton(onClick = {
                     viewModelScope.launch {
                         E_JetPackAncienProduitDabase.getFirebaseData { ancDatas ->
-                            val newPrdList = viewModel.uiState.value.a_ProduitInfosList.toMutableList()
+                            val newPrdList =
+                                viewModel.uiState.value.a_ProduitInfosList.toMutableList()
 
                             // Create a map for faster lookup
                             val ancDataMap = ancDatas.associateBy { it.idArticle.toLong() }
@@ -110,13 +111,15 @@ fun OptionsFragmentButtons(
 
                                 if (ancData != null) {
                                     // Update product details
-                                    currentProduct.prixAchat=ancData.monPrixAchat
+                                    currentProduct.prixAchat = ancData.monPrixAchat
                                     currentProduct.nomArab = ancData.nomArab
                                     currentProduct.autreNomDarticle = ancData.autreNomDarticle
 
                                     // Update quantity information
-                                    currentProduct.nombreUniteInt = if (ancData.nmbrUnite == 0) 1 else  ancData.nmbrUnite
-                                    currentProduct.nombreProduitDonSonCarton = if (ancData.nmbrCaron == 0) 1 else  ancData.nmbrCaron
+                                    currentProduct.nombreUniteInt =
+                                        if (ancData.nmbrUnite == 0) 1 else ancData.nmbrUnite
+                                    currentProduct.nombreProduitDonSonCarton =
+                                        if (ancData.nmbrCaron == 0) 1 else ancData.nmbrCaron
 
                                     // Update display and state information
                                     currentProduct.affichageUniteState = ancData.affichageUniteState
@@ -135,7 +138,10 @@ fun OptionsFragmentButtons(
                             }
                             val totalCount = newPrdList.size
                             val notFoundCount = totalCount - updatedCount
-                            Log.d("DataSync", "Synchronization completed: $updatedCount updated, $notFoundCount not found in legacy data")
+                            Log.d(
+                                "DataSync",
+                                "Synchronization completed: $updatedCount updated, $notFoundCount not found in legacy data"
+                            )
                         }
                         showDialog = false
                     }
@@ -176,12 +182,17 @@ fun OptionsFragmentButtons(
                                 onClick = {
                                     viewModel.moveCategoriesAuCatalogue(catalogue.id)
 
-                                    onCategoriesUpdated( viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
-                                        .datasValue)
+                                    onCategoriesUpdated(
+                                        viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
+                                            .datasValue
+                                    )
 
                                     showCatalogueDialog = false
 
-                                    Log.d("CatalogueMove", "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}")
+                                    Log.d(
+                                        "CatalogueMove",
+                                        "Moved ${selectedCategories.size} categories to catalogue: ${catalogue.nom}"
+                                    )
                                 }
                             ) {
                                 Row(
@@ -238,10 +249,10 @@ fun OptionsFragmentButtons(
             ) {
                 if (showButtons) {
                     ButtonId7(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                     )
-                    CameraFABProtoJuin3(activeCatalogue=uiState.activeCatalogue)
+                    CameraFABProtoJuin3(activeCatalogue = uiState.activeCatalogue)
 
                     ButtonId6(
                         showLabels = showLabels,
@@ -257,7 +268,7 @@ fun OptionsFragmentButtons(
                     )
 
                     ButtonId3(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                         selectedCount = selectedCategories.size,
                         onCatalogueMove = { showCatalogueDialog = true }
@@ -281,17 +292,17 @@ fun OptionsFragmentButtons(
                         }
                     }
                     ButtonId3(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                         selectedCount = selectedCategories.size,
                         onCatalogueMove = { }
                     )
                     ButtonId4(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                     )
                     ButtonId5(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                     )
                 }

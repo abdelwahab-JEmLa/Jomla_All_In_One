@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.S
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.FilterDropdownMenu
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ModeAffichage
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.Card
@@ -102,7 +102,7 @@ fun AppBar(
                 val (icon, description) = when (currentMode) {
                     ModeAffichage.CATEGORIES_LIST -> Icons.Default.ViewModule to "Passer à la liste"
                     ModeAffichage.PRODUCTS_LIST -> Icons.Default.GridView to "Passer à la grille"
-                    ModeAffichage.REORDER_GRID -> Icons.Default.List to "Passer aux catégories"
+                    ModeAffichage.REORDER_GRID -> Icons.AutoMirrored.Filled.List to "Passer aux catégories"
                 }
 
                 Icon(
