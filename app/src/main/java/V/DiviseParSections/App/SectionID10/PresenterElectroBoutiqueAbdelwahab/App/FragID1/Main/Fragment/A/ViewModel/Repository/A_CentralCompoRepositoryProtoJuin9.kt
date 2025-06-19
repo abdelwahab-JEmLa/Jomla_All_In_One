@@ -25,8 +25,7 @@ class A_CentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
     val appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
 
-    val a_GroupeValuesA_ProduitsToB_Categories:
-    A_GroupeValuesA_ProduitsToB_Categories,
+    val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
 
     val a_ProduitDataBaseComposeRepositoryPJ17: A_ProduitDataBaseComposeRepositoryPJ17,
 
@@ -43,12 +42,12 @@ class A_CentralCompoRepositoryProtoJuin9(
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue.filteredParCatalogueBsonId()
+        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
-        val catalogueFilterId = appComptComposeRepositoryProtoJuin17.currentAppCompt
-            ?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+        val catalogueFilterId =
+            appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         // If no catalogue filter is set, return all products
         if (catalogueFilterId.isNullOrEmpty()) {
@@ -60,9 +59,9 @@ class A_CentralCompoRepositoryProtoJuin9(
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
         // Get categories that belong to the target catalogue
-        val categoriesInCatalogue = b3CategoriesCompoRepository.datasValue
-            .filter { it.catalogueParentId == targetCatalogue.id }
-            .map { it.id }
+        val categoriesInCatalogue =
+            b3CategoriesCompoRepository.datasValue.filter { it.catalogueParentId == targetCatalogue.id }
+                .map { it.id }
 
         // Filter products that belong to categories in the target catalogue
         return this.filter { product ->
@@ -70,6 +69,7 @@ class A_CentralCompoRepositoryProtoJuin9(
             categoryId != null && categoriesInCatalogue.contains(categoryId)
         }
     }
+
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
@@ -84,8 +84,8 @@ class A_CentralCompoRepositoryProtoJuin9(
             comptAppState.idClientOuSonMarqueMapEstOuvert
         ).also { transaction ->
             Log.d(
-                "ouvertTransactionCommercial", "comptAppState.idClientOuSonMarqueMapEstOuvert" +
-                        " ${comptAppState.idClientOuSonMarqueMapEstOuvert}"
+                "ouvertTransactionCommercial",
+                "comptAppState.idClientOuSonMarqueMapEstOuvert" + " ${comptAppState.idClientOuSonMarqueMapEstOuvert}"
             )
         }
     }
@@ -93,8 +93,7 @@ class A_CentralCompoRepositoryProtoJuin9(
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             transactionCommercialState.getClientLastTransactionParEtate(
-                it.id,
-                C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                it.id, C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             ).also { transaction ->
                 Log.d("ouvertTransactionCommercial", "Transaction ID: ${transaction?.vid}")
             }
