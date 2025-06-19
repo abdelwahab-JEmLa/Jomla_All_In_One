@@ -127,6 +127,31 @@ fun HeaderSection(
             }
         }
 
+
+        // Floating Delete Button - positioned below the availability badge
+        Surface(
+            onClick = { onShowDeleteDialogChange(true) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 0.dp, end = 12.dp)
+                .size(25.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.errorContainer,
+            shadowElevation = 8.dp
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Supprimer le produit",
+                    modifier = Modifier.size(25.dp),
+                    tint = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        }
+
         // Clickable Availability Status Badge - positioned above delete button
         Surface(
             onClick = {
@@ -136,7 +161,7 @@ fun HeaderSection(
             },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp)
+                .padding(top = 0.dp, end = 8.dp)
                 .clip(RoundedCornerShape(12.dp)),
             color = when (produit.disponibilityEtates) {
                 DisponibilityEtates.DISPO -> MaterialTheme.colorScheme.primaryContainer
@@ -158,28 +183,5 @@ fun HeaderSection(
             )
         }
 
-        // Floating Delete Button - positioned below the availability badge
-        Surface(
-            onClick = { onShowDeleteDialogChange(true) },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 42.dp, end = 12.dp)
-                .size(15.dp),
-            shape = RoundedCornerShape(20.dp),
-            color = MaterialTheme.colorScheme.errorContainer,
-            shadowElevation = 8.dp
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Supprimer le produit",
-                    modifier = Modifier.size(15.dp),
-                    tint = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-        }
     }
 }
