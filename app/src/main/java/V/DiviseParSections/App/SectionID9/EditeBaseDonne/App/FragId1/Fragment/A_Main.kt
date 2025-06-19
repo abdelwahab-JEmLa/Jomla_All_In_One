@@ -12,6 +12,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID.ReorderMultiCategories
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Utils.LoadingScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A_ProduitDataBase.Repository.DisponibilityEtates
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import org.koin.androidx.compose.koinViewModel
-
-enum class ModeAffichage {
-    CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID
-}
 
 @Preview
 @Composable
@@ -52,6 +50,8 @@ fun EditeBaseDonneMainScreenIdS9(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel = koinViewModel(),
     innerPadding: PaddingValues = PaddingValues(0.dp)
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val a_CentralDatasHandlerProtoJuin9 = viewModel.a_CentralDatasHandlerProtoJuin9
 
     val groupeOrientationToRepositorysA_ProduitsToB_Categories =
@@ -64,7 +64,7 @@ fun EditeBaseDonneMainScreenIdS9(
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val categoriesList = categoriesCompoRepository.datasValue
 
-    var currentMode by remember { mutableStateOf(ModeAffichage.REORDER_GRID) }
+    val currentMode = uiState.currentMode
     var filterState by remember { mutableStateOf(FilterState()) }
     var maskedElements by remember { mutableStateOf(setOf<AfficheElements>()) }
     var selectedProducts by remember { mutableStateOf(setOf<ArticlesBasesStatsTable>()) }
@@ -174,10 +174,8 @@ fun EditeBaseDonneMainScreenIdS9(
                     ) {
                         if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                             AppBar(
-                                //    onCreateProductAndCapture = { createTestProduct() },
-
                                 currentMode = currentMode,
-                                onModeChanged = { currentMode = it },
+                                onModeChanged = { viewModel.new_currentMode(it) },
                                 filterState = filterState,
                                 onFilterChanged = { filterState = it },
                                 modifier = Modifier.fillMaxWidth()

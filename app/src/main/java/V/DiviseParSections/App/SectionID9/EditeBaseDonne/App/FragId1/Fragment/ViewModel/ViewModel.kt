@@ -18,6 +18,8 @@ data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
+    var currentMode : EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
+        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST
 )
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
@@ -30,6 +32,9 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+    fun new_currentMode(currentMode:ModeAffichage) {
+        _uiState.value = _uiState.value.copy(currentMode = currentMode)
+    }
     init {
         collecteMasterRepositorysDatasAuUiState()
     }
@@ -186,5 +191,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
         masterRepositorys.repoA_ProduitInfos.deleteData(data)
+    }
+    enum class ModeAffichage {
+        CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID
     }
 }
