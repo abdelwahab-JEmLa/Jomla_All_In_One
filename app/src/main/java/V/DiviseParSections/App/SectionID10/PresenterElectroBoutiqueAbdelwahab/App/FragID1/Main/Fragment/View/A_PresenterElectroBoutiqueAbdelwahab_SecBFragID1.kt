@@ -91,14 +91,13 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     MainUi(
         produits=produits,
         uiState = uiStateHeadViewModel,
-        gridColumns = gridColumns,
         filterText = filterText,
         gridState = gridState,
         onFilterTextChange = { filterText = it },
         onToggleFilter = { showFilter = !showFilter },
         onChangeGridColumns = { gridColumns = it },
         onToggleNavBar = onToggleNavBar,
-        viewModel = viewModelHeadViewModel,
+        viewModelHeadViewModel = viewModelHeadViewModel,
         reloadTrigger = reloadTrigger,
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
@@ -110,7 +109,8 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         viewModelInitApp = viewModelInitApp,
         targetCategoryId = targetCategoryId,
         lockHost = lockHost,
-        onClickImageToShowControles = onClickImageToShowControles
+        onClickImageToShowControles = onClickImageToShowControles,
+        viewModel=viewModel
     )
 }
 
@@ -118,14 +118,13 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
 fun MainUi(
     produits: List<ArticlesBasesStatsTable>,
     uiState: UiState,
-    gridColumns: Int,
     filterText: String,
     gridState: LazyStaggeredGridState,
     onFilterTextChange: (String) -> Unit,
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onToggleNavBar: () -> Unit,
-    viewModel: HeadViewModel,
+    viewModelHeadViewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
@@ -137,7 +136,8 @@ fun MainUi(
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
+    viewModel: Sec10Frag1ViewModel
 ) {
 
     val scope = rememberCoroutineScope()
@@ -199,7 +199,7 @@ fun MainUi(
         isHostPhone = uiState.productDisplayController.isHostPhone,
         isConnected = uiState.productDisplayController.isConnected,
         gridState = gridState,
-        viewModel = viewModel,
+        viewModel = viewModelHeadViewModel,
         onScrollHostChange = { hostSavePosition = it }
     )
 
@@ -222,25 +222,24 @@ fun MainUi(
                 filterText = filterText,
                 onFilterTextChange = onFilterTextChange,
                 onAddNotInBaseArticle = onClickToOpenWindos,
-                viewModel = viewModel,
+                viewModel = viewModelHeadViewModel,
                 uiState = uiState,
             )
             if (uiState.productDisplayController.isHostPhone || uiState.productDisplayController.isConnected) {
 
                 Box(modifier = Modifier.weight(1f)) {
                     ArticleGridWithScrollbar(
-                        produits=produits,
+                        viewModel =viewModel,
+                        produits =produits,
                         uiState = uiState,
-                        gridColumns = gridColumns,
                         filterText = filterText,
                         showFilter = isFabVisible,
                         gridState = gridState,
-                        viewModel = viewModel,
+                        viewModelHeadViewModel = viewModelHeadViewModel,
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = onClickToOpenWindos,
-                        currentClient = currentClient, viewModelInitApp = viewModelInitApp,
-                        targetCategoryId = targetCategoryId,
-                        lockHost = lockHost,
+                        currentClient = currentClient,
+                        viewModelInitApp = viewModelInitApp, lockHost = lockHost,
                         onClickImageToShowControles = onClickImageToShowControles
                     )
                 }
@@ -251,7 +250,7 @@ fun MainUi(
             isFabVisible = isFabVisible,
             isConnected = uiState.productDisplayController.isConnected,
             isHostPhone = uiState.productDisplayController.isHostPhone,
-            viewModel = viewModel,
+            viewModel = viewModelHeadViewModel,
             onToggleNavBar = onToggleNavBar,
             onToggleOutlineFilter = onToggleFilter,
             onChangeGridColumns = onChangeGridColumns,
@@ -412,38 +411,27 @@ private fun HandleClientScroll(
     }
 }
 
-
 private data class ScrollUpdate(
     val position: Int,
     val offset: Int
 )
 
-// ExtensionProduitModel functions for scroll handling
-private fun Int.toScrollUpdate(): ScrollUpdate {
-    return ScrollUpdate(
-        position = this,
-        offset = 0
-    )
-}
-
-
 @Composable
 fun ArticleGridWithScrollbar(
     produits: List<ArticlesBasesStatsTable>,
     uiState: UiState,
-    gridColumns: Int,
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: HeadViewModel,
+    viewModel: Sec10Frag1ViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientInfosProtoJuin3?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
+    viewModelHeadViewModel: HeadViewModel
 ) {
     Box(modifier = modifier) {
         Scrollbar(
@@ -455,12 +443,13 @@ fun ArticleGridWithScrollbar(
         )
 
         MainList(
+            viewModel=viewModel,
             produits=produits,
             uiState = uiState,
             filterText = filterText,
             showFilter = showFilter,
             gridState = gridState,
-            headViewModelViewModel = viewModel,
+            headViewModelViewModel = viewModelHeadViewModel,
             reloadTrigger = reloadTrigger,
             modifier = Modifier.fillMaxSize(),
             onClickToOpenWindos = onClickToOpenWindos,

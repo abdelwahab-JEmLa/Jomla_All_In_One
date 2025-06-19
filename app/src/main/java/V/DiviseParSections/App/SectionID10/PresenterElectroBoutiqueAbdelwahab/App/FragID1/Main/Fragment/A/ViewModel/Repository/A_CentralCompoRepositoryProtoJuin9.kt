@@ -9,7 +9,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -24,46 +23,33 @@ class A_CentralCompoRepositoryProtoJuin9(
     val databaseInitializationManager: Z_DatabaseInitializationManager,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
     val appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
-
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
-
     val a_ProduitDataBaseComposeRepositoryPJ17: A_ProduitDataBaseComposeRepositoryPJ17,
-
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val b3CategoriesCompoRepository: C_CategoriesCompoRepository,
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
-
     val d_AchatOperationComposeRepositoryPJ17: E_AchatOperationComposeRepositoryProtoJuin17,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue
+        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
             appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-        // If no catalogue filter is set, return all products
-        if (catalogueFilterId.isNullOrEmpty()) {
-            return this
-        }
-
-        // Get the catalogue repositories to map bsonObjectId to actual catalogue ID
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.bsonObjectId }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
-        // Get categories that belong to the target catalogue
-        val categoriesInCatalogue =
-            b3CategoriesCompoRepository.datasValue.filter { it.catalogueParentId == targetCatalogue.id }
-                .map { it.id }
+        val categoriesInCatalogue = b3CategoriesCompoRepository.datasValue
+            .filter { it.catalogueParentId == targetCatalogue.id }
+            .map { it.id }
 
-        // Filter products that belong to categories in the target catalogue
         return this.filter { product ->
             val categoryId = product.idParentCategorie
             categoryId != null && categoriesInCatalogue.contains(categoryId)
@@ -80,23 +66,14 @@ class A_CentralCompoRepositoryProtoJuin9(
     }
 
     val clientOuSonMarqueMapEstOuvert by derivedStateOf {
-        clientsState.findClientById(
-            comptAppState.idClientOuSonMarqueMapEstOuvert
-        ).also { transaction ->
-            Log.d(
-                "ouvertTransactionCommercial",
-                "comptAppState.idClientOuSonMarqueMapEstOuvert" + " ${comptAppState.idClientOuSonMarqueMapEstOuvert}"
-            )
-        }
+        clientsState.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             transactionCommercialState.getClientLastTransactionParEtate(
                 it.id, C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            ).also { transaction ->
-                Log.d("ouvertTransactionCommercial", "Transaction ID: ${transaction?.vid}")
-            }
+            )
         }
     }
 
@@ -112,11 +89,9 @@ class A_CentralCompoRepositoryProtoJuin9(
         composScope.launch {
             a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
                 masterModel?.let { model ->
-
                     _loadingProgress.floatValue = model.progress
                 }
             }
         }
     }
 }
-

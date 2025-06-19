@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleItem
@@ -45,15 +46,13 @@ fun MainList(
     currentClient: B_ClientInfosProtoJuin3?,
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
+    viewModel: Sec10Frag1ViewModel,
 ) {
-    var lastSettledFirstVisible by remember { mutableStateOf(-1) }
-    var isSettled by remember { mutableStateOf(true) }
-    var currentCategory by remember { mutableStateOf<String?>(null) }
-
+    val categories = viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasValue
     val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
-    val articlesByCategory = remember(filteredArticles, uiState.categories) {
-        val sortedCategories = uiState.categories.sortedWith(
+    val articlesByCategory = remember(filteredArticles, categories) {
+        val sortedCategories = categories.sortedWith(
             compareBy<CategoriesTabelle> { category ->
                 when {
                     category.position <= 0 -> Int.MAX_VALUE
@@ -75,6 +74,11 @@ fun MainList(
             articlesForCategory
         }.filterValues { it.isNotEmpty() }
     }
+
+    var lastSettledFirstVisible by remember { mutableStateOf(-1) }
+    var isSettled by remember { mutableStateOf(true) }
+    var currentCategory by remember { mutableStateOf<String?>(null) }
+
 
     LaunchedEffect(gridState) {
         snapshotFlow {

@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppComptComposeRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,15 +13,16 @@ import kotlinx.coroutines.sync.withLock
 class Z_DatabaseInitializationManager(
     private val achatOperationRepository: D_AchatOperationDataBaseProtoJuin17,
     val appComptComposeRepositoryPJ17: Z_AppComptComposeRepositoryProtoJuin17,
+    val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
     private val scope = CoroutineScope(Dispatchers.Main)
 
     enum class Repository {
-        A_PRODUIT_INFOS,
+        Z_AppComptEntity,
         D_ACHAT_OPERATION,
-        Z_AppComptEntity
+        A_PRODUIT_INFOS
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -30,8 +32,12 @@ class Z_DatabaseInitializationManager(
 
         val jobs = listOf(
             scope.launch {
-                initRepo(Repository.D_ACHAT_OPERATION.name, context) {
-                    achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                initRepo(Repository.Z_AppComptEntity.name, context) {
+                    z_AppComptRepositoryProtoJuin17.init(
+                        isInternetAvailable = isInternetAvailable(
+                            context
+                        )
+                    ) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
@@ -39,8 +45,12 @@ class Z_DatabaseInitializationManager(
                 }
             },
             scope.launch {
-                initRepo(Repository.Z_AppComptEntity.name, context) {
-                    initAppCompt()
+                initRepo(Repository.D_ACHAT_OPERATION.name, context) {
+                    achatOperationRepository.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                    }
                 }
             }
         )
@@ -63,10 +73,6 @@ class Z_DatabaseInitializationManager(
         }
     }
 
-    private suspend fun initAppCompt() {
-        updateRepoProgress(Repository.Z_AppComptEntity.name, 0.5f)
-        updateRepoProgress(Repository.Z_AppComptEntity.name, 1.0f)
-    }
 
     private suspend fun updateRepoProgress(name: String, progress: Float) {
         mutex.withLock {

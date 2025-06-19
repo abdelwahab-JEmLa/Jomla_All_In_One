@@ -1,12 +1,10 @@
 package Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.B.Init.isInternetAvailable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.SQL.Z_AppComptDao
-import android.content.Context
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
@@ -28,13 +26,13 @@ class Z_AppComptRepositoryProtoJuin17(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun init(
-        context: Context,
+        isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
     ) {
         if (!dao.isTableEmpty()) return
 
         updateRepoProgress(Repository.Z_AppComptEntity.name, 0.4f)
-        val data: List<Z_AppCompt> = if (isInternetAvailable(context)) {
+        val data: List<Z_AppCompt> = if (isInternetAvailable) {
             updateRepoProgress(Repository.Z_AppComptEntity.name, 0.6f)
             onLoadFromFireBase()
         } else {
