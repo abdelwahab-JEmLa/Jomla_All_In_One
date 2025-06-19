@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.A.Model
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin17.Proto
 
 import android.os.Build
 import android.util.Log
@@ -10,21 +10,21 @@ import org.mongodb.kbson.BsonObjectId
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = BsonObjectId().toHexString(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     // Section InfosDeBase
+    var nom: String = "Manager Vendor",
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
-    var nom: String = "Manager Vendor",
 
     // Section StatuesMutable
-    var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
-    var ceComptVendeurStartAffichePeriod: Long = 0L,
+        // Section Options Personnel
+    var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String,
 
     var itsProductionModePourCeCompt: Boolean = false,
-
+    var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
+    var ceComptVendeurStartAffichePeriod: Long = 0L,
     var hideAppScreen: Boolean = false,
-
-    // Section Options Personele
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
@@ -34,8 +34,7 @@ data class Z_AppCompt(
     // Section Paramaters telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
 
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-) {
+    ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): Z_AppCompt {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -43,9 +42,7 @@ data class Z_AppCompt(
     }
 
     companion object {
-        fun logCategory(data: Z_AppCompt, TAG: String) {
-            Log.d(TAG, "Z_AppComptEntity: ${data.bsonObjectId} - ${data.nom}")
-        }
+        fun logCategory(data: Z_AppCompt, TAG: String) { Log.d(TAG, "Z_AppComptEntity: ${data.bsonObjectId} - ${data.nom}") }
 
         fun compareEntre(
             ancien: Z_AppCompt,

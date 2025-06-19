@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin17.Proto
 
-import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.A.Model.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Z_AppComptRepositoryProtoJuin17
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -18,9 +17,14 @@ class Z_AppComptComposeRepositoryProtoJuin17(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
-    val datasValue by derivedStateOf { _datas.value }
+    val datasValue by derivedStateOf {
+        _datas.value.sortedBy {
+            val sortDelimiter = it.bsonObjectId
+            sortDelimiter
+        }
+    }
 
-     val currentAppCompt by derivedStateOf { datasValue.find { it.bsonObjectId == "b1" } }
+    val currentAppCompt by derivedStateOf { datasValue.find { it.bsonObjectId == "b1" } }
 
     init {
         composScope.launch {
