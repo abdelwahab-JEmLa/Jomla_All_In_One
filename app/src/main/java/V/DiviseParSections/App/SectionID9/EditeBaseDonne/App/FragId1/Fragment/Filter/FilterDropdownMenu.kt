@@ -253,20 +253,31 @@ fun FilterDropdownMenu(
                 )
             }
 
-            // NEW: Time-based filter for prixAchatDernierTimeTempUpdate
+            // Time-based filter for prixAchatDernierTimeTempUpdate - HIGHLIGHTED IN YELLOW
             item {
-                FilterOption(
-                    label = "Filtrer par ancienneté de prix d'achat",
-                    checked = filterState.enablePrixAchatTimeFilter,
-                    onCheckedChange = {
-                        onFilterChanged(filterState.copy(enablePrixAchatTimeFilter = it))
-                    }
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    FilterOption(
+                        label = "🟡 Filtrer par ancienneté de prix d'achat",
+                        checked = filterState.enablePrixAchatTimeFilter,
+                        onCheckedChange = {
+                            onFilterChanged(filterState.copy(enablePrixAchatTimeFilter = it))
+                        }
+                    )
+                }
             }
 
+            // The days input field - this is where it's displayed!
+            // It appears in the dropdown menu when enablePrixAchatTimeFilter is true
             if (filterState.enablePrixAchatTimeFilter) {
                 item {
-                    OutlinedTextField(
+                    OutlinedTextField(          //<--
+                    //TODO(1): fait que si 1 ca veut dite hier mem si la defrence on heur n ai pas un jour comme dons getTimeDifferenceInArabic
                         value = filterState.prixAchatTimeFilterDays,
                         onValueChange = {
                             // Only allow numeric input
