@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -57,11 +54,14 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
 ) {
-    val TAG ="PressistatntMainActivityButtons_Sec8FWinID1"
+    val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
+
+    val TAG = "PressistatntMainActivityButtons_Sec8FWinID1"
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showMessageurDialog by remember { mutableStateOf(false) }
+    var showCatalogueDialog by remember { mutableStateOf(false) } // Fixed: Added catalogue dialog state
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -73,7 +73,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     // Cache the client count to avoid multiple reads
     val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
 
-    // Set up a timer to update_showDetailsExpanded the elapsed time every second when recording
+    // Get current selected catalogue
+    val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
+    val currentSelectedCatalogueId = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+
+    // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -110,8 +114,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job = null
                 }
 
-                else -> { /* do nothing */
-                }
+                else -> { /* do nothing */ }
             }
         }
 
@@ -139,6 +142,21 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         )
     }
 
+    CatalogueSelectionDialog(
+        showDialog = showCatalogueDialog,
+        currentSelectedCatalogueId = currentSelectedCatalogueId,
+        onDismiss = { showCatalogueDialog = false },
+        onCatalogueSelected = { catalogueId ->
+            // Fixed: Update the app state with selected catalogue
+            currentAppCompt?.let { appCompt ->
+                val updatedAppCompt = appCompt.copy(
+                    presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
+                )
+                appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
+            }
+        }
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -160,37 +178,15 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
-
-                    // New Row: Messager ButtonAutreEtates with Telegram icon
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    Button1(
+                        appComptComposeRepositoryProtoJuin17=appComptComposeRepositoryProtoJuin17,
+                        showLabels = showLabels,
                     ) {
-                        FloatingActionButton(
-                            onClick = {
-                                showMessageurDialog = true
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = Color(0xFF0088CC), // Telegram brand color
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_telegram),
-                                contentDescription = "Ouvrir Messager",
-                                tint = Color.White
-                            )
-                        }
-
-                        if (showLabels) {
-                            Text(
-                                "Telegrame Abdelwahab",
-                                modifier = Modifier
-                                    .background(Color(0xFF0088CC))
-                                    .padding(4.dp),
-                                color = Color.White
-                            )
-                        }
+                        // Fixed: Show catalogue selection dialog
+                        showCatalogueDialog = true
                     }
-                    // New Row: Messager ButtonAutreEtates with Telegram icon
+
+                    // Messager Button with Telegram icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -211,7 +207,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                         if (showLabels) {
                             Text(
-                                "Telegrame Abdelwahab",
+                                "Telegram Abdelwahab",
                                 modifier = Modifier
                                     .background(Color(0xFF0088CC))
                                     .padding(4.dp),
@@ -221,42 +217,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     }
 
                     if (!cLenceDepuitDialogeAchate) {
-                        val buttonBackgroundColor =
-                            if (isRecording) Color(0xFFFF9800) else Color(0xFF8BC34A)
-                        val enable = true
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        Button3(
+                            isRecording,
+                            showLabels,
+                            displayTime,
+                            remainingClients
                         ) {
-                            // Labels toggle button
-                            FloatingActionButton(
-                                onClick = {
-                                    if (enable) {
-                                        showAlertDialog = true
-                                    }
-                                },
-                                modifier = Modifier.size(40.dp),
-                                containerColor = buttonBackgroundColor,
-                            ) {
-                                val iconColor = Color.Black
-
-                                Icon(
-                                    imageVector = if (isRecording) Icons.Default.PlayArrow else Icons.Default.Stop,
-                                    contentDescription = null,
-                                    tint = iconColor
-                                )
-                            }
-
-                            if (showLabels) {
-                                // Use the pre-cached value
-                                Text(
-                                    "$displayTime | بقي $remainingClients زبون",
-                                    modifier = Modifier
-                                        .background(if (enable) buttonBackgroundColor else Color.Gray)
-                                        .padding(4.dp),
-                                    color = Color.White
-                                )
-                            }
+                            showAlertDialog = true
                         }
                     }
                 }
@@ -268,7 +235,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
                     onFermDialogeAvecAnllation = onClickAnulationButton
                 )
-
             }
         }
     }
