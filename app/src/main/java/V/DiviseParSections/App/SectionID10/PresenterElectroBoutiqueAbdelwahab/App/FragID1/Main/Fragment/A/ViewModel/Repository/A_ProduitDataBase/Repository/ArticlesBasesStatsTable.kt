@@ -7,6 +7,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import org.mongodb.kbson.BsonObjectId
 
+
 @Entity
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
