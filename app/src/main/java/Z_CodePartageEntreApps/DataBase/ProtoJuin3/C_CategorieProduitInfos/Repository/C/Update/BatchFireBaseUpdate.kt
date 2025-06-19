@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update
 
-import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
 import kotlinx.coroutines.tasks.await
 
 suspend fun Boolean.batchFireBaseUpdate(datas: List<CategoriesTabelle>) {

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto
 
-import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

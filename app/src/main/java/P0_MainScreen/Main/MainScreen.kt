@@ -121,7 +121,7 @@ fun MainScreen(
             && navController.currentDestination != null
         ) {
 
-            // Navigate to PresenterElectroBoutiqueAbdelwahab_SecBFragID1 instead of A_ClientsLocationGps
+            // Navigate to PresenterElectroBoutiqueAbdelwahab_Sec10Frag1 instead of A_ClientsLocationGps
             navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
 
             }
