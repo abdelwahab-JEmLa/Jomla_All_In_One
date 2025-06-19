@@ -1,7 +1,7 @@
 package com.example.clientjetpack.Repositorys
 
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle

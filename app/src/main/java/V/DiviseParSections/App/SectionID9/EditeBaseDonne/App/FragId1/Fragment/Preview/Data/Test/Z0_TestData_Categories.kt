@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.CategoriesTabelle
 
 fun testCategories(): List<CategoriesTabelle> {
     return listOf(

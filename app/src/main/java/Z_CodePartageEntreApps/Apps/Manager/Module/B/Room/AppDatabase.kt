@@ -5,9 +5,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.CategoriesTabelle
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.C.SQL.D_AchatOperationDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao

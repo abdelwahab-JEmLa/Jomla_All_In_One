@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 
-class PRODUCTS_LIST_ViewModel: ViewModel() {
+class Sec9FragId1ViewId2ViewModel: ViewModel() {
     data class UiState(var showDetailsExpanded: Boolean = true)
 
     private val _uiState = MutableStateFlow(UiState())

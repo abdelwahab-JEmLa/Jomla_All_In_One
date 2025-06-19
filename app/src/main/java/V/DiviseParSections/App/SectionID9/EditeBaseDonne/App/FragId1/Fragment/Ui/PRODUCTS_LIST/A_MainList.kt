@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem.ProductItem
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +23,7 @@ fun EditeInfosMainList(
     modifier: Modifier = Modifier,
     filteredAndSortedProduitList: List<ArticlesBasesStatsTable>,
     aProduitdatabasecomposerepositorypj17: A_ProduitDataBaseComposeRepositoryPJ17,
-    viewModel: PRODUCTS_LIST_ViewModel = koinViewModel(),
+    viewModel: Sec9FragId1ViewId2ViewModel = koinViewModel(),
     filterState: FilterState,
 ) {
     val uiState by viewModel.uiState.collectAsState()

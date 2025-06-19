@@ -7,8 +7,8 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
-import Views.P1._ArticlesStartFacade.FragmentStartupScreen
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1._ArticlesStartFacade.B.View.PresenterElectroBoutiqueAbdelwahab_SecBFragID1
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -129,8 +129,8 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         // Use key to ensure proper state management
                         key(screenKey) {
-                            FragmentStartupScreen(
-                                viewModel = headViewModel,
+                            PresenterElectroBoutiqueAbdelwahab_SecBFragID1(
+                                viewModelHeadViewModel = headViewModel,
                                 onToggleNavBar = onToggleNavBar,
                                 reloadTrigger = reloadTrigger,
                                 onClickToOpenWindos = { articleDataBaseOn, indexColor ->

@@ -3,7 +3,7 @@ package Views.FragId4_EStorePresentationToClient
 import Views.FragId4_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
 import Views.FragId4_EStorePresentationToClient.Ui.ProductNameSection7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

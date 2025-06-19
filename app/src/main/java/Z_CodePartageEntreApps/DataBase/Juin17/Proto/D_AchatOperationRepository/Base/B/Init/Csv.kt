@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.B.Init
 
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
 

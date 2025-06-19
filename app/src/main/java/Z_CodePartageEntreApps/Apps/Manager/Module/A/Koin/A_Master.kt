@@ -12,21 +12,22 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.PRODUCTS_LIST_ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A2_Passive.B_ClientsStateCompoRepository
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A2_Passive.Z_AutreStatesCompoRepository
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_CentralCompoRepositoryProtoJuin9
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_GroupeValuesA_ProduitsToB_Categories
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.C_CategoriesCompoRepository
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
+import Views.P1._ArticlesStartFacade.A.ViewModel.Sec10Frag1ViewModel
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.Z_AppCompt.Repository.Z_AppComptComposeRepositoryProtoJuin17
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A2_Passive.B_ClientsStateCompoRepository
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A2_Passive.D_TransactionCommercialCompoRepository
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A2_Passive.Z_AutreStatesCompoRepository
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_CentralCompoRepositoryProtoJuin9
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_GroupeValuesA_ProduitsToB_Categories
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.C_CategoriesCompoRepository
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBaseProtoJuin17
@@ -164,7 +165,10 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { PRODUCTS_LIST_ViewModel() }
+    //Sort Par ID
+    viewModel { Sec9FragId1ViewId2ViewModel() }
+    viewModel { Sec10Frag1ViewModel(get(),) }
+
     viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
     viewModel { VendeurAfficheurInfosProduitViewModel(get()) }

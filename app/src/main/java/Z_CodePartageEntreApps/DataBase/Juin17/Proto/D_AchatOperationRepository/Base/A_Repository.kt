@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base
 
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
-import Views.P1.Ui.ArticlesGrid.A.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
+import Views.P1._ArticlesStartFacade.B.View.B.List.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.C.SQL.D_AchatOperationDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init.onLoadFromFireBaseD_AchatOperation
