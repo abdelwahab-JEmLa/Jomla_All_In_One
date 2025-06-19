@@ -164,7 +164,7 @@ fun HeaderSection(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 42.dp, end = 12.dp)
-                .size(40.dp),
+                .size(15.dp),
             shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colorScheme.errorContainer,
             shadowElevation = 8.dp
@@ -176,7 +176,7 @@ fun HeaderSection(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Supprimer le produit",
-                    modifier = Modifier.size(22.dp),
+                    modifier = Modifier.size(15.dp),
                     tint = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
