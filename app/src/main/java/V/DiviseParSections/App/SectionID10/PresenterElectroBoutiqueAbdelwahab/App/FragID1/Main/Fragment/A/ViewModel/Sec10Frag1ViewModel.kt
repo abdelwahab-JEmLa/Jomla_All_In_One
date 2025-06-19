@@ -11,7 +11,7 @@ class Sec10Frag1ViewModel(
 ) : ViewModel() {
     data class UiState(
         val f: Int = 0,
-        )
+    )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
