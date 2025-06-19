@@ -6,8 +6,6 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
-import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -75,21 +73,11 @@ open class HeadViewModel(
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
-    val _uiState = MutableStateFlow(
-        UiState(
-            productDisplayController = ProductDisplayController()
-        )
-    )
-
+    val _uiState = MutableStateFlow(UiState(productDisplayController = ProductDisplayController()))
     open val uiState = _uiState.asStateFlow()
-
-    val categoriesRepository: I_CategorieProduitsRepository =
-        I_CategorieProduitsRepositoryImpl(database)
-
 
     private val connectionManager = WifiTransferDatas(
         context = context, onPayloadReceiveRaw = { payload -> handlePayload(payload) })
-
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
