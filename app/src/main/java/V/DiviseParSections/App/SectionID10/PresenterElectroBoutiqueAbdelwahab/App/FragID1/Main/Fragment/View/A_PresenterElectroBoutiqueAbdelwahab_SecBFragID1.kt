@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.ArticleGridWithScrollbar
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -65,6 +65,8 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val DevMode = false
     val isFabVisible = if (DevMode) DevMode else isFabVisibleInit
     val filterTextInit = if (DevMode) "dyd" else ""
@@ -72,7 +74,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     var gridColumns by remember { mutableStateOf(2) }
     var filterText by remember { mutableStateOf(filterTextInit) }
     val gridState = rememberLazyStaggeredGridState()
-    val uiState by viewModelHeadViewModel.uiState.collectAsState()
+    val uiStateHeadViewModel by viewModelHeadViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         if (viewModelInitApp.savedGridScrollPosition > 0) {
@@ -86,7 +88,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         }
     }
     MainUi(
-        uiState = uiState,
+        uiState = uiStateHeadViewModel,
         gridColumns = gridColumns,
         filterText = filterText,
         gridState = gridState,
@@ -159,7 +161,6 @@ fun MainUi(
                         scrollOffset = 0
                     )
                 } catch (e: Exception) {
-                    // Fallback to instant scroll if animation fails
                     gridState.scrollToItem(currentScrollPosition)
                 }
             }
@@ -169,8 +170,7 @@ fun MainUi(
         if (uiState.productDisplayController.isHostPhone) {
             scope.launch {
                 try {
-                    // Animate scroll with custom duration and delay
-                    delay(1500) // Small initial delay for smoother transition
+                    delay(1500)
                     gridState.animateScrollToItem(
                         index = hostSavePosition,
                         scrollOffset = 0

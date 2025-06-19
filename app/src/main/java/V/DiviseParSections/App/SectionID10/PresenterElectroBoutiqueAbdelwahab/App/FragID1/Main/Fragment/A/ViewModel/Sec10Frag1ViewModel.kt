@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 class Sec10Frag1ViewModel(
     val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    data class UiState(val f: Int = 0, )
+    data class UiState(
+        val f: Int = 0,
+        )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
