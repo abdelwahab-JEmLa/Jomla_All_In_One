@@ -45,17 +45,6 @@ fun QuickInfoSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                // Prix de Vente - Hide when filter is active
-                if (!shouldHideQuickInfoCards) {
-                    QuickInfoCard(
-                        title = "Prix Vente",
-                        value = "${produit.prixVent} DA",
-                        icon = "💰",
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
                 // Bénéfice (only show if not zero) - Hide when filter is active
                 if (benefice != 0.0 && !shouldHideQuickInfoCards) {
                     QuickInfoCard(
@@ -66,53 +55,46 @@ fun QuickInfoSection(
                         modifier = Modifier.weight(1f)
                     )
                 }
-                    if (!shouldHideQuickInfoCards) {
-                        // Combined Visibility and Last Update Card - Always show this one
-                        Surface(
-                            modifier = Modifier.weight(1f),
-                            color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(
-                                alpha = 0.1f
-                            ),
-                            shape = RoundedCornerShape(12.dp),
-                            onClick = {
-                                updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
-                            }
+                // Prix de Vente - Hide when filter is active
+                if (!shouldHideQuickInfoCards) {
+                    QuickInfoCard(
+                        title = "Prix Vente",
+                        value = "${produit.prixVent} DA",
+                        icon = "💰",
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                if (!shouldHideQuickInfoCards) {
+                    // Combined Visibility and Last Update Card - Always show this one
+                    Surface(
+                        modifier = Modifier.weight(1f),
+                        color = (if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary).copy(
+                            alpha = 0.1f
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        onClick = {
+                            updateProduct(produit.copy(cachePrixVent = !produit.cachePrixVent))
+                        }
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp)
-                            ) {
-                                Text(
-                                    text = if (produit.cachePrixVent) "🔒" else "👁️",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Visibilité",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = if (produit.cachePrixVent) "Caché" else "Visible",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (produit.cachePrixVent) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "آخر تحديث: $timeDifference",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                    textAlign = TextAlign.Start,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
+                            Text(
+                                text = if (produit.cachePrixVent) "🔒" else "👁️",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "آخر تحديث: $timeDifference",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                textAlign = TextAlign.Start,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
+                }
             }
         }
     }
@@ -159,7 +141,6 @@ fun QuickInfoCard(
         }
     }
 }
-
 /**
  * Calculates time difference from timestamp and returns formatted Arabic string
  * Example: "قبل أسبوع و 3 أيام" (a week and 3 days ago)
@@ -176,86 +157,120 @@ fun getTimeDifferenceInArabic(timestamp: Long): String {
 
     if (diffInMillis < 0) return "الآن" // Now (if timestamp is in future)
 
-    val diffInSeconds = diffInMillis / 1000
-    val diffInMinutes = diffInSeconds / 60
-    val diffInHours = diffInMinutes / 60
-    val diffInDays = diffInHours / 24
-    val diffInWeeks = diffInDays / 7
-    val diffInMonths = diffInDays / 30
-    val diffInYears = diffInDays / 365
+    // Get calendar dates to compare actual days, not just 24-hour periods
+    val currentCalendar = java.util.Calendar.getInstance()
+    val timestampCalendar = java.util.Calendar.getInstance().apply {
+        timeInMillis = timestamp
+    }
+
+    val currentYear = currentCalendar.get(java.util.Calendar.YEAR)
+    val currentDayOfYear = currentCalendar.get(java.util.Calendar.DAY_OF_YEAR)
+    val timestampYear = timestampCalendar.get(java.util.Calendar.YEAR)
+    val timestampDayOfYear = timestampCalendar.get(java.util.Calendar.DAY_OF_YEAR)
+
+    val dayDifference = if (currentYear == timestampYear) {
+        currentDayOfYear - timestampDayOfYear
+    } else {
+        // For different years, calculate the actual day difference
+        val diffInDays = (diffInMillis / (24 * 60 * 60 * 1000)).toInt()
+        diffInDays
+    }
 
     return when {
-        diffInDays < 7 -> {
-            val days = diffInDays.toInt()
+        // Same day
+        dayDifference == 0 -> "اليوم" // Today
+
+        // Yesterday
+        dayDifference == 1 -> "أمس" // Yesterday
+
+        // More than 1 day ago - use the original calculation logic
+        dayDifference >= 2 -> {
+            val diffInSeconds = diffInMillis / 1000
+            val diffInMinutes = diffInSeconds / 60
+            val diffInHours = diffInMinutes / 60
+            val diffInDays = diffInHours / 24
+            val diffInWeeks = diffInDays / 7
+            val diffInMonths = diffInDays / 30
+            val diffInYears = diffInDays / 365
+
             when {
-                days == 1 -> "قبل يوم"
-                days == 2 -> "قبل يومين"
-                days <= 10 -> "قبل $days أيام"
-                else -> "قبل $days يوم"
+                diffInDays < 7 -> {
+                    val days = diffInDays.toInt()
+                    when {
+                        days == 2 -> "قبل يومين"
+                        days <= 10 -> "قبل $days أيام"
+                        else -> "قبل $days يوم"
+                    }
+                }
+
+                diffInWeeks < 4 -> {
+                    val weeks = diffInWeeks.toInt()
+                    val remainingDays = (diffInDays % 7).toInt()
+
+                    val weeksText = when {
+                        weeks == 1 -> "أسبوع"
+                        weeks == 2 -> "أسبوعين"
+                        weeks <= 10 -> "$weeks أسابيع"
+                        else -> "$weeks أسبوع"
+                    }
+
+                    val daysText = when {
+                        remainingDays == 0 -> ""
+                        remainingDays == 1 -> " و يوم"
+                        remainingDays == 2 -> " و يومين"
+                        remainingDays <= 10 -> " و $remainingDays أيام"
+                        else -> " و $remainingDays يوم"
+                    }
+
+                    "قبل $weeksText$daysText"
+                }
+
+                diffInMonths < 12 -> {
+                    val months = diffInMonths.toInt()
+                    val remainingDays = (diffInDays % 30).toInt()
+
+                    val monthsText = when {
+                        months == 1 -> "شهر"
+                        months == 2 -> "شهرين"
+                        months <= 10 -> "$months أشهر"
+                        else -> "$months شهر"
+                    }
+
+                    val daysText = when {
+                        remainingDays == 0 -> ""
+                        remainingDays == 1 -> " و يوم"
+                        remainingDays == 2 -> " و يومين"
+                        remainingDays <= 10 -> " و $remainingDays أيام"
+                        else -> " و $remainingDays يوم"
+                    }
+
+                    "قبل $monthsText$daysText"
+                }
+
+                else -> {
+                    val years = diffInYears.toInt()
+                    val remainingMonths = ((diffInDays % 365) / 30).toInt()
+
+                    val yearsText = when {
+                        years == 1 -> "سنة"
+                        years == 2 -> "سنتين"
+                        years <= 10 -> "$years سنوات"
+                        else -> "$years سنة"
+                    }
+
+                    val monthsText = when {
+                        remainingMonths == 0 -> ""
+                        remainingMonths == 1 -> " و شهر"
+                        remainingMonths == 2 -> " و شهرين"
+                        remainingMonths <= 10 -> " و $remainingMonths أشهر"
+                        else -> " و $remainingMonths شهر"
+                    }
+
+                    "قبل $yearsText$monthsText"
+                }
             }
         }
-        diffInWeeks < 4 -> {
-            val weeks = diffInWeeks.toInt()
-            val remainingDays = (diffInDays % 7).toInt()
 
-            val weeksText = when {
-                weeks == 1 -> "أسبوع"
-                weeks == 2 -> "أسبوعين"
-                weeks <= 10 -> "$weeks أسابيع"
-                else -> "$weeks أسبوع"
-            }
-
-            val daysText = when {
-                remainingDays == 0 -> ""
-                remainingDays == 1 -> " و يوم"
-                remainingDays == 2 -> " و يومين"
-                remainingDays <= 10 -> " و $remainingDays أيام"
-                else -> " و $remainingDays يوم"
-            }
-
-            "قبل $weeksText$daysText"
-        }
-        diffInMonths < 12 -> {
-            val months = diffInMonths.toInt()
-            val remainingDays = (diffInDays % 30).toInt()
-
-            val monthsText = when {
-                months == 1 -> "شهر"
-                months == 2 -> "شهرين"
-                months <= 10 -> "$months أشهر"
-                else -> "$months شهر"
-            }
-
-            val daysText = when {
-                remainingDays == 0 -> ""
-                remainingDays == 1 -> " و يوم"
-                remainingDays == 2 -> " و يومين"
-                remainingDays <= 10 -> " و $remainingDays أيام"
-                else -> " و $remainingDays يوم"
-            }
-
-            "قبل $monthsText$daysText"
-        }
-        else -> {
-            val years = diffInYears.toInt()
-            val remainingMonths = ((diffInDays % 365) / 30).toInt()
-
-            val yearsText = when {
-                years == 1 -> "سنة"
-                years == 2 -> "سنتين"
-                years <= 10 -> "$years سنوات"
-                else -> "$years سنة"
-            }
-
-            val monthsText = when {
-                remainingMonths == 0 -> ""
-                remainingMonths == 1 -> " و شهر"
-                remainingMonths == 2 -> " و شهرين"
-                remainingMonths <= 10 -> " و $remainingMonths أشهر"
-                else -> " و $remainingMonths شهر"
-            }
-
-            "قبل $yearsText$monthsText"
-        }
+        else -> "غير محدد"
     }
 }

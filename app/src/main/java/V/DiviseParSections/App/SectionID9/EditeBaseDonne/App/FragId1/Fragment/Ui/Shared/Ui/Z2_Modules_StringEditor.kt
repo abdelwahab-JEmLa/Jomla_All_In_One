@@ -34,7 +34,8 @@ fun StringEditor(
     onCancel: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var tempValue by remember { mutableStateOf(currentValue) }
+    // Changed: Start with empty string instead of currentValue
+    var tempValue by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -68,7 +69,8 @@ fun StringEditor(
             OutlinedTextField(
                 value = tempValue,
                 onValueChange = { tempValue = it },
-                label = { Text(label) },
+                // Changed: Show old value in label like PriceEditor does
+                label = { Text("Ancien: $currentValue") },
                 placeholder = { Text("Entrez le nouveau nom") },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
