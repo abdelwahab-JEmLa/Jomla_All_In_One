@@ -3,7 +3,8 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.F
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun A_MainFilter(
     filterState: FilterState,
@@ -31,10 +33,11 @@ fun A_MainFilter(
                 filterState.hidePetiteProbability ||
                 filterState.hidePrixAchatZero ||
                 filterState.hidePrixAchatPositif ||
-                filterState.hidePrixVenteZero ||           // New
-                filterState.hidePrixVentePositif ||       // New
+                filterState.hidePrixVenteZero ||
+                filterState.hidePrixVentePositif ||
                 filterState.hideHeldPrioriteDemandAuGrossist ||
                 filterState.hideNonHeldPrioriteDemandAuGrossist ||
+                filterState.enablePrixAchatTimeFilter ||  // NEW
                 filterState.searchText.isNotEmpty()
 
     if (hasActiveFilters) {
@@ -66,9 +69,10 @@ fun A_MainFilter(
                     )
                 }
 
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
                         FilterChip(
@@ -112,7 +116,26 @@ fun A_MainFilter(
                         )
                     }
 
-                    // New selling price filter chips
+                    // NEW: Time filter chip
+                    if (filterState.enablePrixAchatTimeFilter) {
+                        val daysText = if (filterState.prixAchatTimeFilterDays.isNotEmpty()) {
+                            filterState.prixAchatTimeFilterDays
+                        } else {
+                            "0"
+                        }
+                        FilterChip(
+                            label = "Ancienneté ≥ $daysText jour(s)",
+                            onRemove = {
+                                onFilterChanged(
+                                    filterState.copy(
+                                        enablePrixAchatTimeFilter = false,
+                                        prixAchatTimeFilterDays = ""
+                                    )
+                                )
+                            }
+                        )
+                    }
+
                     if (filterState.hidePrixVenteZero) {
                         FilterChip(
                             label = "Masquer Prix Vente = 0",

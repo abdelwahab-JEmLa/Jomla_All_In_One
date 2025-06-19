@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.A_MainFilter
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.FilterState
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.SortOrder
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Filter.Models.TimeFilterUtils
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.AppBar.AppBar
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.AfficheElements
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main.OptionsFragmentButtons
@@ -92,7 +93,7 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hideQuiNeSontPas_cUnNeveauArrivage) {
                 filtered = filtered.filter {
                     it.etateActuelleOnFusionAvecBaseDonne ==
-                        EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
+                            EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage
                 }
             }
             if (filterState.hideNonDispo) {
@@ -112,6 +113,19 @@ fun EditeBaseDonneMainScreenIdS9(
             if (filterState.hidePrixAchatPositif) {
                 filtered = filtered.filter { it.prixAchat <= 0.0 }
             }
+
+            // NEW: Time-based filter for prixAchatDernierTimeTempUpdate
+            if (filterState.enablePrixAchatTimeFilter) {
+                val days = TimeFilterUtils.parseDaysString(filterState.prixAchatTimeFilterDays)
+                if (days > 0) {
+                    filtered = filtered.filter { product ->
+                        // Assuming ArticlesBasesStatsTable has a field like prixAchatDernierTimeTempUpdate
+                        // You may need to adjust this field name based on your actual data model
+                        TimeFilterUtils.isOlderThanDays(product.prixAchatDernierTimeTempUpdate, days)
+                    }
+                }
+            }
+
             if (filterState.hidePrixVenteZero) {
                 filtered = filtered.filter { it.prixVent > 0.0 }
             }
@@ -160,7 +174,7 @@ fun EditeBaseDonneMainScreenIdS9(
                     ) {
                         if (!maskedElements.contains(AfficheElements.APP_BAR)) {
                             AppBar(
-                            //    onCreateProductAndCapture = { createTestProduct() },
+                                //    onCreateProductAndCapture = { createTestProduct() },
 
                                 currentMode = currentMode,
                                 onModeChanged = { currentMode = it },

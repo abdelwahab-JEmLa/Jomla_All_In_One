@@ -13,5 +13,8 @@ data class FilterState(
     val hideNonHeldPrioriteDemandAuGrossist: Boolean = false,
     val searchText: String = "",
     val sortOrder: SortOrder = SortOrder.CATEGORY_GROUPED,
-    val enableCategoryGrouping: Boolean = true
+    val enableCategoryGrouping: Boolean = true,
+    // New time-based filter
+    val prixAchatTimeFilterDays: String = "", // User input as string
+    val enablePrixAchatTimeFilter: Boolean = false
 )

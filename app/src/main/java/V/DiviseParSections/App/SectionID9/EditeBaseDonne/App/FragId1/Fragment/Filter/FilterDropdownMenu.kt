@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -251,6 +253,42 @@ fun FilterDropdownMenu(
                 )
             }
 
+            // NEW: Time-based filter for prixAchatDernierTimeTempUpdate
+            item {
+                FilterOption(
+                    label = "Filtrer par ancienneté de prix d'achat",
+                    checked = filterState.enablePrixAchatTimeFilter,
+                    onCheckedChange = {
+                        onFilterChanged(filterState.copy(enablePrixAchatTimeFilter = it))
+                    }
+                )
+            }
+
+            if (filterState.enablePrixAchatTimeFilter) {
+                item {
+                    OutlinedTextField(
+                        value = filterState.prixAchatTimeFilterDays,
+                        onValueChange = {
+                            // Only allow numeric input
+                            val cleanedInput = it.filter { char -> char.isDigit() }
+                            onFilterChanged(filterState.copy(prixAchatTimeFilterDays = cleanedInput))
+                        },
+                        label = { Text("Nombre de jours (ex: 1, 7, 30)") },
+                        placeholder = { Text("1") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        supportingText = {
+                            Text(
+                                text = "Affiche seulement les produits dont le prix d'achat a été mis à jour il y a X jours ou plus",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+                }
+            }
+
             item {
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
@@ -340,13 +378,15 @@ fun FilterDropdownMenu(
                                     hidePetiteProbability = true,
                                     hidePrixAchatZero = true,
                                     hidePrixAchatPositif = true,
-                                    hidePrixVenteZero = true,        // New
-                                    hidePrixVentePositif = true,     // New
+                                    hidePrixVenteZero = true,
+                                    hidePrixVentePositif = true,
                                     hideHeldPrioriteDemandAuGrossist = true,
                                     hideNonHeldPrioriteDemandAuGrossist = true,
                                     searchText = filterState.searchText,
                                     sortOrder = filterState.sortOrder,
-                                    enableCategoryGrouping = filterState.enableCategoryGrouping
+                                    enableCategoryGrouping = filterState.enableCategoryGrouping,
+                                    enablePrixAchatTimeFilter = true,
+                                    prixAchatTimeFilterDays = "1"
                                 )
                             )
                         }
