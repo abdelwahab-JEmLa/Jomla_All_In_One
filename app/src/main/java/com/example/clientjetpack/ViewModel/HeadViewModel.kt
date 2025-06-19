@@ -46,7 +46,7 @@ import java.util.Date
 import java.util.Locale
 
 open class HeadViewModel(
-    context: Context,
+    val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
