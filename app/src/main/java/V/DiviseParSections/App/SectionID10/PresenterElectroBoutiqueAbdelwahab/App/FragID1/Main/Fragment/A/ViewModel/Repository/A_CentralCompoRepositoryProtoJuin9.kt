@@ -1,14 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin17.Proto.Z_AppComptComposeRepositoryProtoJuin17
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -50,14 +47,29 @@ class A_CentralCompoRepositoryProtoJuin9(
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
-        val catalogue_bsonObjectId =
-            appComptComposeRepositoryProtoJuin17.currentAppCompt?.bsonObjectId
-        //<--
-        //TODO(1): regle
+        val catalogueFilterId = appComptComposeRepositoryProtoJuin17.currentAppCompt
+            ?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-        return this
+        // If no catalogue filter is set, return all products
+        if (catalogueFilterId.isNullOrEmpty()) {
+            return this
+        }
+
+        // Get the catalogue repositories to map bsonObjectId to actual catalogue ID
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.bsonObjectId }
+        val targetCatalogue = catalogues[catalogueFilterId] ?: return this
+
+        // Get categories that belong to the target catalogue
+        val categoriesInCatalogue = b3CategoriesCompoRepository.datasValue
+            .filter { it.catalogueParentId == targetCatalogue.id }
+            .map { it.id }
+
+        // Filter products that belong to categories in the target catalogue
+        return this.filter { product ->
+            val categoryId = product.idParentCategorie
+            categoryId != null && categoriesInCatalogue.contains(categoryId)
+        }
     }
-
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
