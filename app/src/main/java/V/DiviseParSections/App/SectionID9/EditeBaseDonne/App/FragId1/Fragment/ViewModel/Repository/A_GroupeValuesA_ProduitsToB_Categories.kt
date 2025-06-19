@@ -13,7 +13,7 @@ class A_GroupeValuesA_ProduitsToB_Categories(
 ) {
     val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id.toLong() }
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
 
         val (regularProducts, orphanProducts) = a_ProduitDataBaseComposeRepositoryPJ17.datasValue.partition { product ->
             val categoryId = product.idParentCategorie ?: 0L
