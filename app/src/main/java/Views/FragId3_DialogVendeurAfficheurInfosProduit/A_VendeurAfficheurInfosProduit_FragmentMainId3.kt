@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
-import P0_MainScreen.Main.Main.Settings.Windows.PressistatntMainActivityButtons
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
@@ -281,7 +281,7 @@ fun MainUi(
                 }
 
                 // Action buttons
-                PressistatntMainActivityButtons(
+                PressistatntMainActivityButtons_Sec8FWinID1(
                     cLenceDepuitDialogeAchate = true,
                     onPourFermeWindows = { buttonResult ->
                         updateState(

@@ -1,6 +1,6 @@
 package P0_MainScreen.Main
 
-import P0_MainScreen.Main.Main.Settings.Windows.PressistatntMainActivityButtons
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App._0.Navigation.AppNavHost
@@ -298,7 +298,7 @@ fun MainScreen(
                     )
                 }
                 if (isHostPhone && !hideAppScreen) {
-                  //  PressistatntMainActivityButtons()
+                  //  PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 
                 // Show additional loading indicator if needed for other UI states
@@ -327,7 +327,7 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
-                PressistatntMainActivityButtons(
+                PressistatntMainActivityButtons_Sec8FWinID1(
                     onPourFermeWindows = {  },
                 )
             }

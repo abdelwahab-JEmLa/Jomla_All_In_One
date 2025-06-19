@@ -1,5 +1,7 @@
-package P0_MainScreen.Main.Main.Settings.Windows
+package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.Sec8FWinID1ViewModel
+import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
@@ -47,14 +49,15 @@ import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun PressistatntMainActivityButtons(
+fun PressistatntMainActivityButtons_Sec8FWinID1(
+    viewModel: Sec8FWinID1ViewModel = koinViewModel(),
+    recordingViewModel: RecordingViewModel = koinViewModel(),
     cLenceDepuitDialogeAchate: Boolean = false,
-    viewModel: RecordingViewModel = koinViewModel(),
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
 ) {
-    val TAG ="PressistatntMainActivityButtons"
+    val TAG ="PressistatntMainActivityButtons_Sec8FWinID1"
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
@@ -62,13 +65,13 @@ fun PressistatntMainActivityButtons(
 
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-    val isRecording by viewModel.isRecording.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
-    val displayTime by viewModel.displayTime.collectAsState()
+    val isRecording by recordingViewModel.isRecording.collectAsState()
+    val uiState by recordingViewModel.uiState.collectAsState()
+    val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     // Cache the client count to avoid multiple reads
-    val remainingClients = viewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
+    val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
 
     // Set up a timer to update_showDetailsExpanded the elapsed time every second when recording
     DisposableEffect(isRecording) {
@@ -78,7 +81,7 @@ fun PressistatntMainActivityButtons(
         if (isRecording) {
             job = coroutineScope.launch {
                 while (true) {
-                    viewModel.updateElapsedTime()
+                    recordingViewModel.updateElapsedTime()
                     delay(1000) // Update every second
                 }
             }
@@ -88,11 +91,11 @@ fun PressistatntMainActivityButtons(
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    viewModel.onLifecycleResume()
+                    recordingViewModel.onLifecycleResume()
                     if (isRecording && job == null) {
                         job = coroutineScope.launch {
                             while (true) {
-                                viewModel.updateElapsedTime()
+                                recordingViewModel.updateElapsedTime()
                                 delay(1000)
                             }
                         }
@@ -101,7 +104,7 @@ fun PressistatntMainActivityButtons(
 
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
-                        viewModel.onRecordingStopped()
+                        recordingViewModel.onRecordingStopped()
                     }
                     job?.cancel()
                     job = null
@@ -124,7 +127,7 @@ fun PressistatntMainActivityButtons(
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {
-            viewModel.recordingHandler.stopRecording()
+            recordingViewModel.recordingHandler.stopRecording()
         },
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
@@ -157,6 +160,36 @@ fun PressistatntMainActivityButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showButtons) {
+
+                    // New Row: Messager ButtonAutreEtates with Telegram icon
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                showMessageurDialog = true
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = Color(0xFF0088CC), // Telegram brand color
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_telegram),
+                                contentDescription = "Ouvrir Messager",
+                                tint = Color.White
+                            )
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                "Telegrame Abdelwahab",
+                                modifier = Modifier
+                                    .background(Color(0xFF0088CC))
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
                     // New Row: Messager ButtonAutreEtates with Telegram icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

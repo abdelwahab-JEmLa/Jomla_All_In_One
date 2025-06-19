@@ -19,7 +19,7 @@ data class Z_AppCompt(
 
     // Section StatuesMutable
         // Section Options Personnel
-    var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String,
+    var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "b1",
 
     var itsProductionModePourCeCompt: Boolean = false,
     var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
