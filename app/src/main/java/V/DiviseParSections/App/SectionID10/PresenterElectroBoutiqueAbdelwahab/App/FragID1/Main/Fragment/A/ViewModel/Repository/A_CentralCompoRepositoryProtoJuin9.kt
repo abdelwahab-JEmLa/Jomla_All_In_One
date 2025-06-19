@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.D_TransactionCommercialCompoRepository
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.A_ProduitDataBaseComposeRepositoryPJ17
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_ProduitDataBase.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin17.Proto.Z_AppComptComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -44,7 +45,18 @@ class A_CentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    val filteredA_ProduitsParCatalogueBsonId by derivedStateOf { 
+        a_ProduitDataBaseComposeRepositoryPJ17.
+        sortedDatasValue.filteredParCatalogueBsonId()
+    }
 
+    fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
+      val catalogue_bsonObjectId= appComptComposeRepositoryProtoJuin17.currentAppCompt?.bsonObjectId
+             //<--
+             //TODO(1): regle 
+        return emptyList()
+    }
+    
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         clientsState.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)

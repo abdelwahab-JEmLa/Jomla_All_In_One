@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 
 @Stable
 class A_ProduitDataBaseComposeRepositoryPJ17(
-     val ancienRepo: A_ProduitDataBaseProtoJuin17,
-     val b3CategoriesCompoRepository: C_CategoriesCompoRepository
+    val ancienRepo: A_ProduitDataBaseProtoJuin17,
+    val b3CategoriesCompoRepository: C_CategoriesCompoRepository
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -61,6 +61,8 @@ class A_ProduitDataBaseComposeRepositoryPJ17(
 
         sortedRegular + sortedOrphan
     }
+
+
 
     init {
         composScope.launch {

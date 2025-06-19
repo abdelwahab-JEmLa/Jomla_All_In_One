@@ -28,6 +28,7 @@ data class Z_AppCompt(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
+
     // Section Centralization Valeurs Pour Injection a TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
