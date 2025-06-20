@@ -5,8 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.SQL.Z_AppComptDao
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,13 +14,11 @@ import kotlinx.coroutines.tasks.await
 class Z_AppComptRepositoryProtoJuin17(
     val dao: Z_AppComptDao,
 ) {
-    val repoEntityName = Repository.Z_AppComptEntity.name
+    val repoEntityName ="Z_AppComptRepositoryProtoJuin17"
     val repoTAG = repoEntityName
 
-    val repoRef =
-        Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
-        )
+    val repoRef =Z_AppCompt.caRef
+
 
     private val composScope = CoroutineScope(Dispatchers.IO)
 
@@ -32,13 +29,23 @@ class Z_AppComptRepositoryProtoJuin17(
         if (!dao.isTableEmpty()) return
 
         updateRepoProgress(Repository.Z_AppComptEntity.name, 0.4f)
+
         val data: List<Z_AppCompt> = if (isInternetAvailable) {
+
             updateRepoProgress(Repository.Z_AppComptEntity.name, 0.6f)
+
             onLoadFromFireBase()
         } else {
             onLoadCategoriesFromCsv()
         }
+
         updateRepoProgress(Repository.Z_AppComptEntity.name, 0.8f)
+
+        Log.d(
+            repoTAG,
+            "${data.map { it.nom }}"
+        )
+
         dao.insertAll(data)
     }
 

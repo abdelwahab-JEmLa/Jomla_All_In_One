@@ -73,10 +73,8 @@ open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-   val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
+    val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
 ) : ViewModel() {
-    val currentCompt =
-        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
 
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
@@ -87,8 +85,7 @@ open class HeadViewModel(
     private val connectionManager = WifiTransferDatas(
         context = context,
         a_CentralCompoRepositoryProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
-    )
-    { payload -> handlePayload(payload) }
+    ) { payload -> handlePayload(payload) }
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
@@ -139,14 +136,15 @@ open class HeadViewModel(
 
 
     /**Conexions*/
+// Updated handlePayload method for HeadViewModel
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
-                 /*   if (content=="0") {
-                        showToast("Filtre catalogue reçu: $content")
-                    }
-                    Log.d(tag, "📩 ClientMainGridScrollPosition received: $content")   */
+                    /*   if (content=="0") {
+                           showToast("Filtre catalogue reçu: $content")
+                       }
+                       Log.d(tag, "📩 ClientMainGridScrollPosition received: $content")   */
 
                     copy(mainGridScrollPosition = content.toInt())
                 }
@@ -161,52 +159,36 @@ open class HeadViewModel(
                     )
                 }
 
-                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle -> updateDisplayController {
-                    copy(clientWindowsLazyRowSupColorsScroll = content.toInt())
-                }
-
-                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
-                    copy(
-                        clientWindowsPickerDisplayedQuantity = if (content == "0") 1 else {
-                            content.toInt()
-                        }
-                    )
-                }
-
-                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId -> updateDisplayController {
-                    copy(clientWindowsSelectedColorId = content.toLong())
-                }
-
-                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
-                    copy(searchWindowsDisplaye = content)
-                }
-
-                WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
-                    copy(newArregmentColorsJsonStruct = content)
-                }
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
                     Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
 
-                    Log.d("handlePayload", "📩 currentCompt : ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.map { it.bsonObjectId }}")
-                    Log.d("handlePayload", "📩 currentCompt : $currentCompt")      //<--
-                    //TODO(1): pk c null mem le tabealu a datas
+                    Log.d(
+                        "handlePayload",
+                        "📩 datasValue count: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.size}"
+                    )
 
-                    currentCompt?.let {
-                        Log.d("handlePayload", "📩2 FilterProduitsParCatalogueBsonID received: $content")
+                    Log.d(
+                        "handlePayload",
+                        "📩 datasValue items: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.map { it.bsonObjectId }}"
+                    )
 
-                        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17
-                            .addOrUpdateData(
-                                it.copy(
-                                    presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
-                                )
-                            )
-                    }
+                    val currentAccount =
+                        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+
+                    Log.d("handlePayload", "📩 Updating account: ${currentAccount!!.bsonObjectId}")
+
+                    a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.addOrUpdateData(
+                        currentAccount.copy(
+                            presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
+                        )
+                    )
                 }
 
-
+                else -> {}
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
+
     private fun showToast(message: String) {
         // Ensure we're on the main thread for UI operations
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -217,6 +199,7 @@ open class HeadViewModel(
             }
         }
     }
+
     private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->

@@ -9,6 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,18 +25,11 @@ class Z_AppComptComposeRepositoryProtoJuin17(
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf {
-        _datas.value.sortedBy {
-            val sortDelimiter = it.bsonObjectId
-            sortDelimiter
-        }
+        _datas.value
     }
 
-    // FIXED: Make currentAppCompt more robust
     val currentAppCompt by derivedStateOf {
-        // First try to find "b1", if not found, take the first item, if empty return null
         datasValue.find { it.bsonObjectId == "b1" }
-            ?: datasValue.firstOrNull()
-            ?: createDefaultAppCompt() // Create a default if nothing exists
     }
 
     init {
@@ -48,26 +43,6 @@ class Z_AppComptComposeRepositoryProtoJuin17(
                 }
             }
         }
-
-        // ADDED: Ensure at least one default account exists
-        ensureDefaultAccountExists()
-    }
-
-    // ADDED: Helper function to create default account
-    private fun createDefaultAppCompt(): Z_AppCompt {
-        return Z_AppCompt(bsonObjectId = "b1") // Use "b1" as default ID
-    }
-
-    // ADDED: Ensure at least one account exists
-    private fun ensureDefaultAccountExists() {
-        composScope.launch {
-            val allAccounts = dao.getAll()
-            if (allAccounts.isEmpty()) {
-                Log.d("Z_AppComptRepository", "No accounts found, creating default account")
-                val defaultAccount = createDefaultAppCompt()
-                addOrUpdateData(defaultAccount)
-            }
-        }
     }
 
     fun addOrUpdateData(data: Z_AppCompt) {
@@ -76,10 +51,9 @@ class Z_AppComptComposeRepositoryProtoJuin17(
             Z_AppCompt.compareEntre(ancien = ancien, newData = dataAvecTigerUpdate)
         }
         _datas.value = if (existingIndex >= 0) {
+            // FIXED: Replace the entire object instead of just updating timestamp
             datasValue.toMutableList().apply {
-                this[existingIndex] = this[existingIndex].copy(
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
+                this[existingIndex] = dataAvecTigerUpdate
             }
         } else {
             datasValue + dataAvecTigerUpdate
@@ -96,7 +70,7 @@ data class Z_AppCompt(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     // Section InfosDeBase
-    var nom: String = "Manager Vendor",
+    var nom: String = "",
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
 
@@ -125,6 +99,9 @@ data class Z_AppCompt(
     }
 
     companion object {
+       val caRef = Firebase.database.getReference(
+        "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
+        )
         fun logCategory(data: Z_AppCompt, TAG: String) {
             Log.d(TAG, "Z_AppComptEntity: ${data.bsonObjectId} - ${data.nom}")
         }
