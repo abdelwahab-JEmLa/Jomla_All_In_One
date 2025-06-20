@@ -183,7 +183,7 @@ fun CategorySelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isFastMoveMode) "Déplacement Rapide" else "Changer Catégorie",
+                        text = if (isFastMoveMode) "DR" else "Changer Catégorie",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
