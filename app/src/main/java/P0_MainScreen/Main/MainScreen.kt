@@ -56,16 +56,12 @@ import org.koin.core.parameter.parametersOf
 fun MainScreen(
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
-    xmlResources: List<Pair<String, Int>>? = null,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
-    var showVendeursDialog by remember { mutableStateOf(false) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
-    // Use koinInject to get the FragmentNavigationHandler
     val navigationHandler = koinInject<FragmentNavigationHandler>()
 
-    // Track the repository progress
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
 
     // Additional state to track if we should show the UI
@@ -273,7 +269,6 @@ fun MainScreen(
                     )
                 }
 
-                // Product Display Dialog - only if app screen is not hidden
                 if (showProductDisplay && shouldShowContent && !hideAppScreen) {
                     val productId = productDisplayController.clientWindowsDisplayedProductId
                     val displayProductDataBase = productId?.let { id ->
@@ -291,17 +286,12 @@ fun MainScreen(
                     }
                 }
 
-                // Search Display Dialog - only if app screen is not hidden
                 if (productDisplayController.searchWindowsDisplaye.isNotEmpty() && shouldShowContent && !hideAppScreen) {
                     SearchArticle(
                         dsipayeText = productDisplayController.searchWindowsDisplaye
                     )
                 }
-                if (isHostPhone && !hideAppScreen) {
-                  //  PressistatntMainActivityButtons_Sec8FWinID1()
-                }
 
-                // Show additional loading indicator if needed for other UI states
                 if (uiState.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -316,20 +306,19 @@ fun MainScreen(
                     }
                 }
 
-                // Control FAB panel - placed at the highest z-index to be on top of everything
                 if (isControleFabVisible) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .zIndex(10f) // Ensure it's always on top
+                            .zIndex(10f)
                     ) {
                         panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
-                PressistatntMainActivityButtons_Sec8FWinID1(
-                    onPourFermeWindows = {  },
-                )
+                if(isHostPhone) {
+                    PressistatntMainActivityButtons_Sec8FWinID1()
+                }
             }
         }
     }
