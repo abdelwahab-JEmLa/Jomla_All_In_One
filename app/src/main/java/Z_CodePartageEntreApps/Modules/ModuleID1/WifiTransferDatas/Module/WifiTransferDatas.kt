@@ -6,7 +6,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -61,32 +64,64 @@ class WifiTransferDatas(
         HOST, CLIENT, NONE
     }
 
+    fun sendOrderToClientDisplayerT2(orderName: String, data: Any? = null) {
+        viewModelScope.launch {
+            sendData("$orderName$data")
+        }
+    }
+
     fun sendOrderToClientDisplayerT(
         orderName: WifiUpdateClientDisplayerStats,
         data: Any? = null
     ) {
         viewModelScope.launch {
+            Log.d("sendOrderToClientDisplayerT", " send: ${orderName.prefix}$data")
+
             sendData("${orderName.prefix}$data")
         }
     }
 
     val currentCompt =
         a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+    private fun showToast(message: String) {
+        // Ensure we're on the main thread for UI operations
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+            Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", " received: $payload")
+
             when (messageType) {
-                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID ->
-                    currentCompt?.let {
-                        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
-                            .addOrUpdateData(
-                                it.copy(presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content)
-                            )
-                    }
+                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition ->  {
+                        showToast("Filtre catalogue reçu: $content")
+                    Log.d("handlePayload", "📩 ClientMainGridScrollPosition received: $content")
+                }
+
+                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
+                     Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
+
+                     currentCompt?.let {
+                         Log.d("handlePayload", "📩2 FilterProduitsParCatalogueBsonID received: $content")
+
+                       /*  a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
+                             .addOrUpdateData(
+                                 it.copy(
+                                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
+                                 )
+                             )     */
+                     }
+                 }
 
                 else -> {}
             }
-        } ?: Log.d("", "📩 Unhandled message received: $payload")
+        } ?: Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", "📩 Unhandled message received: $payload")
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -216,6 +251,9 @@ class WifiTransferDatas(
                 try {
                     val rawMessage = String(payload.asBytes()!!)
                     onPayloadReceiveRaw(rawMessage)
+
+                    Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", " rawMessage: $rawMessage")
+
                     handlePayload(rawMessage)
                     Log.d(TAG, "✉️ Message reçu et traité")
                 } catch (e: Exception) {

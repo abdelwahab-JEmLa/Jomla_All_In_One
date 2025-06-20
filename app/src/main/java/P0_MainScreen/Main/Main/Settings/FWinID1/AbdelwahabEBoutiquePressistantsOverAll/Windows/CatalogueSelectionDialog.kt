@@ -41,7 +41,7 @@ fun CatalogueSelectionDialog(
     showDialog: Boolean,
     currentSelectedCatalogueId: String?,
     onDismiss: () -> Unit,
-    onCatalogueSelected: (String) -> Unit
+    onCatalogueSelected:(String) -> Unit
 ) {
     if (showDialog) {
         val catalogues = B4CatalogueCategoriesRepository()

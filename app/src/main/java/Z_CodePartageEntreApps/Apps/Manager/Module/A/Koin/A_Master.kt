@@ -168,7 +168,6 @@ val classesHandlersModule = module {
 
 val viewModelModule = module {
     //Sort Par ID
-    viewModel { Sec8FWinID1ViewModel(get(),get(),) }
     viewModel { Sec9FragId1ViewId2ViewModel() }
     viewModel { Sec10Frag1ViewModel(get(),) }
 
@@ -193,6 +192,8 @@ val viewModelModule = module {
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { HeadViewModel(androidContext(), get(),get(),get(),) }
+    viewModel { Sec8FWinID1ViewModel(androidContext(),get(),get(),get(),) }
+
 }
 
 val appModule = module {

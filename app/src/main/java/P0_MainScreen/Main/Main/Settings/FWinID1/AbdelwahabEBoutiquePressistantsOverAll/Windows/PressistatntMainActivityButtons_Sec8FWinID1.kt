@@ -5,6 +5,8 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
+import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -37,12 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.clientjetpack.R
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
@@ -53,7 +57,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
-) {
+    viewModelHeadViewModel: HeadViewModel= koinViewModel(),
+     wifiTransferDatas: WifiTransferDatas = koinInject(),
+    ) {
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
 
     val TAG = "PressistatntMainActivityButtons_Sec8FWinID1"
@@ -158,7 +164,19 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
 
                 viewModel.sendOrderAuPresentoireDevice(catalogueId)
+
             }
+
+            viewModelHeadViewModel.sendOrderToClientDisplayer(
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+                2000
+            )
+            viewModelHeadViewModel.sendOrderToClientDisplayer(
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+                catalogueId
+            )
+
+            tests(viewModel, wifiTransferDatas,viewModelHeadViewModel)
         }
     )
 
@@ -243,4 +261,26 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             }
         }
     }
+}
+
+private fun tests(
+    viewModel: Sec8FWinID1ViewModel,
+    wifiTransferDatas: WifiTransferDatas,
+    viewModelHeadViewModel: HeadViewModel
+) {
+    viewModelHeadViewModel.sendOrderToClientDisplayer(
+        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+        1
+    )
+    viewModel.wifiTransferDatas.sendOrderToClientDisplayerT2(
+        WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+        100
+    )
+    viewModel.sendOrderToClientDisplayer(
+        WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+        2
+    )
+    val o = WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix
+    val data = 5000
+    wifiTransferDatas.sendData("$o$data")
 }

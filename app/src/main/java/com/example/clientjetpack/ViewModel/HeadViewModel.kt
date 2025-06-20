@@ -20,7 +20,10 @@ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpd
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -137,6 +140,11 @@ open class HeadViewModel(
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
+                 /*   if (content=="0") {
+                        showToast("Filtre catalogue reçu: $content")
+                    }
+                    Log.d(tag, "📩 ClientMainGridScrollPosition received: $content")   */
+
                     copy(mainGridScrollPosition = content.toInt())
                 }
 
@@ -173,12 +181,24 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
                     copy(newArregmentColorsJsonStruct = content)
                 }
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
+                    showToast("Filtre catalogue reçu: $content")
+                    Log.d(tag, "📩 FilterProduitsParCatalogueBsonID received: $content")
+                }
 
-                else -> {}
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
-
+    private fun showToast(message: String) {
+        // Ensure we're on the main thread for UI operations
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
