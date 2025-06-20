@@ -165,6 +165,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                 viewModel.sendOrderAuPresentoireDevice(catalogueId)
 
+                viewModelHeadViewModel.sendOrderToClientDisplayer(
+                    WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
+                    catalogueId
+                )
             }
 
             viewModelHeadViewModel.sendOrderToClientDisplayer(

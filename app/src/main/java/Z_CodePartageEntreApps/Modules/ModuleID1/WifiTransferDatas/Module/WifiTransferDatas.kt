@@ -99,10 +99,6 @@ class WifiTransferDatas(
             Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", " received: $payload")
 
             when (messageType) {
-                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition ->  {
-                        showToast("Filtre catalogue reçu: $content")
-                    Log.d("handlePayload", "📩 ClientMainGridScrollPosition received: $content")
-                }
 
                  WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
                      Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
@@ -110,12 +106,12 @@ class WifiTransferDatas(
                      currentCompt?.let {
                          Log.d("handlePayload", "📩2 FilterProduitsParCatalogueBsonID received: $content")
 
-                       /*  a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
+                        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
                              .addOrUpdateData(
                                  it.copy(
                                      presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
                                  )
-                             )     */
+                             )
                      }
                  }
 
