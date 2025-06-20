@@ -98,6 +98,30 @@ class WifiTransferDatas(
 
             when (messageType) {
 
+                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
+                    Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
+
+                    Log.d(
+                        "handlePayload",
+                        "📩 datasValue count: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.size}"
+                    )
+
+                    Log.d(
+                        "handlePayload",
+                        "📩 datasValue items: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.map { it.bsonObjectId }}"
+                    )
+
+                    val currentAccount =
+                        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+
+                    Log.d("handlePayload", "📩 Updating account: ${currentAccount!!.bsonObjectId}")
+
+                    a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.addOrUpdateData(
+                        currentAccount.copy(
+                            presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
+                        )
+                    )
+                }
 
                 else -> {}
             }
