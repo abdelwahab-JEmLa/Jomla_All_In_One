@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,9 +20,17 @@ fun DetailleSection(
     showDetailsExpanded: Boolean,
     onNextField: (() -> Unit)? = null,
     produit: ArticlesBasesStatsTable,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit
+    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    viewModel: Sec9FragId1ViewId2ViewModel
 ) {
-    if (showDetailsExpanded) {
+    // TODO(1) FIXED: Add individual product expand/collapse functionality
+    // Get individual product expansion state
+    val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
+
+    // Final expansion state: global setting AND individual setting
+    val shouldShowDetails = showDetailsExpanded && isIndividuallyExpanded
+
+    if (shouldShowDetails) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -65,4 +74,3 @@ fun DetailleSection(
         }
     }
 }
-

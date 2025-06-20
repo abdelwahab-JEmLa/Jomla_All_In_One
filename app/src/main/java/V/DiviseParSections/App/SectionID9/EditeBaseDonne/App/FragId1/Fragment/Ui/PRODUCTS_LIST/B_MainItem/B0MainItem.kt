@@ -37,6 +37,7 @@ fun ProductItem(
     focusRequester: FocusRequester? = null,
     viewModel: Sec9FragId1ViewId2ViewModel
 ) {
+
     val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showNameEditor by remember { mutableStateOf(false) }
@@ -133,7 +134,8 @@ fun ProductItem(
             if (!shouldHideQuickInfoCards) {
                 // Action Buttons - Fixed parameter passing
                 ActionButtons(
-                    viewModel= viewModel,
+                    uiState = uiState,
+                    viewModel = viewModel,
                     modifier = modifierWithDefinedPadding,
                     produit = produit,
                     updateProduct = ::updateProduct
@@ -147,14 +149,15 @@ fun ProductItem(
                 updateProduct = ::updateProduct,
             )
 
-            // Details Section
+            // Details Section - Pass viewModel to enable individual expand/collapse
             DetailleSection(
                 shouldHideQuickInfoCards = shouldHideQuickInfoCards,
                 modifier = modifierWithDefinedPadding,
-                showDetailsExpanded = uiState.showDetailsExpanded,
+                showDetailsExpanded = uiState.showDetailsExpandedPourTout,
                 produit = produit,
                 updateProduct = ::updateProduct,
-                onNextField = onNextField
+                onNextField = onNextField,
+                viewModel = viewModel // Added viewModel parameter
             )
         }
     }

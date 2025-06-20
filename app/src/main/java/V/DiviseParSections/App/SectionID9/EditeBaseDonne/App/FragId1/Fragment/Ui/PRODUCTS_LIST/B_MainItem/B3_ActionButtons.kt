@@ -31,67 +31,60 @@ fun ActionButtons(
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     viewModel: Sec9FragId1ViewId2ViewModel,
+    uiState: Sec9FragId1ViewId2ViewModel.UiState,
 ) {
-    val showDetailsExpanded = viewModel.get_showDetailsExpanded(produit)
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        // Row for Priority and other action buttons
-        Row(
-            modifier = modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FilledTonalButton(
-                onClick = { viewModel.update_afficheCesDetailPourComptBsonId(produit) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = if (showDetailsExpanded) "Masquer les détails" else "Afficher les détails",
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = if (showDetailsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+    // Get individual product expansion state
+    val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
 
-            // Priority Toggle Button
+    // Final expansion state: global setting AND individual setting
+    val shouldShowExpanded = uiState.showDetailsExpandedPourTout && isIndividuallyExpanded
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            // Bouton Priorité (à gauche - plus important)
             FilledTonalButton(
-                onClick = {
-                    val updatedProduct =
-                        produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)
-                    updateProduct(updatedProduct)
-                },
-                modifier = Modifier.weight(1f),
+                onClick = { updateProduct(produit.copy(heldPrioriteDemandAuGrossist = !produit.heldPrioriteDemandAuGrossist)) },
+                modifier = Modifier.weight(0.4f),
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = if (produit.heldPrioriteDemandAuGrossist)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = if (produit.heldPrioriteDemandAuGrossist) MaterialTheme.colorScheme.primaryContainer
+                    else MaterialTheme.colorScheme.surfaceVariant
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Icon(
                     imageVector = if (produit.heldPrioriteDemandAuGrossist) Icons.Filled.Star else Icons.Outlined.Star,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(14.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(3.dp))
                 Text(
                     text = "Priorité",
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium
+                )
+            }
+
+            // Bouton Afficher/Masquer détails (à droite - plus large)
+            FilledTonalButton(
+                onClick = { viewModel.toggleProductDetailsVisibility(produit.bsonObjectId) },
+                modifier = Modifier.weight(0.6f),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(
+                    text = if (shouldShowExpanded) "Masquer" else "Détails",
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = if (shouldShowExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
     }
 }
-
-
-
-

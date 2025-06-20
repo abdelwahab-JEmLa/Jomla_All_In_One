@@ -35,11 +35,11 @@ fun ButtonId6(
     ) {
         if (showLabels) {
             Text(
-                text = if (uiState.showDetailsExpanded) "Hide Details" else "Show Details",
+                text = if (uiState.showDetailsExpandedPourTout) "Hide Details" else "Show Details",
                 color = Color.Black,
                 modifier = Modifier
                     .background(
-                        color = if (uiState.showDetailsExpanded) Color.Red else Color.Green,
+                        color = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -50,10 +50,10 @@ fun ButtonId6(
                 viewModelPRODUCTS_LIST.update_showDetailsExpanded()
             },
             modifier = Modifier.size(48.dp),
-            containerColor = if (uiState.showDetailsExpanded) Color.Red else Color.Green
+            containerColor = if (uiState.showDetailsExpandedPourTout) Color.Red else Color.Green
         ) {
             Icon(
-                imageVector = if (uiState.showDetailsExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                imageVector = if (uiState.showDetailsExpandedPourTout) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                 contentDescription = "Toggle product details expansion",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
