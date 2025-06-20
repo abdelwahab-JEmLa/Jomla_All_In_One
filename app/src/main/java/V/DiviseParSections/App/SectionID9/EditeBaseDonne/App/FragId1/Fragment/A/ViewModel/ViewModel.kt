@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.lifecycle.ViewModel
@@ -23,7 +23,7 @@ data class UiState(
 )
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
-    val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
@@ -32,7 +32,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun new_currentMode(currentMode:ModeAffichage) {
+    fun new_currentMode(currentMode: ModeAffichage) {
         _uiState.value = _uiState.value.copy(currentMode = currentMode)
     }
     init {

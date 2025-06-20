@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A2_Passive.Z_AutreStatesCompoRepository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -49,7 +49,7 @@ data class UiState(
 )
 
 class MapClientsViewModel(
-    val centralDatasHandler: A_CentralCompoRepositoryProtoJuin9,
+    val centralDatasHandler: ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase

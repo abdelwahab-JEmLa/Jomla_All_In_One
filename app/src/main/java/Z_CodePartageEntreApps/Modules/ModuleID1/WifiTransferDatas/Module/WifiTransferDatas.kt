@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas(
     private val context: Context,
-    val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    val a_CentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     val appComptComposeRepositoryProtoJuin17 =

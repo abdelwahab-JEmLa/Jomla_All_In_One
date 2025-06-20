@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import android.content.Context
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class Sec8FWinID1ViewModel(
     val context: Context,
 
-    val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val wifiTransferDatas: WifiTransferDatas,
     val headViewModel: HeadViewModel,
 ) : ViewModel() {

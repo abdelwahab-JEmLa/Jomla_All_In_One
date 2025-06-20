@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository
 
 import android.util.Log
 import androidx.room.Entity

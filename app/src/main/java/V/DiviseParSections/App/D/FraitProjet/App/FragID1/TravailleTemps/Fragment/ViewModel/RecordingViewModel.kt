@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
@@ -37,7 +37,7 @@ data class UiState(
 )
 
 class RecordingViewModel(
-    val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,

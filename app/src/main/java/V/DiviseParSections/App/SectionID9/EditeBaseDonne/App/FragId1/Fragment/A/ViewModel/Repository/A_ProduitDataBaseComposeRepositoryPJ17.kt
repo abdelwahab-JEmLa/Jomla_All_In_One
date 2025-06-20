@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository
 
 import Z_CodePartageEntreApps.DataBase.A_ProduitDataBase.Base.Juin17.Proto.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -150,6 +150,8 @@ data class ArticlesBasesStatsTable(
     var actualiseSonImage: Int = 0,
     var actualiseSonImageTest2: Int = 0,
 
+    //Ui States Personele Paramater
+    var afficheCesDetailPourComptBsonId: String = "",
 
     // Add availability states with proper initialization
     var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.DISPO,

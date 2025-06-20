@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.SQL.Z_AppComptDao
@@ -17,7 +17,7 @@ class Z_AppComptRepositoryProtoJuin17(
     val repoEntityName ="Z_AppComptRepositoryProtoJuin17"
     val repoTAG = repoEntityName
 
-    val repoRef =Z_AppCompt.caRef
+    val repoRef = Z_AppCompt.caRef
 
 
     private val composScope = CoroutineScope(Dispatchers.IO)

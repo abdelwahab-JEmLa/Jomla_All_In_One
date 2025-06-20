@@ -1,8 +1,8 @@
 package com.example.clientjetpack.ViewModel
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.A_CentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
@@ -70,7 +70,7 @@ open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-    val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
+    val a_CentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore

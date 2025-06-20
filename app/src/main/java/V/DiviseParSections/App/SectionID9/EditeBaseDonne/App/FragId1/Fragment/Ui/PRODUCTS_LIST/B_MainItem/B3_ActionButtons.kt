@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.B_MainItem
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
@@ -27,18 +30,35 @@ fun ActionButtons(
     modifier: Modifier,
     produit: ArticlesBasesStatsTable,
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    viewModel: Sec9FragId1ViewId2ViewModel,
 ) {
+    val showDetailsExpanded = viewModel.get_showDetailsExpanded(produit)
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
-
         // Row for Priority and other action buttons
         Row(
             modifier = modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            FilledTonalButton(
+                onClick = { viewModel.update_afficheCesDetailPourComptBsonId(produit) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = if (showDetailsExpanded) "Masquer les détails" else "Afficher les détails",
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = if (showDetailsExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
 
             // Priority Toggle Button
             FilledTonalButton(
@@ -68,7 +88,10 @@ fun ActionButtons(
                     fontWeight = FontWeight.Medium
                 )
             }
-
         }
     }
 }
+
+
+
+
