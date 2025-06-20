@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.DisponibilityEtates
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.DisponibilityEtates
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs.CategorySelectionDialog
 import Z_CodePartageEntreApps.Modules.Glide.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,13 +57,25 @@ fun MainItemEditeCategories(
     var showDialog by remember { mutableStateOf(false) }
     val isSelected = selectedProducts.contains(produit)
 
+    // Collect UI state to access clickItemMode
+    val uiState by viewModel.uiState.collectAsState()
+
     Box(modifier = modifier) {
         Card(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable {
-                    // Toggle product selection instead of showing dialog immediately
-                    onProductSelectionToggle(produit)
+                    // FIXED: Check the current click mode
+                    when (uiState.clickItemMode) {
+                        UiStateSec9Frag1.ClickItemMode.FastMove -> {
+                            // In FastMove mode, directly show the category selection dialog
+                            showDialog = true
+                        }
+                        UiStateSec9Frag1.ClickItemMode.Standart -> {
+                            // In Standard mode, toggle selection as before
+                            onProductSelectionToggle(produit)
+                        }
+                    }
                 },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
@@ -110,8 +124,8 @@ fun MainItemEditeCategories(
             }
         }
 
-        // Selection indicator
-        if (isSelected) {
+        // Selection indicator - only show in Standard mode when selected
+        if (isSelected && uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.Standart) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -131,10 +145,32 @@ fun MainItemEditeCategories(
                 )
             }
         }
+
+        // FastMove mode indicator - show a different icon when in FastMove mode
+        if (uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(20.dp)
+                    .background(
+                        uiState.clickItemMode.couleur.copy(alpha = 0.8f),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = uiState.clickItemMode.icon,
+                    contentDescription = "FastMove Mode",
+                    modifier = Modifier.size(12.dp),
+                    tint = Color.White
+                )
+            }
+        }
     }
 
-    // Show dialog only when bulk move dialog is triggered
-    if (showBulkMoveDialog && selectedProducts.isNotEmpty()) {
+    // Show dialog only when bulk move dialog is triggered (Standard mode)
+    if (showBulkMoveDialog && selectedProducts.isNotEmpty() && uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.Standart) {
         BulkCategorySelectionDialog(
             viewModel=viewModel,
             products = selectedProducts.toList(),
@@ -152,7 +188,7 @@ fun MainItemEditeCategories(
         )
     }
 
-    // Individual product dialog (if needed for single product operations)
+    // Individual product dialog - show when FastMove mode is active or when explicitly requested
     if (showDialog) {
         CategorySelectionDialog(
             viewModel = viewModel,

@@ -1,11 +1,12 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.CATEGORIES_LIST.Dialogs
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.UiStateSec9Frag1
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CatalogHeaderCard
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,14 +66,19 @@ fun CategorySelectionDialog(
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
 ) {
+    // Get current UI state to check click mode
+    val uiState by viewModel.uiState.collectAsState()
+    val isFastMoveMode = uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove
+
     var showAddDialog by remember { mutableStateOf(false) }
-    var showSearch by remember { mutableStateOf(false) }
+    // FIXED: Initialize showSearch based on FastMove mode
+    var showSearch by remember(isFastMoveMode) { mutableStateOf(isFastMoveMode) }
     var searchText by remember { mutableStateOf("") }
     var filterWithProducts by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-
+    // FIXED: Auto-focus and show keyboard when in FastMove mode or when search is enabled
     if (showSearch) {
         LaunchedEffect(Unit) {
             delay(100)
@@ -137,6 +144,17 @@ fun CategorySelectionDialog(
         }
     }
 
+    // FIXED: Determine if categories should be shown
+    val shouldShowCategories = remember(isFastMoveMode, searchText) {
+        if (isFastMoveMode) {
+            // In FastMove mode, only show categories when there's search text
+            searchText.isNotBlank()
+        } else {
+            // In Standard mode, always show categories
+            true
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -165,12 +183,12 @@ fun CategorySelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Changer Catégorie",
+                        text = if (isFastMoveMode) "Déplacement Rapide" else "Changer Catégorie",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        // Search toggle button
+                        // Search toggle button - auto-active in FastMove mode
                         IconButton(
                             onClick = {
                                 showSearch = !showSearch
@@ -248,7 +266,7 @@ fun CategorySelectionDialog(
                     }
                 }
 
-                // Search field
+                // Search field - always shown in FastMove mode
                 if (showSearch) {
                     OutlinedTextField(
                         value = searchText,
@@ -258,6 +276,9 @@ fun CategorySelectionDialog(
                             .padding(vertical = 8.dp)
                             .focusRequester(focusRequester),
                         label = { Text("Rechercher") },
+                        placeholder = {
+                            Text(if (isFastMoveMode) "Tapez pour voir les catégories..." else "Rechercher")
+                        },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
                             if (searchText.isNotEmpty()) {
@@ -279,63 +300,97 @@ fun CategorySelectionDialog(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
-                // Main grid content - organized like EditeCategoriesMainList
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4), // Increased to 4 columns for better grid layout
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Add "Sans Catégorie" option at the top
-                    if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
-                            CatalogHeaderCard(
-                                catalogue = CataloguesCaegorie(
-                                    id = 0,
-                                    nom = "Sans Catégorie",
-                                    premierCategorieId = 0
-                                ),
-                                modifier = Modifier.padding(bottom = 4.dp)
+                // FIXED: Show help text in FastMove mode when no search text
+                if (isFastMoveMode && !shouldShowCategories) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
-                        }
-                        item {
-                            CategoryOptionGridCard(
-                                viewModel = viewModel,
-                                categorie = sansCategorieCategory,
-                                categoryId = null,
-                                categoryName = "Sans Catégorie",
-                                isSelected = product.idParentCategorie == null,
-                                onClick = { onCategorySelected(null) },
-                                onEditName = null
+                            Text(
+                                text = "Mode Déplacement Rapide",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                            Text(
+                                text = "Commencez à taper pour voir les catégories disponibles",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                modifier = Modifier.padding(top = 8.dp)
                             )
                         }
                     }
-
-                    // Add catalogue sections with headers (improved organization)
-                    filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                        // Catalogue header spanning full width
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
-                            CatalogHeaderCard(
-                                catalogue = catalogue,
-                                modifier = Modifier.padding(vertical = 4.dp)
-                            )
+                } else if (shouldShowCategories) {
+                    // Main grid content - organized like EditeCategoriesMainList
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(4), // Increased to 4 columns for better grid layout
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Add "Sans Catégorie" option at the top
+                        if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
+                            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                                CatalogHeaderCard(
+                                    catalogue = CataloguesCaegorie(
+                                        id = 0,
+                                        nom = "Sans Catégorie",
+                                        premierCategorieId = 0
+                                    ),
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                            }
+                            item {
+                                CategoryOptionGridCard(
+                                    viewModel = viewModel,
+                                    categorie = sansCategorieCategory,
+                                    categoryId = null,
+                                    categoryName = "Sans Catégorie",
+                                    isSelected = product.idParentCategorie == null,
+                                    onClick = { onCategorySelected(null) },
+                                    onEditName = null
+                                )
+                            }
                         }
 
-                        // Categories in this catalogue
-                        items(categories) { category ->
-                            CategoryOptionGridCard(
-                                viewModel = viewModel,
-                                categorie = category,
-                                categoryId = category.id,
-                                categoryName = category.nom,
-                                isSelected = product.idParentCategorie == category.id,
-                                onClick = { onCategorySelected(category.id) },
-                                onEditName = if (onUpdateCategory != null) { name ->
-                                    onUpdateCategory(category.id, name)
-                                } else null
-                            )
+                        // Add catalogue sections with headers (improved organization)
+                        filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
+                            // Catalogue header spanning full width
+                            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
+                                CatalogHeaderCard(
+                                    catalogue = catalogue,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            }
+
+                            // Categories in this catalogue
+                            items(categories) { category ->
+                                CategoryOptionGridCard(
+                                    viewModel = viewModel,
+                                    categorie = category,
+                                    categoryId = category.id,
+                                    categoryName = category.nom,
+                                    isSelected = product.idParentCategorie == category.id,
+                                    onClick = { onCategorySelected(category.id) },
+                                    onEditName = if (onUpdateCategory != null) { name ->
+                                        onUpdateCategory(category.id, name)
+                                    } else null
+                                )
+                            }
                         }
                     }
                 }

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class UiState(
+data class UiStateSec9Frag1(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
@@ -43,8 +43,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_ProduitDataBaseComposeRepositoryPJ17 =
         a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiStateSec9Frag1())
+    val uiState: StateFlow<UiStateSec9Frag1> = _uiState.asStateFlow()
 
     fun new_currentMode(currentMode: ModeAffichage) {
         _uiState.value = _uiState.value.copy(currentMode = currentMode)

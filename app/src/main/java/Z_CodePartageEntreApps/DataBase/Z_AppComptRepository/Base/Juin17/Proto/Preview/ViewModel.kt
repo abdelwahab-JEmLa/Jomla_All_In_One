@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class UiState(val va: Int = 0)
+data class UiStateSec9Frag1(val va: Int = 0)
 
 class Z_AppComptTestDatasViewModel(
     private val a_CentralDatasHandlerProtoJuin9: A_CentralDatasHandlerProtoJuin9,
@@ -14,7 +14,7 @@ class Z_AppComptTestDatasViewModel(
     val appComptComposeRepository = a_CentralDatasHandlerProtoJuin9.appComptComposeRepository
     val achatOperationComposeRepository = a_CentralDatasHandlerProtoJuin9.achatOperationComposeRepository
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiStateSec9Frag1())
+    val uiState: StateFlow<UiStateSec9Frag1> = _uiState.asStateFlow()
 }
                  */
