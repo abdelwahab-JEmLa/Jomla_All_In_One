@@ -5,9 +5,9 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
-import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -46,7 +48,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
@@ -57,49 +58,36 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
-    viewModelHeadViewModel: HeadViewModel= koinViewModel(),
-     wifiTransferDatas: WifiTransferDatas = koinInject(),
-    ) {
+    viewModelHeadViewModel: HeadViewModel = koinViewModel(),
+) {
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
-
-    val TAG = "PressistatntMainActivityButtons_Sec8FWinID1"
     var showButtons by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showMessageurDialog by remember { mutableStateOf(false) }
-    var showCatalogueDialog by remember { mutableStateOf(false) } // Fixed: Added catalogue dialog state
-
+    var showCatalogueDialog by remember { mutableStateOf(false) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val uiState by recordingViewModel.uiState.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-
-    // Cache the client count to avoid multiple reads
-    val remainingClients =
-        recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
-
-    // Get current selected catalogue
+    val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
-    val currentSelectedCatalogueId =
-        currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+    val isDataLoading = currentAppCompt == null
+    val currentSelectedCatalogueId = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
 
-    // Set up a timer to update the elapsed time every second when recording
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)
-
         if (isRecording) {
             job = coroutineScope.launch {
                 while (true) {
                     recordingViewModel.updateElapsedTime()
-                    delay(1000) // Update every second
+                    delay(1000)
                 }
             }
         }
-
-        // Monitor lifecycle events to handle pause/resume correctly
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
@@ -113,7 +101,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
                 }
-
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
                         recordingViewModel.onRecordingStopped()
@@ -121,18 +108,33 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job?.cancel()
                     job = null
                 }
-
-                else -> { /* do nothing */
-                }
+                else -> {}
             }
         }
-
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose {
             job?.cancel()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
+    }
+
+    if (isDataLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CircularProgressIndicator()
+                Text(
+                    text = "Chargement des données...",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        return
     }
 
     WorkCompletionAlertDialog(
@@ -144,7 +146,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    // Show Messager Dialog when triggered
     if (showMessageurDialog) {
         A_MessageurMainScreen(
             onDismiss = { showMessageurDialog = false }
@@ -156,31 +157,28 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentSelectedCatalogueId = currentSelectedCatalogueId,
         onDismiss = { showCatalogueDialog = false },
         onCatalogueSelected = { catalogueId ->
-            // Fixed: Update the app state with selected catalogue
             currentAppCompt?.let { appCompt ->
                 val updatedAppCompt = appCompt.copy(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )
                 appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
-
                 viewModel.sendOrderAuPresentoireDevice(catalogueId)
+
+                Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $currentAppCompt")
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
                     WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
                     catalogueId
                 )
             }
-
-            viewModelHeadViewModel.sendOrderToClientDisplayer(
+          /*  viewModelHeadViewModel.sendOrderToClientDisplayer(
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
                 2000
             )
             viewModelHeadViewModel.sendOrderToClientDisplayer(
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
                 catalogueId
-            )
-
-            tests(viewModel, wifiTransferDatas,viewModelHeadViewModel)
+            )      */
         }
     )
 
@@ -209,11 +207,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
                         showLabels = showLabels,
                     ) {
-                        // Fixed: Show catalogue selection dialog
                         showCatalogueDialog = true
                     }
 
-                    // Messager Button with Telegram icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -223,7 +219,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 showMessageurDialog = true
                             },
                             modifier = Modifier.size(40.dp),
-                            containerColor = Color(0xFF0088CC), // Telegram brand color
+                            containerColor = Color(0xFF0088CC),
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_telegram),
@@ -231,7 +227,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 tint = Color.White
                             )
                         }
-
                         if (showLabels) {
                             Text(
                                 "Telegram Abdelwahab",
@@ -267,9 +262,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
 }
 
+
 private fun tests(
     viewModel: Sec8FWinID1ViewModel,
-    wifiTransferDatas: WifiTransferDatas,
     viewModelHeadViewModel: HeadViewModel
 ) {
     viewModelHeadViewModel.sendOrderToClientDisplayer(
@@ -284,7 +279,4 @@ private fun tests(
         WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
         2
     )
-    val o = WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix
-    val data = 5000
-    wifiTransferDatas.sendData("$o$data")
 }

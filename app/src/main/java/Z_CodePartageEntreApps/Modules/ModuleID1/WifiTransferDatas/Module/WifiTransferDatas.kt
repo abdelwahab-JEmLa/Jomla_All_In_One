@@ -83,6 +83,7 @@ class WifiTransferDatas(
 
     val currentCompt =
         a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+
     private fun showToast(message: String) {
         // Ensure we're on the main thread for UI operations
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -96,7 +97,6 @@ class WifiTransferDatas(
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
-            Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", " received: $payload")
 
             when (messageType) {
 

@@ -182,7 +182,7 @@ open class HeadViewModel(
                     copy(newArregmentColorsJsonStruct = content)
                 }
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
-                    showToast("Filtre catalogue reçu: $content")
+              //      showToast("Filtre catalogue reçu: $content")
                     Log.d(tag, "📩 FilterProduitsParCatalogueBsonID received: $content")
                 }
 
