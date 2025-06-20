@@ -35,10 +35,22 @@ fun AddCategoryDialog(
 ) {
     var name by remember { mutableStateOf("") }
 
+    fun processText(input: String): String {
+        val result = if (input.contains(".")) {
+            input.replace(Regex("\\.([a-zA-Z]+)")) { matchResult ->
+                "#${matchResult.groupValues[1].uppercase()}"
+            }
+        } else {
+            input
+        }
+        return result.uppercase()
+    }
+
     val addCategory = {
         if (name.trim().isNotEmpty()) {
+            val processedName = processText(name.trim())
             val newCategory = CategoriesTabelle(
-                nom = name.trim(),
+                nom = processedName,
                 position = 0,
                 catalogueParentId = 4,
             )
