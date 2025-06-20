@@ -1,12 +1,17 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,16 +23,31 @@ data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
-    var currentMode : EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
-        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST
-)
+    var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
+        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST,
+    val clickItemMode: ClickItemMode = ClickItemMode.Standart,
+) {
+    enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
+        Standart(Color.White, Icons.Default.TouchApp),
+        FastMove(Color.Blue, Icons.Default.Refresh);
+
+        fun toggle(): ClickItemMode {
+            return when (this) {
+                Standart -> FastMove
+                FastMove -> Standart
+            }
+        }
+    }
+}
+
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
-    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
+    val a_ProduitDataBaseComposeRepositoryPJ17 =
+        a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -35,6 +55,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     fun new_currentMode(currentMode: ModeAffichage) {
         _uiState.value = _uiState.value.copy(currentMode = currentMode)
     }
+
     init {
         collecteMasterRepositorysDatasAuUiState()
     }
@@ -43,7 +64,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         viewModelScope.launch {
             masterRepositorys.model.collect { masterModel ->
                 masterModel?.let { model ->
-                    val newProduitInfosList = model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
+                    val newProduitInfosList =
+                        model.repoStateA_ProduitInfos?.modelListFlow ?: emptyList()
                     val newProgress = model.progress
 
                     _uiState.value = _uiState.value.copy(
@@ -53,6 +75,12 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
                 }
             }
         }
+    }
+
+    fun toggleEntreEntitiesClickItemMode() {
+        val currentMode = _uiState.value.clickItemMode
+        val newMode = currentMode.toggle()
+        _uiState.value = _uiState.value.copy(clickItemMode = newMode)
     }
 
     fun updateActiveCatalogue(catalogue: CataloguesCaegorie) {
@@ -81,7 +109,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     ) {
         when (operation) {
             MoveOperation.TO_CATALOGUE -> {
-                val categoriesToMove = categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+                val categoriesToMove =
+                    categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
                 if (categoriesToMove.isEmpty()) return
 
                 val updatedCategories = categoriesToMove.map { categorie ->
