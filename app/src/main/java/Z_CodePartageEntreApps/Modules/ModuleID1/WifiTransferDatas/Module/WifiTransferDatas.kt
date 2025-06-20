@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas(
     private val context: Context,
-    val a_CentralDatasHandlerProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
+    val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
@@ -81,8 +81,6 @@ class WifiTransferDatas(
         }
     }
 
-    val currentCompt =
-        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
 
     private fun showToast(message: String) {
         // Ensure we're on the main thread for UI operations
@@ -100,20 +98,6 @@ class WifiTransferDatas(
 
             when (messageType) {
 
-                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
-                     Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
-
-                     currentCompt?.let {
-                         Log.d("handlePayload", "📩2 FilterProduitsParCatalogueBsonID received: $content")
-
-                        a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
-                             .addOrUpdateData(
-                                 it.copy(
-                                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
-                                 )
-                             )
-                     }
-                 }
 
                 else -> {}
             }

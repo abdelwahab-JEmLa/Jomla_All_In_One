@@ -31,7 +31,7 @@ class Sec8FWinID1ViewModel(
 
     private val connectionManager = WifiTransferDatas(
         context = context,
-        a_CentralDatasHandlerProtoJuin9 = a_CentralDatasHandlerProtoJuin9,
+        a_CentralCompoRepositoryProtoJuin9 = a_CentralDatasHandlerProtoJuin9,
     )
     { }
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

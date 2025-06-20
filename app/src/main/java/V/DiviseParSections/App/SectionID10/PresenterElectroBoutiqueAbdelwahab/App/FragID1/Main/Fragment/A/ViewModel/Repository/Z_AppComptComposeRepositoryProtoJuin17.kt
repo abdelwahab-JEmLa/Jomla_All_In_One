@@ -29,11 +29,44 @@ class Z_AppComptComposeRepositoryProtoJuin17(
         }
     }
 
-    val currentAppCompt by derivedStateOf { datasValue.find { it.bsonObjectId == "b1" } }
+    // FIXED: Make currentAppCompt more robust
+    val currentAppCompt by derivedStateOf {
+        // First try to find "b1", if not found, take the first item, if empty return null
+        datasValue.find { it.bsonObjectId == "b1" }
+            ?: datasValue.firstOrNull()
+            ?: createDefaultAppCompt() // Create a default if nothing exists
+    }
 
     init {
         composScope.launch {
-            dao.getAllFlow().collect { _datas.value = it }
+            dao.getAllFlow().collect {
+                _datas.value = it
+                // ADDED: Debug logging to track data loading
+                Log.d("Z_AppComptRepository", "Data loaded: ${it.size} items")
+                it.forEach { item ->
+                    Log.d("Z_AppComptRepository", "Item: ${item.bsonObjectId} - ${item.nom}")
+                }
+            }
+        }
+
+        // ADDED: Ensure at least one default account exists
+        ensureDefaultAccountExists()
+    }
+
+    // ADDED: Helper function to create default account
+    private fun createDefaultAppCompt(): Z_AppCompt {
+        return Z_AppCompt(bsonObjectId = "b1") // Use "b1" as default ID
+    }
+
+    // ADDED: Ensure at least one account exists
+    private fun ensureDefaultAccountExists() {
+        composScope.launch {
+            val allAccounts = dao.getAll()
+            if (allAccounts.isEmpty()) {
+                Log.d("Z_AppComptRepository", "No accounts found, creating default account")
+                val defaultAccount = createDefaultAppCompt()
+                addOrUpdateData(defaultAccount)
+            }
         }
     }
 
@@ -54,7 +87,6 @@ class Z_AppComptComposeRepositoryProtoJuin17(
 
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataAvecTigerUpdate)
     }
-
 }
 
 @Entity
@@ -69,7 +101,7 @@ data class Z_AppCompt(
     var deviceModelId: String = Build.ID,
 
     // Section StatuesMutable
-        // Section Options Personnel
+    // Section Options Personnel
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
 
     var itsProductionModePourCeCompt: Boolean = false,
@@ -78,7 +110,6 @@ data class Z_AppCompt(
     var hideAppScreen: Boolean = false,
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
-
 
     // Section Centralization Valeurs Pour Injection a TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,

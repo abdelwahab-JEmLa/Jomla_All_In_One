@@ -73,8 +73,11 @@ open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-    a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
+   val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
 ) : ViewModel() {
+    val currentCompt =
+        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
+
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
@@ -83,7 +86,7 @@ open class HeadViewModel(
 
     private val connectionManager = WifiTransferDatas(
         context = context,
-        a_CentralDatasHandlerProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
+        a_CentralCompoRepositoryProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
     )
     { payload -> handlePayload(payload) }
 
@@ -182,9 +185,24 @@ open class HeadViewModel(
                     copy(newArregmentColorsJsonStruct = content)
                 }
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
-              //      showToast("Filtre catalogue reçu: $content")
-                    Log.d(tag, "📩 FilterProduitsParCatalogueBsonID received: $content")
+                    Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
+
+                    Log.d("handlePayload", "📩 currentCompt : ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.map { it.bsonObjectId }}")
+                    Log.d("handlePayload", "📩 currentCompt : $currentCompt")      //<--
+                    //TODO(1): pk c null mem le tabealu a datas
+
+                    currentCompt?.let {
+                        Log.d("handlePayload", "📩2 FilterProduitsParCatalogueBsonID received: $content")
+
+                        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17
+                            .addOrUpdateData(
+                                it.copy(
+                                    presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
+                                )
+                            )
+                    }
                 }
+
 
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
