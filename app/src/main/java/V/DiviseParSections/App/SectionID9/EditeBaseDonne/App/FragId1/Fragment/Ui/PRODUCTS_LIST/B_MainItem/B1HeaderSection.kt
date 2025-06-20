@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -35,7 +36,8 @@ fun HeaderSection(
     produit: ArticlesBasesStatsTable,
     onShowNameEditorChange: (Boolean) -> Unit,
     onShowDeleteDialogChange: (Boolean) -> Unit,
-    updateProduct: (ArticlesBasesStatsTable) -> Unit
+    updateProduct: (ArticlesBasesStatsTable) -> Unit,
+    paddingDefaulte: Dp,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -45,7 +47,7 @@ fun HeaderSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.dp)
+                .padding(paddingDefaulte)
         ) {
             // Top Row: Image and Product Info
             Row(
@@ -82,7 +84,7 @@ fun HeaderSection(
                     )
                 }
 
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(paddingDefaulte))
 
                 // Product Info Column
                 Column(
@@ -101,7 +103,7 @@ fun HeaderSection(
                             fontWeight = FontWeight.Bold,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(paddingDefaulte),
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = if (produit.nom.any { it.code > 127 }) TextAlign.End else TextAlign.Start
                         )
@@ -128,10 +130,30 @@ fun HeaderSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(paddingDefaulte),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Bouton de suppression (à droite)
+                Surface(
+                    onClick = { onShowDeleteDialogChange(true) },
+                    modifier = Modifier.size(32.dp),
+                    shape = RoundedCornerShape(paddingDefaulte),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shadowElevation = 2.dp
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Supprimer le produit",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
                 // Bouton de statut de disponibilité (à gauche - priorité)
                 Surface(
                     onClick = {
@@ -156,31 +178,12 @@ fun HeaderSection(
                             DisponibilityEtates.NON_DISPO -> MaterialTheme.colorScheme.onErrorContainer
                             DisponibilityEtates.PETITE_PROBABILITY -> MaterialTheme.colorScheme.onTertiaryContainer
                         },
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(paddingDefaulte),
                         textAlign = TextAlign.Center
                     )
                 }
 
-                // Bouton de suppression (à droite)
-                Surface(
-                    onClick = { onShowDeleteDialogChange(true) },
-                    modifier = Modifier.size(32.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shadowElevation = 2.dp
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer le produit",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
+
             }
         }
     }

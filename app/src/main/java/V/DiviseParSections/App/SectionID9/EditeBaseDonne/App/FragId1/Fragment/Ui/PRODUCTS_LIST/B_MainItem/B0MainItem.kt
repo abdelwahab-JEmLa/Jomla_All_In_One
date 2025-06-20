@@ -37,6 +37,7 @@ fun ProductItem(
     focusRequester: FocusRequester? = null,
     viewModel: Sec9FragId1ViewId2ViewModel
 ) {
+    val paddingDefaulte = 3.dp
 
     val modifierWithDefinedPadding = modifier.padding(4.dp)
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -128,7 +129,8 @@ fun ProductItem(
                 produit = produit,
                 onShowNameEditorChange = { showNameEditor = it },
                 onShowDeleteDialogChange = { showDeleteDialog = it },
-                updateProduct = ::updateProduct
+                updateProduct = ::updateProduct,
+                paddingDefaulte = paddingDefaulte
             )
 
             if (!shouldHideQuickInfoCards) {

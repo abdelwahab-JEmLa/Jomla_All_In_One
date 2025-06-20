@@ -42,7 +42,7 @@ fun ActionButtons(
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             // Bouton Priorité (à gauche - plus important)
             FilledTonalButton(
