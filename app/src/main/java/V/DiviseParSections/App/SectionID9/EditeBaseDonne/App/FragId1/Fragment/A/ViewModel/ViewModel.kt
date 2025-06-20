@@ -23,23 +23,17 @@ data class UiState(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
-    var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
-        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage.PRODUCTS_LIST,
+    var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage = EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
+            .CATEGORIES_LIST,
     val clickItemMode: ClickItemMode = ClickItemMode.Standart,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
-        Standart(Color.White, Icons.Default.TouchApp),
-        FastMove(Color.Blue, Icons.Default.Refresh);
+        Standart(Color.Gray, Icons.Default.Refresh),
+        FastMove(Color.Blue, Icons.Default.TouchApp);
 
-        fun toggle(): ClickItemMode {
-            return when (this) {
-                Standart -> FastMove
-                FastMove -> Standart
-            }
-        }
+        fun toggle(): ClickItemMode { return when (this) { Standart -> FastMove ; FastMove -> Standart } }
     }
 }
-
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
