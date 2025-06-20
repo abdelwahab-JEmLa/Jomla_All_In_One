@@ -20,10 +20,7 @@ import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpd
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -75,7 +72,6 @@ open class HeadViewModel(
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
     val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9
 ) : ViewModel() {
-
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
@@ -85,7 +81,35 @@ open class HeadViewModel(
     private val connectionManager = WifiTransferDatas(
         context = context,
         a_CentralCompoRepositoryProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
-    ) { payload -> handlePayload(payload) }
+    ) { payload -> handleRetoureDataPayload(payload) }
+
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
+        viewModelScope.launch {
+            connectionManager.sendData("$orderName$data")
+        }
+    }
+
+    private fun handleRetoureDataPayload(payload: String) {
+        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+            when (messageType) {
+                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
+                    copy(mainGridScrollPosition = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
+                    copy(clientWindowsDisplayedProductId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
+                    copy(
+                        clientWindowsDisplayedProductId = null, searchWindowsDisplaye = ""
+                    )
+                }
+
+                else -> {}
+            }
+        } ?: Log.d(tag, "📩 Unhandled message received: $payload")
+    }
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
@@ -135,40 +159,6 @@ open class HeadViewModel(
     }
 
 
-    /**Conexions*/
-    private fun handlePayload(payload: String) {
-        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
-            when (messageType) {
-                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
-                    copy(mainGridScrollPosition = content.toInt())
-                }
-
-                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
-                    copy(clientWindowsDisplayedProductId = content.toLong())
-                }
-
-                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
-                    copy(
-                        clientWindowsDisplayedProductId = null, searchWindowsDisplaye = ""
-                    )
-                }
-
-                else -> {}
-            }
-        } ?: Log.d(tag, "📩 Unhandled message received: $payload")
-    }
-
-    private fun showToast(message: String) {
-        // Ensure we're on the main thread for UI operations
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        } else {
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
@@ -189,68 +179,8 @@ open class HeadViewModel(
         _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
     }
 
-    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
-        viewModelScope.launch {
-            connectionManager.sendData("$orderName$data")
-        }
-    }
 
 
-    fun addHostDevice(deviceName: String) {
-        viewModelScope.launch {
-            val device =
-                uiState.value.devicesTypeManager.find { it.name == deviceName } ?: return@launch
-
-            val updatedDevice = device.copy(isHost = true)
-
-            // Update Room database
-            database.devicesTypeManagerDao().insert(updatedDevice)
-
-            // Update Firebase
-            refDevicesTypeManager.child(updatedDevice.id.toString()).setValue(updatedDevice)
-                .addOnSuccessListener {
-                    Log.d(tag, "Host device added successfully: $deviceName")
-                }.addOnFailureListener { e ->
-                    Log.e(tag, "Error adding host device", e)
-                }
-
-            // Update UI state
-            _uiState.update { currentState ->
-                currentState.copy(
-                    devicesTypeManager = currentState.devicesTypeManager.map {
-                        if (it.id == updatedDevice.id) updatedDevice else it
-                    })
-            }
-        }
-    }
-
-    fun removeHostDevice(deviceName: String) {
-        viewModelScope.launch {
-            val device =
-                uiState.value.devicesTypeManager.find { it.name == deviceName } ?: return@launch
-
-            val updatedDevice = device.copy(isHost = false)
-
-            // Update Room database
-            database.devicesTypeManagerDao().insert(updatedDevice)
-
-            // Update Firebase
-            refDevicesTypeManager.child(updatedDevice.id.toString()).setValue(updatedDevice)
-                .addOnSuccessListener {
-                    Log.d(tag, "Host device removed successfully: $deviceName")
-                }.addOnFailureListener { e ->
-                    Log.e(tag, "Error removing host device", e)
-                }
-
-            // Update UI state
-            _uiState.update { currentState ->
-                currentState.copy(
-                    devicesTypeManager = currentState.devicesTypeManager.map {
-                        if (it.id == updatedDevice.id) updatedDevice else it
-                    })
-            }
-        }
-    }
 
     private fun getHostDevices(): List<String> {
         return uiState.value.devicesTypeManager.filter { it.isHost }.map { it.name }
