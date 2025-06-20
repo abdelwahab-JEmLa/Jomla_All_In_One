@@ -58,19 +58,12 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
-
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()
-
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
-
-    // Additional state to track if we should show the UI
     var shouldShowContent by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
-    // Get the ViewModel with the context parameter
     val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
-
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
 
