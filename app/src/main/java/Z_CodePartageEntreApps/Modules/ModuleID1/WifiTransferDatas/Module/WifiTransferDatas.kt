@@ -6,10 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -43,6 +40,9 @@ class WifiTransferDatas(
     val a_CentralCompoRepositoryProtoJuin9: A_CentralCompoRepositoryProtoJuin9,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
+    val appComptComposeRepositoryProtoJuin17 =
+        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17
+
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
@@ -64,60 +64,22 @@ class WifiTransferDatas(
         HOST, CLIENT, NONE
     }
 
-    fun sendOrderToClientDisplayerT2(orderName: String, data: Any? = null) {
-        viewModelScope.launch {
-            sendData("$orderName$data")
-        }
-    }
-
     fun sendOrderToClientDisplayerT(
-        orderName: WifiUpdateClientDisplayerStats,
-        data: Any? = null
+        orderName: WifiUpdateClientDisplayerStats, data: Any? = null
     ) {
         viewModelScope.launch {
-            Log.d("sendOrderToClientDisplayerT", " send: ${orderName.prefix}$data")
-
             sendData("${orderName.prefix}$data")
         }
     }
 
 
-    private fun showToast(message: String) {
-        // Ensure we're on the main thread for UI operations
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        } else {
-            Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
-
             when (messageType) {
-
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
-                    Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $content")
-
-                    Log.d(
-                        "handlePayload",
-                        "📩 datasValue count: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.size}"
-                    )
-
-                    Log.d(
-                        "handlePayload",
-                        "📩 datasValue items: ${a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.datasValue.map { it.bsonObjectId }}"
-                    )
-
-                    val currentAccount =
-                        a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.currentAppCompt
-
-                    Log.d("handlePayload", "📩 Updating account: ${currentAccount!!.bsonObjectId}")
-
-                    a_CentralCompoRepositoryProtoJuin9.appComptComposeRepositoryProtoJuin17.addOrUpdateData(
-                        currentAccount.copy(
+                    appComptComposeRepositoryProtoJuin17.addOrUpdateData(
+                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
                             presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
                         )
                     )
@@ -125,7 +87,10 @@ class WifiTransferDatas(
 
                 else -> {}
             }
-        } ?: Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", "📩 Unhandled message received: $payload")
+        } ?: Log.d(
+            "presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId",
+            "📩 Unhandled message received: $payload"
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -181,9 +146,7 @@ class WifiTransferDatas(
 
     // Add a new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
     private fun shouldAttemptReconnection(): Boolean {
-        return !_connectionUiState.value.isConnected &&
-                retryCount < maxRetries &&
-                lastConnectionMode != ConnectionMode.NONE
+        return !_connectionUiState.value.isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
     }
 
     // Update handleDisconnection to use the new logic
@@ -194,8 +157,7 @@ class WifiTransferDatas(
             updateConnectionStatus("Déconnecté")
             _connectionUiState.update {
                 it.copy(
-                    isConnected = false,
-                    lastSuccessfulConnection = System.currentTimeMillis()
+                    isConnected = false, lastSuccessfulConnection = System.currentTimeMillis()
                 )
             }
 
@@ -256,7 +218,10 @@ class WifiTransferDatas(
                     val rawMessage = String(payload.asBytes()!!)
                     onPayloadReceiveRaw(rawMessage)
 
-                    Log.d("presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId", " rawMessage: $rawMessage")
+                    Log.d(
+                        "presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId",
+                        " rawMessage: $rawMessage"
+                    )
 
                     handlePayload(rawMessage)
                     Log.d(TAG, "✉️ Message reçu et traité")
@@ -363,15 +328,10 @@ class WifiTransferDatas(
             _connectionUiState.update { it.copy(isHostPhone = true) }
 
             try {
-                val advertisingOptions = AdvertisingOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
+                val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
 
                 Nearby.getConnectionsClient(context).startAdvertising(
-                    "Host Device",
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
+                    "Host Device", serviceId, connectionLifecycleCallback, advertisingOptions
                 ).addOnSuccessListener {
                     Log.d(TAG, "📡 Mode hôte activé")
                     updateConnectionStatus("En attente de connexion...")
@@ -399,14 +359,10 @@ class WifiTransferDatas(
             _connectionUiState.update { it.copy(isHostPhone = false) }
 
             try {
-                val discoveryOptions = DiscoveryOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
+                val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
 
                 Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
+                    serviceId, endpointDiscoveryCallback, discoveryOptions
                 ).addOnSuccessListener {
                     Log.d(TAG, "🔍 Recherche démarrée")
                     updateConnectionStatus("Recherche d'appareils...")
@@ -425,19 +381,14 @@ class WifiTransferDatas(
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             Log.d(TAG, "🔍 Endpoint trouvé: ${info.endpointName}")
 
-            Nearby.getConnectionsClient(context)
-                .requestConnection(
-                    "ClientAchteur Device",
-                    endpointId,
-                    connectionLifecycleCallback
-                )
-                .addOnSuccessListener {
-                    Log.d(TAG, "✅ Demande de connexion envoyée")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "❌ Échec de la demande de connexion", e)
-                    handleConnectionFailure("Erreur de connexion: ${e.message}")
-                }
+            Nearby.getConnectionsClient(context).requestConnection(
+                "ClientAchteur Device", endpointId, connectionLifecycleCallback
+            ).addOnSuccessListener {
+                Log.d(TAG, "✅ Demande de connexion envoyée")
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "❌ Échec de la demande de connexion", e)
+                handleConnectionFailure("Erreur de connexion: ${e.message}")
+            }
         }
 
         override fun onEndpointLost(endpointId: String) {
@@ -456,12 +407,10 @@ class WifiTransferDatas(
                     }
                 }
 
-                Nearby.getConnectionsClient(context)
-                    .sendPayload(endpoint, payload)
+                Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
                     .addOnSuccessListener {
                         Log.d(TAG, "✅ Données envoyées")
-                    }
-                    .addOnFailureListener { e ->
+                    }.addOnFailureListener { e ->
                         Log.e(TAG, "❌ Échec de l'envoi", e)
                         handleTransferFailure()
                     }
@@ -539,8 +488,7 @@ class WifiTransferDatas(
     private fun checkRequiredPermissions(): Boolean {
         val missingPermissions = requiredPermissions.filter { permission ->
             val isGranted = ContextCompat.checkSelfPermission(
-                context,
-                permission
+                context, permission
             ) != PackageManager.PERMISSION_GRANTED
 
             Log.d(TAG, "🔐 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
@@ -570,8 +518,7 @@ class WifiTransferDatas(
         Log.e(TAG, "⚠️ Erreur: $error")
         _connectionUiState.update {
             it.copy(
-                error = error,
-                connectionStatus = "Erreur: $error"
+                error = error, connectionStatus = "Erreur: $error"
             )
         }
     }
@@ -599,16 +546,16 @@ data class ConnectionUiState(
 )
 
 enum class WifiUpdateClientDisplayerStats(val prefix: String) {
-    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
-    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
-    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
-    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
-    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
-    SearchWindowsDisplaye("SearchWindowsDisplaye"),
-    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"),
-    FilterProduitsParCatalogueBsonID("FilterProduitsParCatalogueBsonID")
-    ;
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"), ClientWindowsLazyRowSupColorsScrolle(
+        "ClientWindowsLazyRowSupColorsScrolle"
+    ),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"), ClientWindowsSelectedColorId(
+        "clientWindowsSelectedColorId"
+    ),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"), WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"), SearchWindowsDisplaye(
+        "SearchWindowsDisplaye"
+    ),
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct"), FilterProduitsParCatalogueBsonID("FilterProduitsParCatalogueBsonID");
 
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {

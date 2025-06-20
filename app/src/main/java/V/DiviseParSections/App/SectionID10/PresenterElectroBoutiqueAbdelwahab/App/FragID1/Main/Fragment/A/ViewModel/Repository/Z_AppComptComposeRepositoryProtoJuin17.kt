@@ -34,14 +34,7 @@ class Z_AppComptComposeRepositoryProtoJuin17(
 
     init {
         composScope.launch {
-            dao.getAllFlow().collect {
-                _datas.value = it
-                // ADDED: Debug logging to track data loading
-                Log.d("Z_AppComptRepository", "Data loaded: ${it.size} items")
-                it.forEach { item ->
-                    Log.d("Z_AppComptRepository", "Item: ${item.bsonObjectId} - ${item.nom}")
-                }
-            }
+            dao.getAllFlow().collect { _datas.value = it }
         }
     }
 

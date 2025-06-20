@@ -7,7 +7,6 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -162,23 +161,14 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )
                 appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
-                viewModel.sendOrderAuPresentoireDevice(catalogueId)
 
-                Log.d("handlePayload", "📩 FilterProduitsParCatalogueBsonID received: $currentAppCompt")
+                viewModel.sendOrderAuPresentoireDevice(catalogueId)
 
                 viewModelHeadViewModel.sendOrderToClientDisplayer(
                     WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
                     catalogueId
                 )
             }
-          /*  viewModelHeadViewModel.sendOrderToClientDisplayer(
-                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
-                2000
-            )
-            viewModelHeadViewModel.sendOrderToClientDisplayer(
-                WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
-                catalogueId
-            )      */
         }
     )
 
@@ -260,23 +250,4 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             }
         }
     }
-}
-
-
-private fun tests(
-    viewModel: Sec8FWinID1ViewModel,
-    viewModelHeadViewModel: HeadViewModel
-) {
-    viewModelHeadViewModel.sendOrderToClientDisplayer(
-        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
-        1
-    )
-    viewModel.wifiTransferDatas.sendOrderToClientDisplayerT2(
-        WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
-        100
-    )
-    viewModel.sendOrderToClientDisplayer(
-        WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID.prefix,
-        2
-    )
 }

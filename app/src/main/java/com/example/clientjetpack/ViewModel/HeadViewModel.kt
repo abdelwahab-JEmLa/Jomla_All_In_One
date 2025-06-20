@@ -136,16 +136,10 @@ open class HeadViewModel(
 
 
     /**Conexions*/
-// Updated handlePayload method for HeadViewModel
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
-                    /*   if (content=="0") {
-                           showToast("Filtre catalogue reçu: $content")
-                       }
-                       Log.d(tag, "📩 ClientMainGridScrollPosition received: $content")   */
-
                     copy(mainGridScrollPosition = content.toInt())
                 }
 
@@ -158,7 +152,6 @@ open class HeadViewModel(
                         clientWindowsDisplayedProductId = null, searchWindowsDisplaye = ""
                     )
                 }
-
 
                 else -> {}
             }
