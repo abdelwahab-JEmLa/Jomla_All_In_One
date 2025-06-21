@@ -5,6 +5,9 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.
 import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init.onLoadFromFireBaseD_AchatOperation
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +36,49 @@ class D_AchatOperationDataBaseProtoJuin17(
         updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.8f)
         dao.insertAll(data)
     }
+
+    var isListenerRegistered = false
+    fun triggerUpdateFbParTimestampsListener() {
+        if (isListenerRegistered) return
+        isListenerRegistered = true
+
+        repoRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        var updateCount = 0
+                        for (child in snapshot.children) {
+                            try {
+                                child.getValue(D_AchatOperation::class.java)?.let { entity ->
+                                    val entityWithKey = entity.copy(bsonObjectId = child.key ?: "")
+                                    val shouldUpdate = try {
+                                        val localEntity = dao.getAll().find { it.bsonObjectId == entityWithKey.bsonObjectId }
+                                        if (localEntity == null) {
+                                            true
+                                        } else {
+                                            entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
+                                        }
+                                    } catch (e: Exception) {
+                                        true
+                                    }
+
+                                    if (shouldUpdate) {
+                                        dao.update(entityWithKey)
+                                        updateCount++
+                                    }
+                                }
+                            } catch (e: Exception) {}
+                        }
+                    } catch (e: Exception) {}
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                isListenerRegistered = false
+            }
+        })
+    }
+
 
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,

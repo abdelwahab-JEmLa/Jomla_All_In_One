@@ -51,6 +51,8 @@ class Z_DatabaseInitializationManager(
                         scope.launch {
                             updateRepoProgress(name, progress)
                         }
+                        achatOperationRepository.triggerUpdateFbParTimestampsListener()
+
                     }
                 }
             }
