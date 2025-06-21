@@ -60,8 +60,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
 ) {
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
-    var showButtons by remember { mutableStateOf(true) }
-    var showLabels by remember { mutableStateOf(true) }
+    val showButtons by remember { mutableStateOf(true) }
+    val showLabels by remember { mutableStateOf(true) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showMessageurDialog by remember { mutableStateOf(false) }
     var showCatalogueDialog by remember { mutableStateOf(false) }
