@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +71,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val isRecording by recordingViewModel.isRecording.collectAsState()
     val uiState by recordingViewModel.uiState.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
     val isDataLoading = currentAppCompt == null
