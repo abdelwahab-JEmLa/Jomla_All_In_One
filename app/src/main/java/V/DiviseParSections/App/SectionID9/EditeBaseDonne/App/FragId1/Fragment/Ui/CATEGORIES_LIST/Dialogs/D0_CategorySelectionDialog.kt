@@ -70,8 +70,6 @@ fun CategorySelectionDialog(
     val uiState by viewModel.uiState.collectAsState()
     val isFastMoveMode = uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove
 
-    var showAddDialog by remember { mutableStateOf(false) }
-    // FIXED: Initialize showSearch based on FastMove mode
     var showSearch by remember(isFastMoveMode) { mutableStateOf(isFastMoveMode) }
     var searchText by remember { mutableStateOf("") }
     var filterWithProducts by remember { mutableStateOf(false) }
@@ -152,6 +150,36 @@ fun CategorySelectionDialog(
         } else {
             // In Standard mode, always show categories
             true
+        }
+    }
+
+    // Function to process text for category creation
+    fun processText(input: String): String {
+        return if (input.contains(".")) {
+            // If input contains dots, replace .word with #WORD
+            input.replace(Regex("\\.([a-zA-Z]+)")) { matchResult ->
+                "#${matchResult.groupValues[1].uppercase()}"
+            }
+        } else {
+            // If no dots, capitalize only the first letter of the entire string
+            input.trim().replaceFirstChar { char ->
+                if (char.isLowerCase()) char.titlecase() else char.toString()
+            }
+        }
+    }
+
+    // Function to create category directly from search text
+    val createCategoryFromSearchText = {
+        if (searchText.trim().isNotEmpty()) {
+            val processedName = processText(searchText.trim())
+            val newCategory = CategoriesTabelle(
+                nom = processedName,
+                position = 0,
+                catalogueParentId = 4,
+            )
+            viewModel.addOrUpdateCategorie(newCategory)
+            // Clear search text after creating category
+            searchText = ""
         }
     }
 
@@ -242,8 +270,11 @@ fun CategorySelectionDialog(
                             }
                         }
 
-                        // Add category button
-                        IconButton(onClick = { showAddDialog = true }) {
+                        // Add category button - FIXED: Use search text directly
+                        IconButton(onClick = {
+                            // Instead of showing dialog, process search text and add category
+                            createCategoryFromSearchText()
+                        }) {
                             Card(
                                 modifier = Modifier.size(48.dp),
                                 colors = CardDefaults.cardColors(
@@ -288,7 +319,15 @@ fun CategorySelectionDialog(
                             }
                         },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
+                        keyboardActions = KeyboardActions(
+                            onSearch = {
+                                keyboard?.hide()
+                                // Option: Create category when pressing search
+                                if (searchText.trim().isNotEmpty()) {
+                                    createCategoryFromSearchText()
+                                }
+                            }
+                        ),
                         singleLine = true
                     )
                 }
@@ -408,13 +447,5 @@ fun CategorySelectionDialog(
                 }
             }
         }
-    }
-
-    // Add category dialog
-    if (showAddDialog) {
-        AddCategoryDialog(
-            viewModel = viewModel,
-            onDismiss = { showAddDialog = false },
-        )
     }
 }
