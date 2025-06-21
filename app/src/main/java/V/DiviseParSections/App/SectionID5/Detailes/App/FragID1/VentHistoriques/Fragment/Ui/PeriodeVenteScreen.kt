@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.Ui
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._015_Produits
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._012_ComptsVendeurs
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._013_ClientTransaction
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._015_Produits
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility

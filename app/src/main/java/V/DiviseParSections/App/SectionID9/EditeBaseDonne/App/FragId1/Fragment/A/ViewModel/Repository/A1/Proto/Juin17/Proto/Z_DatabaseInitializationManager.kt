@@ -1,9 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppComptComposeRepositoryProtoJuin17
-import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBaseProtoJuin17
-import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.triggerUpdateFbParTimestampsListener
-import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Z_AppComptRepositoryProtoJuin17
+import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
