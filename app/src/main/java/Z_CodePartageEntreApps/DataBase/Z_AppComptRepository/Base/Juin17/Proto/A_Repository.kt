@@ -6,6 +6,9 @@ import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.In
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Init.onLoadFromFireBase
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.SQL.Z_AppComptDao
 import android.util.Log
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +19,7 @@ class Z_AppComptRepositoryProtoJuin17(
 ) {
     val repoEntityName ="Z_AppComptRepositoryProtoJuin17"
     val repoTAG = repoEntityName
+    var isListenerRegistered = false
 
     val repoRef = Z_AppCompt.caRef
 
@@ -48,6 +52,48 @@ class Z_AppComptRepositoryProtoJuin17(
 
         dao.insertAll(data)
     }
+
+    fun triggerUpdateFbParTimestampsListener() {
+        if (isListenerRegistered) return
+        isListenerRegistered = true
+
+        repoRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        var updateCount = 0
+                        for (child in snapshot.children) {
+                            try {
+                                child.getValue(Z_AppCompt::class.java)?.let { entity ->
+                                    val entityWithKey = entity.copy(bsonObjectId = child.key ?: "")
+                                    val shouldUpdate = try {
+                                        val localEntity = dao.getAll().find { it.bsonObjectId == entityWithKey.bsonObjectId }
+                                        if (localEntity == null) {
+                                            true
+                                        } else {
+                                            entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
+                                        }
+                                    } catch (e: Exception) {
+                                        true
+                                    }
+
+                                    if (shouldUpdate) {
+                                        dao.update(entityWithKey)
+                                        updateCount++
+                                    }
+                                }
+                            } catch (e: Exception) {}
+                        }
+                    } catch (e: Exception) {}
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                isListenerRegistered = false
+            }
+        })
+    }
+
 
     fun addOrUpdatedDataBase(
         existingIndex: Int,

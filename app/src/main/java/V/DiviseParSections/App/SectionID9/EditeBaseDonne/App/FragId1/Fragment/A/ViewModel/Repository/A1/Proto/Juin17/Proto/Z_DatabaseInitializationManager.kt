@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppComptComposeRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.D_AchatOperationDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.triggerUpdateFbParTimestampsListener
 import Z_CodePartageEntreApps.DataBase.Z_AppComptRepository.Base.Juin17.Proto.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +43,7 @@ class Z_DatabaseInitializationManager(
                             updateRepoProgress(name, progress)
                         }
                     }
+                    z_AppComptRepositoryProtoJuin17.triggerUpdateFbParTimestampsListener()
                 }
             },
             scope.launch {

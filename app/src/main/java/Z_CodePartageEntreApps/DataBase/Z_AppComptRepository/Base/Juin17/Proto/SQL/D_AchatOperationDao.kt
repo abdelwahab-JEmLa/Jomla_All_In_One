@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface Z_AppComptDao {
+    @Query("SELECT * FROM Z_AppCompt")
+    fun getAll(): List<Z_AppCompt>
+
     @Update
     suspend fun update(data: Z_AppCompt)
 
