@@ -52,7 +52,6 @@ class Z_DatabaseInitializationManager(
                             updateRepoProgress(name, progress)
                         }
                         achatOperationRepository.triggerUpdateFbParTimestampsListener()
-
                     }
                 }
             }
