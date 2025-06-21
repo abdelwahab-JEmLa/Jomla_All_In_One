@@ -46,19 +46,9 @@ data class D_AchatOperation(
     }
 
     companion object {
-        val caRef =
-            Firebase.database.getReference(
-                "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation"
-            )
-
-        fun logCategory(data: D_AchatOperation, TAG: String) {
-            Log.d(TAG, "D_AchatOperation: ${data.bsonObjectId} - ")
-        }
-
-        fun safeRemoveRef(): Unit {
-            caRef.removeValue()
-        }
-
+        val caRef = Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
+        fun logCategory(data: D_AchatOperation, TAG: String) { Log.d(TAG, "D_AchatOperation: ${data.bsonObjectId} - ") }
+        fun safeRemoveRef(): Unit { caRef.removeValue() }
         fun compareEntre(
             ancien: D_AchatOperation,
             newData: D_AchatOperation
