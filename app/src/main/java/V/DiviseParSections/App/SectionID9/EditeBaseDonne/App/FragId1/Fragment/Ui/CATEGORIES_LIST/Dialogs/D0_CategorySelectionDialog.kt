@@ -66,17 +66,14 @@ fun CategorySelectionDialog(
     categoriesMap: Map<Long, CategoriesTabelle> = emptyMap(),
     availableCategories: List<Long> = emptyList(),
 ) {
-    // Get current UI state to check click mode
     val uiState by viewModel.uiState.collectAsState()
     val isFastMoveMode = uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove
-
     var showSearch by remember(isFastMoveMode) { mutableStateOf(isFastMoveMode) }
     var searchText by remember { mutableStateOf("") }
     var filterWithProducts by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
-    // FIXED: Auto-focus and show keyboard when in FastMove mode or when search is enabled
     if (showSearch) {
         LaunchedEffect(Unit) {
             delay(100)
@@ -87,38 +84,25 @@ fun CategorySelectionDialog(
 
     val catalogues = remember { B4CatalogueCategoriesRepository() }
     val allCategories = remember(categoriesMap) { categoriesMap.values.sortedBy { it.position } }
+    val sansCategorieCategory =
+        remember { CategoriesTabelle(id = 0L, nom = "Sans Catégorie", position = 0) }
 
-    // Create a dummy category for "Sans Catégorie" option
-    val sansCategorieCategory = remember {
-        CategoriesTabelle(
-            id = 0L,
-            nom = "Sans Catégorie",
-            position = 0
-        )
-    }
-
-    // Group categories by catalogue (improved organization like EditeCategoriesMainList)
     val categoriesByCatalogue = remember(allCategories, catalogues) {
         val grouped = mutableMapOf<CataloguesCaegorie, List<CategoriesTabelle>>()
-
-        // Group categories by their catalogue parent
         catalogues.forEach { catalogue ->
-            val categoriesInCatalogue = allCategories.filter {
-                it.catalogueParentId == catalogue.id
-            }
+            val categoriesInCatalogue =
+                allCategories.filter { it.catalogueParentId == catalogue.id }
             if (categoriesInCatalogue.isNotEmpty()) {
                 grouped[catalogue] = categoriesInCatalogue.sortedBy { it.position }
             }
         }
-
-        // Handle categories without a valid catalogue (orphaned categories)
         val orphanedCategories = allCategories.filter {
             it.catalogueParentId == 0L || !catalogues.any { c -> c.id == it.catalogueParentId }
         }
         if (orphanedCategories.isNotEmpty()) {
-            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] = orphanedCategories.sortedBy { it.position }
+            grouped[CataloguesCaegorie(id = 0, nom = "Autres", premierCategorieId = 0)] =
+                orphanedCategories.sortedBy { it.position }
         }
-
         grouped
     }
 
@@ -131,55 +115,34 @@ fun CategorySelectionDialog(
         derivedStateOf {
             categoriesByCatalogue.mapValues { (_, categories) ->
                 var filtered = categories
-                if (filterWithProducts) {
-                    filtered = filtered.filter { availableCategories.contains(it.id) }
-                }
-                if (searchText.isNotBlank()) {
-                    filtered = filtered.filter { it.nom.contains(searchText, true) }
-                }
+                if (filterWithProducts) filtered =
+                    filtered.filter { availableCategories.contains(it.id) }
+                if (searchText.isNotBlank()) filtered =
+                    filtered.filter { it.nom.contains(searchText, true) }
                 filtered
             }.filterValues { it.isNotEmpty() }
         }
     }
 
-    // FIXED: Determine if categories should be shown
     val shouldShowCategories = remember(isFastMoveMode, searchText) {
-        if (isFastMoveMode) {
-            // In FastMove mode, only show categories when there's search text
-            searchText.isNotBlank()
-        } else {
-            // In Standard mode, always show categories
-            true
-        }
+        if (isFastMoveMode) searchText.isNotBlank() else true
     }
 
-    // Function to process text for category creation
-    fun processText(input: String): String {
-        return if (input.contains(".")) {
-            // If input contains dots, replace .word with #WORD
-            input.replace(Regex("\\.([a-zA-Z]+)")) { matchResult ->
-                "#${matchResult.groupValues[1].uppercase()}"
-            }
-        } else {
-            // If no dots, capitalize only the first letter of the entire string
-            input.trim().replaceFirstChar { char ->
-                if (char.isLowerCase()) char.titlecase() else char.toString()
-            }
-        }
+    fun processText(input: String): String = if (input.contains(".")) {
+        input.replace(Regex("\\.([a-zA-Z]+)")) { "#${it.groupValues[1].uppercase()}" }
+    } else {
+        input.trim().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
 
-    // Function to create category directly from search text
     val createCategoryFromSearchText = {
         if (searchText.trim().isNotEmpty()) {
-            val processedName = processText(searchText.trim())
-            val newCategory = CategoriesTabelle(
-                nom = processedName,
-                position = 0,
-                catalogueParentId = 4,
+            viewModel.addOrUpdateCategorie(
+                CategoriesTabelle(
+                    nom = processText(searchText.trim()),
+                    position = 0,
+                    catalogueParentId = 4
+                )
             )
-            viewModel.addOrUpdateCategorie(newCategory)
-            // Clear search text after creating category
-            searchText = ""
         }
     }
 
@@ -199,12 +162,9 @@ fun CategorySelectionDialog(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 6.dp
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-            ) {
-                // Header with title and action buttons
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -216,22 +176,14 @@ fun CategorySelectionDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        // Search toggle button - auto-active in FastMove mode
-                        IconButton(
-                            onClick = {
-                                showSearch = !showSearch
-                                if (!showSearch) {
-                                    searchText = ""
-                                    keyboard?.hide()
-                                }
-                            }
-                        ) {
+                        IconButton(onClick = {
+                            showSearch = !showSearch; if (!showSearch) {
+                            searchText = ""; keyboard?.hide()
+                        }
+                        }) {
                             Card(
                                 modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (showSearch) MaterialTheme.colorScheme.secondary
-                                    else MaterialTheme.colorScheme.surfaceVariant
-                                ),
+                                colors = CardDefaults.cardColors(containerColor = if (showSearch) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surfaceVariant),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
@@ -246,15 +198,10 @@ fun CategorySelectionDialog(
                                 }
                             }
                         }
-
-                        // Filter toggle button
                         IconButton(onClick = { filterWithProducts = !filterWithProducts }) {
                             Card(
                                 modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (filterWithProducts) MaterialTheme.colorScheme.tertiary
-                                    else MaterialTheme.colorScheme.surfaceVariant
-                                ),
+                                colors = CardDefaults.cardColors(containerColor = if (filterWithProducts) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
@@ -269,17 +216,10 @@ fun CategorySelectionDialog(
                                 }
                             }
                         }
-
-                        // Add category button - FIXED: Use search text directly
-                        IconButton(onClick = {
-                            // Instead of showing dialog, process search text and add category
-                            createCategoryFromSearchText()
-                        }) {
+                        IconButton(onClick = createCategoryFromSearchText) {
                             Card(
                                 modifier = Modifier.size(48.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                ),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Box(
@@ -297,37 +237,27 @@ fun CategorySelectionDialog(
                     }
                 }
 
-                // Search field - always shown in FastMove mode
                 if (showSearch) {
                     OutlinedTextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
+                        value = searchText, onValueChange = { searchText = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                             .focusRequester(focusRequester),
                         label = { Text("Rechercher") },
-                        placeholder = {
-                            Text(if (isFastMoveMode) "Tapez pour voir les catégories..." else "Rechercher")
-                        },
+                        placeholder = { Text(if (isFastMoveMode) "Tapez pour voir les catégories..." else "Rechercher") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
-                            if (searchText.isNotEmpty()) {
-                                IconButton(onClick = { searchText = "" }) {
-                                    Icon(Icons.Default.Clear, contentDescription = null)
-                                }
-                            }
+                            if (searchText.isNotEmpty()) IconButton(onClick = {
+                                searchText = ""
+                            }) { Icon(Icons.Default.Clear, contentDescription = null) }
                         },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(
-                            onSearch = {
-                                keyboard?.hide()
-                                // Option: Create category when pressing search
-                                if (searchText.trim().isNotEmpty()) {
-                                    createCategoryFromSearchText()
-                                }
-                            }
-                        ),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            keyboard?.hide(); if (searchText.trim()
+                                .isNotEmpty()
+                        ) createCategoryFromSearchText()
+                        }),
                         singleLine = true
                     )
                 }
@@ -339,7 +269,6 @@ fun CategorySelectionDialog(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
-                // FIXED: Show help text in FastMove mode when no search text
                 if (isFastMoveMode && !shouldShowCategories) {
                     Box(
                         modifier = Modifier
@@ -372,16 +301,14 @@ fun CategorySelectionDialog(
                         }
                     }
                 } else if (shouldShowCategories) {
-                    // Main grid content - organized like EditeCategoriesMainList
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(4), // Increased to 4 columns for better grid layout
+                        columns = GridCells.Fixed(4),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // Add "Sans Catégorie" option at the top
                         if (searchText.isBlank() || "Sans Catégorie".contains(searchText, true)) {
                             item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                                 CatalogHeaderCard(
@@ -389,8 +316,7 @@ fun CategorySelectionDialog(
                                         id = 0,
                                         nom = "Sans Catégorie",
                                         premierCategorieId = 0
-                                    ),
-                                    modifier = Modifier.padding(bottom = 4.dp)
+                                    ), modifier = Modifier.padding(bottom = 4.dp)
                                 )
                             }
                             item {
@@ -405,18 +331,13 @@ fun CategorySelectionDialog(
                                 )
                             }
                         }
-
-                        // Add catalogue sections with headers (improved organization)
                         filteredCategoriesByCatalogue.forEach { (catalogue, categories) ->
-                            // Catalogue header spanning full width
                             item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(4) }) {
                                 CatalogHeaderCard(
                                     catalogue = catalogue,
                                     modifier = Modifier.padding(vertical = 4.dp)
                                 )
                             }
-
-                            // Categories in this catalogue
                             items(categories) { category ->
                                 CategoryOptionGridCard(
                                     viewModel = viewModel,
@@ -426,24 +347,23 @@ fun CategorySelectionDialog(
                                     isSelected = product.idParentCategorie == category.id,
                                     onClick = { onCategorySelected(category.id) },
                                     onEditName = if (onUpdateCategory != null) { name ->
-                                        onUpdateCategory(category.id, name)
-                                    } else null
-                                )
+                                        onUpdateCategory(
+                                            category.id,
+                                            name
+                                        )
+                                    } else null)
                             }
                         }
                     }
                 }
 
-                // Footer with close button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Fermer")
-                    }
+                    TextButton(onClick = onDismiss) { Text("Fermer") }
                 }
             }
         }
