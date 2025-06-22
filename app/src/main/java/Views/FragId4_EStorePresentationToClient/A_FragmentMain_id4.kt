@@ -3,7 +3,7 @@ package Views.FragId4_EStorePresentationToClient
 import Views.FragId4_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
 import Views.FragId4_EStorePresentationToClient.Ui.ProductNameSection7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Proto.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

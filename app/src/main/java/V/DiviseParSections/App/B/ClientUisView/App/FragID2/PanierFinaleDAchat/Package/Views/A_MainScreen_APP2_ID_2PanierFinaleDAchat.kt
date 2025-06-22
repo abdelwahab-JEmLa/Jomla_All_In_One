@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.B_MainList_APP2_ID_2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Sec1Frag3
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -105,8 +105,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                 }
                             } else {
                                 // Always show the list of items, regardless of order mode
-                                B_MainList_APP2_ID_2(
-                                    composeKeyVID = idOuvertC3_TransactionCommercial,
+                                Sec1Frag3(
                                 )
                             }
                         }
