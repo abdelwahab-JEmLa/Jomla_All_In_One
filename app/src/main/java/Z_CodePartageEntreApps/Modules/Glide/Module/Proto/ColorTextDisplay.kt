@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Modules.Glide
+package Z_CodePartageEntreApps.Modules.Glide.Module.Proto
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

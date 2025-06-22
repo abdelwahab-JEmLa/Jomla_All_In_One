@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Modules.Glide
+package Z_CodePartageEntreApps.Modules.Glide.Module.Proto
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

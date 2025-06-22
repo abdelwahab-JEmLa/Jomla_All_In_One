@@ -4,7 +4,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.ViewModel.CommandeProduitsViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.LoadingScreenB_ClientProtoJuin3
-import Z_CodePartageEntreApps.Modules.Glide.CalculeCouleurHandler
+import Z_CodePartageEntreApps.Modules.Glide.Module.Proto.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation

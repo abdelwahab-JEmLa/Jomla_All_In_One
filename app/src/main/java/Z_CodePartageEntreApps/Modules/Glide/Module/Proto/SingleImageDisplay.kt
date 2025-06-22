@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Modules.Glide
+package Z_CodePartageEntreApps.Modules.Glide.Module.Proto
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.size
