@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
 import com.google.firebase.database.IgnoreExtraProperties
+import org.mongodb.kbson.BsonObjectId
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -14,6 +15,8 @@ import java.util.Locale
 data class C3_TransactionCommercial(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
+    var bsonObjectId: String = BsonObjectId().toHexString(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 
     // Section Related Parents Foreign Key IDs
     var parentVID_1_4_PeriodeVent: Long = 0L,
@@ -42,7 +45,6 @@ data class C3_TransactionCommercial(
 
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {

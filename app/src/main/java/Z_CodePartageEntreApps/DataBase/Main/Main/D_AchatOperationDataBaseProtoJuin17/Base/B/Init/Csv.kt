@@ -52,13 +52,12 @@ fun parseCsvLine(line: String): D_AchatOperation {
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")
     }
 
-    return zAppcompt(values)
+    return parsedData(values)
 }
 
 
-private fun zAppcompt(values: List<String>) = D_AchatOperation(
+private fun parsedData(values: List<String>) = D_AchatOperation(
     bsonObjectId = values.getOrElse(0) { BsonObjectId().toHexString() },
-    creationTimesTamp = values.getOrElse(1) { System.currentTimeMillis().toString() }.toLongOrNull() ?: System.currentTimeMillis(),
     nomImageFichieOuApellationDuCouleur = values.getOrElse(2) { "" },
     parentBonVentObjectId = values.getOrElse(3) { "" },
     parentProduitBsonObjectId = values.getOrElse(4) { "" },

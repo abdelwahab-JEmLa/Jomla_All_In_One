@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.D_AchatOperation.Companion.delimiterExistence
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -14,6 +13,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
@@ -26,37 +26,100 @@ class DAchatOperationComposeRepositoryProtoJuin17(
     private val itsTestModel = true
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+    val ouvertD_AchatOperationBsonId = "bon_001"
+
+    // Fixed: Use datasValue instead of _datas.value to ensure proper reactivity
+    val filteredDatasValue by derivedStateOf {
+        datasValue.filtered()
+    }
+
+    fun List<D_AchatOperation>.filtered(): List<D_AchatOperation> {
+        val filtered = this.filter {
+            findIfItsActiveDataPourActuelleComptApp(it)
+        }
+
+        // Add logging to debug the filtering
+        Log.d("FilterDebug", "Total items: ${this.size}, Filtered items: ${filtered.size}")
+        filtered.forEach {
+            Log.d("FilterDebug", "Filtered item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
+        }
+
+        return filtered
+    }
+
+    private fun findIfItsActiveDataPourActuelleComptApp(it: D_AchatOperation): Boolean {
+        val shouldInclude = it.parentBonVentObjectId == ouvertD_AchatOperationBsonId
+
+        // Log each item being checked
+        Log.d("FilterDebug", "Checking item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}, target: $ouvertD_AchatOperationBsonId, include: $shouldInclude")
+
+        return shouldInclude
+    }
 
     init {
         composScope.launch {
             if (itsTestModel) {
-                _datas.value = getTestDate()
+                val testData = getTestDate()
+                _datas.value = testData
+
+                // Log the initial data for debugging
+                Log.d("InitDebug", "Initial data size: ${testData.size}")
+                testData.forEach {
+                    Log.d("InitDebug", "Item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
+                }
+
+                // FIXED: Access derived state from Main dispatcher
+                withContext(Dispatchers.Main.immediate) {
+                    Log.d("InitDebug", "Filtered data size: ${filteredDatasValue.size}")
+                    filteredDatasValue.forEach {
+                        Log.d("InitDebug", "Filtered Item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
+                    }
+                }
             } else {
-                dao.getAllFlow().collect { _datas.value = it }
+                dao.getAllFlow().collect { data ->
+                    _datas.value = data
+                    Log.d("DatabaseDebug", "Loaded from database: ${data.size} items")
+
+                    // FIXED: Access derived state from Main dispatcher
+                    withContext(Dispatchers.Main.immediate) {
+                        Log.d("DatabaseDebug", "Filtered data size: ${filteredDatasValue.size}")
+                    }
+                }
             }
         }
     }
 
     fun getTestDate(): List<D_AchatOperation> {
+        val parentProduitBsonObjectIdPrd1 = "produit_001"
         return listOf(
             D_AchatOperation(
                 bsonObjectId = "test_achat_001",
-                creationTimesTamp = System.currentTimeMillis(),
-                nomImageFichieOuApellationDuCouleur = "Produit Test 1",
-                parentBonVentObjectId = "bon_001",
-                parentProduitBsonObjectId = "produit_001",
+                nomImageFichieOuApellationDuCouleur = "Couleur1",
+                parentBonVentObjectId = "bon_001", // This should match ouvertD_AchatOperationBsonId
+                parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",
                 produitAcheterAncienID = 1L,
                 quantityAchete = 5,
                 provisoireMonPrix = 150.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Affiche
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+            ),
+            D_AchatOperation(
+                bsonObjectId = "test_achat_100",
+                nomImageFichieOuApellationDuCouleur = "Couleur2",
+                parentBonVentObjectId = "bon_001", // This should match ouvertD_AchatOperationBsonId
+                parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
+                parentComptVendeurCreateurObjectId = "vendeur_001",
+                clientParentObjectId = "client_001",
+                produitAcheterAncienID = 1L,
+                quantityAchete = 5,
+                provisoireMonPrix = 150.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_002",
-                creationTimesTamp = System.currentTimeMillis(),
                 nomImageFichieOuApellationDuCouleur = "Produit Test 2",
-                parentBonVentObjectId = "bon_001",
+                parentBonVentObjectId = "bon_001", // This should match ouvertD_AchatOperationBsonId
                 parentProduitBsonObjectId = "produit_002",
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",
@@ -65,11 +128,11 @@ class DAchatOperationComposeRepositoryProtoJuin17(
                 provisoireMonPrix = 200.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
             ),
+            // These ones with "bon_002" should be filtered out (not displayed)
             D_AchatOperation(
                 bsonObjectId = "test_achat_003",
-                creationTimesTamp = System.currentTimeMillis(),
                 nomImageFichieOuApellationDuCouleur = "Produit Test 3",
-                parentBonVentObjectId = "bon_002",
+                parentBonVentObjectId = "bon_002", // Different bon - should be filtered out
                 parentProduitBsonObjectId = "produit_003",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 clientParentObjectId = "client_002",
@@ -80,9 +143,8 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_004",
-                creationTimesTamp = System.currentTimeMillis(),
                 nomImageFichieOuApellationDuCouleur = "Produit Test 4",
-                parentBonVentObjectId = "bon_002",
+                parentBonVentObjectId = "bon_002", // Different bon - should be filtered out
                 parentProduitBsonObjectId = "produit_004",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 clientParentObjectId = "client_002",
@@ -97,7 +159,7 @@ class DAchatOperationComposeRepositoryProtoJuin17(
     fun addOrUpdateData(data: D_AchatOperation) {
         val dataAvecTigerUpdate = data.withDernierTimeTampsSynchronisationAvecFireBase()
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            delimiterExistence(ancien, dataAvecTigerUpdate)
+            D_AchatOperation.delimiterExistence(ancien, dataAvecTigerUpdate)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -118,7 +180,6 @@ class DAchatOperationComposeRepositoryProtoJuin17(
 data class D_AchatOperation(
     @PrimaryKey
     var bsonObjectId: String = BsonObjectId().toHexString(),
-    var creationTimesTamp: Long = System.currentTimeMillis(),
     var nomImageFichieOuApellationDuCouleur: String = "",
 
     // Section Related ParentBsonObjectId
