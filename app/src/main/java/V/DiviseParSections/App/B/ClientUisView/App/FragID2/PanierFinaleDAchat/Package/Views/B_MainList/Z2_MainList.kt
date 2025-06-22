@@ -57,12 +57,26 @@ fun MainList(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(groupedAchats.entries.toList()) { (productId, achatGroup) ->     //<--
-        //TODO(1): pk aucun achat ne s affiche InitDebug         Initial data size: 5
+        //TODO(1): pk aucun achat ne s affiche InitDebug        Initial data size: 5
             //                  Item: test_achat_001, parentBonVentObjectId: bon_001
             //                  Item: test_achat_100, parentBonVentObjectId: bon_001
             //                  Item: test_achat_002, parentBonVentObjectId: bon_001
             //                  Item: test_achat_003, parentBonVentObjectId: bon_002
             //                  Item: test_achat_004, parentBonVentObjectId: bon_002
+            //FilterDebug       Total items: 0, Filtered items: 0
+            //                  Checking item: test_achat_001, parentBonVentObjectId: bon_001, target: bon_001, include: true
+            //                  Checking item: test_achat_100, parentBonVentObjectId: bon_001, target: bon_001, include: true
+            //                  Checking item: test_achat_002, parentBonVentObjectId: bon_001, target: bon_001, include: true
+            //                  Checking item: test_achat_003, parentBonVentObjectId: bon_002, target: bon_001, include: false
+            //                  Checking item: test_achat_004, parentBonVentObjectId: bon_002, target: bon_001, include: false
+            //                  Total items: 5, Filtered items: 3
+            //                  Filtered item: test_achat_001, parentBonVentObjectId: bon_001
+            //                  Filtered item: test_achat_100, parentBonVentObjectId: bon_001
+            //                  Filtered item: test_achat_002, parentBonVentObjectId: bon_001
+            //InitDebug         Filtered data size: 3
+            //                  Filtered Item: test_achat_001, parentBonVentObjectId: bon_001
+            //                  Filtered Item: test_achat_100, parentBonVentObjectId: bon_001
+            //                  Filtered Item: test_achat_002, parentBonVentObjectId: bon_001
             ProductGroup(
                 productId = productId,
                 achats = achatGroup

@@ -60,7 +60,11 @@ class DAchatOperationComposeRepositoryProtoJuin17(
         composScope.launch {
             if (itsTestModel) {
                 val testData = getTestDate()
-                _datas.value = testData
+
+                // FIXED: Update state from Main dispatcher to ensure proper recomposition
+                withContext(Dispatchers.Main.immediate) {
+                    _datas.value = testData
+                }
 
                 // Log the initial data for debugging
                 Log.d("InitDebug", "Initial data size: ${testData.size}")
@@ -68,22 +72,20 @@ class DAchatOperationComposeRepositoryProtoJuin17(
                     Log.d("InitDebug", "Item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
                 }
 
-                // FIXED: Access derived state from Main dispatcher
-                withContext(Dispatchers.Main.immediate) {
-                    Log.d("InitDebug", "Filtered data size: ${filteredDatasValue.size}")
-                    filteredDatasValue.forEach {
-                        Log.d("InitDebug", "Filtered Item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
-                    }
+                // Log filtered data
+                Log.d("InitDebug", "Filtered data size: ${filteredDatasValue.size}")
+                filteredDatasValue.forEach {
+                    Log.d("InitDebug", "Filtered Item: ${it.bsonObjectId}, parentBonVentObjectId: ${it.parentBonVentObjectId}")
                 }
             } else {
                 dao.getAllFlow().collect { data ->
-                    _datas.value = data
-                    Log.d("DatabaseDebug", "Loaded from database: ${data.size} items")
-
-                    // FIXED: Access derived state from Main dispatcher
+                    // FIXED: Update state from Main dispatcher to ensure proper recomposition
                     withContext(Dispatchers.Main.immediate) {
-                        Log.d("DatabaseDebug", "Filtered data size: ${filteredDatasValue.size}")
+                        _datas.value = data
                     }
+
+                    Log.d("DatabaseDebug", "Loaded from database: ${data.size} items")
+                    Log.d("DatabaseDebug", "Filtered data size: ${filteredDatasValue.size}")
                 }
             }
         }
@@ -161,15 +163,21 @@ class DAchatOperationComposeRepositoryProtoJuin17(
         val existingIndex = datasValue.indexOfFirst { ancien ->
             D_AchatOperation.delimiterExistence(ancien, dataAvecTigerUpdate)
         }
-        _datas.value = if (existingIndex >= 0) {
-            datasValue.toMutableList().apply {
-                this[existingIndex] = this[existingIndex].copy(
-                    quantityAchete = this[existingIndex].quantityAchete + dataAvecTigerUpdate.quantityAchete,
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
+
+        // FIXED: Update state from Main dispatcher
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = if (existingIndex >= 0) {
+                    datasValue.toMutableList().apply {
+                        this[existingIndex] = this[existingIndex].copy(
+                            quantityAchete = this[existingIndex].quantityAchete + dataAvecTigerUpdate.quantityAchete,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                    }
+                } else {
+                    datasValue + dataAvecTigerUpdate
+                }
             }
-        } else {
-            datasValue + dataAvecTigerUpdate
         }
 
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataAvecTigerUpdate)
