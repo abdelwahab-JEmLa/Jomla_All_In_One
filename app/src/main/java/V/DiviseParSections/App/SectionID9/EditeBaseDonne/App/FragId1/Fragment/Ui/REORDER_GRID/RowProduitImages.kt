@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.REORDER_GRID
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Modules.Glide.Module.Proto.A_GlideDisplayImageByKeyId_Proto_5
+import Z_CodePartageEntreApps.Modules.D.Glide.Module.Proto.A_GlideDisplayImageByKeyId_Proto_5
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

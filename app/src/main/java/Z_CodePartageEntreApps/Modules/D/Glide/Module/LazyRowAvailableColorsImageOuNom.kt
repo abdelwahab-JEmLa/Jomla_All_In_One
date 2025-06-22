@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Modules.Glide.Module
+package Z_CodePartageEntreApps.Modules.D.Glide.Module
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable

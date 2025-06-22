@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
-import Z_CodePartageEntreApps.Modules.Glide.Module.Proto.CalculeCouleurHandler
+import Z_CodePartageEntreApps.Modules.D.Glide.Module.Proto.CalculeCouleurHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
