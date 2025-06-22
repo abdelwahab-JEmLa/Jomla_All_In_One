@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.A.Base
+package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao

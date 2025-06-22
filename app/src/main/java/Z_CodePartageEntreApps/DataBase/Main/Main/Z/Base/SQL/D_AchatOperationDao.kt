@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.Z.Base.SQL
+package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppCompt
 import androidx.room.Dao

@@ -1,10 +1,11 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base
+package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager.Repository
-import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
-import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init.onLoadFromFireBaseD_AchatOperation
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppCompt
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadCategoriesFromCsv
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init.onLoadFromFireBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -13,11 +14,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class D_AchatOperationDataBaseProtoJuin17(
-    val dao: D_AchatOperationDao,
+class Z_AppComptRepositoryProtoJuin17(
+    val dao: Z_AppComptDao,
 ) {
-    val repoTAG = "D_AchatOperation"
-    val repoRef = D_AchatOperation.caRef
+    val repoEntityName ="Z_AppComptRepositoryProtoJuin17"
+    val repoTAG = repoEntityName
+    var isListenerRegistered = false
+
+    val repoRef = Z_AppCompt.caRef
+
+
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun init(
@@ -26,18 +32,27 @@ class D_AchatOperationDataBaseProtoJuin17(
     ) {
         if (!dao.isTableEmpty()) return
 
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.4f)
-        val data: List<D_AchatOperation> = if (isInternetAvailable) {
-            updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.6f)
-            onLoadFromFireBaseD_AchatOperation()
+        updateRepoProgress(Repository.Z_AppComptEntity.name, 0.4f)
+
+        val data: List<Z_AppCompt> = if (isInternetAvailable) {
+
+            updateRepoProgress(Repository.Z_AppComptEntity.name, 0.6f)
+
+            onLoadFromFireBase()
         } else {
-            onLoadCategoriesFromCsvD_AchatOperation()
+            onLoadCategoriesFromCsv()
         }
-        updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.8f)
+
+        updateRepoProgress(Repository.Z_AppComptEntity.name, 0.8f)
+
+        Log.d(
+            repoTAG,
+            "${data.map { it.nom }}"
+        )
+
         dao.insertAll(data)
     }
 
-    var isListenerRegistered = false
     fun triggerUpdateFbParTimestampsListener() {
         if (isListenerRegistered) return
         isListenerRegistered = true
@@ -49,7 +64,7 @@ class D_AchatOperationDataBaseProtoJuin17(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(D_AchatOperation::class.java)?.let { entity ->
+                                child.getValue(Z_AppCompt::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(bsonObjectId = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity = dao.getAll().find { it.bsonObjectId == entityWithKey.bsonObjectId }
@@ -80,28 +95,27 @@ class D_AchatOperationDataBaseProtoJuin17(
     }
 
 
-    fun addOrUpdatedAncienRepo(
+    fun addOrUpdatedDataBase(
         existingIndex: Int,
-        dataAvecTigerUpdate: D_AchatOperation
+        dataAvecTigerUpdate: Z_AppCompt
     ) {
         composScope.launch {
             if (existingIndex >= 0) {
                 dao.update(dataAvecTigerUpdate)
-                batchFireBaseUpdateD_AchatOperation(listOf(dataAvecTigerUpdate))
+                batchFireBaseUpdateZ_AppCompt(listOf(dataAvecTigerUpdate))
             } else {
                 dao.insert(dataAvecTigerUpdate)
-                batchFireBaseUpdateD_AchatOperation(listOf(dataAvecTigerUpdate))
+                batchFireBaseUpdateZ_AppCompt(listOf(dataAvecTigerUpdate))
             }
         }
     }
 
 
-    private suspend fun batchFireBaseUpdateD_AchatOperation(datas: List<D_AchatOperation>) {
+    private suspend fun batchFireBaseUpdateZ_AppCompt(datas: List<Z_AppCompt>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.bsonObjectId] = data
         }
-        val firebaseRef = D_AchatOperation.caRef
-        firebaseRef.updateChildren(updates).await()
+        repoRef.updateChildren(updates).await()
     }
 }

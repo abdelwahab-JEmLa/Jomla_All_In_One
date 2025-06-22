@@ -1,6 +1,5 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview
-    /*
-import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.Preview.D_AchatOperationTestDatasViewModel
+package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Preview
+       /*
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,8 +18,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Preview
 @Composable
-fun D_AchatOperationTestDatas(
-    viewModel: D_AchatOperationTestDatasViewModel = koinViewModel()
+fun Z_AppComptTestDatas(
+    viewModel: Z_AppComptTestDatasViewModel = koinViewModel()
 ) {
     val datas = viewModel.achatOperationComposeRepository.datasValue
     val loadingProgress =
@@ -50,4 +49,4 @@ fun D_AchatOperationTestDatas(
         }
     }
 }
-                            */
+                     */

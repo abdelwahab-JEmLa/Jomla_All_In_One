@@ -1,19 +1,19 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.Z.Base.Init
+package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperation
+import org.mongodb.kbson.BsonObjectId
 import java.io.File
 
-fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
+fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<D_AchatOperation> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
-    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "$repoEntityName.csv")
+    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "D_AchatOperation.csv")
 
     if (!csvFile.exists()) {
         return mutableListOf() // Return empty list instead of nothing
     }
 
-    val datas = mutableListOf<Z_AppCompt>()
+    val datas = mutableListOf<D_AchatOperation>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -44,11 +44,11 @@ fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_App
         throw IllegalStateException("No data available from  or CSV")
     }
 }
-// For Z_AppComptEntity CSV
-fun parseCsvLine(line: String): Z_AppCompt {
+// For D_AchatOperation CSV
+fun parseCsvLine(line: String): D_AchatOperation {
     val values = parseCsvValues(line)
 
-    if (values.size < 12) { // Adjust based on Z_AppComptEntity fields
+    if (values.size < 12) { // Adjust based on D_AchatOperation fields
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")
     }
 
@@ -56,7 +56,23 @@ fun parseCsvLine(line: String): Z_AppCompt {
 }
 
 
-private fun zAppcompt(values: List<String>) = Z_AppCompt(
+private fun zAppcompt(values: List<String>) = D_AchatOperation(
+    bsonObjectId = values.getOrElse(0) { BsonObjectId().toHexString() },
+    creationTimesTamp = values.getOrElse(1) { System.currentTimeMillis().toString() }.toLongOrNull() ?: System.currentTimeMillis(),
+    nomImageFichieOuApellationDuCouleur = values.getOrElse(2) { "" },
+    parentBonVentObjectId = values.getOrElse(3) { "" },
+    parentProduitBsonObjectId = values.getOrElse(4) { "" },
+    parentComptVendeurCreateurObjectId = values.getOrElse(5) { "" },
+    clientParentObjectId = values.getOrElse(6) { "" },
+    produitAcheterAncienID = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
+    quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
+    etateActuellementEst = try {
+        D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "Affiche" })
+    } catch (e: IllegalArgumentException) {
+        D_AchatOperation.EtateActuellementEst.Affiche
+    },
+    provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
+    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
 )
 
 

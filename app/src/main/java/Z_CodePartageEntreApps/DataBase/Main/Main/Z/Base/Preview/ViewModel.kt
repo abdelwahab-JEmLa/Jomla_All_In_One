@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase.A_ProduitDataBaseProtoJuin17.Main.Z.Base.Preview
+package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Preview
       /*
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.ViewModel.Repository.A1.Proto.AvantJuin17.Proto.A_CentralDatasHandlerProtoJuin9
 import androidx.lifecycle.ViewModel
