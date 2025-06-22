@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.ArticlesBasesStatsTable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

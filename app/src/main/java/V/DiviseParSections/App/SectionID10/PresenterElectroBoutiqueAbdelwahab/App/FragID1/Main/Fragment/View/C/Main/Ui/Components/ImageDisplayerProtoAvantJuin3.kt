@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.D.Glide.Module.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable

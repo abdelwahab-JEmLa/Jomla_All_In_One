@@ -1,7 +1,7 @@
 // C_Couleurs.kt
-package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
+package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto
 
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.ViewModel.CommandeProduitsViewModel
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.ViewModel.CommandeProduitsViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.LoadingScreenB_ClientProtoJuin3
 import Z_CodePartageEntreApps.Modules.D.Glide.Module.Proto.CalculeCouleurHandler

@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Model.getKeyFireBase
 import Z_CodePartageEntreApps.Model.parseDepuitOldAuNew
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.isSyntheticProperty
 import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.sanitizeValue
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

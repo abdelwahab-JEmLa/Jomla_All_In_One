@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main
 
 import A.AtelierMobile.Test.ID1.Test.Shared.DataBase.Fonctions.Main.Y_Model_ComptApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.CategoriesTabelle
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.CategoriesTabelle
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

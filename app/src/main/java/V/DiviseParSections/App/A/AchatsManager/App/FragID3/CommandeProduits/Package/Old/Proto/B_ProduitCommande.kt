@@ -1,5 +1,5 @@
 // B_ProduitCommande.kt
-package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
+package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
