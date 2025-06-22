@@ -22,38 +22,24 @@ class DAchatOperationComposeRepositoryProtoJuin17(
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
-
     private val itsTestModel = true
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
     val ouvertD_AchatOperationBsonId = "bon_001"
 
     val filteredDatasValue by derivedStateOf {
-        datasValue.filtered()
-    }
-
-    fun List<D_AchatOperation>.filtered(): List<D_AchatOperation> {
-        return this.filter {
-            findIfItsActiveDataPourActuelleComptApp(it)
-        }
-    }
-
-    private fun findIfItsActiveDataPourActuelleComptApp(it: D_AchatOperation): Boolean {
-        return it.parentBonVentObjectId == ouvertD_AchatOperationBsonId
+        datasValue.filter { it.parentBonVentObjectId == ouvertD_AchatOperationBsonId }
     }
 
     init {
         composScope.launch {
             if (itsTestModel) {
-                val testData = getTestDate()
                 withContext(Dispatchers.Main.immediate) {
-                    _datas.value = testData
+                    _datas.value = getTestDate()
                 }
             } else {
                 dao.getAllFlow().collect { data ->
-                    withContext(Dispatchers.Main.immediate) {
-                        _datas.value = data
-                    }
+                    withContext(Dispatchers.Main.immediate) { _datas.value = data }
                 }
             }
         }
@@ -127,34 +113,28 @@ class DAchatOperationComposeRepositoryProtoJuin17(
     }
 
     fun addOrUpdateData(data: D_AchatOperation) {
-        val dataAvecTigerUpdate = data.withDernierTimeTampsSynchronisationAvecFireBase()
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.isSameEntity(dataAvecTigerUpdate)
-        }
+        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = if (existingIndex >= 0) {
                     datasValue.toMutableList().apply {
                         this[existingIndex] = this[existingIndex].copy(
-                            quantityAchete = this[existingIndex].quantityAchete + dataAvecTigerUpdate.quantityAchete,
+                            quantityAchete = this[existingIndex].quantityAchete + dataUpdate.quantityAchete,
                             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         )
                     }
-                } else {
-                    datasValue + dataAvecTigerUpdate
-                }
+                } else datasValue + dataUpdate
             }
         }
-
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataAvecTigerUpdate)
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataUpdate)
     }
 }
 
 @Entity
 data class D_AchatOperation(
-    @PrimaryKey
-    var bsonObjectId: String = BsonObjectId().toHexString(),
+    @PrimaryKey var bsonObjectId: String = BsonObjectId().toHexString(),
     var nomImageFichieOuApellationDuCouleur: String = "",
 
     // Section Related ParentBsonObjectId
@@ -174,57 +154,26 @@ data class D_AchatOperation(
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
+    enum class EtateActuellementEst { Affiche, CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE }
 
-    enum class EtateActuellementEst {
-        Affiche,
-        CONFIRME,
-        SUPPRIME_AU_PREMIER_PICK,
-        SUPP_AU_PANIER_FINALE
-    }
+    fun isSameEntity(other: D_AchatOperation) = nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
+            parentProduitBsonObjectId == other.parentProduitBsonObjectId &&
+            parentBonVentObjectId == other.parentBonVentObjectId &&
+            parentComptVendeurCreateurObjectId == other.parentComptVendeurCreateurObjectId
 
-    fun withDernierTimeTampsSynchronisationAvecFireBase(): D_AchatOperation {
-        return this.copy(
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
+    override fun equals(other: Any?) = this === other || (other is D_AchatOperation && isSameEntity(other) &&
+            quantityAchete == other.quantityAchete && provisoireMonPrix == other.provisoireMonPrix)
 
-    fun isSameEntity(other: D_AchatOperation): Boolean {
-        return nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
-                parentProduitBsonObjectId == other.parentProduitBsonObjectId &&
-                parentBonVentObjectId == other.parentBonVentObjectId &&
-                parentComptVendeurCreateurObjectId == other.parentComptVendeurCreateurObjectId
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is D_AchatOperation) return false
-        return isSameEntity(other) &&
-                quantityAchete == other.quantityAchete &&
-                provisoireMonPrix == other.provisoireMonPrix
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            nomImageFichieOuApellationDuCouleur,
-            parentProduitBsonObjectId,
-            parentBonVentObjectId,
-            parentComptVendeurCreateurObjectId,
-            quantityAchete,
-            provisoireMonPrix
-        )
-    }
+    override fun hashCode() = Objects.hash(
+        nomImageFichieOuApellationDuCouleur,
+        parentProduitBsonObjectId,
+        parentBonVentObjectId,
+        parentComptVendeurCreateurObjectId,
+        quantityAchete,
+        provisoireMonPrix
+    )
 
     companion object {
-        val caRef =
-            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
-
-        @Deprecated(
-            message = "Use isSameEntity() method instead",
-            replaceWith = ReplaceWith("ancien.isSameEntity(dataAvecTigerUpdate)")
-        )
-        fun delimiterExistence(
-            ancien: D_AchatOperation,
-            dataAvecTigerUpdate: D_AchatOperation
-        ) = ancien.isSameEntity(dataAvecTigerUpdate)
+        val caRef = Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
     }
 }
