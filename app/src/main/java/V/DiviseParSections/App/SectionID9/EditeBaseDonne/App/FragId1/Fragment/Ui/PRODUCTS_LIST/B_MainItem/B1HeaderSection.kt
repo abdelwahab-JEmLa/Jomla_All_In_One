@@ -97,8 +97,10 @@ fun HeaderSection(
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
                     ) {
+                        val bsonObjectId =  produit.bsonObjectId.takeLast(4).uppercase()
+                        val nom =  produit.nom
                         Text(
-                            text = produit.nom,
+                            text = "$nom->$bsonObjectId",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             maxLines = 2,

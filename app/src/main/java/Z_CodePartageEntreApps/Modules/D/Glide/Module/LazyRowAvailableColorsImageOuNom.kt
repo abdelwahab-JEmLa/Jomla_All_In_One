@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Modules.D.Glide.Module
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.D_AchatOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -10,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,15 +17,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
@@ -33,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.Priority
@@ -47,68 +51,77 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.mongodb.kbson.BsonObjectId
 import java.io.File
-import kotlin.random.Random
+
+data class CouleurInfos(
+    val bsonObjectId: BsonObjectId,
+    val imageNameSiDispo: String = "NonTrouve.webp",
+    val aAffiche: Affiche = Affiche.Image,
+    val imageCouleurFichie: File,
+    val nomSiDispo: String = "Non Defini Car Il Y Image",
+    val counteDeDisponibility: Int = 0
+) {
+    enum class Affiche {
+        Image,
+        Nom
+    }
+}
 
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
     data: ArticlesBasesStatsTable,
+    couleurInfos: List<CouleurInfos>,
     reloadTrigger: Int,
-    onAddOrUpdateData_achatOperationComposeRepository: (D_AchatOperation) -> Unit,
 ) {
+    // Filter out colors with zero availability count
+    val availableCouleurInfos = couleurInfos.filter { it.counteDeDisponibility > 0 }
+
+    if (availableCouleurInfos.isEmpty()) {
+        return // Don't show anything if no colors are available
+    }
+
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 3.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {
-        val availableColors =
-            (0..3).filter { data.getColorIdForIndex(it) != null }
-        items(availableColors.size) { index ->
-            val colorIndex = availableColors[index]
-            val imageExists =
-                remember(data.id, colorIndex, reloadTrigger) {
-                    val fileName =
-                        "${data.id}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
-                    val basePath =
-                        "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+        items(availableCouleurInfos) { couleurInfo ->
+            val colorIndex = getColorIndexFromCouleurInfo(couleurInfo, data)
+            val imageExists = remember(data.id, colorIndex, reloadTrigger) {
+                couleurInfo.imageCouleurFichie.exists() &&
+                        couleurInfo.imageCouleurFichie.canRead() &&
+                        couleurInfo.imageCouleurFichie.length() > 0
+            }
 
-                    listOf("jpg", "jpeg", "png", "webp").any { ext ->
-                        File("$basePath/$fileName.$ext").run {
-                            exists() && canRead() && length() > 0
-                        }
-                    }
-                }
+            Column(
+                modifier = Modifier.width(250.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ImageDisplayer(
+                    article = data,
+                    colorIndex = colorIndex,
+                    couleurInfo = couleurInfo,
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(if (!imageExists) 70.dp else 250.dp),
+                    contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
+                    imageSize = DpSize(
+                        width = 250.dp,
+                        height = if (!imageExists) 70.dp else 250.dp
+                    ),
+                )
 
-            ImageDisplayer(
-                article = data,
-                colorIndex = colorIndex,
-                modifier = Modifier
-                    .width(250.dp)
-                    .height(if (!imageExists) 70.dp else 250.dp),
-                contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
-                imageSize = DpSize(
-                    width = 250.dp,
-                    height = if (!imageExists) 70.dp else 250.dp
-                ),
-                onClickToOpenWindow = { aProduitinfos, indexCouleur ->
-                    val randomQuantity = Random.nextInt(1, 11)
-                    val newAchatOperation = D_AchatOperation(
-                        nomImageFichieOuApellationDuCouleur = determineImageOrColorName(
-                            aProduitinfos,
-                            indexCouleur
-                        ),
-                        parentBonVentObjectId = "1",
-                        parentComptVendeurCreateurObjectId = "1",
-                        parentProduitBsonObjectId = aProduitinfos.bsonObjectId,
-                        quantityAchete = randomQuantity,
-                        produitAcheterAncienID = aProduitinfos.id,
-                    )
-                    onAddOrUpdateData_achatOperationComposeRepository(
-                        newAchatOperation
-                    )
-                }
-            )
+                // Display availability count
+                Text(
+                    text = "Disponible: ${couleurInfo.counteDeDisponibility}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         }
     }
 }
@@ -120,6 +133,7 @@ fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
+    couleurInfo: CouleurInfos? = null,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit = { _, _ -> },
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
@@ -137,14 +151,18 @@ fun ImageDisplayer(
 
     val imageFile by produceState<File?>(null, article.id, colorIndex) {
         value = withContext(Dispatchers.IO) {
-            listOf("jpg", "webp", "jpeg", "png")
+            couleurInfo?.imageCouleurFichie?.takeIf {
+                it.exists() && it.canRead() && it.length() > 0
+            } ?: listOf("jpg", "webp", "jpeg", "png")
                 .map { File("$basePath/$fileName.$it") }
                 .firstOrNull { it.exists() && it.canRead() && it.length() > 0 }
         }
     }
 
-    val imageExists = remember(article.id, colorIndex) {
-        listOf("jpg", "webp", "jpeg", "png").any { ext ->
+    val imageExists = remember(article.id, colorIndex, couleurInfo) {
+        couleurInfo?.imageCouleurFichie?.let {
+            it.exists() && it.canRead() && it.length() > 0
+        } ?: listOf("jpg", "webp", "jpeg", "png").any { ext ->
             File("$basePath/$fileName.$ext").run { exists() && canRead() && length() > 0 }
         }
     }
@@ -160,9 +178,9 @@ fun ImageDisplayer(
                 .clickable { onClickToOpenWindow(article, colorIndex) }
                 .size(imageSize.width, imageSize.height)
         ) {
-            imageFile?.let { file ->
+            if (imageExists && imageFile != null) {
                 GlideImage(
-                    model = file,
+                    model = imageFile,
                     contentDescription = "Article ${article.id}",
                     contentScale = contentScale,
                     modifier = Modifier
@@ -189,29 +207,46 @@ fun ImageDisplayer(
                         })
                     }
                 }
-            }
-
-            if (!imageExists) {
-                val availableColors = getProduitInfoImageParIndex(article)
-                availableColors.getOrNull(colorIndex)?.let {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.White)
-                            .graphicsLayer {
-                                renderEffect = BlurEffect(25f, 25f, TileMode.Decal)
-                            }
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.Black.copy(alpha = 0.15f))
+            } else {
+                // Show color name or fallback when no image exists
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = couleurInfo?.nomSiDispo ?: getColorNameForIndex(article, colorIndex) ?: "No Color",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
+    }
+}
+
+// Helper function to get color index from CouleurInfo
+private fun getColorIndexFromCouleurInfo(couleurInfo: CouleurInfos, article: ArticlesBasesStatsTable): Int {
+    return when (couleurInfo.nomSiDispo) {
+        article.couleur1 -> 0
+        article.couleur2 -> 1
+        article.couleur3 -> 2
+        article.couleur4 -> 3
+        else -> -1
+    }
+}
+
+// Helper function to get color name by index
+private fun getColorNameForIndex(article: ArticlesBasesStatsTable, index: Int): String? {
+    return when (index) {
+        0 -> article.couleur1
+        1 -> article.couleur2
+        2 -> article.couleur3
+        3 -> article.couleur4
+        else -> null
     }
 }
 

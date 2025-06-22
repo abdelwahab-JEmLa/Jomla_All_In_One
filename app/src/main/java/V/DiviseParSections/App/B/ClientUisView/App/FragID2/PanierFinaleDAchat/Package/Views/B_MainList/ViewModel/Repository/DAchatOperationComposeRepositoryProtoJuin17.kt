@@ -28,7 +28,10 @@ class DAchatOperationComposeRepositoryProtoJuin17(
     val ouvertD_AchatOperationBsonId = "bon_001"
 
     val filteredDatasValue by derivedStateOf {
-        datasValue.filter { it.parentBonVentObjectId == ouvertD_AchatOperationBsonId }
+        datasValue.filter {
+            it.parentBonVentObjectId == ouvertD_AchatOperationBsonId
+                    && it.etateActuellementEst == D_AchatOperation.EtateActuellementEst.CONFIRME
+        }
     }
 
     init {
@@ -46,13 +49,14 @@ class DAchatOperationComposeRepositoryProtoJuin17(
     }
 
     fun getTestDate(): List<D_AchatOperation> {
-        val parentProduitBsonObjectIdPrd1 = "produit_001"
+        val parentProduitBsonObjectIdPrd1 = "684fdff4df922c49f82958c0"
+        val parentProduitAncienIDPrd1 = "822_"
 
         return listOf(
             D_AchatOperation(
                 bsonObjectId = "test_achat_001",
-                nomImageFichieOuApellationDuCouleur = "Couleur1",
-                parentBonVentObjectId = "bon_001",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd1}1",
+                parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",
@@ -63,8 +67,8 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_100",
-                nomImageFichieOuApellationDuCouleur = "Couleur2",
-                parentBonVentObjectId = "bon_001",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd1}2",
+                parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",
@@ -76,7 +80,7 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             D_AchatOperation(
                 bsonObjectId = "test_achat_002",
                 nomImageFichieOuApellationDuCouleur = "Produit Test 2",
-                parentBonVentObjectId = "bon_001",
+                parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = "produit_002",
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",

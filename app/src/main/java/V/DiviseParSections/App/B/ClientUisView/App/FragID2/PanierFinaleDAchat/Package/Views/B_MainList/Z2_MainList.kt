@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.D_AchatOperation
+import Z_CodePartageEntreApps.Modules.D.Glide.Module.CouleurInfos
+import Z_CodePartageEntreApps.Modules.D.Glide.Module.LazyRowAvailableColorsImageOuNom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,15 +21,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.mongodb.kbson.BsonObjectId
+import java.io.File
 
 @Preview @Composable private fun Sec1Frag3Prv() { Sec1Frag3() }
 
@@ -39,6 +44,7 @@ fun Sec1Frag3(
 
     MainList(
         modifier = modifier,
+        viewModel=viewModel,
         achats = achats
     )
 }
@@ -46,7 +52,8 @@ fun Sec1Frag3(
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    achats: List<D_AchatOperation> = emptyList()
+    achats: List<D_AchatOperation> = emptyList(),
+    viewModel: ZViewModel_Sec1Frag3
 ) {
     // Group achats by parentProduitBsonObjectId
     val groupedAchats = achats.groupBy { it.parentProduitBsonObjectId }
@@ -58,6 +65,7 @@ fun MainList(
     ) {
         items(groupedAchats.entries.toList()) { (productId, achatGroup) ->
             ProductGroup(
+                viewModel=viewModel,
                 productId = productId,
                 achats = achatGroup
             )
@@ -69,8 +77,11 @@ fun MainList(
 fun ProductGroup(
     productId: String,
     achats: List<D_AchatOperation>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ZViewModel_Sec1Frag3
 ) {
+    val relatedProduitDataBase = viewModel.a_ProduitDataBaseComposeRepositoryPJ17.datasValue.find { it.bsonObjectId == productId }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -86,7 +97,7 @@ fun ProductGroup(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Product ID: $productId",
+                    text = relatedProduitDataBase?.nom ?: "Product ID: $productId",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -98,6 +109,23 @@ fun ProductGroup(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Show color options for the product if available
+            relatedProduitDataBase?.let { produit ->
+                val couleurInfos = remember(produit.id) {
+                    createCouleurInfosFromProduct(produit)
+                }
+
+                if (couleurInfos.isNotEmpty()) {
+                    LazyRowAvailableColorsImageOuNom(
+                        data = produit,
+                        couleurInfos = couleurInfos,
+                        reloadTrigger = 0
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
 
             // Horizontal scrollable list of purchase operations
             LazyRow(
@@ -162,30 +190,56 @@ fun MainItem(
             }
 
             // Status indicator
-            Surface(
+            Text(
+                text = when (achat.etateActuellementEst) {
+                    D_AchatOperation.EtateActuellementEst.CONFIRME -> "Confirmed"
+                    D_AchatOperation.EtateActuellementEst.Affiche -> "Display"
+                    D_AchatOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK -> "Removed"
+                    D_AchatOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE -> "Deleted"
+                },
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                style = MaterialTheme.typography.labelSmall,
                 color = when (achat.etateActuellementEst) {
                     D_AchatOperation.EtateActuellementEst.CONFIRME -> MaterialTheme.colorScheme.primary
-                    D_AchatOperation.EtateActuellementEst.Affiche -> MaterialTheme.colorScheme.outline
+                    D_AchatOperation.EtateActuellementEst.Affiche -> MaterialTheme.colorScheme.onSurfaceVariant
                     else -> MaterialTheme.colorScheme.error
-                },
-                shape = RoundedCornerShape(4.dp)
-            ) {
-                Text(
-                    text = when (achat.etateActuellementEst) {
-                        D_AchatOperation.EtateActuellementEst.CONFIRME -> "Confirmed"
-                        D_AchatOperation.EtateActuellementEst.Affiche -> "Display"
-                        D_AchatOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK -> "Removed"
-                        D_AchatOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE -> "Deleted"
-                    },
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = when (achat.etateActuellementEst) {
-                        D_AchatOperation.EtateActuellementEst.CONFIRME -> MaterialTheme.colorScheme.onPrimary
-                        D_AchatOperation.EtateActuellementEst.Affiche -> MaterialTheme.colorScheme.onSurfaceVariant
-                        else -> MaterialTheme.colorScheme.onError
-                    }
-                )
-            }
+                }
+            )
         }
     }
+}
+
+// Helper function to create CouleurInfos from ArticlesBasesStatsTable
+private fun createCouleurInfosFromProduct(produit: ArticlesBasesStatsTable): List<CouleurInfos> {
+    val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+    val couleurInfosList = mutableListOf<CouleurInfos>()
+
+    // Check each color and create CouleurInfos if available
+    listOf(
+        produit.couleur1 to 1,
+        produit.couleur2 to 2,
+        produit.couleur3 to 3,
+        produit.couleur4 to 4
+    ).forEach { (couleur, index) ->
+        if (!couleur.isNullOrBlank()) {
+            val fileName = "${produit.id}_$index"
+            val imageFile = listOf("jpg", "webp", "jpeg", "png")
+                .map { File("$basePath/$fileName.$it") }
+                .firstOrNull { it.exists() && it.canRead() && it.length() > 0 }
+                ?: File("$basePath/NonTrouve.webp")
+
+            couleurInfosList.add(
+                CouleurInfos(
+                    bsonObjectId = BsonObjectId(),
+                    imageNameSiDispo = imageFile.name,
+                    aAffiche = if (imageFile.exists()) CouleurInfos.Affiche.Image else CouleurInfos.Affiche.Nom,
+                    imageCouleurFichie = imageFile,
+                    nomSiDispo = couleur,
+                    counteDeDisponibility = if (imageFile.exists()) 1 else 0
+                )
+            )
+        }
+    }
+
+    return couleurInfosList
 }
