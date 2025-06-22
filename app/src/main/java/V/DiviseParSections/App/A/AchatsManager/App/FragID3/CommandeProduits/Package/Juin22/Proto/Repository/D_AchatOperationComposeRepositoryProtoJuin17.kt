@@ -23,13 +23,76 @@ class D_AchatOperationComposeRepositoryProtoJuin17(
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
+    private val itsTestModel = true
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     init {
         composScope.launch {
-            dao.getAllFlow().collect { _datas.value = it }
+            if (itsTestModel) {
+                _datas.value = getTestDate()
+            } else {
+                dao.getAllFlow().collect { _datas.value = it }
+            }
         }
+    }
+
+    fun getTestDate(): List<D_AchatOperation> {
+            // Create test hard data for development/testing purposes
+        return listOf(
+            D_AchatOperation(
+                bsonObjectId = "test_achat_001",
+                creationTimesTamp = System.currentTimeMillis(),
+                nomImageFichieOuApellationDuCouleur = "Produit Test 1",
+                parentBonVentObjectId = "bon_001",
+                parentProduitBsonObjectId = "produit_001",
+                parentComptVendeurCreateurObjectId = "vendeur_001",
+                clientParentObjectId = "client_001",
+                produitAcheterAncienID = 1L,
+                quantityAchete = 5,
+                provisoireMonPrix = 150.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Affiche
+            ),
+            D_AchatOperation(
+                bsonObjectId = "test_achat_002",
+                creationTimesTamp = System.currentTimeMillis(),
+                nomImageFichieOuApellationDuCouleur = "Produit Test 2",
+                parentBonVentObjectId = "bon_001",
+                parentProduitBsonObjectId = "produit_002",
+                parentComptVendeurCreateurObjectId = "vendeur_001",
+                clientParentObjectId = "client_001",
+                produitAcheterAncienID = 2L,
+                quantityAchete = 3,
+                provisoireMonPrix = 200.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+            ),
+            D_AchatOperation(
+                bsonObjectId = "test_achat_003",
+                creationTimesTamp = System.currentTimeMillis(),
+                nomImageFichieOuApellationDuCouleur = "Produit Test 3",
+                parentBonVentObjectId = "bon_002",
+                parentProduitBsonObjectId = "produit_003",
+                parentComptVendeurCreateurObjectId = "vendeur_002",
+                clientParentObjectId = "client_002",
+                produitAcheterAncienID = 3L,
+                quantityAchete = 2,
+                provisoireMonPrix = 75.5,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Affiche
+            ),
+            D_AchatOperation(
+                bsonObjectId = "test_achat_004",
+                creationTimesTamp = System.currentTimeMillis(),
+                nomImageFichieOuApellationDuCouleur = "Produit Test 4",
+                parentBonVentObjectId = "bon_002",
+                parentProduitBsonObjectId = "produit_004",
+                parentComptVendeurCreateurObjectId = "vendeur_002",
+                clientParentObjectId = "client_002",
+                produitAcheterAncienID = 4L,
+                quantityAchete = 1,
+                provisoireMonPrix = 500.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+            )
+        )
     }
 
     fun addOrUpdateData(data: D_AchatOperation) {
