@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository
+package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository
 
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.D_AchatOperation.Companion.delimiterExistence
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -24,7 +25,6 @@ class D_AchatOperationComposeRepositoryProtoJuin17(
 
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-    val tigerDataRecompose by derivedStateOf { _datas.value.map { it.dernierTimeTampsSynchronisationAvecFireBase } }
 
     init {
         composScope.launch {
@@ -35,7 +35,7 @@ class D_AchatOperationComposeRepositoryProtoJuin17(
     fun addOrUpdateData(data: D_AchatOperation) {
         val dataAvecTigerUpdate = data.withDernierTimeTampsSynchronisationAvecFireBase()
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            D_AchatOperation.compareEntre(ancien = ancien, newData = dataAvecTigerUpdate)
+            delimiterExistence(ancien, dataAvecTigerUpdate)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -50,6 +50,7 @@ class D_AchatOperationComposeRepositoryProtoJuin17(
 
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataAvecTigerUpdate)
     }
+
 
 }
 
@@ -92,21 +93,20 @@ data class D_AchatOperation(
     }
 
     companion object {
-        val caRef = Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
+        val caRef =
+            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
+
         fun logCategory(data: D_AchatOperation, TAG: String) {
             Log.d(TAG, "D_AchatOperation: ${data.bsonObjectId} - ")
         }
-        fun safeRemoveRef(): Unit { caRef.removeValue() }
-        fun compareEntre(
+
+        fun delimiterExistence(
             ancien: D_AchatOperation,
-            newData: D_AchatOperation
-        ): Boolean {
-            val delimiterExistence =
-                ancien.nomImageFichieOuApellationDuCouleur == newData.nomImageFichieOuApellationDuCouleur &&
-                        ancien.parentProduitBsonObjectId == newData.parentProduitBsonObjectId &&
-                        ancien.parentBonVentObjectId == newData.parentBonVentObjectId &&
-                        ancien.parentComptVendeurCreateurObjectId == newData.parentComptVendeurCreateurObjectId
-            return delimiterExistence
-        }
+            dataAvecTigerUpdate: D_AchatOperation
+        ) =
+            ancien.nomImageFichieOuApellationDuCouleur == dataAvecTigerUpdate.nomImageFichieOuApellationDuCouleur &&
+                    ancien.parentProduitBsonObjectId == dataAvecTigerUpdate.parentProduitBsonObjectId &&
+                    ancien.parentBonVentObjectId == dataAvecTigerUpdate.parentBonVentObjectId &&
+                    ancien.parentComptVendeurCreateurObjectId == dataAvecTigerUpdate.parentComptVendeurCreateurObjectId
     }
 }
