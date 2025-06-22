@@ -11,7 +11,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.E_AchatOperationComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.D_AchatOperation.Repository.D_AchatOperationComposeRepositoryProtoJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
@@ -112,7 +112,7 @@ val composRepositorysModule = module {
     single { B_ClientsStateCompoRepository(get()) }
     single { C_CategoriesCompoRepository(get()) }
     single { D_TransactionCommercialCompoRepository(get()) }
-    single { E_AchatOperationComposeRepositoryProtoJuin17(get()) }
+    single { D_AchatOperationComposeRepositoryProtoJuin17(get()) }
 
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AppComptComposeRepositoryProtoJuin17(get()) }
