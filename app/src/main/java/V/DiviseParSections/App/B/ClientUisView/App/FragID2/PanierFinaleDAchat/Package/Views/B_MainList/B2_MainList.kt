@@ -26,11 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
-@Preview
-@Composable
-private fun Sec1Frag3Prv() {
-    Sec1Frag3()
-}
+@Preview @Composable private fun Sec1Frag3Prv() { Sec1Frag3() }
 
 @Composable
 fun Sec1Frag3(
