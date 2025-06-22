@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.Z_AppComptComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ZAppComptComposeRepositoryProtoJuin17
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Button1(
-    appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
+    appComptComposeRepositoryProtoJuin17: ZAppComptComposeRepositoryProtoJuin17,
     showLabels: Boolean,
     onClickPourAfficheDialog: () -> Unit = {}
 ) {

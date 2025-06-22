@@ -21,14 +21,14 @@ class ACentralCompoRepositoryProtoJuin9(
     private val context: Context,
     val databaseInitializationManager: Z_DatabaseInitializationManager,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
-    val appComptComposeRepositoryProtoJuin17: Z_AppComptComposeRepositoryProtoJuin17,
+    val appComptComposeRepositoryProtoJuin17: ZAppComptComposeRepositoryProtoJuin17,
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
-    val a_ProduitDataBaseComposeRepositoryPJ17: A_ProduitDataBaseComposeRepositoryPJ17,
+    val a_ProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    val b3CategoriesCompoRepository: C_CategoriesCompoRepository,
+    val b3CategoriesCompoRepository: CCategoriesCompoRepository,
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
-    val d_AchatOperationComposeRepositoryPJ17: D_AchatOperationComposeRepositoryProtoJuin17,
+    val d_AchatOperationComposeRepositoryPJ17: DAchatOperationComposeRepositoryProtoJuin17,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)

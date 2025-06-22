@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.A1.Proto.Juin17.Proto
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.Z_AppComptComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ZAppComptComposeRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
@@ -12,7 +12,7 @@ import kotlinx.coroutines.sync.withLock
 
 class Z_DatabaseInitializationManager(
     private val achatOperationRepository: D_AchatOperationDataBaseProtoJuin17,
-    val appComptComposeRepositoryPJ17: Z_AppComptComposeRepositoryProtoJuin17,
+    val appComptComposeRepositoryPJ17: ZAppComptComposeRepositoryProtoJuin17,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
 ) {
     private val mutex = Mutex()

@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class D_AchatOperationComposeRepositoryProtoJuin17(
+class DAchatOperationComposeRepositoryProtoJuin17(
     private val ancienRepo: D_AchatOperationDataBaseProtoJuin17,
 ) {
     val dao = ancienRepo.dao

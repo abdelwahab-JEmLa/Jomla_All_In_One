@@ -46,7 +46,6 @@ fun MainList(
     modifier: Modifier = Modifier,
     achats: List<D_AchatOperation> = emptyList()
 ) {
-    // Group purchases by parentBonVentObjectId
     val groupedAchats = achats.groupBy { it.parentBonVentObjectId }
 
     LazyColumn(

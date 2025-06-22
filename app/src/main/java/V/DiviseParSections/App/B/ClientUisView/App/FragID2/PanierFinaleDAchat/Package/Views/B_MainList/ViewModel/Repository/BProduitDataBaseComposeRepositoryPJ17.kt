@@ -16,9 +16,9 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class A_ProduitDataBaseComposeRepositoryPJ17(
+class BProduitDataBaseComposeRepositoryPJ17(
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
-    val b3CategoriesCompoRepository: C_CategoriesCompoRepository
+    val b3CategoriesCompoRepository: CCategoriesCompoRepository
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
