@@ -171,7 +171,6 @@ val viewModelModule = module {
     //Sort Par ID
     viewModel { ViewModel_Sec1Frag3(get(),) }
 
-
     viewModel { Sec9FragId1ViewId2ViewModel(get(),) }
     viewModel { Sec10Frag1ViewModel(get(),) }
 
