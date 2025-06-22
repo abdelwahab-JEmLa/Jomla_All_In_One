@@ -56,9 +56,8 @@ fun C_MainItem_APP2_ID_2(
     modifier: Modifier = Modifier,
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
-    onQuantitySelected: () -> Unit,
-    onDoneupdatePrice: (String) -> Unit,
-    headRepository: GroupeRepositorysProtoAvJuin3= koinInject()
+    headRepository: GroupeRepositorysProtoAvJuin3= koinInject(),
+    onDoneUpdatePrice: (String) -> Unit
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         .repositoryC2_ProduitAcheteOperation
@@ -262,7 +261,7 @@ fun C_MainItem_APP2_ID_2(
                                                 focusManager.clearFocus()
                                                 keyboardController?.hide()
                                                 isEditingPrice = false
-                                                onDoneupdatePrice(priceText)
+                                                onDoneUpdatePrice(priceText)
 
                                                 _0_HeadOfRepositorys_Repository_Model.repositoryC2_ProduitAcheteOperation.notifyDataChanged()
                                             }

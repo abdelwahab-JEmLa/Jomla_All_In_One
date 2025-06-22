@@ -1,6 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Proto
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.C_MainItem_APP2_ID_2
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -15,15 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun B_MainList_APP2_ID_2(
+fun B_MainList_APP2_ID_2_2(
     viewModel: PanierFinaleDAchatViewModel,
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
-    onQuantitySelected: () -> Unit,
-    onDoneupdatePrice: (SnapshotStateList<_1_1_CouleurAcheteOperation>) -> Unit,
+    onDoneUpdatePrice: (SnapshotStateList<_1_1_CouleurAcheteOperation>) -> Unit,
 ) {
-    // The list of valid color operations that have a quantity selected
     val validColorOperations =
         _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
             .modelDatasSnapList
@@ -50,9 +49,8 @@ fun B_MainList_APP2_ID_2(
                 viewModel=viewModel,
                 composeKeyVID = produitOperation.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
-                onQuantitySelected = onQuantitySelected,
-                onDoneupdatePrice = { newPrice ->
-                    onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
+                onDoneUpdatePrice = { newPrice ->
+                    onDoneUpdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
 
                     val price = newPrice.toDoubleOrNull() ?: 0.0
                     if (price > 0) {
@@ -64,7 +62,7 @@ fun B_MainList_APP2_ID_2(
                             .updateUnSeulData(updatedProduct)
 
 
-                        onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
+                        onDoneUpdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
                         _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
                     }
                 }

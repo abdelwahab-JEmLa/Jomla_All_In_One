@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Proto.ViewModel.Repository
 
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Juin22.Proto.Repository.D_AchatOperation.Companion.delimiterExistence
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Proto.ViewModel.Repository.D_AchatOperation.Companion.delimiterExistence
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -38,7 +38,6 @@ class D_AchatOperationComposeRepositoryProtoJuin17(
     }
 
     fun getTestDate(): List<D_AchatOperation> {
-            // Create test hard data for development/testing purposes
         return listOf(
             D_AchatOperation(
                 bsonObjectId = "test_achat_001",

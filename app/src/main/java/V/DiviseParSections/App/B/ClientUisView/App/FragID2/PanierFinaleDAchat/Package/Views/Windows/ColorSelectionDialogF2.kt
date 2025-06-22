@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.Windows
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.QuantityButton
-import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,9 +32,7 @@ fun ColorSelectionDialogF2(
     currentQuantity: Int,
     colorName: String,
     onQuantitySelected: (Int) -> Unit,
-    currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    indexColoreAcheter: Int,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
     Dialog(onDismissRequest = onDismiss) {

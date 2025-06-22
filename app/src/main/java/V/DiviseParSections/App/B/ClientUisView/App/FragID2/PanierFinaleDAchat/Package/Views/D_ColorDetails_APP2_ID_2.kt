@@ -101,9 +101,7 @@ fun D_ColorDetails_APP2_ID_2(
 
                 }
             },
-            currentSale = dummySale,
             viewModelInitApp = viewModelInitApp,
-            indexColoreAcheter = relative_1_1_CouleurAcheteOperation.couleurIndex_ParentVID.toInt(),
             compose_1_1_CouleurAcheteOperationVid = composeKeyVID
         )
     }
