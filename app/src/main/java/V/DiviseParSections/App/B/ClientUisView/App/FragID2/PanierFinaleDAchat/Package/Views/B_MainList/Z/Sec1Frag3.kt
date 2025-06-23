@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.LazyRowAvailableColorsImageOuNom
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -107,7 +106,7 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Images(productId, achats, viewModel.a_ProduitDataBaseComposeRepositoryPJ17)
+            LazyRowAvailableColorsImageOuNom(productId, achats, viewModel.a_ProduitDataBaseComposeRepositoryPJ17)
         }
     }
 }

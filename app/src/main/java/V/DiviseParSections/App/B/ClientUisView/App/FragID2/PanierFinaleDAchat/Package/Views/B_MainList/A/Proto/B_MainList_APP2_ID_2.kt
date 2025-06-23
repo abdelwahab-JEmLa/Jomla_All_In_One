@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun B_MainList_APP2_ID_2_2(
+fun B_MainList_APP2_ID_2(
     viewModel: PanierFinaleDAchatViewModel,
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,

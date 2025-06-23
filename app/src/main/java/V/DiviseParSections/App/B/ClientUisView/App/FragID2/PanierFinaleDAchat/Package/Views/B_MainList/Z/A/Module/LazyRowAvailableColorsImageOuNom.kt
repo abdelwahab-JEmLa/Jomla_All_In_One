@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.CouleurInfos
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Infos
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,36 +53,47 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
+
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
-    couleurInfos: List<CouleurInfos>,
-    couleurInfosWithAchat_matchingAchat: D_AchatOperation?,
-    sizeDeChaqueItem: Dp,
+    productId: String?,
+    achats: List<D_AchatOperation>,
+    bProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
+    sizeDeChaqueItem: Dp= 250.dp,
 ) {
-    val availableCouleurInfos = couleurInfos.filter { it.countDeDisponibility > 0 }
-    if (availableCouleurInfos.isEmpty()) return
+    val relatedProduitDataBase = bProduitDataBaseComposeRepositoryPJ17
+        .datasValue
+        .find { it.bsonObjectId == productId }
 
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        items(availableCouleurInfos) { couleurInfo ->
-            Column(
-                modifier = Modifier.width(sizeDeChaqueItem),
-                horizontalAlignment = Alignment.CenterHorizontally
+    createCouleurInfosFromProduct(
+        relatedProduitDataBase,
+        achats
+    ).let {     couleurInfos->
+        if (couleurInfos.couleurInfosList.isNotEmpty()) {
+
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 3.dp),
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                ImageDisplayer(
-                    couleurInfo = couleurInfo,
-                    modifier = Modifier
-                        .width(sizeDeChaqueItem)
-                        .height(sizeDeChaqueItem),
-                    contentScale = if (!couleurInfo.imageExists) ContentScale.Crop else ContentScale.Fit,
-                    imageSize = DpSize(sizeDeChaqueItem, sizeDeChaqueItem),
-                )
+                items(couleurInfos.couleurInfosList) { couleurInfo ->
+                    Column(
+                        modifier = Modifier.width(sizeDeChaqueItem),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ImageDisplayer(
+                            couleurInfo = couleurInfo,
+                            modifier = Modifier
+                                .width(sizeDeChaqueItem)
+                                .height(sizeDeChaqueItem),
+                            contentScale = if (!couleurInfo.imageExists) ContentScale.Crop else ContentScale.Fit,
+                            imageSize = DpSize(sizeDeChaqueItem, sizeDeChaqueItem),
+                        )
 
-                Infos(achat = couleurInfosWithAchat_matchingAchat)
+                        Infos(achat = couleurInfos.matchingAchat)
+                    }
+                }
             }
         }
     }
@@ -131,7 +144,8 @@ fun ImageDisplayer(
                         .clip(RoundedCornerShape(4.dp))
                         .graphicsLayer {
                             if (blurRadius > 0f) {
-                                renderEffect = BlurEffect(blurRadius, blurRadius, TileMode.Decal)
+                                renderEffect =
+                                    BlurEffect(blurRadius, blurRadius, TileMode.Decal)
                             }
                         }
                 ) { request ->
@@ -142,8 +156,20 @@ fun ImageDisplayer(
                         priority(Priority.HIGH)
                         signature(ObjectKey(couleurInfo.imageNameSiDispo))
                         listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean) = false
-                            override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>,
+                                isFirstResource: Boolean
+                            ) = false
+
+                            override fun onResourceReady(
+                                resource: Drawable,
+                                model: Any,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
                                 if (isFirstResource) isLoading = false
                                 return false
                             }
@@ -163,6 +189,46 @@ fun ImageDisplayer(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Infos(achat: D_AchatOperation?, modifier: Modifier = Modifier) {
+    achat?.let { achatData ->
+        Card(
+            modifier = modifier,
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = achatData.nomImageFichieOuApellationDuCouleur,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Qty: ${achatData.quantityAchete}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${achatData.provisoireMonPrix}",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

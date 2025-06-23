@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
@@ -18,13 +19,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
+    viewModel: TariffsButtonsViewModelSec7ID2,
     filteredProduit: A_ProduitInfos,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<D_TarificationInfos>,
+    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -92,27 +94,29 @@ fun MainList(
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
+        val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
+            maxPrixArriveDuProduit
+        } else {
+            filteredProduit.prixVent
+        }
+
+        val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
+            TypeTarificationEnumT2.LeMaxPrixArrive
+        } else {
+            TypeTarificationEnumT2.PRIX_BASE
+        }
+
+        val tarificationInfo = D_TarificationInfos(
+            typeTarificationEnumT2Correspond = typeToUse,
+            prixCurrency = priceToUse,
+        )
 
         GerantButton(
+            viewModel=viewModel,
+            tarificationInfo=tarificationInfo,
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {
-                val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
-                    maxPrixArriveDuProduit
-                } else {
-                    filteredProduit.prixVent
-                }
-
-                val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
-                    TypeTarificationEnumT2.LeMaxPrixArrive
-                } else {
-                    TypeTarificationEnumT2.PRIX_BASE
-                }
-
-                val tarificationInfo = D_TarificationInfos(
-                    typeTarificationEnumT2Correspond = typeToUse,
-                    prixCurrency = priceToUse,
-                )
 
                 onClickPrixButton(typeToUse, tarificationInfo, context)
             },

@@ -33,14 +33,14 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
     val transactionComQuiFilterButtons =
-        viewModel.a_CentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
+        viewModel.aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
 
     val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     val uiState by viewModel.uiState.collectAsState()
 
     val bonAchatList =
-        viewModel.a_CentralDatasHandlerProtoJuin9.transactionCommercialState.datasValue
+        viewModel.aCentralDatasHandlerProtoJuin9.transactionCommercialState.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
@@ -54,6 +54,7 @@ fun TariffsButtonsSec7ID2(
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             afficheButtons = false
             fermeDialog(latestTariffLocalData)
+
         }
 
     // Cancellation callback
@@ -68,6 +69,7 @@ fun TariffsButtonsSec7ID2(
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (transactionComQuiFilterButtons != null) {
                     MainFilter(
+                        viewModel=viewModel,
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
                         produitAcheteOperationList = produitAcheteOperationList,

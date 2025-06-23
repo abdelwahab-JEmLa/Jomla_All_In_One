@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.A.Proto.B_MainList_APP2_ID_2
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -33,9 +33,9 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
 
     val groupeRepositorysProtoAvJuin3Repositorys_Model = eGroupeddatabasesrepositoryprotoavant3juin.repositorys_Model
 
-    val progressValue = viewModel.centralDatasHandler.loadingProgress
+    val progressValue = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress
 
-    val ouvertc3Transactioncommercial = viewModel.centralDatasHandler.ouvertTransactionCommercial
+    val ouvertc3Transactioncommercial = viewModel.a_CentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
 
     val idOuvertC3_TransactionCommercial = ouvertc3Transactioncommercial?.vid
 
@@ -104,8 +104,14 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                     LoadingContent(message = "Loading data...")
                                 }
                             } else {
-                                // Always show the list of items, regardless of order mode
-                                Sec1Frag3(
+                                B_MainList_APP2_ID_2(
+                                    viewModel = viewModel,
+                                    composeKeyVID = idOuvertC3_TransactionCommercial,
+                                    _0_HeadOfRepositorys_Repository_Model = eGroupeddatabasesrepositoryprotoavant3juin
+                                        .repositorys_Model,
+                                    onDoneUpdatePrice = { colorOperations ->
+                                        groupeRepositorysProtoAvJuin3Repositorys_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
+                                    }
                                 )
                             }
                         }

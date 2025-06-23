@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -349,6 +347,14 @@ fun C_MainItem_APP2_ID_2(
                 }
             }
 
+           /* LazyRowAvailableColorsImageOuNom(
+                productId=productId,
+                achats=achats,
+                bProduitDataBaseComposeRepositoryPJ17= viewModel.a_ProduitDataBaseComposeRepositoryPJ17
+            )      */
+
+
+            /*
             val couleursAcheteOperationsVIDs =
                 _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
                     .modelDatasSnapList
@@ -387,7 +393,7 @@ fun C_MainItem_APP2_ID_2(
                         }
                     }
                 }
-            }
+            }     */
         }
     }
 }

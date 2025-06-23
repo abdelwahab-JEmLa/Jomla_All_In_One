@@ -18,10 +18,13 @@ data class UiState(
     val mainLoadingProgress: Float = 0f
 )
 class PanierFinaleDAchatViewModel(
-    val centralDatasHandler : ACentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9 : ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
+    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
+    val d_AchatOperationComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.d_AchatOperationComposeRepositoryPJ17
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 

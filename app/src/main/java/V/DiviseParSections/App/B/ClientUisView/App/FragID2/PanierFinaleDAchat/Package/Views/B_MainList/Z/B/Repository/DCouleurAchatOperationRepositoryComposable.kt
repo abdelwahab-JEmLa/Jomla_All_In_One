@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,8 +17,8 @@ import org.mongodb.kbson.BsonObjectId
 import java.util.Objects
 
 @Stable
-class DAchatOperationComposeRepositoryProtoJuin17(
-    private val ancienRepo: D_AchatOperationDataBaseProtoJuin17,
+class DCouleurAchatOperationRepositoryComposable(
+    private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)

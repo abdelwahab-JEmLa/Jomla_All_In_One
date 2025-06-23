@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -23,7 +24,8 @@ fun MainFilter(
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null 
+    onClickAnulationButton: (() -> Unit)? = null,
+    viewModel: TariffsButtonsViewModelSec7ID2
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: C3_TransactionCommercial()
@@ -67,11 +69,12 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
-            maxPrixArriveDuProduit = maxPrixArriveDuProduit,
-            clientDefiniTariffs = clientDefiniTariffs,
-            clientLastHistoricalPrice = clientLastHistoricalPrice,
+            viewModel=viewModel,
             filteredProduit = filteredProduit,
             showLabels = showLabels,
+            clientLastHistoricalPrice = clientLastHistoricalPrice,
+            maxPrixArriveDuProduit = maxPrixArriveDuProduit,
+            clientDefiniTariffs = clientDefiniTariffs,
             onClickPrixButton = onClickPrixButton,
             onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
         )

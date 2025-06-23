@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import androidx.compose.foundation.background
@@ -32,6 +33,8 @@ import java.util.SortedMap
 
 @Composable
 fun GerantButton(
+    viewModel: TariffsButtonsViewModelSec7ID2,
+    tarificationInfo: D_TarificationInfos,
     showLabels: Boolean,
     tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>,
     onClickPrixButton: () -> Unit,

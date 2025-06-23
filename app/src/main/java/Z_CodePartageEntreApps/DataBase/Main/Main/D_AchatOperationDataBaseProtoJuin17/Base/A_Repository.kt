@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class D_AchatOperationDataBaseProtoJuin17(
+class DataBaseFactoryDCouleurAchatOperation(
     val dao: D_AchatOperationDao,
 ) {
     val repoTAG = "D_AchatOperation"

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -36,7 +37,7 @@ data class UiState(
 )
 
 class TariffsButtonsViewModelSec7ID2(
-    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
@@ -72,6 +73,7 @@ class TariffsButtonsViewModelSec7ID2(
         loadTariffs()
     }
 
+
     private fun loadTariffs() {
         loadingJob?.cancel()
         bonAchatCollectorJob?.cancel()
@@ -103,7 +105,8 @@ class TariffsButtonsViewModelSec7ID2(
                         val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f)
                         val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
 
-                        val totalProgress = (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f
+                        val totalProgress =
+                            (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f
 
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -113,7 +116,10 @@ class TariffsButtonsViewModelSec7ID2(
                             )
                         }
 
-                        Pair(Pair(validProduitProgress, validBonAchatProgress), Pair(validProduitAcheteProgress, validSqlProgress))
+                        Pair(
+                            Pair(validProduitProgress, validBonAchatProgress),
+                            Pair(validProduitAcheteProgress, validSqlProgress)
+                        )
                     }.collect { (firstPair, secondPair) ->
                         val (produitProg, bonAchatProg) = firstPair
                         val (produitAcheteProg, sqlProg) = secondPair
@@ -178,7 +184,8 @@ class TariffsButtonsViewModelSec7ID2(
                             repoC3_BonVent.progressRepo.collect { progress ->
                                 if (progress >= 1f) {
                                     delay(100)
-                                    val updatedBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
+                                    val updatedBonAchatList =
+                                        repoC3_BonVent.modelDatasSnapList.toList()
                                     _uiState.update {
                                         it.copy(bonAchatList = updatedBonAchatList)
                                     }
@@ -200,7 +207,8 @@ class TariffsButtonsViewModelSec7ID2(
 
                 produitAcheteOperationCollectorJob = launch {
                     try {
-                        val initialProduitAcheteList = repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
+                        val initialProduitAcheteList =
+                            repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
 
                         _uiState.update { currentState ->
                             currentState.copy(produitAcheteOperationList = initialProduitAcheteList)
@@ -210,7 +218,8 @@ class TariffsButtonsViewModelSec7ID2(
                             repositoryC2_ProduitAcheteOperation.progressRepo.collect { progress ->
                                 if (progress >= 1f) {
                                     delay(100)
-                                    val updatedProduitAcheteList = repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
+                                    val updatedProduitAcheteList =
+                                        repositoryC2_ProduitAcheteOperation.modelDatasSnapList.toList()
                                     _uiState.update {
                                         it.copy(produitAcheteOperationList = updatedProduitAcheteList)
                                     }
@@ -234,18 +243,23 @@ class TariffsButtonsViewModelSec7ID2(
 
                             _uiState.update { currentState ->
                                 currentState.produitInfosListDepuitAncienDataBase.clear()
-                                currentState.produitInfosListDepuitAncienDataBase.addAll(productsList)
+                                currentState.produitInfosListDepuitAncienDataBase.addAll(
+                                    productsList
+                                )
                                 currentState
                             }
                         }
 
                         produitRepository.progressRepo.collect { progress ->
                             if (progress >= 1f) {
-                                val updatedProductsList = produitRepository.modelDatasSnapList.toList()
+                                val updatedProductsList =
+                                    produitRepository.modelDatasSnapList.toList()
                                 if (updatedProductsList.isNotEmpty()) {
                                     _uiState.update { currentState ->
                                         currentState.produitInfosListDepuitAncienDataBase.clear()
-                                        currentState.produitInfosListDepuitAncienDataBase.addAll(updatedProductsList)
+                                        currentState.produitInfosListDepuitAncienDataBase.addAll(
+                                            updatedProductsList
+                                        )
                                         currentState
                                     }
                                 }
@@ -308,4 +322,6 @@ class TariffsButtonsViewModelSec7ID2(
         produitAcheteOperationCollectorJob?.cancel()
         progressJob?.cancel()
     }
+
+
 }

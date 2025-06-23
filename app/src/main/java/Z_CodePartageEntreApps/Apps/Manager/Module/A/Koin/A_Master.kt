@@ -19,7 +19,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DAchatOperationComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperationRepositoryComposable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
@@ -41,7 +41,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposito
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.D_AchatOperationDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
@@ -113,7 +113,7 @@ val composRepositorysModule = module {
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }
     single { D_TransactionCommercialCompoRepository(get()) }
-    single { DAchatOperationComposeRepositoryProtoJuin17(get()) }
+    single { DCouleurAchatOperationRepositoryComposable(get()) }
 
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { ZAppComptComposeRepositoryProtoJuin17(get()) }
@@ -139,7 +139,7 @@ val dataBaseProtoAvantJuin3Module = module {
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
     single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
     single { D_EtateMessageVocaleRepository(androidContext(), get()) }
-    single { D_AchatOperationDataBaseProtoJuin17(get<AppDatabase>().D_AchatOperationDao()) }
+    single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().D_AchatOperationDao()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }

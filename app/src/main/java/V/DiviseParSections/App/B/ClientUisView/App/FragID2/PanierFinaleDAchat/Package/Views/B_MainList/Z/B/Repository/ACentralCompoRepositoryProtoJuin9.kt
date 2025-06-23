@@ -30,7 +30,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
-    val d_AchatOperationComposeRepositoryPJ17: DAchatOperationComposeRepositoryProtoJuin17,
+    val d_AchatOperationComposeRepositoryPJ17: DCouleurAchatOperationRepositoryComposable,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {
