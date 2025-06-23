@@ -255,6 +255,7 @@ fun B_CouleurAfficheur(
                         )
                     }
                     viewModel.centralDatasHandler
+                        .dCouleurAchatOperationRepositoryComposable
                         .subClassFunctionality
                         .ouvreAddDataDepuitIndexCouleur(index)
 

@@ -19,10 +19,11 @@ import java.util.Objects
 
 @Stable
 class DCouleurAchatOperation_SubClassFunctionality(
-    centralRepo: ACentralCompoRepositoryProtoJuin9
+    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>
 ) {
-    val mainRepo= centralRepo.dCouleurAchatOperationRepositoryComposable
-    val zAppComptRepositoryComposable= centralRepo.zAppComptRepositoryComposable
+    val centralRepo by centralRepoLazy
+    val mainRepo = centralRepo.dCouleurAchatOperationRepositoryComposable
+    val zAppComptRepositoryComposable = centralRepo.zAppComptRepositoryComposable
 
     val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
         mainRepo.datasValue.find {
@@ -30,7 +31,10 @@ class DCouleurAchatOperation_SubClassFunctionality(
                     zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
         }
     }
-    val ouvertData_bProduitDataBase_SubClassFunctionality = centralRepo.ouvertData_bProduitDataBase_SubClassFunctionality
+
+    val ouvertData_bProduitDataBase_SubClassFunctionality =
+        centralRepo.ouvertData_bProduitDataBase_SubClassFunctionality
+
     val ouvertTransactionCommercial = centralRepo.ouvertTransactionCommercial
 
     fun ouvreAddDataDepuitIndexCouleur(index: Int): Unit {
@@ -47,7 +51,9 @@ class DCouleurAchatOperation_SubClassFunctionality(
         mainRepo.addOrUpdateData(
             data
         )
-        zAppComptRepositoryComposable.ouvrireCouleurAchatOperationPourCeCompt(
+        zAppComptRepositoryComposable
+            .subClassFunctionality
+            .ouvrireCouleurAchatOperationPourCeCompt(
             data.bsonObjectId,
             "${ouvertData_bProduitDataBase_SubClassFunctionality!!.nom}_${data.nomImageFichieOuApellationDuCouleur}"
         )
@@ -107,7 +113,9 @@ class DCouleurAchatOperation_SubClassFunctionality(
 @Stable
 class DCouleurAchatOperationRepositoryComposable(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
+    private val subClassFunctionalityLazy: Lazy<DCouleurAchatOperation_SubClassFunctionality>
 ) {
+    val subClassFunctionality by subClassFunctionalityLazy
 
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)

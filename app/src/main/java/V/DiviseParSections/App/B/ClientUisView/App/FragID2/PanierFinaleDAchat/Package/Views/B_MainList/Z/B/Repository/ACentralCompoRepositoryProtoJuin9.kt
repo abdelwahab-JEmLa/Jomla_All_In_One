@@ -37,10 +37,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-
-    private val subClassFunctionalityLazy: Lazy<DCouleurAchatOperation_SubClassFunctionality>
 ) {
-    val subClassFunctionality by subClassFunctionalityLazy
 
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -49,7 +46,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val ouvertData_bProduitDataBase_SubClassFunctionality by derivedStateOf {
         bProduitDataBase_SubClassFunctionality.datasValue.firstOrNull {
             it.bsonObjectId ==
-                    subClassFunctionality.ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
+                   dCouleurAchatOperationRepositoryComposable.subClassFunctionality.ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
         }
     }
 

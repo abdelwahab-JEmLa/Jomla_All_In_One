@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -16,14 +17,44 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
+@Stable
+class Z_SubClassFunctionality_ZAppCompt(
+    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>
+) {
+    val mainRepository = centralRepoLazy.value.zAppComptRepositoryComposable
+
+    fun ouvrireCouleurAchatOperationPourCeCompt(
+        couleurIdOuvertPourCeCompt: String,
+        couleurKeyOuvertPourCeCompt: String
+    ) {
+        mainRepository.addOrUpdateData(
+            mainRepository.currentAppCompt!!.copy(
+                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
+                couleurKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
+            )
+        )
+    }
+
+    fun fermeProduitPourCeCompt(
+    ) {
+        mainRepository.addOrUpdateData(
+            mainRepository.currentAppCompt!!.copy(
+                couleurIdOuvertPourCeCompt = "",
+                couleurKeyOuvertPourCeCompt = ""
+            )
+        )
+    }
+
+}
 
 @Stable
 class ZAppCompt_RepositoryComposable(
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
+    val subClassFunctionalityLazy: Lazy<Z_SubClassFunctionality_ZAppCompt>
 ) {
+    val subClassFunctionality by subClassFunctionalityLazy
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
-
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
@@ -32,27 +63,6 @@ class ZAppCompt_RepositoryComposable(
         datasValue.find { it.bsonObjectId == "b1" }
     }
 
-    fun ouvrireCouleurAchatOperationPourCeCompt(
-        couleurIdOuvertPourCeCompt: String,
-        couleurKeyOuvertPourCeCompt: String
-    ) {
-        addOrUpdateData(
-            currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
-                couleurKeyOuvertPourCeCompt =  couleurKeyOuvertPourCeCompt
-            )
-        )
-    }
-
-    fun fermeProduitPourCeCompt(
-    ) {
-        addOrUpdateData(
-            currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = "",
-                couleurKeyOuvertPourCeCompt =  ""
-            )
-        )
-    }
     init {
         composScope.launch {
             dao.getAllFlow().collect { _datas.value = it }
