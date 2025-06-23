@@ -64,14 +64,14 @@ class ZAppComptSubClassFunctionality {
     private lateinit var repository: ZAppComptRepositoryComposable
     fun initialize(repo: ZAppComptRepositoryComposable) { this.repository = repo }
 
-    fun ouvrireProduitPourCeCompt(
-        idOuvertProduitOnModeVent: String,
-        produitNomActuelleOuvertPourVentAuWindow: String
+    fun ouvrireCouleurAchatOperationPourCeCompt(
+        couleurIdOuvertPourCeCompt: String,
+        couleurKeyOuvertPourCeCompt: String
     ) {
         repository.addOrUpdateData(
             repository.currentAppCompt!!.copy(
-                produitIdActuelleOuvertPourVentAuWindow = idOuvertProduitOnModeVent,
-                produitNomActuelleOuvertPourVentAuWindow =  produitNomActuelleOuvertPourVentAuWindow
+                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
+                couleurKeyOuvertPourCeCompt =  couleurKeyOuvertPourCeCompt
             )
         )
     }
@@ -80,8 +80,8 @@ class ZAppComptSubClassFunctionality {
     ) {
         repository.addOrUpdateData(
             repository.currentAppCompt!!.copy(
-                produitIdActuelleOuvertPourVentAuWindow = "",
-                produitNomActuelleOuvertPourVentAuWindow =  ""
+                couleurIdOuvertPourCeCompt = "",
+                couleurKeyOuvertPourCeCompt =  ""
             )
         )
     }
@@ -115,8 +115,8 @@ data class Z_AppCompt(
     // Section Paramaters App telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
 
-    var produitIdActuelleOuvertPourVentAuWindow: String = "",
-    var produitNomActuelleOuvertPourVentAuWindow: String = "",
+    var couleurIdOuvertPourCeCompt: String = "",
+    var couleurKeyOuvertPourCeCompt: String = "",
 ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): Z_AppCompt {
         return this.copy(

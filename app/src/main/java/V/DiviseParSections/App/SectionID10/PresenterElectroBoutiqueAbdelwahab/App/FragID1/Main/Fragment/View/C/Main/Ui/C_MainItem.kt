@@ -71,11 +71,9 @@ fun ArticleItem(
             reloadTrigger = reloadTrigger,
             onClickToOpenWindos = { article, indexCouleur ->
                 onClickToOpenWindos(article, indexCouleur)
-                viewModel.addNewDAchatCouleurOperation(
+                viewModel.addNewDAchatCouleurOperationEtOuvreLe(
                     article, indexCouleur
-                ) { id, nom ->
-                    viewModel.subClassFunctionality.ouvrireProduitPourCeCompt(id, nom)
-                }
+                )
             },
             uiState = uiState,
             lockHost = lockHost,

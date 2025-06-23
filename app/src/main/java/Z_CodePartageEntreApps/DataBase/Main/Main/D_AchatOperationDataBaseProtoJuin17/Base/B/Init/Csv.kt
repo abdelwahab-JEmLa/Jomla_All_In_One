@@ -66,9 +66,9 @@ private fun parsedData(values: List<String>) = D_AchatOperation(
     produitAcheterAncienID = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
-        D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "Affiche" })
+        D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
     } catch (e: IllegalArgumentException) {
-        D_AchatOperation.EtateActuellementEst.Affiche
+        D_AchatOperation.EtateActuellementEst.ClickOuvre
     },
     provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()

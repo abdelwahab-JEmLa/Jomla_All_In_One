@@ -291,7 +291,7 @@ fun FilterDropdownMenu(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         supportingText = {
                             Text(
-                                text = "Affiche seulement les produits dont le prix d'achat a été mis à jour il y a X jours ou plus",
+                                text = "ClickOuvre seulement les produits dont le prix d'achat a été mis à jour il y a X jours ou plus",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

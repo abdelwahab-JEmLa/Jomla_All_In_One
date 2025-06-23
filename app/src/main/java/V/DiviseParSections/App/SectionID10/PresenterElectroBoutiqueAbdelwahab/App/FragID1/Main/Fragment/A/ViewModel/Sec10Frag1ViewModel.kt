@@ -15,12 +15,11 @@ class Sec10Frag1ViewModel(
 ) : ViewModel() {
     val subClassFunctionality =aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.subClassFunctionality
 
-    fun addNewDAchatCouleurOperation(
+    fun addNewDAchatCouleurOperationEtOuvreLe(
         article: ArticlesBasesStatsTable,
         indexCouleur: Int,
-        onSucceed: (String,String) -> Unit,
     ) {
-        val date = D_AchatOperation(
+        val data = D_AchatOperation(
             parentProduitBsonObjectId = article.bsonObjectId,
             nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
                 article, indexCouleur
@@ -28,9 +27,12 @@ class Sec10Frag1ViewModel(
             parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.bsonObjectId
         )
         aCentralDatasHandlerProtoJuin9.d_AchatOperationComposeRepositoryPJ17.addOrUpdateData(
-            date
+            data
         )
-        onSucceed(date.bsonObjectId,article.nom)
+        subClassFunctionality.ouvrireCouleurAchatOperationPourCeCompt(
+            data.bsonObjectId,
+            "${article.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+        )
     }
 
     data class UiState(

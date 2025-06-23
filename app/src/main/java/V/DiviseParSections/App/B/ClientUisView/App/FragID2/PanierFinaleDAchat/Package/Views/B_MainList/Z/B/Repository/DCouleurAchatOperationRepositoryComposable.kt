@@ -128,7 +128,7 @@ class DCouleurAchatOperationRepositoryComposable(
                 produitAcheterAncienID = 3L,
                 quantityAchete = 2,
                 provisoireMonPrix = 75.5,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Affiche
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ClickOuvre
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_004",
@@ -178,19 +178,22 @@ data class D_AchatOperation(
     var clientParentObjectId: String = "",
     var produitAcheterAncienID: Long = 0L,
 
-    var type: Type = Type.CommandeAssure,
+    var type: Type = Type.CommandeDeLui,
+
     var achatParentBsonID: String = "",
 
     // Section StatuesMutable
     var quantityAchete: Int = 1,
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.Affiche,
+        EtateActuellementEst.ClickOuvre,
     var provisoireMonPrix: Double = 0.0,
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-    enum class EtateActuellementEst { Affiche, CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE }
-    enum class Type { SiNonDispo, CommandeAssure }
+    enum class EtateActuellementEst { ClickOuvre,
+        CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE }
+
+    enum class Type { SiNonDispo, CommandeDeLui }
 
     fun isSameEntity(other: D_AchatOperation) = nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
             parentProduitBsonObjectId == other.parentProduitBsonObjectId &&

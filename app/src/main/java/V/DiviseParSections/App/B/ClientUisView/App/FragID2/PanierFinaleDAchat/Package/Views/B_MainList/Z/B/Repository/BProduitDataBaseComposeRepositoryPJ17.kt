@@ -29,7 +29,7 @@ class BProduitDataBaseSubClassFunctionality(
     val currentActiveVentProduit by derivedStateOf {
         datasValue.find {
             it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
-                ?.produitIdActuelleOuvertPourVentAuWindow
+                ?.couleurIdOuvertPourCeCompt
         }
     }
 

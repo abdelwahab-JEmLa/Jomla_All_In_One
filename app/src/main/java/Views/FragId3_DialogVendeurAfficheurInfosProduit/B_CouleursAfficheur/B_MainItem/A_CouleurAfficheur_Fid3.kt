@@ -255,7 +255,7 @@ fun B_CouleurAfficheur(
                             it.idColore
                         )
                     }
-                    viewModel.update()
+
                 },
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.elevatedCardColors(
@@ -306,8 +306,9 @@ fun B_CouleurAfficheur(
 
         if (showDialog) {
             ColorSelectionDialog(
-                currentSale = currentSale,
+                viewModel = viewModel,
                 viewModelInitApp = viewModelInitApp,
+                compose_1_1_CouleurAcheteOperationVid = compose_1_1_CouleurAcheteOperationVid,
                 onDismiss = {
                     showDialog = false
                     isSelected = false
@@ -345,11 +346,6 @@ fun B_CouleurAfficheur(
                     showDialog = false
                     isSelected = false
                 },
-                currentClient = currentClient,
-                indexColoreAcheter = index,
-                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                color = color,
-                compose_1_1_CouleurAcheteOperationVid = compose_1_1_CouleurAcheteOperationVid,
             )
         }
     }

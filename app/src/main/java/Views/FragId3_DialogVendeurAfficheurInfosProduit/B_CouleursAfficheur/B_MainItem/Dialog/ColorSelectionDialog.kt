@@ -1,9 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.QuantityButton
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
-import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,17 +29,13 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun ColorSelectionDialog(
+    viewModel: VendeurAfficheurInfosProduitViewModel,
+    viewModelInitApp: ViewModelInitApp,
+    compose_1_1_CouleurAcheteOperationVid: Long,
     onDismiss: () -> Unit,
     currentQuantity: Int,
     colorName: String,
     onQuantitySelected: (Int) -> Unit,
-    currentSale: SoldArticlesTabelle?,
-    viewModelInitApp: ViewModelInitApp,
-    currentClient: B_ClientInfosProtoJuin3?,
-    indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    color: ColorsArticlesTabelle,
-    compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -80,17 +74,13 @@ fun ColorSelectionDialog(
 
                 // Quantity Grid
                 QuantityGrid(
+                    viewModel = viewModel,
                     currentQuantity = currentQuantity,
                     onQuantitySelected = { quantity ->
                         onQuantitySelected(quantity)
                         onDismiss()
                     },
-                    currentSale = currentSale,
                     viewModelInitApp = viewModelInitApp,
-                    currentClient = currentClient,
-                    indexColoreAcheter = indexColoreAcheter,
-                    colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                    color = color,
                     compose_1_1_CouleurAcheteOperationVid= compose_1_1_CouleurAcheteOperationVid,
                 )
             }
@@ -100,14 +90,10 @@ fun ColorSelectionDialog(
 
 @Composable
 private fun QuantityGrid(
+    viewModel: VendeurAfficheurInfosProduitViewModel,
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
-    currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: B_ClientInfosProtoJuin3?,
-    indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    color: ColorsArticlesTabelle,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
 
@@ -151,6 +137,7 @@ private fun QuantityGrid(
         items(quantities.size) { index ->
             val quantityNumber = quantities[index]
             QuantityButton(
+                viewModel=viewModel,
                 viewModelInitApp = viewModelInitApp,
                 quantity = quantityNumber,
                 isSelected = quantityNumber == currentQuantity,
