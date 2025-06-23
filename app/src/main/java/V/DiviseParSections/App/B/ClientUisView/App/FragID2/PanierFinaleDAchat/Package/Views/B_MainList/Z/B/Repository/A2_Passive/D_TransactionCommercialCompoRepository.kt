@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -38,11 +39,9 @@ class D_TransactionCommercialCompoRepository(
     val datasValue by derivedStateOf { _datas.value }
 
     val ouvertData by derivedStateOf {
-        datasValue.find {
-            it.bsonObjectId == centralRepo
-                .zAppComptRepositoryComposable
-                .currentAppCompt!!.cTransactionCommercialIdOuvertPourCeCompt
-        }
+        datasValue.lastOrNull {
+            it.etateActuellementEst == EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        } ?: C3_TransactionCommercial()
     }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -82,7 +81,7 @@ class D_TransactionCommercialCompoRepository(
                 it.clientAcheteurID == clientId
                         && it.etateActuellementEst == etateActuellementEst
             }
-            .maxByOrNull { it.timestamps }
+            .maxByOrNull { it.bsonObjectId }
     }
 
     fun getClientLastTransaction(clientId: Long): C3_TransactionCommercial? {
@@ -90,7 +89,7 @@ class D_TransactionCommercialCompoRepository(
             .filter {
                 it.clientAcheteurID == clientId
             }
-            .maxByOrNull { it.timestamps }
+            .maxByOrNull { it.bsonObjectId }
     }
 
     fun updateLoadingProgress(progress: Float) {
@@ -130,20 +129,23 @@ class D_TransactionCommercialCompoRepository(
 
 @Entity
 data class C3_TransactionCommercial(
-    @PrimaryKey(autoGenerate = true)
-    var vid: Long = 0L,
+    @PrimaryKey
     var bsonObjectId: String = BsonObjectId().toHexString(),
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
-    // Section Related Parents Foreign Key IDs
-    var parentVID_1_4_PeriodeVent: Long = 0L,
+    //Section Forging Keys
+    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeMaisNonDefinie,
+    var parentPeriodeVentID: String = BsonObjectId().toHexString(),
+
+    //Section Infos Forging Keys
     var clientAcheteurID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
+    var parentVID_1_4_PeriodeVent: Long = 0L,
+
+    var vid: Long = 0L,
 
     // Section InfosDeBase
-    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
-
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
@@ -151,8 +153,6 @@ data class C3_TransactionCommercial(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
-    var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.NON_DEFINI,
 
     // Section Centralization Valeurs Pour Injection add TOu modules
 
@@ -178,7 +178,7 @@ data class C3_TransactionCommercial(
 
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
-        NON_DEFINI(android.R.color.white, "غير محدد"),
+        CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "تم تنفيذ المطلوب في "),
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم تاكيد الطلبية"),
