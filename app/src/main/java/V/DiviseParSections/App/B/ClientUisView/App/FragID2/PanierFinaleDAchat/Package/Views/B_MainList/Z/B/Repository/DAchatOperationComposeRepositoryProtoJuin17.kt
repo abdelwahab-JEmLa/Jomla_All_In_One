@@ -179,6 +179,9 @@ data class D_AchatOperation(
     var clientParentObjectId: String = "",
     var produitAcheterAncienID: Long = 0L,
 
+    var type: Type = Type.CommandeAssure,
+    var achatParentBsonID: String = "",
+
     // Section StatuesMutable
     var quantityAchete: Int = 0,
     var etateActuellementEst: EtateActuellementEst =
@@ -188,6 +191,7 @@ data class D_AchatOperation(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
     enum class EtateActuellementEst { Affiche, CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE }
+    enum class Type { SiNonDispo, CommandeAssure }
 
     fun isSameEntity(other: D_AchatOperation) = nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
             parentProduitBsonObjectId == other.parentProduitBsonObjectId &&
