@@ -1,10 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -15,7 +13,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
+import com.google.firebase.Firebase
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,22 +26,30 @@ import java.util.Date
 import java.util.Locale
 import java.util.Objects
 
+
 @Stable
 class D_TransactionCommercialCompoRepository(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
-    val centralRepo by centralRepoLazy
     private val composScope = CoroutineScope(Dispatchers.IO)
-
     private val _datas = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
     val datasState: State<List<C3_TransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
+    fun ouvrireTransactionCommercial() {
+        addOrUpdateData(
+            ouvertData.copy(
+                etateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            )
+        )
+    }
+
     val ouvertData by derivedStateOf {
         datasValue.lastOrNull {
             it.etateActuellementEst == EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        } ?: C3_TransactionCommercial()
+        } ?: C3_TransactionCommercial(
+            parentZAppComptID = "b1"
+        )
     }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -73,8 +81,8 @@ class D_TransactionCommercialCompoRepository(
     }
 
     fun getClientLastTransactionParEtate(
-        clientId: Long, etateActuellementEst: C3_TransactionCommercial.EtateActuellementEst =
-            C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        clientId: Long, etateActuellementEst: EtateActuellementEst =
+            EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): C3_TransactionCommercial? {
         return datasValue
             .filter {
@@ -134,21 +142,24 @@ data class C3_TransactionCommercial(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
-    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeMaisNonDefinie,
-    var parentPeriodeVentID: String = BsonObjectId().toHexString(),
+    var parentPeriodeVentID: String = "p1",
+    var parentZAppComptID: String = "b1",
 
     //Section Infos Forging Keys
     var clientAcheteurID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
     var parentVID_1_4_PeriodeVent: Long = 0L,
+    var parentZAppComptNom: String = "",
 
     var vid: Long = 0L,
 
     // Section InfosDeBase
+    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
+    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeMaisNonDefinie,
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
@@ -201,36 +212,23 @@ data class C3_TransactionCommercial(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun withDernierTimeTampsSynchronisationAvecFireBase(): C3_TransactionCommercial {
-        return this.copy(
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
-
     fun isSameEntity(other: C3_TransactionCommercial) =
         bsonObjectId == other.bsonObjectId
+                && parentZAppComptID == other.parentZAppComptNom
+                && parentPeriodeVentID == other.parentPeriodeVentID
 
     override fun equals(other: Any?) =
         this === other || (other is C3_TransactionCommercial && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         bsonObjectId,
+        parentZAppComptNom,
+        parentPeriodeVentID
     )
 
     companion object {
-
-        val caRef =
-            GroupeRepositorysProtoAvJuin3Model.getHeadSqlDataBaseRef()
-                .child("C_AchatsDataBases")
-                .child(
-                    "D" +
-                            "_" +
-                            "TransactionCommercial"
-                            + "DataBAse"
-
-                )
-
-        //ici ce trouve Unique Functions
-
+        val caRef = Firebase.database.getReference(
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_TransactionCommercial"
+        )
     }
 }

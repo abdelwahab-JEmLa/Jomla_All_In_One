@@ -28,7 +28,7 @@ class Z_SubClassFunctionality_ZAppCompt(
         key: String
     ) {
         mainRepository.addOrUpdateData(
-            mainRepository.currentAppCompt!!.copy(
+            mainRepository.currentAppCompt.copy(
                 cTransactionCommercialIdOuvertPourCeCompt = id,
                 cTransactionCommercialKeyOuvertPourCeCompt = key
             )
@@ -39,7 +39,7 @@ class Z_SubClassFunctionality_ZAppCompt(
         couleurKeyOuvertPourCeCompt: String
     ) {
         mainRepository.addOrUpdateData(
-            mainRepository.currentAppCompt!!.copy(
+            mainRepository.currentAppCompt.copy(
                 couleurAchateOperationIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
                 couleurAchateOperationKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
             )
@@ -70,7 +70,7 @@ class ZAppCompt_RepositoryComposable(
     val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
-        datasValue.find { it.bsonObjectId == "b1" }
+        datasValue.firstOrNull { it.bsonObjectId == "b1" } ?: Z_AppCompt()
     }
 
     init {

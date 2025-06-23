@@ -31,5 +31,5 @@ val composRepositorysModule = module {
 
     single { BProduitDataBaseComposeRepositoryPJ17(lazy { get() },get()) }
     single { DCouleurAchatOperationRepositoryComposable(lazy { get() },get()) }
-    single { D_TransactionCommercialCompoRepository(lazy { get() },get()) }
+    single { D_TransactionCommercialCompoRepository(get()) }
 }

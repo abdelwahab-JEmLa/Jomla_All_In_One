@@ -47,14 +47,12 @@ fun CommandButton(
                 viewModel = viewModel,
                 relatedClientID = clientId,
                 newEtate = etateActuellementEst1
-            ) {
-                viewModel.centralDatasHandler
-                    .zAppComptRepositoryComposable.subClassFunctionality
-                    .ouvrirePourCeComptCTransactionCommercial(
-                        it.bsonObjectId,
-                        it.nomClientConcerned
-                    )
-            }
+            ) {}
+
+            viewModel.centralDatasHandler
+                .transactionCommercialState
+                .ouvrireTransactionCommercial()
+
             updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 
             if (clientOuCaMarqueGpsEstOuvert != null) {
@@ -127,7 +125,6 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
 
     if (existingBonAchat != null) {
         val updatedBonAchat = existingBonAchat.copy(
-            timestamps = System.currentTimeMillis(),
             heurDebutInString = SimpleDateFormat(
                 "HH:mm",
                 Locale.getDefault()
