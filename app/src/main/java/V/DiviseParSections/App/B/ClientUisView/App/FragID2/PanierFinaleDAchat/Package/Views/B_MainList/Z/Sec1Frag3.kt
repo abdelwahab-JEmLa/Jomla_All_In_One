@@ -119,7 +119,7 @@ fun ProductGroup(
                     LazyRowAvailableColorsImageOuNom(
                         couleurInfos = couleurInfosWithAchat.couleurInfosList,
                         infos = { Infos(achat = couleurInfosWithAchat.matchingAchat) } ,
-                        sizeDeChaqueItem = 100.dp
+                        sizeDeChaqueItem = 250.dp
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
