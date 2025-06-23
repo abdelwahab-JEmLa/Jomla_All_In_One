@@ -70,17 +70,16 @@ object VidGenerator {
 @Composable
 fun B_CouleurAfficheur(
     viewModel: VendeurAfficheurInfosProduitViewModel,
-    modifier: Modifier = Modifier,
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
-    currentSale: SoldArticlesTabelle?,
-    article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     index: Int,
+    modifier: Modifier = Modifier,
+    currentSale: SoldArticlesTabelle?,
+    article: ArticlesBasesStatsTable,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
     currentClient: B_ClientInfosProtoJuin3?,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
@@ -255,6 +254,8 @@ fun B_CouleurAfficheur(
                             it.idColore
                         )
                     }
+                    viewModel.centralDatasHandler
+                        .ouvreAddDataDepuitIndexCouleur(index)
 
                 },
             shape = RoundedCornerShape(12.dp),

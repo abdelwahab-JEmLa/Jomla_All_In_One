@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class ZViewModel_Sec1Frag3(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.a_ProduitDataBaseComposeRepositoryPJ17
-    val d_AchatOperationComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.d_AchatOperationComposeRepositoryPJ17
+    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.bProduitDataBase_SubClassFunctionality
+    val d_AchatOperationComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.dCouleurAchatOperationRepositoryComposable
 
     data class UiState_Sec1Frag3(
         val v: String = "",

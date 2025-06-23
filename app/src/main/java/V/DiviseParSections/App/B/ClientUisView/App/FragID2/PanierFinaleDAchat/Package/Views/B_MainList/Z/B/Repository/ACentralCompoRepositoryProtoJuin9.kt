@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -18,23 +18,23 @@ import androidx.compose.runtime.mutableFloatStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Stable
 class ACentralCompoRepositoryProtoJuin9(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
-    val a_ProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
-    val bProduitDataBaseSubClassFunctionality: BProduitDataBaseSubClassFunctionality,
+    val bProduitDataBase_SubClassFunctionality: BProduitDataBaseComposeRepositoryPJ17,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
-    val d_AchatOperationComposeRepositoryPJ17: DCouleurAchatOperationRepositoryComposable,
+    val dCouleurAchatOperationRepositoryComposable: DCouleurAchatOperationRepositoryComposable,
 
-    val zAppComptRepositoryComposable: ZAppComptRepositoryComposable,
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -43,8 +43,145 @@ class ACentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    val ouvertData_bProduitDataBase_SubClassFunctionality by derivedStateOf {
+        bProduitDataBase_SubClassFunctionality.datasValue.firstOrNull {
+            it.bsonObjectId ==
+                    ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
+        }
+    }
+
+    val currentActiveVentProduit by derivedStateOf {
+        bProduitDataBase_SubClassFunctionality.datasValue.find {
+            it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
+                ?.couleurIdOuvertPourCeCompt
+        }
+    }
+    val sortedDatasValue: List<ArticlesBasesStatsTable> by derivedStateOf {
+        val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
+
+        val (regularProducts, orphanProducts) = bProduitDataBase_SubClassFunctionality.datasValue.partition { product ->
+            val categoryId = product.idParentCategorie ?: 0L
+            val category = categoryMap[categoryId]
+            val catalogueId = category?.catalogueParentId ?: 4L
+
+            category != null &&
+                    catalogueId != 4L &&
+                    !category.nom.equals("NONE", ignoreCase = true)
+        }
+
+        val sortedRegular = regularProducts.sortedWith(
+            compareBy<ArticlesBasesStatsTable> { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                val category = categoryMap[categoryId]
+                val catalogueId = category?.catalogueParentId ?: 4L
+                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
+            }.thenBy { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
+            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+                .thenBy { it.nom.lowercase() }
+        )
+
+        val sortedOrphan = orphanProducts.sortedWith(
+            compareBy<ArticlesBasesStatsTable> { product ->
+                val categoryId = product.idParentCategorie ?: 0L
+                val category = categoryMap[categoryId]
+                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
+                    ?: "ZZZZZ_NO_CATEGORY"
+            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+                .thenBy { it.nom.lowercase() }
+        )
+
+        sortedRegular + sortedOrphan
+    }
+
+
+
+    val ouvert_zAppComptRepositoryComposable = zAppComptRepositoryComposable.currentAppCompt
+
+    val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
+        dCouleurAchatOperationRepositoryComposable. datasValue.find {
+            it.bsonObjectId ==
+                    zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
+        }
+    }
+
+
+    fun ouvreAddDataDepuitIndexCouleur(index: Int): Unit {
+
+        confirmeOuvertData()
+
+        val data = D_AchatOperation(
+            parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality?.bsonObjectId!!,
+            nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
+                index
+            ),
+            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId
+        )
+
+        dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+            data
+        )
+        zAppComptRepositoryComposable.ouvrireCouleurAchatOperationPourCeCompt(
+            data.bsonObjectId,
+            "${ouvertData_bProduitDataBase_SubClassFunctionality!!.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+        )
+    }
+
+    fun trouve_nomImageFichieOuApellationDuCouleurPar(
+        indexCouleur: Int
+    ): String {
+        // Get the color name based on the index
+        val couleurName = when (indexCouleur) {
+            0 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur1
+            1 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur2
+            2 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur3
+            3 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur4
+            else -> null
+        }
+
+        // Return empty string if color is null or blank
+        if (couleurName.isNullOrBlank()) {
+            return ""
+        }
+
+        // Base path for images (same as in CreateCouleurInfosFromProduct.kt)
+        val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+
+        // Create the image file name pattern: {articleId}_{imageIndex}
+        val imageIndex = indexCouleur + 1
+        val baseFileName = "${ouvertData_bProduitDataBase_SubClassFunctionality?.id}_$imageIndex"
+
+        // Check for image file existence with different extensions
+        val supportedExtensions = listOf("jpg", "webp", "jpeg", "png")
+        val imageFile = supportedExtensions
+            .map { extension -> File("$basePath/$baseFileName.$extension") }
+            .firstOrNull { file ->
+                file.exists() && file.canRead() && file.length() > 0
+            }
+
+        // Return image file name (without extension) if image exists, otherwise return color name
+        return if (imageFile != null && imageFile.name != "NonTrouve.webp") {
+            baseFileName // Return the base file name without extension
+        } else {
+            couleurName // Return the color name if no image is available
+        }
+    }
+
+    fun confirmeOuvertData(): Unit {
+        ouvertData_dCouleurAchatOperation_SubClassFunctionality?.let {
+            dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+                it.copy(
+                    etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                )
+            )
+        }
+    }
+
+
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        a_ProduitDataBaseComposeRepositoryPJ17.sortedDatasValue.filteredParCatalogueBsonId()
+        bProduitDataBase_SubClassFunctionality.datasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {

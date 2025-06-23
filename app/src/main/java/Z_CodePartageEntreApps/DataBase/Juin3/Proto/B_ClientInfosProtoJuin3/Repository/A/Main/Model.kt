@@ -13,11 +13,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import org.mongodb.kbson.BsonObjectId
 
 @Entity
 data class B_ClientInfosProtoJuin3(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+    var bsonObjectId: String = BsonObjectId().toHexString(),
 
     //Infos De Base
     var nom: String = "Non Defini",

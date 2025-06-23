@@ -11,18 +11,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.WDatabaseInitializationManager
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.Z.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B_ClientsStateCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptSubClassFunctionality
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AutreStatesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseSubClassFunctionality
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperationRepositoryComposable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
@@ -107,38 +95,6 @@ val centralDataBasesModule = module {
     single<GroupeRepositorysProtoAvJuin3> { GroupeRepositorysProtoAvJuin3Impl(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
-val composRepositorysModule = module {
-    single { ACentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(),get(),) }
-    single { A_GroupeValuesA_ProduitsToB_Categories(get(),get(),) }
-
-    single { BProduitDataBaseComposeRepositoryPJ17(get(),get(),) }
-    single { BProduitDataBaseSubClassFunctionality(get(),get(),) }
-
-    single { B_ClientsStateCompoRepository(get()) }
-    single { CCategoriesCompoRepository(get()) }
-    single { D_TransactionCommercialCompoRepository(get()) }
-    single { DCouleurAchatOperationRepositoryComposable(get()) }
-
-    single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
-
-    // Fixed: Using lazy initialization
-    single {
-        lazy {
-            val repo = ZAppComptRepositoryComposable(get())
-            val subClass = ZAppComptSubClassFunctionality()
-
-            repo.initializeSubClass(subClass)
-            subClass.initialize(repo)
-
-            repo
-        }.value
-    }
-
-    factory { get<ZAppComptRepositoryComposable>().subClassFunctionality }
-
-    single { Z_AutreStatesCompoRepository(get()) }
-}
-
 val dataBaseProtoAvantJuin3Module = module {
     single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
@@ -187,10 +143,11 @@ val classesHandlersModule = module {
 
 val viewModelModule = module {
     //Sort Par ID
+    viewModel { Sec10Frag1ViewModel(get(),) }
+    viewModel { ZViewModel_Sec1Frag3(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }
 
     viewModel { Sec9FragId1ViewId2ViewModel(get(),) }
-    viewModel { Sec10Frag1ViewModel(get(),) }
 
     viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
@@ -220,7 +177,7 @@ val viewModelModule = module {
 val appModule = module {
     includes(
         centralDataBasesModule,
-        composRepositorysModule,
+        composRepositorysModule, // This will now be resolved
         dataBaseProtoAvantJuin3Module,
         viewModelModule,
         classesHandlersModule

@@ -128,17 +128,16 @@ fun A_MainListFragId3(
                                 viewModel=viewModel,
                                 viewModelHeadViewModel = viewModelHeadViewModel,
                                 viewModelInitApp = viewModelInitApp,
+                                color = color,
+                                index = index,
                                 modifier = Modifier,
                                 currentSale = currentSale,
                                 article = stats,
-                                color = color,
-                                index = index,
                                 height = 350.dp,
                                 updateColorToBeMain = { colorId ->
                                     viewModelHeadViewModel.updateColorSelection(colorId, 1)
                                 },
                                 currentClient = currentClient,
-                                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                                 clickedCouleurIndex = clickedCouleurIndex,
                             )

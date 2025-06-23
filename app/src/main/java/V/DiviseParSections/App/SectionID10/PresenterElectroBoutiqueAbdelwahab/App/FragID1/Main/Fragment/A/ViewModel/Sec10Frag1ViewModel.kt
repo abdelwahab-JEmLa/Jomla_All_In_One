@@ -13,7 +13,7 @@ import java.io.File
 class Sec10Frag1ViewModel(
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    val subClassFunctionality =aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.subClassFunctionality
+    val subClassFunctionality =aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable
 
     fun addNewDAchatCouleurOperationEtOuvreLe(
         article: ArticlesBasesStatsTable,
@@ -26,7 +26,7 @@ class Sec10Frag1ViewModel(
             ),
             parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.bsonObjectId
         )
-        aCentralDatasHandlerProtoJuin9.d_AchatOperationComposeRepositoryPJ17.addOrUpdateData(
+        aCentralDatasHandlerProtoJuin9.dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
             data
         )
         subClassFunctionality.ouvrireCouleurAchatOperationPourCeCompt(

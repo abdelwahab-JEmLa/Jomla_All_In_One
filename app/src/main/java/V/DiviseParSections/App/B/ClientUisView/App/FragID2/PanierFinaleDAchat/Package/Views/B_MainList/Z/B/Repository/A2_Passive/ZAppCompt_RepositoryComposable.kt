@@ -16,14 +16,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
+
 @Stable
-class ZAppComptRepositoryComposable(
+class ZAppCompt_RepositoryComposable(
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    lateinit var subClassFunctionality: ZAppComptSubClassFunctionality
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
@@ -32,6 +32,27 @@ class ZAppComptRepositoryComposable(
         datasValue.find { it.bsonObjectId == "b1" }
     }
 
+    fun ouvrireCouleurAchatOperationPourCeCompt(
+        couleurIdOuvertPourCeCompt: String,
+        couleurKeyOuvertPourCeCompt: String
+    ) {
+        addOrUpdateData(
+            currentAppCompt!!.copy(
+                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
+                couleurKeyOuvertPourCeCompt =  couleurKeyOuvertPourCeCompt
+            )
+        )
+    }
+
+    fun fermeProduitPourCeCompt(
+    ) {
+        addOrUpdateData(
+            currentAppCompt!!.copy(
+                couleurIdOuvertPourCeCompt = "",
+                couleurKeyOuvertPourCeCompt =  ""
+            )
+        )
+    }
     init {
         composScope.launch {
             dao.getAllFlow().collect { _datas.value = it }
@@ -53,39 +74,8 @@ class ZAppComptRepositoryComposable(
 
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataAvecTigerUpdate)
     }
-
-    fun initializeSubClass(subClass: ZAppComptSubClassFunctionality) {
-        this.subClassFunctionality = subClass
-    }
 }
 
-@Stable
-class ZAppComptSubClassFunctionality {
-    private lateinit var repository: ZAppComptRepositoryComposable
-    fun initialize(repo: ZAppComptRepositoryComposable) { this.repository = repo }
-
-    fun ouvrireCouleurAchatOperationPourCeCompt(
-        couleurIdOuvertPourCeCompt: String,
-        couleurKeyOuvertPourCeCompt: String
-    ) {
-        repository.addOrUpdateData(
-            repository.currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
-                couleurKeyOuvertPourCeCompt =  couleurKeyOuvertPourCeCompt
-            )
-        )
-    }
-
-    fun fermeProduitPourCeCompt(
-    ) {
-        repository.addOrUpdateData(
-            repository.currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = "",
-                couleurKeyOuvertPourCeCompt =  ""
-            )
-        )
-    }
-}
 
 @Entity
 data class Z_AppCompt(

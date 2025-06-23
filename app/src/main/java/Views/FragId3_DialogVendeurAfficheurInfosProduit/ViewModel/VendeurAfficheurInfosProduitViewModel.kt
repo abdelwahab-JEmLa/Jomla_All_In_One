@@ -6,9 +6,13 @@ import androidx.lifecycle.ViewModel
 class VendeurAfficheurInfosProduitViewModel(
     val centralDatasHandler: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    val d_AchatOperationComposeRepositoryPJ17=centralDatasHandler.d_AchatOperationComposeRepositoryPJ17
+    val d_AchatOperationComposeRepositoryPJ17=centralDatasHandler.dCouleurAchatOperationRepositoryComposable
 
     fun update() {
+
+    }
+
+    fun ajoutCouleurAchatOperationEtFermeConfirmeActuelle(index: Int) {
 
     }
 }

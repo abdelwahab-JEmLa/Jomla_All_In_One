@@ -23,7 +23,6 @@ class D_TransactionCommercialCompoRepository(
     val datasState: State<List<C3_TransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
 

@@ -1,8 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.compose.runtime.Stable
@@ -20,71 +17,14 @@ import org.mongodb.kbson.BsonObjectId
 
 
 @Stable
-class BProduitDataBaseSubClassFunctionality(
-    bProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
-    val zAppComptRepositoryComposable: ZAppComptRepositoryComposable,
-) {
-    val datasValue = bProduitDataBaseComposeRepositoryPJ17.datasValue
-
-    val currentActiveVentProduit by derivedStateOf {
-        datasValue.find {
-            it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
-                ?.couleurIdOuvertPourCeCompt
-        }
-    }
-
-}
-
-@Stable
 class BProduitDataBaseComposeRepositoryPJ17(
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
-    val b3CategoriesCompoRepository: CCategoriesCompoRepository
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-
-    val sortedDatasValue: List<ArticlesBasesStatsTable> by derivedStateOf {
-        val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
-
-        val (regularProducts, orphanProducts) = datasValue.partition { product ->
-            val categoryId = product.idParentCategorie ?: 0L
-            val category = categoryMap[categoryId]
-            val catalogueId = category?.catalogueParentId ?: 4L
-
-            category != null &&
-                    catalogueId != 4L &&
-                    !category.nom.equals("NONE", ignoreCase = true)
-        }
-
-        val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                val catalogueId = category?.catalogueParentId ?: 4L
-                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
-            }.thenBy { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
-                    ?: "ZZZZZ_NO_CATEGORY"
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        sortedRegular + sortedOrphan
-    }
 
     init {
         composScope.launch {

@@ -14,13 +14,14 @@ import kotlinx.coroutines.launch
 
 @Stable
 class B_ClientsStateCompoRepository (
-    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
+    val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3 ,
 ){
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
     val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
+
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress

@@ -34,6 +34,7 @@ class DCouleurAchatOperationRepositoryComposable(
         }
     }
 
+
     init {
         composScope.launch {
             if (itsTestModel) {
@@ -146,7 +147,8 @@ class DCouleurAchatOperationRepositoryComposable(
     }
 
     fun addOrUpdateData(data: D_AchatOperation) {
-        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
 
         composScope.launch {
@@ -190,18 +192,22 @@ data class D_AchatOperation(
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
-    enum class EtateActuellementEst { ClickOuvre,
-        CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE }
+    enum class EtateActuellementEst {
+        ClickOuvre,
+        CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE
+    }
 
     enum class Type { SiNonDispo, CommandeDeLui }
 
-    fun isSameEntity(other: D_AchatOperation) = nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
-            parentProduitBsonObjectId == other.parentProduitBsonObjectId &&
-            parentBonVentObjectId == other.parentBonVentObjectId &&
-            parentComptVendeurCreateurObjectId == other.parentComptVendeurCreateurObjectId
+    fun isSameEntity(other: D_AchatOperation) =
+        nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
+                parentProduitBsonObjectId == other.parentProduitBsonObjectId &&
+                parentBonVentObjectId == other.parentBonVentObjectId &&
+                parentComptVendeurCreateurObjectId == other.parentComptVendeurCreateurObjectId
 
-    override fun equals(other: Any?) = this === other || (other is D_AchatOperation && isSameEntity(other) &&
-            quantityAchete == other.quantityAchete && provisoireMonPrix == other.provisoireMonPrix)
+    override fun equals(other: Any?) =
+        this === other || (other is D_AchatOperation && isSameEntity(other) &&
+                quantityAchete == other.quantityAchete && provisoireMonPrix == other.provisoireMonPrix)
 
     override fun hashCode() = Objects.hash(
         nomImageFichieOuApellationDuCouleur,
@@ -213,6 +219,7 @@ data class D_AchatOperation(
     )
 
     companion object {
-        val caRef = Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
+        val caRef =
+            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_AchatOperation")
     }
 }
