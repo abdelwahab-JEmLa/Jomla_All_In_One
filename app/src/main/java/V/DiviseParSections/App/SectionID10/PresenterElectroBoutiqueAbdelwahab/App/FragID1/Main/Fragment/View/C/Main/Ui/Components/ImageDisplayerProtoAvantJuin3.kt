@@ -70,7 +70,6 @@ fun ImageDisplayerProtoAvantJuin3(
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
 
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
@@ -141,7 +140,6 @@ fun ImageDisplayerProtoAvantJuin3(
                 contentDescription = "Article image ${article.id}",
                 contentScale = imageScale,
                 modifier = Modifier
-                    .clickable { onClickToOpenWindow(article, indexColor)  }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
                     .graphicsLayer {
@@ -172,7 +170,6 @@ fun ImageDisplayerProtoAvantJuin3(
                 ColorOverlayWithBlur(
                     color = colorInfo,
                     cornerRadius = cornerRadius,
-                    onClickToOpenWindow = { onClickToOpenWindow(article, indexColor) }
                 )
             }
         }
@@ -211,7 +208,6 @@ fun ImageDisplayerProtoAvantJuin3(
 fun ColorOverlayWithBlur(
     color: CalculeCouleurHandler.ProductImageInfo,
     cornerRadius: Dp,
-    onClickToOpenWindow: () -> Unit,
 ) {
 
     Box {
@@ -241,7 +237,6 @@ fun ColorOverlayWithBlur(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius)),
-            onClickToOpenWindow = onClickToOpenWindow
         )
     }
 }

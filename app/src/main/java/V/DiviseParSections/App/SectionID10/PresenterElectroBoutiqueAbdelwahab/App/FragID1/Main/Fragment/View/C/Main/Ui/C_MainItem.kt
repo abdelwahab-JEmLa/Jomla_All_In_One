@@ -107,7 +107,18 @@ fun ArticleImageWithOverlay(
             modifier = Modifier
                 .clickable {
                     onClickToOpenWindow(article, colorIndex)
+                    try {
+                        viewModel.aCentralDatasHandlerProtoJuin9
+                            .ouvreAddDataDepuitIndexCouleur(colorIndex)
+                        println("color index $colorIndex for article ${article.id}")
 
+                    } catch (e: IndexOutOfBoundsException) {
+                        // Log the error or handle gracefully
+                        println("Error: Invalid color index $colorIndex for article ${article.id}")
+                    } catch (e: Exception) {
+                        // Handle other potential exceptions
+                        println("Error accessing color data: ${e.message}")
+                    }
                 }
                 .fillMaxSize()
         ) {
@@ -125,10 +136,7 @@ fun ArticleImageWithOverlay(
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
-            ){prd,indexCouleur->
-                viewModel.aCentralDatasHandlerProtoJuin9
-                    .ouvreAddDataDepuitIndexCouleur(indexCouleur)
-            }
+            )
         }
     }
 }

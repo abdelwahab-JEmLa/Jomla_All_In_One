@@ -68,7 +68,6 @@ fun ColorIndicator(
 fun ColorOverlay(
     color: CalculeCouleurHandler.ProductImageInfo,
     modifier: Modifier = Modifier,
-    onClickToOpenWindow: () -> Unit,
     ) {
 
     Box(
@@ -101,7 +100,7 @@ fun ColorOverlay(
                     text = color.colorName,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onClickToOpenWindow() },
+                        ,
                     color = Color.Black,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
