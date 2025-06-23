@@ -10,12 +10,18 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperationRepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperation_SubClassFunctionality
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    // Fixed: Updated ACentralCompoRepositoryProtoJuin9 instantiation with only context
-    single { ACentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single {
+        lazy {
+            DCouleurAchatOperation_SubClassFunctionality(get<ACentralCompoRepositoryProtoJuin9>())
+        }
+    }
+
+    single { ACentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 

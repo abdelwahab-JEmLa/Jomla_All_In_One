@@ -37,11 +37,10 @@ class ACentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
+
+    private val subClassFunctionalityLazy: Lazy<DCouleurAchatOperation_SubClassFunctionality>
 ) {
-    // Use lazy initialization to break the circular dependency
-    val subClassFunctionality by lazy {
-        DCouleurAchatOperation_SubClassFunctionality(this)
-    }
+    val subClassFunctionality by subClassFunctionalityLazy
 
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -60,6 +59,7 @@ class ACentralCompoRepositoryProtoJuin9(
                 ?.couleurIdOuvertPourCeCompt
         }
     }
+
     val sortedDatasValue: List<ArticlesBasesStatsTable> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
