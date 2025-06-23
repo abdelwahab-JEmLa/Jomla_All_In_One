@@ -108,13 +108,11 @@ val centralDataBasesModule = module {
 }
 
 val composRepositorysModule = module {
-    single { ACentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get()) }
+    single { ACentralCompoRepositoryProtoJuin9(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(),get(),) }
     single { A_GroupeValuesA_ProduitsToB_Categories(get(),get(),) }
 
-
     single { BProduitDataBaseComposeRepositoryPJ17(get(),get(),) }
-    single { BProduitDataBaseSubClassFunctionality(get(),) }
-
+    single { BProduitDataBaseSubClassFunctionality(get(),get(),) }
 
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }

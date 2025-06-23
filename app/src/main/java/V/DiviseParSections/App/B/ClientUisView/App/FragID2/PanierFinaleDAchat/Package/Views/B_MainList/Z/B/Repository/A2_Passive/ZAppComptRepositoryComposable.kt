@@ -75,6 +75,16 @@ class ZAppComptSubClassFunctionality {
             )
         )
     }
+
+    fun fermeProduitPourCeCompt(
+    ) {
+        repository.addOrUpdateData(
+            repository.currentAppCompt!!.copy(
+                produitIdActuelleOuvertPourVentAuWindow = "",
+                produitNomActuelleOuvertPourVentAuWindow =  ""
+            )
+        )
+    }
 }
 
 @Entity

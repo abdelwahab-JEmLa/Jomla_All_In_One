@@ -32,6 +32,7 @@ class BProduitDataBaseSubClassFunctionality(
                 ?.produitIdActuelleOuvertPourVentAuWindow
         }
     }
+
 }
 
 @Stable
