@@ -32,7 +32,6 @@ class ZAppComptRepositoryComposable(
         datasValue.find { it.bsonObjectId == "b1" }
     }
 
-
     init {
         composScope.launch {
             dao.getAllFlow().collect { _datas.value = it }

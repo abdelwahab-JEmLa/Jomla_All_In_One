@@ -118,18 +118,20 @@ val composRepositorysModule = module {
 
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
 
+    // Fixed: Using lazy initialization
     single {
-        val repo = ZAppComptRepositoryComposable(get())
-        val subClass = ZAppComptSubClassFunctionality()
+        lazy {
+            val repo = ZAppComptRepositoryComposable(get())
+            val subClass = ZAppComptSubClassFunctionality()
 
-        // Initialize the circular references
-        repo.initializeSubClass(subClass)
-        subClass.initialize(repo)
+            repo.initializeSubClass(subClass)
+            subClass.initialize(repo)
 
-        repo
+            repo
+        }.value
     }
-    factory { get<ZAppComptRepositoryComposable>().subClassFunctionality }
 
+    factory { get<ZAppComptRepositoryComposable>().subClassFunctionality }
 
     single { Z_AutreStatesCompoRepository(get()) }
 }
