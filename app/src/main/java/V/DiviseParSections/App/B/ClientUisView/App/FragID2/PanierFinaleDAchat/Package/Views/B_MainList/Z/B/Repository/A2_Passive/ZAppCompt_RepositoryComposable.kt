@@ -48,8 +48,8 @@ class Z_SubClassFunctionality_ZAppCompt(
 
 @Stable
 class ZAppCompt_RepositoryComposable(
-    private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
-    val subClassFunctionalityLazy: Lazy<Z_SubClassFunctionality_ZAppCompt>
+    val subClassFunctionalityLazy: Lazy<Z_SubClassFunctionality_ZAppCompt>,
+    private val ancienRepo: Z_AppComptRepositoryProtoJuin17
 ) {
     val subClassFunctionality by subClassFunctionalityLazy
     val dao = ancienRepo.dao

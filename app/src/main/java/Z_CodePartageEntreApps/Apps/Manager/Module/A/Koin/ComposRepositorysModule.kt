@@ -16,7 +16,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    // Layer 1: Basic repositories without dependencies on each other
     single { BProduitDataBaseComposeRepositoryPJ17(get()) }
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }
@@ -25,41 +24,11 @@ val composRepositorysModule = module {
     single { Z_AutreStatesCompoRepository(get()) }
     single { DCouleurAchatOperationRepositoryComposable(get()) }
 
-    // Layer 2: Repositories that depend on Layer 1
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
-
-    // Add DSubClassFunctionality_CouleurAchatOperation as a separate singleton
     single { DSubClassFunctionality_CouleurAchatOperation }
 
-    // Layer 3: Repositories with circular dependencies - use lazy injection
-    single {
-        Z_SubClassFunctionality_ZAppCompt(
-            centralRepoLazy = lazy { get<ACentralCompoRepositoryProtoJuin9>() }
-        )
-    }
+    single { Z_SubClassFunctionality_ZAppCompt(lazy { get() }) }
+    single { ZAppCompt_RepositoryComposable( lazy { get() },get(),) }
 
-    single {
-        ZAppCompt_RepositoryComposable(
-            ancienRepo = get(),
-            subClassFunctionalityLazy = lazy { get<Z_SubClassFunctionality_ZAppCompt>() }
-        )
-    }
-
-    // Layer 4: Central repository - last to be defined
-    single {
-        ACentralCompoRepositoryProtoJuin9(
-            context = androidContext(),
-            databaseInitializationManager = get(),
-            bProduitDataBase_SubClassFunctionality = get(),
-            a_GroupeValuesA_ProduitsToB_Categories = get(),
-            b3CategoriesCompoRepository = get(),
-            clientsState = get(),
-            transactionCommercialState = get(),
-            dCouleurAchatOperationRepositoryComposable = get(),
-            dSubClassFunctionality_CouleurAchatOperation = get(),
-            zAppComptRepositoryComposable = get(),
-            comptAppState = get(),
-            a_MasterRepositorysGrpProtoJuin3 = get()
-        )
-    }
+    single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
 }
