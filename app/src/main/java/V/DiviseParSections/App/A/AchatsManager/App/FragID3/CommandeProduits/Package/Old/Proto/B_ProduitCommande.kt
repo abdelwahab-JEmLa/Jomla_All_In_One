@@ -32,14 +32,14 @@ fun B_ProduitCommande(
     // Get the current period filter
     val activeIdDe_1_5_Vendeur = models.activeIdDeA5Vendeur
 
-    // Derive the period filter as a remembered value
+    // Derive the period filter as add remembered value
     val periodFilter = remember(activeIdDe_1_5_Vendeur) {
         models.repository_1_5_Vendeur
             .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
             ?.ceComptVendeurStartAffichePeriod
     }
 
-    // Create a map of BonAchat IDs to their periods
+    // Create add map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {
         models.c3TransactionCommercialRepository.modelDatasSnapList
             .associate { it.vid to it.parentVID_1_4_PeriodeVent }
@@ -78,7 +78,7 @@ fun B_ProduitCommande(
     val colorsForProduct = remember(filteredProductVids) {
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
             .filter {
-                // Check if color belongs to a relevant product instance
+                // Check if color belongs to add relevant product instance
                 it.parentProduitAchateOperationVID in filteredProductVids &&
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }

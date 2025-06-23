@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,53 +18,28 @@ import org.mongodb.kbson.BsonObjectId
 import java.io.File
 import java.util.Objects
 
-@Stable
-class DCouleurAchatOperation_SubClassFunctionality(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>
-) {
-    val centralRepo by centralRepoLazy
-    val mainRepo = centralRepo.dCouleurAchatOperationRepositoryComposable
-    val zAppComptRepositoryComposable = centralRepo.zAppComptRepositoryComposable
 
-    val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
-        mainRepo.datasValue.find {
-            it.bsonObjectId ==
-                    zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
-        }
-    }
-
-    val ouvertData_bProduitDataBase_SubClassFunctionality =
-        centralRepo.ouvertData_bProduitDataBase_SubClassFunctionality
-
-    val ouvertTransactionCommercial = centralRepo.ouvertTransactionCommercial
-
-    fun ouvreAddDataDepuitIndexCouleur(index: Int): Unit {
-
-        val data = D_AchatOperation(
-            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId ,
+object DSubClassFunctionality_CouleurAchatOperation {
+    fun getDataDepuitIndex(
+        ouvertTransactionCommercial: C3_TransactionCommercial?,
+        ouvertData_bProduitDataBase_SubClassFunctionality: ArticlesBasesStatsTable?,
+        nomImageFichieOuApellationDuCouleur: String
+    ): D_AchatOperation {
+        return D_AchatOperation(
+            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId,
 
             parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality?.bsonObjectId!!,
-            parentProduitNom=ouvertData_bProduitDataBase_SubClassFunctionality.nom,
+            parentProduitNom = ouvertData_bProduitDataBase_SubClassFunctionality.nom,
 
-            nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
-                index
-            ),
-        )
-
-        mainRepo.addOrUpdateData(data)
-
-        confirmeOldOuvertData()
-
-        zAppComptRepositoryComposable
-            .subClassFunctionality
-            .ouvrireCouleurAchatOperationPourCeCompt(
-            data.bsonObjectId,
-            "${ouvertData_bProduitDataBase_SubClassFunctionality.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+            nomImageFichieOuApellationDuCouleur = nomImageFichieOuApellationDuCouleur,
         )
     }
 
+
+
     fun trouve_nomImageFichieOuApellationDuCouleurPar(
-        indexCouleur: Int
+        indexCouleur: Int,
+        ouvertData_bProduitDataBase_SubClassFunctionality: ArticlesBasesStatsTable?
     ): String {
         // Get the color name based on the index
         val couleurName = when (indexCouleur) {
@@ -102,24 +78,17 @@ class DCouleurAchatOperation_SubClassFunctionality(
         }
     }
 
-    fun confirmeOldOuvertData(): Unit {
-        ouvertData_dCouleurAchatOperation_SubClassFunctionality?.let {
-            mainRepo.addOrUpdateData(
-                it.copy(
+    fun confirmeOldOuvertData(ouvertData_dCouleurAchatOperation_SubClassFunctionality: D_AchatOperation?): D_AchatOperation? {
+              return  ouvertData_dCouleurAchatOperation_SubClassFunctionality?.copy(
                     etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
                 )
-            )
-        }
     }
 }
 
 @Stable
 class DCouleurAchatOperationRepositoryComposable(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
-    private val subClassFunctionalityLazy: Lazy<DCouleurAchatOperation_SubClassFunctionality>
 ) {
-    val subClassFunctionality by subClassFunctionalityLazy
-
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val itsTestModel = true

@@ -312,7 +312,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         val dataToUpsert = when (data) {
             is C3_TransactionCommercial -> data.copy() as DataBase
             is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
-            else -> data // Fallback to original object if not a known data class
+            else -> data // Fallback to original object if not add known data class
         }
 
         // Access the vid field with proper accessibility
@@ -375,7 +375,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             }
 
             else -> {
-                // Log that we're inserting a new record
+                // Log that we're inserting add new record
                 Log.d(TAG, "Inserting new record")
 
                 // Insert as new
@@ -433,12 +433,12 @@ class GroupeRepositorysProtoAvJuin3Impl(
         onSuccess: (Long) -> Unit,
     ): Unit {
         try {
-            // Create a copy of the data to work with
+            // Create add copy of the data to work with
             val dataToUpsert = data.copy()
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    // Check if the data already exists (if it has a valid vid)
+                    // Check if the data already exists (if it has add valid vid)
                     if (dataToUpsert.vid > 0) {
                         // Update existing data
                         appDatabase._1_5_VendeurDao().insert(dataToUpsert)
@@ -575,7 +575,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 // Notify any observers that may need to upsertLenceCommandeRepoGroupedProtoAvantJuin3 UI based on this change
                 // (This will cause connected components to recompose)
                 progressRepo.value =
-                    progressRepo.value  // Trigger a small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
+                    progressRepo.value  // Trigger add small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
             } catch (e: Exception) {
                 Log.e(
                     TAG,
@@ -617,7 +617,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 // Notify any observers that may need to upsertLenceCommandeRepoGroupedProtoAvantJuin3 UI based on this change
                 // (This will cause connected components to recompose)
                 progressRepo.value =
-                    progressRepo.value  // Trigger a small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
+                    progressRepo.value  // Trigger add small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
             } catch (e: Exception) {
                 Log.e(
                     TAG,
@@ -697,7 +697,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         try {
             progressRepo.value = 0.6f
             withContext(Dispatchers.IO) {
-                // Create a repository head with all repositories
+                // Create add repository head with all repositories
                 repositorys_Model = GroupeRepositorysProtoAvJuin3Model(
                     _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
                     repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
@@ -726,7 +726,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         var hasCompletedOnce = false
 
         try {
-            // Use combine with a different syntax
+            // Use combine with add different syntax
             val combinedFlow = combine(
                 repo_1_1_CouleurAcheteOperation.progressRepo,
                 repo_1_2_ProduitAcheteOperation.progressRepo,

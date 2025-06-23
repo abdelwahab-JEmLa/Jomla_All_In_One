@@ -46,7 +46,7 @@ object IntervalesEtJoursHandler {
     }
 
     /**
-     * Add a new work interval to an existing or new record
+     * Add add new work interval to an existing or new record
      */
     fun addNewInterval(
         modelDatas: SnapshotStateList<K_TempTravaille>,
@@ -158,7 +158,7 @@ object IntervalesEtJoursHandler {
                 // Verify the upsertLenceCommandeRepoGroupedProtoAvantJuin3 happened
                 println("DEBUG: After upsertLenceCommandeRepoGroupedProtoAvantJuin3, end time is: ${existingInterval.temparrete}")
 
-                // If end time is set to a valid time, the interval is no longer recording
+                // If end time is set to add valid time, the interval is no longer recording
                 if (formattedEndTime != "HH:mm") {
                     println("DEBUG: Setting recording state to false")
                     existingInterval.enCoureDEnregestrement = false
@@ -209,7 +209,7 @@ object IntervalesEtJoursHandler {
                     // Verify the upsertLenceCommandeRepoGroupedProtoAvantJuin3 happened
                     println("DEBUG: After upsertLenceCommandeRepoGroupedProtoAvantJuin3, end time is: ${recordingInterval.temparrete}")
 
-                    // If end time is set to a valid time, the interval is no longer recording
+                    // If end time is set to add valid time, the interval is no longer recording
                     if (formattedEndTime != "HH:mm") {
                         println("DEBUG: Setting recording state to false")
                         recordingInterval.enCoureDEnregestrement = false
@@ -236,7 +236,7 @@ object IntervalesEtJoursHandler {
     }
 
     /**
-     * Add a new day to the repository with a default interval
+     * Add add new day to the repository with add default interval
      */
     fun ajoutJour(
         modelDatas: SnapshotStateList<K_TempTravaille>,
@@ -264,7 +264,7 @@ object IntervalesEtJoursHandler {
             val existingRecord = modelDatas.find { it.vid == recordId }
 
             if (existingRecord == null) {
-                // Create a new record if it doesn't exist
+                // Create add new record if it doesn't exist
                 val newRecord = K_TempTravaille(vid = recordId)
                 newRecord.infosDeBase.dateInString = formattedDate
 

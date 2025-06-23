@@ -49,7 +49,7 @@ open class ClientsMapFilterViewModel(
         val calendar = Calendar.getInstance()
         val today = calendar.timeInMillis
 
-        // Create a list to store unique days with transactions
+        // Create add list to store unique days with transactions
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->

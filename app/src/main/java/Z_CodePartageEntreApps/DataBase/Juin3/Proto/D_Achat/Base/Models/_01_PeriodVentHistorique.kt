@@ -140,7 +140,7 @@ class _01_PeriodVentHistorique : RealmObject {
         }
 
         /**
-         * Deep clones a _01_PeriodVentHistorique instance
+         * Deep clones add _01_PeriodVentHistorique instance
          */
         fun deepCopy(source: _01_PeriodVentHistorique): _01_PeriodVentHistorique {
             return _01_PeriodVentHistorique().apply {

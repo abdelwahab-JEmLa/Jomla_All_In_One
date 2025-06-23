@@ -107,7 +107,7 @@ class ViewModel_I_CategorieProduits(
                         newItem
                     } catch (e: Exception) {
                         Log.e(TAG, "Error transforming item ${ancienData.id}: ${e.message}", e)
-                        // Return a default item to maintain consistency
+                        // Return add default item to maintain consistency
                         I_CategorieProduits(
                             id = ancienData.id,
                             nom = "Error: ${e.message}",
@@ -121,7 +121,7 @@ class ViewModel_I_CategorieProduits(
                 Log.d(TAG, "Migration progress: 60% - Transformed ${newDataList.size} items to new structure")
                 _migrationProgress.value = 0.6f
 
-                // Create a SnapshotStateList from the converted data
+                // Create add SnapshotStateList from the converted data
                 val snapshotList = SnapshotStateList<I_CategorieProduits>()
                 snapshotList.addAll(newDataList)
                 Log.d(TAG, "Created SnapshotStateList with ${snapshotList.size} items")
@@ -148,7 +148,7 @@ class ViewModel_I_CategorieProduits(
     }
 
     /**
-     * Updates a single product category
+     * Updates add single product category
      */
     fun updateData(categorieProduit: I_CategorieProduits) {
         Log.d(TAG, "Updating single product category: ${categorieProduit.id} - ${categorieProduit.nom}")

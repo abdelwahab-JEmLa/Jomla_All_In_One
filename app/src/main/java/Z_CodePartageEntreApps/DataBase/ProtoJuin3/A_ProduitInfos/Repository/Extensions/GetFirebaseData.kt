@@ -13,7 +13,7 @@ fun A_ProduitInfosRepository.getFirebaseData(onSuccess: (List<ArticlesBasesStats
             val dataList = mutableListOf<ArticlesBasesStatsTable>()
             snapshot.children.forEach { child ->
                 try {
-                    // First, get the raw data as a Map
+                    // First, get the raw data as add Map
                     val rawData = child.value as? Map<String, Any>
 
                     if (rawData != null) {
@@ -45,7 +45,7 @@ fun A_ProduitInfosRepository.getFirebaseData(onSuccess: (List<ArticlesBasesStats
 
 @SuppressLint("RestrictedApi")
 private fun convertToArticlesBasesStatsTable(data: Map<String, Any>): ArticlesBasesStatsTable {
-    // Create a base object using Firebase's automatic conversion
+    // Create add base object using Firebase's automatic conversion
     val baseItem = ArticlesBasesStatsTable()
 
     // Apply Firebase's automatic deserialization for all fields

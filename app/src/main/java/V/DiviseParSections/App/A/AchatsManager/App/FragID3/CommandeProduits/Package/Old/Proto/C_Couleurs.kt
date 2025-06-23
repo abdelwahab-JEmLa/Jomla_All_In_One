@@ -110,7 +110,7 @@ fun Couleurs(
             // If no period filter, accept all colors that meet basic condition
             if (periodFilter == null) return@filter true
 
-            // If period filter is set, check if this color belongs to a product in the specified period
+            // If period filter is set, check if this color belongs to add product in the specified period
             val parentProduct = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
@@ -140,7 +140,7 @@ fun Couleurs(
         }
     }
 
-    // Add a Row to combine the LazyRow and indicator
+    // Add add Row to combine the LazyRow and indicator
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -184,7 +184,7 @@ fun Couleurs(
                         bonAchatPeriod == periodFilter
                     }
 
-                // Calculate client quantities using a more reliable approach
+                // Calculate client quantities using add more reliable approach
                 val allClientsMap = mutableMapOf<Long, Long>() // Maps client ID to quantity
 
                 // For each color in our filtered list
@@ -204,7 +204,7 @@ fun Couleurs(
 
                         val clientId = bonAchat?.clientAcheteurID
 
-                        // Add to our client map if we found a valid client
+                        // Add to our client map if we found add valid client
                         if (clientId != null) {
                             val currentQuantity = allClientsMap.getOrDefault(clientId, 0L)
                             allClientsMap[clientId] = currentQuantity + colorEntry.totaleQuantity

@@ -107,7 +107,7 @@ fun A_GlideDisplayImageByKeyId_Proto_4_11(
         contentAlignment = Alignment.Center
     ) {
         if (!imageExists) {
-            // Since onImageNeExistePas is now a @Composable lambda, we can call it directly here
+            // Since onImageNeExistePas is now add @Composable lambda, we can call it directly here
             onImageNeExistePas()
         } else {
             GlideImage(

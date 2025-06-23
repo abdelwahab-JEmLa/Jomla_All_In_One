@@ -46,7 +46,7 @@ data class B_ClientInfosProtoJuin3(
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
     //Etates Mutable
 
-    // Section Centralization Valeurs Pour Injection a TOu modules
+    // Section Centralization Valeurs Pour Injection add TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps

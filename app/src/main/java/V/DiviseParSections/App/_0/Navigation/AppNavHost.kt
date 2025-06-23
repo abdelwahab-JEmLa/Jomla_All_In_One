@@ -3,8 +3,8 @@ package V.DiviseParSections.App._0.Navigation
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.A_APP1FragID3_MainScreen
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2PanierFinaleDAchat
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
@@ -20,7 +20,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,37 +42,31 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun AppNavHost(
+    modifier: Modifier = Modifier,
+    headViewModel: HeadViewModel = koinViewModel(),
+    viewModelInitApp: ViewModelInitApp= koinViewModel(),
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
-    modifier: Modifier = Modifier,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
-    viewModelInitApp: ViewModelInitApp,
-    headViewModel: HeadViewModel,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
 ) {
     val uiState by headViewModel.uiState.collectAsState()
 
-    // Get current navigation state
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    var savedGridScrollPosition by rememberSaveable { mutableStateOf(0) }
-
-    // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-
     val currentClient = viewModelInitApp.clientDataBaseSnapList.find { it.id == currentClientId }
-
-    // State management for dialogs and navigation
     var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
     var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
@@ -89,17 +82,7 @@ fun AppNavHost(
                 .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
                 ?.valueLong ?: 0)
     }
-
-    // Map reload trigger for client location selection
     val mapReloadTrigger = remember { mutableIntStateOf(0) }
-
-    // Screen-specific navigation state
-    val isMainScreenActive = remember(currentDestination) {
-        derivedStateOf {
-            currentDestination?.route == Screen.EditDatabaseWithCreateNewArticles.route
-        }
-    }
-
     val bottomNavHeight = 80.dp
     val bottomPadding = 8.dp
 
@@ -114,20 +97,11 @@ fun AppNavHost(
                 startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
                 modifier = Modifier.fillMaxSize()
             ) {
-                // Main product catalog screen
                 composable(
                     route = Screen.EditDatabaseWithCreateNewArticles.route,
                 ) { backStackEntry ->
-                    // Create a unique key for proper state handling
                     val screenKey = rememberScreenKey(backStackEntry)
-
-                    // Reset state when screen is disposed
-                    CleanupEffect {
-                        // Nothing specific to clean up here as this is the main screen
-                    }
-
                     Box(modifier = Modifier.fillMaxSize()) {
-                        // Use key to ensure proper state management
                         key(screenKey) {
                             PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
                                 viewModelHeadViewModel = headViewModel,
@@ -269,7 +243,7 @@ fun AppNavHost(
                                 currentState.copy(soldArticlesModel = emptyList())
                             }
 
-                            // Clear the database in a coroutine
+                            // Clear the database in add coroutine
                             headViewModel.database.soldArticlesModelDao().deleteAll()
 
                             // Clear Firebase references
@@ -341,7 +315,7 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_ClientsLocationGps.route,
     ) { backStackEntry ->
-        // Create a more reliable key that combines time and reload trigger
+        // Create add more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
             mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
@@ -364,7 +338,7 @@ fun NavGraphBuilder.app2(
 }
 
 /**
- * Helper function to create a consistent screen key for proper recomposition
+ * Helper function to create add consistent screen key for proper recomposition
  */
 @Composable
 private fun rememberScreenKey(backStackEntry: NavBackStackEntry): Any {

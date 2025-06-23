@@ -159,7 +159,7 @@ fun CartItem(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Using a list of color quantities with their indices
+                // Using add list of color quantities with their indices
                 val colorQuantities = listOf(
                     soldArticle.color1SoldQuantity,
                     soldArticle.color2SoldQuantity,

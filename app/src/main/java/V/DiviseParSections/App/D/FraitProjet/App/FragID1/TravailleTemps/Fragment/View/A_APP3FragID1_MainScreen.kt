@@ -49,7 +49,7 @@ fun A_APP3FragID1_MainScreen(
     // Timer effect for recording session
     LaunchedEffect(isRecording) {
         if (isRecording) {
-            // Reset session timer when starting a new recording
+            // Reset session timer when starting add new recording
             viewModel.resetSessionTimer()
         } else {
             // When stopping, recalculate total time to include the newly completed interval

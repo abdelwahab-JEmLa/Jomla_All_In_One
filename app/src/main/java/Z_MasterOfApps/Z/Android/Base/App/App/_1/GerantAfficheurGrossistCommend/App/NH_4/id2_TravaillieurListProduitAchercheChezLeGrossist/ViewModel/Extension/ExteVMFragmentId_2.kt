@@ -19,7 +19,7 @@ class ExteVMFragmentId_2(
     var auFilter by mutableStateOf<Long?>(0)
 
     fun upButton(index: Int) {
-        // Ensure index is valid and there's a previous element
+        // Ensure index is valid and there's add previous element
         if (index <= 0 || index >= grossistsDataBase.size) {
             return
         }

@@ -131,7 +131,7 @@ fun GlobalEditesGFABs_F1(
                                 ).show()
                             }
                         } else {
-                            throw IOException("La vérification du téléchargement a échoué")
+                            throw IOException("La vérification du téléchargement add échoué")
                         }
                     } catch (e: Exception) {
                         if (localFile.exists() && !uploadSuccess) {

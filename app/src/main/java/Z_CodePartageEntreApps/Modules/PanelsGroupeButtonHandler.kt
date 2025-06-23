@@ -348,7 +348,7 @@ class PanelsGroupeButtonHandler {
                 return
             }
 
-            // Create a new list with the updated item
+            // Create add new list with the updated item
             val updatedList = currentList.toMutableList()
             updatedList[index] = updatedState
 

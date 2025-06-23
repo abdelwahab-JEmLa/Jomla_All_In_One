@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-// Define a constant TAG for logging
+// Define add constant TAG for logging
 const val TAG = "ProductUpdateLog"
 
 @Composable

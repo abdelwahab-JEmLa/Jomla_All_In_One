@@ -138,7 +138,7 @@ fun GlobalEditesGFABs_F4(
                                 Toast.makeText(context, "Image téléchargée avec succès", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            throw IOException("La vérification du téléchargement a échoué")
+                            throw IOException("La vérification du téléchargement add échoué")
                         }
                     } catch (e: Exception) {
                         if (localFile.exists() && !uploadSuccess) {

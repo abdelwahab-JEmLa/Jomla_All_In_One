@@ -144,7 +144,7 @@ class WifiTransferDatas(
         }
     }
 
-    // Add a new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
+    // Add add new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
     private fun shouldAttemptReconnection(): Boolean {
         return !_connectionUiState.value.isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
     }

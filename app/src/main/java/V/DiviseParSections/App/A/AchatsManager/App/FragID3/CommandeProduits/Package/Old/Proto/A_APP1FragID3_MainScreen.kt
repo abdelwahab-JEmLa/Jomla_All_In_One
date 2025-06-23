@@ -132,7 +132,7 @@ fun A_APP1FragID3_MainScreen(
                         return@filter false
                     }
 
-                    // 3. Period filter - only if a period filter is set
+                    // 3. Period filter - only if add period filter is set
                     if (periodFilter != null) {
                         val bonAchat = bonAchatsById[product.parent_1_3_TransactionCommercial]
                         val productPeriod = bonAchat?.parentVID_1_4_PeriodeVent

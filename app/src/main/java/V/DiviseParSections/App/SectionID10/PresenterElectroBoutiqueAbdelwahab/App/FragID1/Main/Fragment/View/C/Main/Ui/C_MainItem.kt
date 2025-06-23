@@ -127,8 +127,6 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
             ){prd,indexCouleur->
                 viewModel.aCentralDatasHandlerProtoJuin9
-                    .dCouleurAchatOperationRepositoryComposable
-                    .subClassFunctionality
                     .ouvreAddDataDepuitIndexCouleur(indexCouleur)
             }
         }

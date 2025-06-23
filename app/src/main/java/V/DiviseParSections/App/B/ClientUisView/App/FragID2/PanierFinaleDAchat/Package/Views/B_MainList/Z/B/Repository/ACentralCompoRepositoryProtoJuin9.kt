@@ -8,6 +8,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DSubClassFunctionality_CouleurAchatOperation.trouve_nomImageFichieOuApellationDuCouleurPar
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -31,7 +32,9 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
+
     val dCouleurAchatOperationRepositoryComposable: DCouleurAchatOperationRepositoryComposable,
+    val dSubClassFunctionality_CouleurAchatOperation: DSubClassFunctionality_CouleurAchatOperation,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
@@ -42,10 +45,49 @@ class ACentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+
+    val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
+        dCouleurAchatOperationRepositoryComposable.datasValue.find {
+            it.bsonObjectId ==
+                    zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
+        }
+    }
+
+    fun ouvreAddDataDepuitIndexCouleur(
+        index: Int
+    ): Unit {
+        val data = dSubClassFunctionality_CouleurAchatOperation.getDataDepuitIndex(
+            ouvertTransactionCommercial,
+            ouvertData_bProduitDataBase_SubClassFunctionality,
+            nomImageFichieOuApellationDuCouleur= trouve_nomImageFichieOuApellationDuCouleurPar(
+                index,
+                ouvertData_bProduitDataBase_SubClassFunctionality
+            )
+        )
+
+        dCouleurAchatOperationRepositoryComposable.addOrUpdateData(data)
+
+        dSubClassFunctionality_CouleurAchatOperation.confirmeOldOuvertData(
+            ouvertData_dCouleurAchatOperation_SubClassFunctionality
+        )?.let {
+            dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+                it
+            )
+        }
+
+        zAppComptRepositoryComposable
+            .subClassFunctionality
+            .ouvrireCouleurAchatOperationPourCeCompt(
+                data.bsonObjectId,
+                "${ouvertData_bProduitDataBase_SubClassFunctionality?.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+            )
+    }
+
+
     val ouvertData_bProduitDataBase_SubClassFunctionality by derivedStateOf {
         bProduitDataBase_SubClassFunctionality.datasValue.firstOrNull {
             it.bsonObjectId ==
-                   dCouleurAchatOperationRepositoryComposable.subClassFunctionality.ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
+                    ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
         }
     }
 

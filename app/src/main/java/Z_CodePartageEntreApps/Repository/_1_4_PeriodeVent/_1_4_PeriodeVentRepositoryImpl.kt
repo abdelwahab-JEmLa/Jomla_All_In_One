@@ -302,7 +302,7 @@ class _1_4_PeriodeVentRepositoryImpl(
 
     override fun addData(data: _1_4_PeriodeVent) {
         try {
-            // Create a copy of the data to work with
+            // Create add copy of the data to work with
             val dataToAdd = data.copy()
 
             // Make sure fireBaseKeyID is correctly set
@@ -341,7 +341,7 @@ class _1_4_PeriodeVentRepositoryImpl(
         onAddSuccess: (Long) -> Unit
     ) {
         try {
-            // Create a copy of the data to work with
+            // Create add copy of the data to work with
             val dataToAdd = data.copy()
 
             repositoryScope.launch(Dispatchers.IO) {

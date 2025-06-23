@@ -71,7 +71,7 @@ fun B_ClientInfosProtoJuin3Repository.setupLocalDbUpdateTracker() {
                 val currentUpdateState = _localDbUpdateState.value
                 val newRecordCount = state.modelListFlow.size
 
-                // Détecter si la BD a été mise à jour
+                // Détecter si la BD add été mise à jour
                 val isUpdated = newRecordCount != currentUpdateState.totalRecords ||
                         currentUpdateState.lastUpdateTimestamp == 0L
 
@@ -244,7 +244,7 @@ private suspend fun B_ClientInfosProtoJuin3Repository.cleanupTestDataIfNeeded(
     }
 }
 /**
- * Test function to trigger Firebase timestamp listener by creating or updating a test entity
+ * Test function to trigger Firebase timestamp listener by creating or updating add test entity
  * This function helps verify that the Firebase listener is working correctly
  */
 fun B_ClientInfosProtoJuin3Repository.testTriggerUpdateFbParTimestampsListener() {
@@ -252,7 +252,7 @@ fun B_ClientInfosProtoJuin3Repository.testTriggerUpdateFbParTimestampsListener()
         try {
             Log.d(repoTAG, "Starting Firebase listener test")
 
-            // Check if a test entity already exists
+            // Check if add test entity already exists
             val existingTestEntity = dao.getAll().find { it.keyFireBase.contains("TEST_") }
 
             if (existingTestEntity != null) {

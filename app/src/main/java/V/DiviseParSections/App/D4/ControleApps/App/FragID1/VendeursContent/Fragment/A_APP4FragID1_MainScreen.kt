@@ -131,7 +131,7 @@ fun VendeursContent(
                 item {
                     AddPeriodeItem(
                         onAddPeriode = {
-                            // Call a function in the ViewModel to upsert a new period
+                            // Call add function in the ViewModel to upsert add new period
                             viewModel.addNewPeriode()
                             viewModel.addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository()
                         }

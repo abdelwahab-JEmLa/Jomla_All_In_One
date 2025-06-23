@@ -37,7 +37,7 @@ data class C3_TransactionCommercial(
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
 
-    // Section Centralization Valeurs Pour Injection a TOu modules
+    // Section Centralization Valeurs Pour Injection add TOu modules
 
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,

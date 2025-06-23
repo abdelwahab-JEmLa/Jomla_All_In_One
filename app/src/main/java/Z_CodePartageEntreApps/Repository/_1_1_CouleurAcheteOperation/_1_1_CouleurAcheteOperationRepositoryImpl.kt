@@ -49,12 +49,12 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         onSuccess: (Long) -> Unit
     ): Unit {
         try {
-            // Create a copy of the data to work with
+            // Create add copy of the data to work with
             val dataToUpsert = data.copy()
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    // Check if the data already exists (if it has a valid vid)
+                    // Check if the data already exists (if it has add valid vid)
                     if (dataToUpsert.vid > 0) {
                         // Update existing data
                         appDatabase._1_1_CouleurAcheteOperationDao().insert(dataToUpsert)

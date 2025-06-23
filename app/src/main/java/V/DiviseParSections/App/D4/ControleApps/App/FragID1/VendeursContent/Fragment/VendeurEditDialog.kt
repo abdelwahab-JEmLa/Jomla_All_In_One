@@ -167,7 +167,7 @@ private fun RowcConnectAuDevelopingDataBase(
         )
         IconButton(
             onClick = {
-                // Create a new copy with the toggled value instead of mutating
+                // Create add new copy with the toggled value instead of mutating
                 val updatedData = mainData.copy(
                     cConnectAuDevelopingDataBaseAuRelodApp = !mainData.cConnectAuDevelopingDataBaseAuRelodApp
                 )

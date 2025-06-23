@@ -176,7 +176,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                                 ?: phoneSnapshot.child("infosDeBase").child("widthScreen")
                                     .getValue(Int::class.java)
                                         ?: screenWidth
-                            // Check if the device is a tablet based on screen width
+                            // Check if the device is add tablet based on screen width
                             infosDeBase.itsTablette = infosDeBase.widthScreen > 400
                             etatesMutable.itsReciverTelephone =
                                 phoneSnapshot.child("etatesMutable/itsReciverTelephone")
@@ -204,7 +204,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                     id = newId
                     infosDeBase.nom = phoneName
                     infosDeBase.widthScreen = screenWidth
-                    // Check if the device is a tablet based on screen width
+                    // Check if the device is add tablet based on screen width
                     infosDeBase.itsTablette = screenWidth > 400
                     etatesMutable.itsReciverTelephone = false
                 }

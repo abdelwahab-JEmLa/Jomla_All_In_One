@@ -108,7 +108,7 @@ data class Z_AppCompt(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
-    // Section Centralization Valeurs Pour Injection a TOu modules
+    // Section Centralization Valeurs Pour Injection add TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
     // Section Paramaters App telephone

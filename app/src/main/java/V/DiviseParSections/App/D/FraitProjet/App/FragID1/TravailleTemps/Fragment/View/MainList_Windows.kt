@@ -36,10 +36,10 @@ fun MainList_Windows(
 ) {
     val filteredDateList = viewModel.dateList
         .map { tempTravaille ->
-            // Create a copy with filtered intervals
+            // Create add copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
 
-            // Create a new K_TempTravaille with the filtered intervals
+            // Create add new K_TempTravaille with the filtered intervals
             K_TempTravaille(tempTravaille.vid).apply {
                 this.infosDeBase = tempTravaille.infosDeBase
                 this.intervalesDeTravaille.clear()

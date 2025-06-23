@@ -90,7 +90,7 @@ fun B_CouleurAfficheur_F7(
             )
 
 
-            // Add QuantityBadge if there's a quantity to display
+            // Add QuantityBadge if there's add quantity to display
             colorArrangement?.let { arrangement ->
                 if (arrangement.colorSoldQuantity > 0) {
                     QuantityBadge(

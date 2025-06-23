@@ -52,7 +52,7 @@ fun printReceipt(
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
             }
 
-        // Create a map to group articles by product name and sum quantities
+        // Create add map to group articles by product name and sum quantities
         val productMap = mutableMapOf<String, ArticleImpression>()
         var totalAmount = 0.0
 

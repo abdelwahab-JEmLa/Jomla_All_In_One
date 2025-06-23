@@ -29,7 +29,7 @@ data class _1_5_Vendeur(
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
 
-    // Section Centralization Valeurs Pour Injection a TOu modules
+    // Section Centralization Valeurs Pour Injection add TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps

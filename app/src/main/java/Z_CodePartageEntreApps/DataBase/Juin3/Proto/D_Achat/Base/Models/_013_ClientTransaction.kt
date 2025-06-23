@@ -63,7 +63,7 @@ class _013_ClientTransaction : RealmObject {
             val acheteurKey = snapshot.key ?: return null
 
             try {
-                // Extract ObjectId if available, or create a new one
+                // Extract ObjectId if available, or create add new one
                 val objectIdStr = snapshot.child(SchemaFields.BSON_OBJECT_ID).getValue(String::class.java)
                 val objectId = if (!objectIdStr.isNullOrEmpty()) {
                     try {

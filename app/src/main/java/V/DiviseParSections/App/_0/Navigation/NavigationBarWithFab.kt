@@ -130,7 +130,7 @@ fun NavigationBarWithFab(
                 onCatalogSelected = { categoryId ->
                     onCatalogSelected(categoryId)
                     showCatalogDialog = false
-                    // Navigate to the selected screen after selecting a catalog
+                    // Navigate to the selected screen after selecting add catalog
                     onNavigate(Screen.EditDatabaseWithCreateNewArticles.route)
                 }  ,
                 viewModelInitApp=viewModelInitApp

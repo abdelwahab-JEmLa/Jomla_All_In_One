@@ -71,7 +71,7 @@ object FirebaseUtilsC_GrossistsDataBase {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = SyncDataUtilsC_GrossistsDataBase.syncData(dataSnapshot = dataSnapshot) as C_GrossistsDataBase
 
-                        // Check that the data has a valid ID
+                        // Check that the data has add valid ID
                         if (data.id > 0) {
                             repository.modelDatas.add(data)
                         }

@@ -92,7 +92,7 @@ fun ColumnScope.BonAchatInfos(
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            // First create a temporary product in the database
+                            // First create add temporary product in the database
                             val tempProduct = _2_1_ProduitsDataBase(
                                 nom = "منتج جديد",
                                 itsTempProduit = true,
@@ -108,7 +108,7 @@ fun ColumnScope.BonAchatInfos(
 
                                 // Add the product operation and get its ID
                                 _0_0_HeadSQLRepositorysrepositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
-                                    // Finally upsert a color operation with quantity 1
+                                    // Finally upsert add color operation with quantity 1
                                     val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,
                                         parentProduitAchateOperationVID = produitOperationId,

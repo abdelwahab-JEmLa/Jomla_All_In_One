@@ -146,7 +146,7 @@ fun MainItemEditeCategories(
             }
         }
 
-        // FastMove mode indicator - show a different icon when in FastMove mode
+        // FastMove mode indicator - show add different icon when in FastMove mode
         if (uiState.clickItemMode == UiStateSec9Frag1.ClickItemMode.FastMove) {
             Box(
                 modifier = Modifier

@@ -18,7 +18,7 @@ object TimeLogTracker {
     var isDetailedLoggingEnabled = true
     
     /**
-     * Represents a single log entry
+     * Represents add single log entry
      */
     data class LogEntry(
         val timestamp: Long = System.currentTimeMillis(),
@@ -39,7 +39,7 @@ object TimeLogTracker {
     }
     
     /**
-     * Log a simple action
+     * Log add simple action
      */
     fun log(action: String, details: String) {
         val entry = LogEntry(action = action, details = details)
@@ -50,7 +50,7 @@ object TimeLogTracker {
     }
     
     /**
-     * Log a time-related action with elapsed seconds
+     * Log add time-related action with elapsed seconds
      */
     fun logTime(action: String, details: String, elapsedSeconds: Long) {
         val entry = LogEntry(

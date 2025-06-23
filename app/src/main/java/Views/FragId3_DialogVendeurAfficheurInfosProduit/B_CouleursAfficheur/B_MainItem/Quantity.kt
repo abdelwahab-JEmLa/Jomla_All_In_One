@@ -48,7 +48,7 @@ fun QuantityButton(
                 }
                 couleuracheteoperationRepository.updateUnSeulData(existingOperation)
             } else if (compose_1_1_CouleurAcheteOperationVid > 0) {
-                // Create a new operation if we have a valid VID but no existing record
+                // Create add new operation if we have add valid VID but no existing record
                 val newOperation = _1_1_CouleurAcheteOperation(
                     vid = compose_1_1_CouleurAcheteOperationVid,
                     totaleQuantity = quantity,

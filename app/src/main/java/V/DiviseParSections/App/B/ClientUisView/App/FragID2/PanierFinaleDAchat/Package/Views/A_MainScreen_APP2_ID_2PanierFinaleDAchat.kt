@@ -127,7 +127,7 @@ private fun calcule_totalPrice(
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     colorOperations: List<_1_1_CouleurAcheteOperation>? = null
 ) = produitsBonAchatIDs.sumOf { produitOpe ->
-    // Check if there's a provisional price, use it instead of the default if available
+    // Check if there's add provisional price, use it instead of the default if available
     val productPrice = if (produitOpe.provisoireMonPrix > 0) {
         produitOpe.provisoireMonPrix
     } else {

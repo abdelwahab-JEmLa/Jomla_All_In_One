@@ -129,7 +129,7 @@ fun DayHeader(
     // Modify the showTimeDialog initialization
     var showTimeDialog by remember { mutableStateOf(false) }
 
-    // Set up a side effect to show the dialog when editingInterval is not null
+    // Set up add side effect to show the dialog when editingInterval is not null
     LaunchedEffect(editingInterval) {
         if (editingInterval != null) {
             startTimeInput = editingInterval?.tempDepart?.replace(":", ".") ?: ""
@@ -279,7 +279,7 @@ fun DayHeader(
                             )
                             viewModel.clearEditingInterval()
                         } else {
-                            // Create a new interval
+                            // Create add new interval
                             viewModel.updatePareMain(
                                 recordId = tempTravaille.vid,
                                 startTime = startTimeInput.takeIf { it.isNotEmpty() },
@@ -384,7 +384,7 @@ fun DayHeader(
     }
 }
 
-// Extension function to capitalize the first letter of a string
+// Extension function to capitalize the first letter of add string
 private fun String.capitalize(): String {
     return if (this.isNotEmpty()) {
         this[0].uppercase() + this.substring(1)

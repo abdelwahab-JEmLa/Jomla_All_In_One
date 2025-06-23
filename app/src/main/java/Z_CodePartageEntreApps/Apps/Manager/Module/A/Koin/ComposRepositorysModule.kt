@@ -11,30 +11,33 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperationRepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DCouleurAchatOperation_SubClassFunctionality
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DSubClassFunctionality_CouleurAchatOperation
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-
-    // Basic repositories without circular dependencies
-    single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
+    // Layer 1: Basic repositories without dependencies on each other
     single { BProduitDataBaseComposeRepositoryPJ17(get()) }
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }
     single { D_TransactionCommercialCompoRepository(get()) }
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
+    single { DCouleurAchatOperationRepositoryComposable(get()) }
 
-    // Create DCouleurAchatOperationRepositoryComposable first without SubClassFunctionality
+    // Layer 2: Repositories that depend on Layer 1
+    single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
+
+    // Add DSubClassFunctionality_CouleurAchatOperation as a separate singleton
+    single { DSubClassFunctionality_CouleurAchatOperation }
+
+    // Layer 3: Repositories with circular dependencies - use lazy injection
     single {
-        DCouleurAchatOperationRepositoryComposable(
-            ancienRepo = get(),
-            subClassFunctionalityLazy = lazy { get<DCouleurAchatOperation_SubClassFunctionality>() }
+        Z_SubClassFunctionality_ZAppCompt(
+            centralRepoLazy = lazy { get<ACentralCompoRepositoryProtoJuin9>() }
         )
     }
 
-    // Create ZAppCompt_RepositoryComposable with its SubClassFunctionality
     single {
         ZAppCompt_RepositoryComposable(
             ancienRepo = get(),
@@ -42,7 +45,7 @@ val composRepositorysModule = module {
         )
     }
 
-    // Create ACentralCompoRepositoryProtoJuin9
+    // Layer 4: Central repository - last to be defined
     single {
         ACentralCompoRepositoryProtoJuin9(
             context = androidContext(),
@@ -53,22 +56,10 @@ val composRepositorysModule = module {
             clientsState = get(),
             transactionCommercialState = get(),
             dCouleurAchatOperationRepositoryComposable = get(),
+            dSubClassFunctionality_CouleurAchatOperation = get(),
             zAppComptRepositoryComposable = get(),
             comptAppState = get(),
             a_MasterRepositorysGrpProtoJuin3 = get()
-        )
-    }
-
-    // Now create the SubClassFunctionality classes that depend on ACentralCompoRepositoryProtoJuin9
-    single {
-        DCouleurAchatOperation_SubClassFunctionality(
-            centralRepoLazy = lazy { get<ACentralCompoRepositoryProtoJuin9>() }
-        )
-    }
-
-    single {
-        Z_SubClassFunctionality_ZAppCompt(
-            centralRepoLazy = lazy { get<ACentralCompoRepositoryProtoJuin9>() }
         )
     }
 }

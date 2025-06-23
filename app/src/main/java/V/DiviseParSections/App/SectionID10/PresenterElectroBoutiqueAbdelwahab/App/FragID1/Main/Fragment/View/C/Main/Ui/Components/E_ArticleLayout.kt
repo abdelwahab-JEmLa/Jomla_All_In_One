@@ -163,7 +163,7 @@ private fun SmallDisplayerMultiColor(
             viewModelInitApp = viewModelInitApp
         )
 
-        // Replace LazyColumn with Column since we have a small fixed number of items
+        // Replace LazyColumn with Column since we have add small fixed number of items
         val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
         availableColors.forEach { index ->
             ArticleImageWithOverlay(
