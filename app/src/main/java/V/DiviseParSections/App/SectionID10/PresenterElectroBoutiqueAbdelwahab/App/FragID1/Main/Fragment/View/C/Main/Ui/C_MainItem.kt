@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ArticleItem(
@@ -84,17 +85,17 @@ fun ArticleItem(
 
 @Composable
 fun ArticleImageWithOverlay(
+    viewModel: Sec10Frag1ViewModel = koinViewModel(),
+    viewModelHeadViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
     colorIndex: Int,
     reloadTrigger: Int,
-    uiState: UiState,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     imageSize: DpSize,
-    qualityImagePourcentage: Int = 100,
-    viewModelInitApp: ViewModelInitApp
+    qualityImagePourcentage: Int = 100
 ) {
     Surface(
         modifier = modifier,
@@ -104,27 +105,32 @@ fun ArticleImageWithOverlay(
     ) {
         Box(
             modifier = Modifier
-                .clickable { onClickToOpenWindow(article, colorIndex) }
+                .clickable {
+                    onClickToOpenWindow(article, colorIndex)
+
+                }
                 .fillMaxSize()
         ) {
             val imageExists = remember(article.id, colorIndex, reloadTrigger) {
-                checkImageExists(viewModel, article, colorIndex, reloadTrigger)
+                checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
             }
 
             ImageDisplayerProtoAvantJuin3(
-                viewModel = viewModel,
+                viewModel = viewModelHeadViewModel,
                 article = article,
                 indexColor = colorIndex,
                 reloadKey = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindow,
-                uiState = uiState,
                 showOverlay = !imageExists,
                 imageScale = contentScale,
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
-            )
-
+            ){prd,indexCouleur->
+                viewModel.aCentralDatasHandlerProtoJuin9
+                    .dCouleurAchatOperationRepositoryComposable
+                    .subClassFunctionality
+                    .ouvreAddDataDepuitIndexCouleur(indexCouleur)
+            }
         }
     }
 }

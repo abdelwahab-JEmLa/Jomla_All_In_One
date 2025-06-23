@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,7 +48,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -58,20 +58,19 @@ import java.io.File
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayerProtoAvantJuin3(
+    modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
-    modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     indexColor: Int,
     reloadKey: Any,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
     showOverlay: Boolean,
     imageScale: ContentScale = ContentScale.Fit,
     cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
 
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
@@ -142,6 +141,7 @@ fun ImageDisplayerProtoAvantJuin3(
                 contentDescription = "Article image ${article.id}",
                 contentScale = imageScale,
                 modifier = Modifier
+                    .clickable { onClickToOpenWindow(article, indexColor)  }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
                     .graphicsLayer {

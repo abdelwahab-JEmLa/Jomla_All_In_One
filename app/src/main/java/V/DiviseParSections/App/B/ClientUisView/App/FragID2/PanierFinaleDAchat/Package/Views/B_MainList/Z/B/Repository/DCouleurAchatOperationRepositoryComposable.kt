@@ -38,24 +38,27 @@ class DCouleurAchatOperation_SubClassFunctionality(
     val ouvertTransactionCommercial = centralRepo.ouvertTransactionCommercial
 
     fun ouvreAddDataDepuitIndexCouleur(index: Int): Unit {
-        confirmeOuvertData()
 
         val data = D_AchatOperation(
+            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId ,
+
             parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality?.bsonObjectId!!,
+            parentProduitNom=ouvertData_bProduitDataBase_SubClassFunctionality.nom,
+
             nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
                 index
             ),
-            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId
         )
 
-        mainRepo.addOrUpdateData(
-            data
-        )
+        mainRepo.addOrUpdateData(data)
+
+        confirmeOldOuvertData()
+
         zAppComptRepositoryComposable
             .subClassFunctionality
             .ouvrireCouleurAchatOperationPourCeCompt(
             data.bsonObjectId,
-            "${ouvertData_bProduitDataBase_SubClassFunctionality!!.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+            "${ouvertData_bProduitDataBase_SubClassFunctionality.nom}_${data.nomImageFichieOuApellationDuCouleur}"
         )
     }
 
@@ -99,7 +102,7 @@ class DCouleurAchatOperation_SubClassFunctionality(
         }
     }
 
-    fun confirmeOuvertData(): Unit {
+    fun confirmeOldOuvertData(): Unit {
         ouvertData_dCouleurAchatOperation_SubClassFunctionality?.let {
             mainRepo.addOrUpdateData(
                 it.copy(
@@ -275,7 +278,9 @@ data class D_AchatOperation(
     // Section Related Parents Infos
     var parentComptVendeurCreateurObjectId: String = "",
     var clientParentObjectId: String = "",
+
     var produitAcheterAncienID: Long = 0L,
+    var parentProduitNom: String = "",
 
     var type: Type = Type.CommandeDeLui,
 

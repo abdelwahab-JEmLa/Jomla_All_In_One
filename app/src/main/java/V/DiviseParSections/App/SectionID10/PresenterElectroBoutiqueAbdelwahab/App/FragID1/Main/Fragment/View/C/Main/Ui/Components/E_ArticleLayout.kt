@@ -74,9 +74,15 @@ sealed class E_ArticleLayout {
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallDual -> SmallDisplayerDualColor(
-                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                viewModelheadViewModelViewModel,
+                article,
+                reloadTrigger,
+                onClickToOpenWindos,
+                uiState,
+                modifier = modifier,
                 imageSize = this.imageSize,
-                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
+                lockHost = lockHost,
+                viewModelInitApp = viewModelInitApp
             )
             is SmallMulti -> SmallDisplayerMultiColor(
                 article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
@@ -90,8 +96,8 @@ sealed class E_ArticleLayout {
 // Add new layout components
 @Composable
 private fun SmallDisplayerDualColor(
-    article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
+    article: ArticlesBasesStatsTable,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -103,23 +109,23 @@ private fun SmallDisplayerDualColor(
         verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         ArticleImageWithOverlay(
+            viewModelHeadViewModel = viewModel,
             article = article,
-            viewModel = viewModel,
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+            imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         ArticleImageWithOverlay(
             article = article,
-            viewModel = viewModel,
+            viewModelHeadViewModel = viewModel,
             colorIndex = 1,
             reloadTrigger = reloadTrigger,
             modifier = Modifier.height(100.dp),
+            contentScale = ContentScale.Crop,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState,
-            contentScale = ContentScale.Crop, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+            imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         InfosArticleBottom(
@@ -148,13 +154,13 @@ private fun SmallDisplayerMultiColor(
         // Main image
         ArticleImageWithOverlay(
             article = article,
-            viewModel = viewModel,
+            viewModelHeadViewModel = viewModel,
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState,
-            imageSize = imageSize ,
-            qualityImagePourcentage= 48, viewModelInitApp = viewModelInitApp
+            imageSize = imageSize,
+            qualityImagePourcentage= 48,
+            viewModelInitApp = viewModelInitApp
         )
 
         // Replace LazyColumn with Column since we have a small fixed number of items
@@ -162,16 +168,16 @@ private fun SmallDisplayerMultiColor(
         availableColors.forEach { index ->
             ArticleImageWithOverlay(
                 article = article,
-                viewModel = viewModel,
+                viewModelHeadViewModel = viewModel,
                 colorIndex = index,
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp),
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState,
                 contentScale = ContentScale.Crop,
-                imageSize = imageSize, viewModelInitApp = viewModelInitApp
+                onClickToOpenWindow = onClickToOpenWindos,
+                imageSize = imageSize,
+                viewModelInitApp = viewModelInitApp
             )
         }
 
@@ -201,11 +207,11 @@ private fun DemiDisplayerMultiColor(
         // Main image display
         ArticleImageWithOverlay(
             article = article,
-            viewModel = viewModel,
+            viewModelHeadViewModel = viewModel,
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+            imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         // Secondary images row
@@ -223,7 +229,7 @@ private fun DemiDisplayerMultiColor(
 
                 ArticleImageWithOverlay(
                     article = article,
-                    viewModel = viewModel,
+                    viewModelHeadViewModel = viewModel,
                     colorIndex = index,
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier
@@ -231,7 +237,7 @@ private fun DemiDisplayerMultiColor(
                         .height(if (!imageExists) 70.dp else 250.dp),
                     contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
                     onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+                    imageSize = imageSize, viewModelInitApp = viewModelInitApp
                 )
             }
         }
@@ -253,22 +259,22 @@ private fun DemiDisplayerDualColor(
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
         ArticleImageWithOverlay(
             article = article,
-            viewModel = viewModel,
+            viewModelHeadViewModel = viewModel,
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+            imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         Box(modifier = Modifier.height(100.dp)) {
             ArticleImageWithOverlay(
                 article = article,
-                viewModel = viewModel,
+                viewModelHeadViewModel = viewModel,
                 colorIndex = 1,
                 reloadTrigger = reloadTrigger,
+                contentScale = ContentScale.Crop,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState,
-                contentScale = ContentScale.Crop, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+                imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
     }
@@ -290,11 +296,11 @@ private fun SmallSingleColorDisplayer(
         ) {
             ArticleImageWithOverlay(
                 article = article,
-                viewModel = viewModel,
+                viewModelHeadViewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+                imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
@@ -317,11 +323,11 @@ private fun DemiSingleColorDisplayer(
         ) {
             ArticleImageWithOverlay(
                 article = article,
-                viewModel = viewModel,
+                viewModelHeadViewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
+                imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
         InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)

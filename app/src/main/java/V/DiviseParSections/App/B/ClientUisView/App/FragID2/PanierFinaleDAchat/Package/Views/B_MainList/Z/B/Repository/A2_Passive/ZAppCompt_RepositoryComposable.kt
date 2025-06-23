@@ -44,7 +44,6 @@ class Z_SubClassFunctionality_ZAppCompt(
             )
         )
     }
-
 }
 
 @Stable
