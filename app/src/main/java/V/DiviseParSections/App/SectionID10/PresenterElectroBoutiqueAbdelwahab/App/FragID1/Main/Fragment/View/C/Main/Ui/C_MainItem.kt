@@ -72,9 +72,9 @@ fun ArticleItem(
             onClickToOpenWindos = { article, indexCouleur ->
                 onClickToOpenWindos(article, indexCouleur)
                 viewModel.addNewDAchatCouleurOperation(
-                    article,indexCouleur
-                ) { id,nom->
-                    viewModel.subClassFunctionality.ouvrireProduitPourCeCompt(id,nom)
+                    article, indexCouleur
+                ) { id, nom ->
+                    viewModel.subClassFunctionality.ouvrireProduitPourCeCompt(id, nom)
                 }
             },
             uiState = uiState,
