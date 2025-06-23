@@ -65,7 +65,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
-    val produits = viewModel.a_CentralDatasHandlerProtoJuin9.filteredA_ProduitsParCatalogueBsonId
+    val produits = viewModel.aCentralDatasHandlerProtoJuin9.filteredA_ProduitsParCatalogueBsonId
     val uiState by viewModel.uiState.collectAsState()
 
     val DevMode = false

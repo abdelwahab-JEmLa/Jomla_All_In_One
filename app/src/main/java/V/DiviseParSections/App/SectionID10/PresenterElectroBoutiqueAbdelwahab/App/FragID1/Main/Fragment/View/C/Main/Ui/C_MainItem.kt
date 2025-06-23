@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.countColors
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,20 +23,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.UiState
 
 @Composable
 fun ArticleItem(
+    viewModel: Sec10Frag1ViewModel,
+    viewModelheadViewModelViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     isFirstVisible: Boolean = false,
     lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
     val colorCount = countColors(article)
 
@@ -43,6 +45,7 @@ fun ArticleItem(
         uiState.productDisplayController.isHostPhone && isFirstVisible -> {
             Color.Red
         }
+
         else -> {
             MaterialTheme.colorScheme.surface
         }
@@ -64,9 +67,16 @@ fun ArticleItem(
 
         layout.Content(
             article = article,
-            viewModel = viewModel,
+            viewModelheadViewModelViewModel = viewModelheadViewModelViewModel,
             reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
+            onClickToOpenWindos = { article, indexCouleur ->
+                onClickToOpenWindos(article, indexCouleur)
+                viewModel.addNewDAchatCouleurOperation(
+                    article,indexCouleur
+                ) { id,nom->
+                    viewModel.subClassFunctionality.ouvrireProduitPourCeCompt(id,nom)
+                }
+            },
             uiState = uiState,
             lockHost = lockHost,
             viewModelInitApp = viewModelInitApp

@@ -1,12 +1,12 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -39,25 +39,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.UiState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     uiState: UiState,
-    viewModelFragment: VendeurAfficheurInfosProduitViewModel = koinViewModel(),
-    viewModel: HeadViewModel,
+    viewModel: VendeurAfficheurInfosProduitViewModel = koinViewModel(),
+    viewModelHeadViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
-    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientInfosProtoJuin3?,
     clickedCouleurIndex: Int,
     onFermDialoge: () -> Unit,
 ) {
-    val currentSale by viewModel.currentSaleInWindows.collectAsState()
+    val currentSale by viewModelHeadViewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
         uiState.articlesBasesStatTables.find { it.id.toLong() == sale.idArticle }
     }
@@ -68,19 +68,19 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
     currentSale?.let {
         MainUi(
-            viewModelFragment=viewModelFragment,
+            viewModel=viewModel,
+            viewModelHeadViewModel = viewModelHeadViewModel,
+            viewModelInitApp = viewModelInitApp,
             currentSale = it,
             currentClient = currentClient,
-            viewModelInitApp = viewModelInitApp,
             modifier = modifier,
             articlesBaseStats = articlesBaseStats,
-            viewModel = viewModel,
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
             uiState = uiState,
             lockExpandedPrices = lockExpandedPrices,
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
+            colorsArticlesTabelleModele = viewModelHeadViewModel._uiState.value.colorsArticlesTabelleModel,
             clickedCouleurIndex = clickedCouleurIndex,
             onPourFermeWindows = onFermDialoge,
         )
@@ -89,13 +89,13 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
 @Composable
 fun MainUi(
-    viewModelFragment: VendeurAfficheurInfosProduitViewModel,
+    viewModel: VendeurAfficheurInfosProduitViewModel,
     currentSale: SoldArticlesTabelle,
     currentClient: B_ClientInfosProtoJuin3?,
     viewModelInitApp: ViewModelInitApp,
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,
-    viewModel: HeadViewModel,
+    viewModelHeadViewModel: HeadViewModel,
     isDetailsVisible: Boolean,
     onDismiss: () -> Unit,
     uiState: UiState,
@@ -107,7 +107,7 @@ fun MainUi(
     onPourFermeWindows: () -> Unit,
 ) {
     val idProduitActuelle = currentSale.idArticle
-    val centralDatasHandler = viewModelFragment.centralDatasHandler
+    val centralDatasHandler = viewModel.centralDatasHandler
     val ouvertTransactionalCommercial = centralDatasHandler.ouvertTransactionCommercial
 
     if (ouvertTransactionalCommercial == null) {
@@ -240,10 +240,11 @@ fun MainUi(
                                 )
 
                                 A_MainListFragId3(
-                                    viewModel = viewModel,
+                                    viewModel= viewModel,
+                                    viewModelHeadViewModel = viewModelHeadViewModel,
+                                    viewModelInitApp = viewModelInitApp,
                                     currentSale = currentSale,
                                     stats = stats,
-                                    viewModelInitApp = viewModelInitApp,
                                     currentClient = currentClient,
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                     parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
@@ -256,7 +257,7 @@ fun MainUi(
                                     isDetailsVisible = isDetailsVisible,
                                     article = stats,
                                     uiState = uiState,
-                                    viewModel = viewModel,
+                                    viewModel = viewModelHeadViewModel,
                                     lockExpandedPrices = lockExpandedPrices,
                                     onToggleLockExpandedPricex = onToggleLockExpandedPricex
                                 )
@@ -291,7 +292,7 @@ fun MainUi(
                             newProvisoirePrix = buttonResult.prixCurrency
                         )
 
-                        viewModel.saveSaleTransactionToSoldAriclesList()
+                        viewModelHeadViewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                         onPourFermeWindows()
                     },

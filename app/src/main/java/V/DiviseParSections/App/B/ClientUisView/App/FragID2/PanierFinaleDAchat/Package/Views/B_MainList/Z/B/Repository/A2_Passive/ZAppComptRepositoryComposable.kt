@@ -17,20 +17,21 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class ZAppComptComposeRepositoryProtoJuin17(
+class ZAppComptRepositoryComposable(
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
+    lateinit var subClassFunctionality: ZAppComptSubClassFunctionality
+
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
-    val datasValue by derivedStateOf {
-        _datas.value
-    }
+    val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
         datasValue.find { it.bsonObjectId == "b1" }
     }
+
 
     init {
         composScope.launch {
@@ -44,7 +45,6 @@ class ZAppComptComposeRepositoryProtoJuin17(
             Z_AppCompt.compareEntre(ancien = ancien, newData = dataAvecTigerUpdate)
         }
         _datas.value = if (existingIndex >= 0) {
-            // FIXED: Replace the entire object instead of just updating timestamp
             datasValue.toMutableList().apply {
                 this[existingIndex] = dataAvecTigerUpdate
             }
@@ -53,6 +53,31 @@ class ZAppComptComposeRepositoryProtoJuin17(
         }
 
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataAvecTigerUpdate)
+    }
+
+    fun initializeSubClass(subClass: ZAppComptSubClassFunctionality) {
+        this.subClassFunctionality = subClass
+    }
+}
+
+@Stable
+class ZAppComptSubClassFunctionality {
+    private lateinit var repository: ZAppComptRepositoryComposable
+
+    fun initialize(repo: ZAppComptRepositoryComposable) {
+        this.repository = repo
+    }
+
+    fun ouvrireProduitPourCeCompt(
+        idOuvertProduitOnModeVent: String,
+        produitNomActuelleOuvertPourVentAuWindow: String
+    ) {
+        repository.addOrUpdateData(
+            repository.currentAppCompt!!.copy(
+                produitIdActuelleOuvertPourVentAuWindow = idOuvertProduitOnModeVent,
+                produitNomActuelleOuvertPourVentAuWindow =  produitNomActuelleOuvertPourVentAuWindow
+            )
+        )
     }
 }
 
@@ -81,10 +106,12 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection a TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
-    // Section Paramaters telephone
+    // Section Paramaters App telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
 
-    ) {
+    var produitIdActuelleOuvertPourVentAuWindow: String = "",
+    var produitNomActuelleOuvertPourVentAuWindow: String = "",
+) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): Z_AppCompt {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -92,9 +119,10 @@ data class Z_AppCompt(
     }
 
     companion object {
-       val caRef = Firebase.database.getReference(
-        "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
+        val caRef = Firebase.database.getReference(
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
+
         fun logCategory(data: Z_AppCompt, TAG: String) {
             Log.d(TAG, "Z_AppComptEntity: ${data.bsonObjectId} - ${data.nom}")
         }

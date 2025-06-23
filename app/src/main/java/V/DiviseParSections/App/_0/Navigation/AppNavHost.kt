@@ -305,7 +305,7 @@ fun AppNavHost(
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
                     uiState = uiState,
-                    viewModel = headViewModel,
+                    viewModelHeadViewModel = headViewModel,
                     onDismiss = {
                         headViewModel.clearCurrentSale()
                         opnerSaleWindows = false

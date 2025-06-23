@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.ArticleImageWithOverlay
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.UiState
 
 sealed class E_ArticleLayout {
     data object DemiUno : E_ArticleLayout()
@@ -46,7 +46,7 @@ sealed class E_ArticleLayout {
     @Composable
     fun Content(
         article: ArticlesBasesStatsTable,
-        viewModel: HeadViewModel,
+        viewModelheadViewModelViewModel: HeadViewModel,
         reloadTrigger: Int,
         onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
         uiState: UiState,
@@ -54,32 +54,32 @@ sealed class E_ArticleLayout {
     ) {
         when (this) {
             is DemiUno -> SmallSingleColorDisplayer(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is DemiDual -> DemiDisplayerDualColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is DemiMulti -> DemiDisplayerMultiColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallUno -> DemiSingleColorDisplayer(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallDual -> SmallDisplayerDualColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallMulti -> SmallDisplayerMultiColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                article, viewModelheadViewModelViewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
                 modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )

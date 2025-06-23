@@ -1,7 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
@@ -68,15 +69,16 @@ object VidGenerator {
 
 @Composable
 fun B_CouleurAfficheur(
+    viewModel: VendeurAfficheurInfosProduitViewModel,
     modifier: Modifier = Modifier,
+    viewModelHeadViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     index: Int,
-    viewModel: HeadViewModel,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
-    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientInfosProtoJuin3?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
@@ -233,6 +235,10 @@ fun B_CouleurAfficheur(
             QuantityBadge(
                 quantity = currentQuantity,
                 modifier = Modifier
+                    .clickable {
+
+
+                    }
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
                     .zIndex(1f)
@@ -248,7 +254,7 @@ fun B_CouleurAfficheur(
                     showDialog = true
                     color.let {
                         updateColorToBeMain(it.idColore)
-                        viewModel.sendOrderToClientDisplayer(
+                        viewModelHeadViewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                             it.idColore
                         )
@@ -329,16 +335,16 @@ fun B_CouleurAfficheur(
                     }
 
                     // Legacy behavior for backward compatibility
-                    viewModel.updateColorSelection(color.idColore, newQuantity)
-                    viewModel.sendOrderToClientDisplayer(
+                    viewModelHeadViewModel.updateColorSelection(color.idColore, newQuantity)
+                    viewModelHeadViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                         index
                     )
-                    viewModel.sendOrderToClientDisplayer(
+                    viewModelHeadViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                         color.idColore
                     )
-                    viewModel.saveSaleTransactionToSoldAriclesList()
+                    viewModelHeadViewModel.saveSaleTransactionToSoldAriclesList()
                     showDialog = false
                     isSelected = false
                 },

@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.WDatabaseInitializationManager
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.Z.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
@@ -22,15 +22,18 @@ import kotlinx.coroutines.launch
 @Stable
 class ACentralCompoRepositoryProtoJuin9(
     private val context: Context,
-    val databaseInitializationManager: Z_DatabaseInitializationManager,
-    val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
-    val appComptComposeRepositoryProtoJuin17: ZAppComptComposeRepositoryProtoJuin17,
-    val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
+    val databaseInitializationManager: WDatabaseInitializationManager,
+
     val a_ProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
+    val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
+
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: D_TransactionCommercialCompoRepository,
     val d_AchatOperationComposeRepositoryPJ17: DCouleurAchatOperationRepositoryComposable,
+
+    val zAppComptRepositoryComposable: ZAppComptRepositoryComposable,
+    val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {
@@ -44,7 +47,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
-            appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+            zAppComptRepositoryComposable.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.bsonObjectId }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this

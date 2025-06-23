@@ -9,13 +9,15 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.WDatabaseInitializationManager
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.Z.Repository.Juin9.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.Z_DatabaseInitializationManager
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptComposeRepositoryProtoJuin17
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptSubClassFunctionality
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
@@ -67,7 +69,6 @@ import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
@@ -116,7 +117,19 @@ val composRepositorysModule = module {
     single { DCouleurAchatOperationRepositoryComposable(get()) }
 
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
-    single { ZAppComptComposeRepositoryProtoJuin17(get()) }
+
+    single {
+        val repo = ZAppComptRepositoryComposable(get())
+        val subClass = ZAppComptSubClassFunctionality()
+
+        // Initialize the circular references
+        repo.initializeSubClass(subClass)
+        subClass.initialize(repo)
+
+        repo
+    }
+    factory { get<ZAppComptRepositoryComposable>().subClassFunctionality }
+
 
     single { Z_AutreStatesCompoRepository(get()) }
 }
@@ -152,7 +165,7 @@ val dataBaseProtoAvantJuin3Module = module {
 
 val classesHandlersModule = module {
     single { WifiTransferDatas(androidContext(),get(),) }
-    single { Z_DatabaseInitializationManager(get(),get(),get(),) }
+    single { WDatabaseInitializationManager(get(),get(),get(),) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

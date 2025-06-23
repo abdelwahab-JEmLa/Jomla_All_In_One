@@ -1,11 +1,12 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.A.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -36,11 +37,12 @@ import org.koin.compose.koinInject
 
 @Composable
 fun A_MainListFragId3(
-    viewModel: HeadViewModel,
+    viewModel: VendeurAfficheurInfosProduitViewModel,
+    viewModelHeadViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
-    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientInfosProtoJuin3?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
@@ -123,18 +125,18 @@ fun A_MainListFragId3(
                                 .clip(MaterialTheme.shapes.medium)
                         ) {
                             B_CouleurAfficheur(
+                                viewModel=viewModel,
+                                viewModelHeadViewModel = viewModelHeadViewModel,
+                                viewModelInitApp = viewModelInitApp,
                                 modifier = Modifier,
                                 currentSale = currentSale,
                                 article = stats,
                                 color = color,
                                 index = index,
-                                viewModel = viewModel,
                                 height = 350.dp,
                                 updateColorToBeMain = { colorId ->
-                                    // Implementation for color selection
-                                    viewModel.updateColorSelection(colorId, 1)
+                                    viewModelHeadViewModel.updateColorSelection(colorId, 1)
                                 },
-                                viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,

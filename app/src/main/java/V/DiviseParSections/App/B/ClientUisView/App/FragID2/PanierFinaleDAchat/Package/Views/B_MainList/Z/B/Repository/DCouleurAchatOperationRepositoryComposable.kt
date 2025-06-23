@@ -168,14 +168,13 @@ class DCouleurAchatOperationRepositoryComposable(
 @Entity
 data class D_AchatOperation(
     @PrimaryKey var bsonObjectId: String = BsonObjectId().toHexString(),
+    // Section Foreign BsonIDs
     var nomImageFichieOuApellationDuCouleur: String = "",
-
-    // Section Related ParentBsonObjectId
     var parentBonVentObjectId: String = "",
     var parentProduitBsonObjectId: String = "",
-    var parentComptVendeurCreateurObjectId: String = "",
 
     // Section Related Parents Infos
+    var parentComptVendeurCreateurObjectId: String = "",
     var clientParentObjectId: String = "",
     var produitAcheterAncienID: Long = 0L,
 
@@ -183,7 +182,7 @@ data class D_AchatOperation(
     var achatParentBsonID: String = "",
 
     // Section StatuesMutable
-    var quantityAchete: Int = 0,
+    var quantityAchete: Int = 1,
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.Affiche,
     var provisoireMonPrix: Double = 0.0,

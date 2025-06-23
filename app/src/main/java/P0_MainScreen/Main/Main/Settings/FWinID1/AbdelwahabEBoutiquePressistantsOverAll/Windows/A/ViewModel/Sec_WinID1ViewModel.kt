@@ -17,7 +17,7 @@ class Sec8FWinID1ViewModel(
     val wifiTransferDatas: WifiTransferDatas,
     val headViewModel: HeadViewModel,
 ) : ViewModel() {
-    val appComptComposeRepositoryProtoJuin17 = a_CentralDatasHandlerProtoJuin9.appComptComposeRepositoryProtoJuin17
+    val appComptComposeRepositoryProtoJuin17 = a_CentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable
     data class UiState(
         val f: Int = 0,
     )

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CategoriesTabelle
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.CategoryHeader
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.ScrolleAdBanner
@@ -33,10 +33,11 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MainList(
+    viewModel: Sec10Frag1ViewModel,
+    viewModelInitApp: ViewModelInitApp,
+    headViewModelViewModel: HeadViewModel,
     produits: List<ArticlesBasesStatsTable>,
     uiState: UiState,
-    headViewModelViewModel: HeadViewModel,
-    viewModelInitApp: ViewModelInitApp,
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
@@ -46,9 +47,8 @@ fun MainList(
     currentClient: B_ClientInfosProtoJuin3?,
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
-    viewModel: Sec10Frag1ViewModel,
 ) {
-    val categories = viewModel.a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasValue
+    val categories = viewModel.aCentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasValue
     val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
     val articlesByCategory = remember(filteredArticles, categories) {
@@ -139,8 +139,9 @@ fun MainList(
                 }
 
                 ArticleItem(
+                    viewModel=viewModel,
                     article = article,
-                    viewModel = headViewModelViewModel,
+                    viewModelheadViewModelViewModel = headViewModelViewModel,
                     reloadTrigger = reloadTrigger,
                     onClickToOpenWindos = onClickToOpenWindos,
                     uiState = uiState,
