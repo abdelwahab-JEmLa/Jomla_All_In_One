@@ -26,7 +26,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.Objects
 
-
 @Stable
 class D_TransactionCommercialCompoRepository(
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
@@ -214,7 +213,7 @@ data class C3_TransactionCommercial(
 
     fun isSameEntity(other: C3_TransactionCommercial) =
         bsonObjectId == other.bsonObjectId
-                && parentZAppComptID == other.parentZAppComptNom
+                && parentZAppComptID == other.parentZAppComptID
                 && parentPeriodeVentID == other.parentPeriodeVentID
 
     override fun equals(other: Any?) =
