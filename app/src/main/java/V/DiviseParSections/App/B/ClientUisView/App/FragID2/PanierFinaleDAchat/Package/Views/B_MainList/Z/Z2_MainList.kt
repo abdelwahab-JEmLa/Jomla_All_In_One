@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.D_AchatOperation
-import Z_CodePartageEntreApps.Modules.D.Glide.Module.LazyRowAvailableColorsImageOuNom
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.LazyRowAvailableColorsImageOuNom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -119,7 +119,6 @@ fun ProductGroup(
                     LazyRowAvailableColorsImageOuNom(
                         couleurInfos = couleurInfosWithAchat.couleurInfosList,
                         infos = {
-                            // Fixed: Pass the matching achat to the Infos composable
                             Infos(achat = couleurInfosWithAchat.matchingAchat)
                         } ,
                         sizeDeChaqueItem = 100.dp

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.tasks.await
 
