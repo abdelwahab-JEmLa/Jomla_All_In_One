@@ -54,6 +54,9 @@ class DAchatOperationComposeRepositoryProtoJuin17(
 
         val parentProduitBsonObjectIdPrd2 = "684fdff4df922c49f82958f9"
         val parentProduitAncienIDPrd2 = "881"
+
+        val parentProduitBsonObjectIdPrd3 = "684fdff4df922c49f829570d"
+        val parentProduitAncienIDPrd3 = "25"
         return listOf(
             D_AchatOperation(
                 bsonObjectId = "test_achat_001",
@@ -88,6 +91,18 @@ class DAchatOperationComposeRepositoryProtoJuin17(
                 clientParentObjectId = "client_001",
                 produitAcheterAncienID = 2L,
                 quantityAchete = 3,
+                provisoireMonPrix = 200.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+            ),
+            D_AchatOperation(
+                parentBonVentObjectId = ouvertD_AchatOperationBsonId,
+                bsonObjectId = "test_achat_200",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_2",
+                parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
+                produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
+                parentComptVendeurCreateurObjectId = "vendeur_001",
+                clientParentObjectId = "client_001",
+                quantityAchete = 10,
                 provisoireMonPrix = 200.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
             ),
