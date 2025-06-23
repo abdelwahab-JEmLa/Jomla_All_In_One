@@ -38,7 +38,7 @@ suspend fun getNoSqlDisplayer(
         }
 
         // Ajouter le NoSqlSecteurDeClientsPolygonGeoLimite à la liste résultat
-        result.add(
+        result.update(
             NoSqlSecteurDeClientsPolygonGeoLimite(
                 keyIDSecteurDeClients = secteurKey,
                 listPolygonGeoLimite = pointKeys

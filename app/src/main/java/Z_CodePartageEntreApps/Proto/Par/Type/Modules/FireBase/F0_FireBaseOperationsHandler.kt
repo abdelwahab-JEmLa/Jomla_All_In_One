@@ -150,7 +150,7 @@ class F0_FireBaseOperationsHandler(
             // Create batch update_showDetailsExpanded map for all items
             val batchUpdateMap = mutableMapOf<String, Any>()
 
-            // Process each data item and add to batch
+            // Process each data item and update to batch
             for (data in datas) {
                 try {
                     // Generate proper key for Firebase

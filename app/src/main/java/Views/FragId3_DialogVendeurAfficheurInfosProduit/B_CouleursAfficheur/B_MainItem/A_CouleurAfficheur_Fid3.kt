@@ -235,10 +235,6 @@ fun B_CouleurAfficheur(
             QuantityBadge(
                 quantity = currentQuantity,
                 modifier = Modifier
-                    .clickable {
-
-
-                    }
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
                     .zIndex(1f)
@@ -259,6 +255,7 @@ fun B_CouleurAfficheur(
                             it.idColore
                         )
                     }
+                    viewModel.update()
                 },
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.elevatedCardColors(
@@ -286,7 +283,7 @@ fun B_CouleurAfficheur(
                         .clip(RoundedCornerShape(8.dp))
                 ) {
                     A_GlideDisplayImageByKeyId_Proto_4_11(
-                        produitVID = article.id.toLong(),
+                        produitVID = article.id,
                         couleurVID = index.toLong() + 1,
                         size = 600.dp,
                         qualityImage = 100,

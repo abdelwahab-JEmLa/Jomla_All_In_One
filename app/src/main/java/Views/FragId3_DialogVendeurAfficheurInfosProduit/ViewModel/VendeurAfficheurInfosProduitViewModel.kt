@@ -8,7 +8,7 @@ class VendeurAfficheurInfosProduitViewModel(
     val centralDatasHandler: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
     val d_AchatOperationComposeRepositoryPJ17=centralDatasHandler.d_AchatOperationComposeRepositoryPJ17
-    fun add(dAchatoperation: D_AchatOperation) {
+    fun update() {
 
     }
 }
