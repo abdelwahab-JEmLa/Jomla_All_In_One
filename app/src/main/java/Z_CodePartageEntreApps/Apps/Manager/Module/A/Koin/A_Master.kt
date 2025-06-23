@@ -179,7 +179,7 @@ val appModule = module {
         centralDataBasesModule,
         composRepositorysModule, // This will now be resolved
         dataBaseProtoAvantJuin3Module,
-        viewModelModule,
-        classesHandlersModule
+        classesHandlersModule,
+        viewModelModule
     )
 }

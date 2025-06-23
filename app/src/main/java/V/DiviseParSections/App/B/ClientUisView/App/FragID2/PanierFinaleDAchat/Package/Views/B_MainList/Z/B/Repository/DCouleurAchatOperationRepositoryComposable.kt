@@ -14,12 +14,101 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
+import java.io.File
 import java.util.Objects
+
+@Stable
+class DCouleurAchatOperation_SubClassFunctionality(
+    centralRepo: ACentralCompoRepositoryProtoJuin9
+) {
+    val mainRepo= centralRepo.dCouleurAchatOperationRepositoryComposable
+    val zAppComptRepositoryComposable= centralRepo.zAppComptRepositoryComposable
+
+    val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
+        mainRepo.datasValue.find {
+            it.bsonObjectId ==
+                    zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
+        }
+    }
+    val ouvertData_bProduitDataBase_SubClassFunctionality = centralRepo.ouvertData_bProduitDataBase_SubClassFunctionality
+    val ouvertTransactionCommercial = centralRepo.ouvertTransactionCommercial
+
+    fun ouvreAddDataDepuitIndexCouleur(index: Int): Unit {
+        confirmeOuvertData()
+
+        val data = D_AchatOperation(
+            parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality?.bsonObjectId!!,
+            nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
+                index
+            ),
+            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId
+        )
+
+        mainRepo.addOrUpdateData(
+            data
+        )
+        zAppComptRepositoryComposable.ouvrireCouleurAchatOperationPourCeCompt(
+            data.bsonObjectId,
+            "${ouvertData_bProduitDataBase_SubClassFunctionality!!.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+        )
+    }
+
+    fun trouve_nomImageFichieOuApellationDuCouleurPar(
+        indexCouleur: Int
+    ): String {
+        // Get the color name based on the index
+        val couleurName = when (indexCouleur) {
+            0 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur1
+            1 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur2
+            2 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur3
+            3 -> ouvertData_bProduitDataBase_SubClassFunctionality?.couleur4
+            else -> null
+        }
+
+        // Return empty string if color is null or blank
+        if (couleurName.isNullOrBlank()) {
+            return ""
+        }
+
+        // Base path for images (same as in CreateCouleurInfosFromProduct.kt)
+        val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+
+        // Create the image file name pattern: {articleId}_{imageIndex}
+        val imageIndex = indexCouleur + 1
+        val baseFileName = "${ouvertData_bProduitDataBase_SubClassFunctionality?.id}_$imageIndex"
+
+        // Check for image file existence with different extensions
+        val supportedExtensions = listOf("jpg", "webp", "jpeg", "png")
+        val imageFile = supportedExtensions
+            .map { extension -> File("$basePath/$baseFileName.$extension") }
+            .firstOrNull { file ->
+                file.exists() && file.canRead() && file.length() > 0
+            }
+
+        // Return image file name (without extension) if image exists, otherwise return color name
+        return if (imageFile != null && imageFile.name != "NonTrouve.webp") {
+            baseFileName // Return the base file name without extension
+        } else {
+            couleurName // Return the color name if no image is available
+        }
+    }
+
+    fun confirmeOuvertData(): Unit {
+        ouvertData_dCouleurAchatOperation_SubClassFunctionality?.let {
+            mainRepo.addOrUpdateData(
+                it.copy(
+                    etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                )
+            )
+        }
+    }
+}
 
 @Stable
 class DCouleurAchatOperationRepositoryComposable(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
+
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val itsTestModel = true
@@ -194,7 +283,11 @@ data class D_AchatOperation(
 ) {
     enum class EtateActuellementEst {
         ClickOuvre,
-        CONFIRME, SUPPRIME_AU_PREMIER_PICK, SUPP_AU_PANIER_FINALE
+
+        Affiche,
+        CONFIRME,
+        SUPPRIME_AU_PREMIER_PICK,
+        SUPP_AU_PANIER_FINALE
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }
