@@ -94,7 +94,7 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             D_AchatOperation(
                 bsonObjectId = "test_achat_003",
                 nomImageFichieOuApellationDuCouleur = "Produit Test 3",
-                parentBonVentObjectId = "bon_002", // Different bon to test filtering
+                parentBonVentObjectId = "bon_002",
                 parentProduitBsonObjectId = "produit_003",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 clientParentObjectId = "client_002",
@@ -106,7 +106,7 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             D_AchatOperation(
                 bsonObjectId = "test_achat_004",
                 nomImageFichieOuApellationDuCouleur = "Produit Test 4",
-                parentBonVentObjectId = "bon_002", // Different bon to test filtering
+                parentBonVentObjectId = "bon_002",
                 parentProduitBsonObjectId = "produit_004",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 clientParentObjectId = "client_002",
