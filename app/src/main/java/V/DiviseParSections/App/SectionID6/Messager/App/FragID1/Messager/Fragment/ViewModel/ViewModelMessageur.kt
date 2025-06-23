@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData

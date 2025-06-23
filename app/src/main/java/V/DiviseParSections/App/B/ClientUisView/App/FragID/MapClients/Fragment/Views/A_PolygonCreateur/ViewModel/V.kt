@@ -11,7 +11,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import android.util.Log

@@ -23,14 +23,25 @@ class Z_SubClassFunctionality_ZAppCompt(
 ) {
     val mainRepository = centralRepoLazy.value.zAppComptRepositoryComposable
 
+    fun ouvrirePourCeComptCTransactionCommercial(
+        id: String,
+        key: String
+    ) {
+        mainRepository.addOrUpdateData(
+            mainRepository.currentAppCompt!!.copy(
+                cTransactionCommercialIdOuvertPourCeCompt = id,
+                cTransactionCommercialKeyOuvertPourCeCompt = key
+            )
+        )
+    }
     fun ouvrireCouleurAchatOperationPourCeCompt(
         couleurIdOuvertPourCeCompt: String,
         couleurKeyOuvertPourCeCompt: String
     ) {
         mainRepository.addOrUpdateData(
             mainRepository.currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
-                couleurKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
+                couleurAchateOperationIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
+                couleurAchateOperationKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
             )
         )
     }
@@ -39,8 +50,8 @@ class Z_SubClassFunctionality_ZAppCompt(
     ) {
         mainRepository.addOrUpdateData(
             mainRepository.currentAppCompt!!.copy(
-                couleurIdOuvertPourCeCompt = "",
-                couleurKeyOuvertPourCeCompt = ""
+                couleurAchateOperationIdOuvertPourCeCompt = "",
+                couleurAchateOperationKeyOuvertPourCeCompt = ""
             )
         )
     }
@@ -111,11 +122,14 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection add TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
+    var cTransactionCommercialIdOuvertPourCeCompt: String = BsonObjectId().toHexString(),
+    var cTransactionCommercialKeyOuvertPourCeCompt: String = BsonObjectId().toHexString(),
+
     // Section Paramaters App telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
 
-    var couleurIdOuvertPourCeCompt: String = "",
-    var couleurKeyOuvertPourCeCompt: String = "",
+    var couleurAchateOperationIdOuvertPourCeCompt: String = "",
+    var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
 ) {
     fun withDernierTimeTampsSynchronisationAvecFireBase(): Z_AppCompt {
         return this.copy(

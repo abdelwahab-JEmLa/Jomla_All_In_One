@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -39,11 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ColumnScope.BonAchatInfos(
-    viewModel: PanierFinaleDAchatViewModel ,
+    viewModel: PanierFinaleDAchatViewModel,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     relativeBonAchate: C3_TransactionCommercial?,
     itemCount: Int,

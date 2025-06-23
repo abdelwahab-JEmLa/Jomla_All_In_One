@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -21,14 +21,13 @@ import java.util.Objects
 
 object DSubClassFunctionality_CouleurAchatOperation {
     fun getDataDepuitIndex(
-        ouvertTransactionCommercial: C3_TransactionCommercial?,
-        ouvertData_bProduitDataBase_SubClassFunctionality: ArticlesBasesStatsTable?,
+        ouvertTransactionCommercial: C3_TransactionCommercial,
+        ouvertData_bProduitDataBase_SubClassFunctionality: ArticlesBasesStatsTable,
         nomImageFichieOuApellationDuCouleur: String
     ): D_AchatOperation {
         return D_AchatOperation(
-            parentBonVentObjectId = ouvertTransactionCommercial!!.bsonObjectId,
-
-            parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality?.bsonObjectId!!,
+            parentBonVentObjectId = ouvertTransactionCommercial.bsonObjectId,
+            parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality.bsonObjectId,
             parentProduitNom = ouvertData_bProduitDataBase_SubClassFunctionality.nom,
 
             nomImageFichieOuApellationDuCouleur = nomImageFichieOuApellationDuCouleur,
@@ -87,6 +86,7 @@ object DSubClassFunctionality_CouleurAchatOperation {
 
 @Stable
 class DCouleurAchatOperationRepositoryComposable(
+    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
     val dao = ancienRepo.dao
@@ -94,6 +94,14 @@ class DCouleurAchatOperationRepositoryComposable(
     private val itsTestModel = true
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+
+    val ouvertData by derivedStateOf {
+        datasValue.find {
+            it.bsonObjectId ==
+                    centralRepoLazy.value.zAppComptRepositoryComposable.currentAppCompt!!.bsonObjectId
+        }
+    }
+
     val ouvertD_AchatOperationBsonId = "bon_001"
 
     val filteredDatasValue by derivedStateOf {

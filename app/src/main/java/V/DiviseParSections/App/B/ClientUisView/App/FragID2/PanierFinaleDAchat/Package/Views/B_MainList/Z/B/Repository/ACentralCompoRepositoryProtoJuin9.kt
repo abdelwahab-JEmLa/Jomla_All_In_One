@@ -10,7 +10,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DSubClassFunctionality_CouleurAchatOperation.trouve_nomImageFichieOuApellationDuCouleurPar
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -49,7 +49,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
         dCouleurAchatOperationRepositoryComposable.datasValue.find {
             it.bsonObjectId ==
-                    zAppComptRepositoryComposable.currentAppCompt?.couleurIdOuvertPourCeCompt
+                    zAppComptRepositoryComposable.currentAppCompt?.couleurAchateOperationIdOuvertPourCeCompt
         }
     }
 
@@ -57,8 +57,8 @@ class ACentralCompoRepositoryProtoJuin9(
         index: Int
     ): Unit {
         val data = dSubClassFunctionality_CouleurAchatOperation.getDataDepuitIndex(
-            ouvertTransactionCommercial,
-            ouvertData_bProduitDataBase_SubClassFunctionality,
+            transactionCommercialState.ouvertData!!,
+            bProduitDataBase_SubClassFunctionality.ouvertData!!,
             nomImageFichieOuApellationDuCouleur= trouve_nomImageFichieOuApellationDuCouleurPar(
                 index,
                 ouvertData_bProduitDataBase_SubClassFunctionality
@@ -94,7 +94,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val currentActiveVentProduit by derivedStateOf {
         bProduitDataBase_SubClassFunctionality.datasValue.find {
             it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
-                ?.couleurIdOuvertPourCeCompt
+                ?.couleurAchateOperationIdOuvertPourCeCompt
         }
     }
 

@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -47,7 +47,14 @@ fun CommandButton(
                 viewModel = viewModel,
                 relatedClientID = clientId,
                 newEtate = etateActuellementEst1
-            )
+            ) {
+                viewModel.centralDatasHandler
+                    .zAppComptRepositoryComposable.subClassFunctionality
+                    .ouvrirePourCeComptCTransactionCommercial(
+                        it.bsonObjectId,
+                        it.nomClientConcerned
+                    )
+            }
             updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 
             if (clientOuCaMarqueGpsEstOuvert != null) {
@@ -102,6 +109,7 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
     newEtate: C3_TransactionCommercial.EtateActuellementEst,
+    onAddNew: (C3_TransactionCommercial) -> Unit,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -129,17 +137,19 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
             updatedBonAchat
         )
     } else {
-        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-            C3_TransactionCommercial(
-                clientAcheteurID = clientId,
-                nomClientConcerned = relatedClients?.nom!!,
-                parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                etateActuellementEst = newEtate,
-                heurDebutInString = SimpleDateFormat(
-                    "HH:mm",
-                    Locale.getDefault()
-                ).format(Date())
-            )
+        val newTrx = C3_TransactionCommercial(
+            clientAcheteurID = clientId,
+            nomClientConcerned = relatedClients?.nom!!,
+            parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
+            etateActuellementEst = newEtate,
+            heurDebutInString = SimpleDateFormat(
+                "HH:mm",
+                Locale.getDefault()
+            ).format(Date())
         )
+        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
+            newTrx
+        )
+        onAddNew(newTrx)
     }
 }

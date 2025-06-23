@@ -16,13 +16,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    single { BProduitDataBaseComposeRepositoryPJ17(get()) }
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }
-    single { D_TransactionCommercialCompoRepository(get()) }
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
-    single { DCouleurAchatOperationRepositoryComposable(get()) }
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
     single { DSubClassFunctionality_CouleurAchatOperation }
@@ -31,4 +28,8 @@ val composRepositorysModule = module {
     single { ZAppCompt_RepositoryComposable( lazy { get() },get(),) }
 
     single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
+
+    single { BProduitDataBaseComposeRepositoryPJ17(lazy { get() },get()) }
+    single { DCouleurAchatOperationRepositoryComposable(lazy { get() },get()) }
+    single { D_TransactionCommercialCompoRepository(lazy { get() },get()) }
 }
