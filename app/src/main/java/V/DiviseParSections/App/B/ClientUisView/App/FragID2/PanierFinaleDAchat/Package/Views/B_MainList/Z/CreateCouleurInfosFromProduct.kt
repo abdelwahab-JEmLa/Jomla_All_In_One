@@ -1,11 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.LazyRowAvailableColorsImageOuNom
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -18,6 +22,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
+
+
+@Composable
+fun Images(
+    productId: String?,
+    achats: List<D_AchatOperation>,
+    bProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17
+) {
+    val relatedProduitDataBase = bProduitDataBaseComposeRepositoryPJ17
+        .datasValue
+        .find { it.bsonObjectId == productId }
+
+    createCouleurInfosFromProduct(
+        relatedProduitDataBase,
+        achats
+    ).let {
+        if (it.couleurInfosList.isNotEmpty()) {
+            LazyRowAvailableColorsImageOuNom(
+                couleurInfos = it.couleurInfosList,
+                couleurInfosWithAchat_matchingAchat = it.matchingAchat,
+                sizeDeChaqueItem = 100.dp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
 
 data class CouleurInfosWithAchat(
     val couleurInfosList: List<CouleurInfos>,

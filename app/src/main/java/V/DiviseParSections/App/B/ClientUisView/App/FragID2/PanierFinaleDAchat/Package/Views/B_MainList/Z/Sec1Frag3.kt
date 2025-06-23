@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.LazyRowAvailableColorsImageOuNom
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,9 +78,6 @@ fun ProductGroup(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    val relatedProduitDataBase = viewModel.a_ProduitDataBaseComposeRepositoryPJ17
-        .datasValue
-        .find { it.bsonObjectId == productId }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -96,7 +94,7 @@ fun ProductGroup(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = relatedProduitDataBase?.nom ?: "Product ID: $productId",
+                    text = productId,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -109,20 +107,7 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            createCouleurInfosFromProduct(
-                relatedProduitDataBase,
-                achats
-            ).let {
-                if (it.couleurInfosList.isNotEmpty()) {
-                    LazyRowAvailableColorsImageOuNom(
-                        couleurInfos = it.couleurInfosList,
-                        couleurInfosWithAchat_matchingAchat = it.matchingAchat,
-                        sizeDeChaqueItem = 100.dp
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
+            Images(productId, achats, viewModel.a_ProduitDataBaseComposeRepositoryPJ17)
         }
     }
 }
