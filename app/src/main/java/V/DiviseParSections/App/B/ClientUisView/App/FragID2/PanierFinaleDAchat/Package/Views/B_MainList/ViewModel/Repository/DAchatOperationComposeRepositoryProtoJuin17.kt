@@ -109,7 +109,7 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             D_AchatOperation(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 bsonObjectId = "test_achat_300",
-                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_3",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_1",
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
                 produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
                 parentComptVendeurCreateurObjectId = "vendeur_001",
