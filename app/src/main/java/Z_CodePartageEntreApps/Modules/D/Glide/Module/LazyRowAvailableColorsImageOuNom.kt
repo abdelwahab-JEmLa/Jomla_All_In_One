@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide.Module
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.CouleurInfos
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -51,31 +52,18 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.mongodb.kbson.BsonObjectId
 import java.io.File
 
-data class CouleurInfos(
-    val bsonObjectId: BsonObjectId,
-    val imageNameSiDispo: String = "NonTrouve.webp",
-    val aAffiche: Affiche = Affiche.Image,
-    val imageCouleurFichie: File,
-    val nomSiDispo: String = "Non Defini Car Il Y Image",
-    val counteDeDisponibility: Int = 0
-) {
-    enum class Affiche {
-        Image,
-        Nom
-    }
-}
 
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
     data: ArticlesBasesStatsTable,
     couleurInfos: List<CouleurInfos>,
-    reloadTrigger: Int,
+    reloadTrigger: Int=0,
+    infos: @Composable () -> Unit,  // Changed from Unit to () -> Unit
 ) {
     // Filter out colors with zero availability count
-    val availableCouleurInfos = couleurInfos.filter { it.counteDeDisponibility > 0 }
+    val availableCouleurInfos = couleurInfos.filter { it.countDeDisponibility > 0 }
 
     if (availableCouleurInfos.isEmpty()) {
         return // Don't show anything if no colors are available
@@ -113,18 +101,12 @@ fun LazyRowAvailableColorsImageOuNom(
                     ),
                 )
 
-                // Display availability count
-                Text(
-                    text = "Disponible: ${couleurInfo.counteDeDisponibility}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                infos()
             }
         }
     }
 }
+
 
 @SuppressLint("CheckResult")
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -259,43 +241,3 @@ fun getProduitInfoImageParIndex(article: ArticlesBasesStatsTable): List<String> 
         article.couleur4?.takeIf { it.isNotBlank() }
     )
 }
-
-fun determineImageOrColorName(produit: ArticlesBasesStatsTable, indexCouleur: Int): String {
-    val imagesBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-    val keyImageId = "${produit.id}_${indexCouleur + 1}"
-
-    val extensions = listOf("jpg", "jpeg", "png", "webp")
-
-    // Find the actual file path if it exists
-    val actualFilePath = extensions.firstNotNullOfOrNull { ext ->
-        val file = File("$imagesBasePath/$keyImageId.$ext")
-        if (file.exists() && file.length() > 0) {
-            file.absolutePath
-        } else {
-            null
-        }
-    }
-
-    return if (actualFilePath != null) {
-        actualFilePath
-    } else {
-        // Return color name if no image file exists
-        val colorName = when (indexCouleur) {
-            0 -> produit.couleur1?.takeIf { it.isNotBlank() }
-            1 -> produit.couleur2?.takeIf { it.isNotBlank() }
-            2 -> produit.couleur3?.takeIf { it.isNotBlank() }
-            3 -> produit.couleur4?.takeIf { it.isNotBlank() }
-            else -> null
-        }
-        colorName ?: produit.nom
-    }
-}
-
-fun ArticlesBasesStatsTable.getColorIdForIndex(index: Int): String? =
-    when (index) {
-        0 -> couleur1?.takeIf { it.isNotBlank() }
-        1 -> couleur2?.takeIf { it.isNotBlank() }
-        2 -> couleur3?.takeIf { it.isNotBlank() }
-        3 -> couleur4?.takeIf { it.isNotBlank() }
-        else -> null
-    }

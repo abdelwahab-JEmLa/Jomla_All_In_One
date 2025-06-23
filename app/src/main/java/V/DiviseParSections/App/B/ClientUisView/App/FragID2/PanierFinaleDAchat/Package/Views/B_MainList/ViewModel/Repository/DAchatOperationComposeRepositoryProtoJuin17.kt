@@ -52,6 +52,8 @@ class DAchatOperationComposeRepositoryProtoJuin17(
         val parentProduitBsonObjectIdPrd1 = "684fdff4df922c49f82958c0"
         val parentProduitAncienIDPrd1 = "822_"
 
+        val parentProduitBsonObjectIdPrd2 = "684fdff4df922c49f82958f9"
+        val parentProduitAncienIDPrd2 = "881"
         return listOf(
             D_AchatOperation(
                 bsonObjectId = "test_achat_001",
@@ -79,9 +81,9 @@ class DAchatOperationComposeRepositoryProtoJuin17(
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_002",
-                nomImageFichieOuApellationDuCouleur = "Produit Test 2",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd2}_1",
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
-                parentProduitBsonObjectId = "produit_002",
+                parentProduitBsonObjectId = parentProduitBsonObjectIdPrd2,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 clientParentObjectId = "client_001",
                 produitAcheterAncienID = 2L,
