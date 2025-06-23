@@ -19,11 +19,23 @@ import androidx.compose.ui.unit.dp
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
 
-// Fixed: Changed return type to return both List<CouleurInfos> and the matching achat operation
 data class CouleurInfosWithAchat(
     val couleurInfosList: List<CouleurInfos>,
     val matchingAchat: D_AchatOperation?
 )
+
+data class CouleurInfos(
+    val bsonObjectId: BsonObjectId,
+    val imageNameSiDispo: String = "NonTrouve.webp",
+    val aAffiche: Affiche = Affiche.Image,
+    val imageCouleurFichie: File,
+    val nomSiDispo: String = "Non Defini Car Il Y Image",
+    val countDeDisponibility: Int = 0,
+    val colorIndex: Int = -1,
+    val imageExists: Boolean = false
+) {
+    enum class Affiche { Image, Nom }
+}
 
 fun createCouleurInfosFromProduct(
     produit: ArticlesBasesStatsTable,
@@ -33,40 +45,45 @@ fun createCouleurInfosFromProduct(
     val couleurInfosList = mutableListOf<CouleurInfos>()
     var firstMatchingAchat: D_AchatOperation? = null
 
-    listOf(
-        produit.couleur1 to 1,
-        produit.couleur2 to 2,
-        produit.couleur3 to 3,
-        produit.couleur4 to 4
-    ).forEach { (couleur, index) ->
+    val colorMappings = listOf(
+        produit.couleur1 to 0,
+        produit.couleur2 to 1,
+        produit.couleur3 to 2,
+        produit.couleur4 to 3
+    )
+
+    colorMappings.forEach { (couleur, colorIndex) ->
         if (!couleur.isNullOrBlank()) {
-            val fileName = "${produit.id}_$index"
+            val imageIndex = colorIndex + 1
+            val fileName = "${produit.id}_$imageIndex"
+
             val imageFile = listOf("jpg", "webp", "jpeg", "png")
                 .map { File("$basePath/$fileName.$it") }
                 .firstOrNull { it.exists() && it.canRead() && it.length() > 0 }
                 ?: File("$basePath/NonTrouve.webp")
 
-            // Find the matching achat operation for this color and get its quantity
+            val imageExists = imageFile.name != "NonTrouve.webp" &&
+                    imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
+
             val matchingAchat = achats.find { achat ->
-                achat.nomImageFichieOuApellationDuCouleur == "${produit.id}_$index" ||
+                achat.nomImageFichieOuApellationDuCouleur == fileName ||
                         achat.nomImageFichieOuApellationDuCouleur == couleur
             }
 
-            // Store the first matching achat for the info component
             if (firstMatchingAchat == null && matchingAchat != null) {
                 firstMatchingAchat = matchingAchat
             }
-
-            val quantityAvailable = matchingAchat?.quantityAchete ?: 0
 
             couleurInfosList.add(
                 CouleurInfos(
                     bsonObjectId = BsonObjectId(),
                     imageNameSiDispo = imageFile.name,
-                    aAffiche = if (imageFile.exists()) CouleurInfos.Affiche.Image else CouleurInfos.Affiche.Nom,
+                    aAffiche = if (imageExists) CouleurInfos.Affiche.Image else CouleurInfos.Affiche.Nom,
                     imageCouleurFichie = imageFile,
                     nomSiDispo = couleur,
-                    countDeDisponibility = quantityAvailable
+                    countDeDisponibility = matchingAchat?.quantityAchete ?: 0,
+                    colorIndex = colorIndex,
+                    imageExists = imageExists
                 )
             )
         }
@@ -75,11 +92,9 @@ fun createCouleurInfosFromProduct(
     return CouleurInfosWithAchat(couleurInfosList, firstMatchingAchat)
 }
 
+
 @Composable
-fun Infos(
-    achat: D_AchatOperation?,
-    modifier: Modifier = Modifier
-) {
+fun Infos(achat: D_AchatOperation?, modifier: Modifier = Modifier) {
     achat?.let { achatData ->
         Card(
             modifier = modifier,
@@ -115,19 +130,5 @@ fun Infos(
                 }
             }
         }
-    }
-}
-
-data class CouleurInfos(
-    val bsonObjectId: BsonObjectId,
-    val imageNameSiDispo: String = "NonTrouve.webp",
-    val aAffiche: Affiche = Affiche.Image,
-    val imageCouleurFichie: File,
-    val nomSiDispo: String = "Non Defini Car Il Y Image",
-    val countDeDisponibility: Int = 0
-) {
-    enum class Affiche {
-        Image,
-        Nom
     }
 }

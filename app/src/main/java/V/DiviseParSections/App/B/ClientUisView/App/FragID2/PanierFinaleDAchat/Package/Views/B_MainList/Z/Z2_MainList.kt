@@ -117,12 +117,12 @@ fun ProductGroup(
 
                 if (couleurInfosWithAchat.couleurInfosList.isNotEmpty()) {
                     LazyRowAvailableColorsImageOuNom(
-                        data = produit,
                         couleurInfos = couleurInfosWithAchat.couleurInfosList,
                         infos = {
                             // Fixed: Pass the matching achat to the Infos composable
                             Infos(achat = couleurInfosWithAchat.matchingAchat)
-                        }
+                        } ,
+                        sizeDeChaqueItem = 100.dp
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
