@@ -35,6 +35,7 @@ fun Sec1Frag3(
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
 ) {
     val achats = viewModel.d_AchatOperationComposeRepositoryPJ17.filteredDatasValue
+
     MainList(
         modifier = modifier,
         viewModel = viewModel,
@@ -48,6 +49,7 @@ fun MainList(
     achats: List<D_AchatOperation> = emptyList(),
     viewModel: ZViewModel_Sec1Frag3
 ) {
+    // Group achats by parentProduitBsonObjectId
     val groupedAchats = achats.groupBy { it.parentProduitBsonObjectId }
 
     LazyColumn(
@@ -118,6 +120,7 @@ fun ProductGroup(
                         data = produit,
                         couleurInfos = couleurInfosWithAchat.couleurInfosList,
                         infos = {
+                            // Fixed: Pass the matching achat to the Infos composable
                             Infos(achat = couleurInfosWithAchat.matchingAchat)
                         }
                     )

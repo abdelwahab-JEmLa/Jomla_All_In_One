@@ -107,6 +107,18 @@ class DAchatOperationComposeRepositoryProtoJuin17(
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
             ),
             D_AchatOperation(
+                parentBonVentObjectId = ouvertD_AchatOperationBsonId,
+                bsonObjectId = "test_achat_300",
+                nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_3",
+                parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
+                produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
+                parentComptVendeurCreateurObjectId = "vendeur_001",
+                clientParentObjectId = "client_001",
+                quantityAchete = 5,
+                provisoireMonPrix = 200.0,
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+            ),
+            D_AchatOperation(
                 bsonObjectId = "test_achat_003",
                 nomImageFichieOuApellationDuCouleur = "Produit Test 3",
                 parentBonVentObjectId = "bon_002",
