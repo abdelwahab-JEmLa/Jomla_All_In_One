@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B_ClientsStateCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.D_TransactionCommercialCompoRepository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.DTransactionCommercialCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DSubClassFunctionality_CouleurAchatOperation.trouve_nomImageFichieOuApellationDuCouleurPar
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -31,10 +31,10 @@ class ACentralCompoRepositoryProtoJuin9(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val clientsState: B_ClientsStateCompoRepository,
-    val transactionCommercialState: D_TransactionCommercialCompoRepository,
+    val transactionCommercialState: DTransactionCommercialCompoRepository,
 
     val dCouleurAchatOperationRepositoryComposable: DCouleurAchatOperationRepositoryComposable,
-    val dSubClassFunctionality_CouleurAchatOperation: DSubClassFunctionality_CouleurAchatOperation,
+    val dCouleurAchatOperationSubClassFunctionality: DSubClassFunctionality_CouleurAchatOperation,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
@@ -45,29 +45,25 @@ class ACentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-
-    val ouvertData_dCouleurAchatOperation_SubClassFunctionality by derivedStateOf {
-        dCouleurAchatOperationRepositoryComposable.datasValue.find {
-            it.bsonObjectId ==
-                    zAppComptRepositoryComposable.currentAppCompt?.couleurAchateOperationIdOuvertPourCeCompt
-        }
-    }
+    val ouvertData_dCouleurAchatOperation_SubClassFunctionality = dCouleurAchatOperationRepositoryComposable.ouvertData
+    val ouvertData_bProduitDataBase_SubClassFunctionality = bProduitDataBase_SubClassFunctionality.ouvertData
 
     fun ouvreAddDataDepuitIndexCouleur(
+        article: ArticlesBasesStatsTable,
         index: Int
     ): Unit {
-        val data = dSubClassFunctionality_CouleurAchatOperation.getDataDepuitIndex(
+        val data = dCouleurAchatOperationSubClassFunctionality.getDataDepuitIndex(
             transactionCommercialState.ouvertData,
-            bProduitDataBase_SubClassFunctionality.ouvertData!!,
+            article,
             nomImageFichieOuApellationDuCouleur= trouve_nomImageFichieOuApellationDuCouleurPar(
                 index,
-                ouvertData_bProduitDataBase_SubClassFunctionality
+                article
             )
         )
 
         dCouleurAchatOperationRepositoryComposable.addOrUpdateData(data)
 
-        dSubClassFunctionality_CouleurAchatOperation.confirmeOldOuvertData(
+        dCouleurAchatOperationSubClassFunctionality.confirmeOldOuvertData(
             ouvertData_dCouleurAchatOperation_SubClassFunctionality
         )?.let {
             dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
@@ -83,62 +79,6 @@ class ACentralCompoRepositoryProtoJuin9(
             )
     }
 
-
-    val ouvertData_bProduitDataBase_SubClassFunctionality by derivedStateOf {
-        bProduitDataBase_SubClassFunctionality.datasValue.firstOrNull {
-            it.bsonObjectId ==
-                    ouvertData_dCouleurAchatOperation_SubClassFunctionality?.parentProduitBsonObjectId
-        }
-    }
-
-    val currentActiveVentProduit by derivedStateOf {
-        bProduitDataBase_SubClassFunctionality.datasValue.find {
-            it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
-                ?.couleurAchateOperationIdOuvertPourCeCompt
-        }
-    }
-
-    val sortedDatasValue: List<ArticlesBasesStatsTable> by derivedStateOf {
-        val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
-
-        val (regularProducts, orphanProducts) = bProduitDataBase_SubClassFunctionality.datasValue.partition { product ->
-            val categoryId = product.idParentCategorie ?: 0L
-            val category = categoryMap[categoryId]
-            val catalogueId = category?.catalogueParentId ?: 4L
-
-            category != null &&
-                    catalogueId != 4L &&
-                    !category.nom.equals("NONE", ignoreCase = true)
-        }
-
-        val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                val catalogueId = category?.catalogueParentId ?: 4L
-                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
-            }.thenBy { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
-                    ?: "ZZZZZ_NO_CATEGORY"
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
-                .thenBy { it.nom.lowercase() }
-        )
-
-        sortedRegular + sortedOrphan
-    }
-
-    val ouvert_zAppComptRepositoryComposable = zAppComptRepositoryComposable.currentAppCompt
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
         bProduitDataBase_SubClassFunctionality.datasValue.filteredParCatalogueBsonId()

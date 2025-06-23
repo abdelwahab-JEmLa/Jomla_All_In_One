@@ -109,7 +109,7 @@ fun ArticleImageWithOverlay(
                     onClickToOpenWindow(article, colorIndex)
                     try {
                         viewModel.aCentralDatasHandlerProtoJuin9
-                            .ouvreAddDataDepuitIndexCouleur(colorIndex)
+                            .ouvreAddDataDepuitIndexCouleur(article,colorIndex)
                         println("color index $colorIndex for article ${article.id}")
 
                     } catch (e: IndexOutOfBoundsException) {

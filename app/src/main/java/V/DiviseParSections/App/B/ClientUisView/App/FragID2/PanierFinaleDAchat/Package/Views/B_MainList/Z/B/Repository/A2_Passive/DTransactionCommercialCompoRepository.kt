@@ -27,7 +27,7 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class D_TransactionCommercialCompoRepository(
+class DTransactionCommercialCompoRepository(
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)

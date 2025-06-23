@@ -255,7 +255,7 @@ fun B_CouleurAfficheur(
                         )
                     }
                     viewModel.centralDatasHandler
-                        .ouvreAddDataDepuitIndexCouleur(index)
+                        .ouvreAddDataDepuitIndexCouleur(article, index)
 
                 },
             shape = RoundedCornerShape(12.dp),
