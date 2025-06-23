@@ -25,6 +25,8 @@ class ACentralCompoRepositoryProtoJuin9(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val a_ProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
+    val bProduitDataBaseSubClassFunctionality: BProduitDataBaseSubClassFunctionality,
+
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 

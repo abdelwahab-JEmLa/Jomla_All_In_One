@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppComptRepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.compose.runtime.Stable
@@ -16,6 +17,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
+
+
+@Stable
+class BProduitDataBaseSubClassFunctionality(
+    bProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
+    val zAppComptRepositoryComposable: ZAppComptRepositoryComposable,
+) {
+    val datasValue = bProduitDataBaseComposeRepositoryPJ17.datasValue
+
+    val currentActiveVentProduit by derivedStateOf {
+        datasValue.find {
+            it.bsonObjectId == zAppComptRepositoryComposable.currentAppCompt
+                ?.produitIdActuelleOuvertPourVentAuWindow
+        }
+    }
+}
 
 @Stable
 class BProduitDataBaseComposeRepositoryPJ17(
