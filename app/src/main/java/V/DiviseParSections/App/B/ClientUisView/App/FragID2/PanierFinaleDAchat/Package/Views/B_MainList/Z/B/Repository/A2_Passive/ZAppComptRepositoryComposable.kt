@@ -62,10 +62,7 @@ class ZAppComptRepositoryComposable(
 @Stable
 class ZAppComptSubClassFunctionality {
     private lateinit var repository: ZAppComptRepositoryComposable
-
-    fun initialize(repo: ZAppComptRepositoryComposable) {
-        this.repository = repo
-    }
+    fun initialize(repo: ZAppComptRepositoryComposable) { this.repository = repo }
 
     fun ouvrireProduitPourCeCompt(
         idOuvertProduitOnModeVent: String,
