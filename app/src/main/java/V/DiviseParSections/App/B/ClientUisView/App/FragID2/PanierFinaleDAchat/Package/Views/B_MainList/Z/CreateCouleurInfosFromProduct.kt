@@ -38,7 +38,7 @@ data class CouleurInfos(
 }
 
 fun createCouleurInfosFromProduct(
-    produit: ArticlesBasesStatsTable,
+    produit: ArticlesBasesStatsTable?,
     achats: List<D_AchatOperation>
 ): CouleurInfosWithAchat {
     val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
@@ -46,16 +46,16 @@ fun createCouleurInfosFromProduct(
     var firstMatchingAchat: D_AchatOperation? = null
 
     val colorMappings = listOf(
-        produit.couleur1 to 0,
-        produit.couleur2 to 1,
-        produit.couleur3 to 2,
-        produit.couleur4 to 3
+        produit?.couleur1 to 0,
+        produit?.couleur2 to 1,
+        produit?.couleur3 to 2,
+        produit?.couleur4 to 3
     )
 
     colorMappings.forEach { (couleur, colorIndex) ->
         if (!couleur.isNullOrBlank()) {
             val imageIndex = colorIndex + 1
-            val fileName = "${produit.id}_$imageIndex"
+            val fileName = "${produit?.id}_$imageIndex"
 
             val imageFile = listOf("jpg", "webp", "jpeg", "png")
                 .map { File("$basePath/$fileName.$it") }

@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.CouleurInfos
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Infos
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -52,8 +54,8 @@ import com.bumptech.glide.signature.ObjectKey
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
     couleurInfos: List<CouleurInfos>,
+    couleurInfosWithAchat_matchingAchat: D_AchatOperation?,
     sizeDeChaqueItem: Dp,
-    infos: @Composable () -> Unit,
 ) {
     val availableCouleurInfos = couleurInfos.filter { it.countDeDisponibility > 0 }
     if (availableCouleurInfos.isEmpty()) return
@@ -65,22 +67,20 @@ fun LazyRowAvailableColorsImageOuNom(
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         items(availableCouleurInfos) { couleurInfo ->
-            // Utiliser la même taille pour tous les items
-            val itemWidth = sizeDeChaqueItem
-
             Column(
-                modifier = Modifier.width(itemWidth),
+                modifier = Modifier.width(sizeDeChaqueItem),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ImageDisplayer(
                     couleurInfo = couleurInfo,
                     modifier = Modifier
-                        .width(itemWidth)
+                        .width(sizeDeChaqueItem)
                         .height(sizeDeChaqueItem),
                     contentScale = if (!couleurInfo.imageExists) ContentScale.Crop else ContentScale.Fit,
-                    imageSize = DpSize(itemWidth, sizeDeChaqueItem),
+                    imageSize = DpSize(sizeDeChaqueItem, sizeDeChaqueItem),
                 )
-                infos()
+
+                Infos(achat = couleurInfosWithAchat_matchingAchat)
             }
         }
     }
@@ -92,9 +92,9 @@ fun LazyRowAvailableColorsImageOuNom(
 fun ImageDisplayer(
     modifier: Modifier = Modifier,
     couleurInfo: CouleurInfos? = null,
-    onClickToOpenWindow: (CouleurInfos) -> Unit = {},
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
+    onClickToOpenWindow: (CouleurInfos) -> Unit = {},
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(

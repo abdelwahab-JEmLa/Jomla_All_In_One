@@ -19,7 +19,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
-@Preview @Composable private fun Sec1Frag3Prv() { Sec1Frag3() }
+@Preview
+@Composable
+private fun Sec1Frag3Prv() {
+    Sec1Frag3()
+}
 
 @Composable
 fun Sec1Frag3(
@@ -106,20 +109,15 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            relatedProduitDataBase?.let { produit ->
-                // Fixed: Use the new return type structure
-                val couleurInfosWithAchat = remember(produit.id) {
-                    createCouleurInfosFromProduct(
-                        produit,
-                        achats
-                    )
-                }
-
-                if (couleurInfosWithAchat.couleurInfosList.isNotEmpty()) {
+            createCouleurInfosFromProduct(
+                relatedProduitDataBase,
+                achats
+            ).let {
+                if (it.couleurInfosList.isNotEmpty()) {
                     LazyRowAvailableColorsImageOuNom(
-                        couleurInfos = couleurInfosWithAchat.couleurInfosList,
-                        infos = { Infos(achat = couleurInfosWithAchat.matchingAchat) } ,
-                        sizeDeChaqueItem = 250.dp
+                        couleurInfos = it.couleurInfosList,
+                        couleurInfosWithAchat_matchingAchat = it.matchingAchat,
+                        sizeDeChaqueItem = 100.dp
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
