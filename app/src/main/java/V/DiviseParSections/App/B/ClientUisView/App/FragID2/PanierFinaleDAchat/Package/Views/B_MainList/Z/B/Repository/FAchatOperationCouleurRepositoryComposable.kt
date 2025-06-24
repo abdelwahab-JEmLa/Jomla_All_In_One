@@ -264,16 +264,14 @@ data class FCouleurVentOperation(
     enum class Type { SiNonDispo, CommandeDeLui }
 
     fun isSameEntity(other: FCouleurVentOperation) =
+        id == other.id &&
         nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
                 parentProduitId == other.parentProduitId &&
                 parentBonVentId == other.parentBonVentId &&
                 parentZAppComptID == other.parentZAppComptID
 
-    override fun equals(other: Any?) =
-        this === other || (other is FCouleurVentOperation && isSameEntity(other) &&
-                quantityAchete == other.quantityAchete && provisoireMonPrix == other.provisoireMonPrix)
-
     override fun hashCode() = Objects.hash(
+        id,
         nomImageFichieOuApellationDuCouleur,
         parentProduitId,
         parentBonVentId,
@@ -281,6 +279,8 @@ data class FCouleurVentOperation(
         quantityAchete,
         provisoireMonPrix
     )
+    override fun equals(other: Any?) = this === other || (other is FCouleurVentOperation && isSameEntity(other) )
+
 
     companion object {
         val ref =

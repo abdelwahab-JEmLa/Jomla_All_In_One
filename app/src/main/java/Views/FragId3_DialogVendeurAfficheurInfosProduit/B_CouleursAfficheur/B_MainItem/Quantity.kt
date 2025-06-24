@@ -1,5 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -18,6 +19,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun QuantityButton(
+    article: ArticlesBasesStatsTable,
+    color: Int,
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelInitApp: ViewModelInitApp,
     quantity: Int,
@@ -58,7 +61,12 @@ fun QuantityButton(
             }
 
             onClick()
-            viewModel.update()
+            viewModel.acheter(
+                produit =article,
+                baseFileName = "${article.id}_$color",
+                colorIndex = color,
+                quantity = quantity
+            )
         },
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         shape = RoundedCornerShape(8.dp),

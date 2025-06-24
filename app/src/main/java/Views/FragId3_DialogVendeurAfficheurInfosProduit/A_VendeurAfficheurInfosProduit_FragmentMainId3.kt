@@ -107,7 +107,7 @@ fun MainUi(
     onPourFermeWindows: () -> Unit,
 ) {
     val idProduitActuelle = currentSale.idArticle
-    val centralDatasHandler = viewModel.centralDatasHandler
+    val centralDatasHandler = viewModel.aCentralDatasHandlerProtoJuin9
     val ouvertTransactionalCommercial = centralDatasHandler.ouvertTransactionCommercial
 
     if (ouvertTransactionalCommercial == null) {

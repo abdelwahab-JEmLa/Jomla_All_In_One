@@ -1,18 +1,27 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import androidx.lifecycle.ViewModel
 
 class VendeurAfficheurInfosProduitViewModel(
-    val centralDatasHandler: ACentralCompoRepositoryProtoJuin9,
+    val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    val d_AchatOperationComposeRepositoryPJ17=centralDatasHandler.dCouleurAchatOperationRepositoryComposable
+    fun acheter(
+        produit: ArticlesBasesStatsTable,
+        baseFileName: String,
+        colorIndex: Int,
+        quantity: Int,
+    ) {
+        val data = aCentralDatasHandlerProtoJuin9
+            .zAppComptRepositoryComposable
+            .ouvrireProduitEtCouleurVent(produit, baseFileName)
 
-    fun update() {
-
+        data.let {
+            aCentralDatasHandlerProtoJuin9
+                .dCouleurAchatOperationRepositoryComposable
+                .acheterUneCouleur(it, produit, quantity, colorIndex)
+        }
     }
 
-    fun ajoutCouleurAchatOperationEtFermeConfirmeActuelle(index: Int) {
-
-    }
 }

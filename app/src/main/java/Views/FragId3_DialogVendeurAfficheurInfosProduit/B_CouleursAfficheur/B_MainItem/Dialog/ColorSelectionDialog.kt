@@ -1,5 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.QuantityButton
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -31,6 +32,9 @@ import androidx.compose.ui.window.Dialog
 fun ColorSelectionDialog(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelInitApp: ViewModelInitApp,
+    article: ArticlesBasesStatsTable,
+    color: Int,
+
     compose_1_1_CouleurAcheteOperationVid: Long,
     onDismiss: () -> Unit,
     currentQuantity: Int,
@@ -81,7 +85,9 @@ fun ColorSelectionDialog(
                         onDismiss()
                     },
                     viewModelInitApp = viewModelInitApp,
-                    compose_1_1_CouleurAcheteOperationVid= compose_1_1_CouleurAcheteOperationVid,
+                    compose_1_1_CouleurAcheteOperationVid = compose_1_1_CouleurAcheteOperationVid,
+                    article = article,
+                    color = color
                 )
             }
         }
@@ -91,6 +97,9 @@ fun ColorSelectionDialog(
 @Composable
 private fun QuantityGrid(
     viewModel: VendeurAfficheurInfosProduitViewModel,
+    article: ArticlesBasesStatsTable,
+    color: Int,
+
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
     viewModelInitApp: ViewModelInitApp,
@@ -137,14 +146,15 @@ private fun QuantityGrid(
         items(quantities.size) { index ->
             val quantityNumber = quantities[index]
             QuantityButton(
-                viewModel=viewModel,
+                viewModel =viewModel,
                 viewModelInitApp = viewModelInitApp,
                 quantity = quantityNumber,
                 isSelected = quantityNumber == currentQuantity,
                 onClick = {
                     onQuantitySelected(quantityNumber)
                 },
-                compose_1_1_CouleurAcheteOperationVid=compose_1_1_CouleurAcheteOperationVid,
+                compose_1_1_CouleurAcheteOperationVid =compose_1_1_CouleurAcheteOperationVid,
+                article =article, color = color
             )
         }
     }

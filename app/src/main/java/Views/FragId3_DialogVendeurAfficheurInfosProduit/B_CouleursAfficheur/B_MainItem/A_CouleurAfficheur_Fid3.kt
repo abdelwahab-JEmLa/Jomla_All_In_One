@@ -72,11 +72,11 @@ fun B_CouleurAfficheur(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
+    article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     index: Int,
     modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
-    article: ArticlesBasesStatsTable,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
     currentClient: B_ClientInfosProtoJuin3?,
@@ -254,7 +254,7 @@ fun B_CouleurAfficheur(
                             it.idColore
                         )
                     }
-                    viewModel.centralDatasHandler
+                    viewModel.aCentralDatasHandlerProtoJuin9
                         .ouvreAddDataDepuitIndexCouleur(article, index)
 
                 },
@@ -347,6 +347,8 @@ fun B_CouleurAfficheur(
                     showDialog = false
                     isSelected = false
                 },
+                article = article,
+                color = index
             )
         }
     }
