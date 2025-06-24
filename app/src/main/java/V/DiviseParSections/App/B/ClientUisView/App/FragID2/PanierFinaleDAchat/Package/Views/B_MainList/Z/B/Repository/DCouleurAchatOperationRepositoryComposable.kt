@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -33,7 +33,6 @@ object DSubClassFunctionality_CouleurAchatOperation {
             nomImageFichieOuApellationDuCouleur = nomImageFichieOuApellationDuCouleur,
         )
     }
-
 
 
     fun trouve_nomImageFichieOuApellationDuCouleurPar(
@@ -78,9 +77,9 @@ object DSubClassFunctionality_CouleurAchatOperation {
     }
 
     fun confirmeOldOuvertData(ouvertData_dCouleurAchatOperation_SubClassFunctionality: D_AchatOperation?): D_AchatOperation? {
-              return  ouvertData_dCouleurAchatOperation_SubClassFunctionality?.copy(
-                    etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
-                )
+        return ouvertData_dCouleurAchatOperation_SubClassFunctionality?.copy(
+            etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
+        )
     }
 }
 
@@ -89,17 +88,29 @@ class DCouleurAchatOperationRepositoryComposable(
     private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
+    val centralRepo by centralRepoLazy
+
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val itsTestModel = true
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+    val datasFiltered by derivedStateOf {
+        datasValue.filter {
+            it.parentComptVendeurCreateurObjectId == centralRepo.zAppComptRepositoryComposable
+                .currentAppCompt.bsonObjectId
+        }
+    }
 
     val ouvertData by derivedStateOf {
-        datasValue.find {
-            it.bsonObjectId ==
-                    centralRepoLazy.value.zAppComptRepositoryComposable.currentAppCompt!!.bsonObjectId
+        datasFiltered.lastOrNull {
+            it.etateActuellementEst.ordinal <=
+                    D_AchatOperation.EtateActuellementEst.ChoisiQuantityDialogOuvert.ordinal
         }
+    }
+
+    fun ouvreData(): Unit {
+
     }
 
     val ouvertD_AchatOperationBsonId = "bon_001"
@@ -107,7 +118,7 @@ class DCouleurAchatOperationRepositoryComposable(
     val filteredDatasValue by derivedStateOf {
         datasValue.filter {
             it.parentBonVentObjectId == ouvertD_AchatOperationBsonId
-                    && it.etateActuellementEst == D_AchatOperation.EtateActuellementEst.CONFIRME
+                    && it.etateActuellementEst == D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
         }
     }
 
@@ -142,11 +153,11 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
-                clientParentObjectId = "client_001",
+                parentClientObjectId = "client_001",
                 produitAcheterAncienID = 1L,
                 quantityAchete = 5,
                 provisoireMonPrix = 150.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_100",
@@ -154,11 +165,11 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
-                clientParentObjectId = "client_001",
+                parentClientObjectId = "client_001",
                 produitAcheterAncienID = 1L,
                 quantityAchete = 5,
                 provisoireMonPrix = 150.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_002",
@@ -166,11 +177,11 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd2,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
-                clientParentObjectId = "client_001",
+                parentClientObjectId = "client_001",
                 produitAcheterAncienID = 2L,
                 quantityAchete = 3,
                 provisoireMonPrix = 200.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             ),
             D_AchatOperation(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
@@ -179,10 +190,10 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
                 produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
                 parentComptVendeurCreateurObjectId = "vendeur_001",
-                clientParentObjectId = "client_001",
+                parentClientObjectId = "client_001",
                 quantityAchete = 10,
                 provisoireMonPrix = 200.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             ),
             D_AchatOperation(
                 parentBonVentObjectId = ouvertD_AchatOperationBsonId,
@@ -191,10 +202,10 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
                 produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
                 parentComptVendeurCreateurObjectId = "vendeur_001",
-                clientParentObjectId = "client_001",
+                parentClientObjectId = "client_001",
                 quantityAchete = 5,
                 provisoireMonPrix = 200.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_003",
@@ -202,11 +213,11 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentBonVentObjectId = "bon_002",
                 parentProduitBsonObjectId = "produit_003",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
-                clientParentObjectId = "client_002",
+                parentClientObjectId = "client_002",
                 produitAcheterAncienID = 3L,
                 quantityAchete = 2,
                 provisoireMonPrix = 75.5,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ClickOuvre
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Cree
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_004",
@@ -214,11 +225,11 @@ class DCouleurAchatOperationRepositoryComposable(
                 parentBonVentObjectId = "bon_002",
                 parentProduitBsonObjectId = "produit_004",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
-                clientParentObjectId = "client_002",
+                parentClientObjectId = "client_002",
                 produitAcheterAncienID = 4L,
                 quantityAchete = 1,
                 provisoireMonPrix = 500.0,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
             )
         )
     }
@@ -254,7 +265,15 @@ data class D_AchatOperation(
 
     // Section Related Parents Infos
     var parentComptVendeurCreateurObjectId: String = "",
-    var clientParentObjectId: String = "",
+
+    // Class FastNestedIn Infos
+        //Section Parent Period Vent
+    var parentPeriodVentObjectId: BsonObjectId = BsonObjectId(),
+    var parentPeriodVentEndTimeTamp: Long = System.currentTimeMillis(),
+
+    //Section Parent Transaction
+    var parentClientObjectId: String = "",
+    var parentClientKenName: String = "",
 
     var produitAcheterAncienID: Long = 0L,
     var parentProduitNom: String = "",
@@ -266,18 +285,21 @@ data class D_AchatOperation(
     // Section StatuesMutable
     var quantityAchete: Int = 1,
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.ClickOuvre,
+        EtateActuellementEst.Cree,
     var provisoireMonPrix: Double = 0.0,
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
     enum class EtateActuellementEst {
-        ClickOuvre,
-
-        Affiche,
-        CONFIRME,
+        Cree,
+        ParentBonVentOuvert,
+        ParentProduitOuvert,
+        ChoisiQuantityDialogOuvert,
+        ChoisiQuantityConfirme,
+        ParentProduitConfirme,
+        ParentBonVentConfirme,
         SUPPRIME_AU_PREMIER_PICK,
-        SUPP_AU_PANIER_FINALE
+        SUPP_AU_PANIER_FINALE,
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }

@@ -24,7 +24,7 @@ fun B_ProduitCommande(
 ) {
     val TAG = "B_ProduitCommande"
 
-    // Verify that this product has CONFIRME status before proceeding
+    // Verify that this product has ParentBonVentConfirme status before proceeding
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }

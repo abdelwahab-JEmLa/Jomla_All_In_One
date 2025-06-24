@@ -59,7 +59,7 @@ fun Couleurs(
     periodFilter: Long? = null,
 
     ) {
-    // Only proceed if the product is in CONFIRME state
+    // Only proceed if the product is in ParentBonVentConfirme state
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }

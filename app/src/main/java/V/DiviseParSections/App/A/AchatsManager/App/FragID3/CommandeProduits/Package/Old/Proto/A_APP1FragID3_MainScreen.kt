@@ -104,10 +104,10 @@ fun A_APP1FragID3_MainScreen(
                         Log.d(TAG, "Filtering product 127...")
                     }
 
-                    // 1. Check CONFIRME status
+                    // 1. Check ParentBonVentConfirme status
                     val hasConfirmedStatus = product.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
                     if (isProduct127) {
-                        Log.d(TAG, "Product 127 CONFIRME status check: $hasConfirmedStatus")
+                        Log.d(TAG, "Product 127 ParentBonVentConfirme status check: $hasConfirmedStatus")
                     }
 
                     if (!hasConfirmedStatus) {
