@@ -68,7 +68,7 @@ private fun parsedData(values: List<String>) = D_AchatOperation(
     etateActuellementEst = try {
         D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
     } catch (e: IllegalArgumentException) {
-        D_AchatOperation.EtateActuellementEst.Cree
+        D_AchatOperation.EtateActuellementEst.CreeSlote
     },
     provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()

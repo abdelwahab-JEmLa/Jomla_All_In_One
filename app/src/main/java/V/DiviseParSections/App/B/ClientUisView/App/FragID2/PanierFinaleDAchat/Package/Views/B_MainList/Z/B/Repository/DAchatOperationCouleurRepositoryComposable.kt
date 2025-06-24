@@ -105,8 +105,8 @@ class DAchatOperationCouleurRepositoryComposable(
 
     val ouvertData by derivedStateOf {
         datasFiltered.lastOrNull {
-            it.etateActuellementEst.ordinal <=
-                    D_AchatOperation.EtateActuellementEst.ChoisiQuantityDialogOuvert.ordinal
+            it.etateActuellementEst == D_AchatOperation.EtateActuellementEst.CreeSlote
+
         } ?: D_AchatOperation(parentComptVendeurCreateurObjectId = ouvertDataID)
     }
 
@@ -114,6 +114,17 @@ class DAchatOperationCouleurRepositoryComposable(
 
     }
 
+    fun ouvrireBonVent(clientObjectID: String) {
+        addOrUpdateData(
+            ouvertData.copy(
+                parentBonVentObjectId = BsonObjectId().toHexString(),
+                parentClientObjectId = clientObjectID,
+                parentEPeriodVentObjectId = "p1",
+                parentEPeriodVentStartDate = "juin-24",
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentOuvert
+            )
+        )
+    }
 
     val ouvertD_AchatOperationBsonId = "bon_001"
 
@@ -219,7 +230,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitAncienId = 3L,
                 quantityAchete = 2,
                 provisoireMonPrix = 75.5,
-                etateActuellementEst = D_AchatOperation.EtateActuellementEst.Cree
+                etateActuellementEst = D_AchatOperation.EtateActuellementEst.CreeSlote
             ),
             D_AchatOperation(
                 bsonObjectId = "test_achat_004",
@@ -270,8 +281,8 @@ data class D_AchatOperation(
 
     // Class FastNestedIn Infos
     //Section Parent Period Vent
-    var parentEPeriodVentObjectId: String = BsonObjectId().toHexString(),
-    var parentEPeriodVentEndTimeTamp: Long = System.currentTimeMillis(),
+    var parentEPeriodVentObjectId: String = "",
+    var parentEPeriodVentStartDate: String = "",
 
     //Section Parent Transaction
     var parentClientObjectId: String = "",
@@ -287,13 +298,13 @@ data class D_AchatOperation(
     // Section StatuesMutable
     var quantityAchete: Int = 1,
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.Cree,
+        EtateActuellementEst.CreeSlote,
     var provisoireMonPrix: Double = 0.0,
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 ) {
     enum class EtateActuellementEst {
-        Cree,
+        CreeSlote,
         ParentBonVentOuvert,
         ParentProduitOuvert,
         ChoisiQuantityDialogOuvert,

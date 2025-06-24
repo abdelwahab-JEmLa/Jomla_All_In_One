@@ -96,7 +96,7 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            viewModel.centralDatasHandler.comptAppState
+            viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
                 .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clickedMarker.id.toLong())
 
             if (showMarkerDetails) clickedMarker.showInfoWindow()

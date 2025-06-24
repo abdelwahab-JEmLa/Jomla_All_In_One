@@ -15,7 +15,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    single { ZAppCompt_RepositoryComposable( lazy { get() },get(),) }
+    single { ZAppCompt_RepositoryComposable( get(),) }
     single { Z_SubClassFunctionality_ZAppCompt(lazy { get() }) }
 
     single { B_ClientsStateCompoRepository(get()) }

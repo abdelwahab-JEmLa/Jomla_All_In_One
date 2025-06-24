@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +12,12 @@ import java.io.File
 class Sec10Frag1ViewModel(
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    val subClassFunctionality_zAppComptRepositoryComposable =aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.subClassFunctionality
 
     fun addNewDAchatCouleurOperationEtOuvreLe(
         article: ArticlesBasesStatsTable,
         indexCouleur: Int,
     ) {
-        val data = D_AchatOperation(
+      /*  val data = D_AchatOperation(
             parentProduitBsonObjectId = article.bsonObjectId,
             nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
                 article, indexCouleur
@@ -34,7 +32,7 @@ class Sec10Frag1ViewModel(
             .ouvrireCouleurAchatOperationPourCeCompt(
             data.bsonObjectId,
             "${article.nom}_${data.nomImageFichieOuApellationDuCouleur}"
-        )
+        )                   */
     }
 
     data class UiState(

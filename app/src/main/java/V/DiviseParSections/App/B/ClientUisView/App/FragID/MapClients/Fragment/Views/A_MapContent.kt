@@ -78,9 +78,9 @@ fun MapContent(
     }
 
     LaunchedEffect(
-        viewModel.centralDatasHandler.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.centralDatasHandler.transactionCommercialState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.centralDatasHandler.clientsState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.aCentralCompoRepositoryProtoJuin9.transactionCommercialState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.aCentralCompoRepositoryProtoJuin9.clientsState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
@@ -159,7 +159,7 @@ fun MapContent(
                 }
             )
         }
-        val clientOuCaMarqueGpsEstOuvert = viewModel.centralDatasHandler
+        val clientOuCaMarqueGpsEstOuvert = viewModel.aCentralCompoRepositoryProtoJuin9
             .clientOuSonMarqueMapEstOuvert
 
         if (clientOuCaMarqueGpsEstOuvert != null) {

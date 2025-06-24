@@ -61,10 +61,8 @@ class Z_SubClassFunctionality_ZAppCompt(
 
 @Stable
 class ZAppCompt_RepositoryComposable(
-    val subClassFunctionalityLazy: Lazy<Z_SubClassFunctionality_ZAppCompt>,
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17
 ) {
-    val subClassFunctionality by subClassFunctionalityLazy
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
@@ -79,6 +77,21 @@ class ZAppCompt_RepositoryComposable(
         composScope.launch {
             dao.getAllFlow().collect { _datas.value = it }
         }
+    }
+
+    fun ouvrireUnBonVent(
+        ouvertClientOnVentKeyId: String,
+        ouvertClientOnVentNom: String,
+    ): Unit {
+        val ouvertEPeriodVentStartDate = ouvertData!!.ouvertEPeriodVentStartDateTime
+
+        addOrUpdateData(
+            ouvertData!!.copy(
+                ouvertBonVentKeyId = "$ouvertEPeriodVentStartDate -<($ouvertClientOnVentNom)",
+                ouvertClientOnVentKeyId = ouvertClientOnVentKeyId,
+                ouvertClientOnVentNom = ouvertClientOnVentNom
+            )
+        )
     }
 
     fun addOrUpdateData(data: Z_AppCompt) {
@@ -135,14 +148,37 @@ data class Z_AppCompt(
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
+
+    //-----------------Vent Createur-----------
+
+    //Section Parent Period Vent
+    var ouvertEPeriodVentKeyId: String = "p1",
+    var ouvertEPeriodVentStartDateTime: String = "Juin-24 -<(08:00 AM)",
+
+    //Section Parent Transaction
+    var ouvertBonVentKeyId: String = "",
+    var ouvertClientOnVentKeyId: String = "",
+    var ouvertClientOnVentNom: String = "",
+
+    //Section ouvertProduitAncien
+    var ouvertProduitOnVentKeyID: String = "",
+    var ouvertProduitOnVentAncienId: Long = 0L,
+    var ouvertProduitOnVentNom: String = "",
+
+    var ouvertCouleurOnVentObjID: String = "",
+    var ouvertCouleurOnVentNomImageFichie: String = "",
 ) {
-    override fun equals(other: Any?) = this === other || (other is Z_AppCompt && isSameEntity(other))
+    override fun equals(other: Any?) =
+        this === other || (other is Z_AppCompt && isSameEntity(other))
+
     fun isSameEntity(other: Z_AppCompt) =
         bsonObjectId == other.bsonObjectId
                 && nom == other.nom
+
     override fun hashCode() = Objects.hash(
         bsonObjectId,
-        nom,)
+        nom,
+    )
 
     companion object {
         val caRef = Firebase.database.getReference(

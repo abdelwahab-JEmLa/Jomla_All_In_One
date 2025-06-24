@@ -42,7 +42,7 @@ fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
             if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.centralDatasHandler.comptAppState
+                viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
             }
         },

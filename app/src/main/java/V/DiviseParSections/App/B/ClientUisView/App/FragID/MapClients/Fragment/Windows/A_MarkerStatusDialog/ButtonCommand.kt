@@ -55,16 +55,16 @@ fun CommandButton(
             updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 
             if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.centralDatasHandler.comptAppState
+                viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clientOuCaMarqueGpsEstOuvert.id)
             }
 
-            /*viewModel.centralDatasHandler
-                .transactionCommercialState
-                .ouvrireTransactionCommercial(
-                 /*   it.bsonObjectId,
-                    "${it.nomClientConcerned}->"           */
-                )      */
+            if (clientOuCaMarqueGpsEstOuvert != null) {
+                viewModel.ouvrireBonVent(
+                    ouvertClientOnVentObjectId = clientOuCaMarqueGpsEstOuvert.bsonObjectId,
+                    ouvertClientOnVentNom = clientOuCaMarqueGpsEstOuvert.nom
+                )
+            }
 
             viewModel.startRecordIfNot()
         },
