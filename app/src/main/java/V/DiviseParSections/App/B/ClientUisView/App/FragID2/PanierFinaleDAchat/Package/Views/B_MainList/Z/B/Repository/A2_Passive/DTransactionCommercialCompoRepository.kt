@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -28,27 +29,32 @@ import java.util.Objects
 
 @Stable
 class DTransactionCommercialCompoRepository(
+    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
+    val centralRepo by centralRepoLazy
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
     val datasState: State<List<C3_TransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    fun ouvrireTransactionCommercial() {
-        addOrUpdateData(
-            ouvertData.copy(
-                etateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            )
-        )
+    val ouvertData by derivedStateOf {
+        datasValue.find {
+            it.bsonObjectId == centralRepo.zAppComptRepositoryComposable
+                .currentAppCompt
+                .cTransactionCommercialIdOuvertPourCeCompt
+        }
     }
 
-    val ouvertData by derivedStateOf {
-        datasValue.lastOrNull {
-            it.etateActuellementEst == EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        } ?: C3_TransactionCommercial(
-            parentZAppComptID = "b1"
-        )
+    fun ouvrireTransactionCommercial(bsonObjectId: String, keyNom: String) {
+        centralRepo.zAppComptRepositoryComposable.let {
+            it.addOrUpdateData(
+                it.currentAppCompt.copy(
+                    cTransactionCommercialIdOuvertPourCeCompt = bsonObjectId,
+                    cTransactionCommercialKeyOuvertPourCeCompt = keyNom
+                )
+            )
+        }
     }
 
     private val _loadingProgress = mutableFloatStateOf(0f)

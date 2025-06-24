@@ -47,11 +47,15 @@ fun CommandButton(
                 viewModel = viewModel,
                 relatedClientID = clientId,
                 newEtate = etateActuellementEst1
-            ) {}
+            ) {
+                viewModel.centralDatasHandler
+                    .transactionCommercialState
+                    .ouvrireTransactionCommercial(
+                        it.bsonObjectId,
+                        "${it.nomClientConcerned}->"
+                    )
+            }
 
-            viewModel.centralDatasHandler
-                .transactionCommercialState
-                .ouvrireTransactionCommercial()
 
             updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
 

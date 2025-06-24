@@ -53,7 +53,7 @@ class ACentralCompoRepositoryProtoJuin9(
         index: Int
     ): Unit {
         val data = dCouleurAchatOperationSubClassFunctionality.getDataDepuitIndex(
-            transactionCommercialState.ouvertData,
+            transactionCommercialState.ouvertData!!,
             article,
             nomImageFichieOuApellationDuCouleur= trouve_nomImageFichieOuApellationDuCouleurPar(
                 index,
