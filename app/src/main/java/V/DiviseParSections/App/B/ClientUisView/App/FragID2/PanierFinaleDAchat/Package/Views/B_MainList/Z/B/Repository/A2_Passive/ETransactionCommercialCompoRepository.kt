@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DAchatOperationCouleurRepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -39,8 +39,8 @@ class ETransactionCommercialCompoRepository(
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = dAchatOperationCouleurRepositoryComposable.filteredDatasValue.lastOrNull {
-        it.etateActuellementEst == D_AchatOperation.EtateActuellementEst.ParentBonVentOuvert
-    }?.parentBonVentObjectId
+        it.etateActuellementEst == D_CouleurVentOperation.EtateActuellementEst.ParentBonVentOuvert
+    }?.parentBonVentId
 
     val ouvertData by derivedStateOf {
         datasValue.find {

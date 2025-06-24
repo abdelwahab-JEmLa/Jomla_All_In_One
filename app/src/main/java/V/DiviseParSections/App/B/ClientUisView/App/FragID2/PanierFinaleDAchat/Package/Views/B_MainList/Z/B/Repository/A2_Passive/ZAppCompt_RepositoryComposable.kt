@@ -17,48 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
+import java.util.Date
 import java.util.Objects
-
-@Stable
-class Z_SubClassFunctionality_ZAppCompt(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>
-) {
-    val mainRepository = centralRepoLazy.value.zAppComptRepositoryComposable
-
-    fun ouvrirePourCeComptCTransactionCommercial(
-        id: String,
-        key: String
-    ) {
-        mainRepository.addOrUpdateData(
-            mainRepository.ouvertData!!.copy(
-                cTransactionCommercialIdOuvertPourCeCompt = id,
-                cTransactionCommercialKeyOuvertPourCeCompt = key
-            )
-        )
-    }
-
-    fun ouvrireCouleurAchatOperationPourCeCompt(
-        couleurIdOuvertPourCeCompt: String,
-        couleurKeyOuvertPourCeCompt: String
-    ) {
-        mainRepository.addOrUpdateData(
-            mainRepository.ouvertData!!.copy(
-                couleurAchateOperationIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
-                couleurAchateOperationKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
-            )
-        )
-    }
-
-    fun fermeProduitPourCeCompt(
-    ) {
-        mainRepository.addOrUpdateData(
-            mainRepository.ouvertData!!.copy(
-                couleurAchateOperationIdOuvertPourCeCompt = "",
-                couleurAchateOperationKeyOuvertPourCeCompt = ""
-            )
-        )
-    }
-}
 
 @Stable
 class ZAppCompt_RepositoryComposable(
@@ -84,11 +44,11 @@ class ZAppCompt_RepositoryComposable(
         ouvertClientOnVentKeyId: String,
         ouvertClientOnVentNom: String,
     ): Unit {
-        val ouvertEPeriodVentStartDate = ouvertData!!.ouvertEPeriodVentStartDateTime
+        val ouvertEPeriodVentStartDate = ouvertData!!.ouvertEPeriodVentStartTimesTamp
 
         addOrUpdateData(
             ouvertData!!.copy(
-                ouvertBonVentKeyId = "$ouvertEPeriodVentStartDate -<($ouvertClientOnVentNom)",
+                ouvertBonVentId = "$ouvertEPeriodVentStartDate -<($ouvertClientOnVentNom)",
                 ouvertClientOnVentKeyId = ouvertClientOnVentKeyId,
                 ouvertClientOnVentNom = ouvertClientOnVentNom
             )
@@ -98,13 +58,15 @@ class ZAppCompt_RepositoryComposable(
     fun ouvrireProduitEtCouleurVent(
         produit: ArticlesBasesStatsTable,
         baseFileName: String,
-    ): Unit {
+    ): Z_AppCompt {
+       val data =ouvertData!!.copy(
+           ouvertProduitOnVentID = produit.getKeyID(),
+           ouvertCouleurOnVentID = baseFileName,
+       )
         addOrUpdateData(
-            ouvertData!!.copy(
-                ouvertProduitOnVentKeyID = produit.getKeyID(),
-                ouvertCouleurOnVentKeyID = baseFileName,
-            )
+            data
         )
+        return data
     }
 
     fun addOrUpdateData(data: Z_AppCompt) {
@@ -132,10 +94,13 @@ class ZAppCompt_RepositoryComposable(
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = BsonObjectId().toHexString(),
+    var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     // Section InfosDeBase
     var nom: String = "",
+    var nomMutable: String = "",
+
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
 
@@ -167,19 +132,55 @@ data class Z_AppCompt(
     //-----------------Vent Createur-----------
 
     //Section Parent Period Vent
-    var ouvertEPeriodVentKeyId: String = "p1",
-    var ouvertEPeriodVentStartDateTime: String = "Juin-24 -<(08:00 AM)",
+    var ouvertEPeriodVentId: String = " -<[${BsonObjectId()}](Juin-24 -<(08:00 AM))",
+    var ouvertEPeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
 
     //Section Parent Transaction
-    var ouvertBonVentKeyId: String = "",
+    var ouvertBonVentId: String = "",
     var ouvertClientOnVentKeyId: String = "",
 
     //Section ouvertProduitAncien
-    var ouvertProduitOnVentKeyID: String = "ProduitKeyID",
+    var ouvertProduitOnVentID: String = "ProduitKeyID",
     var ouvertProduitOnVentAncienId: Long = 0L,
 
-    var ouvertCouleurOnVentKeyID: String = "baseFileName",
+    var ouvertCouleurOnVentID: String = "baseFileName",
 ) {
+
+    init {
+        if (id.isEmpty()) {
+            id = getKeyID()
+        }
+        if (nomMutable.isEmpty()) {
+            nomMutable = getInitCreationName()
+        }
+    }
+
+    fun getInitCreationName(): String {
+        return nom.ifEmpty { "DefaultCompt" }
+    }
+
+    fun getKeyID(): String {
+        return " -<[$bsonObjectId]($nom)"
+    }
+
+    companion object {
+        fun creatTimeTampDepuitStr(dateString: String): Long {
+            return try {
+                // Simple parsing for the format "(Juin-24 -<(08:00 AM))"
+                // You might want to implement more sophisticated date parsing
+                val cleanString = dateString.replace(Regex("[()\\-<>]"), "").trim()
+                val currentDate = Date()
+                currentDate.time
+            } catch (e: Exception) {
+                System.currentTimeMillis()
+            }
+        }
+
+        val caRef = Firebase.database.getReference(
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
+        )
+    }
+
     override fun equals(other: Any?) =
         this === other || (other is Z_AppCompt && isSameEntity(other))
 
@@ -191,10 +192,4 @@ data class Z_AppCompt(
         bsonObjectId,
         nom,
     )
-
-    companion object {
-        val caRef = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
-        )
-    }
 }

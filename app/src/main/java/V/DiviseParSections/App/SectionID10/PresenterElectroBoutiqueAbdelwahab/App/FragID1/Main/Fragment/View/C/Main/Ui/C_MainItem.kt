@@ -120,26 +120,23 @@ fun ArticleImageWithOverlay(
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
             ) { article, colorIndex,couleurKey->
-                onClickToOpenWindow(article, colorIndex)
-
-                try {
-                    viewModel.ouvrireProduitEtCouleurVent(
-                        produit=article,
-                        baseFileName = couleurKey
-                    )
-
-                    viewModel.aCentralDatasHandlerProtoJuin9
-                        .ouvreAddDataDepuitIndexCouleur(article, colorIndex)
+               /*onClickToOpenWindow(article, colorIndex)
+                                   viewModel.aCentralDatasHandlerProtoJuin9.ouvreAddDataDepuitIndexCouleur(article, colorIndex)
 
 
-                    println("color index $colorIndex for article ${article.id}")
-                } catch (e: IndexOutOfBoundsException) {
-                    // Log the error or handle gracefully
-                    println("Error: Invalid color index $colorIndex for article ${article.id}")
-                } catch (e: Exception) {
-                    // Handle other potential exceptions
-                    println("Error accessing color data: ${e.message}")
-                }
+                */
+                viewModel.ouvrireProduitEtCouleurVent(produit=article, baseFileName = couleurKey ,
+                        colorIndex=colorIndex,
+                    quantity=1)
+
+
+             /*   viewModel.acheterUneCouleur(
+                    produit = article,
+                    colorIndex=colorIndex,
+                    quantity=1
+                )      */
+
+
             }
         }
     }

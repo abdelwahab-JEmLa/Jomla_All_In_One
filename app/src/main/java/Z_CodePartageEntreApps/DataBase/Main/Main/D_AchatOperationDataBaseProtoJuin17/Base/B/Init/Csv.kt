@@ -1,19 +1,19 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
 
-fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<D_AchatOperation> {
+fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<D_CouleurVentOperation> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
-    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "D_AchatOperation.csv")
+    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "D_CouleurVentOperation.csv")
 
     if (!csvFile.exists()) {
         return mutableListOf() // Return empty list instead of nothing
     }
 
-    val datas = mutableListOf<D_AchatOperation>()
+    val datas = mutableListOf<D_CouleurVentOperation>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -44,11 +44,11 @@ fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<D_AchatOperation> {
         throw IllegalStateException("No data available from  or CSV")
     }
 }
-// For D_AchatOperation CSV
-fun parseCsvLine(line: String): D_AchatOperation {
+// For D_CouleurVentOperation CSV
+fun parseCsvLine(line: String): D_CouleurVentOperation {
     val values = parseCsvValues(line)
 
-    if (values.size < 12) { // Adjust based on D_AchatOperation fields
+    if (values.size < 12) { // Adjust based on D_CouleurVentOperation fields
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")
     }
 
@@ -56,22 +56,22 @@ fun parseCsvLine(line: String): D_AchatOperation {
 }
 
 
-private fun parsedData(values: List<String>) = D_AchatOperation(
-    bsonObjectId = values.getOrElse(0) { BsonObjectId().toHexString() },
+private fun parsedData(values: List<String>) = D_CouleurVentOperation(
+    id = values.getOrElse(0) { BsonObjectId().toHexString() },
+    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
     nomImageFichieOuApellationDuCouleur = values.getOrElse(2) { "" },
-    parentBonVentObjectId = values.getOrElse(3) { "" },
-    parentProduitBsonObjectId = values.getOrElse(4) { "" },
-    parentComptVendeurCreateurObjectId = values.getOrElse(5) { "" },
-    parentClientObjectId = values.getOrElse(6) { "" },
+    parentBonVentId = values.getOrElse(3) { "" },
+    parentProduitId = values.getOrElse(4) { "" },
+    parentZAppComptID = values.getOrElse(5) { "" },
+    parentClientId = values.getOrElse(6) { "" },
     parentProduitAncienId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
-        D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
+        D_CouleurVentOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
     } catch (e: IllegalArgumentException) {
-        D_AchatOperation.EtateActuellementEst.CreeSlote
+        D_CouleurVentOperation.EtateActuellementEst.CreeSlote
     },
-    provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
-    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+    provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0
 )
 
 

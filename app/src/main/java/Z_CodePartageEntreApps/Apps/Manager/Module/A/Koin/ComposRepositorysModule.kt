@@ -7,7 +7,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ETransactionCommercialCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AutreStatesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_SubClassFunctionality_ZAppCompt
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DAchatOperationCouleurRepositoryComposable
@@ -16,7 +15,6 @@ import org.koin.dsl.module
 
 val composRepositorysModule = module {
     single { ZAppCompt_RepositoryComposable( get(),) }
-    single { Z_SubClassFunctionality_ZAppCompt(lazy { get() }) }
 
     single { B_ClientsStateCompoRepository(get()) }
     single { CCategoriesCompoRepository(get()) }
@@ -26,7 +24,7 @@ val composRepositorysModule = module {
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
     single { BProduitDataBaseComposeRepositoryPJ17(get()) }
-    single { DAchatOperationCouleurRepositoryComposable(get(),get()) }
+    single { DAchatOperationCouleurRepositoryComposable(get()) }
     single { ETransactionCommercialCompoRepository(get(),get(),) }
 
     single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }

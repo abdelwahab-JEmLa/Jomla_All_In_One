@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module.LazyRowAvailableColorsImageOuNom
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
+import Z_CodePartageEntreApps.Modules.D.Glide.LazyRowAvailableColorsImageOuNom
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,11 +49,11 @@ fun Sec1Frag3(
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    achats: List<D_AchatOperation> = emptyList(),
+    achats: List<D_CouleurVentOperation> = emptyList(),
     viewModel: ZViewModel_Sec1Frag3
 ) {
     // Group achats by parentProduitBsonObjectId
-    val groupedAchats = achats.groupBy { it.parentProduitBsonObjectId }
+    val groupedAchats = achats.groupBy { it.parentProduitId }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -73,7 +73,7 @@ fun MainList(
 @Composable
 fun ProductGroup(
     productId: String,
-    achats: List<D_AchatOperation>,
+    achats: List<D_CouleurVentOperation>,
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3
 ) {

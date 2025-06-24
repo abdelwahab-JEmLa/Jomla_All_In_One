@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.Module
+package Z_CodePartageEntreApps.Modules.D.Glide
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.BProduitDataBaseComposeRepositoryPJ17
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_AchatOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -57,7 +57,7 @@ import com.bumptech.glide.signature.ObjectKey
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
     productId: String?,
-    achats: List<D_AchatOperation>,
+    achats: List<D_CouleurVentOperation>,
     bProduitDataBaseComposeRepositoryPJ17: BProduitDataBaseComposeRepositoryPJ17,
     sizeDeChaqueItem: Dp= 250.dp,
 ) {
@@ -68,7 +68,7 @@ fun LazyRowAvailableColorsImageOuNom(
     createCouleurInfosFromProduct(
         relatedProduitDataBase,
         achats
-    ).let {     couleurInfos->
+    ).let { couleurInfos->
         if (couleurInfos.couleurInfosList.isNotEmpty()) {
 
             LazyRow(
@@ -87,7 +87,7 @@ fun LazyRowAvailableColorsImageOuNom(
                             modifier = Modifier
                                 .width(sizeDeChaqueItem)
                                 .height(sizeDeChaqueItem),
-                            contentScale = if (!couleurInfo.imageExists) ContentScale.Crop else ContentScale.Fit,
+                            contentScale = if (couleurInfo.aAffiche!= FileCouleurInfos.Affiche.Image) ContentScale.Crop else ContentScale.Fit,
                             imageSize = DpSize(sizeDeChaqueItem, sizeDeChaqueItem),
                         )
 
@@ -104,10 +104,10 @@ fun LazyRowAvailableColorsImageOuNom(
 @Composable
 fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    couleurInfo: CouleurInfos? = null,
+    couleurInfo: FileCouleurInfos? = null,
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
-    onClickToOpenWindow: (CouleurInfos) -> Unit = {},
+    onClickToOpenWindow: (FileCouleurInfos) -> Unit = {},
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(
@@ -117,7 +117,7 @@ fun ImageDisplayer(
     )
 
     val imageFile = couleurInfo?.imageCouleurFichie
-    val imageExists = couleurInfo?.imageExists ?: false
+    val imageExists = couleurInfo?.aAffiche != (FileCouleurInfos.Affiche.Image ?: false)
 
     Surface(
         modifier = modifier,
@@ -185,7 +185,7 @@ fun ImageDisplayer(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = couleurInfo?.nomSiDispo ?: "No Color",
+                        text = couleurInfo?.nomCouleurStrSiSonImageDispo ?: "No Color",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
@@ -197,7 +197,7 @@ fun ImageDisplayer(
 }
 
 @Composable
-fun Infos(achat: D_AchatOperation?, modifier: Modifier = Modifier) {
+fun Infos(achat: D_CouleurVentOperation?, modifier: Modifier = Modifier) {
     achat?.let { achatData ->
         Card(
             modifier = modifier,

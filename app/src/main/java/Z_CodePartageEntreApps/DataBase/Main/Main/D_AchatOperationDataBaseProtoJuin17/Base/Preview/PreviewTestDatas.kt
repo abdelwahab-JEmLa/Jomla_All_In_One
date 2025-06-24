@@ -36,7 +36,7 @@ fun D_AchatOperationTestDatas(
                             modifier = Modifier.padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(data.bsonObjectId)
+                            Text(data.id)
 
                             VerticalDivider(thickness = 10.dp)
 
