@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -84,21 +85,21 @@ object DSubClassFunctionality_CouleurAchatOperation {
 }
 
 @Stable
-class DCouleurAchatOperationRepositoryComposable(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
+class DAchatOperationCouleurRepositoryComposable(
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
-    val centralRepo by centralRepoLazy
-
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val itsTestModel = true
+    private val depuitTestData = false
     private val _datas = mutableStateOf<List<D_AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+    val ouvertDataID = zAppComptRepositoryComposable
+        .ouvertData?.bsonObjectId ?: "b1"
+
     val datasFiltered by derivedStateOf {
         datasValue.filter {
-            it.parentComptVendeurCreateurObjectId == centralRepo.zAppComptRepositoryComposable
-                .currentAppCompt.bsonObjectId
+            it.parentComptVendeurCreateurObjectId == ouvertDataID
         }
     }
 
@@ -106,12 +107,13 @@ class DCouleurAchatOperationRepositoryComposable(
         datasFiltered.lastOrNull {
             it.etateActuellementEst.ordinal <=
                     D_AchatOperation.EtateActuellementEst.ChoisiQuantityDialogOuvert.ordinal
-        }
+        } ?: D_AchatOperation(parentComptVendeurCreateurObjectId = ouvertDataID)
     }
 
     fun ouvreData(): Unit {
 
     }
+
 
     val ouvertD_AchatOperationBsonId = "bon_001"
 
@@ -125,7 +127,7 @@ class DCouleurAchatOperationRepositoryComposable(
 
     init {
         composScope.launch {
-            if (itsTestModel) {
+            if (depuitTestData) {
                 withContext(Dispatchers.Main.immediate) {
                     _datas.value = getTestDate()
                 }
@@ -267,8 +269,8 @@ data class D_AchatOperation(
     var parentComptVendeurCreateurObjectId: String = "",
 
     // Class FastNestedIn Infos
-        //Section Parent Period Vent
-    var parentPeriodVentObjectId: BsonObjectId = BsonObjectId(),
+    //Section Parent Period Vent
+    var parentPeriodVentObjectId: String = BsonObjectId().toHexString(),
     var parentPeriodVentEndTimeTamp: Long = System.currentTimeMillis(),
 
     //Section Parent Transaction

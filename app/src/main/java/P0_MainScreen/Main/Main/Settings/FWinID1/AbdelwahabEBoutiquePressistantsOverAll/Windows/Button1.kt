@@ -25,7 +25,7 @@ fun Button1(
     onClickPourAfficheDialog: () -> Unit = {}
 ) {
     val catalogues = B4CatalogueCategoriesRepository()
-    val catalogueId = appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+    val catalogueId = appComptComposeRepositoryProtoJuin17.ouvertData?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
     val buttonAFficheAuCata = catalogues.find { it.bsonObjectId == catalogueId }
 
     // Get the catalogue name and color, with fallbacks

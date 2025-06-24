@@ -29,10 +29,8 @@ import java.util.Objects
 
 @Stable
 class DTransactionCommercialCompoRepository(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
-    val centralRepo by centralRepoLazy
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
     val datasState: State<List<C3_TransactionCommercial>> = _datas
@@ -40,21 +38,12 @@ class DTransactionCommercialCompoRepository(
 
     val ouvertData by derivedStateOf {
         datasValue.find {
-            it.bsonObjectId == centralRepo.zAppComptRepositoryComposable
-                .currentAppCompt
-                .cTransactionCommercialIdOuvertPourCeCompt
+            it.bsonObjectId ==""
         }
     }
 
     fun ouvrireTransactionCommercial(bsonObjectId: String, keyNom: String) {
-        centralRepo.zAppComptRepositoryComposable.let {
-            it.addOrUpdateData(
-                it.currentAppCompt.copy(
-                    cTransactionCommercialIdOuvertPourCeCompt = bsonObjectId,
-                    cTransactionCommercialKeyOuvertPourCeCompt = keyNom
-                )
-            )
-        }
+
     }
 
     private val _loadingProgress = mutableFloatStateOf(0f)

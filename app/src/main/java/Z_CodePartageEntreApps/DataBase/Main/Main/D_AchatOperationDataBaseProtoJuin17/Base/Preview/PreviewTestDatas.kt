@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview
-    /*
-import Z_CodePartageEntreApps.DataBase.Juin17.Proto.D_AchatOperationRepository.Base.Preview.D_AchatOperationTestDatasViewModel
+
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,9 +21,8 @@ import org.koin.androidx.compose.koinViewModel
 fun D_AchatOperationTestDatas(
     viewModel: D_AchatOperationTestDatasViewModel = koinViewModel()
 ) {
-    val datas = viewModel.achatOperationComposeRepository.datasValue
-    val loadingProgress =
-        viewModel.appComptComposeRepository.mainInitDataBaseProgressEtate_appComptActuelle
+    val datas = viewModel.mainData
+    val loadingProgress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress ?: 0f
 
     if (loadingProgress < 1.0f) {
         LoadingScreen(loadingProgress)
@@ -40,7 +38,7 @@ fun D_AchatOperationTestDatas(
                         ) {
                             Text(data.bsonObjectId)
 
-                            VerticalDivider(thickness=10.dp)
+                            VerticalDivider(thickness = 10.dp)
 
                             Text(data.etateActuellementEst.name)
                         }
@@ -50,4 +48,4 @@ fun D_AchatOperationTestDatas(
         }
     }
 }
-                            */
+

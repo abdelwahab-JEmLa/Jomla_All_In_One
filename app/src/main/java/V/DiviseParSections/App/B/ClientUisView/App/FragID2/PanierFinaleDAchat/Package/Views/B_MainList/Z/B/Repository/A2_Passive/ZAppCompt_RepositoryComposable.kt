@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -15,7 +14,9 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
+import java.util.Objects
 
 @Stable
 class Z_SubClassFunctionality_ZAppCompt(
@@ -28,18 +29,19 @@ class Z_SubClassFunctionality_ZAppCompt(
         key: String
     ) {
         mainRepository.addOrUpdateData(
-            mainRepository.currentAppCompt.copy(
+            mainRepository.ouvertData!!.copy(
                 cTransactionCommercialIdOuvertPourCeCompt = id,
                 cTransactionCommercialKeyOuvertPourCeCompt = key
             )
         )
     }
+
     fun ouvrireCouleurAchatOperationPourCeCompt(
         couleurIdOuvertPourCeCompt: String,
         couleurKeyOuvertPourCeCompt: String
     ) {
         mainRepository.addOrUpdateData(
-            mainRepository.currentAppCompt.copy(
+            mainRepository.ouvertData!!.copy(
                 couleurAchateOperationIdOuvertPourCeCompt = couleurIdOuvertPourCeCompt,
                 couleurAchateOperationKeyOuvertPourCeCompt = couleurKeyOuvertPourCeCompt
             )
@@ -49,7 +51,7 @@ class Z_SubClassFunctionality_ZAppCompt(
     fun fermeProduitPourCeCompt(
     ) {
         mainRepository.addOrUpdateData(
-            mainRepository.currentAppCompt!!.copy(
+            mainRepository.ouvertData!!.copy(
                 couleurAchateOperationIdOuvertPourCeCompt = "",
                 couleurAchateOperationKeyOuvertPourCeCompt = ""
             )
@@ -69,8 +71,8 @@ class ZAppCompt_RepositoryComposable(
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val currentAppCompt by derivedStateOf {
-        datasValue.firstOrNull { it.bsonObjectId == "b1" } ?: Z_AppCompt()
+    val ouvertData by derivedStateOf {
+        datasValue.firstOrNull { it.bsonObjectId == "b1" }
     }
 
     init {
@@ -80,19 +82,22 @@ class ZAppCompt_RepositoryComposable(
     }
 
     fun addOrUpdateData(data: Z_AppCompt) {
-        val dataAvecTigerUpdate = data.withDernierTimeTampsSynchronisationAvecFireBase()
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            Z_AppCompt.compareEntre(ancien = ancien, newData = dataAvecTigerUpdate)
-        }
-        _datas.value = if (existingIndex >= 0) {
-            datasValue.toMutableList().apply {
-                this[existingIndex] = dataAvecTigerUpdate
-            }
-        } else {
-            datasValue + dataAvecTigerUpdate
-        }
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
 
-        ancienRepo.addOrUpdatedDataBase(existingIndex, dataAvecTigerUpdate)
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = if (existingIndex >= 0) {
+                    datasValue.toMutableList().apply {
+                        this[existingIndex] = this[existingIndex].copy(
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                    }
+                } else datasValue + dataUpdate
+            }
+        }
+        ancienRepo.addOrUpdatedDataBase(existingIndex, dataUpdate)
     }
 }
 
@@ -131,28 +136,17 @@ data class Z_AppCompt(
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
 ) {
-    fun withDernierTimeTampsSynchronisationAvecFireBase(): Z_AppCompt {
-        return this.copy(
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
+    override fun equals(other: Any?) = this === other || (other is Z_AppCompt && isSameEntity(other))
+    fun isSameEntity(other: Z_AppCompt) =
+        bsonObjectId == other.bsonObjectId
+                && nom == other.nom
+    override fun hashCode() = Objects.hash(
+        bsonObjectId,
+        nom,)
 
     companion object {
         val caRef = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
-
-        fun logCategory(data: Z_AppCompt, TAG: String) {
-            Log.d(TAG, "Z_AppComptEntity: ${data.bsonObjectId} - ${data.nom}")
-        }
-
-        fun compareEntre(
-            ancien: Z_AppCompt,
-            newData: Z_AppCompt
-        ): Boolean {
-            val delimiterExistence =
-                ancien.bsonObjectId == newData.bsonObjectId
-            return delimiterExistence
-        }
     }
 }

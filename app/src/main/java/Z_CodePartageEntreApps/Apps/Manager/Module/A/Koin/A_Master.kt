@@ -33,6 +33,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_VendeurReposi
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
+import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
@@ -144,6 +145,7 @@ val classesHandlersModule = module {
 val viewModelModule = module {
     //Sort Par ID
     viewModel { Sec10Frag1ViewModel(get(),) }
+    viewModel { D_AchatOperationTestDatasViewModel(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }
 

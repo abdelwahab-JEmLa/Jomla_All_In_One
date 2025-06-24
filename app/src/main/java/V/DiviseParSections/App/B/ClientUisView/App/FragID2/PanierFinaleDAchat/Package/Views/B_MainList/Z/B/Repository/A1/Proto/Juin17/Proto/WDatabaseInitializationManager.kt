@@ -100,7 +100,7 @@ class WDatabaseInitializationManager(
     }
 
     fun updateMainInitDataBaseProgressEtate(loadingProgress: Float) {
-        appComptComposeRepositoryPJ17.currentAppCompt?.let { appCompt ->
+        appComptComposeRepositoryPJ17.ouvertData?.let { appCompt ->
             val updatedAppCompt = appCompt.copy(
                 mainInitDataBaseProgressEtate = loadingProgress
             )

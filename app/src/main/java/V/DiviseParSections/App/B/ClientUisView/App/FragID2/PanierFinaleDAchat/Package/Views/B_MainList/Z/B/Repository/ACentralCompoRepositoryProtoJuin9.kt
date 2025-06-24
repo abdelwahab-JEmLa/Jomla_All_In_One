@@ -9,7 +9,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.DTransactionCommercialCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DSubClassFunctionality_CouleurAchatOperation.trouve_nomImageFichieOuApellationDuCouleurPar
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -33,8 +32,8 @@ class ACentralCompoRepositoryProtoJuin9(
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: DTransactionCommercialCompoRepository,
 
-    val dCouleurAchatOperationRepositoryComposable: DCouleurAchatOperationRepositoryComposable,
-    val dCouleurAchatOperationSubClassFunctionality: DSubClassFunctionality_CouleurAchatOperation,
+    val dCouleurAchatOperationRepositoryComposable: DAchatOperationCouleurRepositoryComposable,
+ //   val dCouleurAchatOperationSubClassFunctionality: DSubClassFunctionality_CouleurAchatOperation,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
@@ -52,7 +51,7 @@ class ACentralCompoRepositoryProtoJuin9(
         article: ArticlesBasesStatsTable,
         index: Int
     ): Unit {
-        val data = dCouleurAchatOperationSubClassFunctionality.getDataDepuitIndex(
+      /*  val data = dCouleurAchatOperationSubClassFunctionality.getDataDepuitIndex(
             transactionCommercialState.ouvertData!!,
             article,
             nomImageFichieOuApellationDuCouleur= trouve_nomImageFichieOuApellationDuCouleurPar(
@@ -76,7 +75,7 @@ class ACentralCompoRepositoryProtoJuin9(
             .ouvrireCouleurAchatOperationPourCeCompt(
                 data.bsonObjectId,
                 "${ouvertData_bProduitDataBase_SubClassFunctionality?.nom}_${data.nomImageFichieOuApellationDuCouleur}"
-            )
+            )        */
     }
 
 
@@ -86,7 +85,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
-            zAppComptRepositoryComposable.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+            zAppComptRepositoryComposable.ouvertData?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.bsonObjectId }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this

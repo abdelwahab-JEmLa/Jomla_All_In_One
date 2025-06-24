@@ -18,10 +18,8 @@ import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class BProduitDataBaseComposeRepositoryPJ17(
-    private val centralRepoLazy: Lazy<ACentralCompoRepositoryProtoJuin9>,
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {
-    val centralRepo by centralRepoLazy
 
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -31,9 +29,7 @@ class BProduitDataBaseComposeRepositoryPJ17(
 
     val ouvertData by derivedStateOf {
         datasValue.find {
-            it.bsonObjectId == centralRepo
-                .dCouleurAchatOperationRepositoryComposable
-                .ouvertData!!.parentProduitBsonObjectId
+            it.bsonObjectId == "centralRep"
         }
     }
 
