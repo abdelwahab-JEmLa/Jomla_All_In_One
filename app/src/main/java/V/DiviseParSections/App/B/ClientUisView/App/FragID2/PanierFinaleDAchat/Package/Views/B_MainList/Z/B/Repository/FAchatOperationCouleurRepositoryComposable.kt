@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AppCompt
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.Modules.D.Glide.Affiche
 import Z_CodePartageEntreApps.Modules.D.Glide.FileCouleurInfos
@@ -227,7 +228,7 @@ class FAchatOperationCouleurRepositoryComposable(
 
 @Entity
 data class FCouleurVentOperation(
-    @PrimaryKey var id: String = ref.push().key.toString(),
+    @PrimaryKey var id: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var nomImageFichieOuApellationDuCouleur: String = "",
     var parentBonVentId: String = "",
@@ -287,3 +288,4 @@ data class FCouleurVentOperation(
 
     }
 }
+

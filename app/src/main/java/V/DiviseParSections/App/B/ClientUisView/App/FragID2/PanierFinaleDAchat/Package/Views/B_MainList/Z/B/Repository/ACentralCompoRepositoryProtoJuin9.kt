@@ -15,6 +15,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {
+
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
@@ -136,5 +138,8 @@ class ACentralCompoRepositoryProtoJuin9(
                 }
             }
         }
+    }
+    companion object {
+        fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
     }
 }

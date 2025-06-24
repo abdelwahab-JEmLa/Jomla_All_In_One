@@ -21,7 +21,7 @@ class Z_AppComptRepositoryProtoJuin17(
     val repoTAG = repoEntityName
     var isListenerRegistered = false
 
-    val repoRef = Z_AppCompt.caRef
+    val repoRef = Z_AppCompt.ref
 
 
     private val composScope = CoroutineScope(Dispatchers.IO)

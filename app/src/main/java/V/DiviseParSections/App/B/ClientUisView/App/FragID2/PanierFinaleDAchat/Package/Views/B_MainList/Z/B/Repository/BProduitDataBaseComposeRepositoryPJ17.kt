@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.compose.runtime.Stable
@@ -13,7 +14,6 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.mongodb.kbson.BsonObjectId
 
 
 @Stable
@@ -85,7 +85,7 @@ class BProduitDataBaseComposeRepositoryPJ17(
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-    var bsonObjectId: String = BsonObjectId().toHexString(),
+    var bsonObjectId: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
@@ -97,7 +97,7 @@ data class ArticlesBasesStatsTable(
     // Section InfosDeBase
     var nom: String = "",
     var nomMutable: String = "",
-    
+
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
     var nombreUniteInt: Int = 1,

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
@@ -92,7 +93,7 @@ class ZAppCompt_RepositoryComposable(
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
-    var bsonObjectId: String = BsonObjectId().toHexString(),
+    var bsonObjectId: String = getPushFireBase(ref),
     var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
@@ -117,8 +118,8 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection add TOu modules
     var idClientOuSonMarqueMapEstOuvert: Long = 0L,
 
-    var cTransactionCommercialIdOuvertPourCeCompt: String = BsonObjectId().toHexString(),
-    var cTransactionCommercialKeyOuvertPourCeCompt: String = BsonObjectId().toHexString(),
+    var cTransactionCommercialIdOuvertPourCeCompt: String = getPushFireBase(ref),
+    var cTransactionCommercialKeyOuvertPourCeCompt: String = getPushFireBase(ref),
 
     // Section Paramaters App telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
@@ -172,7 +173,7 @@ data class Z_AppCompt(
             }
         }
 
-        val caRef = Firebase.database.getReference(
+        val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
     }
