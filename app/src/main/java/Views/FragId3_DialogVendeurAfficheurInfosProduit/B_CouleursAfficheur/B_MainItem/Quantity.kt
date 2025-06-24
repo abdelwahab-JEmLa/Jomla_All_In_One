@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun QuantityButton(
     article: ArticlesBasesStatsTable,
-    color: Int,
+    colorIndex: Int,
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelInitApp: ViewModelInitApp,
     quantity: Int,
@@ -64,10 +64,10 @@ fun QuantityButton(
 
             viewModel.acheter(
                 produit =article,
-                baseFileName = "${article.id}_${color + 1}",
-                colorIndex = color,
+                colorIndex = colorIndex,
                 quantity = quantity
             )
+
         },
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         shape = RoundedCornerShape(8.dp),

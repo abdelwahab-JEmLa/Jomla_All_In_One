@@ -120,7 +120,6 @@ fun ArticleImageWithOverlay(
                 onClickToOpenWindow(article, colorIndex)
                 viewModel.acheter(
                     produit = article,
-                    baseFileName = couleurKey,
                     colorIndex = colorIndex,
                     quantity = 1
                 )

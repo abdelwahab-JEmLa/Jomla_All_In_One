@@ -53,11 +53,11 @@ class ZAppCompt_RepositoryComposable(
 
     fun ouvrireProduitEtCouleurVent(
         produit: ArticlesBasesStatsTable,
-        baseFileName: String,
+        colorIndex: Int,
     ): Z_AppCompt {
         val data = ouvertData!!.copy(
             ouvertF3ProduitOnVentID = produit.id.toString(),
-            ouvertF4CouleurOnVentID = baseFileName,
+            ouvertF4CouleurOnVentID = "${produit.id}_${colorIndex + 1}",
         )
 
         addOrUpdateData(data)

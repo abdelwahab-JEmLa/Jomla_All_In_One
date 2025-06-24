@@ -19,17 +19,16 @@ class Sec10Frag1ViewModel(
 
     fun acheter(
         produit: ArticlesBasesStatsTable,
-        baseFileName: String,
         colorIndex: Int,
         quantity: Int,
     ) {
         val data = aCentralDatasHandlerProtoJuin9
             .zAppComptRepositoryComposable
-            .ouvrireProduitEtCouleurVent(produit, baseFileName)
+            .ouvrireProduitEtCouleurVent(produit, colorIndex)
 
         data.let {
             aCentralDatasHandlerProtoJuin9
-                .dCouleurAchatOperationRepositoryComposable
+                .fCouleurAchatOperationRepositoryComposable
                 .acheterUneCouleur(it, produit, quantity, colorIndex)
         }
     }

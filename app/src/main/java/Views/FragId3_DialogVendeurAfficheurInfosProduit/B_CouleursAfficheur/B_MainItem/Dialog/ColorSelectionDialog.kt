@@ -154,7 +154,7 @@ private fun QuantityGrid(
                     onQuantitySelected(quantityNumber)
                 },
                 compose_1_1_CouleurAcheteOperationVid =compose_1_1_CouleurAcheteOperationVid,
-                article =article, color = color
+                article =article, colorIndex = color
             )
         }
     }

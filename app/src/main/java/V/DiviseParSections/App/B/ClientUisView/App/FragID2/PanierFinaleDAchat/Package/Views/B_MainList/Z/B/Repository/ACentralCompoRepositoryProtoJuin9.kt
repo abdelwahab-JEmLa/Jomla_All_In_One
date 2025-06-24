@@ -34,7 +34,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: ETransactionCommercialCompoRepository,
 
-    val dCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
+    val fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
  //   val dCouleurAchatOperationSubClassFunctionality: DSubClassFunctionality_CouleurAchatOperation,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
@@ -62,12 +62,12 @@ class ACentralCompoRepositoryProtoJuin9(
             )
         )
 
-        dCouleurAchatOperationRepositoryComposable.addOrUpdateData(data)
+        fCouleurAchatOperationRepositoryComposable.addOrUpdateData(data)
 
         dCouleurAchatOperationSubClassFunctionality.confirmeOldOuvertData(
             ouvertData_dCouleurAchatOperation_SubClassFunctionality
         )?.let {
-            dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+            fCouleurAchatOperationRepositoryComposable.addOrUpdateData(
                 it
             )
         }

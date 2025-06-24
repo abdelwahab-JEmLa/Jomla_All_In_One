@@ -13,7 +13,6 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
@@ -197,17 +196,6 @@ fun B_CouleurAfficheur(
                     } ?: 0)
     }
 
-    // Check if this color has any quantity across all positions
-    val hasQuantity = remember(currentSale, currentQuantity) {
-        currentQuantity > 0 || currentSale?.let { sale ->
-            (sale.color1IdPicked == color.idColore && sale.color1SoldQuantity > 0) ||
-                    (sale.color2IdPicked == color.idColore && sale.color2SoldQuantity > 0) ||
-                    (sale.color3IdPicked == color.idColore && sale.color3SoldQuantity > 0) ||
-                    (sale.color4IdPicked == color.idColore && sale.color4SoldQuantity > 0)
-        } ?: false
-    }
-
-    // Track whether this color is currently selected as main
     val isMainColor = remember(color.idColore, currentSale) {
         color.idColore == currentSale?.color1IdPicked
     }
@@ -217,22 +205,10 @@ fun B_CouleurAfficheur(
         label = "cardElevation"
     )
 
-    LaunchedEffect(key1 = currentSale?.idArticle) {
-        if (hasQuantity) {
-            _DisplayeProductInfosToSeller(viewModelInitApp)
-                .onClickComposeQuantityButton(
-                    1,
-                    currentSale,
-                    currentClient,
-                    color,
-                )
-        }
-    }
 
     Box(
         modifier = modifier.height(height)
     ) {
-        if (currentQuantity > 0) {
             val key =
                 viewModel.aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvertData?.let {
                     createCouleurOnVentKey(
@@ -241,15 +217,16 @@ fun B_CouleurAfficheur(
                         indexCouleur = index
                     )
                 }
+                 val quantity = viewModel.aCentralDatasHandlerProtoJuin9.fCouleurAchatOperationRepositoryComposable
+                     .datasValue.find { it.keyID==key }?.quantityAchete
 
             QuantityBadge(
-                quantity = "$key$currentQuantity",
+                quantity = "$key Qua=$quantity",
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
                     .zIndex(1f)
             )
-        }
 
         ElevatedCard(
             modifier = Modifier
