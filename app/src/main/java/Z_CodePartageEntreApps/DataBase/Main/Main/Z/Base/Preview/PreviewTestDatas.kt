@@ -37,7 +37,7 @@ fun Z_AppComptTestDatas(
                             modifier = Modifier.padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(data.bsonObjectId)
+                            Text(data.key)
 
                             VerticalDivider(thickness=10.dp)
 

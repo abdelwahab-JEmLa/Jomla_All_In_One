@@ -23,7 +23,7 @@ class _015_Produits : RealmObject {
     companion object {
         // Schema constants for consistency
         object SchemaFields {
-            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val BSON_OBJECT_ID = "key"
             const val START_DESIGNATION = "startDesignation"
             const val TEMP_DATE_CREATION = "tempDateCreationStr"
             const val ID_PRODUIT = "idProduit"

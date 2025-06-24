@@ -34,7 +34,7 @@ class _01_PeriodVentHistorique : RealmObject {
         // Schema constants - define field names to ensure consistency
         object SchemaFields {
             const val VID = "vid"
-            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val BSON_OBJECT_ID = "key"
             const val TEMP_CREATION = "tempCreationString"
             const val ID_PERIOD = "idPeriodDonAncienDataBase"
             const val FIREBASE_KEY_ID = "fireBaseKeyID"

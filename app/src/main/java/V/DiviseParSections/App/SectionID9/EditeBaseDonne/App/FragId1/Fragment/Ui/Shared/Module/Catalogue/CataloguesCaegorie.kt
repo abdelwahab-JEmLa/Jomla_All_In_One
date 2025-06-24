@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import org.mongodb.kbson.BsonObjectId
 
 data class CataloguesCaegorie(
-    var bsonObjectId: String = BsonObjectId().toHexString(),
+    var key: String = BsonObjectId().toHexString(),
     val id: Long = 0,
     val nom: String = "",
     val premierCategorieId: Long = 0,

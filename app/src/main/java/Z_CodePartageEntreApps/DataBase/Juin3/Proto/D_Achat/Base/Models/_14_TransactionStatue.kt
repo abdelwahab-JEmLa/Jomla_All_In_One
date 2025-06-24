@@ -47,7 +47,7 @@ class _14_TransactionStatue : RealmObject {
     companion object {
         // Schema constants for consistency
         object SchemaFields {
-            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val BSON_OBJECT_ID = "key"
             const val DATE_CREATION = "dateCreationStr"
             const val TEMP_CREATION = "tempCreationStr"
             const val ETATE_NAME = "etateTransactionName"

@@ -60,7 +60,7 @@ data class FileCouleurInfos(
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
             "keyID" to keyID,
-            "bsonObjectId" to bsonObjectId.toString(), // Use toString() instead of toHexString()
+            "key" to bsonObjectId.toString(), // Use toString() instead of toHexString()
             "aAffiche" to aAffiche.name,
             "imageCouleurFichiePath" to imageCouleurFichiePath,
             "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,

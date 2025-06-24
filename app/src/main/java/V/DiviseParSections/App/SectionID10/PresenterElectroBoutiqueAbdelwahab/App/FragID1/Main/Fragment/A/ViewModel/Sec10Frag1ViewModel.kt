@@ -28,11 +28,11 @@ class Sec10Frag1ViewModel(
         indexCouleur: Int,
     ) {
       /*  val data = FCouleurVentOperation(
-            parentProduitBsonObjectId = article.bsonObjectId,
+            parentProduitBsonObjectId = article.key,
             nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
                 article, indexCouleur
             ),
-            parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.bsonObjectId
+            parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.key
         )
         aCentralDatasHandlerProtoJuin9.dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
             data
@@ -40,7 +40,7 @@ class Sec10Frag1ViewModel(
         subClassFunctionality_zAppComptRepositoryComposable
 
             .ouvrireCouleurAchatOperationPourCeCompt(
-            data.bsonObjectId,
+            data.key,
             "${article.nom}_${data.nomImageFichieOuApellationDuCouleur}"
         )                   */
     }

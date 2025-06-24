@@ -89,8 +89,8 @@ fun CatalogueSelectionDialog(
                         items(catalogues) { catalogue ->
                             CatalogueItem(
                                 catalogue = catalogue,
-                                isSelected = selectedCatalogueId == catalogue.bsonObjectId,
-                                onSelect = { selectedCatalogueId = catalogue.bsonObjectId }
+                                isSelected = selectedCatalogueId == catalogue.key,
+                                onSelect = { selectedCatalogueId = catalogue.key }
                             )
                         }
                     }

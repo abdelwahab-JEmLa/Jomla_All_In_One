@@ -21,7 +21,7 @@ class _012_ComptsVendeurs : RealmObject {
 
     companion object {
         object SchemaFields {
-            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val BSON_OBJECT_ID = "key"
             const val FIREBASE_KEY_ID = "fireBaseKeyID"  // Corrected to match actual property name
             const val ID_COMPT = "idCompt"
             const val START_DESIGNATION = "startDesignation"

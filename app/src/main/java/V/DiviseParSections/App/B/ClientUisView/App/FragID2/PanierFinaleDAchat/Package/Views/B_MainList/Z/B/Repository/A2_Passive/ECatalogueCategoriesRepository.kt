@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
     return listOf(
         CataloguesCaegorie(
-            bsonObjectId = "t4",
+            key = "t4",
             id = 4,
             nom = "Sans Catalogue",
             premierCategorieId = 0,
@@ -15,7 +15,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             couleur = Color(0xFF9C27B0) // Purple
         ),
         CataloguesCaegorie(
-            bsonObjectId = "t2",
+            key = "t2",
             id = 2,
             nom = "Cosmétique",
             premierCategorieId = 100,
@@ -23,7 +23,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             couleur = Color(0xFFE91E63) // Pink for cosmetics
         ),
         CataloguesCaegorie(
-            bsonObjectId = "t1",
+            key = "t1",
             id = 1,
             nom = "Confiserie",
             premierCategorieId = 3,
@@ -31,7 +31,7 @@ fun B4CatalogueCategoriesRepository(): List<CataloguesCaegorie> {
             couleur = Color(0xFFFF9800) // Orange for confectionery
         ),
         CataloguesCaegorie(
-            bsonObjectId = "t3",
+            key = "t3",
             id = 3,
             nom = "TeBnage",
             premierCategorieId = 92,

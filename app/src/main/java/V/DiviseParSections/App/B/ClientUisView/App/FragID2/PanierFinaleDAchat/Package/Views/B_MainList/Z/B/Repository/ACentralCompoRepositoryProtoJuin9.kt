@@ -74,7 +74,7 @@ class ACentralCompoRepositoryProtoJuin9(
         zAppComptRepositoryComposable
             .subClassFunctionality
             .ouvrireCouleurAchatOperationPourCeCompt(
-                data.bsonObjectId,
+                data.key,
                 "${ouvertData_bProduitDataBase_SubClassFunctionality?.nom}_${data.nomImageFichieOuApellationDuCouleur}"
             )        */
     }
@@ -88,7 +88,7 @@ class ACentralCompoRepositoryProtoJuin9(
         val catalogueFilterId =
             zAppComptRepositoryComposable.ouvertData?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.bsonObjectId }
+        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
         val categoriesInCatalogue = b3CategoriesCompoRepository.datasValue

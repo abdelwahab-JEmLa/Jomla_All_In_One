@@ -26,7 +26,7 @@ fun Button1(
 ) {
     val catalogues = B4CatalogueCategoriesRepository()
     val catalogueId = appComptComposeRepositoryProtoJuin17.ouvertData?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
-    val buttonAFficheAuCata = catalogues.find { it.bsonObjectId == catalogueId }
+    val buttonAFficheAuCata = catalogues.find { it.key == catalogueId }
 
     // Get the catalogue name and color, with fallbacks
     val catalogueName = buttonAFficheAuCata?.nom ?: "Catalogues"

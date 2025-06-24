@@ -33,7 +33,7 @@ class _013_ClientTransaction : RealmObject {
     companion object {
         // Schema constants for consistency
         object SchemaFields {
-            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val BSON_OBJECT_ID = "key"
             const val ID_CLIENT = "idClient"
             const val NOM_CLIENT = "nomClient"
             const val START_DESIGNATION = "startDesignation"
