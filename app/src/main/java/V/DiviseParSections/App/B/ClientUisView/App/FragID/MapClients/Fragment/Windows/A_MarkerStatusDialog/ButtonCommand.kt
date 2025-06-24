@@ -48,12 +48,7 @@ fun CommandButton(
                 relatedClientID = clientId,
                 newEtate = etateActuellementEst1
             ) {
-                viewModel.centralDatasHandler
-                    .transactionCommercialState
-                    .ouvrireTransactionCommercial(
-                        it.bsonObjectId,
-                        "${it.nomClientConcerned}->"
-                    )
+
             }
 
 
@@ -63,6 +58,13 @@ fun CommandButton(
                 viewModel.centralDatasHandler.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clientOuCaMarqueGpsEstOuvert.id)
             }
+
+            /*viewModel.centralDatasHandler
+                .transactionCommercialState
+                .ouvrireTransactionCommercial(
+                 /*   it.bsonObjectId,
+                    "${it.nomClientConcerned}->"           */
+                )      */
 
             viewModel.startRecordIfNot()
         },

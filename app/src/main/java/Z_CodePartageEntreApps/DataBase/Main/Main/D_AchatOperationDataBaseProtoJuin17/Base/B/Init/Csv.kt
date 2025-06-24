@@ -63,7 +63,7 @@ private fun parsedData(values: List<String>) = D_AchatOperation(
     parentProduitBsonObjectId = values.getOrElse(4) { "" },
     parentComptVendeurCreateurObjectId = values.getOrElse(5) { "" },
     parentClientObjectId = values.getOrElse(6) { "" },
-    produitAcheterAncienID = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
+    parentProduitAncienId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
         D_AchatOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })

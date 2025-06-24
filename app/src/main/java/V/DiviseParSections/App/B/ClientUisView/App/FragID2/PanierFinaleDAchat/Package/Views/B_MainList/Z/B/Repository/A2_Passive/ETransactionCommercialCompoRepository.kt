@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DAchatOperationCouleurRepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -28,7 +28,8 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class DTransactionCommercialCompoRepository(
+class ETransactionCommercialCompoRepository(
+    val dAchatOperationCouleurRepositoryComposable: DAchatOperationCouleurRepositoryComposable,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -38,7 +39,7 @@ class DTransactionCommercialCompoRepository(
 
     val ouvertData by derivedStateOf {
         datasValue.find {
-            it.bsonObjectId ==""
+            it.bsonObjectId == ""
         }
     }
 

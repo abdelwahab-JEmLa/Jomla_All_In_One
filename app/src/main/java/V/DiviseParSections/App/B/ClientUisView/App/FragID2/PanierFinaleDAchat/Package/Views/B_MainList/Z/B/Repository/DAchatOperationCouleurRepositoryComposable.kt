@@ -29,7 +29,7 @@ object DSubClassFunctionality_CouleurAchatOperation {
         return D_AchatOperation(
             parentBonVentObjectId = ouvertTransactionCommercial.bsonObjectId,
             parentProduitBsonObjectId = ouvertData_bProduitDataBase_SubClassFunctionality.bsonObjectId,
-            parentProduitNom = ouvertData_bProduitDataBase_SubClassFunctionality.nom,
+            parentProduitKeyNom = ouvertData_bProduitDataBase_SubClassFunctionality.nom,
 
             nomImageFichieOuApellationDuCouleur = nomImageFichieOuApellationDuCouleur,
         )
@@ -156,7 +156,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 parentClientObjectId = "client_001",
-                produitAcheterAncienID = 1L,
+                parentProduitAncienId = 1L,
                 quantityAchete = 5,
                 provisoireMonPrix = 150.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
@@ -168,7 +168,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd1,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 parentClientObjectId = "client_001",
-                produitAcheterAncienID = 1L,
+                parentProduitAncienId = 1L,
                 quantityAchete = 5,
                 provisoireMonPrix = 150.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
@@ -180,7 +180,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd2,
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 parentClientObjectId = "client_001",
-                produitAcheterAncienID = 2L,
+                parentProduitAncienId = 2L,
                 quantityAchete = 3,
                 provisoireMonPrix = 200.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
@@ -190,7 +190,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 bsonObjectId = "test_achat_200",
                 nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_2",
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
-                produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
+                parentProduitAncienId = parentProduitAncienIDPrd3.toLong(),
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 parentClientObjectId = "client_001",
                 quantityAchete = 10,
@@ -202,7 +202,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 bsonObjectId = "test_achat_300",
                 nomImageFichieOuApellationDuCouleur = "${parentProduitAncienIDPrd3}_1",
                 parentProduitBsonObjectId = parentProduitBsonObjectIdPrd3,
-                produitAcheterAncienID = parentProduitAncienIDPrd3.toLong(),
+                parentProduitAncienId = parentProduitAncienIDPrd3.toLong(),
                 parentComptVendeurCreateurObjectId = "vendeur_001",
                 parentClientObjectId = "client_001",
                 quantityAchete = 5,
@@ -216,7 +216,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitBsonObjectId = "produit_003",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 parentClientObjectId = "client_002",
-                produitAcheterAncienID = 3L,
+                parentProduitAncienId = 3L,
                 quantityAchete = 2,
                 provisoireMonPrix = 75.5,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.Cree
@@ -228,7 +228,7 @@ class DAchatOperationCouleurRepositoryComposable(
                 parentProduitBsonObjectId = "produit_004",
                 parentComptVendeurCreateurObjectId = "vendeur_002",
                 parentClientObjectId = "client_002",
-                produitAcheterAncienID = 4L,
+                parentProduitAncienId = 4L,
                 quantityAchete = 1,
                 provisoireMonPrix = 500.0,
                 etateActuellementEst = D_AchatOperation.EtateActuellementEst.ParentBonVentConfirme
@@ -270,19 +270,19 @@ data class D_AchatOperation(
 
     // Class FastNestedIn Infos
     //Section Parent Period Vent
-    var parentPeriodVentObjectId: String = BsonObjectId().toHexString(),
-    var parentPeriodVentEndTimeTamp: Long = System.currentTimeMillis(),
+    var parentEPeriodVentObjectId: String = BsonObjectId().toHexString(),
+    var parentEPeriodVentEndTimeTamp: Long = System.currentTimeMillis(),
 
     //Section Parent Transaction
     var parentClientObjectId: String = "",
     var parentClientKenName: String = "",
-
-    var produitAcheterAncienID: Long = 0L,
-    var parentProduitNom: String = "",
+    //Section parentProduitAncien
+    var parentProduitAncienId: Long = 0L,
+    var parentProduitKeyNom: String = "",
 
     var type: Type = Type.CommandeDeLui,
 
-    var achatParentBsonID: String = "",
+    var achatParentBsonIDOld: String = "",
 
     // Section StatuesMutable
     var quantityAchete: Int = 1,
