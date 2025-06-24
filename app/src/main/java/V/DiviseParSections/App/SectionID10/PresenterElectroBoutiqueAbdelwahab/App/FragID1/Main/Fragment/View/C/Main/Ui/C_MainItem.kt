@@ -119,24 +119,14 @@ fun ArticleImageWithOverlay(
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
-            ) { article, colorIndex,couleurKey->
-               /*onClickToOpenWindow(article, colorIndex)
-                                   viewModel.aCentralDatasHandlerProtoJuin9.ouvreAddDataDepuitIndexCouleur(article, colorIndex)
-
-
-                */
-                viewModel.ouvrireProduitEtCouleurVent(produit=article, baseFileName = couleurKey ,
-                        colorIndex=colorIndex,
-                    quantity=1)
-
-
-             /*   viewModel.acheterUneCouleur(
+            ) { article, colorIndex, couleurKey ->
+                onClickToOpenWindow(article, colorIndex)
+                viewModel.acheter(
                     produit = article,
-                    colorIndex=colorIndex,
-                    quantity=1
-                )      */
-
-
+                    baseFileName = couleurKey,
+                    colorIndex = colorIndex,
+                    quantity = 1
+                )
             }
         }
     }

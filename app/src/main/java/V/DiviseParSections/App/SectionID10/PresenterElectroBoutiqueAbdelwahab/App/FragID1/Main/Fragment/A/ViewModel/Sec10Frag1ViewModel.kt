@@ -93,7 +93,7 @@ class Sec10Frag1ViewModel(
         }
     }
 
-    fun ouvrireProduitEtCouleurVent(
+    fun acheter(
         produit: ArticlesBasesStatsTable,
         baseFileName: String,
         colorIndex: Int,
@@ -107,7 +107,7 @@ class Sec10Frag1ViewModel(
         // Use viewModelScope instead of GlobalScope for better lifecycle management
         viewModelScope.launch {
             try {
-                Log.d(TAG, "Starting ouvrireProduitEtCouleurVent for product ${produit.id}")
+                Log.d(TAG, "Starting acheter for product ${produit.id}")
 
                 // Create safe copies of string parameters to prevent memory corruption
                 val safeBaseFileName = baseFileName.take(MAX_STRING_LENGTH)
@@ -138,13 +138,13 @@ class Sec10Frag1ViewModel(
                                     colorIndex = colorIndex
                                 )
                         } else {
-                            Log.w(TAG, "Data is null from ouvrireProduitEtCouleurVent")
+                            Log.w(TAG, "Data is null from acheter")
                         }
 
-                        Log.d(TAG, "Successfully completed ouvrireProduitEtCouleurVent for product ${produit.id}")
+                        Log.d(TAG, "Successfully completed acheter for product ${produit.id}")
 
                     } catch (e: OutOfMemoryError) {
-                        Log.e(TAG, "OutOfMemoryError in ouvrireProduitEtCouleurVent", e)
+                        Log.e(TAG, "OutOfMemoryError in acheter", e)
                         // Force garbage collection
                         System.gc()
                         // Try to recover gracefully
@@ -156,7 +156,7 @@ class Sec10Frag1ViewModel(
                 }
 
             } catch (e: Exception) {
-                Log.e(TAG, "Error in ouvrireProduitEtCouleurVent for product ${produit.id}", e)
+                Log.e(TAG, "Error in acheter for product ${produit.id}", e)
                 // Don't rethrow to prevent app crash
             }
         }

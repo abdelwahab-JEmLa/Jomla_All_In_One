@@ -31,7 +31,7 @@ class A_ProduitDataBaseProtoJuin17(
 
     fun deleteDataAncienRepo(data: ArticlesBasesStatsTable) {
         composScope.launch {
-            dao.deleteByBsonObjectId(data.bsonObjectId)
+            dao.delete(data)
             deleteFromFireBase(data)
         }
     }

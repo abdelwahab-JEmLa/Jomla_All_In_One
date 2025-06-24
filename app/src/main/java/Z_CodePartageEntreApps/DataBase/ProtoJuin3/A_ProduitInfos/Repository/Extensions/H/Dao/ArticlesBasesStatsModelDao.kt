@@ -22,12 +22,6 @@ interface ArticlesBasesStatsModelDao {
     @Delete
     suspend fun delete(article: ArticlesBasesStatsTable)
 
-    @Query("SELECT * FROM ArticlesBasesStatsTable WHERE key = :key")
-    suspend fun getByBsonObjectId(bsonObjectId: String): ArticlesBasesStatsTable?
-
-    @Query("DELETE FROM ArticlesBasesStatsTable WHERE key = :key")
-    suspend fun deleteByBsonObjectId(bsonObjectId: String)
-
     @Query("SELECT * FROM ArticlesBasesStatsTable")
     suspend fun getAll(): MutableList<ArticlesBasesStatsTable>
 
