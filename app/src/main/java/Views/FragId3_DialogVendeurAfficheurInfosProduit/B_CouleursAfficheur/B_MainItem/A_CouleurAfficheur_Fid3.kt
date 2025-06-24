@@ -1,5 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.createCouleurOnVentKey
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
@@ -13,6 +14,7 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -108,7 +110,7 @@ fun B_CouleurAfficheur(
         }
 
         // Debug information
-        android.util.Log.d(
+        Log.d(
             "ColorOperation",
             "Checking: Index=$couleurActuelleIndex, ParentVID=$parentCompose_1_2_ProduitAcheteOperationVid"
         )
@@ -147,7 +149,7 @@ fun B_CouleurAfficheur(
             _1_1_CouleurAcheteOperation_Repository.addData(newColorOp)
 
             // Log successful creation
-            android.util.Log.d(
+            Log.d(
                 "ColorOperation",
                 "Created new operation with VID=$newVid for index=$couleurActuelleIndex"
             )
@@ -231,8 +233,17 @@ fun B_CouleurAfficheur(
         modifier = modifier.height(height)
     ) {
         if (currentQuantity > 0) {
+            val key =
+                viewModel.aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvertData?.let {
+                    createCouleurOnVentKey(
+                        compt = it,
+                        bProduitDataBase = article,
+                        indexCouleur = index
+                    )
+                }
+
             QuantityBadge(
-                quantity = currentQuantity,
+                quantity = "$key$currentQuantity",
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
@@ -356,7 +367,7 @@ fun B_CouleurAfficheur(
 
 @Composable
 private fun QuantityBadge(
-    quantity: Int,
+    quantity: String,
     modifier: Modifier = Modifier,
 ) {
     Surface(

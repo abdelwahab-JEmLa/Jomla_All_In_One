@@ -22,7 +22,7 @@ fun updateNewModelDeLachat(
 
         // Find product or create new one if it doesn't exist
         var productIndex = produitsMainDataBase
-            .indexOfFirst { it.id == currentSale.idArticle }
+            .indexOfFirst { it.keyID == currentSale.idArticle }
 
         val product = if (productIndex != -1) {
             produitsMainDataBase[productIndex]
@@ -46,7 +46,7 @@ fun updateNewModelDeLachat(
         )
 
         val existingSaleIndex = product.bonsVentDeCetteCota
-            .indexOfFirst { it.clientIdChoisi == currentClient.id }
+            .indexOfFirst { it.clientIdChoisi == currentClient.keyID }
 
         if (existingSaleIndex != -1) {
             val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
@@ -61,7 +61,7 @@ fun updateNewModelDeLachat(
         } else {
             val newSale = ClientBonVentModel(
                 vid = System.currentTimeMillis(),
-                clientIdChoisi = currentClient.id
+                clientIdChoisi = currentClient.keyID
             ).apply {
 
                 colours_Achete.upsert(colorPurchase)
@@ -83,7 +83,7 @@ fun updateNewModelDeLachat(
                     val totalQuantity = colorList.sumOf { it.quantity_Achete }
                     if (totalQuantity > 0) {
                         GrossistBonCommandes.ColoursGoutsCommendee(
-                            id = couleurId,
+                            keyID = couleurId,
                             nom = firstColor.nom,
                             emogi = firstColor.imogi
                         ).apply {
@@ -127,10 +127,10 @@ fun createNewProduct(
     nameArticle: String? = null
 ): A_ProduitModel {
     val maxId = viewModelInitApp._modelAppsFather.produitsMainDataBase
-        .maxOfOrNull { it.id } ?: 0
+        .maxOfOrNull { it.keyID } ?: 0
 
     return A_ProduitModel(
-        id = maxId + 1,
+        keyID = maxId + 1,
         itsTempProduit = true,
     ).apply {
         nom = nameArticle ?: "New Product ${maxId + 1}"

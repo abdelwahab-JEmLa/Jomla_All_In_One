@@ -130,7 +130,7 @@ class MapClientsViewModelss(
             .c3TransactionCommercialRepository
             .modelDatasSnapList
         val lastTransaction = historicalData
-            .filter { it.clientAcheteurID == client.id }
+            .filter { it.clientAcheteurID == client.keyID }
             .maxByOrNull { it.timestamps }
         return lastTransaction
     }
@@ -307,13 +307,13 @@ class MapClientsViewModelss(
             val newID = if (bProto_ClientsDataBase.isEmpty()) {
                 1L
             } else {
-                bProto_ClientsDataBase.maxOf { it.id } + 1
+                bProto_ClientsDataBase.maxOf { it.keyID } + 1
             }
 
             val newnom = "ز.$newID"
 
             val newClientAchteur = B_ClientInfosProtoJuin3().apply {
-                id = newID
+                keyID = newID
                 nom = newnom
                 cUnClientTemporaire = true
                 typeDeSonMagasine = auClickeCaUpdateClientPar
@@ -338,14 +338,14 @@ class MapClientsViewModelss(
         viewModelScope.launch {
             try {
                 val appSettingsSaverModel = AppSettingsSaverModel(
-                    id = 1,
+                    keyID = 1,
                     name = name,
                     valueLong = value,
                     date = Date()
                 )
 
                 Firebase.database.getReference("A_AppSettingsSaverModel")
-                    .child(appSettingsSaverModel.id.toString())
+                    .child(appSettingsSaverModel.keyID.toString())
                     .setValue(appSettingsSaverModel)
                     .await()
             } catch (e: Exception) {

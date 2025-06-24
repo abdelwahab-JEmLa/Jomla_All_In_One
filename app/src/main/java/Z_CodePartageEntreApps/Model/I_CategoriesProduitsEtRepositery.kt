@@ -52,7 +52,7 @@ class I_CategoriesProduits(
             // Convert from model to Firebase map
             val sourceData = data ?: I_CategoriesProduits()
             return mapOf(
-                "id" to sourceData.id,
+                "keyID" to sourceData.id,
                 "infosDeBase" to mapOf(
                     "nom" to sourceData.infosDeBase.nom,
                     "groupeParentId" to sourceData.infosDeBase.groupeParentId
@@ -94,7 +94,7 @@ interface I_CategoriesRepository {
             // Convert from model to Firebase map
             val sourceData = data ?: I_CategoriesProduits()
             return mapOf(
-                "id" to sourceData.id,
+                "keyID" to sourceData.id,
                 "infosDeBase" to mapOf(
                     "nom" to sourceData.infosDeBase.nom,
                     "groupeParentId" to sourceData.infosDeBase.groupeParentId

@@ -42,9 +42,6 @@ interface ArticlesBasesStatsModelDao {
     fun getAllFlow(): Flow<List<ArticlesBasesStatsTable>>
 
 
-    @Query("SELECT * FROM ArticlesBasesStatsTable WHERE id = :id")
-    suspend fun getDataById(id: Long): ArticlesBasesStatsTable?
-
     @Insert
     suspend fun insertData(data: ArticlesBasesStatsTable): Long
 
@@ -55,8 +52,6 @@ interface ArticlesBasesStatsModelDao {
     @Delete
     suspend fun deleteData(data: ArticlesBasesStatsTable)
 
-    @Query("DELETE FROM ArticlesBasesStatsTable WHERE id = :id")
-    suspend fun deleteDataById(id: Long)
 
     @Query("SELECT COUNT(*) FROM ArticlesBasesStatsTable")
     suspend fun getCount(): Int

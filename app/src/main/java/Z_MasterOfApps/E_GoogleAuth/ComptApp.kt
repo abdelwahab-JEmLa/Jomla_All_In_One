@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 @Entity
 data class ComptApp(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    var keyID: Long = 0L,
     var googleId: String? = null,
     var nom: String = "Manager Vendor",
     var email: String? = null,
@@ -62,7 +62,7 @@ class AuthManager(
         val googleResult = googleAuth?.signIn() ?: return@withContext false
 
         val updatedCompte = localCompte.copy(
-            googleId = googleResult.id,
+            googleId = googleResult.keyID,
             email = googleResult.email,
             photoUrl = googleResult.photoUrl,
             isGoogleAuth = true,
@@ -96,7 +96,7 @@ class AuthManager(
         val result = googleAuth?.signIn() ?: return AuthResult.Error("Google non disponible")
 
         val compte = ComptApp(
-            googleId = result.id,
+            googleId = result.keyID,
             nom = result.name,
             email = result.email,
             photoUrl = result.photoUrl,
@@ -139,7 +139,7 @@ sealed class AuthResult {
 
 // GoogleAuthHelper.kt
 data class GoogleUserInfo(
-    val id: String,
+    val keyID: String,
     val name: String,
     val email: String,
     val photoUrl: String?

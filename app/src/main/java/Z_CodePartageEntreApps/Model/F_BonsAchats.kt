@@ -81,7 +81,7 @@ class F_BonsAchats(
 
      /*
 class J_AppInstalleDonTelephone(
-    var id: Long = 0,
+    var keyID: Long = 0,
 ) {
     var infosDeBase by mutableStateOf(InfosDeBase())
     @IgnoreExtraProperties
@@ -152,15 +152,15 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
             // Parcourir tous les téléphones pour trouver celui avec le même nom
             snapshot.children.forEach { phoneSnapshot ->
                 try {
-                    val id = phoneSnapshot.child("id").getValue(Long::class.java) ?: 0
+                    val keyID = phoneSnapshot.child("keyID").getValue(Long::class.java) ?: 0
                     val nom = phoneSnapshot.child("infosDeBase/nom").getValue(String::class.java)
                         ?: phoneSnapshot.child("infosDeBase").child("nom")
                             .getValue(String::class.java)
                         ?: ""
 
                     // Mettre à jour l'ID maximum
-                    if (id > maxId) {
-                        maxId = id
+                    if (keyID > maxId) {
+                        maxId = keyID
                     }
 
                     // Vérifier si le téléphone existe déjà
@@ -169,7 +169,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
                         // Créer l'objet téléphone à partir des données Firebase
                         val phone = J_AppInstalleDonTelephone().apply {
-                            this.id = id
+                            this.keyID = keyID
                             infosDeBase.nom = nom
                             infosDeBase.widthScreen = phoneSnapshot.child("infosDeBase/widthScreen")
                                 .getValue(Int::class.java)
@@ -187,7 +187,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                         }
 
                         // Vérifier si le téléphone est déjà dans la liste locale
-                        if (modelDatas.none { it.id == id }) {
+                        if (modelDatas.none { it.keyID == keyID }) {
                             modelDatas.upsert(phone)
                         }
                     }
@@ -201,7 +201,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                 val newId = maxId + 1
 
                 val newPhone = J_AppInstalleDonTelephone().apply {
-                    id = newId
+                    keyID = newId
                     infosDeBase.nom = phoneName
                     infosDeBase.widthScreen = screenWidth
                     // Check if the device is add tablet based on screen width
@@ -210,7 +210,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                 }
 
                 // Ajouter à la liste locale
-                if (modelDatas.none { it.id == newId }) {
+                if (modelDatas.none { it.keyID == newId }) {
                     modelDatas.upsert(newPhone)
 
                     // Ajouter à Firebase
@@ -357,7 +357,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
 
         // Update Firebase with the new data
         datas.forEach { category ->
-            J_AppInstalleDonTelephoneRepository.caReference.child(category.id.toString())
+            J_AppInstalleDonTelephoneRepository.caReference.child(category.keyID.toString())
                 .setValue(category)
         }
     }
@@ -365,7 +365,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
     override fun updatePhones() {
         modelDatas.forEach { phone ->
             J_AppInstalleDonTelephoneRepository.caReference
-                .child(phone.id.toString())
+                .child(phone.keyID.toString())
                 .setValue(phone)
         }
     }

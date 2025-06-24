@@ -74,12 +74,12 @@ _modelAppsFather.produitsMainDataBase.forEachIndexed { index, produit ->
 try {
     loadingProgress = index.toFloat() / _modelAppsFather.produitsMainDataBase.size
 
-    val imageRef = imagesProduitsFireBaseStorageRef.child("${produit.id}_1.jpg")
-    val localFile = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/${produit.id}_1.jpg")
+    val imageRef = imagesProduitsFireBaseStorageRef.child("${produit.keyID}_1.jpg")
+    val localFile = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/${produit.keyID}_1.jpg")
 
     imageHandler.handleImageOperation(imageRef, localFile)
 } catch (e: Exception) {
-    Log.e("ViewModelInitApp", "Error handling image for product ${produit.id}", e)
+    Log.e("ViewModelInitApp", "Error handling image for product ${produit.keyID}", e)
 }
 }
 

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AppCompt
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.createCouleurOnVentKey
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.Modules.D.Glide.Affiche
@@ -88,8 +89,12 @@ class FAchatOperationCouleurRepositoryComposable(
                 val colorName =
                     getFileCouleurInfosFromProduct(produit, colorIndex).nomCouleurStrSiSonImageDispo
 
-
                 val couleurVentOperation = createSafeCouleurVentOperation(
+                    id = createCouleurOnVentKey(
+                        ouvertData,
+                        produit,
+                        colorIndex
+                    ),
                     ouvertData = ouvertData,
                     produit = produit,
                     colorIndex = colorIndex,
@@ -107,6 +112,7 @@ class FAchatOperationCouleurRepositoryComposable(
     }
 
     private fun createSafeCouleurVentOperation(
+        id: String,
         ouvertData: Z_AppCompt,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
@@ -114,17 +120,18 @@ class FAchatOperationCouleurRepositoryComposable(
         quantity: Int
     ): FCouleurVentOperation {
         return FCouleurVentOperation(
+            keyID = id,
             nomCouleurStrSiSonImageDispo = colorName,
             nomImageFichieOuApellationDuCouleur = "${produit.id}_${colorIndex + 1}",
             aAffiche = Affiche.Nom,
             baseFileName = "${produit.id}_${colorIndex + 1}.webp",
             parentZAppComptID = ouvertData.bsonObjectId,
-            parentEPeriodVentId = ouvertData.ouvertEPeriodVentId,
-            parentEPeriodVentStartDate = ouvertData.ouvertEPeriodVentStartTimesTamp,
-            parentBonVentId = ouvertData.ouvertBonVentId,
+            parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
+            parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
+            parentBonVentId = ouvertData.ouvertF2BonVentId,
             parentClientId = ouvertData.ouvertClientOnVentKeyId,
             parentClientName = ouvertData.ouvertClientOnVentNom,
-            parentProduitId = ouvertData.ouvertProduitOnVentID,
+            parentProduitId = ouvertData.ouvertF3ProduitOnVentID,
             parentProduitAncienId = ouvertData.ouvertProduitOnVentAncienId,
             parentProduitKeyNom = ouvertData.ouvertProduitOnVentNom,
             quantityAchete = quantity,
@@ -228,7 +235,7 @@ class FAchatOperationCouleurRepositoryComposable(
 
 @Entity
 data class FCouleurVentOperation(
-    @PrimaryKey var id: String = getPushFireBase(ref),
+    @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var nomImageFichieOuApellationDuCouleur: String = "",
     var parentBonVentId: String = "",
@@ -264,22 +271,22 @@ data class FCouleurVentOperation(
     enum class Type { SiNonDispo, CommandeDeLui }
 
     fun isSameEntity(other: FCouleurVentOperation) =
-        id == other.id &&
-        nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
+        keyID == other.keyID ||
+                nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
                 parentProduitId == other.parentProduitId &&
                 parentBonVentId == other.parentBonVentId &&
                 parentZAppComptID == other.parentZAppComptID
 
     override fun hashCode() = Objects.hash(
-        id,
+        keyID,
         nomImageFichieOuApellationDuCouleur,
         parentProduitId,
         parentBonVentId,
-        parentZAppComptID,
-        quantityAchete,
-        provisoireMonPrix
+        parentZAppComptID
     )
-    override fun equals(other: Any?) = this === other || (other is FCouleurVentOperation && isSameEntity(other) )
+
+    override fun equals(other: Any?) =
+        this === other || (other is FCouleurVentOperation && isSameEntity(other))
 
 
     companion object {

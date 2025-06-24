@@ -81,7 +81,7 @@ fun CameraFABProtoJuin3(
                             val catalogue = activeCatalogue.nom.takeLast(3)
 
                             val updatedProduct = product.copy(
-                                nom = "Produit $catalogue id${pendingProduct!!.id} $bsonObjectId",
+                                nom = "Produit $catalogue keyID${pendingProduct!!.id} $bsonObjectId",
                                 actualiseSonImage = 1,
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),

@@ -52,7 +52,7 @@ class C_CategorieProduitInfosRepository(
 
             data.map {
                 if (it.id == 89L) {
-                    Log.d("Test", "cate ${it.nom}id ${it.id} pos = ${it.position}")
+                    Log.d("Test", "cate ${it.nom}keyID ${it.id} pos = ${it.position}")
                 }
             }
         }

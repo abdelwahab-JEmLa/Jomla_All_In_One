@@ -107,7 +107,7 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
     val csvContent = StringBuilder()
 
     // Add CSV header
-    csvContent.append("id,catalogueParentId,nom,position,displayedHeader,itsHeldPourDeplacement,cSelectionePourDeplace,dernierTimeTampsSynchronisationAvecFireBase\n")
+    csvContent.append("keyID,catalogueParentId,nom,position,displayedHeader,itsHeldPourDeplacement,cSelectionePourDeplace,dernierTimeTampsSynchronisationAvecFireBase\n")
 
     // Add category data
     categories.forEach { category ->
@@ -139,7 +139,7 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
     val csvContent = StringBuilder()
 
     // Add CSV header - complete list of all fields
-    csvContent.append("id,idParentCategorie,nom,nombreUniteInt,nombreProduitDonSonCarton,dernierFireBaseUpdateTimestamps,prixVent,prixAchat,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles\n")
+    csvContent.append("keyID,idParentCategorie,nom,nombreUniteInt,nombreProduitDonSonCarton,dernierFireBaseUpdateTimestamps,prixVent,prixAchat,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles\n")
 
     // Add article data
     articles.forEach { article ->
@@ -211,7 +211,7 @@ private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabas
     val csvContent = StringBuilder()
 
     // Add CSV header for B_ClientInfosProtoJuin3
-    csvContent.append("id,nom,cretionTimestamps,numTelephone,couleur,bonDuClientsSu,currentCreditBalance,positionDonClientsList,cUnClientTemporaire,auFilterFAB,typeDeSonMagasine,clientTypeMode,caMarqueGpsEstOuvert,latitude,longitude,title,snippet,actuelleEtat,tagCeBonEstOuvertPourComptsIds,keyFireBase,dernierTimeTampsSynchronisationAvecFireBase\n")
+    csvContent.append("keyID,nom,cretionTimestamps,numTelephone,couleur,bonDuClientsSu,currentCreditBalance,positionDonClientsList,cUnClientTemporaire,auFilterFAB,typeDeSonMagasine,clientTypeMode,caMarqueGpsEstOuvert,latitude,longitude,title,snippet,actuelleEtat,tagCeBonEstOuvertPourComptsIds,keyFireBase,dernierTimeTampsSynchronisationAvecFireBase\n")
 
     // Add client data
     clients.forEach { client ->

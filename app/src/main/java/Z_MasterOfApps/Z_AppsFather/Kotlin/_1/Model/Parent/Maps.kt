@@ -66,7 +66,7 @@ class Maps {
 
                         mapOf(
                             "grossistInfo" to mapOf(
-                                "id" to entry.key.id,
+                                "keyID" to entry.key.id,
                                 "nom" to entry.key.nom
                             ),
                             "products" to products
@@ -93,7 +93,7 @@ class Maps {
 
         private fun formatArticle(article: Map.Entry<ArticleInfosModel, MutableList<Map.Entry<ColourEtGoutInfosModel, Double>>>) = mapOf(
             "articleInfo" to mapOf(
-                "id" to article.key.id,
+                "keyID" to article.key.id,
                 "nom" to article.key.nom,
                 "besoinToBeUpdated" to article.key.besoinToBeUpdated,
                 "sonImageBesoinActualisation" to article.key.sonImageBesoinActualisation,
@@ -102,7 +102,7 @@ class Maps {
             "colors" to article.value.map { color ->
                 mapOf(
                     "colorInfo" to mapOf(
-                        "id" to color.key.id,
+                        "keyID" to color.key.id,
                         "nom" to color.key.nom,
                         "imogi" to color.key.imogi
                     ),

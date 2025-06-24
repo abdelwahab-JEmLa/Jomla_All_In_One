@@ -50,9 +50,9 @@ class DataBaseFactoryDCouleurAchatOperation(
                         for (child in snapshot.children) {
                             try {
                                 child.getValue(FCouleurVentOperation::class.java)?.let { entity ->
-                                    val entityWithKey = entity.copy(id = child.key ?: "")
+                                    val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
-                                        val localEntity = dao.getAll().find { it.id == entityWithKey.id }
+                                        val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
                                         if (localEntity == null) {
                                             true
                                         } else {
@@ -99,7 +99,7 @@ class DataBaseFactoryDCouleurAchatOperation(
     private suspend fun batchFireBaseUpdateD_AchatOperation(datas: List<FCouleurVentOperation>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.id] = data
+            updates[data.keyID] = data
         }
         val firebaseRef = FCouleurVentOperation.ref
         firebaseRef.updateChildren(updates).await()

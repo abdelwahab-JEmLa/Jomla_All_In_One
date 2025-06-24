@@ -61,9 +61,10 @@ fun QuantityButton(
             }
 
             onClick()
+
             viewModel.acheter(
                 produit =article,
-                baseFileName = "${article.id}_$color",
+                baseFileName = "${article.id}_${color + 1}",
                 colorIndex = color,
                 quantity = quantity
             )

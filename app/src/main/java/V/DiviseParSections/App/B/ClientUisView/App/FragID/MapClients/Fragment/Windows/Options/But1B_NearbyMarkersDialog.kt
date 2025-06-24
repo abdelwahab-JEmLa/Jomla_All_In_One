@@ -158,7 +158,7 @@ fun But1B_NearbyMarkersDialog(
                                 val product =
                                     viewModelInitApp.produitsMainDataBase.find { produit ->
                                         produit.bonsVentDeCetteCota.any { bonVent ->
-                                            bonVent.clientIdChoisi == foundClient.id
+                                            bonVent.clientIdChoisi == foundClient.keyID
                                         }
                                     }
 

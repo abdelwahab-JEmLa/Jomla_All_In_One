@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.mongodb.kbson.BsonObjectId
 import java.util.Date
 import java.util.Objects
 
@@ -44,11 +43,8 @@ class ZAppCompt_RepositoryComposable(
         ouvertClientOnVentKeyId: String,
         ouvertClientOnVentNom: String,
     ): Unit {
-        val ouvertEPeriodVentStartDate = ouvertData!!.ouvertEPeriodVentStartTimesTamp
-
         addOrUpdateData(
             ouvertData!!.copy(
-                ouvertBonVentId = "____Child_ID${ouvertEPeriodVentStartDate}__Nom_$ouvertClientOnVentNom",
                 ouvertClientOnVentKeyId = ouvertClientOnVentKeyId,
                 ouvertClientOnVentNom = ouvertClientOnVentNom
             )
@@ -59,13 +55,12 @@ class ZAppCompt_RepositoryComposable(
         produit: ArticlesBasesStatsTable,
         baseFileName: String,
     ): Z_AppCompt {
-       val data =ouvertData!!.copy(
-           ouvertProduitOnVentID = produit.id.toString(),
-           ouvertCouleurOnVentID = baseFileName,
-       )
-        addOrUpdateData(
-            data
+        val data = ouvertData!!.copy(
+            ouvertF3ProduitOnVentID = produit.id.toString(),
+            ouvertF4CouleurOnVentID = baseFileName,
         )
+
+        addOrUpdateData(data)
         return data
     }
 
@@ -94,9 +89,12 @@ class ZAppCompt_RepositoryComposable(
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = getPushFireBase(ref),
+   // var keyID: String = "",
+
     var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+    // Section InfosDeBase
     // Section InfosDeBase
     var nom: String = "",
     var nomMutable: String = "",
@@ -132,24 +130,24 @@ data class Z_AppCompt(
     //-----------------Vent Createur-----------
 
     //Section Parent Period Vent
-    var ouvertEPeriodVentId: String = " ____Child_ID${BsonObjectId()}__Nom_Juin24_08_00_AM",
-    var ouvertEPeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
+    var ouvertF1PeriodVentId: String = "F1_Juin24_08",
+    var ouvertF1PeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
 
     //Section Parent Transaction
-    var ouvertBonVentId: String = "",
+    var ouvertF2BonVentId: String = "F2_3omar",
     var ouvertClientOnVentKeyId: String = "",
 
     //Section ouvertProduitAncien
-    var ouvertProduitOnVentID: String = "ProduitKeyID",
+    var ouvertF3ProduitOnVentID: String = "",
     var ouvertProduitOnVentAncienId: Long = 0L,
 
-    var ouvertCouleurOnVentID: String = "baseFileName",
+    var ouvertF4CouleurOnVentID: String = "",
 ) {
-
     init {
-        if (id.isEmpty()) {
-            id = getKeyID()
-        }
+       /* if (keyID.isEmpty()) {
+            val data = nom
+            keyID = data.withOutInvalidCharacters()
+        }     */
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()
         }
@@ -159,9 +157,6 @@ data class Z_AppCompt(
         return nom.ifEmpty { "DefaultCompt" }
     }
 
-    fun getKeyID(): String {
-        return "____Child_id${bsonObjectId}_nom_$nom"
-    }
 
     companion object {
         fun creatTimeTampDepuitStr(dateString: String): Long {

@@ -9,6 +9,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.CCategoriesCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ETransactionCommercialCompoRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -141,5 +142,41 @@ class ACentralCompoRepositoryProtoJuin9(
     }
     companion object {
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
+
+        // Version that returns Result for better error handling
+        fun String?.withOutInvalidCharactersResult(): Result<String> {
+            return try {
+                val result = this.withOutInvalidCharacters()
+                Result.success(result)
+            } catch (e: IllegalArgumentException) {
+                Result.failure(e)
+            }
+        }
+
+        fun String?.withOutInvalidCharacters(): String {
+            val cleanedNom = (this ?: "")
+                .replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?-]"), "")
+                .replace(Regex("\\s+"), "_")
+                .replace(Regex("_+"), "_")
+                .trim('_')
+                .take(40)
+
+
+            return when {
+                cleanedNom.isNotEmpty() -> cleanedNom
+                else -> throw IllegalArgumentException("Invalid ID or name")
+            }
+        }
+
+        fun createCouleurOnVentKey(
+            compt: Z_AppCompt,
+            bProduitDataBase: ArticlesBasesStatsTable,
+            indexCouleur: Int,
+        ): String {
+            return compt.ouvertF1PeriodVentId +
+                    "--${compt.ouvertF2BonVentId}" +
+                    "--${bProduitDataBase.id}" +
+                    "--${bProduitDataBase.id}_${indexCouleur + 1}"
+        }
     }
 }

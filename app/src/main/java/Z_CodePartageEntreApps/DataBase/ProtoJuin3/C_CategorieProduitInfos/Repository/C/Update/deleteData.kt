@@ -11,7 +11,7 @@ fun C_CategorieProduitInfosRepository.deleteData(data: CategoriesTabelle) {
 
         dao.deleteData(data)
 
-       // C_CategorieProduitInfosRepository.re(getKeyFireBase(data.id, data.nom) )
+       // C_CategorieProduitInfosRepository.re(getKeyFireBaseReplaceInvalidCarcters(data.keyID, data.nom) )
 
         val allData = dao.getAll()
         updateRepoState(allData)

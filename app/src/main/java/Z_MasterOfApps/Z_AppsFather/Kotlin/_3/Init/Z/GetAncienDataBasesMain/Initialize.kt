@@ -30,7 +30,7 @@ suspend fun startImplementationViewModel(nombreEntries: Int = 100, onInitProgres
         val (positioned, nonPositioned) = grossistProducts.partition { it.idArticle % 2 == 0L }
 
         mapOf(
-            "grossistInfo" to mapOf("id" to grossist.id, "nom" to grossist.nom),
+            "grossistInfo" to mapOf("keyID" to grossist.id, "nom" to grossist.nom),
             "products" to mapOf(
                 TypePosition.POSITIONE.name to positioned.map { product ->
                     buildProductMap(product)
@@ -48,7 +48,7 @@ suspend fun startImplementationViewModel(nombreEntries: Int = 100, onInitProgres
 
 private fun buildProductMap(product: ProduitsAncienDataBaseMain) = mapOf(
     "articleInfo" to mapOf(
-        "id" to product.idArticle,
+        "keyID" to product.idArticle,
         "nom" to product.nomArticleFinale,
         "besoinToBeUpdated" to false
     ),
@@ -61,7 +61,7 @@ private fun buildProductMap(product: ProduitsAncienDataBaseMain) = mapOf(
         .map { (id, name) ->
             mapOf(
                 "colorInfo" to mapOf(
-                    "id" to id,
+                    "keyID" to id,
                     "nom" to name,
                     "imogi" to name?.let { getEmoji(it) }
                 ),
