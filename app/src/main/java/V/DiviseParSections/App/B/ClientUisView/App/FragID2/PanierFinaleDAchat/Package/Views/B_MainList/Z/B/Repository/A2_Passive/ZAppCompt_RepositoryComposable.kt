@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import androidx.compose.runtime.Stable
@@ -94,6 +95,18 @@ class ZAppCompt_RepositoryComposable(
         )
     }
 
+    fun ouvrireProduitEtCouleurVent(
+        produit: ArticlesBasesStatsTable,
+        baseFileName: String,
+    ): Unit {
+        addOrUpdateData(
+            ouvertData!!.copy(
+                ouvertProduitOnVentKeyID = produit.getKeyID(),
+                ouvertCouleurOnVentKeyID = baseFileName,
+            )
+        )
+    }
+
     fun addOrUpdateData(data: Z_AppCompt) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
@@ -148,6 +161,8 @@ data class Z_AppCompt(
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
+    var ouvertProduitOnVentNom: String = "",
+    var ouvertClientOnVentNom: String = "",
 
     //-----------------Vent Createur-----------
 
@@ -158,15 +173,12 @@ data class Z_AppCompt(
     //Section Parent Transaction
     var ouvertBonVentKeyId: String = "",
     var ouvertClientOnVentKeyId: String = "",
-    var ouvertClientOnVentNom: String = "",
 
     //Section ouvertProduitAncien
-    var ouvertProduitOnVentKeyID: String = "",
+    var ouvertProduitOnVentKeyID: String = "ProduitKeyID",
     var ouvertProduitOnVentAncienId: Long = 0L,
-    var ouvertProduitOnVentNom: String = "",
 
-    var ouvertCouleurOnVentObjID: String = "",
-    var ouvertCouleurOnVentNomImageFichie: String = "",
+    var ouvertCouleurOnVentKeyID: String = "baseFileName",
 ) {
     override fun equals(other: Any?) =
         this === other || (other is Z_AppCompt && isSameEntity(other))

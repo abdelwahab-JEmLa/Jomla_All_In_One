@@ -70,7 +70,11 @@ fun ImageDisplayerProtoAvantJuin3(
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int,String) -> Unit
+
 ) {
+    val baseFileName =
+        "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
 
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
 
@@ -114,8 +118,7 @@ fun ImageDisplayerProtoAvantJuin3(
 
     val imagePath by remember(viewModel.viewModelImagesPath, article.id, indexColor) {
         derivedStateOf {
-            val baseFileName =
-                "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+
             File(viewModel.viewModelImagesPath, baseFileName)
         }
     }
@@ -137,9 +140,12 @@ fun ImageDisplayerProtoAvantJuin3(
         imageFile?.let { file ->
             GlideImage(
                 model = file,
-                contentDescription = "Article image ${article.id}",
+                contentDescription = file.toString(),
                 contentScale = imageScale,
                 modifier = Modifier
+                    .clickable {
+                        onClickToOpenWindow(article,indexColor,baseFileName)
+                    }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
                     .graphicsLayer {

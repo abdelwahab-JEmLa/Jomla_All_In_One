@@ -83,4 +83,13 @@ class Sec10Frag1ViewModel(
         }
     }
 
+    fun ouvrireProduitEtCouleurVent(
+        produit: ArticlesBasesStatsTable,
+        baseFileName: String,
+    ) {
+         aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvrireProduitEtCouleurVent(
+             produit,
+             baseFileName
+         )
+    }
 }

@@ -96,6 +96,8 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosDeBase
     var nom: String = "",
+    var nomMutable: String = "",
+    
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
     var nombreUniteInt: Int = 1,
@@ -169,6 +171,10 @@ data class ArticlesBasesStatsTable(
         PrixDeVentDefinie,
         CategorieOriginaleDefinie,
         PositionAvecCesFrereDefinie,
+    }
+
+    fun getKeyID(): String {
+        return " -<[$bsonObjectId]($nom)"
     }
 
     fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {

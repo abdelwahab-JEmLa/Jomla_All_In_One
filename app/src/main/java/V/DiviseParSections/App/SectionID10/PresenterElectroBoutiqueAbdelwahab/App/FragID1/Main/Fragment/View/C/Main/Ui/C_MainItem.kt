@@ -7,7 +7,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.countColors
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -85,17 +84,17 @@ fun ArticleItem(
 
 @Composable
 fun ArticleImageWithOverlay(
+    modifier: Modifier = Modifier,
     viewModel: Sec10Frag1ViewModel = koinViewModel(),
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     imageSize: DpSize,
-    qualityImagePourcentage: Int = 100
+    qualityImagePourcentage: Int = 100,
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -105,27 +104,11 @@ fun ArticleImageWithOverlay(
     ) {
         Box(
             modifier = Modifier
-                .clickable {
-                    onClickToOpenWindow(article, colorIndex)
-                    try {
-                        viewModel.aCentralDatasHandlerProtoJuin9
-                            .ouvreAddDataDepuitIndexCouleur(article,colorIndex)
-                        println("color index $colorIndex for article ${article.id}")
-
-                    } catch (e: IndexOutOfBoundsException) {
-                        // Log the error or handle gracefully
-                        println("Error: Invalid color index $colorIndex for article ${article.id}")
-                    } catch (e: Exception) {
-                        // Handle other potential exceptions
-                        println("Error accessing color data: ${e.message}")
-                    }
-                }
                 .fillMaxSize()
         ) {
             val imageExists = remember(article.id, colorIndex, reloadTrigger) {
                 checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
             }
-
             ImageDisplayerProtoAvantJuin3(
                 viewModel = viewModelHeadViewModel,
                 article = article,
@@ -136,7 +119,28 @@ fun ArticleImageWithOverlay(
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
-            )
+            ) { article, colorIndex,couleurKey->
+                onClickToOpenWindow(article, colorIndex)
+
+                try {
+                    viewModel.ouvrireProduitEtCouleurVent(
+                        produit=article,
+                        baseFileName = couleurKey
+                    )
+
+                    viewModel.aCentralDatasHandlerProtoJuin9
+                        .ouvreAddDataDepuitIndexCouleur(article, colorIndex)
+
+
+                    println("color index $colorIndex for article ${article.id}")
+                } catch (e: IndexOutOfBoundsException) {
+                    // Log the error or handle gracefully
+                    println("Error: Invalid color index $colorIndex for article ${article.id}")
+                } catch (e: Exception) {
+                    // Handle other potential exceptions
+                    println("Error accessing color data: ${e.message}")
+                }
+            }
         }
     }
 }
