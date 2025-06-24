@@ -27,22 +27,22 @@ class Sec10Frag1ViewModel(
         article: ArticlesBasesStatsTable,
         indexCouleur: Int,
     ) {
-        /*  val data = D_CouleurVentOperation(
-              parentProduitBsonObjectId = article.bsonObjectId,
-              nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
-                  article, indexCouleur
-              ),
-              parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.bsonObjectId
-          )
-          aCentralDatasHandlerProtoJuin9.dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
-              data
-          )
-          subClassFunctionality_zAppComptRepositoryComposable
+      /*  val data = D_CouleurVentOperation(
+            parentProduitBsonObjectId = article.bsonObjectId,
+            nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
+                article, indexCouleur
+            ),
+            parentBonVentObjectId = aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial!!.bsonObjectId
+        )
+        aCentralDatasHandlerProtoJuin9.dCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+            data
+        )
+        subClassFunctionality_zAppComptRepositoryComposable
 
-              .ouvrireCouleurAchatOperationPourCeCompt(
-              data.bsonObjectId,
-              "${article.nom}_${data.nomImageFichieOuApellationDuCouleur}"
-          )                   */
+            .ouvrireCouleurAchatOperationPourCeCompt(
+            data.bsonObjectId,
+            "${article.nom}_${data.nomImageFichieOuApellationDuCouleur}"
+        )                   */
     }
 
     data class UiState(
@@ -56,68 +56,43 @@ class Sec10Frag1ViewModel(
         article: ArticlesBasesStatsTable,
         indexCouleur: Int
     ): String {
-        return try {
-            // Validate input parameters
-            if (indexCouleur < 0 || indexCouleur > 3) {
-                Log.w(TAG, "Invalid color index: $indexCouleur")
-                return ""
-            }
+        // Get the color name based on the index
+        val couleurName = when (indexCouleur) {
+            0 -> article.couleur1
+            1 -> article.couleur2
+            2 -> article.couleur3
+            3 -> article.couleur4
+            else -> null
+        }
 
-            // Get the color name based on the index with null safety
-            val couleurName = when (indexCouleur) {
-                0 -> article.couleur1?.trim()
-                1 -> article.couleur2?.trim()
-                2 -> article.couleur3?.trim()
-                3 -> article.couleur4?.trim()
-                else -> null
-            }
-
-            // Return empty string if color is null or blank
-            if (couleurName.isNullOrBlank()) {
-                return ""
-            }
-
-            // Base path for images (same as in CreateCouleurInfosFromProduct.kt)
-            val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-
-            // Create the image file name pattern: {articleId}_{imageIndex}
-            val imageIndex = indexCouleur + 1
-            val baseFileName = "${article.id}_$imageIndex"
-
-            // Check for image file existence with different extensions safely
-            val supportedExtensions = listOf("jpg", "webp", "jpeg", "png")
-            val imageFile = try {
-                supportedExtensions
-                    .map { extension -> File("$basePath/$baseFileName.$extension") }
-                    .firstOrNull { file ->
-                        try {
-                            file.exists() && file.canRead() && file.length() > 0
-                        } catch (e: SecurityException) {
-                            Log.w(TAG, "Permission issue accessing file: ${file.absolutePath}")
-                            false
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Error checking file: ${file.absolutePath}", e)
-                            false
-                        }
-                    }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error finding image files for article ${article.id}", e)
-                null
-            }
-
-            // Return image file name (without extension) if image exists, otherwise return color name
-            return if (imageFile != null && imageFile.name != "NonTrouve.webp") {
-                baseFileName.take(MAX_STRING_LENGTH) // Limit string length
-            } else {
-                couleurName.take(MAX_STRING_LENGTH) // Limit string length
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in trouve_nomImageFichieOuApellationDuCouleurPar", e)
+        // Return empty string if color is null or blank
+        if (couleurName.isNullOrBlank()) {
             return ""
+        }
+
+        // Base path for images (same as in CreateCouleurInfosFromProduct.kt)
+        val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
+
+        // Create the image file name pattern: {articleId}_{imageIndex}
+        val imageIndex = indexCouleur + 1
+        val baseFileName = "${article.id}_$imageIndex"
+
+        // Check for image file existence with different extensions
+        val supportedExtensions = listOf("jpg", "webp", "jpeg", "png")
+        val imageFile = supportedExtensions
+            .map { extension -> File("$basePath/$baseFileName.$extension") }
+            .firstOrNull { file ->
+                file.exists() && file.canRead() && file.length() > 0
+            }
+
+        // Return image file name (without extension) if image exists, otherwise return color name
+        return if (imageFile != null && imageFile.name != "NonTrouve.webp") {
+            baseFileName // Return the base file name without extension
+        } else {
+            couleurName // Return the color name if no image is available
         }
     }
 
-    // FIXED: Main crash-prone function with comprehensive safety measures
     fun ouvrireProduitEtCouleurVent(
         produit: ArticlesBasesStatsTable,
         baseFileName: String,

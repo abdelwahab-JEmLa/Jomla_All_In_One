@@ -87,7 +87,7 @@ fun LazyRowAvailableColorsImageOuNom(
                             modifier = Modifier
                                 .width(sizeDeChaqueItem)
                                 .height(sizeDeChaqueItem),
-                            contentScale = if (couleurInfo.aAffiche!= FileCouleurInfos.Affiche.Image) ContentScale.Crop else ContentScale.Fit,
+                            contentScale = if (couleurInfo.aAffiche!= Affiche.Image) ContentScale.Crop else ContentScale.Fit,
                             imageSize = DpSize(sizeDeChaqueItem, sizeDeChaqueItem),
                         )
 
@@ -117,7 +117,7 @@ fun ImageDisplayer(
     )
 
     val imageFile = couleurInfo?.imageCouleurFichie
-    val imageExists = couleurInfo?.aAffiche != (FileCouleurInfos.Affiche.Image ?: false)
+    val imageExists = couleurInfo?.aAffiche != (Affiche.Image ?: false)
 
     Surface(
         modifier = modifier,
@@ -154,7 +154,7 @@ fun ImageDisplayer(
                         transition(DrawableTransitionOptions.withCrossFade())
                         diskCacheStrategy(DiskCacheStrategy.ALL)
                         priority(Priority.HIGH)
-                        signature(ObjectKey(couleurInfo.imageNameSiDispo))
+                        signature(ObjectKey(couleurInfo.imageCouleurFichie))
                         listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
                                 e: GlideException?,

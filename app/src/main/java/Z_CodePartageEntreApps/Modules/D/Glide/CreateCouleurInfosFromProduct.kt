@@ -12,7 +12,9 @@ data class CouleurInfosWithAchat(
     val couleurInfosList: List<FileCouleurInfos>,
     val matchingAchat: D_CouleurVentOperation?
 )
-
+enum class Affiche {
+    Image, Nom
+}
 // FIXED: FileCouleurInfos class to prevent circular references
 data class FileCouleurInfos(
     // FIXED: Made nullable and excluded from serialization to break circular reference
@@ -39,12 +41,8 @@ data class FileCouleurInfos(
     val colorIndex: Int = 0,
 ) {
 
-    enum class Affiche {
-        Image, Nom
-    }
 
-    // FIXED: Safe getter for File object
-    @get:Exclude
+
     fun getImageFile(): File? {
         return try {
             if (imageCouleurFichiePath.isNotEmpty()) {
@@ -58,12 +56,11 @@ data class FileCouleurInfos(
         }
     }
 
-    // FIXED: Create Firebase-safe version
-    @get:Exclude
+    // FIXED: Create Firebase-safe version - Remove @get:Exclude annotation
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
             "keyID" to keyID,
-            "bsonObjectId" to bsonObjectId.toHexString(),
+            "bsonObjectId" to bsonObjectId.toString(), // Use toString() instead of toHexString()
             "aAffiche" to aAffiche.name,
             "imageCouleurFichiePath" to imageCouleurFichiePath,
             "nomCouleurStrSiSonImageDispo" to nomCouleurStrSiSonImageDispo,
@@ -137,7 +134,7 @@ fun createCouleurInfosFromProduct(
             couleurInfosList.add(
                 FileCouleurInfos(
                     bsonObjectId = BsonObjectId(),
-                    aAffiche = if (imageExists) FileCouleurInfos.Affiche.Image else FileCouleurInfos.Affiche.Nom,
+                    aAffiche = if (imageExists) Affiche.Image else Affiche.Nom,
                     imageCouleurFichie = imageFile,
                     nomCouleurStrSiSonImageDispo = couleur,
                     quantityDeDisponibility = matchingAchat?.quantityAchete ?: 0,
