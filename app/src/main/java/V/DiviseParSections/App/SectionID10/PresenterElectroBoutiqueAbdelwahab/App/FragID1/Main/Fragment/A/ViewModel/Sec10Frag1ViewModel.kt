@@ -27,7 +27,7 @@ class Sec10Frag1ViewModel(
         article: ArticlesBasesStatsTable,
         indexCouleur: Int,
     ) {
-      /*  val data = D_CouleurVentOperation(
+      /*  val data = FCouleurVentOperation(
             parentProduitBsonObjectId = article.bsonObjectId,
             nomImageFichieOuApellationDuCouleur = trouve_nomImageFichieOuApellationDuCouleurPar(
                 article, indexCouleur

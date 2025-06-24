@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
 import Z_CodePartageEntreApps.Modules.D.Glide.LazyRowAvailableColorsImageOuNom
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.FCouleurVentOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,7 +49,7 @@ fun Sec1Frag3(
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    achats: List<D_CouleurVentOperation> = emptyList(),
+    achats: List<FCouleurVentOperation> = emptyList(),
     viewModel: ZViewModel_Sec1Frag3
 ) {
     // Group achats by parentProduitBsonObjectId
@@ -73,7 +73,7 @@ fun MainList(
 @Composable
 fun ProductGroup(
     productId: String,
-    achats: List<D_CouleurVentOperation>,
+    achats: List<FCouleurVentOperation>,
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3
 ) {

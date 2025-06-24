@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
-import com.google.firebase.database.Exclude
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,22 +24,21 @@ import java.io.File
 import java.util.Objects
 
 @Stable
-class DAchatOperationCouleurRepositoryComposable(
+class FAchatOperationCouleurRepositoryComposable(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
-    private val _datas = mutableStateOf<List<D_CouleurVentOperation>>(emptyList())
+    private val _datas = mutableStateOf<List<FCouleurVentOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
     val datasFiltered by derivedStateOf { datasValue }
 
     val filteredDatasValue by derivedStateOf {
         datasValue.filter {
-            it.etateActuellementEst == D_CouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
+            it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
         }
     }
-    val ouvertData by derivedStateOf { datasFiltered.lastOrNull() }
 
     private val dbMutex = Mutex()
 
@@ -70,7 +68,7 @@ class DAchatOperationCouleurRepositoryComposable(
         }
     }
 
-    fun getTestDate(): List<D_CouleurVentOperation> {
+    fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
     }
 
@@ -86,12 +84,11 @@ class DAchatOperationCouleurRepositoryComposable(
 
         composScope.launch {
             try {
-                val timestamp = System.currentTimeMillis()
-                val id = "p_${produit.id}_${colorIndex}_$timestamp"
-                val colorName = getFileCouleurInfosFromProduct(produit, colorIndex).nomCouleurStrSiSonImageDispo
+                val colorName =
+                    getFileCouleurInfosFromProduct(produit, colorIndex).nomCouleurStrSiSonImageDispo
+
 
                 val couleurVentOperation = createSafeCouleurVentOperation(
-                    id = id,
                     ouvertData = ouvertData,
                     produit = produit,
                     colorIndex = colorIndex,
@@ -109,20 +106,18 @@ class DAchatOperationCouleurRepositoryComposable(
     }
 
     private fun createSafeCouleurVentOperation(
-        id: String,
         ouvertData: Z_AppCompt,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         colorName: String,
         quantity: Int
-    ): D_CouleurVentOperation {
-        return D_CouleurVentOperation(
-            id = id,
-            nomCouleurStrSiSonImageDispo = colorName.take(50),
+    ): FCouleurVentOperation {
+        return FCouleurVentOperation(
+            nomCouleurStrSiSonImageDispo = colorName,
             nomImageFichieOuApellationDuCouleur = "${produit.id}_${colorIndex + 1}",
             aAffiche = Affiche.Nom,
             baseFileName = "${produit.id}_${colorIndex + 1}.webp",
-            parentZAppComptID = ouvertData.bsonObjectId.toString(),
+            parentZAppComptID = ouvertData.bsonObjectId,
             parentEPeriodVentId = ouvertData.ouvertEPeriodVentId,
             parentEPeriodVentStartDate = ouvertData.ouvertEPeriodVentStartTimesTamp,
             parentBonVentId = ouvertData.ouvertBonVentId,
@@ -132,13 +127,13 @@ class DAchatOperationCouleurRepositoryComposable(
             parentProduitAncienId = ouvertData.ouvertProduitOnVentAncienId,
             parentProduitKeyNom = ouvertData.ouvertProduitOnVentNom,
             quantityAchete = quantity,
-            etateActuellementEst = D_CouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
-            type = D_CouleurVentOperation.Type.CommandeDeLui,
+            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
+            type = FCouleurVentOperation.Type.CommandeDeLui,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
 
-    fun addOrUpdateData(data: D_CouleurVentOperation) {
+    fun addOrUpdateData(data: FCouleurVentOperation) {
         composScope.launch {
             try {
                 dbMutex.withLock {
@@ -159,7 +154,7 @@ class DAchatOperationCouleurRepositoryComposable(
                                 )
                             }
                         } else {
-                            ArrayList<D_CouleurVentOperation>(currentData.size + 1).apply {
+                            ArrayList<FCouleurVentOperation>(currentData.size + 1).apply {
                                 addAll(currentData)
                                 add(dataUpdate)
                             }
@@ -189,7 +184,10 @@ class DAchatOperationCouleurRepositoryComposable(
         }
     }
 
-    private fun getFileCouleurInfosFromProduct(produit: ArticlesBasesStatsTable, colorIndex: Int = 0): FileCouleurInfos {
+    private fun getFileCouleurInfosFromProduct(
+        produit: ArticlesBasesStatsTable,
+        colorIndex: Int = 0
+    ): FileCouleurInfos {
         val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
         val fileName = "${produit.id}_${colorIndex + 1}"
 
@@ -228,16 +226,15 @@ class DAchatOperationCouleurRepositoryComposable(
 }
 
 @Entity
-data class D_CouleurVentOperation(
-    @PrimaryKey var id: String = BsonObjectId().toString(),
+data class FCouleurVentOperation(
+    @PrimaryKey var id: String = ref.push().key.toString(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var nomImageFichieOuApellationDuCouleur: String = "",
     var parentBonVentId: String = "",
     var parentProduitId: String = "",
     var nomCouleurStrSiSonImageDispo: String = "",
-    @get:Exclude
     var aAffiche: Affiche = Affiche.Image,
-    var baseFileName: String="",
+    var baseFileName: String = "",
     var parentZAppComptID: String = "",
     var parentEPeriodVentId: String = "",
     var parentEPeriodVentStartDate: Long = 0,
@@ -251,7 +248,6 @@ data class D_CouleurVentOperation(
     var provisoireMonPrix: Double = 0.0,
     var achatParentBsonIDOld: String = "",
 ) {
-
     enum class EtateActuellementEst {
         CreeSlote,
         ParentBonVentOuvert,
@@ -266,14 +262,14 @@ data class D_CouleurVentOperation(
 
     enum class Type { SiNonDispo, CommandeDeLui }
 
-    fun isSameEntity(other: D_CouleurVentOperation) =
+    fun isSameEntity(other: FCouleurVentOperation) =
         nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
                 parentProduitId == other.parentProduitId &&
                 parentBonVentId == other.parentBonVentId &&
                 parentZAppComptID == other.parentZAppComptID
 
     override fun equals(other: Any?) =
-        this === other || (other is D_CouleurVentOperation && isSameEntity(other) &&
+        this === other || (other is FCouleurVentOperation && isSameEntity(other) &&
                 quantityAchete == other.quantityAchete && provisoireMonPrix == other.provisoireMonPrix)
 
     override fun hashCode() = Objects.hash(
@@ -286,7 +282,8 @@ data class D_CouleurVentOperation(
     )
 
     companion object {
-        val caRef = Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/D_CouleurVentOperation")
+        val ref =
+            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/FCouleurVentOperation")
 
     }
 }

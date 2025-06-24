@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_AchatOperationRepository.Base.B.Init
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.FCouleurVentOperation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend fun onLoadFromFireBaseD_AchatOperation(): MutableList<D_CouleurVentOperation> {
+suspend fun onLoadFromFireBaseD_AchatOperation(): MutableList<FCouleurVentOperation> {
     return suspendCancellableCoroutine { continuation ->
-        D_CouleurVentOperation.caRef.get()
+        FCouleurVentOperation.ref.get()
             .addOnSuccessListener { snapshot ->
-                val dataList = mutableListOf<D_CouleurVentOperation>()
+                val dataList = mutableListOf<FCouleurVentOperation>()
                 snapshot.children.forEach { child ->
-                    child.getValue(D_CouleurVentOperation::class.java)?.let { item ->
+                    child.getValue(FCouleurVentOperation::class.java)?.let { item ->
                         dataList.add(item)
                     }
                 }

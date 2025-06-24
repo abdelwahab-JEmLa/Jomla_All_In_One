@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.FCouleurVentOperation
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,49 +13,49 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface D_AchatOperationDao {
     @Update
-    suspend fun update(data: D_CouleurVentOperation)
+    suspend fun update(data: FCouleurVentOperation)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(data: D_CouleurVentOperation): Long
+    suspend fun insert(data: FCouleurVentOperation): Long
 
-    @Query("SELECT COUNT(*) FROM D_CouleurVentOperation")
+    @Query("SELECT COUNT(*) FROM FCouleurVentOperation")
     suspend fun getCount(): Int
 
-    @Query("SELECT COUNT(*) FROM D_CouleurVentOperation")
+    @Query("SELECT COUNT(*) FROM FCouleurVentOperation")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 
-    @Query("SELECT * FROM D_CouleurVentOperation ")
-    suspend fun getAll(): MutableList<D_CouleurVentOperation>
+    @Query("SELECT * FROM FCouleurVentOperation ")
+    suspend fun getAll(): MutableList<FCouleurVentOperation>
 
-    @Query("SELECT * FROM D_CouleurVentOperation")
-    fun getAllFlow(): Flow<List<D_CouleurVentOperation>>
+    @Query("SELECT * FROM FCouleurVentOperation")
+    fun getAllFlow(): Flow<List<FCouleurVentOperation>>
 
     @Upsert
-    suspend fun upsert(data: D_CouleurVentOperation)
+    suspend fun upsert(data: FCouleurVentOperation)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<D_CouleurVentOperation>)
+    suspend fun insertAll(categories: List<FCouleurVentOperation>)
 
-    @Query("DELETE FROM D_CouleurVentOperation")
+    @Query("DELETE FROM FCouleurVentOperation")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(categories: List<D_CouleurVentOperation>)
+    suspend fun updateAll(categories: List<FCouleurVentOperation>)
 
     @Insert
-    suspend fun insertData(data: D_CouleurVentOperation): Long
+    suspend fun insertData(data: FCouleurVentOperation): Long
 
     @Update
-    suspend fun updateData(data: D_CouleurVentOperation)
+    suspend fun updateData(data: FCouleurVentOperation)
 
     @Delete
-    suspend fun deleteData(data: D_CouleurVentOperation)
+    suspend fun deleteData(data: FCouleurVentOperation)
 
     @Upsert
-    suspend fun upsertData(data: D_CouleurVentOperation)
+    suspend fun upsertData(data: FCouleurVentOperation)
 
     @Upsert
-    suspend fun upsertAllDatas(datas: List<D_CouleurVentOperation>)
+    suspend fun upsertAllDatas(datas: List<FCouleurVentOperation>)
 
 }

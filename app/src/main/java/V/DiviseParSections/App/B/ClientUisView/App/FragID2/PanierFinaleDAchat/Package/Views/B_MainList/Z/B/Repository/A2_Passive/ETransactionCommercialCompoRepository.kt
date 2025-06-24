@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.DAchatOperationCouleurRepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.D_CouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.FAchatOperationCouleurRepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.FCouleurVentOperation
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -30,7 +30,7 @@ import java.util.Objects
 
 @Stable
 class ETransactionCommercialCompoRepository(
-    val dAchatOperationCouleurRepositoryComposable: DAchatOperationCouleurRepositoryComposable,
+    val dAchatOperationCouleurRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -39,7 +39,7 @@ class ETransactionCommercialCompoRepository(
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = dAchatOperationCouleurRepositoryComposable.filteredDatasValue.lastOrNull {
-        it.etateActuellementEst == D_CouleurVentOperation.EtateActuellementEst.ParentBonVentOuvert
+        it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentOuvert
     }?.parentBonVentId
 
     val ouvertData by derivedStateOf {

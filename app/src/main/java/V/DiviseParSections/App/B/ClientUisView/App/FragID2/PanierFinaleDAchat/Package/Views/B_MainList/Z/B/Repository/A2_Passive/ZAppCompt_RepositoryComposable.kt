@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
@@ -48,7 +47,7 @@ class ZAppCompt_RepositoryComposable(
 
         addOrUpdateData(
             ouvertData!!.copy(
-                ouvertBonVentId = "$ouvertEPeriodVentStartDate -<($ouvertClientOnVentNom)",
+                ouvertBonVentId = "____Child_ID${ouvertEPeriodVentStartDate}__Nom_$ouvertClientOnVentNom",
                 ouvertClientOnVentKeyId = ouvertClientOnVentKeyId,
                 ouvertClientOnVentNom = ouvertClientOnVentNom
             )
@@ -60,7 +59,7 @@ class ZAppCompt_RepositoryComposable(
         baseFileName: String,
     ): Z_AppCompt {
        val data =ouvertData!!.copy(
-           ouvertProduitOnVentID = produit.getKeyID(),
+           ouvertProduitOnVentID = produit.id.toString(),
            ouvertCouleurOnVentID = baseFileName,
        )
         addOrUpdateData(
@@ -132,7 +131,7 @@ data class Z_AppCompt(
     //-----------------Vent Createur-----------
 
     //Section Parent Period Vent
-    var ouvertEPeriodVentId: String = " -<[${BsonObjectId()}](Juin-24 -<(08:00 AM))",
+    var ouvertEPeriodVentId: String = " ____Child_ID${BsonObjectId()}__Nom_Juin24_08_00_AM",
     var ouvertEPeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
 
     //Section Parent Transaction
@@ -160,15 +159,12 @@ data class Z_AppCompt(
     }
 
     fun getKeyID(): String {
-        return " -<[$bsonObjectId]($nom)"
+        return "____Child_id${bsonObjectId}_nom_$nom"
     }
 
     companion object {
         fun creatTimeTampDepuitStr(dateString: String): Long {
             return try {
-                // Simple parsing for the format "(Juin-24 -<(08:00 AM))"
-                // You might want to implement more sophisticated date parsing
-                val cleanString = dateString.replace(Regex("[()\\-<>]"), "").trim()
                 val currentDate = Date()
                 currentDate.time
             } catch (e: Exception) {

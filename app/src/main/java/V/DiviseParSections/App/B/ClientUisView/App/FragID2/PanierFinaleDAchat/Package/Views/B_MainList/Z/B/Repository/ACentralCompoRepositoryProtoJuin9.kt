@@ -32,7 +32,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val clientsState: B_ClientsStateCompoRepository,
     val transactionCommercialState: ETransactionCommercialCompoRepository,
 
-    val dCouleurAchatOperationRepositoryComposable: DAchatOperationCouleurRepositoryComposable,
+    val dCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
  //   val dCouleurAchatOperationSubClassFunctionality: DSubClassFunctionality_CouleurAchatOperation,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
@@ -44,7 +44,6 @@ class ACentralCompoRepositoryProtoJuin9(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val ouvertData_dCouleurAchatOperation_SubClassFunctionality = dCouleurAchatOperationRepositoryComposable.ouvertData
     val ouvertData_bProduitDataBase_SubClassFunctionality = bProduitDataBase_SubClassFunctionality.ouvertData
 
     fun ouvreAddDataDepuitIndexCouleur(
