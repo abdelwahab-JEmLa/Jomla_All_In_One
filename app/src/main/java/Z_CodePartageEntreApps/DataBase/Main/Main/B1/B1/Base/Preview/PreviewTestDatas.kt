@@ -68,8 +68,13 @@ private fun MainScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp)) {
             SearchBar(repository)
-            Text("Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
-                modifier = Modifier.padding(vertical = 8.dp))
+
+            // Only show filtered count when text filter is active
+            if (repository.filterQuery.value == FilterQuery.SearchText) {
+                Text("Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
+                    modifier = Modifier.padding(vertical = 8.dp))
+            }
+
             if (uiState.progressCount > 0) Text("Generated ${uiState.progressCount} variants",
                 modifier = Modifier.padding(bottom = 8.dp))
             if (datas.isEmpty()) EmptyDataMessage() else MainList(repository)

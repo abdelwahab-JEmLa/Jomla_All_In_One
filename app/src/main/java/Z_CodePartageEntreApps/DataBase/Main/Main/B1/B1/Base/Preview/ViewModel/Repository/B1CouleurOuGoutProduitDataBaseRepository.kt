@@ -29,7 +29,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-enum class FilterQuery { NO_FILTER, SearchText, ProductId }
+enum class FilterQuery {
+    NO_FILTER,
+    SearchText
+}
 
 @Stable
 class B1CouleurOuGoutProduitDataBaseRepository(
@@ -43,9 +46,14 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     val datasValueFiltred by derivedStateOf {
         when (filterQuery.value) {
             FilterQuery.SearchText -> if (filterTextSearch.value.isBlank()) datasValue else
-                datasValue.filter { d -> listOf(d.nomCouleurStrSiSonImageDispo, d.parentBProduitNom, d.nomImageFichie)
-                    .any { it.contains(filterTextSearch.value, true) } }
-            FilterQuery.ProductId -> filterProductId.value?.let { id -> datasValue.filter { it.parentBProduitOldID == id } } ?: datasValue
+                datasValue.filter { d ->
+                    listOf(
+                        d.nomCouleurStrSiSonImageDispo,
+                        d.parentBProduitNom,
+                        d.nomImageFichie,
+                        d.parentBProduitOldID?.toString() ?: "" // Include product ID in search
+                    ).any { it.contains(filterTextSearch.value, true) }
+                }
             else -> datasValue
         }
     }
@@ -54,8 +62,6 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     val filterQuery get() = _filterQuery
     private val _filterTextSearch = mutableStateOf("")
     val filterTextSearch get() = _filterTextSearch
-    private val _filterProductId = mutableStateOf<Long?>(null)
-    val filterProductId get() = _filterProductId
 
     init {
         composScope.launch {
@@ -64,19 +70,14 @@ class B1CouleurOuGoutProduitDataBaseRepository(
         }
     }
 
-    fun setFilterQuery(query: FilterQuery) { _filterQuery.value = query }
     fun setFilterTextSearch(text: String) {
         _filterTextSearch.value = text
         if (text.isNotBlank()) _filterQuery.value = FilterQuery.SearchText
     }
-    fun setFilterProductId(productId: Long?) {
-        _filterProductId.value = productId
-        if (productId != null) _filterQuery.value = FilterQuery.ProductId
-    }
+
     fun clearFilters() {
         _filterQuery.value = FilterQuery.NO_FILTER
         _filterTextSearch.value = ""
-        _filterProductId.value = null
     }
 
     fun addOrUpdateData(data: B1CouleurOuGoutProduitDataBase) {
