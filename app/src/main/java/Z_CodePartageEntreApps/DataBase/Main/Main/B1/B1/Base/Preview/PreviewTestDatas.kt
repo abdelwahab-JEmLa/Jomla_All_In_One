@@ -31,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 fun B1CouleurOuGoutProduitDataBaseTestDatas(
     viewModel: B1CouleurOuGoutProduitDataBaseTestDatasViewModel = koinViewModel()
 ) {
-    val datas = viewModel.mainData
+    val datas = viewModel.a_CentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBase_Repository.datasValue
     val uiState by viewModel.uiState.collectAsState()
     val loadingProgress = viewModel.a_CentralDatasHandlerProtoJuin9.loadingProgress ?: 0f
 

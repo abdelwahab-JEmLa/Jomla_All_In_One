@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 class B1CouleurOuGoutProduitDataBase_Repository(
     val mainInitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
 ) {
+    val repoTAG = "B1CouleurOuGoutProduitDataBase"
     val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
@@ -33,7 +35,9 @@ class B1CouleurOuGoutProduitDataBase_Repository(
             // Then start collecting flow updates
             dao.getAllFlow().collect { newData ->
                 _datas.value = newData
-                println("B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: ${newData.size}")
+                Log.d(repoTAG,"B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: ${newData.size}")
+                //<--
+                //TODO(1): pk mem si B1Coule...ataBase B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: 954 
             }
         }
     }

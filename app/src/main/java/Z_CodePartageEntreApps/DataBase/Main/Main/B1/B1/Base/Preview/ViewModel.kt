@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 class B1CouleurOuGoutProduitDataBaseTestDatasViewModel(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-
+           //<--
+           //TODO(1): rien ne s affiche ici 
     val mainRepo = a_CentralDatasHandlerProtoJuin9
         .b1CouleurOuGoutProduitDataBase_Repository
 
