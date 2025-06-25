@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -43,6 +42,7 @@ fun ArticleImageWithOverlay(
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
+
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -50,20 +50,12 @@ fun ArticleImageWithOverlay(
         shadowElevation = 4.dp
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    onClickToOpenWindow(article, colorIndex)
-                    viewModel.acheter(
-                        produit = article,
-                        colorIndex = colorIndex,
-                        quantity = 1
-                    )
-                }
+            modifier = Modifier.fillMaxSize()
         ) {
             val imageExists = remember(article.id, colorIndex, reloadTrigger) {
                 checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
             }
+
             ImageDisplayerProtoAvantJuin3(
                 viewModel = viewModelHeadViewModel,
                 article = article,
@@ -76,29 +68,34 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
             )
 
-            val keyIDRelatedFAchatCouleurOperation = viewModel.aCentralDatasHandlerProtoJuin9
-                .getRelatedFAchatCouleurOperation(article.id, colorIndex)
-                ?.keyID
-            if (keyIDRelatedFAchatCouleurOperation != null) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .background(
-                            color = Color.Red,
-                            shape = RoundedCornerShape(bottomStart = 8.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .zIndex(1f) // Ensure overlay is on top
-                ) {
-                    Text(
-                        text = keyIDRelatedFAchatCouleurOperation,
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                }
+            val imageKeyID = buildString {
+                append(article.id)
+                append("--")
+                append(colorIndex)
             }
+
+            Text(
+                text = imageKeyID,
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .background(
+                        color = Color.Red,
+                        shape = RoundedCornerShape(bottomStart = 8.dp)
+                    )
+                    .clickable {
+                        onClickToOpenWindow(article, colorIndex)
+                        viewModel.acheter(
+                            produit = article,
+                            colorIndex = colorIndex,
+                            quantity = 1
+                        )
+                    }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
         }
     }
 }

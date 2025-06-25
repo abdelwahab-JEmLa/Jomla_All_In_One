@@ -156,7 +156,7 @@ fun ImageDisplayerProtoAvantJuin3(
                         } else {
                             Modifier
                         }
-                    )
+                    ),
             ) {
                 it.apply {
                     applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
