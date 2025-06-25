@@ -44,11 +44,13 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(article.id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
+
     val imageKeyID = buildString {
         append(article.id)
         append("_")
         append(colorIndex)
     }
+
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
