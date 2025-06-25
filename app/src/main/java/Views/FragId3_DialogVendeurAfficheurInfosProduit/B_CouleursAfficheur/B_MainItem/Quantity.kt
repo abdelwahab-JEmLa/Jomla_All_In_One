@@ -67,7 +67,6 @@ fun QuantityButton(
                 colorIndex = colorIndex,
                 quantity = quantity
             )
-
         },
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         shape = RoundedCornerShape(8.dp),

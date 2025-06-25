@@ -20,6 +20,7 @@ class VendeurAfficheurInfosProduitViewModel(
             aCentralDatasHandlerProtoJuin9
                 .fCouleurAchatOperationRepositoryComposable
                 .acheterUneCouleur(it, produit, quantity, colorIndex)
+
         }
     }
 

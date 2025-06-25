@@ -19,11 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
-import java.util.Objects
 
 @Stable
 class FAchatOperationCouleurRepositoryComposable(
@@ -69,6 +67,24 @@ class FAchatOperationCouleurRepositoryComposable(
             }
         }
     }
+
+    fun addOrUpdateData(data: FCouleurVentOperation) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            FCouleurVentOperation.compareEntre(ancien = ancien, newData = data)
+        }
+        _datas.value = if (existingIndex >= 0) {
+            datasValue.toMutableList().apply {
+                this[existingIndex] = this[existingIndex].copy(
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+            }
+        } else {
+            datasValue + data
+        }
+
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+    }
+
 
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
@@ -141,7 +157,8 @@ class FAchatOperationCouleurRepositoryComposable(
         )
     }
 
-    fun addOrUpdateData(data: FCouleurVentOperation) {
+
+   /* fun addOrUpdateData(data: FCouleurVentOperation) {
         composScope.launch {
             try {
                 dbMutex.withLock {
@@ -149,17 +166,14 @@ class FAchatOperationCouleurRepositoryComposable(
                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                     )
 
+                    Log.d(TAG,"data ${data.keyID} Qua  =${data.quantityAchete}")
                     val currentData = _datas.value
                     val existingIndex = currentData.indexOfFirst { it.isSameEntity(dataUpdate) }
 
                     withContext(Dispatchers.Main) {
                         val newList = if (existingIndex >= 0) {
                             currentData.toMutableList().apply {
-                                val existing = this[existingIndex]
-                                this[existingIndex] = existing.copy(
-                                    quantityAchete = existing.quantityAchete + dataUpdate.quantityAchete,
-                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                )
+                                this[existingIndex] = dataUpdate
                             }
                         } else {
                             ArrayList<FCouleurVentOperation>(currentData.size + 1).apply {
@@ -167,21 +181,32 @@ class FAchatOperationCouleurRepositoryComposable(
                                 add(dataUpdate)
                             }
                         }
+
+                        // Fix: Update state first, then log the correct item
                         _datas.value = newList
+
+                        // Log the actual updated item
+                        val actualUpdatedItem = if (existingIndex >= 0) {
+                            newList[existingIndex]
+                        } else {
+                            newList.last()
+                        }
+                        Log.d(TAG,"dataUpdated data ${actualUpdatedItem.keyID} Qua  =${actualUpdatedItem.quantityAchete}")
                     }
 
                     try {
-                        ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataUpdate)
+                       ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataUpdate)
                     } catch (dbException: Exception) {
+                        Log.e(TAG, "Database update failed", dbException)
                     }
                 }
             } catch (e: OutOfMemoryError) {
                 System.gc()
             } catch (e: Exception) {
+                Log.e(TAG, "Error in addOrUpdateData", e)
             }
         }
-    }
-
+    }          */
     private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
         return when (colorIndex) {
             0 -> produit.couleur1 ?: "couleur1"
@@ -269,7 +294,7 @@ data class FCouleurVentOperation(
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }
-
+/*
     fun isSameEntity(other: FCouleurVentOperation) =
         keyID == other.keyID ||
                 nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
@@ -287,12 +312,21 @@ data class FCouleurVentOperation(
 
     override fun equals(other: Any?) =
         this === other || (other is FCouleurVentOperation && isSameEntity(other))
-
+                  */
 
     companion object {
         val ref =
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/FCouleurVentOperation")
 
+
+        fun compareEntre(
+            ancien: FCouleurVentOperation,
+            newData: FCouleurVentOperation
+        ): Boolean {
+            val delimiterExistence =
+                ancien.keyID == newData.keyID
+            return delimiterExistence
+        }
     }
 }
 

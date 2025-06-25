@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -80,7 +79,6 @@ fun B_CouleurAfficheur(
     currentSale: SoldArticlesTabelle?,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
@@ -209,24 +207,28 @@ fun B_CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-            val key =
-                viewModel.aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvertData?.let {
-                    createCouleurOnVentKey(
-                        compt = it,
-                        bProduitDataBase = article,
-                        indexCouleur = index
-                    )
-                }
-                 val quantity = viewModel.aCentralDatasHandlerProtoJuin9.fCouleurAchatOperationRepositoryComposable
-                     .datasValue.find { it.keyID==key }?.quantityAchete
+        val key =
+            viewModel.aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvertData?.let {
+                createCouleurOnVentKey(
+                    compt = it,
+                    bProduitDataBase = article,
+                    indexCouleur = index
+                )
+            }
 
-            QuantityBadge(
-                quantity = "$key Qua=$quantity",
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(2.dp)
-                    .zIndex(1f)
-            )
+        val quantity =
+            viewModel.aCentralDatasHandlerProtoJuin9.fCouleurAchatOperationRepositoryComposable
+                .datasValue.find { it.keyID == key }?.quantityAchete
+
+        Log.d("RelodDebug", "data ${key} Qua  =${quantity}")
+
+        QuantityBadge(
+            quantity = "$key Qua=$quantity",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(2.dp)
+                .zIndex(1f)
+        )
 
         ElevatedCard(
             modifier = Modifier
