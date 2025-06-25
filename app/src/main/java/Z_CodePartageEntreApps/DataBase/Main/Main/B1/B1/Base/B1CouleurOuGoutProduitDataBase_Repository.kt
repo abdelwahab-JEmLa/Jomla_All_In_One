@@ -16,10 +16,9 @@ import kotlinx.coroutines.launch
 
 @Stable
 class B1CouleurOuGoutProduitDataBase_Repository(
-    private val ancienRepo: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
+    val mainInitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
 ) {
-    val dao = ancienRepo.dao
-
+    val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<B1CouleurOuGoutProduitDataBase>>(emptyList())
@@ -27,7 +26,15 @@ class B1CouleurOuGoutProduitDataBase_Repository(
 
     init {
         composScope.launch {
-            dao.getAllFlow().collect { _datas.value = it }
+            // Load initial data from database
+            val initialData = dao.getAll()
+            _datas.value = initialData
+
+            // Then start collecting flow updates
+            dao.getAllFlow().collect { newData ->
+                _datas.value = newData
+                println("B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: ${newData.size}")
+            }
         }
     }
 
@@ -35,23 +42,22 @@ class B1CouleurOuGoutProduitDataBase_Repository(
         val existingIndex = datasValue.indexOfFirst { ancien ->
             B1CouleurOuGoutProduitDataBase.compareEntre(ancien = ancien, newData = data)
         }
-        _datas.value = if (existingIndex >= 0) {
-            datasValue.toMutableList().apply {
-                this[existingIndex] = this[existingIndex].copy(
-                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                )
-            }
+
+        val updatedData = if (existingIndex >= 0) {
+            data.copy(
+                key = datasValue[existingIndex].key, // Keep existing key
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
         } else {
-            datasValue + data
+            data.copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
         }
 
-        addOrUpdatedAncienRepo(existingIndex, data)
+        addOrUpdatedAncienRepo(existingIndex, updatedData)
     }
 
     fun deleteData(data: B1CouleurOuGoutProduitDataBase) {
-        _datas.value = datasValue.filter { existing ->
-            !B1CouleurOuGoutProduitDataBase.compareEntre(ancien = existing, newData = data)
-        }
         deleteDataAncienRepo(data)
     }
 
@@ -60,7 +66,7 @@ class B1CouleurOuGoutProduitDataBase_Repository(
         data: B1CouleurOuGoutProduitDataBase
     ) {
         composScope.launch {
-            ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+            mainInitDataBase.addOrUpdatedAncienRepo(existingIndex, data)
         }
     }
 
@@ -68,7 +74,7 @@ class B1CouleurOuGoutProduitDataBase_Repository(
         data: B1CouleurOuGoutProduitDataBase
     ) {
         composScope.launch {
-            ancienRepo.deleteDataAncienRepo(data)
+            mainInitDataBase.deleteDataAncienRepo(data)
         }
     }
 }
@@ -76,15 +82,20 @@ class B1CouleurOuGoutProduitDataBase_Repository(
 @Entity
 data class B1CouleurOuGoutProduitDataBase(
     @PrimaryKey
-    var id: String = "",
-
+    var key: String = getPushFireBase(ref),
     var pushKey: String = getPushFireBase(ref),
+    var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    var parentBProduitOldID: Long? = null,
-    var parentBProduitKeyID: String = "",
+    val aAffiche: Type = Type.Image,
+    val nomImageFichie: String = "Non Dispo",
+    val nomCouleurStrSiSonImageDispo: String = "",
 
-    ) {
+    var parentBProduitOldID: Long? = null,
+    var parentBProduitNom: String = "",
+) {
+    enum class Type { Image, Nom }
+
     companion object {
         val ref =
             Firebase.database.getReference(
@@ -98,9 +109,10 @@ data class B1CouleurOuGoutProduitDataBase(
             ancien: B1CouleurOuGoutProduitDataBase,
             newData: B1CouleurOuGoutProduitDataBase
         ): Boolean {
-            val delimiterExistence =
-                ancien.id == newData.id
-            return delimiterExistence
+            // Compare by parent product ID and color/image info for better matching
+            return ancien.parentBProduitOldID == newData.parentBProduitOldID &&
+                    ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
+                    ancien.nomImageFichie == newData.nomImageFichie
         }
     }
 }

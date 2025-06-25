@@ -29,9 +29,6 @@
       <SelectionState runConfigName="ClearAPP Lence">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Sec1Frag3Prv (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="Sec1Frag3Prv (2)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -42,6 +39,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="D_AchatOperationTestDatas">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="B1CouleurOuGoutProduitDataBaseTestDatas">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

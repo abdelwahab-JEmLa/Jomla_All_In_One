@@ -17,7 +17,6 @@ enum class Affiche {
 }
 // FIXED: FileCouleurInfos class to prevent circular references
 data class FileCouleurInfos(
-    // FIXED: Made nullable and excluded from serialization to break circular reference
     @get:Exclude
     @Transient
     val d_CouleurVentOperation: FCouleurVentOperation? = null, // FIXED: Made nullable
@@ -25,15 +24,12 @@ data class FileCouleurInfos(
     val keyID: String = "",
     val bsonObjectId: BsonObjectId = BsonObjectId(),
 
-    // Store as string for Firebase serialization
     val aAffiche: Affiche = Affiche.Image,
 
-    // FIXED: Exclude File object from serialization (not serializable by Firebase)
     @get:Exclude
     @Transient
     val imageCouleurFichie: File? = null,
 
-    // Store file path as string instead of File object
     val imageCouleurFichiePath: String = imageCouleurFichie?.absolutePath ?: "",
 
     val nomCouleurStrSiSonImageDispo: String = "",

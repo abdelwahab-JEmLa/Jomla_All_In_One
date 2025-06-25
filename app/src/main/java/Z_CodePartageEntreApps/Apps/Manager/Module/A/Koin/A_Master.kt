@@ -10,7 +10,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.WDatabaseInitializationManager
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
@@ -32,6 +31,8 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposito
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.B1CouleurOuGoutProduitDataBaseTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
@@ -147,6 +148,8 @@ val classesHandlersModule = module {
 
 val viewModelModule = module {
     //Sort Par ID
+    viewModel { B1CouleurOuGoutProduitDataBaseTestDatasViewModel(get(),) }
+
     viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get(),) }
     viewModel { D_AchatOperationTestDatasViewModel(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }

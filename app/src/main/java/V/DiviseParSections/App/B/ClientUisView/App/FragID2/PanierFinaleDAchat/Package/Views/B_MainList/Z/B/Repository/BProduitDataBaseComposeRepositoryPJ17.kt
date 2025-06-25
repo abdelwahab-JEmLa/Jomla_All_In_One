@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 class BProduitDataBaseComposeRepositoryPJ17(
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {
-
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
 
