@@ -1,6 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.createCouleurOnVentKey
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
@@ -207,23 +206,10 @@ fun B_CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-        val key =
-            viewModel.aCentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable.ouvertData?.let {
-                createCouleurOnVentKey(
-                    compt = it,
-                    bProduitDataBase = article,
-                    indexCouleur = index
-                )
-            }
-
-        val quantity =
-            viewModel.aCentralDatasHandlerProtoJuin9.fCouleurAchatOperationRepositoryComposable
-                .datasValue.find { it.keyID == key }?.quantityAchete
-
-        Log.d("RelodDebug", "data ${key} Qua  =${quantity}")
+        val relatedFAchatCouleurOperation =viewModel.getRelatedFAchatCouleurOperation(article.id,index)
 
         QuantityBadge(
-            quantity = "$key Qua=$quantity",
+            quantity = "${relatedFAchatCouleurOperation.keyID} Qua=${relatedFAchatCouleurOperation.quantityAchete}",
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(2.dp)

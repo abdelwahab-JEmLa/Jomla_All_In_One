@@ -49,6 +49,23 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val ouvertData_bProduitDataBase_SubClassFunctionality = bProduitDataBase_SubClassFunctionality.ouvertData
 
+
+    fun getKeyID(produitID: Long,index:Int): String {
+        return createCouleurOnVentKey(
+            compt = zAppComptRepositoryComposable.ouvertData!!,
+            bProduitDataBase = bProduitDataBase_SubClassFunctionality
+                .datasValue.find { it.id== produitID }!!,
+            indexCouleur = index)
+    }
+
+    fun getRelatedFAchatCouleurOperation(produitID: Long, index:Int): FCouleurVentOperation {
+        val fAchatCouleurOperation= fCouleurAchatOperationRepositoryComposable
+            .datasValue.find { it.keyID == getKeyID(produitID,index) } !!
+     //   Log.d("RelodDebug", "data ${fAchatCouleurOperation.keyID} Qua  =${fAchatCouleurOperation.quantityAchete}")
+
+        return  fAchatCouleurOperation
+    }
+
     fun ouvreAddDataDepuitIndexCouleur(
         article: ArticlesBasesStatsTable,
         index: Int

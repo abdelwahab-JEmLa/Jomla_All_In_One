@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.mongodb.kbson.BsonObjectId
 
-class Sec10Frag1ViewModel(
+class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
 
@@ -25,7 +25,6 @@ class Sec10Frag1ViewModel(
         val data = aCentralDatasHandlerProtoJuin9
             .zAppComptRepositoryComposable
             .ouvrireProduitEtCouleurVent(produit, colorIndex)
-
         data.let {
             aCentralDatasHandlerProtoJuin9
                 .fCouleurAchatOperationRepositoryComposable

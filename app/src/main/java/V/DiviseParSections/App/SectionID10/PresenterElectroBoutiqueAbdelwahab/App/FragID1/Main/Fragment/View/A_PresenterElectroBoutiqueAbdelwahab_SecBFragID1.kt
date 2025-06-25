@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.Sec10Frag1ViewModel
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.Scrollbar
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
@@ -48,7 +48,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
-    viewModel: Sec10Frag1ViewModel = koinViewModel(),
+    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel = koinViewModel(),
     viewModelHeadViewModel: HeadViewModel,
     viewModelInitApp: ViewModelInitApp,
     onToggleNavBar: () -> Unit,
@@ -137,7 +137,7 @@ fun MainUi(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
-    viewModel: Sec10Frag1ViewModel
+    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 ) {
 
     val scope = rememberCoroutineScope()
@@ -423,7 +423,7 @@ fun ArticleGridWithScrollbar(
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: Sec10Frag1ViewModel,
+    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,

@@ -66,7 +66,7 @@ class FAchatOperationCouleurRepositoryComposable(
 
     fun addOrUpdateData(data: FCouleurVentOperation) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperation.isSame(ancien , newData)
+            FCouleurVentOperation.isSame(ancien, newData =data )
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
