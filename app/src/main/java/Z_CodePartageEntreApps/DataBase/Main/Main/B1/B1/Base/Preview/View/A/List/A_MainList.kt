@@ -25,9 +25,8 @@ import androidx.compose.ui.unit.dp
 fun MainList(
     b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
 ) {
-    val items = b1CouleurOuGoutProduitDataBaseRepository.datasValue
+    val items = b1CouleurOuGoutProduitDataBaseRepository.datasValueFiltred
 
-    // Group items by parentBProduitOldID
     val groupedItems by remember(items) {
         derivedStateOf {
             items.groupBy { it.parentBProduitOldID }
