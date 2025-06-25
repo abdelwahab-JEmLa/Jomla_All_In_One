@@ -66,7 +66,7 @@ class FAchatOperationCouleurRepositoryComposable(
 
     fun addOrUpdateData(data: FCouleurVentOperation) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperation.compareEntre(ancien = ancien, newData = data)
+            FCouleurVentOperation.isSame(ancien , newData)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -268,7 +268,7 @@ data class FCouleurVentOperation(
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/FCouleurVentOperation")
 
 
-        fun compareEntre(
+        fun isSame(
             ancien: FCouleurVentOperation,
             newData: FCouleurVentOperation
         ): Boolean {
