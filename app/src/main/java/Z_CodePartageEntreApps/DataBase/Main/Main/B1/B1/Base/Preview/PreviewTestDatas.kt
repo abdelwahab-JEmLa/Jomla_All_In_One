@@ -11,7 +11,6 @@ import Z_CodePartageEntreApps.Ui.LoadingScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,95 +67,40 @@ private fun MainScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Search bar
-            SearchBar(repository = repository)
-
-            Text("Total items: ${datas.size}", modifier = Modifier.padding(vertical = 8.dp))
-            Text("Filtered items: ${repository.datasValueFiltred.size}", modifier = Modifier.padding(bottom = 8.dp))
-
-            if (uiState.progressCount > 0) {
-                Text(
-                    "Generated ${uiState.progressCount} color variants",
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            if (datas.isEmpty()) {
-                EmptyDataMessage()
-            } else {
-                MainList(repository)
-            }
+            SearchBar(repository)
+            Text("Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
+                modifier = Modifier.padding(vertical = 8.dp))
+            if (uiState.progressCount > 0) Text("Generated ${uiState.progressCount} variants",
+                modifier = Modifier.padding(bottom = 8.dp))
+            if (datas.isEmpty()) EmptyDataMessage() else MainList(repository)
         }
-
-        MainOptions(
-            repository,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            onRefresh,
-        )
+        MainOptions(repository, Modifier.align(Alignment.BottomEnd).padding(16.dp), {})
     }
 }
 
 @Composable
-private fun SearchBar(
-    repository: B1CouleurOuGoutProduitDataBaseRepository
-) {
+private fun SearchBar(repository: B1CouleurOuGoutProduitDataBaseRepository) {
     var searchText by remember { mutableStateOf("") }
-    val currentFilter = repository.filterQuery.value
-    val isSearchActive = currentFilter == FilterQuery.SearchText
+    val isSearchActive = repository.filterQuery.value == FilterQuery.SearchText
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { newText ->
-                searchText = newText
-                if (newText.isNotBlank()) {
-                    repository.setFilterTextSearch(newText)
-                } else {
-                    repository.clearFilters()
-                }
-            },
-            label = { Text("Search colors, products, or images...") },
-            leadingIcon = {
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = "Search"
-                )
-            },
-            trailingIcon = {
-                if (searchText.isNotEmpty()) {
-                    IconButton(
-                        onClick = {
-                            searchText = ""
-                            repository.clearFilters()
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.Clear,
-                            contentDescription = "Clear search"
-                        )
-                    }
-                }
-            },
-            modifier = Modifier.weight(1f),
-            singleLine = true
-        )
-    }
+    OutlinedTextField(
+        value = searchText,
+        onValueChange = {
+            searchText = it
+            if (it.isNotBlank()) repository.setFilterTextSearch(it) else repository.clearFilters()
+        },
+        label = { Text("Search...") },
+        leadingIcon = { Icon(Icons.Default.Search, null) },
+        trailingIcon = { if (searchText.isNotEmpty()) IconButton({ searchText = ""; repository.clearFilters() })
+        { Icon(Icons.Default.Clear, null) } },
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        singleLine = true
+    )
 
-    if (isSearchActive) {
-        Text(
-            text = "Active filter: Search for \"${repository.filterTextSearch.value}\"",
-            modifier = Modifier.padding(bottom = 4.dp),
-            style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-            color = androidx.compose.material3.MaterialTheme.colorScheme.primary
-        )
-    }
+    if (isSearchActive) Text("Searching: \"${repository.filterTextSearch.value}\"",
+        modifier = Modifier.padding(bottom = 4.dp),
+        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+        color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
 }
 
 @Composable
@@ -168,50 +112,18 @@ private fun MainOptions(
     var refreshClickCount by remember { mutableStateOf(0) }
     var showSearchIcon by remember { mutableStateOf(true) }
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Search toggle button
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FloatingActionButton(
-            onClick = {
-                showSearchIcon = !showSearchIcon
-                if (showSearchIcon) {
-                    // When switching to search mode, clear any existing filters
-                    repository.clearFilters()
-                }
-            },
+            onClick = { showSearchIcon = !showSearchIcon; if (showSearchIcon) repository.clearFilters() },
             modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                if (showSearchIcon) Icons.Default.Search else Icons.Default.Clear,
-                contentDescription = if (showSearchIcon) "Show Search Options" else "Clear Filters"
-            )
-        }
+        ) { Icon(if (showSearchIcon) Icons.Default.Search else Icons.Default.Clear, null) }
 
-        // Refresh button with double-click protection
         FloatingActionButton(
-            onClick = {
-                refreshClickCount++
-                if (refreshClickCount >= 2) {
-                    onRefresh()
-                    refreshClickCount = 0
-                }
-            },
+            onClick = { refreshClickCount++; if (refreshClickCount >= 2) { onRefresh(); refreshClickCount = 0 } },
             modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                Icons.Default.Refresh,
-                contentDescription = if (refreshClickCount == 0) "Click twice to generate data" else "Click once more to confirm"
-            )
-        }
+        ) { Icon(Icons.Default.Refresh, null) }
 
-        if (refreshClickCount == 1) {
-            Text(
-                text = "Click again to confirm",
-                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(4.dp)
-            )
-        }
+        if (refreshClickCount == 1) Text("Click again", style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(4.dp))
     }
 }

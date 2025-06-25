@@ -29,72 +29,50 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-enum class FilterQuery {
-    NO_FILTER,
-    SearchText,
-    ProductId
-}
+enum class FilterQuery { NO_FILTER, SearchText, ProductId }
 
 @Stable
 class B1CouleurOuGoutProduitDataBaseRepository(
     val mainInitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
 ) {
-    val repoTAG = "B1CouleurOuGoutProduitDataBase"
     val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
-
     private val _datas = mutableStateOf<List<B1CouleurOuGoutProduitDataBase>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     val datasValueFiltred by derivedStateOf {
         when (filterQuery.value) {
-            FilterQuery.NO_FILTER -> datasValue
-            FilterQuery.SearchText -> {
-                if (filterTextSearch.value.isBlank()) {
-                    datasValue
-                } else {
-                    datasValue.filter { data ->
-                        data.nomCouleurStrSiSonImageDispo.contains(filterTextSearch.value, ignoreCase = true) ||
-                                data.parentBProduitNom.contains(filterTextSearch.value, ignoreCase = true) ||
-                                data.nomImageFichie.contains(filterTextSearch.value, ignoreCase = true)
-                    }
-                }
-            }
-            FilterQuery.ProductId -> {
-                if (filterProductId.value == null) {
-                    datasValue
-                } else {
-                    datasValue.filter { data ->
-                        data.parentBProduitOldID == filterProductId.value
-                    }
-                }
-            }
+            FilterQuery.SearchText -> if (filterTextSearch.value.isBlank()) datasValue else
+                datasValue.filter { d -> listOf(d.nomCouleurStrSiSonImageDispo, d.parentBProduitNom, d.nomImageFichie)
+                    .any { it.contains(filterTextSearch.value, true) } }
+            FilterQuery.ProductId -> filterProductId.value?.let { id -> datasValue.filter { it.parentBProduitOldID == id } } ?: datasValue
+            else -> datasValue
         }
     }
 
     private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
     val filterQuery get() = _filterQuery
-
     private val _filterTextSearch = mutableStateOf("")
     val filterTextSearch get() = _filterTextSearch
-
     private val _filterProductId = mutableStateOf<Long?>(null)
     val filterProductId get() = _filterProductId
 
     init {
         composScope.launch {
             _datas.value = dao.getAll()
-            dao.getAllFlow().collect { newData -> _datas.value = newData }
+            dao.getAllFlow().collect { _datas.value = it }
         }
     }
 
+    fun setFilterQuery(query: FilterQuery) { _filterQuery.value = query }
     fun setFilterTextSearch(text: String) {
         _filterTextSearch.value = text
-        if (text.isNotBlank()) {
-            _filterQuery.value = FilterQuery.SearchText
-        }
+        if (text.isNotBlank()) _filterQuery.value = FilterQuery.SearchText
     }
-
+    fun setFilterProductId(productId: Long?) {
+        _filterProductId.value = productId
+        if (productId != null) _filterQuery.value = FilterQuery.ProductId
+    }
     fun clearFilters() {
         _filterQuery.value = FilterQuery.NO_FILTER
         _filterTextSearch.value = ""
@@ -102,43 +80,16 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     }
 
     fun addOrUpdateData(data: B1CouleurOuGoutProduitDataBase) {
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            B1CouleurOuGoutProduitDataBase.compareEntre(ancien = ancien, newData = data)
-        }
-
-        val updatedData = if (existingIndex >= 0) {
-            data.copy(
-                key = datasValue[existingIndex].key, // Keep existing key
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-        } else {
-            data.copy(
-                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-            )
-        }
-
-        addOrUpdatedAncienRepo(existingIndex, updatedData)
+        val existingIndex = datasValue.indexOfFirst { B1CouleurOuGoutProduitDataBase.compareEntre(it, data) }
+        val updatedData = data.copy(
+            key = if (existingIndex >= 0) datasValue[existingIndex].key else data.key,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+        composScope.launch { mainInitDataBase.addOrUpdatedAncienRepo(existingIndex, updatedData) }
     }
 
     fun deleteData(data: B1CouleurOuGoutProduitDataBase) {
-        deleteDataAncienRepo(data)
-    }
-
-    private fun addOrUpdatedAncienRepo(
-        existingIndex: Int,
-        data: B1CouleurOuGoutProduitDataBase
-    ) {
-        composScope.launch {
-            mainInitDataBase.addOrUpdatedAncienRepo(existingIndex, data)
-        }
-    }
-
-    private fun deleteDataAncienRepo(
-        data: B1CouleurOuGoutProduitDataBase
-    ) {
-        composScope.launch {
-            mainInitDataBase.deleteDataAncienRepo(data)
-        }
+        composScope.launch { mainInitDataBase.deleteDataAncienRepo(data) }
     }
 }
 
@@ -160,23 +111,11 @@ data class B1CouleurOuGoutProduitDataBase(
     enum class Type { Image, Nom }
 
     companion object {
-        val ref =
-            Firebase.database.getReference(
-                "00_DataPrototype-04-02" +
-                        "/_1_developingRef" +
-                        "/C_InfosSqlDataBases" +
-                        "/B1CouleurOuGoutProduitDataBase"
-            )
-
-        fun compareEntre(
-            ancien: B1CouleurOuGoutProduitDataBase,
-            newData: B1CouleurOuGoutProduitDataBase
-        ): Boolean {
-            // Compare by parent product ID and color/image info for better matching
-            return ancien.parentBProduitOldID == newData.parentBProduitOldID &&
+        val ref = Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/B1CouleurOuGoutProduitDataBase")
+        fun compareEntre(ancien: B1CouleurOuGoutProduitDataBase, newData: B1CouleurOuGoutProduitDataBase) =
+            ancien.parentBProduitOldID == newData.parentBProduitOldID &&
                     ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
                     ancien.nomImageFichie == newData.nomImageFichie
-        }
     }
 }
 
@@ -187,45 +126,30 @@ fun CouleurDisplayer(
     data: B1CouleurOuGoutProduitDataBase,
     onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
 ) {
-    val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-
     val imageFile by derivedStateOf {
-        if (data.nomImageFichie != "Non Dispo") {
-            File(basePath, data.nomImageFichie)
-        } else null
+        if (data.nomImageFichie != "Non Dispo") File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", data.nomImageFichie) else null
     }
 
-    Card(
-        modifier = modifier.then(Modifier.fillMaxWidth())
-    ) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Display image if available
             when (data.aAffiche) {
-                B1CouleurOuGoutProduitDataBase.Type.Image -> {
-                    ImageDisplayer(
-                        modifier = Modifier.size(120.dp),
-                        imageFile = imageFile,
-                        colorName = data.nomCouleurStrSiSonImageDispo,
-                        contentScale = ContentScale.Crop,
-                        imageSize = DpSize(120.dp, 120.dp),
-                        onClickToOpenWindow = { onClickToOpenWindow(data) }
-                    )
-                }
-                B1CouleurOuGoutProduitDataBase.Type.Nom -> {
-                    ColorNameDisplayer(
-                        modifier = Modifier.size(120.dp),
-                        colorName = data.nomCouleurStrSiSonImageDispo,
-                        onClickToOpenWindow = { onClickToOpenWindow(data) }
-                    )
-                }
+                B1CouleurOuGoutProduitDataBase.Type.Image -> ImageDisplayer(
+                    modifier = Modifier.size(120.dp),
+                    imageFile = imageFile,
+                    colorName = data.nomCouleurStrSiSonImageDispo,
+                    contentScale = ContentScale.Crop,
+                    imageSize = DpSize(120.dp, 120.dp),
+                    onClickToOpenWindow = { onClickToOpenWindow(data) }
+                )
+                B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer(
+                    modifier = Modifier.size(120.dp),
+                    colorName = data.nomCouleurStrSiSonImageDispo,
+                    onClickToOpenWindow = { onClickToOpenWindow(data) }
+                )
             }
 
-            // Product information
-            Text("ID: ${data.key}")
-            Text("Product: ${data.parentBProduitNom}")
-            Text("Color: ${data.nomCouleurStrSiSonImageDispo}")
-            Text("Type: ${data.aAffiche}")
-            Text("Image: ${data.nomImageFichie}")
+            listOf("ID: ${data.key}", "Product: ${data.parentBProduitNom}", "Color: ${data.nomCouleurStrSiSonImageDispo}",
+                "Type: ${data.aAffiche}", "Image: ${data.nomImageFichie}").forEach { Text(it) }
             data.parentBProduitOldID?.let { Text("Parent ID: $it") }
         }
     }
