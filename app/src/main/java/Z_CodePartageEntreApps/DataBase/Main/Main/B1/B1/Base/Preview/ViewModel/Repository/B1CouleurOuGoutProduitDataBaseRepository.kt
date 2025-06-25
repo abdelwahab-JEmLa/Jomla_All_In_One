@@ -88,21 +88,10 @@ class B1CouleurOuGoutProduitDataBaseRepository(
         }
     }
 
-    fun setFilterQuery(query: FilterQuery) {
-        _filterQuery.value = query
-    }
-
     fun setFilterTextSearch(text: String) {
         _filterTextSearch.value = text
         if (text.isNotBlank()) {
             _filterQuery.value = FilterQuery.SearchText
-        }
-    }
-
-    fun setFilterProductId(productId: Long?) {
-        _filterProductId.value = productId
-        if (productId != null) {
-            _filterQuery.value = FilterQuery.ProductId
         }
     }
 
