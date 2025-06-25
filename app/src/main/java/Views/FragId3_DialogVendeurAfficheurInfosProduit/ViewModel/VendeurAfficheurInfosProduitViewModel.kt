@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 class VendeurAfficheurInfosProduitViewModel(
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-    fun getRelatedFAchatCouleurOperation(produitID: Long, index:Int): FCouleurVentOperation {
+    fun getRelatedFAchatCouleurOperation(produitID: Long, index:Int): FCouleurVentOperation? {
       return  aCentralDatasHandlerProtoJuin9.getRelatedFAchatCouleurOperation(produitID,index)
     }
 

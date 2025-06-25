@@ -3,28 +3,19 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.E_ArticleLayout
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.countColors
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.UiState
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ArticleItem(
@@ -79,51 +70,3 @@ fun ArticleItem(
     }
 }
 
-@Composable
-fun ArticleImageWithOverlay(
-    modifier: Modifier = Modifier,
-    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel = koinViewModel(),
-    viewModelHeadViewModel: HeadViewModel,
-    viewModelInitApp: ViewModelInitApp,
-    article: ArticlesBasesStatsTable,
-    colorIndex: Int,
-    reloadTrigger: Int,
-    contentScale: ContentScale = ContentScale.Fit,
-    imageSize: DpSize,
-    qualityImagePourcentage: Int = 100,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
-) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        shadowElevation = 4.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            val imageExists = remember(article.id, colorIndex, reloadTrigger) {
-                checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
-            }
-            ImageDisplayerProtoAvantJuin3(
-                viewModel = viewModelHeadViewModel,
-                article = article,
-                indexColor = colorIndex,
-                reloadKey = reloadTrigger,
-                showOverlay = !imageExists,
-                imageScale = contentScale,
-                imageSize = imageSize,
-                finalequalityImagePourcentage = qualityImagePourcentage,
-                viewModelInitApp = viewModelInitApp,
-            ) { article, colorIndex, couleurKey ->
-                onClickToOpenWindow(article, colorIndex)
-                viewModel.acheter(
-                    produit = article,
-                    colorIndex = colorIndex,
-                    quantity = 1
-                )
-            }
-        }
-    }
-}

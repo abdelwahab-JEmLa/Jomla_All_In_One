@@ -208,13 +208,15 @@ fun B_CouleurAfficheur(
     ) {
         val relatedFAchatCouleurOperation =viewModel.getRelatedFAchatCouleurOperation(article.id,index)
 
-        QuantityBadge(
-            quantity = "${relatedFAchatCouleurOperation.keyID} Qua=${relatedFAchatCouleurOperation.quantityAchete}",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(2.dp)
-                .zIndex(1f)
-        )
+        if (relatedFAchatCouleurOperation != null) {
+            QuantityBadge(
+                quantity = "${relatedFAchatCouleurOperation.keyID} Qua=${relatedFAchatCouleurOperation.quantityAchete}",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(2.dp)
+                    .zIndex(1f)
+            )
+        }
 
         ElevatedCard(
             modifier = Modifier

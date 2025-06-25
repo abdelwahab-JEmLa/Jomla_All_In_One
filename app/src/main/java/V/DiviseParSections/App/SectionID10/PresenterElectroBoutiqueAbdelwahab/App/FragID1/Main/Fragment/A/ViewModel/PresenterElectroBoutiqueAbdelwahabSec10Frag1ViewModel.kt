@@ -17,6 +17,7 @@ class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+
     fun acheter(
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
