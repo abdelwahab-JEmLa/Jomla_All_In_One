@@ -39,9 +39,6 @@ class FAchatOperationCouleurRepositoryComposable(
             it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
         }
     }
-
-    private val dbMutex = Mutex()
-
     companion object {
         private const val TAG = "ColorOperation"
     }
