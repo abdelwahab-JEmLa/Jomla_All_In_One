@@ -50,7 +50,7 @@ class B1CouleurOuGoutProduitDataBaseRepository(
                     listOf(
                         d.nomCouleurStrSiSonImageDispo,
                         d.parentBProduitNom,
-                        d.nomImageFichie,
+                        d.nomImageFichieSansEtansion,
                         d.parentBProduitOldID?.toString() ?: "" // Include product ID in search
                     ).any { it.contains(filterTextSearch.value, true) }
                 }
@@ -103,11 +103,13 @@ data class B1CouleurOuGoutProduitDataBase(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     val aAffiche: Type = Type.Image,
-    val nomImageFichie: String = "Non Dispo",
+    val nomImageFichieSansEtansion: String = "Non Dispo",
     val nomCouleurStrSiSonImageDispo: String = "",
 
     var parentBProduitOldID: Long? = null,
     var parentBProduitNom: String = "",
+    var indexCouleurDansAncienProto: Int = 0,
+    val extensionDisponible: String = "webp", // Default extension
 ) {
     enum class Type { Image, Nom }
 
@@ -116,7 +118,7 @@ data class B1CouleurOuGoutProduitDataBase(
         fun compareEntre(ancien: B1CouleurOuGoutProduitDataBase, newData: B1CouleurOuGoutProduitDataBase) =
             ancien.parentBProduitOldID == newData.parentBProduitOldID &&
                     ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
-                    ancien.nomImageFichie == newData.nomImageFichie
+                    ancien.nomImageFichieSansEtansion == newData.nomImageFichieSansEtansion
     }
 }
 
@@ -128,7 +130,10 @@ fun CouleurDisplayer(
     onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
 ) {
     val imageFile by derivedStateOf {
-        if (data.nomImageFichie != "Non Dispo") File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", data.nomImageFichie) else null
+        if (data.nomImageFichieSansEtansion != "Non Dispo") {
+            val fileName = "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
+        } else null
     }
 
     Card(modifier = modifier.fillMaxWidth()) {
@@ -150,7 +155,7 @@ fun CouleurDisplayer(
             }
 
             listOf("ID: ${data.key}", "Product: ${data.parentBProduitNom}", "Color: ${data.nomCouleurStrSiSonImageDispo}",
-                "Type: ${data.aAffiche}", "Image: ${data.nomImageFichie}").forEach { Text(it) }
+                "Type: ${data.aAffiche}", "Image: ${data.nomImageFichieSansEtansion}").forEach { Text(it) }
             data.parentBProduitOldID?.let { Text("Parent ID: $it") }
         }
     }

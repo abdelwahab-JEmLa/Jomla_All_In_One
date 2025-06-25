@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,15 +41,24 @@ fun ArticleImageWithOverlay(
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
-    val imageExists = remember(article.id, colorIndex, reloadTrigger) {
+    val id = article.id
+    val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-
+    /*
     val imageKeyID = buildString {
-        append(article.id)
+        append(id)
         append("_")
         append(colorIndex)
-    }
+    }     */
+
+    val relatedCouleurKey =
+        viewModel.aCentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+            .find {
+                it.parentBProduitOldID == id
+                        && it.indexCouleurDansAncienProto==colorIndex
+            }
+
 
     Surface(
         modifier = modifier,
@@ -80,21 +89,23 @@ fun ArticleImageWithOverlay(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Text(
-                text = imageKeyID,
-                color = Color.White,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
+            if (relatedCouleurKey != null) {
+                Text(
+                    text = relatedCouleurKey.key,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
 
-                    .align(Alignment.TopEnd)
-                    .background(
-                        color = Color.Red,
-                        shape = RoundedCornerShape(bottomStart = 8.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(bottomStart = 8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
         }
     }
 }

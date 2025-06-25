@@ -21,7 +21,6 @@ class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
     val repoRef = B1CouleurOuGoutProduitDataBase.ref
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-
     suspend fun init(
         isInternetAvailable: Boolean,
         updateRepoProgress: (String, Float) -> Unit
@@ -69,36 +68,14 @@ class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
                     imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
 
             if (imageExists || !couleur.isNullOrBlank()) {
-                /*
-                ProtoKey
-                val couleurNom = buildString {
-
-                    if (imageExists) {
-                        append(imageFile.nameWithoutExtension)
-                        append("_")
-                        append(imageFile.extension)
-                    } else {
-                        append(produit.id.toString())
-                        append("ProtoImgParIndex_")
-                        append(colorIndex)
-                    }
-                }
-
-                val key = buildString {
-                    append("B0")
-                    append("-")
-                    append(produit.id.toString())
-                    append("--")
-                    append("B1")
-                    append("-")
-                    append(couleurNom)
-                }               */
                 val colorData = B1CouleurOuGoutProduitDataBase(
                     aAffiche = if (imageExists) B1CouleurOuGoutProduitDataBase.Type.Image else B1CouleurOuGoutProduitDataBase.Type.Nom,
-                    nomImageFichie = imageFile.name,
+                    nomImageFichieSansEtansion = if (imageExists) imageFile.nameWithoutExtension else "Non Dispo",
+                    extensionDisponible = if (imageExists) imageFile.extension else "webp",
                     nomCouleurStrSiSonImageDispo = couleur ?: "",
                     parentBProduitOldID = produit.id,
-                    parentBProduitNom = produit.nom
+                    parentBProduitNom = produit.nom,
+                    indexCouleurDansAncienProto = colorIndex
                 )
 
                 results.add(colorData)

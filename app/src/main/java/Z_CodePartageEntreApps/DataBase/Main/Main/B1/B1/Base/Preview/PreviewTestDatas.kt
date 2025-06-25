@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -71,15 +73,21 @@ private fun MainScreen(
 
             // Only show filtered count when text filter is active
             if (repository.filterQuery.value == FilterQuery.SearchText) {
-                Text("Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
-                    modifier = Modifier.padding(vertical = 8.dp))
+                Text(
+                    "Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
 
-            if (uiState.progressCount > 0) Text("Generated ${uiState.progressCount} variants",
-                modifier = Modifier.padding(bottom = 8.dp))
+            if (uiState.progressCount > 0) Text(
+                "Generated ${uiState.progressCount} variants",
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
             if (datas.isEmpty()) EmptyDataMessage() else MainList(repository)
         }
-        MainOptions(repository, Modifier.align(Alignment.BottomEnd).padding(16.dp), {})
+        MainOptions(repository, Modifier
+            .align(Alignment.BottomEnd)
+            .padding(16.dp), onRefresh)
     }
 }
 
@@ -96,16 +104,22 @@ private fun SearchBar(repository: B1CouleurOuGoutProduitDataBaseRepository) {
         },
         label = { Text("Search...") },
         leadingIcon = { Icon(Icons.Default.Search, null) },
-        trailingIcon = { if (searchText.isNotEmpty()) IconButton({ searchText = ""; repository.clearFilters() })
-        { Icon(Icons.Default.Clear, null) } },
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        trailingIcon = {
+            if (searchText.isNotEmpty()) IconButton({ searchText = ""; repository.clearFilters() })
+            { Icon(Icons.Default.Clear, null) }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
         singleLine = true
     )
 
-    if (isSearchActive) Text("Searching: \"${repository.filterTextSearch.value}\"",
+    if (isSearchActive) Text(
+        "Searching: \"${repository.filterTextSearch.value}\"",
         modifier = Modifier.padding(bottom = 4.dp),
         style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-        color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
+        color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+    )
 }
 
 @Composable
@@ -114,21 +128,37 @@ private fun MainOptions(
     modifier: Modifier,
     onRefresh: () -> Unit
 ) {
-    var refreshClickCount by remember { mutableStateOf(0) }
+    var refreshClickCount by remember { mutableIntStateOf(0) }
     var showSearchIcon by remember { mutableStateOf(true) }
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         FloatingActionButton(
-            onClick = { showSearchIcon = !showSearchIcon; if (showSearchIcon) repository.clearFilters() },
+            onClick = {
+                showSearchIcon = !showSearchIcon; if (showSearchIcon) repository.clearFilters()
+            },
             modifier = Modifier.size(48.dp)
         ) { Icon(if (showSearchIcon) Icons.Default.Search else Icons.Default.Clear, null) }
 
         FloatingActionButton(
-            onClick = { refreshClickCount++; if (refreshClickCount >= 2) { onRefresh(); refreshClickCount = 0 } },
+            onClick = {
+                refreshClickCount++; if (refreshClickCount >= 2) {
+                onRefresh(); refreshClickCount = 0
+            }
+            },
             modifier = Modifier.size(48.dp)
-        ) { Icon(Icons.Default.Refresh, null) }
+        ) {
+            Icon(
+                if (refreshClickCount == 1)
+                    Icons.Default.Warning
+                else
+                    Icons.Default.Refresh,
+                null
+            )
+        }
 
-        if (refreshClickCount == 1) Text("Click again", style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(4.dp))
+        if (refreshClickCount == 1) Text(
+            "Click again", style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(4.dp)
+        )
     }
 }
