@@ -18,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
@@ -32,13 +31,13 @@ class FAchatOperationCouleurRepositoryComposable(
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<FCouleurVentOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-    val datasFiltered by derivedStateOf { datasValue }
 
     val filteredDatasValue by derivedStateOf {
         datasValue.filter {
             it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
         }
     }
+
     companion object {
         private const val TAG = "ColorOperation"
     }
