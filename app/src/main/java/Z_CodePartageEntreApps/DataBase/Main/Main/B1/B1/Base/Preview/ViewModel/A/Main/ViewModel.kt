@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview
+package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,13 +11,12 @@ import kotlinx.coroutines.launch
 class B1CouleurOuGoutProduitDataBaseTestDatasViewModel(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
-           //<--
-           //TODO(1): rien ne s affiche ici 
-    val mainRepo = a_CentralDatasHandlerProtoJuin9
-        .b1CouleurOuGoutProduitDataBase_Repository
+    val b1CouleurOuGoutProduitDataBaseRepository =
+        a_CentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository
 
-    val mainData = mainRepo
-        .datasValue
+    val mainRepo = a_CentralDatasHandlerProtoJuin9
+        .b1CouleurOuGoutProduitDataBaseRepository
+
 
     data class UiState(
         val progressCount: Int = 0,

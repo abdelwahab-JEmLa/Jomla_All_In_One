@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
+package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import android.util.Log
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 
 @Stable
-class B1CouleurOuGoutProduitDataBase_Repository(
+class B1CouleurOuGoutProduitDataBaseRepository(
     val mainInitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     val repoTAG = "B1CouleurOuGoutProduitDataBase"
@@ -28,17 +28,8 @@ class B1CouleurOuGoutProduitDataBase_Repository(
 
     init {
         composScope.launch {
-            // Load initial data from database
-            val initialData = dao.getAll()
-            _datas.value = initialData
-
-            // Then start collecting flow updates
-            dao.getAllFlow().collect { newData ->
-                _datas.value = newData
-                Log.d(repoTAG,"B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: ${newData.size}")
-                //<--
-                //TODO(1): pk mem si B1Coule...ataBase B1CouleurOuGoutProduitDataBase_Repository: Data updated, size: 954 
-            }
+            _datas.value = dao.getAll()
+            dao.getAllFlow().collect { newData -> _datas.value = newData }
         }
     }
 
