@@ -9,8 +9,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
-import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto.WDatabaseInitializationManager
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
@@ -59,6 +59,7 @@ import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.RecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
+import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
@@ -108,6 +109,8 @@ val dataBaseProtoAvantJuin3Module = module {
     single { A_ProduitInfosRepository(androidContext(), get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
     single { A_ProduitDataBaseProtoJuin17(get<AppDatabase>().ArticlesBasesStatsModelDao()) }
+    single { DataBaseFactory_B1CouleurOuGoutProduitDataBase(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
+
 
     single { B_ClientInfosProtoJuin3Repository(androidContext(), get()) }
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
@@ -127,7 +130,7 @@ val dataBaseProtoAvantJuin3Module = module {
 
 val classesHandlersModule = module {
     single { WifiTransferDatas(androidContext(),get(),) }
-    single { WDatabaseInitializationManager(get(),get(),get(),) }
+    single { WDatabaseInitializationManager(get(),get(),get(),get(),) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

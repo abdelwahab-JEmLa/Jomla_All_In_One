@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.ViewModel
               /*
 import V.DiviseParS/ections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.PanelsGroupeButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiStateSec9Frag1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -48,8 +48,8 @@ class MapClientsViewModelss(
 
     val b_ClientDataBaseRepository= a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
 
-    private val _uiState = MutableStateFlow(UiStateSec9Frag1())
-    val uiState: StateFlow<UiStateSec9Frag1> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model
         .e1SecteurDeClientsRepository

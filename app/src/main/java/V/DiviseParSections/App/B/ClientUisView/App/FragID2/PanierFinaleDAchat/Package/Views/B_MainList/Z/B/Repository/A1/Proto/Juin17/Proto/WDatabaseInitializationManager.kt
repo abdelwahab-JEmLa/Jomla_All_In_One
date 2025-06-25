@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A1.Proto.Juin17.Proto
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.ZAppCompt_RepositoryComposable
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
@@ -14,12 +15,14 @@ class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
     val appComptComposeRepositoryPJ17: ZAppCompt_RepositoryComposable,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
+    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
     private val scope = CoroutineScope(Dispatchers.Main)
 
     enum class Repository {
+        FCouleurVentOperation,
         Z_AppComptEntity,
         D_ACHAT_OPERATION,
         A_PRODUIT_INFOS
@@ -54,7 +57,17 @@ class WDatabaseInitializationManager(
                         achatOperationRepository.triggerUpdateFbParTimestampsListener()
                     }
                 }
-            }
+            } ,
+            scope.launch {
+                initRepo(Repository.FCouleurVentOperation.name, context) {
+                    dataBaseFactory_B1CouleurOuGoutProduitDataBase.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        dataBaseFactory_B1CouleurOuGoutProduitDataBase.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
         )
 
         jobs.forEach { it.join() }

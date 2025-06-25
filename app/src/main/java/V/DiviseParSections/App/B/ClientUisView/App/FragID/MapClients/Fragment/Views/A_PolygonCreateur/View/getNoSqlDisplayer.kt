@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
        /*
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiStateSec9Frag1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
@@ -8,7 +8,7 @@ import android.util.Log
 
 suspend fun getNoSqlDisplayer(
     polygonDao: PolygonGeoLimiteDao,
-    uiState: UiStateSec9Frag1,
+    uiState: UiState,
     viewModel: MapClientsViewModel,
 ): List<NoSqlSecteurDeClientsPolygonGeoLimite> {
     // Récupérer tous les secteurs
