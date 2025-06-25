@@ -158,55 +158,7 @@ class FAchatOperationCouleurRepositoryComposable(
     }
 
 
-   /* fun addOrUpdateData(data: FCouleurVentOperation) {
-        composScope.launch {
-            try {
-                dbMutex.withLock {
-                    val dataUpdate = data.copy(
-                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                    )
 
-                    Log.d(TAG,"data ${data.keyID} Qua  =${data.quantityAchete}")
-                    val currentData = _datas.value
-                    val existingIndex = currentData.indexOfFirst { it.isSameEntity(dataUpdate) }
-
-                    withContext(Dispatchers.Main) {
-                        val newList = if (existingIndex >= 0) {
-                            currentData.toMutableList().apply {
-                                this[existingIndex] = dataUpdate
-                            }
-                        } else {
-                            ArrayList<FCouleurVentOperation>(currentData.size + 1).apply {
-                                addAll(currentData)
-                                add(dataUpdate)
-                            }
-                        }
-
-                        // Fix: Update state first, then log the correct item
-                        _datas.value = newList
-
-                        // Log the actual updated item
-                        val actualUpdatedItem = if (existingIndex >= 0) {
-                            newList[existingIndex]
-                        } else {
-                            newList.last()
-                        }
-                        Log.d(TAG,"dataUpdated data ${actualUpdatedItem.keyID} Qua  =${actualUpdatedItem.quantityAchete}")
-                    }
-
-                    try {
-                       ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataUpdate)
-                    } catch (dbException: Exception) {
-                        Log.e(TAG, "Database update failed", dbException)
-                    }
-                }
-            } catch (e: OutOfMemoryError) {
-                System.gc()
-            } catch (e: Exception) {
-                Log.e(TAG, "Error in addOrUpdateData", e)
-            }
-        }
-    }          */
     private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
         return when (colorIndex) {
             0 -> produit.couleur1 ?: "couleur1"
@@ -294,7 +246,8 @@ data class FCouleurVentOperation(
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }
-/*
+
+/*       /*Metode Hash Proto**/
     fun isSameEntity(other: FCouleurVentOperation) =
         keyID == other.keyID ||
                 nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
