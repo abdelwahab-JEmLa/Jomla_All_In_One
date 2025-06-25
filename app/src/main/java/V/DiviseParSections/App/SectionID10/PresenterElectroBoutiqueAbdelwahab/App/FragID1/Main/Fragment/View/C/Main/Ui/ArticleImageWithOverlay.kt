@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,38 +41,43 @@ fun ArticleImageWithOverlay(
     qualityImagePourcentage: Int = 100,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
-
+    val imageExists = remember(article.id, colorIndex, reloadTrigger) {
+        checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
+    }
+    val imageKeyID = buildString {
+        append(article.id)
+        append("_")
+        append(colorIndex)
+    }
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 2.dp,
         shadowElevation = 4.dp
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        ImageDisplayerProtoAvantJuin3(
+            viewModel = viewModelHeadViewModel,
+            article = article,
+            indexColor = colorIndex,
+            reloadKey = reloadTrigger,
+            showOverlay = !imageExists,
+            imageScale = contentScale,
+            imageSize = imageSize,
+            finalequalityImagePourcentage = qualityImagePourcentage,
+            viewModelInitApp = viewModelInitApp,
         ) {
-            val imageExists = remember(article.id, colorIndex, reloadTrigger) {
-                checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
-            }
-
-            ImageDisplayerProtoAvantJuin3(
-                viewModel = viewModelHeadViewModel,
-                article = article,
-                indexColor = colorIndex,
-                reloadKey = reloadTrigger,
-                showOverlay = !imageExists,
-                imageScale = contentScale,
-                imageSize = imageSize,
-                finalequalityImagePourcentage = qualityImagePourcentage,
-                viewModelInitApp = viewModelInitApp,
+            onClickToOpenWindow(article, colorIndex)
+            viewModel.acheter(
+                produit = article,
+                colorIndex = colorIndex,
+                quantity = 1
             )
+        }
 
-            val imageKeyID = buildString {
-                append(article.id)
-                append("--")
-                append(colorIndex)
-            }
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
             Text(
                 text = imageKeyID,
                 color = Color.White,
@@ -81,19 +85,12 @@ fun ArticleImageWithOverlay(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
+
                     .align(Alignment.TopEnd)
                     .background(
                         color = Color.Red,
                         shape = RoundedCornerShape(bottomStart = 8.dp)
                     )
-                    .clickable {
-                        onClickToOpenWindow(article, colorIndex)
-                        viewModel.acheter(
-                            produit = article,
-                            colorIndex = colorIndex,
-                            quantity = 1
-                        )
-                    }
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }

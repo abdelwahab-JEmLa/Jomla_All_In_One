@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,7 +70,7 @@ fun ImageDisplayerProtoAvantJuin3(
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int,String) -> Unit ={_,_,_->}
+    onClickToOpenWindow: () -> Unit ={}
 ) {
     val baseFileName =
         "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -141,22 +142,20 @@ fun ImageDisplayerProtoAvantJuin3(
                 contentDescription = file.toString(),
                 contentScale = imageScale,
                 modifier = Modifier
+                    .clickable {
+                        onClickToOpenWindow()
+                    }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
-                    .then(
-                        // Apply blur effect conditionally to avoid interfering with click detection
+                    .graphicsLayer {
                         if (blurRadius > 0f) {
-                            Modifier.graphicsLayer {
-                                renderEffect = BlurEffect(
-                                    radiusX = blurRadius,
-                                    radiusY = blurRadius,
-                                    edgeTreatment = TileMode.Decal
-                                )
-                            }
-                        } else {
-                            Modifier
+                            renderEffect = BlurEffect(
+                                radiusX = blurRadius,
+                                radiusY = blurRadius,
+                                edgeTreatment = TileMode.Decal
+                            )
                         }
-                    ),
+                    }
             ) {
                 it.apply {
                     applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
@@ -316,3 +315,5 @@ fun RequestBuilder<Drawable>.applyImageOptions(
             return false
         }
     })
+
+
