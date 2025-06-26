@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.A2_Passive.FCouleurVentOperation
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import android.util.Log
 import com.google.firebase.database.Exclude
 import org.mongodb.kbson.BsonObjectId
@@ -118,14 +118,6 @@ fun createCouleurInfosFromProduct(
             val imageExists = imageFile.name != "NonTrouve.webp" &&
                     imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
 
-            val matchingAchat = achats.find { achat ->
-                achat.nomImageFichieOuApellationDuCouleur == fileName ||
-                        achat.nomImageFichieOuApellationDuCouleur == couleur
-            }
-
-            if (firstMatchingAchat == null && matchingAchat != null) {
-                firstMatchingAchat = matchingAchat
-            }
 
             couleurInfosList.add(
                 FileCouleurInfos(
@@ -133,7 +125,6 @@ fun createCouleurInfosFromProduct(
                     aAffiche = if (imageExists) Affiche.Image else Affiche.Nom,
                     imageCouleurFichie = imageFile,
                     nomCouleurStrSiSonImageDispo = couleur,
-                    quantityDeDisponibility = matchingAchat?.quantityAchete ?: 0,
                     colorIndex = colorIndex,
                 )
             )

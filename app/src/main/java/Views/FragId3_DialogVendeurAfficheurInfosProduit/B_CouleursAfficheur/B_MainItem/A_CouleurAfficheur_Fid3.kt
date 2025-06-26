@@ -1,8 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -232,9 +232,6 @@ fun B_CouleurAfficheur(
                             it.idColore
                         )
                     }
-                    viewModel.aCentralDatasHandlerProtoJuin9
-                        .ouvreAddDataDepuitIndexCouleur(article, index)
-
                 },
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.elevatedCardColors(

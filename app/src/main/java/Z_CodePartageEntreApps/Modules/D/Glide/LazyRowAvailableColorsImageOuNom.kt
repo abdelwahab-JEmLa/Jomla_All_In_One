@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.BProduitDataBaseComposeRepositoryPJ17
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.A2_Passive.FCouleurVentOperation
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.BProduitDataBaseComposeRepositoryPJ17
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -208,12 +208,6 @@ fun Infos(achat: FCouleurVentOperation?, modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = achatData.nomImageFichieOuApellationDuCouleur,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 2
-                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

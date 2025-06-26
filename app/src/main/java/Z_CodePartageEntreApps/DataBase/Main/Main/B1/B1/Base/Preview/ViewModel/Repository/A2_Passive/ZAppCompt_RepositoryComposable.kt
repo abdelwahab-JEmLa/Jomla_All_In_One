@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.R
 
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import androidx.compose.runtime.Stable
@@ -53,13 +54,12 @@ class ZAppCompt_RepositoryComposable(
 
     fun ouvrireProduitEtCouleurVent(
         produit: ArticlesBasesStatsTable,
-        colorIndex: Int,
+        relatedCouleur: B1CouleurOuGoutProduitDataBase,
     ): Z_AppCompt {
         val data = ouvertData!!.copy(
             ouvertF3ProduitOnVentID = produit.id.toString(),
-            ouvertF4CouleurOnVentID = "${produit.id}_${colorIndex + 1}",
+            ouvertF4CouleurOnVentID = relatedCouleur.key,
         )
-
         addOrUpdateData(data)
         return data
     }

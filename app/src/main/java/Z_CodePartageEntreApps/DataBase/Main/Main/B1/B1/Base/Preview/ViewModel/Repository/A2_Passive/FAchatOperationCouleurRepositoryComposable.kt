@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.A2_Passive
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.createCouleurOnVentKey
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.Modules.D.Glide.Affiche
 import Z_CodePartageEntreApps.Modules.D.Glide.FileCouleurInfos
@@ -81,36 +81,20 @@ class FAchatOperationCouleurRepositoryComposable(
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
     }
 
-
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
     }
 
     fun acheterUneCouleur(
         ouvertData: Z_AppCompt,
-        produit: ArticlesBasesStatsTable,
-        quantity: Int = 1,
-        colorIndex: Int
+        relatedCouleur: B1CouleurOuGoutProduitDataBase,
+        quantity: Int,
     ) {
-        if (quantity <= 0 || colorIndex < 0) {
-            return
-        }
-
         composScope.launch {
             try {
-                val colorName =
-                    getFileCouleurInfosFromProduct(produit, colorIndex).nomCouleurStrSiSonImageDispo
-
                 val couleurVentOperation = createSafeCouleurVentOperation(
-                    id = createCouleurOnVentKey(
-                        ouvertData,
-                        produit,
-                        colorIndex
-                    ),
+                    relatedCouleur = relatedCouleur,
                     ouvertData = ouvertData,
-                    produit = produit,
-                    colorIndex = colorIndex,
-                    colorName = colorName,
                     quantity = quantity
                 )
 
@@ -124,36 +108,28 @@ class FAchatOperationCouleurRepositoryComposable(
     }
 
     private fun createSafeCouleurVentOperation(
-        id: String,
+        relatedCouleur: B1CouleurOuGoutProduitDataBase,
         ouvertData: Z_AppCompt,
-        produit: ArticlesBasesStatsTable,
-        colorIndex: Int,
-        colorName: String,
         quantity: Int
     ): FCouleurVentOperation {
         return FCouleurVentOperation(
-            keyID = id,
-            nomCouleurStrSiSonImageDispo = colorName,
-            nomImageFichieOuApellationDuCouleur = "${produit.id}_${colorIndex + 1}",
-            aAffiche = Affiche.Nom,
-            baseFileName = "${produit.id}_${colorIndex + 1}.webp",
+            parentCouleurDataBaseKey = relatedCouleur.key,
+
+            parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
+            parentProduitAncienId = relatedCouleur.parentBProduitOldID,
+            parentProduitKeyNom = relatedCouleur.parentBProduitNom,
+
             parentZAppComptID = ouvertData.bsonObjectId,
             parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
             parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
             parentBonVentId = ouvertData.ouvertF2BonVentId,
             parentClientId = ouvertData.ouvertClientOnVentKeyId,
             parentClientName = ouvertData.ouvertClientOnVentNom,
-            parentProduitId = ouvertData.ouvertF3ProduitOnVentID,
-            parentProduitAncienId = ouvertData.ouvertProduitOnVentAncienId,
-            parentProduitKeyNom = ouvertData.ouvertProduitOnVentNom,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
             type = FCouleurVentOperation.Type.CommandeDeLui,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
     }
-
-
 
     private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
         return when (colorIndex) {
@@ -210,12 +186,9 @@ class FAchatOperationCouleurRepositoryComposable(
 data class FCouleurVentOperation(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var nomImageFichieOuApellationDuCouleur: String = "",
+    var parentCouleurDataBaseKey: String = "",
     var parentBonVentId: String = "",
     var parentProduitId: String = "",
-    var nomCouleurStrSiSonImageDispo: String = "",
-    var aAffiche: Affiche = Affiche.Image,
-    var baseFileName: String = "",
     var parentZAppComptID: String = "",
     var parentEPeriodVentId: String = "",
     var parentEPeriodVentStartDate: Long = 0,
@@ -243,25 +216,25 @@ data class FCouleurVentOperation(
 
     enum class Type { SiNonDispo, CommandeDeLui }
 
-/*       /*Metode Hash Proto**/
-    fun isSameEntity(other: FCouleurVentOperation) =
-        keyID == other.keyID ||
-                nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
-                parentProduitId == other.parentProduitId &&
-                parentBonVentId == other.parentBonVentId &&
-                parentZAppComptID == other.parentZAppComptID
+    /*       /*Metode Hash Proto**/
+        fun isSameEntity(other: FCouleurVentOperation) =
+            keyID == other.keyID ||
+                    nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
+                    parentProduitId == other.parentProduitId &&
+                    parentBonVentId == other.parentBonVentId &&
+                    parentZAppComptID == other.parentZAppComptID
 
-    override fun hashCode() = Objects.hash(
-        keyID,
-        nomImageFichieOuApellationDuCouleur,
-        parentProduitId,
-        parentBonVentId,
-        parentZAppComptID
-    )
+        override fun hashCode() = Objects.hash(
+            keyID,
+            nomImageFichieOuApellationDuCouleur,
+            parentProduitId,
+            parentBonVentId,
+            parentZAppComptID
+        )
 
-    override fun equals(other: Any?) =
-        this === other || (other is FCouleurVentOperation && isSameEntity(other))
-                  */
+        override fun equals(other: Any?) =
+            this === other || (other is FCouleurVentOperation && isSameEntity(other))
+                      */
 
     companion object {
         val ref =

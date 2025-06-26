@@ -51,9 +51,10 @@ class B1CouleurOuGoutProduitDataBaseRepository(
                         d.nomCouleurStrSiSonImageDispo,
                         d.parentBProduitNom,
                         d.nomImageFichieSansEtansion,
-                        d.parentBProduitOldID?.toString() ?: "" // Include product ID in search
+                        d.parentBProduitOldID.toString()
                     ).any { it.contains(filterTextSearch.value, true) }
                 }
+
             else -> datasValue
         }
     }
@@ -81,7 +82,8 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     }
 
     fun addOrUpdateData(data: B1CouleurOuGoutProduitDataBase) {
-        val existingIndex = datasValue.indexOfFirst { B1CouleurOuGoutProduitDataBase.compareEntre(it, data) }
+        val existingIndex =
+            datasValue.indexOfFirst { B1CouleurOuGoutProduitDataBase.compareEntre(it, data) }
         val updatedData = data.copy(
             key = if (existingIndex >= 0) datasValue[existingIndex].key else data.key,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -92,7 +94,22 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     fun deleteData(data: B1CouleurOuGoutProduitDataBase) {
         composScope.launch { mainInitDataBase.deleteDataAncienRepo(data) }
     }
+
+    companion object {
+        fun getRelatedCouleur(
+            aCentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+            produit: ArticlesBasesStatsTable,
+            colorIndex: Int
+        ) =
+            aCentralCompoRepositoryProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+                .find {
+                    it.parentBProduitOldID == produit.id
+                            && it.indexCouleurDansAncienProto == colorIndex
+                }!!
+    }
 }
+
+
 
 @Entity
 data class B1CouleurOuGoutProduitDataBase(
@@ -106,7 +123,7 @@ data class B1CouleurOuGoutProduitDataBase(
     val nomImageFichieSansEtansion: String = "Non Dispo",
     val nomCouleurStrSiSonImageDispo: String = "",
 
-    var parentBProduitOldID: Long? = null,
+    var parentBProduitOldID: Long = 0,
     var parentBProduitNom: String = "",
     var indexCouleurDansAncienProto: Int = 0,
     val extensionDisponible: String = "webp", // Default extension
@@ -114,8 +131,13 @@ data class B1CouleurOuGoutProduitDataBase(
     enum class Type { Image, Nom }
 
     companion object {
-        val ref = Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/B1CouleurOuGoutProduitDataBase")
-        fun compareEntre(ancien: B1CouleurOuGoutProduitDataBase, newData: B1CouleurOuGoutProduitDataBase) =
+        val ref =
+            Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/B1CouleurOuGoutProduitDataBase")
+
+        fun compareEntre(
+            ancien: B1CouleurOuGoutProduitDataBase,
+            newData: B1CouleurOuGoutProduitDataBase
+        ) =
             ancien.parentBProduitOldID == newData.parentBProduitOldID &&
                     ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
                     ancien.nomImageFichieSansEtansion == newData.nomImageFichieSansEtansion
@@ -147,6 +169,7 @@ fun CouleurDisplayer(
                     imageSize = DpSize(120.dp, 120.dp),
                     onClickToOpenWindow = { onClickToOpenWindow(data) }
                 )
+
                 B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer(
                     modifier = Modifier.size(120.dp),
                     colorName = data.nomCouleurStrSiSonImageDispo,
@@ -154,8 +177,13 @@ fun CouleurDisplayer(
                 )
             }
 
-            listOf("ID: ${data.key}", "Product: ${data.parentBProduitNom}", "Color: ${data.nomCouleurStrSiSonImageDispo}",
-                "Type: ${data.aAffiche}", "Image: ${data.nomImageFichieSansEtansion}").forEach { Text(it) }
+            listOf(
+                "ID: ${data.key}",
+                "Product: ${data.parentBProduitNom}",
+                "Color: ${data.nomCouleurStrSiSonImageDispo}",
+                "Type: ${data.aAffiche}",
+                "Image: ${data.nomImageFichieSansEtansion}"
+            ).forEach { Text(it) }
             data.parentBProduitOldID?.let { Text("Parent ID: $it") }
         }
     }

@@ -47,13 +47,6 @@ fun ArticleImageWithOverlay(
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
 
-    val relatedCouleurKey =
-        viewModel.aCentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find {
-                it.parentBProduitOldID == id
-                        && it.indexCouleurDansAncienProto == colorIndex
-            }
-
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -76,14 +69,15 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
             ) {
                 onClickToOpenWindow(article, colorIndex)
-                viewModel.acheter(
+                viewModel.acheterACaSetterCentralProto26(
                     produit = article,
                     colorIndex = colorIndex,
                     quantity = 1
                 )
             }
 
-            relatedCouleurKey?.takeIf { it.key.isNotEmpty() }?.let {
+            viewModel.aCentralDatasHandlerProtoJuin9.relatedCouleurKey(article,colorIndex)
+                .takeIf { it.key.isNotEmpty() }?.let {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

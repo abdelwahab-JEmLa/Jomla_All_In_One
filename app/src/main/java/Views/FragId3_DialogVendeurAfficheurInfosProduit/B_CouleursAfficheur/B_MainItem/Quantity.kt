@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
@@ -63,9 +63,9 @@ fun QuantityButton(
             onClick()
 
             viewModel.acheter(
-                produit =article,
+                produit = article,
                 colorIndex = colorIndex,
-                quantity = quantity
+                quantity = 1
             )
         },
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
