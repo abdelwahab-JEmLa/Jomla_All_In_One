@@ -14,10 +14,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    mainRepo: FAchatOperationCouleurRepositoryComposable,
+    fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    val groupedAchats = mainRepo.datasValue.groupBy { it.parentProduitId }
+    val groupedAchats = fCouleurAchatOperationRepositoryComposable.datasValue.groupBy { it.parentProduitId }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
