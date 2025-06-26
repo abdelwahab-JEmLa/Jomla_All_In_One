@@ -98,7 +98,7 @@ private fun NavigationItemCard(item: NavigationItem) {
         // Image handling for the Test Data item
         Card(
             modifier = Modifier
-                .size(64.dp)
+                .size(500.dp)
                 .clickable { item.onClick() },
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -107,7 +107,7 @@ private fun NavigationItemCard(item: NavigationItem) {
                 painter = painterResource(id = item.imageRes!!),
                 contentDescription = item.title,
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(500.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
