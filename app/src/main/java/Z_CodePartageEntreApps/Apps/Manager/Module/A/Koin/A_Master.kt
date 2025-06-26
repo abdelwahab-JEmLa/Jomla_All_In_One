@@ -153,7 +153,6 @@ val viewModelModule = module {
     viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get(),get(),) }
     viewModel { D_AchatOperationTestDatasViewModel(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }
-    viewModel { ZViewModel_Sec1Frag3(get(),) }
 
     viewModel { Sec9FragId1ViewId2ViewModel(get(),) }
 
