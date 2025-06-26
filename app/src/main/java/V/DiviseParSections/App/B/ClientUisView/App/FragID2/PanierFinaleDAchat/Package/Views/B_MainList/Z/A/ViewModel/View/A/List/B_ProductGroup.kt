@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -140,10 +141,10 @@ fun ProductGroup(
                 contentPadding = PaddingValues(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(achats) { achat ->
+                items(achats) { vent ->
                     val relatedCouleur =
                         viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
-                            .find { it.key == achat.parentCouleurDataBaseKey }
+                            .find { it.key == vent.parentCouleurDataBaseKey }
 
                     relatedCouleur?.let { couleur ->
                         Surface(
@@ -151,9 +152,10 @@ fun ProductGroup(
                             tonalElevation = 2.dp,
                             modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                         ) {
-                            CouleurDisplayerSec2FragId2(
-                                keyCouleur = couleur.key,
-                                purchasedQuantity = achat.quantityAchete,
+                            VentDisplayer_Sec2FragId2(
+                                viewModel=viewModel,
+                                ventKey =vent.keyID,
+                                purchasedQuantity = vent.quantityAchete,
                                 size = 120.dp,
                                 modifier = Modifier.padding(4.dp)
                             )

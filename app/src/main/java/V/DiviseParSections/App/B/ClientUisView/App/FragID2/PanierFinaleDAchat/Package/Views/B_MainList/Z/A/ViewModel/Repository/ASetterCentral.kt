@@ -38,4 +38,7 @@ class ASetterCentral(
             )
         }
     }
+    fun updateQuantity(ventKey:String): Unit {
+
+    }
 }
