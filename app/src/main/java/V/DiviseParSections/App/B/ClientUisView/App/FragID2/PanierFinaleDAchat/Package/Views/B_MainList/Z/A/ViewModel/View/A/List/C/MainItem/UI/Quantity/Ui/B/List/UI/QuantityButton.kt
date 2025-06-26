@@ -36,11 +36,10 @@ enum class ClickUpdate{
     CouleurQua,
     TotalQua
 }
+
 @Composable
 fun QuantityButton(
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua, //<--
-    //TODO(2.C Relative Au Todo(1): 
-    //... fait passe que ca va etre par TOtale quantity 
+    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     viewModel: ZViewModel_Sec1Frag3,
     newQuantity: Int,
     isSelected: Boolean,
@@ -98,25 +97,66 @@ fun QuantityButton(
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onClick(newQuantity)
-               if (clickUpdate==ClickUpdate.TotalQua) //<--
-               //TODO(2.C Relative Au Todo(1): 
-                       //... si ca fait update tout les achat couleurs par quant / size dispo achats
-                vent.let { existingVent ->
-                    val updatedVent = if (newQuantity == 0) {
-                        existingVent.copy(
-                            quantityAchete = newQuantity,
-                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                        )
-                    } else {
-                        existingVent.copy(
-                            quantityAchete = newQuantity,
-                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
-                        )
-                    }
-                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                }
-                
 
+                when(clickUpdate) {
+                    ClickUpdate.CouleurQua -> {
+                        // Original functionality - update single color quantity
+                        vent.let { existingVent ->
+                            val updatedVent = if (newQuantity == 0) {
+                                existingVent.copy(
+                                    quantityAchete = newQuantity,
+                                    etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                                )
+                            } else {
+                                existingVent.copy(
+                                    quantityAchete = newQuantity,
+                                    etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
+                                )
+                            }
+                            fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                        }
+                    }
+                    ClickUpdate.TotalQua -> {
+                        // TODO(2.C) FIXED: Update all purchase colors by total quantity
+                        // Find all items with the same product ID as the current vent
+                        val allProductVents = fCouleurAchatOperationRepositoryComposable.datasValue.filter {
+                            it.parentProduitId == vent.parentProduitId &&
+                                    it.etateActuellementEst != FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                        }
+
+                        if (allProductVents.isNotEmpty()) {
+                            if (newQuantity == 0) {
+                                // Remove all items from the product group
+                                allProductVents.forEach { ventItem ->
+                                    val updatedVent = ventItem.copy(
+                                        quantityAchete = 0,
+                                        etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                                }
+                            } else {
+                                // Distribute the new total quantity among all colors
+                                val quantityPerItem = newQuantity / allProductVents.size
+                                val remainder = newQuantity % allProductVents.size
+
+                                allProductVents.forEachIndexed { index, ventItem ->
+                                    val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
+                                    val updatedVent = ventItem.copy(
+                                        quantityAchete = itemQuantity,
+                                        etateActuellementEst = if (itemQuantity > 0) {
+                                            FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
+                                        } else {
+                                            FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                                        },
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                                }
+                            }
+                        }
+                    }
+                }
             },
         shape = RoundedCornerShape(16.dp),
         color = backgroundColor,
