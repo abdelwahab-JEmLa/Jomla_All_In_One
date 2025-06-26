@@ -56,9 +56,8 @@ fun ArticleImageWithOverlay(
         viewModel.aCentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
             .find {
                 it.parentBProduitOldID == id
-                        && it.indexCouleurDansAncienProto==colorIndex
+                        && it.indexCouleurDansAncienProto == colorIndex
             }
-
 
     Surface(
         modifier = modifier,
@@ -90,8 +89,18 @@ fun ArticleImageWithOverlay(
                 .fillMaxSize()
         ) {
             if (relatedCouleurKey != null) {
+
+                val text = buildString {
+                    append(relatedCouleurKey.key.takeLast(4).uppercase())
+                    append(" ")
+                    append(relatedCouleurKey.nomImageFichieSansEtansion)
+                    append(".")
+                    append(relatedCouleurKey.extensionDisponible)
+
+                }
+
                 Text(
-                    text = relatedCouleurKey.key,
+                    text = text,
                     color = Color.White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
