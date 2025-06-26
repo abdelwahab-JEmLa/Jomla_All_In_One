@@ -43,11 +43,9 @@ class FragmentNavigationHandler {
         }
     }
 
-    // New method to navigate to the test data screen (B1CouleurOuGoutProduitDataBaseTestDatas)
     fun navigateToTestDataScreen() {
         _navController?.navigate(Screen.NewFragTest.route) {
             launchSingleTop = true
-            // Don't pop from back stack so we can return with back button
             popUpTo(_navController!!.graph.findStartDestination().id) {
                 saveState = true
                 inclusive = false
