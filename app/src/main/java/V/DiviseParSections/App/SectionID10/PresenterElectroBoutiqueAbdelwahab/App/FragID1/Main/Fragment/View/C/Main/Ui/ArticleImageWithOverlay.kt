@@ -1,8 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
@@ -17,7 +15,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -47,7 +44,8 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-    val relatedCouleurKeyParAncienMethod = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
+    val relatedCouleurKeyParAncienMethod =
+        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
     val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
     Surface(
@@ -81,43 +79,44 @@ fun ArticleImageWithOverlay(
                 )
             }
 
-            relatedCouleurKeyParAncienMethod
-                ?.let {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.TopEnd)
-                    ) {
-                        AfficheKey(it, viewModel = viewModel,vent)
-                    }
-                }
+            AfficheKey(viewModel, article, colorIndex)
         }
     }
 }
 
 @Composable
 private fun AfficheKey(
-    relatedCouleurKey: B1CouleurOuGoutProduitDataBase,
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
-    vent: FCouleurVentOperation?,
+    article: ArticlesBasesStatsTable,
+    colorIndex: Int,
 ) {
-    val text = with(relatedCouleurKey) {
-        "${
-            key.takeLast(4).uppercase()
-        } $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
-    }
+    val couleur = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+    val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
-    Text(
-        text = text,
-        color = Color.White,
-        fontSize = 10.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.Companion
-            .background(
-                color = Color.Red,
-                shape = RoundedCornerShape(bottomStart = 8.dp)
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    )
+    couleur
+        ?.let {
+            val text = with(couleur) {
+                "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
+                        " V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.Companion
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(bottomStart = 8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        }
 }
