@@ -28,7 +28,7 @@ fun PanierFinaleDAchatSec1Frag3(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
 ) {
-    val achats = viewModel.d_AchatOperationComposeRepositoryPJ17.datasValue
+    val achats = viewModel.getter.fCouleurAchatOperationRepositoryComposable.datasValue
 
     MainList(
         modifier = modifier,
