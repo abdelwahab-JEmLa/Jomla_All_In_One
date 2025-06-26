@@ -58,7 +58,7 @@ class ACentralCompoRepositoryProtoJuin9(
             .find {
                 it.parentBProduitOldID == produit.id
                         && it.indexCouleurDansAncienProto == colorIndex
-            }!!
+            }
 
 
     fun getRelatedFAchatCouleurOperation(produitID: Long, index: Int): FCouleurVentOperation? {
