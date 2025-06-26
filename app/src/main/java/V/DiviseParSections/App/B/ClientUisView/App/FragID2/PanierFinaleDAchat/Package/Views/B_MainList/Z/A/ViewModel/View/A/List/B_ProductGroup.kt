@@ -135,14 +135,6 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Color Variants (${achats.size})",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 4.dp),
