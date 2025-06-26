@@ -47,8 +47,8 @@ fun ImageDisplayerGlide_Sec2FragID2(
     colorName: String = "",
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
-    onClickToOpenWindow: () -> Unit = {},
-    colorFilter: ColorFilter? = null // Added colorFilter parameter
+    colorFilter: ColorFilter? = null,
+    onClickToOpenWindow: () -> Unit = {}
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(

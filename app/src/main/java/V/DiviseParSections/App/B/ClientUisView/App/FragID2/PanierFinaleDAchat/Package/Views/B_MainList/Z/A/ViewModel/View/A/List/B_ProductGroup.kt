@@ -153,11 +153,11 @@ fun ProductGroup(
                             modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                         ) {
                             VentDisplayer_Sec2FragId2(
-                                viewModel=viewModel,
-                                ventKey =vent.keyID,
-                                purchasedQuantity = vent.quantityAchete,
+                                modifier = Modifier.padding(4.dp),
+                                ventKey = vent.keyID,
                                 size = 120.dp,
-                                modifier = Modifier.padding(4.dp)
+                                purchasedQuantity = vent.quantityAchete,
+                                viewModel = viewModel
                             )
                         }
                     }

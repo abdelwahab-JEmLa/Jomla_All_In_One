@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.AfficheKeyCouleurAvecVentDebugPanie
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
@@ -49,7 +48,6 @@ fun VentDisplayer_Sec2FragId2(
     modifier: Modifier = Modifier,
     ventKey: String,
     b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
-    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {},
     size: Dp = 200.dp,
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
@@ -87,11 +85,12 @@ fun VentDisplayer_Sec2FragId2(
         return
     }
 
-    var showQuantityDialog by remember { mutableStateOf(false) }
+    var showQuantityDialog by remember { mutableStateOf(true) }
     val haptic = LocalHapticFeedback.current
 
     // Check if item should be grayed out (removed from final cart)
-    val isRemovedFromCart = vent?.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+    val isRemovedFromCart =
+        vent.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
 
     // Apply visual effects for removed items
     val itemAlpha = if (isRemovedFromCart) 0.4f else 1.0f
@@ -106,20 +105,19 @@ fun VentDisplayer_Sec2FragId2(
         } else null
     }
 
+    // FIX: Move the click handler to the Card level to ensure it captures all clicks
     Card(
         modifier = modifier
             .fillMaxWidth()
             .alpha(itemAlpha)
+            .clickable(enabled = !isRemovedFromCart) {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                showQuantityDialog = true
+            }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable(
-                    enabled = !isRemovedFromCart // Disable clicking for removed items
-                ) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    showQuantityDialog = true
-                }
                 .padding(5.dp)
         ) {
             when (data.aAffiche) {
@@ -130,31 +128,16 @@ fun VentDisplayer_Sec2FragId2(
                         colorName = data.nomCouleurStrSiSonImageDispo,
                         contentScale = ContentScale.Crop,
                         imageSize = DpSize(size, size),
-                        onClickToOpenWindow = {
-                            if (!isRemovedFromCart) onClickToOpenWindow(data)
-                        },
-                        // Apply grayscale filter if removed
-                        colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) }
+                        colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
                     )
                 }
 
                 B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer_Sec2FragID2(
                     modifier = Modifier.size(size),
                     colorName = data.nomCouleurStrSiSonImageDispo,
-                    onClickToOpenWindow = {
-                        if (!isRemovedFromCart) onClickToOpenWindow(data)
-                    }
+                    // FIX: Remove the click handler from here since we handle it at Card level
+                    onClickToOpenWindow = {} // Empty lambda to prevent conflicts
                 )
-            }
-
-            if (data.key.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.TopEnd)
-                ) {
-                    AfficheKeyCouleurAvecVentDebugPanie(data)
-                }
             }
 
             // Show removed indicator
@@ -201,7 +184,7 @@ fun VentDisplayer_Sec2FragId2(
         ModernQuantityDialog(
             colorName = data.nomCouleurStrSiSonImageDispo,
             currentQuantity = purchasedQuantity,
-            viewModel = viewModel, // Ajout du viewModel
+            viewModel = viewModel,
             onQuantitySelected = { newQuantity ->
                 vent?.let { existingVent ->
                     val updatedVent = if (newQuantity == 0) {
