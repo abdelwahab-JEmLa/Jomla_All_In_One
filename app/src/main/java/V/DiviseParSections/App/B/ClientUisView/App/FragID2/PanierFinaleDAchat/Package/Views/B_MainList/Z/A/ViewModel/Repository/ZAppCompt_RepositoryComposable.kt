@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View.PeriodGenerator
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import androidx.compose.runtime.Stable
@@ -15,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 import java.util.Objects
 
 @Stable
@@ -82,17 +82,14 @@ class ZAppCompt_RepositoryComposable(
     }
 }
 
-
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = getPushFireBase(ref),
-   // var keyID: String = "",
 
     var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    // Section InfosDeBase
     // Section InfosDeBase
     var nom: String = "",
     var nomMutable: String = "",
@@ -127,12 +124,12 @@ data class Z_AppCompt(
 
     //-----------------Vent Createur-----------
 
-    //Section Parent Period Vent
-    var ouvertF1PeriodVentId: String = "F1_Juin24_08",
-    var ouvertF1PeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
+    //Section Parent Period Vent - FIXED: Now using dynamic generation
+    var ouvertF1PeriodVentId: String = PeriodGenerator.generateCurrentPeriodId(),
+    var ouvertF1PeriodVentStartTimesTamp: Long = PeriodGenerator.getPeriodStartTimestamp(),
 
-    //Section Parent Transaction
-    var ouvertF2BonVentId: String = "F2_3omar",
+    //Section Parent Transaction - FIXED: Now using dynamic generation
+    var ouvertF2BonVentId: String = PeriodGenerator.generateRandomBonVentId(),
     var ouvertClientOnVentKeyId: String = "",
 
     //Section ouvertProduitAncien
@@ -142,12 +139,26 @@ data class Z_AppCompt(
     var ouvertF4CouleurOnVentID: String = "",
 ) {
     init {
-       /* if (keyID.isEmpty()) {
-            val data = nom
-            keyID = data.withOutInvalidCharacters()
-        }     */
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()
+        }
+
+        // Ensure period and bon vent IDs are properly initialized
+        if (ouvertF1PeriodVentId.isEmpty() || ouvertF1PeriodVentId == "F1_Juin24_08") {
+            ouvertF1PeriodVentId = PeriodGenerator.generateCurrentPeriodId()
+        }
+
+        if (ouvertF2BonVentId.isEmpty() || ouvertF2BonVentId == "F2_3omar") {
+            ouvertF2BonVentId = if (ouvertClientOnVentNom.isNotEmpty()) {
+                PeriodGenerator.generateBonVentId(ouvertClientOnVentNom)
+            } else {
+                PeriodGenerator.generateRandomBonVentId()
+            }
+        }
+
+        // Update timestamp to match period if needed
+        if (ouvertF1PeriodVentStartTimesTamp == 0L) {
+            ouvertF1PeriodVentStartTimesTamp = PeriodGenerator.getPeriodStartTimestamp(ouvertF1PeriodVentId)
         }
     }
 
@@ -155,31 +166,70 @@ data class Z_AppCompt(
         return nom.ifEmpty { "DefaultCompt" }
     }
 
+    /**
+     * Create a new period for this account
+     */
+    fun createNewPeriod(): Z_AppCompt {
+        return this.copy(
+            ouvertF1PeriodVentId = PeriodGenerator.generateCurrentPeriodId(),
+            ouvertF1PeriodVentStartTimesTamp = System.currentTimeMillis(),
+            ouvertF2BonVentId = if (ouvertClientOnVentNom.isNotEmpty()) {
+                PeriodGenerator.generateBonVentId(ouvertClientOnVentNom)
+            } else {
+                PeriodGenerator.generateRandomBonVentId()
+            },
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
+
+    /**
+     * Update client and generate new bon vent ID
+     */
+    fun updateClientAndGenerateNewBon(clientId: String, clientName: String): Z_AppCompt {
+        return this.copy(
+            ouvertClientOnVentKeyId = clientId,
+            ouvertClientOnVentNom = clientName,
+            ouvertF2BonVentId = PeriodGenerator.generateBonVentId(clientName),
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
 
     companion object {
+        @Deprecated("Use PeriodGenerator.getPeriodStartTimestamp() instead")
         fun creatTimeTampDepuitStr(dateString: String): Long {
-            return try {
-                val currentDate = Date()
-                currentDate.time
-            } catch (e: Exception) {
-                System.currentTimeMillis()
-            }
+            return PeriodGenerator.getPeriodStartTimestamp()
         }
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
+
+        /**
+         * Create a new Z_AppCompt instance with dynamic values
+         */
+        fun createWithDynamicValues(
+            nom: String = "DefaultCompt",
+            clientName: String = ""
+        ): Z_AppCompt {
+            return Z_AppCompt(
+                nom = nom,
+                ouvertF1PeriodVentId = PeriodGenerator.generateCurrentPeriodId(),
+                ouvertF1PeriodVentStartTimesTamp = System.currentTimeMillis(),
+                ouvertF2BonVentId = if (clientName.isNotEmpty()) {
+                    PeriodGenerator.generateBonVentId(clientName)
+                } else {
+                    PeriodGenerator.generateRandomBonVentId()
+                },
+                ouvertClientOnVentNom = clientName
+            )
+        }
     }
 
     override fun equals(other: Any?) =
         this === other || (other is Z_AppCompt && isSameEntity(other))
 
     fun isSameEntity(other: Z_AppCompt) =
-        bsonObjectId == other.bsonObjectId
-                && nom == other.nom
+        bsonObjectId == other.bsonObjectId && nom == other.nom
 
-    override fun hashCode() = Objects.hash(
-        bsonObjectId,
-        nom,
-    )
+    override fun hashCode() = Objects.hash(bsonObjectId, nom)
 }
