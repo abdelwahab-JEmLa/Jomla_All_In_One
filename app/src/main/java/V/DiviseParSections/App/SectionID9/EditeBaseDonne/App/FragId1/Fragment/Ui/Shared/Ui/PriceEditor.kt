@@ -69,7 +69,7 @@ fun PriceEditor(
         }
     }
 
-    // Fixed condition: Always show the PriceEditor (removed currentPrice > 0 check)
+    // Fixed condition: Always show the PriceEditorFragID2 (removed currentPrice > 0 check)
     if (currentPrice >= 0 || isEditing) {
         Column(modifier = modifier) {
             if (isEditing) {

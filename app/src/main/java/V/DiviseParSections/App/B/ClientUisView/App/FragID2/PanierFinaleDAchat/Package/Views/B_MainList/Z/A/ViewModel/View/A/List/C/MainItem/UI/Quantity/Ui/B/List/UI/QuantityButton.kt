@@ -32,8 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+enum class ClickUpdate{
+    CouleurQua,
+    TotalQua
+}
 @Composable
 fun QuantityButton(
+    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua, //<--
+    //TODO(2.C Relative Au Todo(1): 
+    //... fait passe que ca va etre par TOtale quantity 
     viewModel: ZViewModel_Sec1Frag3,
     newQuantity: Int,
     isSelected: Boolean,
@@ -91,8 +98,10 @@ fun QuantityButton(
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onClick(newQuantity)
-
-                vent?.let { existingVent ->
+               if (clickUpdate==ClickUpdate.TotalQua) //<--
+               //TODO(2.C Relative Au Todo(1): 
+                       //... si ca fait update tout les achat couleurs par quant / size dispo achats
+                vent.let { existingVent ->
                     val updatedVent = if (newQuantity == 0) {
                         existingVent.copy(
                             quantityAchete = newQuantity,
@@ -106,6 +115,7 @@ fun QuantityButton(
                     }
                     fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
                 }
+                
 
             },
         shape = RoundedCornerShape(16.dp),

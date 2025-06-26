@@ -69,7 +69,7 @@ fun StringEditor(
             OutlinedTextField(
                 value = tempValue,
                 onValueChange = { tempValue = it },
-                // Changed: Show old value in label like PriceEditor does
+                // Changed: Show old value in label like PriceEditorFragID2 does
                 label = { Text("Ancien: $currentValue") },
                 placeholder = { Text("Entrez le nouveau nom") },
                 keyboardOptions = KeyboardOptions(
