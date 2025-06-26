@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B_ClientsStateCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.ETransactionCommercialCompoRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Repository.Main.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -43,6 +43,36 @@ class ACentralCompoRepositoryProtoJuin9(
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
+
+    // Fixed getVent function in ACentralCompoRepositoryProtoJuin9.kt
+    fun getRelatedCouleur(
+        produit: ArticlesBasesStatsTable,
+        colorIndex: Int
+    ) =
+        b1CouleurOuGoutProduitDataBaseRepository.datasValue
+            .find {
+                it.parentBProduitOldID == produit.id
+                        && it.indexCouleurDansAncienProto == colorIndex
+            }!!
+
+    fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperation? {
+        val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
+
+        val bonVentKey = ouvertData.ouvertF2BonVentId
+        val periodKey = ouvertData.ouvertF1PeriodVentId
+             /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
+            vent.keyID == couleurKey
+        }?.parentProduitAncienId ?: return "0" // Get Long value and handle null cas*/
+        val matchingOperation =
+            fCouleurAchatOperationRepositoryComposable.datasValue.find { operation ->
+                operation.parentCouleurDataBaseKey == couleurKey &&
+                        operation.parentProduitAncienId == produitId && // Use parentProduitAncienId instead of parentProduitId
+                        operation.parentBonVentId == bonVentKey && // Fixed: use parentBonVentId instead of parentProduitId
+                        operation.parentEPeriodVentId == periodKey // Fixed: use parentEPeriodVentId instead of parentProduitId
+            }
+
+        return matchingOperation
+    }
 
     fun getKeyID(produitID: Long, index: Int): String {
         return createCouleurOnVentKey(

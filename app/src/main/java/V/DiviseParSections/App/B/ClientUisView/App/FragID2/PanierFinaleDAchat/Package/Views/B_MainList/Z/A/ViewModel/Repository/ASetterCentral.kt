@@ -1,19 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 class ASetterCentral(
-    val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
+    val getter:ACentralCompoRepositoryProtoJuin9,
     val fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    fun getRelatedCouleur(
-        produit: ArticlesBasesStatsTable,
-        colorIndex: Int
-    ) =
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find {
-                it.parentBProduitOldID == produit.id
-                        && it.indexCouleurDansAncienProto == colorIndex
-            }!!
+    fun  getRelatedCouleur( produit: ArticlesBasesStatsTable, colorIndex: Int) =getter.getRelatedCouleur( produit, colorIndex)
 
     fun acheterACaSetterCentral(
         produit: ArticlesBasesStatsTable,

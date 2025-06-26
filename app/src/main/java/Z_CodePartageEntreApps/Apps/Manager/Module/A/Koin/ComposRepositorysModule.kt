@@ -32,6 +32,6 @@ val composRepositorysModule = module {
     single { B1CouleurOuGoutProduitDataBaseRepository(get(),) }
 
     single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
-    single { ASetterCentral(get(),get(),get(),) }
+    single { ASetterCentral(get(), get(), get(),) }
     single { ACentral( get(), get(),) }
 }

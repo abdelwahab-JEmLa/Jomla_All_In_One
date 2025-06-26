@@ -48,7 +48,7 @@ fun MainList(
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
 ) {
-    val categories = viewModel.aCentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository.datasValue
+    val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
     val filteredArticles = remember(produits, filterText, currentClient) { filterArticles(produits, filterText) }
 
     val articlesByCategory = remember(filteredArticles, categories) {

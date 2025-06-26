@@ -46,7 +46,6 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -76,14 +75,14 @@ fun ArticleImageWithOverlay(
                 )
             }
 
-            viewModel.aCentralDatasHandlerProtoJuin9.relatedCouleurKey(article,colorIndex)
+            viewModel.getter.relatedCouleurKey(article, colorIndex)
                 ?.let {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.TopEnd)
                     ) {
-                        AfficheKey(it)
+                        AfficheKey(it, viewModel = viewModel)
                     }
                 }
         }
@@ -91,10 +90,16 @@ fun ArticleImageWithOverlay(
 }
 
 @Composable
-private fun AfficheKey(relatedCouleurKey: B1CouleurOuGoutProduitDataBase) {
+private fun AfficheKey(
+    relatedCouleurKey: B1CouleurOuGoutProduitDataBase,
+    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
+) {
     val text = with(relatedCouleurKey) {
-        "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible"
+        val vent = viewModel.getter.getVent(key, parentBProduitOldID)
+
+        "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentBonVentId} ${vent?.quantityAchete ?: 0}"
     }
+
     Text(
         text = text,
         color = Color.White,

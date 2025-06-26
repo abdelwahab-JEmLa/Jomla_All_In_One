@@ -150,7 +150,7 @@ val viewModelModule = module {
     //Sort Par ID
     viewModel { B1CouleurOuGoutProduitDataBaseTestDatasViewModel(get(),) }
 
-    viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get(),get(),) }
+    viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get(),) }
     viewModel { D_AchatOperationTestDatasViewModel(get(),) }
     viewModel { ZViewModel_Sec1Frag3(get(),) }
 

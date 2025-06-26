@@ -195,7 +195,7 @@ data class FCouleurVentOperation(
     var parentProduitAncienId: Long = 0L,
     var parentProduitKeyNom: String = "",
     var type: Type = Type.CommandeDeLui,
-    var quantityAchete: Int = 1,
+    var quantityAchete: Int = 0,
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
     var provisoireMonPrix: Double = 0.0,
     var achatParentBsonIDOld: String = "",
@@ -245,6 +245,7 @@ data class FCouleurVentOperation(
         ): Boolean {
             val delimiterExistence =
                 ancien.keyID == newData.keyID
+
             return delimiterExistence
         }
     }
