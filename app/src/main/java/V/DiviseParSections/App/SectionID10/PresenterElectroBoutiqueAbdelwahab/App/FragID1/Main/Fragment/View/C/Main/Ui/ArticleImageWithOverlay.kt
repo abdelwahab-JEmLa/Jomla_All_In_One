@@ -47,10 +47,8 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-    val relatedCouleurKeyParAncienMethod =
-        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
-
-    val vent = viewModel.getter.getRelatedFAchatCouleurOperation(article.id, colorIndex)
+    val relatedCouleurKeyParAncienMethod = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
+    val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
     Surface(
         modifier = modifier,
