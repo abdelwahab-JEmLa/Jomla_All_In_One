@@ -59,7 +59,33 @@ fun VentDisplayer_Sec2FragId2(
     val vent = fCouleurAchatOperationRepositoryComposable.datasValue.find { it.keyID == ventKey }
 
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
-    val data = datas.find { it.key == ventKey }!!
+
+    // FIX: Use safe call and provide fallback, and use the correct key for lookup
+    val data = vent?.let { ventData ->
+        datas.find { it.key == ventData.parentCouleurDataBaseKey }
+    }
+
+    // Early return if data is not found
+    if (data == null) {
+        // Show placeholder or error state
+        Card(
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Color data not found",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+        return
+    }
 
     var showQuantityDialog by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
@@ -197,5 +223,3 @@ fun VentDisplayer_Sec2FragId2(
         )
     }
 }
-
-
