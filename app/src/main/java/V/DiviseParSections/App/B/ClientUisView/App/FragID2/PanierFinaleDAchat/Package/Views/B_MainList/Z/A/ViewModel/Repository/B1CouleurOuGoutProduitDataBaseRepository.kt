@@ -175,7 +175,7 @@ fun CouleurDisplayer(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(5.dp)
         ) {
             when (data.aAffiche) {
                 B1CouleurOuGoutProduitDataBase.Type.Image -> {

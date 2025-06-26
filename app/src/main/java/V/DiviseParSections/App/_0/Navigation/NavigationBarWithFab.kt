@@ -212,7 +212,6 @@ object NavigationItems {
         Screen.CommandeProduits,
         Screen.ToggleFab,
         Screen.EditeProduitsBaseDonneS9,
-        Screen.NewFragTest,
         Screen.DialogTests
     )
 }
