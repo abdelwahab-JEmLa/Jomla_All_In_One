@@ -130,7 +130,7 @@ fun A_MainListFragId3(
                                 viewModelInitApp = viewModelInitApp,
                                 article = stats,
                                 color = color,
-                                index = index,
+                                colorIndex = index,
                                 modifier = Modifier,
                                 currentSale = currentSale,
                                 height = 350.dp,

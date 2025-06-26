@@ -11,6 +11,7 @@ class VendeurAfficheurInfosProduitViewModel(
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
 
+
     fun getRelatedFAchatCouleurOperation(): (ArticlesBasesStatsTable, Int) -> FCouleurVentOperation? {
         return aCentral.getter::getVentForArticleAndColorInThisApp
     }

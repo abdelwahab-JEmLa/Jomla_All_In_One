@@ -1,7 +1,7 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AfficheKeyCouleurAvecVentDebugParAncienMethode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorArrangement
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -49,9 +48,6 @@ fun B_CouleurAfficheur_F7(
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
     colorIndex: Int,
-    relodeTigger: Int,
-    colorArrangement: ColorArrangement? = null, // Add this parameter
-    sizeScreen: Dp,
     viewModelInitApp: ViewModelInitApp
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
@@ -63,8 +59,7 @@ fun B_CouleurAfficheur_F7(
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
-    val articleproduitsMainDataBase =
-        viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id == article.id }
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(0.dp),
@@ -72,7 +67,7 @@ fun B_CouleurAfficheur_F7(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             A_GlideDisplayImageByKeyId_Proto_4_11(
-                produitVID = article.id.toLong(),
+                produitVID = article.id,
                 couleurVID = colorIndex.toLong() + 1,
                 size = 600.dp,
                 qualityImage = 100,
@@ -89,20 +84,8 @@ fun B_CouleurAfficheur_F7(
                 }
             )
 
+            AfficheKeyCouleurAvecVentDebugParAncienMethode(article,colorIndex)
 
-            // Add QuantityBadge if there's add quantity to display
-            colorArrangement?.let { arrangement ->
-                if (arrangement.colorSoldQuantity > 0) {
-                    QuantityBadge(
-                        quantity = arrangement.colorSoldQuantity,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                    )
-                }
-            }
-
-            // Gradient Overlay and Content (remains the same)
             color?.let { colorData ->
                 Box(
                     modifier = Modifier

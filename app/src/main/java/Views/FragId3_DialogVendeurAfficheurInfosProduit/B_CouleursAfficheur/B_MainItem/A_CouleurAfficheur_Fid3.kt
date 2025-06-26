@@ -1,6 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AfficheKeyCouleurAvecVentDebugParAncienMethode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
@@ -14,6 +13,7 @@ import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,9 +41,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -74,7 +76,7 @@ fun B_CouleurAfficheur(
     viewModelInitApp: ViewModelInitApp,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
-    index: Int,
+    colorIndex: Int,
     modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
     height: Dp,
@@ -83,11 +85,13 @@ fun B_CouleurAfficheur(
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
+    val currentQuantity =0
+
     // Using add simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository =
         koinInject<_1_1_CouleurAcheteOperation_Repository>()
-    val couleurActuelleIndex = index.toLong()
+    val couleurActuelleIndex = colorIndex.toLong()
 
     val initializedIndices = remember { mutableSetOf<Long>() }
 
@@ -167,32 +171,6 @@ fun B_CouleurAfficheur(
         ._1_1_CouleurAcheteOperation_Repository
         .modelDatasSnapList
 
-    // Enhanced quantity tracking that retrieves quantity from _1_1_CouleurAcheteOperation for this color
-    val currentQuantity = remember(
-        color.idColore,
-        currentSale,
-        _1_1_CouleurAcheteOperations,
-        compose_1_1_CouleurAcheteOperationVid
-    ) {
-
-        val colorOperation = _1_1_CouleurAcheteOperations.find {
-            it.vid == compose_1_1_CouleurAcheteOperationVid &&
-                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-        }
-
-        // Return the quantity from the operation if it exists
-        colorOperation?.totaleQuantity
-            ?: (// Fallback to the legacy method for backward compatibility
-                    currentSale?.let { sale ->
-                        when (color.idColore) {
-                            sale.color1IdPicked -> sale.color1SoldQuantity
-                            sale.color2IdPicked -> sale.color2SoldQuantity
-                            sale.color3IdPicked -> sale.color3SoldQuantity
-                            sale.color4IdPicked -> sale.color4SoldQuantity
-                            else -> 0
-                        }
-                    } ?: 0)
-    }
 
     val isMainColor = remember(color.idColore, currentSale) {
         color.idColore == currentSale?.color1IdPicked
@@ -207,11 +185,12 @@ fun B_CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-        val relatedFAchatCouleurOperation = viewModel.getRelatedFAchatCouleurOperation()(article, index)
+        val relatedFAchatCouleurOperation =
+            viewModel.getRelatedFAchatCouleurOperation()(article, colorIndex)
 
         if (relatedFAchatCouleurOperation != null) {
             QuantityBadge(
-                quantity = "${relatedFAchatCouleurOperation.keyID} Qua=${relatedFAchatCouleurOperation.quantityAchete}",
+                quantity = "0",
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
@@ -261,7 +240,7 @@ fun B_CouleurAfficheur(
                 ) {
                     A_GlideDisplayImageByKeyId_Proto_4_11(
                         produitVID = article.id,
-                        couleurVID = index.toLong() + 1,
+                        couleurVID = colorIndex.toLong() + 1,
                         size = 600.dp,
                         qualityImage = 100,
                         onImageNeExistePas = {
@@ -277,7 +256,7 @@ fun B_CouleurAfficheur(
                         }
                     )
 
-                    AfficheKeyCouleurAvecVentDebugParAncienMethode(article, index)
+                    DebugCouleurBox(viewModel, article, colorIndex)
                 }
 
             }
@@ -315,7 +294,7 @@ fun B_CouleurAfficheur(
                     viewModelHeadViewModel.updateColorSelection(color.idColore, newQuantity)
                     viewModelHeadViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                        index
+                        colorIndex
                     )
                     viewModelHeadViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
@@ -326,11 +305,57 @@ fun B_CouleurAfficheur(
                     isSelected = false
                 },
                 article = article,
-                color = index
+                color = colorIndex
             )
         }
     }
 }
+
+@Composable
+private fun DebugCouleurBox(
+    viewModel: VendeurAfficheurInfosProduitViewModel,
+    article: ArticlesBasesStatsTable,
+    colorIndex: Int
+) {
+    val couleur = viewModel.aCentral.getter.relatedCouleurKeyParAncienMethod(
+        article,
+        colorIndex
+    )
+    val vent = viewModel.aCentral.getter.getVentForArticleAndColorInThisApp(
+        article,
+        colorIndex
+    )
+
+    couleur
+        ?.let {
+            val text = with(couleur) {
+                "${
+                    key.takeLast(4).uppercase()
+                } $nomImageFichieSansEtansion.$extensionDisponible" +
+                        " V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(bottomStart = 8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        }
+}
+
 
 @Composable
 private fun QuantityBadge(

@@ -34,7 +34,6 @@ fun ColorSelectionDialog(
     viewModelInitApp: ViewModelInitApp,
     article: ArticlesBasesStatsTable,
     color: Int,
-
     compose_1_1_CouleurAcheteOperationVid: Long,
     onDismiss: () -> Unit,
     currentQuantity: Int,

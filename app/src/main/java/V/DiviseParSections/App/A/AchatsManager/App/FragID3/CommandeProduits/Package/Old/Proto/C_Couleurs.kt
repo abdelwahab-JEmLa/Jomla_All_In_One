@@ -248,6 +248,7 @@ fun Couleurs(
                                 }, qualityImage = 1
 
                             )
+                          //  AfficheKeyCouleurAvecVentDebugParAncienMethode(Produit,Couleur.couleurIndex_ParentVID.toInt())
 
                             Box(
                                 modifier = Modifier

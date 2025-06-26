@@ -127,9 +127,6 @@ fun A_CouleurSectionAfficheur_F7(
                                 article = articlesBasesStatsTable,
                                 color = color,
                                 colorIndex = colorsListToDisplaye.indexOf(color),
-                                relodeTigger = relodeTigger,
-                                colorArrangement = colorArrangements.find { it.idColore == color.idColore },
-                                sizeScreen = sizeScreen,
                                 viewModelInitApp = viewModelInitApp
                             )
                         }
