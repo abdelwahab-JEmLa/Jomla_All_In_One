@@ -1,5 +1,6 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AfficheKeyCouleurAvecVentDebugParAncienMethode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -218,23 +220,40 @@ fun B_CouleurAfficheur_F7(
         }
     }
 }
+
 @Composable
-private fun QuantityBadge(
-    quantity: Int,
-    modifier: Modifier = Modifier
+fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
+    article: ArticlesBasesStatsTable,
+    colorIndex: Int,
+    getter: ACentralCompoRepositoryProtoJuin9 = koinInject(),
 ) {
-    Surface(
-        modifier = modifier,
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.error,
-        contentColor = MaterialTheme.colorScheme.onError
-    ) {
-        Text(
-            text = quantity.toString(),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
-    }
+    val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+    val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
+
+    couleur
+        ?.let {
+            val text = with(couleur) {
+                "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
+                        " V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = text,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.Companion
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(bottomStart = 8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        }
 }

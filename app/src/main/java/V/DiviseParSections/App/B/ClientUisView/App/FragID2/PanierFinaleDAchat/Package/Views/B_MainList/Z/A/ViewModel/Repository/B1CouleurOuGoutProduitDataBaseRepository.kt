@@ -232,7 +232,7 @@ private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase)
 }
 
 @Composable
-fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
+fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
     getter: ACentralCompoRepositoryProtoJuin9 = koinInject(),

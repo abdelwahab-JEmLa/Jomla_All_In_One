@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class ZViewModel_Sec1Frag3(
     aCentral: ACentral,
 ) : ViewModel() {
-    val getter = aCentral.getter
+    val uiStateCentraleRpositorys = aCentral.getter
 
     data class UiState_Sec1Frag3(
         val v: String = "",
