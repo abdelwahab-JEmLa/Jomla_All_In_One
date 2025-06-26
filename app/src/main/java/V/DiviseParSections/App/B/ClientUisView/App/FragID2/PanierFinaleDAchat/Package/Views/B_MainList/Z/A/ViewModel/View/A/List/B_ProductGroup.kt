@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -62,8 +64,11 @@ fun ProductGroup(
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productId"
 
-    // Get the first item's price for the price editor
-    val firstItemPrice = achats.firstOrNull()?.provisoireMonPrix ?: 0.0
+    // Get the current price (assuming all variants should have the same price)
+    val currentPrice = achats.firstOrNull()?.provisoireMonPrix ?: 0.0
+
+    // Calculate total value for all variants
+    val totalValue = achats.sumOf { it.provisoireMonPrix * it.quantityAchete }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -150,6 +155,26 @@ fun ProductGroup(
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Product-level price editor - applies to all variants
+            PriceEditorFragID2(
+                currentPrice = currentPrice,
+                label = "Prix unitaire (toutes variantes)",
+                onPriceUpdate = { newPrice ->
+                    // Update price for ALL variants of this product
+                    achats.forEach { vent ->
+                        val updatedVent = vent.copy(
+                            provisoireMonPrix = newPrice,
+                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                        )
+                        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),

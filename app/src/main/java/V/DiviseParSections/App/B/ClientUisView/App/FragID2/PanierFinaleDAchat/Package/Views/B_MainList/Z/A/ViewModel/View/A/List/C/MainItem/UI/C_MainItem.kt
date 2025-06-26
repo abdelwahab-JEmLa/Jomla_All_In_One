@@ -4,17 +4,14 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.PriceEditorFragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,13 +36,11 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import java.io.File
-
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -160,44 +155,6 @@ fun VentDisplayer_Sec2FragId2(
                 }
             }
 
-            vent?.let { ventData ->
-                Spacer(modifier = Modifier.height(8.dp))
-
-                PriceEditorFragID2(   //<--
-                //TODO(1): enlve ca d ici eu fait que ca soit au 
-                    currentPrice = ventData.provisoireMonPrix,
-                    label = "Prix unitaire",
-                    onPriceUpdate = { newPrice ->
-                        val updatedVent = ventData.copy(
-                            provisoireMonPrix = newPrice,
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                        repo.addOrUpdateData(updatedVent)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    additionalInfo = if (ventData.provisoireMonPrix > 0 && purchasedQuantity > 0) {
-                        {
-                            val totalPrice = ventData.provisoireMonPrix * purchasedQuantity
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 4.dp),
-                                shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                            ) {
-                                Text(
-                                    text = "Total: ${String.format("%.2f", totalPrice)} DA",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)
-                                )
-                            }
-                        }
-                    } else null
-                )
-            }
         }
     }
 
