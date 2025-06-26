@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -147,7 +148,7 @@ fun DetailsBonVent(
 fun ClientDetailsSection(
     ouvertClientNom: String,
     ouvertClientId: String,
-    clientDetails: Any? // Replace with actual client type
+    clientDetails: B_ClientInfosProtoJuin3? // Replace with actual client type
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
