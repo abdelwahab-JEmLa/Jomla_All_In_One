@@ -66,7 +66,12 @@ class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
 
             val imageExists = imageFile.name != "NonTrouve.webp" &&
                     imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
-
+            /* val extensionDisponible = if (imageExists) {
+  buildString {
+      append(".")
+      append(imageFile.extension)
+  }
+} else "webp"    */
             if (imageExists || !couleur.isNullOrBlank()) {
                 val colorData = B1CouleurOuGoutProduitDataBase(
                     aAffiche = if (imageExists) B1CouleurOuGoutProduitDataBase.Type.Image else B1CouleurOuGoutProduitDataBase.Type.Nom,

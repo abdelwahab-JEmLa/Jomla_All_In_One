@@ -89,14 +89,8 @@ fun ArticleImageWithOverlay(
                 .fillMaxSize()
         ) {
             if (relatedCouleurKey != null) {
-
-                val text = buildString {
-                    append(relatedCouleurKey.key.takeLast(4).uppercase())
-                    append(" ")
-                    append(relatedCouleurKey.nomImageFichieSansEtansion)
-                    append(".")
-                    append(relatedCouleurKey.extensionDisponible)
-
+                val text = with(relatedCouleurKey) {
+                    "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible"
                 }
 
                 Text(
