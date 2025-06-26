@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
@@ -89,7 +90,7 @@ fun ArticleImageWithOverlay(
                             .fillMaxSize()
                             .align(Alignment.TopEnd)
                     ) {
-                        AfficheKey(it, viewModel = viewModel)
+                        AfficheKey(it, viewModel = viewModel,vent)
                     }
                 }
         }
@@ -100,13 +101,12 @@ fun ArticleImageWithOverlay(
 private fun AfficheKey(
     relatedCouleurKey: B1CouleurOuGoutProduitDataBase,
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
+    vent: FCouleurVentOperation?,
 ) {
     val text = with(relatedCouleurKey) {
-        val vent = viewModel.getter.getVent(key, parentBProduitOldID)
-
         "${
             key.takeLast(4).uppercase()
-        } $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentBonVentId} ${vent?.quantityAchete}"
+        } $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
     }
 
     Text(
