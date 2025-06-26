@@ -93,7 +93,6 @@ data class Z_AppCompt(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     // Section InfosDeBase
-    // Section InfosDeBase
     var nom: String = "",
     var nomMutable: String = "",
 
@@ -142,10 +141,6 @@ data class Z_AppCompt(
     var ouvertF4CouleurOnVentID: String = "",
 ) {
     init {
-       /* if (keyID.isEmpty()) {
-            val data = nom
-            keyID = data.withOutInvalidCharacters()
-        }     */
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()
         }
