@@ -32,11 +32,11 @@ import androidx.compose.ui.window.Dialog
 fun ColorSelectionDialog(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     viewModelInitApp: ViewModelInitApp,
+    currentQuantity: Int,
     article: ArticlesBasesStatsTable,
     color: Int,
     compose_1_1_CouleurAcheteOperationVid: Long,
     onDismiss: () -> Unit,
-    currentQuantity: Int,
     colorName: String,
     onQuantitySelected: (Int) -> Unit,
 ) {
@@ -86,7 +86,7 @@ fun ColorSelectionDialog(
                     viewModelInitApp = viewModelInitApp,
                     compose_1_1_CouleurAcheteOperationVid = compose_1_1_CouleurAcheteOperationVid,
                     article = article,
-                    color = color
+                    colorIndex = color
                 )
             }
         }
@@ -97,13 +97,13 @@ fun ColorSelectionDialog(
 private fun QuantityGrid(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     article: ArticlesBasesStatsTable,
-    color: Int,
-
+    colorIndex: Int,
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
     viewModelInitApp: ViewModelInitApp,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
+
 
     val quantities = remember {
         listOf(
@@ -134,6 +134,7 @@ private fun QuantityGrid(
             50
         )
     }
+   // DebugCouleurBox(viewModel, article, colorIndex)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
@@ -153,7 +154,7 @@ private fun QuantityGrid(
                     onQuantitySelected(quantityNumber)
                 },
                 compose_1_1_CouleurAcheteOperationVid =compose_1_1_CouleurAcheteOperationVid,
-                article =article, colorIndex = color
+                article =article, colorIndex = colorIndex
             )
         }
     }

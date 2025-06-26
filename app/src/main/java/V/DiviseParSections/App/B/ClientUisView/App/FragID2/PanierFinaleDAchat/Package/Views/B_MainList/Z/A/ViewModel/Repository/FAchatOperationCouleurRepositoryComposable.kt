@@ -62,13 +62,16 @@ class FAchatOperationCouleurRepositoryComposable(
         }
     }
 
-    fun addOrUpdateData(data: FCouleurVentOperation) {
+    fun addOrUpdateData(data: FCouleurVentOperation) {       //<--
+        //TODO(1): cree debug pk la qantity ne change pas quend existingIndex
         val existingIndex = datasValue.indexOfFirst { ancien ->
             FCouleurVentOperation.isSame(ancien = ancien, newData = data)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
-                this[existingIndex] = this[existingIndex].copy(
+                // Fix: Copy all relevant fields from the new data, not just timestamp
+                this[existingIndex] = data.copy(
+                    keyID = this[existingIndex].keyID, // Keep the original keyID
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                 )
             }
@@ -82,7 +85,6 @@ class FAchatOperationCouleurRepositoryComposable(
             )
         )
     }
-
 
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()

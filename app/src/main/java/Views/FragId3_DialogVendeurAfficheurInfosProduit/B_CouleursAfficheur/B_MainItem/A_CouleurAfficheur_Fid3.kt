@@ -85,7 +85,12 @@ fun B_CouleurAfficheur(
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
-    val currentQuantity =0
+    val vent = viewModel.aCentral.getter.getVentForArticleAndColorInThisApp(
+        article,
+        colorIndex
+    )
+
+    val currentQuantity = vent?.quantityAchete ?: 0
 
     // Using add simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -185,12 +190,11 @@ fun B_CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-        val relatedFAchatCouleurOperation =
-            viewModel.getRelatedFAchatCouleurOperation()(article, colorIndex)
 
-        if (relatedFAchatCouleurOperation != null) {
+
+        if (vent != null) {
             QuantityBadge(
-                quantity = "0",
+                quantity = vent.quantityAchete.toString(),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
@@ -312,7 +316,7 @@ fun B_CouleurAfficheur(
 }
 
 @Composable
-private fun DebugCouleurBox(
+ fun DebugCouleurBox(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     article: ArticlesBasesStatsTable,
     colorIndex: Int
