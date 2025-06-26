@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
-import Z_CodePartageEntreApps.Modules.D.Glide.LazyRowAvailableColorsImageOuNom
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.A2_Passive.FCouleurVentOperation
+import Z_CodePartageEntreApps.Modules.D.Glide.LazyRowAvailableColorsImageOuNom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,15 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-
-@Preview
-@Composable
-private fun Sec1Frag3Prv() {
-    Sec1Frag3()
-}
 
 @Composable
 fun Sec1Frag3(

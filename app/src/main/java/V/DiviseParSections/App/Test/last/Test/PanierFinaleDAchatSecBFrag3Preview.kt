@@ -1,0 +1,7 @@
+package V.DiviseParSections.App.Test.last.Test
+
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Sec1Frag3
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+
+@Preview @Composable fun PanierFinaleDAchatSecBFrag3Preview() { Sec1Frag3() }
