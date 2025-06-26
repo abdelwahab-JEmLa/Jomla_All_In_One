@@ -94,6 +94,62 @@ class FAchatOperationCouleurRepositoryComposable(
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
     }
+
+    fun acheterUneCouleur(
+        ouvertData: Z_AppCompt,
+        relatedCouleur: B1CouleurOuGoutProduitDataBase,
+        quantity: Int,
+    ) {
+        composScope.launch {
+            try {
+                val couleurVentOperation = createSafeCouleurVentOperation(
+                    relatedCouleur = relatedCouleur,
+                    ouvertData = ouvertData,
+                    quantity = quantity
+                )
+
+                addOrUpdateData(couleurVentOperation)
+
+            } catch (e: OutOfMemoryError) {
+                System.gc()
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun createSafeCouleurVentOperation(
+        relatedCouleur: B1CouleurOuGoutProduitDataBase,
+        ouvertData: Z_AppCompt,
+        quantity: Int
+    ): FCouleurVentOperation {
+        return FCouleurVentOperation(
+            parentCouleurDataBaseKey = relatedCouleur.key,
+
+            parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
+            parentProduitAncienId = relatedCouleur.parentBProduitOldID,
+            parentProduitKeyNom = relatedCouleur.parentBProduitNom,
+
+            parentZAppComptID = ouvertData.bsonObjectId,
+            parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
+            parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
+            parentBonVentId = ouvertData.ouvertF2BonVentId,
+            parentClientId = ouvertData.ouvertClientOnVentKeyId,
+            parentClientName = ouvertData.ouvertClientOnVentNom,
+            quantityAchete = quantity,
+            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
+            type = FCouleurVentOperation.Type.CommandeDeLui,
+        )
+    }
+
+    private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
+        return when (colorIndex) {
+            0 -> produit.couleur1 ?: "couleur1"
+            1 -> produit.couleur2 ?: "couleur2"
+            2 -> produit.couleur3 ?: "couleur3"
+            3 -> produit.couleur4 ?: "couleur4"
+            else -> "couleur${colorIndex + 1}"
+        }
+    }
 }
 
 @Entity
