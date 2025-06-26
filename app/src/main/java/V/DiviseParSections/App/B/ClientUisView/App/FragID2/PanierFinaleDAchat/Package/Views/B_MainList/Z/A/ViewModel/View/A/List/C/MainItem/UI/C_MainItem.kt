@@ -8,7 +8,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -85,7 +84,7 @@ fun VentDisplayer_Sec2FragId2(
         return
     }
 
-    var showQuantityDialog by remember { mutableStateOf(true) }
+    var showQuantityDialog by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
 
     // Check if item should be grayed out (removed from final cart)
@@ -105,15 +104,11 @@ fun VentDisplayer_Sec2FragId2(
         } else null
     }
 
-    // FIX: Move the click handler to the Card level to ensure it captures all clicks
+    // FIXED: Remove click handler from Card level - now handled in individual components
     Card(
         modifier = modifier
             .fillMaxWidth()
             .alpha(itemAlpha)
-            .clickable(enabled = !isRemovedFromCart) {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                showQuantityDialog = true
-            }
     ) {
         Box(
             modifier = Modifier
@@ -129,14 +124,22 @@ fun VentDisplayer_Sec2FragId2(
                         contentScale = ContentScale.Crop,
                         imageSize = DpSize(size, size),
                         colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
+                        // FIXED: Always allow clicking on image, even when removed from cart
+                        onClickToOpenWindow = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showQuantityDialog = true
+                        }
                     )
                 }
 
                 B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer_Sec2FragID2(
                     modifier = Modifier.size(size),
                     colorName = data.nomCouleurStrSiSonImageDispo,
-                    // FIX: Remove the click handler from here since we handle it at Card level
-                    onClickToOpenWindow = {} // Empty lambda to prevent conflicts
+                    // FIXED: Always allow clicking on color name, even when removed from cart
+                    onClickToOpenWindow = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showQuantityDialog = true
+                    }
                 )
             }
 
@@ -179,8 +182,8 @@ fun VentDisplayer_Sec2FragId2(
         }
     }
 
-    // Modern Quantity Selection Dialog
-    if (showQuantityDialog && !isRemovedFromCart) {
+    // Modern Quantity Selection Dialog - FIXED: Now shows even for removed items
+    if (showQuantityDialog) {
         ModernQuantityDialog(
             colorName = data.nomCouleurStrSiSonImageDispo,
             currentQuantity = purchasedQuantity,
