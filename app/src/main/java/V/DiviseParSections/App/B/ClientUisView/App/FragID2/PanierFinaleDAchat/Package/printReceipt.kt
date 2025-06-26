@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.Modules
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
 import android.content.Context
 import android.content.Intent
 import android.util.Log
