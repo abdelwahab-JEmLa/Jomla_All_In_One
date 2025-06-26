@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AGetterCentral
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.mongodb.kbson.BsonObjectId
 
 class Sec9FragId1ViewId2ViewModel(
-    a_CentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    a_CentralCompoRepositoryProtoJuin9: AGetterCentral,
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,

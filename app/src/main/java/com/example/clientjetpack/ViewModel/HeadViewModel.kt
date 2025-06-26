@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AGetterCentral
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CategoriesTabelle
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -70,7 +70,7 @@ open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-    val a_CentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9
+    val a_CentralCompoRepositoryProtoJuin9: AGetterCentral
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
