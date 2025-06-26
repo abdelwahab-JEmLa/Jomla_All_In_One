@@ -48,7 +48,8 @@ fun ArticleImageWithOverlay(
     }
     val relatedCouleurKeyParAncienMethod =
         viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
-    val vent = relatedCouleurKeyParAncienMethod.let { viewModel.getter.getVent(it.key, article.id) }
+
+    val vent = viewModel.getter.getRelatedFAchatCouleurOperation(article.id, colorIndex)
 
     Surface(
         modifier = modifier,
@@ -73,13 +74,12 @@ fun ArticleImageWithOverlay(
             ) {
                 onClickToOpenWindow(article, colorIndex)
 
-                vent ?: run {
-                    viewModel.setter.acheterACaSetterCentral(
-                        produit = article,
-                        colorIndex = colorIndex,
-                        quantity = 1
-                    )
-                }
+                viewModel.setter.acheterACaSetterCentral(
+                    fCouleurVentOperation = vent,
+                    produit = article,
+                    colorIndex = colorIndex,
+                    quantity = 1
+                )
             }
 
             relatedCouleurKeyParAncienMethod

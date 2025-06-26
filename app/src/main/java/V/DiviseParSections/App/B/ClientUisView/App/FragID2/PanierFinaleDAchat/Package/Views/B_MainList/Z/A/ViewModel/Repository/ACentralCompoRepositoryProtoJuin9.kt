@@ -55,6 +55,11 @@ class ACentralCompoRepositoryProtoJuin9(
                         && it.indexCouleurDansAncienProto == colorIndex
             }!!
 
+    fun getVentForArticleAndColorInThisApp(article: ArticlesBasesStatsTable, colorIndex: Int): FCouleurVentOperation? {
+        val relatedCouleur = relatedCouleurKeyParAncienMethod(article, colorIndex) ?: return null
+        return getVent(relatedCouleur.key, article.id)
+    }
+    
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperation? {
         val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
 

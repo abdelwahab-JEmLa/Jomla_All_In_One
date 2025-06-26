@@ -1,8 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -206,7 +206,7 @@ fun B_CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-        val relatedFAchatCouleurOperation =viewModel.getRelatedFAchatCouleurOperation(article.id,index)
+        val relatedFAchatCouleurOperation = viewModel.getRelatedFAchatCouleurOperation()(article, index)
 
         if (relatedFAchatCouleurOperation != null) {
             QuantityBadge(
