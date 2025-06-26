@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,12 +46,6 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-    /*
-    val imageKeyID = buildString {
-        append(id)
-        append("_")
-        append(colorIndex)
-    }     */
 
     val relatedCouleurKey =
         viewModel.aCentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
@@ -65,50 +60,58 @@ fun ArticleImageWithOverlay(
         tonalElevation = 2.dp,
         shadowElevation = 4.dp
     ) {
-        ImageDisplayerProtoAvantJuin3(
-            viewModel = viewModelHeadViewModel,
-            article = article,
-            indexColor = colorIndex,
-            reloadKey = reloadTrigger,
-            showOverlay = !imageExists,
-            imageScale = contentScale,
-            imageSize = imageSize,
-            finalequalityImagePourcentage = qualityImagePourcentage,
-            viewModelInitApp = viewModelInitApp,
-        ) {
-            onClickToOpenWindow(article, colorIndex)
-            viewModel.acheter(
-                produit = article,
-                colorIndex = colorIndex,
-                quantity = 1
-            )
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            if (relatedCouleurKey != null) {
-                val text = with(relatedCouleurKey) {
-                    "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible"
-                }
-
-                Text(
-                    text = text,
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-
-                        .align(Alignment.TopEnd)
-                        .background(
-                            color = Color.Red,
-                            shape = RoundedCornerShape(bottomStart = 8.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+            ImageDisplayerProtoAvantJuin3(
+                viewModel = viewModelHeadViewModel,
+                article = article,
+                indexColor = colorIndex,
+                reloadKey = reloadTrigger,
+                showOverlay = !imageExists,
+                imageScale = contentScale,
+                imageSize = imageSize,
+                finalequalityImagePourcentage = qualityImagePourcentage,
+                viewModelInitApp = viewModelInitApp,
+            ) {
+                onClickToOpenWindow(article, colorIndex)
+                viewModel.acheter(
+                    produit = article,
+                    colorIndex = colorIndex,
+                    quantity = 1
                 )
+            }
+
+            relatedCouleurKey?.takeIf { it.key.isNotEmpty() }?.let {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.TopEnd)
+                ) {
+                    AfficheKey(it)
+                }
             }
         }
     }
+}
+
+@Composable
+private fun AfficheKey(relatedCouleurKey: B1CouleurOuGoutProduitDataBase) {
+    val text = with(relatedCouleurKey) {
+        "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible"
+    }
+    Text(
+        text = text,
+        color = Color.White,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.Companion
+            .background(
+                color = Color.Red,
+                shape = RoundedCornerShape(bottomStart = 8.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    )
 }
