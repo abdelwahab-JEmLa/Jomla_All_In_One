@@ -1,6 +1,7 @@
 // Enhanced QuantityButton.kt - Fixed TODOs
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -34,11 +35,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun QuantityButton(
     viewModel: ZViewModel_Sec1Frag3,
-    quantity: Int,
+    newQuantity: Int,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vent: FCouleurVentOperation
 ) {
+    val fCouleurAchatOperationRepositoryComposable = viewModel.uiStateCentralRepositorys
+        .fCouleurAchatOperationRepositoryComposable
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -86,7 +90,23 @@ fun QuantityButton(
                 )
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                onClick(quantity)
+                onClick(newQuantity)
+
+                vent?.let { existingVent ->
+                    val updatedVent = if (newQuantity == 0) {
+                        existingVent.copy(
+                            quantityAchete = newQuantity,
+                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                        )
+                    } else {
+                        existingVent.copy(
+                            quantityAchete = newQuantity,
+                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
+                        )
+                    }
+                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                }
+
             },
         shape = RoundedCornerShape(16.dp),
         color = backgroundColor,
@@ -117,7 +137,7 @@ fun QuantityButton(
                 )
         ) {
             Text(
-                text = quantity.toString(),
+                text = newQuantity.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
                 color = textColor,

@@ -1,5 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI.QuantityButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +18,8 @@ import androidx.compose.ui.unit.dp
  fun QuantityGrid(
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
-    viewModel: ZViewModel_Sec1Frag3 // Ajout du viewModel pour le QuantityButton personnalisé
+    viewModel: ZViewModel_Sec1Frag3, // Ajout du viewModel pour le QuantityButton personnalisé
+    vent: FCouleurVentOperation
 ) {
     val quantities = remember {
         listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40, 50)
@@ -33,8 +36,9 @@ import androidx.compose.ui.unit.dp
             val quantityNumber = quantities[index]
             // Utilisation de votre QuantityButton personnalisé
             QuantityButton(
+                vent=vent,
                 viewModel = viewModel,
-                quantity = quantityNumber,
+                newQuantity = quantityNumber,
                 isSelected = quantityNumber == currentQuantity,
                 onClick = onQuantitySelected,
                 modifier = Modifier.fillMaxWidth()

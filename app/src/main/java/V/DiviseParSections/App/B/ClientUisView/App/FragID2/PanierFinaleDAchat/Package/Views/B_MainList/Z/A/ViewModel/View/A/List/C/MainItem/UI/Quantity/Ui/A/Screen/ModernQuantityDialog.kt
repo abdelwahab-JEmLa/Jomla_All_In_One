@@ -1,5 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.QuantityGrid
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -22,9 +24,10 @@ import androidx.compose.ui.window.DialogProperties
 fun ModernQuantityDialog(
     colorName: String,
     currentQuantity: Int,
-    onQuantitySelected: (Int) -> Unit,
+    onDissmiss_showQuantityDialog: () -> Unit,
     onDismiss: () -> Unit,
-    viewModel: ZViewModel_Sec1Frag3
+    viewModel: ZViewModel_Sec1Frag3,
+    vent: FCouleurVentOperation
 ) {
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }
     val haptic = LocalHapticFeedback.current
@@ -53,15 +56,14 @@ fun ModernQuantityDialog(
         text = {
             Column {
                 QuantityGrid(
+                    vent=vent,
                     currentQuantity = selectedQuantity,
                     onQuantitySelected = { newQuantity ->
                         selectedQuantity = newQuantity
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
 
-                        // Immediately update the quantity and show toast
-                        onQuantitySelected(newQuantity)
+                        onDissmiss_showQuantityDialog()
 
-                        // Show toast notification
                         val message = if (newQuantity == 0) {
                             "Removed $colorName from cart"
                         } else {
@@ -69,7 +71,6 @@ fun ModernQuantityDialog(
                         }
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
-                        // Close dialog after selection
                         onDismiss()
                     },
                     viewModel = viewModel

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.ModernQuantityDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
@@ -187,25 +187,12 @@ fun VentDisplayer_Sec2FragId2(
         ModernQuantityDialog(
             colorName = data.nomCouleurStrSiSonImageDispo,
             currentQuantity = purchasedQuantity,
-            viewModel = viewModel,
-            onQuantitySelected = { newQuantity ->
-                vent?.let { existingVent ->
-                    val updatedVent = if (newQuantity == 0) {
-                        existingVent.copy(
-                            quantityAchete = newQuantity,
-                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                        )
-                    } else {
-                        existingVent.copy(
-                            quantityAchete = newQuantity,
-                            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
-                        )
-                    }
-                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                }
+            onDissmiss_showQuantityDialog = {
                 showQuantityDialog = false
             },
-            onDismiss = { showQuantityDialog = false }
+            onDismiss = { showQuantityDialog = false },
+            viewModel = viewModel,
+            vent= vent
         )
     }
 }
