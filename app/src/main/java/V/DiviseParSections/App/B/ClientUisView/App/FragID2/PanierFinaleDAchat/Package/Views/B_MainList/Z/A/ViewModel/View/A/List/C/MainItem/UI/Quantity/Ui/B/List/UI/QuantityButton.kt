@@ -1,11 +1,10 @@
 // Enhanced QuantityButton.kt - Fixed TODOs
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,19 +30,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-enum class ClickUpdate{
-    CouleurQua,
-    TotalQua
-}
-
 @Composable
 fun QuantityButton(
+    modifier: Modifier = Modifier,
     clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     viewModel: ZViewModel_Sec1Frag3,
     newQuantity: Int,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {},
-    modifier: Modifier = Modifier,
     vent: FCouleurVentOperation
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.uiStateCentralRepositorys
@@ -52,39 +45,12 @@ fun QuantityButton(
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Animations
-    val scale by animateFloatAsState(
-        targetValue = if (isSelected) 1.15f else 1f,
-        animationSpec = spring(
-            dampingRatio = 0.7f,
-            stiffness = 400f
-        ),
-        label = "quantity_button_scale"
-    )
-
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-        animationSpec = spring(dampingRatio = 0.8f),
-        label = "quantity_button_color"
-    )
-
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.onPrimary
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        },
-        animationSpec = spring(dampingRatio = 0.8f),
-        label = "quantity_text_color"
-    )
+    // Use the separated animation functions
+    val animations = rememberQuantityButtonAnimations(isSelected)
 
     Surface(
         modifier = modifier
-            .scale(scale)
+            .scale(animations.scale)
             .size(56.dp)
             .clickable(
                 interactionSource = interactionSource,
@@ -117,8 +83,6 @@ fun QuantityButton(
                         }
                     }
                     ClickUpdate.TotalQua -> {
-                        // TODO(2.C) FIXED: Update all purchase colors by total quantity
-                        // Find all items with the same product ID as the current vent
                         val allProductVents = fCouleurAchatOperationRepositoryComposable.datasValue.filter {
                             it.parentProduitId == vent.parentProduitId &&
                                     it.etateActuellementEst != FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
@@ -126,7 +90,6 @@ fun QuantityButton(
 
                         if (allProductVents.isNotEmpty()) {
                             if (newQuantity == 0) {
-                                // Remove all items from the product group
                                 allProductVents.forEach { ventItem ->
                                     val updatedVent = ventItem.copy(
                                         quantityAchete = 0,
@@ -136,7 +99,6 @@ fun QuantityButton(
                                     fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
                                 }
                             } else {
-                                // Distribute the new total quantity among all colors
                                 val quantityPerItem = newQuantity / allProductVents.size
                                 val remainder = newQuantity % allProductVents.size
 
@@ -159,7 +121,7 @@ fun QuantityButton(
                 }
             },
         shape = RoundedCornerShape(16.dp),
-        color = backgroundColor,
+        color = animations.backgroundColor,
         shadowElevation = if (isSelected) 8.dp else 2.dp,
         border = if (isSelected) {
             BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
@@ -190,7 +152,7 @@ fun QuantityButton(
                 text = newQuantity.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                color = textColor,
+                color = animations.textColor,
                 textAlign = TextAlign.Center
             )
         }

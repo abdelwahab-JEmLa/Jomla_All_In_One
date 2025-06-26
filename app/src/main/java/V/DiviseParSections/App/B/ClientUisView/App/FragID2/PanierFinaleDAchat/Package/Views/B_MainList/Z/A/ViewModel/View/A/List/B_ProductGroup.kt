@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.BProduitDataBaseComposeRepositoryPJ17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI.ClickUpdate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.background
@@ -56,32 +56,19 @@ fun ProductGroup(
     val haptic = LocalHapticFeedback.current
     var showTotalQuantityDialog by remember { mutableStateOf(false) }
 
-    // Calculate total quantity across all colors
     val totalQuantity = achats.sumOf { it.quantityAchete }
-
-    // Get product name with fallback
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productId"
-
-    // Get the current price (assuming all variants should have the same price)
     val currentPrice = achats.firstOrNull()?.provisoireMonPrix ?: 0.0
-
-    // Calculate total value for all variants
-    val totalValue = achats.sumOf { it.provisoireMonPrix * it.quantityAchete }
 
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // Enhanced product header with gradient background
+        Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,9 +88,7 @@ fun ProductGroup(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = productName,
                             style = MaterialTheme.typography.titleMedium,
@@ -113,7 +98,6 @@ fun ProductGroup(
                             overflow = TextOverflow.Ellipsis
                         )
 
-                        // Show product ID if different from name
                         if (productName != "Product #$productId") {
                             Text(
                                 text = "ID: $productId",
@@ -157,18 +141,17 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Product-level price editor - applies to all variants
             PriceEditorFragID2(
                 currentPrice = currentPrice,
                 label = "Prix unitaire (toutes variantes)",
                 onPriceUpdate = { newPrice ->
-                    // Update price for ALL variants of this product
                     achats.forEach { vent ->
                         val updatedVent = vent.copy(
                             provisoireMonPrix = newPrice,
                             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         )
-                        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+                            .addOrUpdateData(updatedVent)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -182,45 +165,36 @@ fun ProductGroup(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(achats) { vent ->
-                    val relatedCouleur =
-                        viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
-                            .find { it.key == vent.parentCouleurDataBaseKey }
-
-                    relatedCouleur?.let { couleur ->
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            tonalElevation = 2.dp,
-                            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
-                        ) {
-                            VentDisplayer_Sec2FragId2(
-                                modifier = Modifier.padding(4.dp),
-                                ventKey = vent.keyID,
-                                size = 120.dp,
-                                purchasedQuantity = vent.quantityAchete,
-                                viewModel = viewModel
-                            )
+                    viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+                        .find { it.key == vent.parentCouleurDataBaseKey }?.let {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                tonalElevation = 2.dp,
+                                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                            ) {
+                                VentDisplayer_Sec2FragId2(
+                                    modifier = Modifier.padding(4.dp),
+                                    ventKey = vent.keyID,
+                                    size = 120.dp,
+                                    purchasedQuantity = vent.quantityAchete,
+                                    viewModel = viewModel
+                                )
+                            }
                         }
-                    }
                 }
             }
         }
     }
 
     if (showTotalQuantityDialog && achats.isNotEmpty()) {
-        // Create a dummy vent operation for the dialog to handle total quantity updates
-        val dummyVent = achats.first().copy(
-            // This will be used to identify that we're updating all items in the product group
-            quantityAchete = totalQuantity
-        )
-
         ModernQuantityDialog(
-            clickUpdate = ClickUpdate.TotalQua, // FIXED: Pass the correct click update mode for total quantity
+            clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
             currentQuantity = totalQuantity,
             onDissmiss_showQuantityDialog = { showTotalQuantityDialog = false },
             onDismiss = { showTotalQuantityDialog = false },
             viewModel = viewModel,
-            vent = dummyVent
+            vent = achats.first().copy(quantityAchete = totalQuantity)
         )
     }
 }

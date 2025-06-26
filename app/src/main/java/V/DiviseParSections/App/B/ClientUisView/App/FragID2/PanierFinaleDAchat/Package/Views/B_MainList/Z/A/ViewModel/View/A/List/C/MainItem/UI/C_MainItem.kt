@@ -52,10 +52,11 @@ fun VentDisplayer_Sec2FragId2(
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    val repo = viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
-    val vent = repo.datasValue.find { it.keyID == ventKey }
+    val vent = viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+        .datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v ->
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue.find { it.key == v.parentCouleurDataBaseKey }
+        b1CouleurOuGoutProduitDataBaseRepository.datasValue
+            .find { it.key == v.parentCouleurDataBaseKey }
     }
 
     if (data == null) {
@@ -88,14 +89,8 @@ fun VentDisplayer_Sec2FragId2(
         } else null
     }
 
-    val onItemClick = {
-        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        showQuantityDialog = true
-    }
-
     Card(modifier = modifier.fillMaxWidth().alpha(itemAlpha)) {
         Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
-            // Main content (image/color name)
             Box(modifier = Modifier.fillMaxWidth()) {
                 when (data.aAffiche) {
                     B1CouleurOuGoutProduitDataBase.Type.Image -> {
@@ -106,14 +101,20 @@ fun VentDisplayer_Sec2FragId2(
                             contentScale = ContentScale.Crop,
                             imageSize = DpSize(size, size),
                             colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
-                            onClickToOpenWindow = onItemClick
+                            onClickToOpenWindow = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showQuantityDialog = true
+                            }
                         )
                     }
                     B1CouleurOuGoutProduitDataBase.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
                             colorName = data.nomCouleurStrSiSonImageDispo,
-                            onClickToOpenWindow = onItemClick
+                            onClickToOpenWindow = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showQuantityDialog = true
+                            }
                         )
                     }
                 }
@@ -154,7 +155,6 @@ fun VentDisplayer_Sec2FragId2(
                     }
                 }
             }
-
         }
     }
 

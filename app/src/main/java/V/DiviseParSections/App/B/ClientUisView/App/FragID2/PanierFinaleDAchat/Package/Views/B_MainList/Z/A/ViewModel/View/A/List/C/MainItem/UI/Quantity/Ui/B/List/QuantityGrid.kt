@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI.ClickUpdate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.UI.QuantityButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
@@ -123,13 +123,13 @@ fun QuantityGrid(
             items(quantities.size) { index ->
                 val quantityNumber = quantities[index]
                 QuantityButton(
-                    clickUpdate = clickUpdate, // Pass the click update mode
-                    vent = vent,
+                    modifier = Modifier.fillMaxWidth(), // Pass the click update mode
+                    clickUpdate = clickUpdate,
                     viewModel = viewModel,
                     newQuantity = quantityNumber,
                     isSelected = quantityNumber == currentQuantity,
                     onClick = onQuantitySelected,
-                    modifier = Modifier.fillMaxWidth()
+                    vent = vent
                 )
             }
         }

@@ -18,3 +18,8 @@ class ZViewModel_Sec1Frag3(
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
     val uiState: StateFlow<UiState_Sec1Frag3> = _uiState.asStateFlow()
 }
+
+enum class ClickUpdate{
+    CouleurQua,
+    TotalQua
+}
