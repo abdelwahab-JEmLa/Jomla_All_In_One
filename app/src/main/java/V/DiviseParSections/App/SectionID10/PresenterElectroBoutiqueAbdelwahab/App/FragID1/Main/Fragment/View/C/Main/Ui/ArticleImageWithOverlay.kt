@@ -44,8 +44,6 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
-    val relatedCouleurKeyParAncienMethod =
-        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
     val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
     Surface(
@@ -79,13 +77,13 @@ fun ArticleImageWithOverlay(
                 )
             }
 
-            AfficheKey(viewModel, article, colorIndex)
+            AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
         }
     }
 }
 
 @Composable
-private fun AfficheKey(
+private fun AfficheKeyCouleurAvecVent(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
