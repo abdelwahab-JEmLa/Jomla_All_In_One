@@ -152,6 +152,7 @@ data class B1CouleurOuGoutProduitDataBase(
                     ancien.nomImageFichieSansEtansion == newData.nomImageFichieSansEtansion
     }
 }
+
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun CouleurDisplayer(
@@ -211,7 +212,9 @@ fun CouleurDisplayer(
 
 @Composable
 private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase) {
-    val text = "${data.key.takeLast(4).uppercase()} ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+    val text = "${
+        data.key.takeLast(4).uppercase()
+    } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
 
     Text(
         text = text,
@@ -229,10 +232,10 @@ private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase)
 }
 
 @Composable
-private fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
-    getter:ACentralCompoRepositoryProtoJuin9= koinInject(),
+fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
+    getter: ACentralCompoRepositoryProtoJuin9 = koinInject(),
 ) {
     val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
