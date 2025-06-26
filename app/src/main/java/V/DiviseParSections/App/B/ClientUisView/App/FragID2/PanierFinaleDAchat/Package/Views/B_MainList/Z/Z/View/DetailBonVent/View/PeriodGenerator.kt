@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 object PeriodGenerator {
@@ -15,16 +14,6 @@ object PeriodGenerator {
         val hour = String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))
 
         return "F1_${month}${year}_$hour"
-    }
-
-    fun generatePeriodId(date: Date, hour: Int): String {
-        val calendar = Calendar.getInstance().apply { time = date }
-        val monthFormat = SimpleDateFormat("MMM", Locale.ENGLISH)
-        val year = calendar.get(Calendar.YEAR).toString().takeLast(2)
-        val month = monthFormat.format(calendar.time)
-        val hourStr = String.format("%02d", hour)
-
-        return "F1_${month}${year}_$hourStr"
     }
 
     fun getPeriodStartTimestamp(periodId: String? = null): Long {
@@ -94,15 +83,4 @@ object PeriodGenerator {
         val randomId = (1000..9999).random()
         return "F2_bon_$randomId"
     }
-}
-
-fun String.toSafeId(): String {
-    return this.replace(Regex("[^a-zA-Z0-9]"), "")
-        .take(20)
-        .ifEmpty { "default" }
-}
-
-fun Long.toReadableDate(): String {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    return dateFormat.format(Date(this))
 }

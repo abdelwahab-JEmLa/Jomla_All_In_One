@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,21 +16,26 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +55,8 @@ fun DetailsBonVent(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinInject()
 ) {
+    var isMinimized by remember { mutableStateOf(false) }
+
     val zAppComptRepositoryComposable = viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
     val clientsRepository = viewModel.uiStateCentralRepositorys.clientsState
@@ -85,248 +93,115 @@ fun DetailsBonVent(
     }
 
     if (comptAppActuelle != null) {
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.secondary
-                                )
-                            )
-                        )
-                        .padding(16.dp)
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { isMinimized = !isMinimized },
+                    containerColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = "Bon de Vente",
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                text = ouvertF2BonVentId,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.Receipt,
-                            contentDescription = "Bon de vente",
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(32.dp)
+                    Icon(
+                        imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails"
+                    )
+                }
+            }
+        ) { paddingValues ->
+            Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(paddingValues),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Header - Always visible
+                    BonVentHeader(ouvertF2BonVentId)
+
+                    // Summary - Always visible
+                    CartSummarySection(cartSummary)
+
+                    // Details - Toggle visibility
+                    if (!isMinimized) {
+                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        ClientDetailsSection(
+                            ouvertClientNom = ouvertClientNom,
+                            ouvertClientId = ouvertClientId,
+                            clientDetails = clientDetails
+                        )
+
+                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                        PeriodDetailsSection(
+                            ouvertPeriodId = ouvertPeriodId,
+                            ouvertPeriodStartTime = ouvertPeriodStartTime
                         )
                     }
                 }
-
-                DetailInfoRow(
-                    icon = Icons.Default.Person,
-                    title = "Client",
-                    content = {
-                        Column {
-                            Text(
-                                text = ouvertClientNom.ifEmpty { "Client non sélectionné" },
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium
-                            )
-
-                            val client = clientDetails
-                            if (client != null) {
-                                Text(
-                                    text = "ID: ${client.id}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-
-                                client.numTelephone.takeIf { it.isNotEmpty() }?.let { phone ->
-                                    Text(
-                                        text = "Tél: $phone",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                    )
-                                }
-
-                                Text(
-                                    text = "Type: ${client.clientTypeMode.name}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-
-                                if (client.currentCreditBalance != 0.0) {
-                                    Text(
-                                        text = "Solde: ${String.format("%.2f", client.currentCreditBalance)} DA",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = if (client.currentCreditBalance >= 0)
-                                            MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.error
-                                    )
-                                }
-
-                            } else if (ouvertClientId.isNotEmpty()) {
-                                Text(
-                                    text = "ID: $ouvertClientId",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
-                    }
-                )
-
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-
-                DetailInfoRow(
-                    icon = Icons.Default.DateRange,
-                    title = "Période",
-                    content = {
-                        Column {
-                            Text(
-                                text = ouvertPeriodId,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium
-                            )
-                            if (ouvertPeriodStartTime > 0) {
-                                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                                Text(
-                                    text = "Début: ${dateFormat.format(Date(ouvertPeriodStartTime))}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
-                    }
-                )
-
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-
-                DetailInfoRow(
-                    icon = Icons.Default.ShoppingCart,
-                    title = "Résumé du Panier",
-                    content = {
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Articles:",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "${cartSummary.totalItems} unités",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Produits:",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "${cartSummary.totalProducts} produits",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Variantes:",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "${cartSummary.itemsCount} variantes",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                            Divider(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                            )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Total:",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "${String.format("%.2f", cartSummary.totalValue)} DA",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    }
-                )
             }
         }
     } else {
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer
+        ErrorCard(modifier = modifier)
+    }
+}
+
+@Composable
+private fun BonVentHeader(ouvertF2BonVentId: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary
+                    )
+                )
             )
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
+            Column {
                 Text(
-                    text = "Aucun compte actif trouvé",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    text = "Bon de Vente",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Text(
+                    text = ouvertF2BonVentId,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
             }
+            Icon(
+                imageVector = Icons.Default.Receipt,
+                contentDescription = "Bon de vente",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(32.dp)
+            )
         }
     }
 }
 
 @Composable
-private fun DetailInfoRow(
-    icon: ImageVector,
-    title: String,
-    content: @Composable () -> Unit
-) {
+private fun CartSummarySection(cartSummary: CartSummary) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Icon(
-            imageVector = icon,
-            contentDescription = title,
+            imageVector = Icons.Default.ShoppingCart,
+            contentDescription = "Résumé du Panier",
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
@@ -335,12 +210,197 @@ private fun DetailInfoRow(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = title,
+                text = "Résumé du Panier",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-            content()
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Articles:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "${cartSummary.totalItems} unités",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Produits:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "${cartSummary.totalProducts} produits",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Variantes:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "${cartSummary.itemsCount} variantes",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Divider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Total:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${String.format("%.2f", cartSummary.totalValue)} DA",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClientDetailsSection(
+    ouvertClientNom: String,
+    ouvertClientId: String,
+    clientDetails: B_ClientInfosProtoJuin3? // Replace with actual client type
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "Client",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Client",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = ouvertClientNom.ifEmpty { "Client non sélectionné" },
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+
+            val client = clientDetails
+            if (client != null) {
+                // Client details display code - replace with actual client properties
+                Text(
+                    text = "ID: ${ouvertClientId}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+
+                // Add other client details as needed based on your client data class
+
+            } else if (ouvertClientId.isNotEmpty()) {
+                Text(
+                    text = "ID: $ouvertClientId",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PeriodDetailsSection(
+    ouvertPeriodId: String,
+    ouvertPeriodStartTime: Long
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.DateRange,
+            contentDescription = "Période",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Période",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = ouvertPeriodId,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+            if (ouvertPeriodStartTime > 0) {
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                Text(
+                    text = "Début: ${dateFormat.format(Date(ouvertPeriodStartTime))}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorCard(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Aucun compte actif trouvé",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
         }
     }
 }
