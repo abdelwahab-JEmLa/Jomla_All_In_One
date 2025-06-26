@@ -79,7 +79,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
             var showOrderSuccess by remember { mutableStateOf(false) }
 
             ouvertc3Transactioncommercial?.let {
-                BonAchatInfos(
+                BonVentInfos(
                     viewModel=viewModel,
                     _0_0_HeadSQLRepositorys = eGroupeddatabasesrepositoryprotoavant3juin,
                     relativeBonAchate = ouvertc3Transactioncommercial,
