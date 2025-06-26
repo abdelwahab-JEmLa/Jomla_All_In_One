@@ -51,27 +51,16 @@ fun VentDisplayer_Sec2FragId2(
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    val fCouleurAchatOperationRepositoryComposable = viewModel.uiStateCentralRepositorys
-        .fCouleurAchatOperationRepositoryComposable
-    val vent = fCouleurAchatOperationRepositoryComposable.datasValue.find { it.keyID == ventKey }
-
-    val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
-
-    // FIX: Use safe call and provide fallback, and use the correct key for lookup
-    val data = vent?.let { ventData ->
-        datas.find { it.key == ventData.parentCouleurDataBaseKey }
+    val repo = viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+    val vent = repo.datasValue.find { it.keyID == ventKey }
+    val data = vent?.let { v ->
+        b1CouleurOuGoutProduitDataBaseRepository.datasValue.find { it.key == v.parentCouleurDataBaseKey }
     }
 
-    // Early return if data is not found
     if (data == null) {
-        // Show placeholder or error state
-        Card(
-            modifier = modifier.fillMaxWidth()
-        ) {
+        Card(modifier = modifier.fillMaxWidth()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -87,34 +76,24 @@ fun VentDisplayer_Sec2FragId2(
     var showQuantityDialog by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
 
-    // Check if item should be grayed out (removed from final cart)
-    val isRemovedFromCart =
-        vent.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-
-    // Apply visual effects for removed items
-    val itemAlpha = if (isRemovedFromCart) 0.4f else 1.0f
-    val colorMatrix = if (isRemovedFromCart) {
-        ColorMatrix().apply { setToSaturation(0f) } // Grayscale effect
-    } else null
+    val isRemoved = vent.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+    val itemAlpha = if (isRemoved) 0.4f else 1.0f
+    val colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
 
     val imageFile by derivedStateOf {
         if (data.nomImageFichieSansEtansion != "Non Dispo") {
-            val fileName = "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
+            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
+                "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}")
         } else null
     }
 
-    // FIXED: Remove click handler from Card level - now handled in individual components
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .alpha(itemAlpha)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp)
-        ) {
+    val onItemClick = {
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        showQuantityDialog = true
+    }
+
+    Card(modifier = modifier.fillMaxWidth().alpha(itemAlpha)) {
+        Box(modifier = Modifier.fillMaxSize().padding(5.dp)) {
             when (data.aAffiche) {
                 B1CouleurOuGoutProduitDataBase.Type.Image -> {
                     ImageDisplayerGlide_Sec2FragID2(
@@ -124,27 +103,19 @@ fun VentDisplayer_Sec2FragId2(
                         contentScale = ContentScale.Crop,
                         imageSize = DpSize(size, size),
                         colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
-                        // FIXED: Always allow clicking on image, even when removed from cart
-                        onClickToOpenWindow = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showQuantityDialog = true
-                        }
+                        onClickToOpenWindow = onItemClick
                     )
                 }
-
-                B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer_Sec2FragID2(
-                    modifier = Modifier.size(size),
-                    colorName = data.nomCouleurStrSiSonImageDispo,
-                    // FIXED: Always allow clicking on color name, even when removed from cart
-                    onClickToOpenWindow = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        showQuantityDialog = true
-                    }
-                )
+                B1CouleurOuGoutProduitDataBase.Type.Nom -> {
+                    ColorNameDisplayer_Sec2FragID2(
+                        modifier = Modifier.size(size),
+                        colorName = data.nomCouleurStrSiSonImageDispo,
+                        onClickToOpenWindow = onItemClick
+                    )
+                }
             }
 
-            // Show removed indicator
-            if (isRemovedFromCart) {
+            if (isRemoved) {
                 Surface(
                     modifier = Modifier.align(Alignment.Center),
                     shape = RoundedCornerShape(8.dp),
@@ -160,7 +131,7 @@ fun VentDisplayer_Sec2FragId2(
                 }
             }
 
-            if (purchasedQuantity > 0 && !isRemovedFromCart) {
+            if (purchasedQuantity > 0 && !isRemoved) {
                 BadgedBox(
                     badge = {
                         Badge(
@@ -182,17 +153,14 @@ fun VentDisplayer_Sec2FragId2(
         }
     }
 
-    // Modern Quantity Selection Dialog - FIXED: Now shows even for removed items
     if (showQuantityDialog) {
         ModernQuantityDialog(
             colorName = data.nomCouleurStrSiSonImageDispo,
             currentQuantity = purchasedQuantity,
-            onDissmiss_showQuantityDialog = {
-                showQuantityDialog = false
-            },
+            onDissmiss_showQuantityDialog = { showQuantityDialog = false },
             onDismiss = { showQuantityDialog = false },
             viewModel = viewModel,
-            vent= vent
+            vent = vent
         )
     }
 }
