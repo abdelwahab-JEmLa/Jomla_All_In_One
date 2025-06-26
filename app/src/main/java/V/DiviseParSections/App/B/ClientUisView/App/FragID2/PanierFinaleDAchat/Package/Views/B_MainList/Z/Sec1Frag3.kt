@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.A2_Passive.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.A2_Passive.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import Z_CodePartageEntreApps.Modules.D.Glide.LazyRowAvailableColorsImageOuNom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,7 @@ fun Sec1Frag3(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
 ) {
-    val achats = viewModel.d_AchatOperationComposeRepositoryPJ17.filteredDatasValue
+    val achats = viewModel.d_AchatOperationComposeRepositoryPJ17.datasValue
 
     MainList(
         modifier = modifier,
@@ -45,7 +46,6 @@ fun MainList(
     achats: List<FCouleurVentOperation> = emptyList(),
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    // Group achats by parentProduitBsonObjectId
     val groupedAchats = achats.groupBy { it.parentProduitId }
 
     LazyColumn(
