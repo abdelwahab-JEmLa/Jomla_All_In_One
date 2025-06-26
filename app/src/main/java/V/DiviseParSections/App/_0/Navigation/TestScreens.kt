@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,7 +46,7 @@ fun TestScreens(
     // Create navigation items list
     val navigationItems = listOf(
         NavigationItem(
-            title = "Test Data",
+            title = "Panie",
             onClick = {
                 fragmentNavigationHandler.navigateToTestDataScreen()
                 onDismiss()
@@ -98,19 +100,23 @@ private fun NavigationItemCard(item: NavigationItem) {
         // Image handling for the Test Data item
         Card(
             modifier = Modifier
-                .size(64.dp)
+                .size(500.dp)
                 .clickable { item.onClick() },
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Image(
-                painter = painterResource(id = item.imageRes!!),
-                contentDescription = item.title,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
+            if (true) {
+                Icons.Default.TravelExplore
+            } else {
+                Image(
+                    painter = painterResource(id = item.imageRes!!),
+                    contentDescription = item.title,
+                    modifier = Modifier
+                        .size(500.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Text(
