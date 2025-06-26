@@ -81,7 +81,7 @@ private fun LazyRowProduitGroup(
             ) {
                 items(items) { data ->
                     CouleurDisplayer(
-                        data = data,
+                        keyCouleur = data.key,
                     )
                 }
             }

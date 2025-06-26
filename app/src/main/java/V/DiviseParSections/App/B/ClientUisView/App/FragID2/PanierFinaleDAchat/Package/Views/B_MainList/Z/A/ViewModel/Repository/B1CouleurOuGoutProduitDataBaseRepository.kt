@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +27,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import java.io.File
 
 enum class FilterQuery {
@@ -110,7 +111,6 @@ class B1CouleurOuGoutProduitDataBaseRepository(
 }
 
 
-
 @Entity
 data class B1CouleurOuGoutProduitDataBase(
     @PrimaryKey
@@ -148,9 +148,13 @@ data class B1CouleurOuGoutProduitDataBase(
 @Composable
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
-    data: B1CouleurOuGoutProduitDataBase,
+    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    keyCouleur: String,
     onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
 ) {
+    val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
+    val data = datas.find { it.key == keyCouleur }!!
+
     val imageFile by derivedStateOf {
         if (data.nomImageFichieSansEtansion != "Non Dispo") {
             val fileName = "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"

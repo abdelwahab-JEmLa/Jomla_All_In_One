@@ -106,7 +106,7 @@ fun ProductGroup(
 
                     relatedCouleur?.let { couleur ->
                         CouleurDisplayer(
-                            data = couleur,
+                            keyCouleur = couleur.key,
                         )
                     }
                 }
