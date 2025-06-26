@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
+import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf

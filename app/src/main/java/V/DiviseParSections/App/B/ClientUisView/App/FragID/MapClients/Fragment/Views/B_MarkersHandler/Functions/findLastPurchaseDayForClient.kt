@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
+import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.snapshots.SnapshotStateList
 

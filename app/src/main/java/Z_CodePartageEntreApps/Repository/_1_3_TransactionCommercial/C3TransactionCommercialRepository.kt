@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial
+import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.Z.Main
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View.DetailsBonVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.ListAchats.View.A.List.MainList
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -24,14 +25,6 @@ fun PanierFinaleDAchatSec1Frag3(
             fCouleurAchatOperationRepositoryComposable = fCouleurAchatOperationRepositoryComposable
         )
     }
-}
-
-@Composable
-fun DetailsBonVent(
-    modifier: Modifier = Modifier,
-    viewModel: ZViewModel_Sec1Frag3
-) {
-
 }
 
 

@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive
+package Z_CodePartageEntreApps.Repository.Main.Proto
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.C3_TransactionCommercial.EtateActuellementEst
+import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FAchatOperationCouleurRepositoryComposable
