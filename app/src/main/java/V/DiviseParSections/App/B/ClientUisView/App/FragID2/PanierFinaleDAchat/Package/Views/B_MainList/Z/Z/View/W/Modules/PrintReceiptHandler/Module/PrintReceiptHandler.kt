@@ -15,9 +15,7 @@ import java.util.Date
 import java.util.Locale
 
 class PrintReceiptHandler {
-
     private val PRINT_INTENT = "pe.diegoveloper.printing"
-
 
     data class ArticleImpression(
         val nomArticle: String,
