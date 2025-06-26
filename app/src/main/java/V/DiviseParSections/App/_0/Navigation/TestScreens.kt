@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -50,8 +50,8 @@ fun TestScreens(
                 onDismiss()
             },
             isImageItem = true,
-            imageRes = R.drawable.screen // Reference to your screen.webp image
-        )
+            imageRes = R.drawable.screen
+        ),
     )
 
     AlertDialog(
@@ -72,9 +72,9 @@ fun TestScreens(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     items(navigationItems) { item ->
                         NavigationItemCard(item = item)
@@ -98,7 +98,7 @@ private fun NavigationItemCard(item: NavigationItem) {
         // Image handling for the Test Data item
         Card(
             modifier = Modifier
-                .size(500.dp)
+                .size(64.dp)
                 .clickable { item.onClick() },
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -107,7 +107,7 @@ private fun NavigationItemCard(item: NavigationItem) {
                 painter = painterResource(id = item.imageRes!!),
                 contentDescription = item.title,
                 modifier = Modifier
-                    .size(500.dp)
+                    .size(64.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )

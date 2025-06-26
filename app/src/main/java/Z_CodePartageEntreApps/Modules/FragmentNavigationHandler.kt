@@ -54,4 +54,5 @@ class FragmentNavigationHandler {
             restoreState = true
         }
     }
+
 }
