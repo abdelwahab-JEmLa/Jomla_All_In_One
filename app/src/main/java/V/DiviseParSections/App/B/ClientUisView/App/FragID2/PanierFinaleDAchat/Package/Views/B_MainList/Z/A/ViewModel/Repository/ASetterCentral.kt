@@ -5,13 +5,14 @@ class ASetterCentral(
     val fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    fun  getRelatedCouleur( produit: ArticlesBasesStatsTable, colorIndex: Int) =getter.getRelatedCouleur( produit, colorIndex)
+    fun  getRelatedCouleur(produit: ArticlesBasesStatsTable, colorIndex: Int) =getter.getRelatedCouleur( produit, colorIndex)
 
     fun acheterACaSetterCentral(
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         quantity: Int,
     ) {
+
         val data = zAppComptRepositoryComposable
             .ouvrireProduitEtCouleurVent(
                 produit,

@@ -46,6 +46,10 @@ fun ArticleImageWithOverlay(
     val imageExists = remember(id, colorIndex, reloadTrigger) {
         checkImageExists(viewModelHeadViewModel, article, colorIndex, reloadTrigger)
     }
+    val relatedCouleurKeyParAncienMethod =
+        viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)!!
+    val vent = relatedCouleurKeyParAncienMethod.let { viewModel.getter.getVent(it.key, article.id) }
+
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -68,14 +72,16 @@ fun ArticleImageWithOverlay(
                 viewModelInitApp = viewModelInitApp,
             ) {
                 onClickToOpenWindow(article, colorIndex)
-                viewModel.acheterACaSetterCentralProto26(
-                    produit = article,
-                    colorIndex = colorIndex,
-                    quantity = 1
-                )
+                vent ?: run {
+                    viewModel.setter.acheterACaSetterCentral(
+                        produit = article,
+                        colorIndex = colorIndex,
+                        quantity = 1
+                    )
+                }
             }
 
-            viewModel.getter.relatedCouleurKey(article, colorIndex)
+            relatedCouleurKeyParAncienMethod
                 ?.let {
                     Box(
                         modifier = Modifier
@@ -97,7 +103,9 @@ private fun AfficheKey(
     val text = with(relatedCouleurKey) {
         val vent = viewModel.getter.getVent(key, parentBProduitOldID)
 
-        "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentBonVentId} ${vent?.quantityAchete ?: 0}"
+        "${
+            key.takeLast(4).uppercase()
+        } $nomImageFichieSansEtansion.$extensionDisponible V= ${vent?.parentBonVentId} ${vent?.quantityAchete}"
     }
 
     Text(

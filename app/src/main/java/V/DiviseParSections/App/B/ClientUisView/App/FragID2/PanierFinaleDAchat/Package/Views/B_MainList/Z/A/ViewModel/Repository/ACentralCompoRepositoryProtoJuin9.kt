@@ -83,7 +83,7 @@ class ACentralCompoRepositoryProtoJuin9(
         )
     }
 
-    fun relatedCouleurKey(produit: ArticlesBasesStatsTable, colorIndex: Int) =
+    fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
             .find {
                 it.parentBProduitOldID == produit.id

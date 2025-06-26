@@ -19,6 +19,12 @@ class VendeurAfficheurInfosProduitViewModel(
         colorIndex: Int,
         quantity: Int,
     ) {
-        aSetterCentralProto26.acheterACaSetterCentral(produit,colorIndex,quantity)
+        aSetterCentralProto26.acheterACaSetterCentral(
+            vent,
+            relatedCouleurKeyParAncienMethod,
+            produit,
+            colorIndex,
+            quantity
+        )
     }
 }

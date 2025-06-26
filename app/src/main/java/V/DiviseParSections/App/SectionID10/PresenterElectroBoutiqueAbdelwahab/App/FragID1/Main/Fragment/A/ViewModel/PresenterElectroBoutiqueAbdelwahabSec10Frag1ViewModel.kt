@@ -24,6 +24,12 @@ class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
         colorIndex: Int,
         quantity: Int,
     ) {
-        setter.acheterACaSetterCentral(produit,colorIndex,quantity)
+        setter.acheterACaSetterCentral(
+            vent,
+            relatedCouleurKeyParAncienMethod,
+            produit,
+            colorIndex,
+            quantity
+        )
     }
 }
