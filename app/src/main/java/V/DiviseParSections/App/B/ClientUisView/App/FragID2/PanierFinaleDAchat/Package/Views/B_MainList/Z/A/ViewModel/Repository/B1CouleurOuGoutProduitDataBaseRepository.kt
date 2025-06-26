@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -157,7 +158,8 @@ fun CouleurDisplayer(
     modifier: Modifier = Modifier,
     b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
     keyCouleur: String,
-    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
+    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {},
+    size: Dp = 200.dp
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
     val data = datas.find { it.key == keyCouleur }!!
@@ -176,17 +178,19 @@ fun CouleurDisplayer(
                 .padding(16.dp)
         ) {
             when (data.aAffiche) {
-                B1CouleurOuGoutProduitDataBase.Type.Image -> ImageDisplayer(
-                    modifier = Modifier.size(120.dp),
-                    imageFile = imageFile,
-                    colorName = data.nomCouleurStrSiSonImageDispo,
-                    contentScale = ContentScale.Crop,
-                    imageSize = DpSize(120.dp, 120.dp),
-                    onClickToOpenWindow = { onClickToOpenWindow(data) }
-                )
+                B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                    ImageDisplayer(
+                        modifier = Modifier.size(size),
+                        imageFile = imageFile,
+                        colorName = data.nomCouleurStrSiSonImageDispo,
+                        contentScale = ContentScale.Crop,
+                        imageSize = DpSize(size, size),
+                        onClickToOpenWindow = { onClickToOpenWindow(data) }
+                    )
+                }
 
                 B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer(
-                    modifier = Modifier.size(120.dp),
+                    modifier = Modifier.size(size),
                     colorName = data.nomCouleurStrSiSonImageDispo,
                     onClickToOpenWindow = { onClickToOpenWindow(data) }
                 )
