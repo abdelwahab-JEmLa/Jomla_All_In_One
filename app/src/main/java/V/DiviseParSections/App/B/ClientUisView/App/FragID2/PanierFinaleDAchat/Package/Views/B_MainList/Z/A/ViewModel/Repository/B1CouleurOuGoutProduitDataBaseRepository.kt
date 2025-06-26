@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
@@ -203,7 +202,7 @@ fun CouleurDisplayer(
                         .fillMaxSize()
                         .align(Alignment.TopEnd)
                 ) {
-                    AfficheCouleurKeyDebug(data)
+                    AfficheKeyCouleurAvecVentDebug(data)
                 }
             }
         }
@@ -211,7 +210,7 @@ fun CouleurDisplayer(
 }
 
 @Composable
-private fun AfficheCouleurKeyDebug(data: B1CouleurOuGoutProduitDataBase) {
+private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase) {
     val text = "${data.key.takeLast(4).uppercase()} ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
 
     Text(
@@ -229,15 +228,14 @@ private fun AfficheCouleurKeyDebug(data: B1CouleurOuGoutProduitDataBase) {
     )
 }
 
-
 @Composable
-private fun AfficheKeyCouleurAvecVent(
-    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
+private fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
+    getter:ACentralCompoRepositoryProtoJuin9= koinInject(),
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
 ) {
-    val couleur = viewModel.getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
-    val vent = viewModel.getter.getVentForArticleAndColorInThisApp(article, colorIndex)
+    val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+    val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
 
     couleur
         ?.let {
