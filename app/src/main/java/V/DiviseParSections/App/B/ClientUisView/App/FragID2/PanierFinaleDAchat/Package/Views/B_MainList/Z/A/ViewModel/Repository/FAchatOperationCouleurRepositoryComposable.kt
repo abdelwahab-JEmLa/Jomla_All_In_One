@@ -2,8 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
-import Z_CodePartageEntreApps.Modules.D.Glide.Affiche
-import Z_CodePartageEntreApps.Modules.D.Glide.FileCouleurInfos
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,8 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.mongodb.kbson.BsonObjectId
-import java.io.File
 
 @Stable
 class FAchatOperationCouleurRepositoryComposable(
@@ -62,7 +58,6 @@ class FAchatOperationCouleurRepositoryComposable(
         }
     }
 
-    // addOrUpdateData function
     fun addOrUpdateData(data: FCouleurVentOperation) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             FCouleurVentOperation.isSame(ancien = ancien, newData = data)
@@ -98,102 +93,6 @@ class FAchatOperationCouleurRepositoryComposable(
     }
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
-    }
-
-    fun acheterUneCouleur(
-        ouvertData: Z_AppCompt,
-        relatedCouleur: B1CouleurOuGoutProduitDataBase,
-        quantity: Int,
-    ) {
-        composScope.launch {
-            try {
-                val couleurVentOperation = createSafeCouleurVentOperation(
-                    relatedCouleur = relatedCouleur,
-                    ouvertData = ouvertData,
-                    quantity = quantity
-                )
-
-                addOrUpdateData(couleurVentOperation)
-
-            } catch (e: OutOfMemoryError) {
-                System.gc()
-            } catch (e: Exception) {
-            }
-        }
-    }
-
-    private fun createSafeCouleurVentOperation(
-        relatedCouleur: B1CouleurOuGoutProduitDataBase,
-        ouvertData: Z_AppCompt,
-        quantity: Int
-    ): FCouleurVentOperation {
-        return FCouleurVentOperation(
-            parentCouleurDataBaseKey = relatedCouleur.key,
-
-            parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
-            parentProduitAncienId = relatedCouleur.parentBProduitOldID,
-            parentProduitKeyNom = relatedCouleur.parentBProduitNom,
-
-            parentZAppComptID = ouvertData.bsonObjectId,
-            parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
-            parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
-            parentBonVentId = ouvertData.ouvertF2BonVentId,
-            parentClientId = ouvertData.ouvertClientOnVentKeyId,
-            parentClientName = ouvertData.ouvertClientOnVentNom,
-            quantityAchete = quantity,
-            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
-            type = FCouleurVentOperation.Type.CommandeDeLui,
-        )
-    }
-
-    private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
-        return when (colorIndex) {
-            0 -> produit.couleur1 ?: "couleur1"
-            1 -> produit.couleur2 ?: "couleur2"
-            2 -> produit.couleur3 ?: "couleur3"
-            3 -> produit.couleur4 ?: "couleur4"
-            else -> "couleur${colorIndex + 1}"
-        }
-    }
-
-    private fun getFileCouleurInfosFromProduct(
-        produit: ArticlesBasesStatsTable,
-        colorIndex: Int = 0
-    ): FileCouleurInfos {
-        val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-        val fileName = "${produit.id}_${colorIndex + 1}"
-
-        val imageFile = try {
-            listOf("webp", "jpg", "jpeg", "png")
-                .map { File("$basePath/$fileName.$it") }
-                .firstOrNull { file ->
-                    try {
-                        file.exists() && file.canRead() && file.length() > 0
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-                ?: File("$basePath/NonTrouve.webp")
-        } catch (e: Exception) {
-            File("$basePath/NonTrouve.webp")
-        }
-
-        val imageExists = try {
-            imageFile.name != "NonTrouve.webp" &&
-                    imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
-        } catch (e: Exception) {
-            false
-        }
-
-        return FileCouleurInfos(
-            keyID = fileName,
-            bsonObjectId = BsonObjectId(),
-            aAffiche = if (imageExists) Affiche.Image else Affiche.Nom,
-            imageCouleurFichie = imageFile,
-            nomCouleurStrSiSonImageDispo = getCouleurNameByIndex(produit, colorIndex),
-            quantityDeDisponibility = 0,
-            colorIndex = colorIndex,
-        )
     }
 }
 
