@@ -96,12 +96,6 @@ class ACentralCompoRepositoryProtoJuin9(
             }
 
 
-    fun getRelatedFAchatCouleurOperation(produitID: Long, index: Int): FCouleurVentOperation? {
-        val fAchatCouleurOperation = fCouleurAchatOperationRepositoryComposable
-            .datasValue.find { it.keyID == getKeyID(produitID, index) }
-
-        return fAchatCouleurOperation
-    }
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
         bProduitDataBase_SubClassFunctionality.datasValue.filteredParCatalogueBsonId()

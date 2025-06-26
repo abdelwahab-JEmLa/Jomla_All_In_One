@@ -64,7 +64,7 @@ class FAchatOperationCouleurRepositoryComposable(
 
     fun addOrUpdateData(data: FCouleurVentOperation) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperation.isSame(ancien, newData = data)
+            FCouleurVentOperation.isSame(ancien = ancien, newData = data)
         }
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -76,8 +76,13 @@ class FAchatOperationCouleurRepositoryComposable(
             datasValue + data
         }
 
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data
+            .copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        )
     }
+
 
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
