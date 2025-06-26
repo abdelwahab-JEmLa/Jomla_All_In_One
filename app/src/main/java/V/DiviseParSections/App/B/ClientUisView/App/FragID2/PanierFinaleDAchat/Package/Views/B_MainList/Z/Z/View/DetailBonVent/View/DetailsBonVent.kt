@@ -54,12 +54,14 @@ fun DetailsBonVent(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinInject()
 ) {
-    var isMinimized by remember { mutableStateOf(true) }
+    var isMinimized by remember { mutableStateOf(false) }
 
-    val zAppComptRepositoryComposable = viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
+    val zAppComptRepositoryComposable =
+        viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
     val clientsRepository = viewModel.uiStateCentralRepositorys.clientsState
-    val achatsRepository = viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+    val achatsRepository =
+        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
     val ouvertF2BonVentId = comptAppActuelle?.ouvertF2BonVentId ?: ""
     val ouvertClientId = comptAppActuelle?.ouvertClientOnVentKeyId ?: ""
@@ -122,10 +124,16 @@ fun DetailsBonVent(
                         BonVentHeader(ouvertF2BonVentId)
 
                         // Summary - Only when expanded
-                        CartSummarySection(cartSummary)
 
-                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                     }
+                    if (!isMinimized) {
+
+                        PeriodDetailsSection(
+                            ouvertPeriodId = ouvertPeriodId,
+                            ouvertPeriodStartTime = ouvertPeriodStartTime
+                        )
+                    }
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
                     // Client details - Always visible
                     ClientDetailsSection(
@@ -133,15 +141,11 @@ fun DetailsBonVent(
                         ouvertClientId = ouvertClientId,
                         clientDetails = clientDetails
                     )
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
-                    if (!isMinimized) {
-                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    CartSummarySection(cartSummary)
 
-                        PeriodDetailsSection(
-                            ouvertPeriodId = ouvertPeriodId,
-                            ouvertPeriodStartTime = ouvertPeriodStartTime
-                        )
-                    }
+
                 }
             }
         }
