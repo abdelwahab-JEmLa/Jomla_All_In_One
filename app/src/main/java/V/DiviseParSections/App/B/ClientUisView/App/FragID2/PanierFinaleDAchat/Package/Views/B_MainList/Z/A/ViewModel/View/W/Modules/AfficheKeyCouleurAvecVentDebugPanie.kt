@@ -21,13 +21,13 @@ fun AfficheKeyCouleurAvecVentDebugPanie(data: B1CouleurOuGoutProduitDataBase) {
 
     Text(
         text = text,
-        color = Color.White, // Fixed: use 'color' parameter name instead of 'Color'
+        color = Color.White,
         fontSize = 10.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .background(
-                color = Color.Red, // Fixed: use 'color' parameter name instead of 'Color'
+                color = Color.Red,
                 shape = RoundedCornerShape(bottomStart = 8.dp)
             )
             .padding(horizontal = 8.dp, vertical = 4.dp)

@@ -1,8 +1,35 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
+import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
+import android.annotation.SuppressLint
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -11,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import org.koin.compose.koinInject
 import java.io.File
 import kotlin.coroutines.resume
 
@@ -221,6 +249,123 @@ class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
                 // Handle error - could log or throw based on requirements
                 println("Error deleting all data: ${e.message}")
             }
+        }
+    }
+}
+@SuppressLint("UnrememberedMutableState")
+@Composable
+fun CouleurDisplayer(
+    modifier: Modifier = Modifier,
+    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    keyCouleur: String,
+    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {},
+    size: Dp = 200.dp
+) {
+    val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
+    val data = datas.find { it.key == keyCouleur }!!
+
+    val imageFile by derivedStateOf {
+        if (data.nomImageFichieSansEtansion != "Non Dispo") {
+            val fileName = "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", fileName)
+        } else null
+    }
+
+    Card(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(5.dp)
+        ) {
+            when (data.aAffiche) {
+                B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                    // Fixed: Removed the comment and properly called the composable
+                    ImageDisplayer(
+                        modifier = Modifier.size(size),
+                        imageFile = imageFile,
+                        colorName = data.nomCouleurStrSiSonImageDispo,
+                        contentScale = ContentScale.Crop,
+                        imageSize = DpSize(size, size),
+                        onClickToOpenWindow = { onClickToOpenWindow(data) }
+                    )
+                }
+
+                B1CouleurOuGoutProduitDataBase.Type.Nom -> {
+                    ColorNameDisplayer(
+                        modifier = Modifier.size(size),
+                        colorName = data.nomCouleurStrSiSonImageDispo,
+                        onClickToOpenWindow = { onClickToOpenWindow(data) }
+                    )
+                }
+            }
+
+            if (data.key.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.TopEnd)
+                ) {
+                    AfficheKeyCouleurAvecVentDebug(data)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase) {
+    val text = "${
+        data.key.takeLast(4).uppercase()
+    } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
+
+    Text(
+        text = text,
+        color = Color.White,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        // Fixed: Use 'modifier' parameter name instead of 'androidx.compose.ui.Modifier'
+        modifier = Modifier
+            .background(
+                color = Color.Red,
+                shape = RoundedCornerShape(bottomStart = 8.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    )
+}
+
+@Composable
+fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
+    article: ArticlesBasesStatsTable,
+    colorIndex: Int,
+    getter: ACentralCompoRepositoryProtoJuin9 = koinInject(),
+) {
+    val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
+    val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
+
+    couleur?.let {
+        val text = with(couleur) {
+            "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
+                    " V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
+        }
+
+        Box(
+            // Fixed: Use 'modifier' parameter name instead of 'androidx.compose.ui.Modifier'
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .background(
+                        color = Color.Red,
+                        shape = RoundedCornerShape(bottomStart = 8.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            )
         }
     }
 }

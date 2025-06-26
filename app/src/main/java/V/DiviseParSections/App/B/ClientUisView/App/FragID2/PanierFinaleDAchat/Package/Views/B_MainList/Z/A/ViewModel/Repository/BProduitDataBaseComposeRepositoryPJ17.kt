@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
-import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -26,11 +26,7 @@ class BProduitDataBaseComposeRepositoryPJ17(
     private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val ouvertData by derivedStateOf {
-        datasValue.find {
-            it.bsonObjectId == "centralRep"
-        }
-    }
+    val ouvertData by derivedStateOf {}
 
     init {
         composScope.launch {
@@ -173,14 +169,6 @@ data class ArticlesBasesStatsTable(
         PositionAvecCesFrereDefinie,
     }
 
-  /*  init {
-        if (keyID.isEmpty()) {
-            val data = nom
-            keyID = data.withOutInvalidCharacters()
-        }
-    }  */
-
-
     fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
         return this.copy(
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -204,9 +192,6 @@ data class ArticlesBasesStatsTable(
         )
     }
 
-    fun getNomFilesDesCouleursImagesDispoDonSockage(): List<String> {
-        return emptyList()
-    }
 
 
     companion object {
@@ -218,9 +203,6 @@ data class ArticlesBasesStatsTable(
                         "/A_ProduitInfos"
             )
 
-        fun securedRemoveFireBaseDB() {
-            ref.removeValue()
-        }
 
         fun removeRef(
             preparedData: ArticlesBasesStatsTable
