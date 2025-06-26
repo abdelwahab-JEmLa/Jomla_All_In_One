@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.AGetterCentral
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CategoriesTabelle
@@ -36,7 +36,7 @@ data class UiStateSec9Frag1(
 }
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
-    val a_CentralDatasHandlerProtoJuin9: AGetterCentral,
+    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
