@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.Modules.D.Glide.Affiche
 import Z_CodePartageEntreApps.Modules.D.Glide.FileCouleurInfos
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,30 +63,86 @@ class FAchatOperationCouleurRepositoryComposable(
         }
     }
 
-    fun addOrUpdateData(data: FCouleurVentOperation) {       //<--
-        //TODO(1): cree debug pk la qantity ne change pas quend existingIndex
-        val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperation.isSame(ancien = ancien, newData = data)
+    fun addOrUpdateData(data: FCouleurVentOperation) {
+        Log.d(TAG, "=== addOrUpdateData START ===")
+        Log.d(TAG, "Input data - keyID: ${data.keyID}")
+        Log.d(TAG, "Input data - quantityAchete: ${data.quantityAchete}")
+        Log.d(TAG, "Input data - etateActuellementEst: ${data.etateActuellementEst}")
+        Log.d(TAG, "Input data - parentProduitId: ${data.parentProduitId}")
+        Log.d(TAG, "Input data - parentCouleurDataBaseKey: ${data.parentCouleurDataBaseKey}")
+
+        Log.d(TAG, "Current datasValue size: ${datasValue.size}")
+        datasValue.forEachIndexed { index, item ->
+            Log.d(TAG, "Existing[$index] - keyID: ${item.keyID}, quantity: ${item.quantityAchete}")
         }
+
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            val isSame = FCouleurVentOperation.isSame(ancien = ancien, newData = data)
+            Log.d(TAG, "Comparing with existing item:")
+            Log.d(TAG, "  Existing - keyID: ${ancien.keyID}, quantity: ${ancien.quantityAchete}")
+            Log.d(TAG, "  New - keyID: ${data.keyID}, quantity: ${data.quantityAchete}")
+            Log.d(TAG, "  isSame result: $isSame")
+            isSame
+        }
+
+        Log.d(TAG, "Found existingIndex: $existingIndex")
+
         _datas.value = if (existingIndex >= 0) {
+            Log.d(TAG, "UPDATING existing item at index $existingIndex")
+            val existingItem = datasValue[existingIndex]
+            Log.d(TAG, "Before update - existing quantity: ${existingItem.quantityAchete}")
+            Log.d(TAG, "Before update - existing keyID: ${existingItem.keyID}")
+
             datasValue.toMutableList().apply {
-                // Fix: Copy all relevant fields from the new data, not just timestamp
-                this[existingIndex] = data.copy(
-                    keyID = this[existingIndex].keyID, // Keep the original keyID
+                val updatedItem = data.copy(
+                    keyID = existingItem.keyID, // Keep the original keyID
                     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                 )
+                Log.d(TAG, "Updated item - keyID: ${updatedItem.keyID}")
+                Log.d(TAG, "Updated item - quantityAchete: ${updatedItem.quantityAchete}")
+                Log.d(TAG, "Updated item - etateActuellementEst: ${updatedItem.etateActuellementEst}")
+
+                this[existingIndex] = updatedItem
+
+                Log.d(TAG, "After assignment - item[$existingIndex].quantityAchete: ${this[existingIndex].quantityAchete}")
             }
         } else {
-            datasValue + data
-        }
-
-        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data
-            .copy(
+            Log.d(TAG, "ADDING new item")
+            val newItem = data.copy(
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
-        )
-    }
+            Log.d(TAG, "New item - keyID: ${newItem.keyID}")
+            Log.d(TAG, "New item - quantityAchete: ${newItem.quantityAchete}")
 
+            datasValue + newItem
+        }
+
+        Log.d(TAG, "After update - datasValue size: ${_datas.value.size}")
+        _datas.value.forEachIndexed { index, item ->
+            Log.d(TAG, "Final[$index] - keyID: ${item.keyID}, quantity: ${item.quantityAchete}")
+        }
+
+        // Update the database repository
+        val dataForRepo = if (existingIndex >= 0) {
+            data.copy(
+                keyID = datasValue[existingIndex].keyID,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        } else {
+            data.copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        }
+
+        Log.d(TAG, "Calling ancienRepo.addOrUpdatedAncienRepo with:")
+        Log.d(TAG, "  existingIndex: $existingIndex")
+        Log.d(TAG, "  data.keyID: ${dataForRepo.keyID}")
+        Log.d(TAG, "  data.quantityAchete: ${dataForRepo.quantityAchete}")
+
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
+
+        Log.d(TAG, "=== addOrUpdateData END ===")
+    }
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
     }
