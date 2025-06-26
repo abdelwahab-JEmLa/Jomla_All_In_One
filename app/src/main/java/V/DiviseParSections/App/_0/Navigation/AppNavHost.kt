@@ -1,3 +1,4 @@
+// Updated AppNavHost.kt - Remove DialogTests composable route
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.A_APP1FragID3_MainScreen
@@ -9,6 +10,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ed
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.B1CouleurOuGoutProduitDataBaseTestDatas
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -43,13 +45,13 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-
+import org.koin.compose.koinInject
 
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     headViewModel: HeadViewModel = koinViewModel(),
-    viewModelInitApp: ViewModelInitApp= koinViewModel(),
+    viewModelInitApp: ViewModelInitApp = koinViewModel(),
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     isFabVisible: Boolean,
@@ -59,11 +61,11 @@ fun AppNavHost(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
+    fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
 ) {
     val uiState by headViewModel.uiState.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
     val currentClient = viewModelInitApp.clientDataBaseSnapList.find { it.id == currentClientId }
@@ -80,7 +82,8 @@ fun AppNavHost(
         mutableLongStateOf(
             headViewModel._uiState.value
                 .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
-                ?.valueLong ?: 0)
+                ?.valueLong ?: 0
+        )
     }
     val mapReloadTrigger = remember { mutableIntStateOf(0) }
     val bottomNavHeight = 80.dp
@@ -160,7 +163,6 @@ fun AppNavHost(
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
 
-                    // Clean up resources when leaving screen
                     CleanupEffect {
                         // Any cleanup needed for this screen
                     }
@@ -182,7 +184,6 @@ fun AppNavHost(
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
 
-                    // Clean up resources when leaving screen
                     CleanupEffect {
                         // Any cleanup needed for this screen
                     }
@@ -208,6 +209,7 @@ fun AppNavHost(
                         }
                     }
                 }
+
                 // Product ordering screen
                 composable(
                     route = Screen.EditeProduitsBaseDonneS9.route,
@@ -231,6 +233,8 @@ fun AppNavHost(
                         }
                     }
                 }
+
+                // DialogTests route REMOVED - now handled as dialog in NavigationBarWithFab
 
                 // Add client map navigation routes
                 app2(
@@ -294,13 +298,15 @@ fun AppNavHost(
                     currentClient = currentClient,
                     clickedCouleurIndex = pendingIndexColor,
                     onFermDialoge = {
-                        opnerSaleWindows=false
-                         },
+                        opnerSaleWindows = false
+                    },
                 )
             }
         }
     }
 }
+
+// DialogTestsScreen function REMOVED - now handled as dialog in NavigationBarWithFab
 
 /**
  * Creates client map navigation routes

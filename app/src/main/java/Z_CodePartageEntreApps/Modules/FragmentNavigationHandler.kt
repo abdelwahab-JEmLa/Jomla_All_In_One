@@ -36,21 +36,24 @@ class FragmentNavigationHandler {
             restoreState = true
         }
     }
+
     fun navigateToClientMapScreen() {
         _navController?.navigate(Screen.A_ClientsLocationGps.route) {
             launchSingleTop = true
         }
     }
 
-    fun navigateToCommandeProduits() {
-        _navController?.navigate(Screen.CommandeProduits.route) {
+    // New method to navigate to the test data screen (B1CouleurOuGoutProduitDataBaseTestDatas)
+    fun navigateToTestDataScreen() {
+        _navController?.navigate(Screen.NewFragTest.route) {
             launchSingleTop = true
-        }
-    }
-
-    fun navigateToTravailleTempRecorder() {
-        _navController?.navigate(Screen.TravailleTempRecorder.route) {
-            launchSingleTop = true
+            // Don't pop from back stack so we can return with back button
+            popUpTo(_navController!!.graph.findStartDestination().id) {
+                saveState = true
+                inclusive = false
+            }
+            // Restore state when navigating back
+            restoreState = true
         }
     }
 }

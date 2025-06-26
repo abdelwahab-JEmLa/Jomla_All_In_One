@@ -1,19 +1,29 @@
+// Updated NavigationBarWithFab.kt
 package V.DiviseParSections.App._0.Navigation
 
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.EditRoad
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.Visibility
@@ -21,6 +31,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -42,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import com.example.clientjetpack.R
+import org.koin.compose.koinInject
 
 private const val TAG = "NavigationBarWithFab"
 
@@ -57,6 +69,8 @@ fun NavigationBarWithFab(
     viewModelInitApp: ViewModelInitApp,
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
+    var showDialogTests by remember { mutableStateOf(false) } // Add state for dialog tests
+    val fragmentNavigationHandler: FragmentNavigationHandler = koinInject()
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -91,7 +105,12 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        onNavigate(screen.route)
+                        // Handle DialogTests specially - show dialog instead of navigating
+                        if (screen.route == Screen.DialogTests.route) {
+                            showDialogTests = true
+                        } else {
+                            onNavigate(screen.route)
+                        }
                     }
                 )
             }
@@ -122,6 +141,7 @@ fun NavigationBarWithFab(
             }
         }
 
+        // Catalog selection dialog
         if (showCatalogDialog) {
             CatalogSelectionDialog(
                 onDismiss = {
@@ -130,13 +150,147 @@ fun NavigationBarWithFab(
                 onCatalogSelected = { categoryId ->
                     onCatalogSelected(categoryId)
                     showCatalogDialog = false
-                    // Navigate to the selected screen after selecting add catalog
                     onNavigate(Screen.EditDatabaseWithCreateNewArticles.route)
-                }  ,
-                viewModelInitApp=viewModelInitApp
+                },
+                viewModelInitApp = viewModelInitApp
+            )
+        }
+
+        // Dialog Tests - Show as dialog instead of navigation
+        if (showDialogTests) {
+            DialogTestsDialog(
+                onDismiss = { showDialogTests = false },
+                fragmentNavigationHandler = fragmentNavigationHandler
             )
         }
     }
+}
+
+@Composable
+fun DialogTestsDialog(
+    onDismiss: () -> Unit,
+    fragmentNavigationHandler: FragmentNavigationHandler
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Navigation Test Dialog",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    "Choose a navigation option:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Navigate to Test Data Screen
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        IconButton(
+                            onClick = {
+                                fragmentNavigationHandler.navigateToTestDataScreen()
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Science,
+                                contentDescription = "Test Data",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Text(
+                            "Test Data",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    // Navigate to Main Screen
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        IconButton(
+                            onClick = {
+                                fragmentNavigationHandler.navigateToMainScreen()
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "Main Screen",
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Text(
+                            "Main Screen",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    // Navigate to Cart Screen
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        IconButton(
+                            onClick = {
+                                fragmentNavigationHandler.navigateToCartScreen()
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.tertiaryContainer,
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Text(
+                            "Cart",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -153,12 +307,9 @@ fun CatalogSelectionDialog(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                // Catalog options in the dialog
-                androidx.compose.foundation.layout.Column {
+                Column {
                     TextButton(
-                        onClick = { onCatalogSelected(148L)
-
-                        }
+                        onClick = { onCatalogSelected(148L) }
                     ) {
                         Text("Catalogue Cosmétiques")
                     }
@@ -178,16 +329,14 @@ fun CatalogSelectionDialog(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
+            TextButton(onClick = onDismiss) {
                 Text("Annuler")
             }
         }
     )
 }
 
-// Add this to your project if it's missing
+// Navigation Items
 object NavigationItems {
     fun getItems() = listOf(
         ScreensApp2.A_ClientsLocationGps,
@@ -197,7 +346,8 @@ object NavigationItems {
         Screen.CommandeProduits,
         Screen.ToggleFab,
         Screen.EditeProduitsBaseDonneS9,
-        Screen.NewFragTest
+        Screen.NewFragTest,
+        Screen.DialogTests
     )
 }
 
@@ -220,6 +370,7 @@ sealed class Screen(
         title = "A_ClientsLocationGps",
         color = Color(0xFFFF5722)
     )
+
     data object EditDatabaseWithCreateNewArticles : Screen(
         route = "main_fragment_edit_database_with_create_new_articles",
         icon = Icons.Default.EditRoad,
@@ -253,6 +404,13 @@ sealed class Screen(
         icon = Icons.Default.TravelExplore,
         title = "NewFragTest",
         color = Color(0xFF4CAF50)
+    )
+
+    data object DialogTests : Screen(
+        route = "DialogTests",
+        icon = Icons.Default.DeveloperMode,
+        title = "DialogTests",
+        color = Color(0xFF009688)
     )
 
     data object ToggleFab : Screen(
