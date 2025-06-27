@@ -30,7 +30,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val bClientsStateCompoRepository: B_ClientsStateCompoRepository,
     val transactionCommercialState: GRepoTransactionCommercial,
 
-    val fCouleurAchatOperationRepositoryComposable: GDataBaseTransactionCommercial,
+    val fCouleurAchatOperationRepositoryComposable: FVentCouleurOperationRepository,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,

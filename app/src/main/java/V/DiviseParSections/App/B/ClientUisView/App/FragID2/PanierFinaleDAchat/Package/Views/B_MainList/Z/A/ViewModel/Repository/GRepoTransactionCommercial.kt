@@ -29,7 +29,7 @@ import java.util.Objects
 
 @Stable
 class GRepoTransactionCommercial(
-    val gDataBaseTransactionCommercial: GDataBaseTransactionCommercial,
+    val gDataBaseTransactionCommercial: FVentCouleurOperationRepository,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)

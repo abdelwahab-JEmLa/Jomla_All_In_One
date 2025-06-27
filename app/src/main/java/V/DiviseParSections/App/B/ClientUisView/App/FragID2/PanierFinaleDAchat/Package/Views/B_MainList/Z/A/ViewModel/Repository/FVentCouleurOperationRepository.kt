@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class GDataBaseTransactionCommercial(
+class FVentCouleurOperationRepository(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
 ) {
     val dao = ancienRepo.dao
