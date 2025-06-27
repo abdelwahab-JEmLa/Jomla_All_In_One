@@ -131,22 +131,20 @@ data class GTransactionVent(
     //Section Forging Keys
     //PeriodeVen
     var parentPeriodeVentKeyID: String = getPushFireBase(ref),
-    var parentPeriodeVentStartTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
+    var parentPeriodeVentStartTimestampStr: String = "Juin-24 08:00 AM",
 
     //Section Infos ForgingKeys
     var parentHClientKeyID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
-
     var parentZAppComptCreateurKeyID: String = "b1",
 
     //Autres Infos ForgingKeys
     //PeriodeVen
-    var parentPeriodeVentCreationTimestamps: Long = System.currentTimeMillis(),
+    var parentPeriodeVentStartTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
     var parentPeriodeVentOldID: Long = 0L,
 
     //Autres Infos ForgingKeys
     var parentHClientOldID: Long = 0L,
-
 
     // Section InfosDeBase
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),

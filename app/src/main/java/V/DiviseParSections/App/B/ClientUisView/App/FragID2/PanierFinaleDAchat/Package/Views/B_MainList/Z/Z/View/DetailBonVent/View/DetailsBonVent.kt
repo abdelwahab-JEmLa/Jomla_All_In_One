@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,24 +48,14 @@ fun DetailsBonVent(
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
-    val clientsRepository = viewModel.uiStateCentralRepositorys.bClientsStateCompoRepository
+    val clientsRepository = viewModel.uiStateCentralRepositorys.fClientRepository
     val achatsRepository =
         viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
     val ouvertF2BonVentId = comptAppActuelle?.ouvertGTransactionVentKeyId ?: ""
-    val ouvertClientId = comptAppActuelle?.ouvertClientOnVentAncienId.toString() ?: ""
-    val ouvertClientNom = comptAppActuelle?.ouvertClientOnVentNom ?: ""
     val ouvertPeriodKeyId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
-
-    val clientDetails by remember(ouvertClientId) {
-        derivedStateOf {
-            if (ouvertClientId.isNotEmpty()) {
-                ouvertClientId.toLongOrNull()?.let { clientId ->
-                    clientsRepository.findClientById(clientId)
-                }
-            } else null
-        }
-    }
+    // FIXED: Use the correct property for client key ID
+    val onVentHClientKeyID = comptAppActuelle?.onVentFClientKeyID ?: ""
 
     val cartSummary by remember {
         derivedStateOf {
@@ -113,7 +102,7 @@ fun DetailsBonVent(
                     }
                     if (!isMinimized) {
                         PeriodDetailsSection(
-                            viewModel=viewModel,
+                            viewModel = viewModel,
                             ouvertPeriodKeyId = ouvertPeriodKeyId,
                         )
                     }
@@ -121,15 +110,11 @@ fun DetailsBonVent(
 
                     // Client details - Always visible
                     ClientDetailsSection(
-                        ouvertClientNom = ouvertClientNom,
-                        ouvertClientId = ouvertClientId,
-                        clientDetails = clientDetails
+                        viewModel = viewModel,
                     )
                     Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
                     CartSummarySection(cartSummary)
-
-
                 }
             }
         }
@@ -140,10 +125,11 @@ fun DetailsBonVent(
 
 @Composable
 fun ClientDetailsSection(
-    ouvertClientNom: String,
-    ouvertClientId: String,
-    clientDetails: B_ClientInfosProtoJuin3? // Replace with actual client type
+    viewModel: ZViewModel_Sec1Frag3,
 ) {
+    val fClientRepository = viewModel.uiStateCentralRepositorys.fClientRepository
+    val onVentClient = fClientRepository.onVentClient
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -159,33 +145,33 @@ fun ClientDetailsSection(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "Client",
+                text = "Client On Vent",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            Text(
-                text = ouvertClientNom.ifEmpty { "Client non sélectionné" },
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-
-            if (clientDetails != null) {
+            if (onVentClient != null) {
+                with(onVentClient) {
+                    Text(
+                        text = "Nom: $nom", // FIXED: This should now display correctly
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = "keyID: $keyID",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = "Téléphone: $numTelephone",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
+            } else {
                 Text(
-                    text = "ID: $ouvertClientId",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                Text(
-                    text = "keyID: ${clientDetails.keyID}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-
-            } else if (ouvertClientId.isNotEmpty()) {
-                Text(
-                    text = "ID: $ouvertClientId",
+                    text = "Non Définie Pour Le Moment",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -193,4 +179,3 @@ fun ClientDetailsSection(
         }
     }
 }
-

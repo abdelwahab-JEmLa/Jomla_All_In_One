@@ -114,6 +114,11 @@ fun ClientEdites(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
+            Text(
+                text = marqueClickRelativeClient?.keyID ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
 
             if (!marqueClickRelativeClient?.numTelephone.isNullOrEmpty()) {
                 Text(

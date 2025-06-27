@@ -10,7 +10,7 @@ class ASetterCentral(
 ) {
     fun genereUnPushKeyFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
-    val bClientsStateCompoRepository = getter.bClientsStateCompoRepository
+    val bClientsStateCompoRepository = getter.fClientRepository
 
     fun ouvrireUneNewTransactionVent(clientOldId: Long) {
         setParameterAuAppCompt(clientOldId)
@@ -18,11 +18,17 @@ class ASetterCentral(
         val zAppComptRepositoryComposableOuvertData = zAppComptRepositoryComposable.ouvertData
         if (zAppComptRepositoryComposableOuvertData != null) {
             gTransactionVentRepository.addOrUpdateData(
-                GTransactionVent(
-                    keyID = zAppComptRepositoryComposableOuvertData.ouvertGTransactionVentKeyId,
-                    parentPeriodeVentKeyID = zAppComptRepositoryComposableOuvertData.ouvertHPeriodVentKeyId,
-                    parentPeriodeVentStartTimestamp = zAppComptRepositoryComposableOuvertData.ouvertHPeriodVentTimestamp
-                )
+                with(zAppComptRepositoryComposableOuvertData) {
+                    GTransactionVent(
+                        keyID = ouvertGTransactionVentKeyId,
+
+                        parentPeriodeVentKeyID = ouvertHPeriodVentKeyId,
+                        parentPeriodeVentStartTimestamp = ouvertHPeriodVentTimestamp,
+
+                        parentHClientKeyID = ouvertClientOnVentAncienId,
+                        parentZAppComptNom = keyID
+                    )
+                }
             )
         }
     }
@@ -33,10 +39,10 @@ class ASetterCentral(
             zAppComptRepositoryComposable.ouvertData!!.copy(
                 ouvertGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
 
-                ouvertClientOnVentKey = client.keyID,
+                onVentFClientKeyID = client.keyID,
 
                 ouvertClientOnVentAncienId = client.id,
-                ouvertClientOnVentNom = client.nom,
+                ouvertClientOnVentDebugNameKey = client.nom,
             )
         )
     }

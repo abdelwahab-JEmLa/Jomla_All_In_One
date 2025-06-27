@@ -64,7 +64,7 @@ class ZAppCompt_RepositoryComposable(
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = getPushFireBase(ref),
-    // var keyID: String = "",
+    var keyID: String = getPushFireBase(ref),
 
     var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -88,10 +88,6 @@ data class Z_AppCompt(
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
     // Section Centralization Valeurs Pour Injection add TOu modules
-    var idClientOuSonMarqueMapEstOuvert: Long = 0L,
-
-    var cTransactionCommercialIdOuvertPourCeCompt: String = getPushFireBase(ref),
-    var cTransactionCommercialKeyOuvertPourCeCompt: String = getPushFireBase(ref),
 
     // Section Paramaters App telephone
     var mainInitDataBaseProgressEtate: Float = 0f,
@@ -100,20 +96,21 @@ data class Z_AppCompt(
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
     var ouvertProduitOnVentNom: String = "",
 
-    //-----------------Vent Createur-----------
-
+    //---------------------------------------------------Vent Createur--------------------------------------------------------------
     //Section Parent Period Vent
     var ouvertHPeriodVentKeyId: String = getPushFireBase(ref),
+    var ouvertHPeriodVentDebugNameKey: String ="",
+    var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
     var ouvertGTransactionVentKeyId: String = getPushFireBase(ref),
+    var ouvertGTransactionVentDebugNameKey: String = "",
 
-    var ouvertClientOnVentKey: String = getPushFireBase(ref),
+    var onVentFClientKeyID: String = getPushFireBase(ref),
+    var ouvertClientOnVentDebugNameKey: String = "",
     var ouvertClientOnVentAncienId: Long = 0L,
-    var ouvertClientOnVentNom: String = "",
-
-    ) {
+) {
     init {
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()

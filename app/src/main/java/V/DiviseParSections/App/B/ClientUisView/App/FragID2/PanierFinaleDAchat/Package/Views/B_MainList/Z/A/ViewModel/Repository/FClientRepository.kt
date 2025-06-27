@@ -26,15 +26,18 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class B_ClientsStateCompoRepository (
+class FClientRepository(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-){
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+) {
+    val TAG_REPO = "FClientRepository"
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
     val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
+    val onVentClient by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentFClientKeyID } }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
@@ -64,7 +67,10 @@ class B_ClientsStateCompoRepository (
     fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
         return this._datas.value.find { it.id == id }
     }
-    fun removeClient(clientId: Long) { this._datas.value = this._datas.value.filter { it.id != clientId } }
+
+    fun removeClient(clientId: Long) {
+        this._datas.value = this._datas.value.filter { it.id != clientId }
+    }
 
     fun updateClients(newClients: List<B_ClientInfosProtoJuin3>) {
         this._datas.value = newClients

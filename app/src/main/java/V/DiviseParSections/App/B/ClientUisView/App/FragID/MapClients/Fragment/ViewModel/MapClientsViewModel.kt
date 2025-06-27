@@ -68,7 +68,7 @@ class MapClientsViewModel(
 
     // Compose States
     val transactionsState = aCentralCompoRepositoryProtoJuin9.gTransactionVentRepository
-    val clientsState = aCentralCompoRepositoryProtoJuin9.bClientsStateCompoRepository
+    val clientsState = aCentralCompoRepositoryProtoJuin9.fClientRepository
     val appState = aCentralCompoRepositoryProtoJuin9.comptAppState
 
     private val _uiState = MutableStateFlow(UiState())
