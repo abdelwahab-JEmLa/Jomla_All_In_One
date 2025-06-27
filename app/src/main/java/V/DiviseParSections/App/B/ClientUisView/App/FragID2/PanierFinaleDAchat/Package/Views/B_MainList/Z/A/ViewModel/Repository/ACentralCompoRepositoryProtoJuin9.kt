@@ -119,7 +119,7 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                GmodelTransactionCommercial.EtateActuellementEst.Cible,
+                TransactionCommercial.EtateActuellementEst.Cible,
             )
         }
     }
@@ -128,10 +128,10 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
-    val ouvertTransactionCommercial: GmodelTransactionCommercial? by derivedStateOf {
+    val ouvertTransactionCommercial: TransactionCommercial? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             transactionCommercialState.getClientLastTransactionParEtate(
-                it.id, GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                it.id, TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
     }

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -33,8 +33,8 @@ class GRepoTransactionCommercial(
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<GmodelTransactionCommercial>>(emptyList())
-    val datasState: State<List<GmodelTransactionCommercial>> = _datas
+    private val _datas = mutableStateOf<List<TransactionCommercial>>(emptyList())
+    val datasState: State<List<TransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = gDataBaseTransactionCommercial.filteredDatasValue.lastOrNull {
@@ -79,7 +79,7 @@ class GRepoTransactionCommercial(
     fun getClientLastTransactionParEtate(
         clientId: Long, etateActuellementEst: EtateActuellementEst =
             EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): GmodelTransactionCommercial? {
+    ): TransactionCommercial? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -88,7 +88,7 @@ class GRepoTransactionCommercial(
             .maxByOrNull { it.keyID }
     }
 
-    fun getClientLastTransaction(clientId: Long): GmodelTransactionCommercial? {
+    fun getClientLastTransaction(clientId: Long): TransactionCommercial? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -100,11 +100,11 @@ class GRepoTransactionCommercial(
         _loadingProgress.floatValue = progress
     }
 
-    fun updateDatas(newDatas: List<GmodelTransactionCommercial>) {
+    fun updateDatas(newDatas: List<TransactionCommercial>) {
         _datas.value = newDatas
     }
 
-    fun addOrUpdateData(data: GmodelTransactionCommercial) {
+    fun addOrUpdateData(data: TransactionCommercial) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
@@ -124,7 +124,7 @@ class GRepoTransactionCommercial(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GmodelTransactionCommercial) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: TransactionCommercial) {
         ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
             dataUpdate
         )
@@ -132,7 +132,7 @@ class GRepoTransactionCommercial(
 }
 
 @Entity
-data class GmodelTransactionCommercial(
+data class TransactionCommercial(
     @PrimaryKey
     var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
@@ -208,13 +208,13 @@ data class GmodelTransactionCommercial(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun isSameEntity(other: GmodelTransactionCommercial) =
+    fun isSameEntity(other: TransactionCommercial) =
         keyID == other.keyID
                 && parentZAppComptID == other.parentZAppComptID
                 && parentPeriodeVentID == other.parentPeriodeVentID
 
     override fun equals(other: Any?) =
-        this === other || (other is GmodelTransactionCommercial && isSameEntity(other))
+        this === other || (other is TransactionCommercial && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         keyID,

@@ -37,52 +37,52 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create GmodelTransactionCommercial test data with relations to _1_4_PeriodeVent
+        // Create TransactionCommercial test data with relations to _1_4_PeriodeVent
         val bonAchatTestData = listOf(
             // Original entries
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 501L,
                 clientAchteurID = 301L,
                 parent_1_4_PeriodeVentVid = 601L,
                 heurDebutInString = "08:00",
                 heurFinInString = "17:00"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 502L,
                 clientAchteurID = 302L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "09:00",
                 heurFinInString = "18:00"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 503L,
                 clientAchteurID = 303L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "10:00",
                 heurFinInString = "19:00"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 504L,
                 clientAchteurID = 304L,
                 parent_1_4_PeriodeVentVid = 603L,
                 heurDebutInString = "08:30",
                 heurFinInString = "16:30"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 505L,
                 clientAchteurID = 305L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "09:30",
                 heurFinInString = "17:30"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 506L,
                 clientAchteurID = 306L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "07:00",
                 heurFinInString = "15:00"
             ),
-            GmodelTransactionCommercial(
+            TransactionCommercial(
                 vid = 507L,
                 clientAchteurID = 307L,
                 parent_1_4_PeriodeVentVid = 604L,
@@ -91,7 +91,7 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create _1_2_ProduitAcheteOperation test data with relations to GmodelTransactionCommercial
+        // Create _1_2_ProduitAcheteOperation test data with relations to TransactionCommercial
         val produitTestData = listOf(
             // Original entries
             _1_2_ProduitAcheteOperation(
@@ -266,9 +266,9 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then GmodelTransactionCommercial (depends on _1_4_PeriodeVent)
+            // Then TransactionCommercial (depends on _1_4_PeriodeVent)
             withContext(Dispatchers.IO) {
-                val snapListBonAchat = mutableStateListOf<GmodelTransactionCommercial>()
+                val snapListBonAchat = mutableStateListOf<TransactionCommercial>()
                 snapListBonAchat.addAll(bonAchatTestData)
                 C3TransactionCommercialRepository.updateMultiDatas(snapListBonAchat)
                 Log.d(
@@ -277,7 +277,7 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then _1_2_ProduitAcheteOperation (depends on GmodelTransactionCommercial)
+            // Then _1_2_ProduitAcheteOperation (depends on TransactionCommercial)
             withContext(Dispatchers.IO) {
                 val snapListProduit = mutableStateListOf<_1_2_ProduitAcheteOperation>()
                 snapListProduit.addAll(produitTestData)

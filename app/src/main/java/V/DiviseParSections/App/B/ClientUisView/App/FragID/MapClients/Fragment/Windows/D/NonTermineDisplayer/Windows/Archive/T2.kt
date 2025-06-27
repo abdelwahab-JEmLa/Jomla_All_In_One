@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +28,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<GmodelTransactionCommercial>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<TransactionCommercial>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible }
         }
     }
 
@@ -39,7 +39,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<GmodelTransactio
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<GmodelTransactionCommercial>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<TransactionCommercial>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,7 +50,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<GmodelTransactionC
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: GmodelTransactionCommercial) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: TransactionCommercial) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -67,18 +67,18 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: GmodelTransactionCommerci
     }
 }
 
-fun testData(): List<GmodelTransactionCommercial> {
+fun testData(): List<TransactionCommercial> {
     return listOf(
-        GmodelTransactionCommercial(
+        TransactionCommercial(
             vid = 10L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
-            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.Cible
+            etateActuellementEst = TransactionCommercial.EtateActuellementEst.Cible
         ),
-        GmodelTransactionCommercial(
+        TransactionCommercial(
             vid = 5L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
@@ -91,25 +91,25 @@ fun testData(): List<GmodelTransactionCommercial> {
             vocaleKeyID = "",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            etateActuellementEst = TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
         ),
-        GmodelTransactionCommercial(
+        TransactionCommercial(
             vid = 4L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
-            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            etateActuellementEst = TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
-        GmodelTransactionCommercial(
+        TransactionCommercial(
             vid = 6L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",
-            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
         )
     )
 }

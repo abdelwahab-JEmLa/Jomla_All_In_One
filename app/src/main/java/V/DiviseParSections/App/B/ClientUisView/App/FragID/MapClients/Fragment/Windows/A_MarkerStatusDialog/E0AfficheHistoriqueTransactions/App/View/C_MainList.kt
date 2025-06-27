@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,12 +20,12 @@ import java.util.Locale
 
 @Composable
 fun MainList(
-    filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<GmodelTransactionCommercial>>>,
+    filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<TransactionCommercial>>>,
     dateStringName: DatesHandler,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     uiState: SecID5FragID2UiState,
     idClient: Long,
-    onClickToOpenTransaction: (GmodelTransactionCommercial) -> Unit,
+    onClickToOpenTransaction: (TransactionCommercial) -> Unit,
 ) {
     val groupedByWeek = remember(filteredGroupedTransactions) {
         filteredGroupedTransactions.groupBy { (period, _) ->

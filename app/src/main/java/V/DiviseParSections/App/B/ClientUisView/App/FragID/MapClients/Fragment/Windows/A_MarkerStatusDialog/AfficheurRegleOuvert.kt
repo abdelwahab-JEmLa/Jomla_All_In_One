@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +24,7 @@ fun AfficheurRegleOuvert(
 ) {
     val clientId = relatedClients?.id ?: 0L
 
-    fun getLatestTransactionForClient(clientId: Long): GmodelTransactionCommercial? {
+    fun getLatestTransactionForClient(clientId: Long): TransactionCommercial? {
         return uiState
             .c3_TransactionCommercialList
             .filter { it.clientAcheteurID == clientId }
@@ -66,14 +66,14 @@ fun AfficheurRegleOuvert(
                     text = "الحالة الحالية: ${latestTransaction?.etateActuellementEst?.nomArabe ?: ""}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )
 
-                GmodelTransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,

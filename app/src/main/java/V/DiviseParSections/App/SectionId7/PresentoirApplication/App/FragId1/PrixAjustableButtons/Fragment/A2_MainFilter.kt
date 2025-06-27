@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
-    bonAchatList: List<GmodelTransactionCommercial>,
+    bonAchatList: List<TransactionCommercial>,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
     produitInfosList: SnapshotStateList<A_ProduitInfos>,
     showLabels: Boolean,
@@ -28,7 +28,7 @@ fun MainFilter(
     viewModel: TariffsButtonsViewModelSec7ID2
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID } ?: GmodelTransactionCommercial()
+        bonAchatList.find { it.vid == filterBonID } ?: TransactionCommercial()
     }
 
     val filteredProduit = remember(produitInfosList, filterProduitID) {

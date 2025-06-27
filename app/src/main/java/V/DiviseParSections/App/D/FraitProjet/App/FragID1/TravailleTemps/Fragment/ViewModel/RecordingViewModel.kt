@@ -10,7 +10,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.Avan
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.TimeFormatUtils
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -24,7 +24,7 @@ data class UiState(
     val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
-    val bonAchatList: List<GmodelTransactionCommercial> = emptyList(),
+    val bonAchatList: List<TransactionCommercial> = emptyList(),
 
     val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(vid = 7L),
     val isRecording: Boolean = false,
@@ -90,7 +90,7 @@ class RecordingViewModel(
         recordingHandler.setupRecordingStateListener()
     }
 
-    private fun log(list: List<GmodelTransactionCommercial>) {
+    private fun log(list: List<TransactionCommercial>) {
         val map = list.map { bon ->
             val clientAcheteurID = bon.clientAcheteurID
             val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
@@ -104,7 +104,7 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
 
@@ -156,7 +156,7 @@ class RecordingViewModel(
                 a_CentralDatasHandlerProtoJuin9.transactionCommercialState
                     .getClientLastTransactionParEtate(
                         client.id,
-                        GmodelTransactionCommercial.EtateActuellementEst.Cible
+                        TransactionCommercial.EtateActuellementEst.Cible
                     ) != null
             }
         return count

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -96,8 +96,8 @@ fun filterClientsBasedOnMode(
                 viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
                     .c3TransactionCommercialRepository.modelDatasSnapList
                     .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                || bonAchat.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        bonAchat.etateActuellementEst == TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                || bonAchat.etateActuellementEst == TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.clientAcheteurID }
                     .distinct()
@@ -109,21 +109,21 @@ fun filterClientsBasedOnMode(
 
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.A_EVITE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.FERME
+                viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.A_EVITE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == TransactionCommercial.EtateActuellementEst.FERME
             }
         }
 

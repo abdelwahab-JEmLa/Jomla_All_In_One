@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,26 +11,26 @@ import androidx.room.Upsert
 @Dao
 interface _1_3_TransactionCommercialDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: GmodelTransactionCommercial): Long
+    suspend fun insertAvecRetureNewVid(item: TransactionCommercial): Long
 
-    @Query("SELECT * FROM GmodelTransactionCommercial")
-    suspend fun getAll(): MutableList<GmodelTransactionCommercial>
+    @Query("SELECT * FROM TransactionCommercial")
+    suspend fun getAll(): MutableList<TransactionCommercial>
 
     @Upsert
-    suspend fun upsert(data: GmodelTransactionCommercial)
+    suspend fun upsert(data: TransactionCommercial)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: GmodelTransactionCommercial)
+    suspend fun insert(item: TransactionCommercial)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<GmodelTransactionCommercial>)
+    suspend fun insertAll(items: List<TransactionCommercial>)
 
     @Delete
-    suspend fun delete(item: GmodelTransactionCommercial)
+    suspend fun delete(item: TransactionCommercial)
 
-    @Query("DELETE FROM GmodelTransactionCommercial")
+    @Query("DELETE FROM TransactionCommercial")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM GmodelTransactionCommercial")
+    @Query("SELECT COUNT(*) FROM TransactionCommercial")
     fun getCount(): Int
 }
