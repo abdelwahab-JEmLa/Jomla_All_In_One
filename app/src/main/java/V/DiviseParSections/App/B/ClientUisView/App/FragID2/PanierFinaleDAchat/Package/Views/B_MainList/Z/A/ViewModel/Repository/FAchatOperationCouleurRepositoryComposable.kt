@@ -133,7 +133,6 @@ class FAchatOperationCouleurRepositoryComposable(
             parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
             parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
             parentBonVentId = ouvertData.ouvertF2BonVentId,
-            parentClientId = ouvertData.ouvertClientOnVentKeyId,
             parentClientName = ouvertData.ouvertClientOnVentNom,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,

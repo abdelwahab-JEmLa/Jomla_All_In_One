@@ -1,16 +1,17 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentral
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
+import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
+import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
@@ -49,6 +50,7 @@ data class UiState(
 )
 
 class MapClientsViewModel(
+    val  aCentral: ACentral,
     val aCentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
@@ -66,7 +68,7 @@ class MapClientsViewModel(
 
     // Compose States
     val transactionsState = aCentralCompoRepositoryProtoJuin9.transactionCommercialState
-    val clientsState = aCentralCompoRepositoryProtoJuin9.clientsState
+    val clientsState = aCentralCompoRepositoryProtoJuin9.bClientsStateCompoRepository
     val appState = aCentralCompoRepositoryProtoJuin9.comptAppState
 
     private val _uiState = MutableStateFlow(UiState())
@@ -257,10 +259,5 @@ class MapClientsViewModel(
             .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
     }
 
-    fun ouvrireBonVent(ouvertClientOnVentObjectId: String, ouvertClientOnVentNom: String) {
-        aCentralCompoRepositoryProtoJuin9.zAppComptRepositoryComposable.ouvrireUnBonVent(
-            ouvertClientOnVentKeyId = ouvertClientOnVentObjectId,
-            ouvertClientOnVentNom = ouvertClientOnVentNom,
-        )
-    }
+
 }

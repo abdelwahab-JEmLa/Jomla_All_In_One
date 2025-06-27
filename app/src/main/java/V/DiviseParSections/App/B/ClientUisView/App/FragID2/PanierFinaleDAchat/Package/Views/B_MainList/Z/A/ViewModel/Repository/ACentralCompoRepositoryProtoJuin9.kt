@@ -29,7 +29,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val clientsState: B_ClientsStateCompoRepository,
+    val bClientsStateCompoRepository: B_ClientsStateCompoRepository,
     val transactionCommercialState: ETransactionCommercialCompoRepository,
 
     val fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
@@ -118,7 +118,7 @@ class ACentralCompoRepositoryProtoJuin9(
     }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
-        clientsState.datasValue.count { client ->
+        bClientsStateCompoRepository.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 C3_TransactionCommercial.EtateActuellementEst.Cible,
@@ -127,7 +127,7 @@ class ACentralCompoRepositoryProtoJuin9(
     }
 
     val clientOuSonMarqueMapEstOuvert by derivedStateOf {
-        clientsState.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
+        bClientsStateCompoRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
     val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {

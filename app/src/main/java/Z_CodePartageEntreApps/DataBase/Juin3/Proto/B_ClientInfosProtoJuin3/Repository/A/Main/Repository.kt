@@ -29,7 +29,7 @@ class B_ClientInfosProtoJuin3Repository(
     )
 
     val dao = appDatabase.B_ClientInfosProtoJuin3Dao()
-    val repoRef = B_ClientInfosProtoJuin3.caRef
+    val repoRef = B_ClientInfosProtoJuin3.ref
     var isListenerRegistered = false
 
     init {

@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
+import java.util.Calendar
 import java.util.Objects
 
 @Stable
@@ -38,29 +38,6 @@ class ZAppCompt_RepositoryComposable(
         }
     }
 
-    fun ouvrireUnBonVent(
-        ouvertClientOnVentKeyId: String,
-        ouvertClientOnVentNom: String,
-    ): Unit {
-        addOrUpdateData(
-            ouvertData!!.copy(
-                ouvertClientOnVentKeyId = ouvertClientOnVentKeyId,
-                ouvertClientOnVentNom = ouvertClientOnVentNom
-            )
-        )
-    }
-
-    fun ouvrireProduitEtCouleurVent(
-        produit: ArticlesBasesStatsTable,
-        relatedCouleur: B1CouleurOuGoutProduitDataBase,
-    ): Z_AppCompt {
-        val data = ouvertData!!.copy(
-            ouvertF3ProduitOnVentID = produit.id.toString(),
-            ouvertF4CouleurOnVentID = relatedCouleur.key,
-        )
-        addOrUpdateData(data)
-        return data
-    }
 
     fun addOrUpdateData(data: Z_AppCompt) {
         val dataUpdate =
@@ -87,7 +64,7 @@ class ZAppCompt_RepositoryComposable(
 data class Z_AppCompt(
     @PrimaryKey
     var bsonObjectId: String = getPushFireBase(ref),
-   // var keyID: String = "",
+    // var keyID: String = "",
 
     var id: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -122,24 +99,21 @@ data class Z_AppCompt(
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
     var ouvertProduitOnVentNom: String = "",
-    var ouvertClientOnVentNom: String = "",
 
     //-----------------Vent Createur-----------
 
     //Section Parent Period Vent
-    var ouvertF1PeriodVentId: String = "F1_Juin24_08",
-    var ouvertF1PeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("(Juin-24 -<(08:00 AM)"),
+    var ouvertF1PeriodVentId: String = getPushFireBase(ref),
+    var ouvertF1PeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var ouvertF2BonVentId: String = "F2_3omar",
-    var ouvertClientOnVentKeyId: String = "",
+    var ouvertF2BonVentId: String = getPushFireBase(ref),
 
-    //Section ouvertProduitAncien
-    var ouvertF3ProduitOnVentID: String = "",
-    var ouvertProduitOnVentAncienId: Long = 0L,
+    var ouvertClientOnVentKey: String = getPushFireBase(ref),
+    var ouvertClientOnVentAncienId: Long = 0L,
+    var ouvertClientOnVentNom: String = "",
 
-    var ouvertF4CouleurOnVentID: String = "",
-) {
+    ) {
     init {
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()
@@ -154,9 +128,52 @@ data class Z_AppCompt(
     companion object {
         fun creatTimeTampDepuitStr(dateString: String): Long {
             return try {
-                val currentDate = Date()
-                currentDate.time
+                // Parse the French month and format
+                val parts = dateString.split(" ")
+                if (parts.size < 3) return System.currentTimeMillis()
+
+                val monthYear = parts[0] // "Juin-24"
+                val time = parts[1] // "08:00"
+                val amPm = parts[2] // "AM"
+
+                val monthYearParts = monthYear.split("-")
+                if (monthYearParts.size != 2) return System.currentTimeMillis()
+
+                val monthStr = monthYearParts[0]
+                val yearStr = "20${monthYearParts[1]}" // Convert "24" to "2024"
+
+                // French month mapping
+                val monthMap = mapOf(
+                    "Janvier" to 0, "Février" to 1, "Mars" to 2, "Avril" to 3,
+                    "Mai" to 4, "Juin" to 5, "Juillet" to 6, "Août" to 7,
+                    "Septembre" to 8, "Octobre" to 9, "Novembre" to 10, "Décembre" to 11
+                )
+
+                val month = monthMap[monthStr] ?: return System.currentTimeMillis()
+                val year = yearStr.toIntOrNull() ?: return System.currentTimeMillis()
+
+                // Parse time
+                val timeParts = time.split(":")
+                if (timeParts.size != 2) return System.currentTimeMillis()
+
+                var hour = timeParts[0].toIntOrNull() ?: return System.currentTimeMillis()
+                val minute = timeParts[1].toIntOrNull() ?: return System.currentTimeMillis()
+
+                // Convert to 24-hour format
+                if (amPm.uppercase() == "PM" && hour != 12) {
+                    hour += 12
+                } else if (amPm.uppercase() == "AM" && hour == 12) {
+                    hour = 0
+                }
+
+                // Create Calendar and set values
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, 1, hour, minute, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+
+                calendar.timeInMillis
             } catch (e: Exception) {
+                // Return current time as fallback
                 System.currentTimeMillis()
             }
         }

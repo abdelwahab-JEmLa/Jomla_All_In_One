@@ -3,11 +3,23 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
-    val fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
     fun getRelatedCouleur(produit: ArticlesBasesStatsTable, colorIndex: Int) =
         getter.getRelatedCouleur(produit, colorIndex)
+
+    val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
+    val bClientsStateCompoRepository = getter.bClientsStateCompoRepository
+
+    fun ouvrireUnBonVent(clientOldId: Long): Unit {
+        val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
+        zAppComptRepositoryComposable.addOrUpdateData(
+            zAppComptRepositoryComposable.ouvertData!!.copy(
+                ouvertClientOnVentKey = client.keyID,
+                ouvertClientOnVentAncienId = client.id,
+                ouvertClientOnVentNom = client.nom,
+            )
+        )
+    }
 
     fun acheterACaSetterCentral(
         fCouleurVentOperation: FCouleurVentOperation? = null,
@@ -16,10 +28,7 @@ class ASetterCentral(
         quantity: Int,
     ) {
         val relatedCouleur = getRelatedCouleur(produit, colorIndex)
-        val data = zAppComptRepositoryComposable.ouvrireProduitEtCouleurVent(
-            produit,
-            relatedCouleur = relatedCouleur,
-        )
+        val data = zAppComptRepositoryComposable.ouvertData
 
         fCouleurVentOperation?.let { existingOperation ->
             if (existingOperation.quantityAchete != quantity) {
@@ -31,14 +40,17 @@ class ASetterCentral(
                 getter.fCouleurAchatOperationRepositoryComposable.addOrUpdateData(existingOperation)
             }
         } ?: run {
-            fCouleurAchatOperationRepositoryComposable.acheterUneCouleur(
-                ouvertData = data,
-                relatedCouleur = relatedCouleur,
-                quantity = quantity
-            )
+            if (data != null) {
+                getter.fCouleurAchatOperationRepositoryComposable.acheterUneCouleur(
+                    ouvertData = data,
+                    relatedCouleur = relatedCouleur,
+                    quantity = quantity
+                )
+            }
         }
     }
-    fun updateQuantity(ventKey:String): Unit {
+
+    fun updateQuantity(ventKey: String): Unit {
 
     }
 }

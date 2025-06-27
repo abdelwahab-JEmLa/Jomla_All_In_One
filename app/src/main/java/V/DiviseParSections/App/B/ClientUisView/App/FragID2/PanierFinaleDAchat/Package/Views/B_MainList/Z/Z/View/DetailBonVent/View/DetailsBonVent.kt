@@ -49,12 +49,12 @@ fun DetailsBonVent(
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
-    val clientsRepository = viewModel.uiStateCentralRepositorys.clientsState
+    val clientsRepository = viewModel.uiStateCentralRepositorys.bClientsStateCompoRepository
     val achatsRepository =
         viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
     val ouvertF2BonVentId = comptAppActuelle?.ouvertF2BonVentId ?: ""
-    val ouvertClientId = comptAppActuelle?.ouvertClientOnVentKeyId ?: ""
+    val ouvertClientId = comptAppActuelle?.ouvertClientOnVentAncienId.toString() ?: ""
     val ouvertClientNom = comptAppActuelle?.ouvertClientOnVentNom ?: ""
     val ouvertPeriodId = comptAppActuelle?.ouvertF1PeriodVentId ?: ""
     val ouvertPeriodStartTime = comptAppActuelle?.ouvertF1PeriodVentStartTimesTamp ?: 0L

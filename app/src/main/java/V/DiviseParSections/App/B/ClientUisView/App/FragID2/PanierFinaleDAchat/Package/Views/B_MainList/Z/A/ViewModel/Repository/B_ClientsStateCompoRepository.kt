@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -87,6 +88,7 @@ class B_ClientsStateCompoRepository (
 data class B_ClientInfosProtoJuin3(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+    var keyID: String = getPushFireBase(ref),
     var bsonObjectId: String = BsonObjectId().toHexString(),
 
     //Infos De Base
@@ -178,7 +180,7 @@ data class B_ClientInfosProtoJuin3(
                     "/C_InfosSqlDataBases"
         )
 
-        val caRef = parent.child("B_ClientInfosProtoJuin3")
+        val ref = parent.child("B_ClientInfosProtoJuin3")
 
         fun removeRef(
             preparedData: B_ClientInfosProtoJuin3

@@ -173,7 +173,7 @@ val viewModelModule = module {
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get()) }
     viewModel { VendeursViewModel(get(), get()) }
-    viewModel { MapClientsViewModel(get(), get(), get(), get()) }
+    viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { HeadViewModel(androidContext(), get(),get(),get(),) }
