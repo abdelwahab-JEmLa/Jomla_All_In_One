@@ -125,6 +125,8 @@ class FAchatOperationCouleurRepositoryComposable(
         return FCouleurVentOperation(
             parentCouleurDataBaseKey = relatedCouleur.key,
 
+            parentBonVentId = ouvertData.ouvertF2BonVentId,
+
             parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
             parentProduitAncienId = relatedCouleur.parentBProduitOldID,
             parentProduitKeyNom = relatedCouleur.parentBProduitNom,
@@ -132,7 +134,7 @@ class FAchatOperationCouleurRepositoryComposable(
             parentZAppComptID = ouvertData.bsonObjectId,
             parentEPeriodVentId = ouvertData.ouvertF1PeriodVentId,
             parentEPeriodVentStartDate = ouvertData.ouvertF1PeriodVentStartTimesTamp,
-            parentBonVentId = ouvertData.ouvertF2BonVentId,
+
             parentClientName = ouvertData.ouvertClientOnVentNom,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,

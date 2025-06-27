@@ -60,7 +60,7 @@ fun CommandButton(
             }
 
             if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.aCentral.setter.ouvrireUnBonVent(
+                viewModel.aCentral.setter.ouvrireUnNewBonVent(
                     clientOldId = clientId,
                 )
             }
