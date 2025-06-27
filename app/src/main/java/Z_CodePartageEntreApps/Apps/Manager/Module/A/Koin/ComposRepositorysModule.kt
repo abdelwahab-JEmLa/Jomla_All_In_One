@@ -27,7 +27,7 @@ val composRepositorysModule = module {
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
     single { BProduitDataBaseComposeRepositoryPJ17(get()) }
-    single { FVentCouleurOperationRepository(get()) }
+    single { FVentCouleurOperationRepository(get(),get(),) }
     single { GBonVentRepository(get(),get(),get(),) }
     single { B1CouleurOuGoutProduitDataBaseRepository(get(),) }
 
