@@ -20,7 +20,7 @@ class ASetterCentral(
             gTransactionVentRepository.addOrUpdateData(
                 with(zAppComptRepositoryComposableOuvertData) {
                     GTransactionVent(
-                        keyID = ouvertGTransactionVentKeyId,
+                        keyID = onVentGTransactionVentKeyId,
 
                         parentPeriodeVentKeyID = ouvertHPeriodVentKeyId,
                         parentPeriodeVentStartTimestamp = ouvertHPeriodVentTimestamp,
@@ -37,7 +37,7 @@ class ASetterCentral(
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         zAppComptRepositoryComposable.addOrUpdateData(
             zAppComptRepositoryComposable.ouvertData!!.copy(
-                ouvertGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
+                onVentGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
 
                 onVentFClientKeyID = client.keyID,
 

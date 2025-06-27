@@ -38,8 +38,10 @@ class GTransactionVentRepository(
     val datasState: State<List<GTransactionVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
+    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentGTransactionVentKeyId } }
+
     val ouvertGTransactionVentKeyId =
-        (zAppComptRepositoryComposable.ouvertData?.ouvertGTransactionVentKeyId ?: "")
+        (zAppComptRepositoryComposable.ouvertData?.onVentGTransactionVentKeyId ?: "")
 
     val ouvertData by derivedStateOf {
         datasValue.find {

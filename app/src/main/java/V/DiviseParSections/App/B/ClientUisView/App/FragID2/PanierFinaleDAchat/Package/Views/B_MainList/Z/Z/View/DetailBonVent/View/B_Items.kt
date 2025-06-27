@@ -32,7 +32,12 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun BonVentHeader(ouvertF2BonVentId: String) {
+fun TransactionVentInfosHeader(
+    viewModel: ZViewModel_Sec1Frag3,
+) {
+    val repo = viewModel.uiStateCentralRepositorys.gTransactionVentRepository
+    val onVentData = repo.onVentData
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,33 +52,45 @@ fun BonVentHeader(ouvertF2BonVentId: String) {
             )
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "Bon de Vente",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Text(
-                    text = ouvertF2BonVentId,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                )
+        onVentData?.let { data ->
+            with(data) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Bon de Vente",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = keyID,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.Receipt,
+                        contentDescription = "Bon de vente",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
-            Icon(
-                imageVector = Icons.Default.Receipt,
-                contentDescription = "Bon de vente",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(32.dp)
+        } ?: run {
+            Text(
+                text = "Aucune donnée de vente disponible",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                modifier = Modifier.align(Alignment.Center)
             )
         }
     }
 }
+
 
 @Composable
 fun CartSummarySection(cartSummary: CartSummary) {

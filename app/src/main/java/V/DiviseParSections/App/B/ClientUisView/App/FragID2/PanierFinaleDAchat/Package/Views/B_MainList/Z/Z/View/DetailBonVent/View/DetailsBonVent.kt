@@ -48,14 +48,11 @@ fun DetailsBonVent(
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
-    val clientsRepository = viewModel.uiStateCentralRepositorys.fClientRepository
     val achatsRepository =
         viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
-    val ouvertF2BonVentId = comptAppActuelle?.ouvertGTransactionVentKeyId ?: ""
+    val ouvertF2BonVentId = comptAppActuelle?.onVentGTransactionVentKeyId ?: ""
     val ouvertPeriodKeyId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
-    // FIXED: Use the correct property for client key ID
-    val onVentHClientKeyID = comptAppActuelle?.onVentFClientKeyID ?: ""
 
     val cartSummary by remember {
         derivedStateOf {
@@ -98,7 +95,7 @@ fun DetailsBonVent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     if (!isMinimized) {
-                        BonVentHeader(ouvertF2BonVentId)
+                        TransactionVentInfosHeader(viewModel)
                     }
                     if (!isMinimized) {
                         PeriodDetailsSection(
