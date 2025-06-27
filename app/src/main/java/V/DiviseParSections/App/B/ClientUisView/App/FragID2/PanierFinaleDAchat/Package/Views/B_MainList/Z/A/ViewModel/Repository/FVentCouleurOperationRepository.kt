@@ -133,7 +133,6 @@ class FVentCouleurOperationRepository(
 
             parentZAppComptID = ouvertData.bsonObjectId,
             parentEPeriodVentId = ouvertData.ouvertHPeriodVentKeyId,
-            parentEPeriodVentStartDate = ouvertData.ouvertHPeriodVentStartTimesTamp,
 
             parentClientName = ouvertData.ouvertClientOnVentNom,
             quantityAchete = quantity,

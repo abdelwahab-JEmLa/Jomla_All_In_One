@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
@@ -10,7 +10,7 @@ data class LastPurchaseInfo(
 )
 
 fun findLastPurchaseInfoForClient(
-    historicalData: SnapshotStateList<TransactionVent>,
+    historicalData: SnapshotStateList<GTransactionVent>,
     clientId: Long
 ): LastPurchaseInfo {
     // Find the most recent transaction for this client (highest timestamp)

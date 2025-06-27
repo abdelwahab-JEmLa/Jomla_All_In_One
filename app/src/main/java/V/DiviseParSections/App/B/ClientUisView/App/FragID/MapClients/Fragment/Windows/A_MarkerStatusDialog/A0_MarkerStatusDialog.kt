@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,8 +81,8 @@ fun MarkerStatusDialog(
     }
 
     val isClientInCommandMode = remember(clientId, uiState) {
-        val lastTransaction = viewModel.aCentralCompoRepositoryProtoJuin9.transactionCommercialState.getClientLastTransaction(clientId)
-        lastTransaction?.etateActuellementEst == TransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        val lastTransaction = viewModel.aCentralCompoRepositoryProtoJuin9.gTransactionVentRepository.getClientLastTransaction(clientId)
+        lastTransaction?.etateActuellementEst == GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     }
 
     fun dismissDialog() {
@@ -169,7 +169,7 @@ fun MarkerStatusDialog(
                                 ) {
 
                                     item {
-                                        TransactionVent.EtateActuellementEst.AVEC_MARCHANDISE
+                                        GTransactionVent.EtateActuellementEst.AVEC_MARCHANDISE
                                             .ButtonAutreEtates(
                                                 uiState = uiState,
                                                 viewModel = viewModel,
@@ -183,7 +183,7 @@ fun MarkerStatusDialog(
                                             viewModel = viewModel,
                                             clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
                                             uiState = uiState,
-                                            etateActuellementEst1 = TransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            etateActuellementEst1 = GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             clientId = clientId,
                                             selectedMarker = marqueClick,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting,
@@ -192,7 +192,7 @@ fun MarkerStatusDialog(
                                     }
 
                                     item {
-                                        TransactionVent.EtateActuellementEst.FERME
+                                        GTransactionVent.EtateActuellementEst.FERME
                                             .ButtonAutreEtates(
                                                 uiState = uiState,
                                                 viewModel = viewModel,
@@ -200,7 +200,7 @@ fun MarkerStatusDialog(
                                             )
                                     }
                                     item {
-                                        TransactionVent.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                        GTransactionVent.EtateActuellementEst.ACHETEUR_NON_DISPO
                                             .ButtonAutreEtates(
                                                 uiState = uiState,
                                                 viewModel = viewModel,
@@ -218,7 +218,7 @@ fun MarkerStatusDialog(
                                     }
 
                                     item {
-                                        TransactionVent.EtateActuellementEst.Cible
+                                        GTransactionVent.EtateActuellementEst.Cible
                                             .ButtonAutreEtates(
                                                 uiState = uiState,
                                                 viewModel = viewModel,
@@ -230,7 +230,7 @@ fun MarkerStatusDialog(
                                     uiState.activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
                                             item {
-                                                TransactionVent.EtateActuellementEst.CIBLE_POUR_2
+                                                GTransactionVent.EtateActuellementEst.CIBLE_POUR_2
                                                     .ButtonAutreEtates(
                                                         uiState = uiState,
                                                         viewModel = viewModel,

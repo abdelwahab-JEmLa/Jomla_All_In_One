@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.creatTimeTampDepuitStr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -34,8 +34,8 @@ class GTransactionVentRepository(
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<TransactionVent>>(emptyList())
-    val datasState: State<List<TransactionVent>> = _datas
+    private val _datas = mutableStateOf<List<GTransactionVent>>(emptyList())
+    val datasState: State<List<GTransactionVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = gDataBaseTransactionCommercial.filteredDatasValue.lastOrNull {
@@ -80,7 +80,7 @@ class GTransactionVentRepository(
     fun getClientLastTransactionParEtate(
         clientId: Long, etateActuellementEst: EtateActuellementEst =
             EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): TransactionVent? {
+    ): GTransactionVent? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -89,7 +89,7 @@ class GTransactionVentRepository(
             .maxByOrNull { it.keyID }
     }
 
-    fun getClientLastTransaction(clientId: Long): TransactionVent? {
+    fun getClientLastTransaction(clientId: Long): GTransactionVent? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -101,11 +101,11 @@ class GTransactionVentRepository(
         _loadingProgress.floatValue = progress
     }
 
-    fun updateDatas(newDatas: List<TransactionVent>) {
+    fun updateDatas(newDatas: List<GTransactionVent>) {
         _datas.value = newDatas
     }
 
-    fun addOrUpdateData(data: TransactionVent) {
+    fun addOrUpdateData(data: GTransactionVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
@@ -125,7 +125,7 @@ class GTransactionVentRepository(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: TransactionVent) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GTransactionVent) {
         ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
             dataUpdate
         )
@@ -133,7 +133,7 @@ class GTransactionVentRepository(
 }
 
 @Entity
-data class TransactionVent(
+data class GTransactionVent(
     @PrimaryKey
     var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
@@ -213,13 +213,13 @@ data class TransactionVent(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun isSameEntity(other: TransactionVent) =
+    fun isSameEntity(other: GTransactionVent) =
         keyID == other.keyID
                 && parentZAppComptID == other.parentZAppComptID
                 && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
 
     override fun equals(other: Any?) =
-        this === other || (other is TransactionVent && isSameEntity(other))
+        this === other || (other is GTransactionVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         keyID,
@@ -229,7 +229,7 @@ data class TransactionVent(
 
     companion object {
         val caRef = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/C_TransactionCommercial"
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GTransactionVent"
         )
     }
 }

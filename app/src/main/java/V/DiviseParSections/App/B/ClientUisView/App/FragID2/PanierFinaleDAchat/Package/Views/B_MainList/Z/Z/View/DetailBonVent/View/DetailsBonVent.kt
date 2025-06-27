@@ -56,8 +56,7 @@ fun DetailsBonVent(
     val ouvertF2BonVentId = comptAppActuelle?.ouvertF2BonVentId ?: ""
     val ouvertClientId = comptAppActuelle?.ouvertClientOnVentAncienId.toString() ?: ""
     val ouvertClientNom = comptAppActuelle?.ouvertClientOnVentNom ?: ""
-    val ouvertPeriodId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
-    val ouvertPeriodStartTime = comptAppActuelle?.ouvertHPeriodVentStartTimesTamp ?: 0L
+    val ouvertPeriodKeyId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
 
     val clientDetails by remember(ouvertClientId) {
         derivedStateOf {
@@ -110,17 +109,12 @@ fun DetailsBonVent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     if (!isMinimized) {
-                        // Header - Only when expanded
                         BonVentHeader(ouvertF2BonVentId)
-
-                        // Summary - Only when expanded
-
                     }
                     if (!isMinimized) {
-
                         PeriodDetailsSection(
-                            ouvertPeriodId = ouvertPeriodId,
-                            ouvertPeriodStartTime = ouvertPeriodStartTime
+                            viewModel=viewModel,
+                            ouvertPeriodKeyId = ouvertPeriodKeyId,
                         )
                     }
                     Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))

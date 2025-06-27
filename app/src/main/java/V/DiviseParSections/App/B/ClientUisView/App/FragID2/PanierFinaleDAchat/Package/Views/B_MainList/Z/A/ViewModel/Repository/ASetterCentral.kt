@@ -6,7 +6,6 @@ import com.google.firebase.database.DatabaseReference
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
 ) {
-
     fun genereUnPushKeyFireBase(ref: DatabaseReference ) = ref.push().key.toString()
 
     val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
@@ -53,6 +52,4 @@ class ASetterCentral(
             }
         }
     }
-
-
 }

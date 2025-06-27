@@ -37,52 +37,52 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create TransactionVent test data with relations to _1_4_PeriodeVent
+        // Create GTransactionVent test data with relations to _1_4_PeriodeVent
         val bonAchatTestData = listOf(
             // Original entries
-            TransactionVent(
+            GTransactionVent(
                 vid = 501L,
                 clientAchteurID = 301L,
                 parent_1_4_PeriodeVentVid = 601L,
                 heurDebutInString = "08:00",
                 heurFinInString = "17:00"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 502L,
                 clientAchteurID = 302L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "09:00",
                 heurFinInString = "18:00"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 503L,
                 clientAchteurID = 303L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "10:00",
                 heurFinInString = "19:00"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 504L,
                 clientAchteurID = 304L,
                 parent_1_4_PeriodeVentVid = 603L,
                 heurDebutInString = "08:30",
                 heurFinInString = "16:30"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 505L,
                 clientAchteurID = 305L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "09:30",
                 heurFinInString = "17:30"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 506L,
                 clientAchteurID = 306L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "07:00",
                 heurFinInString = "15:00"
             ),
-            TransactionVent(
+            GTransactionVent(
                 vid = 507L,
                 clientAchteurID = 307L,
                 parent_1_4_PeriodeVentVid = 604L,
@@ -91,7 +91,7 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create _1_2_ProduitAcheteOperation test data with relations to TransactionVent
+        // Create _1_2_ProduitAcheteOperation test data with relations to GTransactionVent
         val produitTestData = listOf(
             // Original entries
             _1_2_ProduitAcheteOperation(
@@ -266,9 +266,9 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then TransactionVent (depends on _1_4_PeriodeVent)
+            // Then GTransactionVent (depends on _1_4_PeriodeVent)
             withContext(Dispatchers.IO) {
-                val snapListBonAchat = mutableStateListOf<TransactionVent>()
+                val snapListBonAchat = mutableStateListOf<GTransactionVent>()
                 snapListBonAchat.addAll(bonAchatTestData)
                 C3TransactionCommercialRepository.updateMultiDatas(snapListBonAchat)
                 Log.d(
@@ -277,7 +277,7 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then _1_2_ProduitAcheteOperation (depends on TransactionVent)
+            // Then _1_2_ProduitAcheteOperation (depends on GTransactionVent)
             withContext(Dispatchers.IO) {
                 val snapListProduit = mutableStateListOf<_1_2_ProduitAcheteOperation>()
                 snapListProduit.addAll(produitTestData)

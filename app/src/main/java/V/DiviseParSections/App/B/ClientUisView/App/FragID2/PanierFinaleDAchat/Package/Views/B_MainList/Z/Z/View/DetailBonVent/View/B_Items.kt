@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
- fun BonVentHeader(ouvertF2BonVentId: String) {
+fun BonVentHeader(ouvertF2BonVentId: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,7 +76,7 @@ import java.util.Locale
 }
 
 @Composable
- fun CartSummarySection(cartSummary: CartSummary) {
+fun CartSummarySection(cartSummary: CartSummary) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -165,50 +166,56 @@ import java.util.Locale
 }
 
 @Composable
- fun PeriodDetailsSection(
-    ouvertPeriodId: String,
-    ouvertPeriodStartTime: Long
+fun PeriodDetailsSection(
+    ouvertPeriodKeyId: String,
+    viewModel: ZViewModel_Sec1Frag3,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Default.DateRange,
-            contentDescription = "Période",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = "Période",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+    val mainRepo = viewModel.uiStateCentralRepositorys.gTransactionVentRepository
+    val ouvertData = mainRepo.datasValue.find { it.keyID == ouvertPeriodKeyId }
 
-            Text(
-                text = ouvertPeriodId,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+    if (ouvertData != null) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Période",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
-            if (ouvertPeriodStartTime > 0) {
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
-                    text = "Début: ${dateFormat.format(Date(ouvertPeriodStartTime))}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    text = "Période",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
+
+                Text(
+                    text = ouvertPeriodKeyId,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+
+                if (ouvertData.parentPeriodeVentStartTimestamp > 0) {
+                    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    Text(
+                        text = "Début: ${dateFormat.format(Date(ouvertData.parentPeriodeVentStartTimestamp))}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
- fun ErrorCard(modifier: Modifier = Modifier) {
+fun ErrorCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()

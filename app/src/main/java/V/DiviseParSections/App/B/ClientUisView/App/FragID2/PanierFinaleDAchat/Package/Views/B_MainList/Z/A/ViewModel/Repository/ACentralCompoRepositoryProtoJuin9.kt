@@ -28,7 +28,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val bClientsStateCompoRepository: B_ClientsStateCompoRepository,
-    val transactionCommercialState: GTransactionVentRepository,
+    val gTransactionVentRepository: GTransactionVentRepository,
 
     val fCouleurAchatOperationRepositoryComposable: FVentCouleurOperationRepository,
 
@@ -117,9 +117,9 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         bClientsStateCompoRepository.datasValue.count { client ->
-            val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
+            val lastTransaction = gTransactionVentRepository.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                TransactionVent.EtateActuellementEst.Cible,
+                GTransactionVent.EtateActuellementEst.Cible,
             )
         }
     }
@@ -128,10 +128,10 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
-    val ouvertTransactionCommercial: TransactionVent? by derivedStateOf {
+    val ouvertTransactionCommercial: GTransactionVent? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
-            transactionCommercialState.getClientLastTransactionParEtate(
-                it.id, TransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            gTransactionVentRepository.getClientLastTransactionParEtate(
+                it.id, GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
     }

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,7 @@ open class ClientsMapFilterViewModel(
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->
-            if (transaction.etateActuellementEst == TransactionVent.EtateActuellementEst.COMMANDE_LIVRAI) {
+            if (transaction.etateActuellementEst == GTransactionVent.EtateActuellementEst.COMMANDE_LIVRAI) {
                 // Get transaction date
                 val transactionDate = Date(transaction.timestamps)
                 val cal = Calendar.getInstance()
@@ -173,7 +173,7 @@ open class ClientsMapFilterViewModel(
                 var key by mutableStateOf("")
                 var cActive by mutableStateOf(false)
 
-                var cesCommercialTransactions by mutableStateOf<List<TransactionVent>>(emptyList())
+                var cesCommercialTransactions by mutableStateOf<List<GTransactionVent>>(emptyList())
             }
         }
     }
@@ -191,7 +191,7 @@ open class ClientsMapFilterViewModel(
     )
 
     // Helper function to get filtered transactions based on current filter
-    open fun getFilteredTransactions(): List<TransactionVent> {
+    open fun getFilteredTransactions(): List<GTransactionVent> {
         return when (currentFilter) {
             FilterType.ALL -> allListrepo_0_0_HeadSQLRepositorys ?: emptyList()
             FilterType.DatesHistoriqueTransactions -> {
@@ -206,10 +206,10 @@ open class ClientsMapFilterViewModel(
             }
             FilterType.CIBLE -> {
                 allListrepo_0_0_HeadSQLRepositorys?.filter { transaction ->
-                    transaction.etateActuellementEst == TransactionVent.EtateActuellementEst.Cible ||
-                            transaction.etateActuellementEst == TransactionVent.EtateActuellementEst.CIBLE_PRIORITE_2 ||
-                            transaction.etateActuellementEst == TransactionVent.EtateActuellementEst.CIBLE_PRIORITE_3 ||
-                            transaction.etateActuellementEst == TransactionVent.EtateActuellementEst.CIBLE_POUR_2
+                    transaction.etateActuellementEst == GTransactionVent.EtateActuellementEst.Cible ||
+                            transaction.etateActuellementEst == GTransactionVent.EtateActuellementEst.CIBLE_PRIORITE_2 ||
+                            transaction.etateActuellementEst == GTransactionVent.EtateActuellementEst.CIBLE_PRIORITE_3 ||
+                            transaction.etateActuellementEst == GTransactionVent.EtateActuellementEst.CIBLE_POUR_2
                 } ?: emptyList()
             }
         }

@@ -79,7 +79,7 @@ fun MapContent(
 
     LaunchedEffect(
         viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.aCentralCompoRepositoryProtoJuin9.transactionCommercialState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.aCentralCompoRepositoryProtoJuin9.gTransactionVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.aCentralCompoRepositoryProtoJuin9.bClientsStateCompoRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
