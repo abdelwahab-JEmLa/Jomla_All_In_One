@@ -35,7 +35,7 @@ class PrintReceiptHandler {
 
         val printFunction = {
             val client =
-                datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.clientAcheteurID }
+                datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parentHClientOldID }
             val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
             val products = repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .filter {

@@ -92,9 +92,9 @@ class RecordingViewModel(
 
     private fun log(list: List<GTransactionVent>) {
         val map = list.map { bon ->
-            val clientAcheteurID = bon.clientAcheteurID
+            val clientAcheteurID = bon.parentHClientOldID
             val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
-            bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentVID_1_4_PeriodeVent)
+            bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentPeriodeVentOldID)
         }
         Log.d(TAG, "$map")
     }
@@ -104,7 +104,7 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentVID_1_4_PeriodeVent == uiState.activePeriodeVent?.vid && it.etateActuellementEst == GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    it.parentPeriodeVentOldID == uiState.activePeriodeVent?.vid && it.etateActuellementEst == GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
 

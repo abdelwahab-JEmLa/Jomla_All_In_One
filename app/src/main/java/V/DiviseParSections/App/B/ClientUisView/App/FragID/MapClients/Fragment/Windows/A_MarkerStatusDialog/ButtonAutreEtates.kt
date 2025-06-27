@@ -98,8 +98,8 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     }
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {
-        it.clientAcheteurID == clientId
-                && it.parentVID_1_4_PeriodeVent == periodId
+        it.parentHClientOldID == clientId
+                && it.parentPeriodeVentOldID == periodId
                 && it.etateActuellementEst == newEtate
     }
 
@@ -112,9 +112,9 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
         )
     } else {
         val newTransaction = GTransactionVent(
-            clientAcheteurID = clientId,
+            parentHClientOldID = clientId,
             nomClientConcerned = clientName,
-            parentVID_1_4_PeriodeVent = periodId,
+            parentPeriodeVentOldID = periodId,
             etateActuellementEst = newEtate,
         )
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(

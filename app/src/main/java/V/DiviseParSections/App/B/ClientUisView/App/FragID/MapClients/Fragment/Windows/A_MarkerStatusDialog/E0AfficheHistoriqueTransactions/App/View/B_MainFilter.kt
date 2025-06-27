@@ -21,7 +21,7 @@ fun MainFilter(
         uiState.transactionsDateToList_C_3_BonAchate
             .map { (period, transactions) ->
                 val filteredTransactions = transactions.filter { transaction ->
-                    transaction.clientAcheteurID == idClient
+                    transaction.parentHClientOldID == idClient
                 }
                 Pair(period, filteredTransactions)
             }

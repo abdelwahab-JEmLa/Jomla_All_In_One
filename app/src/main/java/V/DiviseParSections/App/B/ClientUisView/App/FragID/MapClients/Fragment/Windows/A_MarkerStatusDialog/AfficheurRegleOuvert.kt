@@ -27,7 +27,7 @@ fun AfficheurRegleOuvert(
     fun getLatestTransactionForClient(clientId: Long): GTransactionVent? {
         return uiState
             .c3_TransactionCommercialList
-            .filter { it.clientAcheteurID == clientId }
+            .filter { it.parentHClientOldID == clientId }
             .maxByOrNull { it.timestamps }
     }
 

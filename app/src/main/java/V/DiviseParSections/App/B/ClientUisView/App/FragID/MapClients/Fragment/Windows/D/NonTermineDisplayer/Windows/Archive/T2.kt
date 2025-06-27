@@ -71,8 +71,8 @@ fun testData(): List<GTransactionVent> {
     return listOf(
         GTransactionVent(
             vid = 10L,
-            parentVID_1_4_PeriodeVent = 7L,
-            clientAcheteurID = 15L,
+            parentPeriodeVentOldID = 7L,
+            parentHClientOldID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
@@ -80,8 +80,8 @@ fun testData(): List<GTransactionVent> {
         ),
         GTransactionVent(
             vid = 5L,
-            parentVID_1_4_PeriodeVent = 7L,
-            clientAcheteurID = 4L,
+            parentPeriodeVentOldID = 7L,
+            parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628555L,
             heurDebutInString = "20:47",
@@ -95,8 +95,8 @@ fun testData(): List<GTransactionVent> {
         ),
         GTransactionVent(
             vid = 4L,
-            parentVID_1_4_PeriodeVent = 7L,
-            clientAcheteurID = 4L,
+            parentPeriodeVentOldID = 7L,
+            parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
@@ -104,8 +104,8 @@ fun testData(): List<GTransactionVent> {
         ),
         GTransactionVent(
             vid = 6L,
-            parentVID_1_4_PeriodeVent = 7L,
-            clientAcheteurID = 4L,
+            parentPeriodeVentOldID = 7L,
+            parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",

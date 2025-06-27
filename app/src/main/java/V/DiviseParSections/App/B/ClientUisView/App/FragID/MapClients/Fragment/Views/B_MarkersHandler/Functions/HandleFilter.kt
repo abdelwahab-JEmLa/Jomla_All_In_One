@@ -99,7 +99,7 @@ fun filterClientsBasedOnMode(
                         bonAchat.etateActuellementEst == GTransactionVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                                 || bonAchat.etateActuellementEst == GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
-                    .map { bonAchat -> bonAchat.clientAcheteurID }
+                    .map { bonAchat -> bonAchat.parentHClientOldID }
                     .distinct()
 
             clientDataBaseSnapList.filter { client ->

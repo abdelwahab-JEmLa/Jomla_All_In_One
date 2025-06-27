@@ -53,8 +53,8 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
     val currentTransaction =
         viewModel.c3_BonAchate_List
             .filter {
-                it.clientAcheteurID == clientId &&
-                        it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+                it.parentHClientOldID == clientId &&
+                        it.parentPeriodeVentOldID == ceComptVendeurInsertBonsAchatAuPeriodID
             }
             .maxByOrNull { it.timestamps }
 

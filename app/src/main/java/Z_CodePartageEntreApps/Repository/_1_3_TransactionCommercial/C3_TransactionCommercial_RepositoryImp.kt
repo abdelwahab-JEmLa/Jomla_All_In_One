@@ -25,7 +25,7 @@ class C3_TransactionCommercial_RepositoryImp(
     override var modelDatasSnapList: SnapshotStateList<GTransactionVent> =
         mutableStateListOf()
 
-    val refModel = GTransactionVent.caRef
+    val refModel = GTransactionVent.ref
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)

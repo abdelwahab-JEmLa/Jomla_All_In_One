@@ -36,7 +36,7 @@ fun MainFilter(
     }
 
     val idClientFiltruer = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID }?.clientAcheteurID ?: 0L
+        bonAchatList.find { it.vid == filterBonID }?.parentHClientOldID ?: 0L
     }
 
     val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {

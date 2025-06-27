@@ -195,7 +195,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
 
                 val groupedTransactions = sortedPeriods.map { period ->
                     val periodTransactions = sortedTransactions.filter { transaction ->
-                        transaction.parentVID_1_4_PeriodeVent == period.vid
+                        transaction.parentPeriodeVentOldID == period.vid
                     }
                     Pair(period, periodTransactions)
                 }
@@ -220,7 +220,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
     }
 
     fun openTransaction(data: GTransactionVent): Unit {
-        updateActiveComptIdClientOuvertPoutCeCompt(data.clientAcheteurID)
+        updateActiveComptIdClientOuvertPoutCeCompt(data.parentHClientOldID)
         navigateToCartScreen()
     }
 

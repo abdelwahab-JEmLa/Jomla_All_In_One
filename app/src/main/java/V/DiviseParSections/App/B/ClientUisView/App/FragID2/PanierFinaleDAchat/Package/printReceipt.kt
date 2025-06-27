@@ -38,7 +38,7 @@ fun printReceipt(
 
     val printFunction = {
         // Get client information
-        val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.clientAcheteurID }
+        val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parentHClientOldID }
 
         // Generate current date string
         val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())

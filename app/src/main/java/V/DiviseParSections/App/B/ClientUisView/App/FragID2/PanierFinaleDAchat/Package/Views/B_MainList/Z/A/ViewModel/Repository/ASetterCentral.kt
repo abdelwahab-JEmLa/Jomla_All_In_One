@@ -5,24 +5,36 @@ import com.google.firebase.database.DatabaseReference
 
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
+    val gTransactionVentRepository: GTransactionVentRepository,
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    fun genereUnPushKeyFireBase(ref: DatabaseReference ) = ref.push().key.toString()
+    fun genereUnPushKeyFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
-    val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
     val bClientsStateCompoRepository = getter.bClientsStateCompoRepository
 
     fun ouvrireUneNewTransactionVent(clientOldId: Long) {
+        setParameterAuAppCompt(clientOldId)
 
-        setParameterAuCompt(clientOldId)
+        val zAppComptRepositoryComposableOuvertData = zAppComptRepositoryComposable.ouvertData
+        if (zAppComptRepositoryComposableOuvertData != null) {
+            gTransactionVentRepository.addOrUpdateData(
+                GTransactionVent(
+                    keyID = zAppComptRepositoryComposableOuvertData.ouvertGTransactionVentKeyId,
+                    parentPeriodeVentKeyID = zAppComptRepositoryComposableOuvertData.ouvertHPeriodVentKeyId,
+                    parentPeriodeVentStartTimestamp = zAppComptRepositoryComposableOuvertData.ouvertHPeriodVentTimestamp
+                )
+            )
+        }
     }
 
-    private fun setParameterAuCompt(clientOldId: Long) {
+    private fun setParameterAuAppCompt(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         zAppComptRepositoryComposable.addOrUpdateData(
             zAppComptRepositoryComposable.ouvertData!!.copy(
                 ouvertGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
 
                 ouvertClientOnVentKey = client.keyID,
+
                 ouvertClientOnVentAncienId = client.id,
                 ouvertClientOnVentNom = client.nom,
             )

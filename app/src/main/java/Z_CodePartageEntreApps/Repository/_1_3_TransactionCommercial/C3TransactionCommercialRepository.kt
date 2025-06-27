@@ -15,7 +15,7 @@ interface C3TransactionCommercialRepository {
     companion object {
         const val TAG = "GTransactionVent"
 
-        val sonDataBaseRef = GTransactionVent.caRef
+        val sonDataBaseRef = GTransactionVent.ref
 
     }
 

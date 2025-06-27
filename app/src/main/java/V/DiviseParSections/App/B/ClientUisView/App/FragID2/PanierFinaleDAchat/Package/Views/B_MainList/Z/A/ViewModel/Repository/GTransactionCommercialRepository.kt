@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent.EtateActuellementEst
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.creatTimeTampDepuitStr
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -46,10 +45,6 @@ class GTransactionVentRepository(
         datasValue.find {
             it.keyID == ouvertGTransactionVentKeyId
         }
-            ?: GTransactionVent(
-                parentPeriodeVentKeyID =
-                    zAppComptRepositoryComposable.ouvertData?.ouvertGTransactionVentKeyId ?: ""
-            )
     }
 
 
@@ -82,13 +77,13 @@ class GTransactionVentRepository(
         etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): GTransactionVent? {
         return datasValue.filter {
-            it.clientAcheteurID == clientId && it.etateActuellementEst == etateActuellementEst
+            it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.keyID }
     }
 
     fun getClientLastTransaction(clientId: Long): GTransactionVent? {
         return datasValue.filter {
-            it.clientAcheteurID == clientId
+            it.parentHClientOldID == clientId
         }.maxByOrNull { it.keyID }
     }
 
@@ -130,26 +125,30 @@ class GTransactionVentRepository(
 @Entity
 data class GTransactionVent(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
+    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
-    var parentZAppComptID: String = "b1",
-
     //PeriodeVen
-    var parentPeriodeVentKeyID: String = "",
+    var parentPeriodeVentKeyID: String = getPushFireBase(ref),
     var parentPeriodeVentStartTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
-
-    //Section Infos Forging Keys
-    var clientAcheteurID: Long = 0L,
+    //Section Infos ForgingKeys
+    var parentHClientKeyID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
-    var parentVID_1_4_PeriodeVent: Long = 0L,
-    var parentZAppComptNom: String = "",
 
-    var vid: Long = 0L,
+    var parentZAppComptCreateurKeyID: String = "b1",
+
+    //Autres Infos ForgingKeys
+    //PeriodeVen
+    var parentPeriodeVentCreationTimestamps: Long = System.currentTimeMillis(),
+    var parentPeriodeVentOldID: Long = 0L,
+
+    //Autres Infos ForgingKeys
+    var parentHClientOldID: Long = 0L,
+
 
     // Section InfosDeBase
-    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
     var heurFinInString: String = "Non Defini",
 
@@ -165,14 +164,16 @@ data class GTransactionVent(
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
 
-
+    //A Supp
+    var vid: Long = 0L,
+    var parentZAppComptNom: String = "",
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
 ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {
-            val parent = "(${parentVID_1_4_PeriodeVent})"
-            val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
+            val parent = "(${parentPeriodeVentOldID})"
+            val thisVal = "->(${parentHClientOldID}_($nomClientConcerned))"
 
             val name = etateActuellementEst.nomArabe
 
@@ -217,7 +218,7 @@ data class GTransactionVent(
     }
 
     fun isSameEntity(other: GTransactionVent) =
-        keyID == other.keyID && parentZAppComptID == other.parentZAppComptID && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
+        keyID == other.keyID && parentZAppComptCreateurKeyID == other.parentZAppComptCreateurKeyID && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
 
     override fun equals(other: Any?) =
         this === other || (other is GTransactionVent && isSameEntity(other))
@@ -227,7 +228,7 @@ data class GTransactionVent(
     )
 
     companion object {
-        val caRef = Firebase.database.getReference(
+        val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GTransactionVent"
         )
     }

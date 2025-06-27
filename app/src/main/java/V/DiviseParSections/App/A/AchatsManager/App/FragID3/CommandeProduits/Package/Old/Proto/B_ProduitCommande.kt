@@ -42,7 +42,7 @@ fun B_ProduitCommande(
     // Create add map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {
         models.c3TransactionCommercialRepository.modelDatasSnapList
-            .associate { it.vid to it.parentVID_1_4_PeriodeVent }
+            .associate { it.vid to it.parentPeriodeVentOldID }
     }
 
     // Find all product instances with the same produitAcheterID (same base product)
@@ -110,7 +110,7 @@ fun B_ProduitCommande(
         // Get all client IDs from those BonAchat entries
         models.c3TransactionCommercialRepository.modelDatasSnapList
             .filter { it.vid in bonAchatIds }
-            .map { it.clientAcheteurID }
+            .map { it.parentHClientOldID }
             .distinct()
     }
 

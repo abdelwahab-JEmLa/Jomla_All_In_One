@@ -66,7 +66,7 @@ fun A_APP1FragID3_MainScreen(
             val bonAchatId = product127.parent_1_3_TransactionCommercial
             val bonAchat = models.c3TransactionCommercialRepository.modelDatasSnapList.find { it.vid == bonAchatId }
             if (bonAchat != null) {
-                Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentVID_1_4_PeriodeVent}, filter=$periodFilter")
+                Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentPeriodeVentOldID}, filter=$periodFilter")
             } else {
                 Log.d(TAG, "BonAchat not found for product 127")
             }
@@ -92,7 +92,7 @@ fun A_APP1FragID3_MainScreen(
 
             // Debug logging for period filtering
             val bonAchatsPeriods = models.c3TransactionCommercialRepository.modelDatasSnapList
-                .map { "${it.vid}: ${it.parentVID_1_4_PeriodeVent}" }
+                .map { "${it.vid}: ${it.parentPeriodeVentOldID}" }
             Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 
             // First pass: find all products that meet the criteria
@@ -135,7 +135,7 @@ fun A_APP1FragID3_MainScreen(
                     // 3. Period filter - only if add period filter is set
                     if (periodFilter != null) {
                         val bonAchat = bonAchatsById[product.parent_1_3_TransactionCommercial]
-                        val productPeriod = bonAchat?.parentVID_1_4_PeriodeVent
+                        val productPeriod = bonAchat?.parentPeriodeVentOldID
 
                         // Debug logging for this specific product's period
                         if (isProduct127) {
@@ -150,7 +150,7 @@ fun A_APP1FragID3_MainScreen(
 
                         // Get all periods for these BonAchats
                         val allPeriods = allBonAchats.mapNotNull { bonAchatId ->
-                            bonAchatsById[bonAchatId]?.parentVID_1_4_PeriodeVent
+                            bonAchatsById[bonAchatId]?.parentPeriodeVentOldID
                         }.distinct()
 
                         // FIXED: Changed from allPeriodsMatch to anyPeriodMatches

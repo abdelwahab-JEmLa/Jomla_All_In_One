@@ -123,8 +123,8 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     val clientId = relatedClients?.id ?: 0L
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {
-        it.clientAcheteurID == clientId
-                && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+        it.parentHClientOldID == clientId
+                && it.parentPeriodeVentOldID == ceComptVendeurInsertBonsAchatAuPeriodID
                 && it.etateActuellementEst == newEtate
     }
 
@@ -140,9 +140,9 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
         )
     } else {
         val newTrx = GTransactionVent(
-            clientAcheteurID = clientId,
+            parentHClientOldID = clientId,
             nomClientConcerned = relatedClients?.nom!!,
-            parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
+            parentPeriodeVentOldID = ceComptVendeurInsertBonsAchatAuPeriodID!!,
             etateActuellementEst = newEtate,
             heurDebutInString = SimpleDateFormat(
                 "HH:mm",

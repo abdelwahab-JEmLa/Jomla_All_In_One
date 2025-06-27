@@ -55,7 +55,7 @@ fun ColumnScope.BonVentInfos(
     val _0_0_HeadSQLRepositorysrepositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
 
     val relativeClientDataBase =
-        datasB_ClientInfosProtoJuin3List.find { it.id == relativeBonAchate?.clientAcheteurID }
+        datasB_ClientInfosProtoJuin3List.find { it.id == relativeBonAchate?.parentHClientOldID }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
