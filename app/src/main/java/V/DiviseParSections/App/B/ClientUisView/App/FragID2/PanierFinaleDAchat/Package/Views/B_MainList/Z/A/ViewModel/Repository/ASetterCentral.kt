@@ -5,7 +5,7 @@ import com.google.firebase.database.DatabaseReference
 
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
-    val gTransactionVentRepository: GTransactionVentRepository,
+    val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
     fun genereUnPushKeyFireBase(ref: DatabaseReference) = ref.push().key.toString()
@@ -20,7 +20,7 @@ class ASetterCentral(
             gTransactionVentRepository.addOrUpdateData(
                 with(zAppComptRepositoryComposableOuvertData) {
                     GTransactionVent(
-                        keyID = onVentGTransactionVentKeyId,
+                        keyID = onVentGBonVentKeyId,
 
                         parentPeriodeVentKeyID = ouvertHPeriodVentKeyId,
                         parentPeriodeVentStartTimestamp = ouvertHPeriodVentTimestamp,
@@ -37,7 +37,7 @@ class ASetterCentral(
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         zAppComptRepositoryComposable.addOrUpdateData(
             zAppComptRepositoryComposable.ouvertData!!.copy(
-                onVentGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
+                onVentGBonVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
 
                 onVentFClientKeyID = client.keyID,
 
@@ -61,13 +61,13 @@ class ASetterCentral(
                 val updatedOperation = existingOperation.copy(
                     quantityAchete = quantity,
                 )
-                getter.fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedOperation)
+                getter.fVentCouleurOperationRepository.addOrUpdateData(updatedOperation)
             } else {
-                getter.fCouleurAchatOperationRepositoryComposable.addOrUpdateData(existingOperation)
+                getter.fVentCouleurOperationRepository.addOrUpdateData(existingOperation)
             }
         } ?: run {
             if (data != null) {
-                getter.fCouleurAchatOperationRepositoryComposable.acheterUneCouleur(
+                getter.fVentCouleurOperationRepository.acheterUneCouleur(
                     ouvertData = data,
                     relatedCouleur = relatedCouleur,
                     quantity = quantity

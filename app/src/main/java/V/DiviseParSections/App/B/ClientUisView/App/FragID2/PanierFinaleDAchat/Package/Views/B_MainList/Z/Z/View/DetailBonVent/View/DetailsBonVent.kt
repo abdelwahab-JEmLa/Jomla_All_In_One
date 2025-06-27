@@ -48,22 +48,20 @@ fun DetailsBonVent(
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
     val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
-    val achatsRepository =
-        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
-    val ouvertF2BonVentId = comptAppActuelle?.onVentGTransactionVentKeyId ?: ""
+    val fVentCouleurOperationRepository =
+        viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+
     val ouvertPeriodKeyId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
 
     val cartSummary by remember {
         derivedStateOf {
-            val achats = achatsRepository.filteredDatasValue.filter {
-                it.parentBonVentId == ouvertF2BonVentId
-            }
+            val vents = fVentCouleurOperationRepository.onVentFilteredDatas
             CartSummary(
-                totalItems = achats.sumOf { it.quantityAchete },
-                totalProducts = achats.groupBy { it.parentProduitId }.size,
-                totalValue = achats.sumOf { it.quantityAchete * it.provisoireMonPrix },
-                itemsCount = achats.size
+                totalItems = vents.sumOf { it.quantityAchete },
+                totalProducts = vents.groupBy { it.parentProduitId }.size,
+                totalValue = vents.sumOf { it.quantityAchete * it.provisoireMonPrix },
+                itemsCount = vents.size
             )
         }
     }

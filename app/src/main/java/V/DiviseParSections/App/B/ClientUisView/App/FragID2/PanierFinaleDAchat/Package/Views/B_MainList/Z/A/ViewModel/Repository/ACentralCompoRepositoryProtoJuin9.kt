@@ -28,9 +28,9 @@ class ACentralCompoRepositoryProtoJuin9(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val fClientRepository: FClientRepository,
-    val gTransactionVentRepository: GTransactionVentRepository,
+    val gBonVentRepository: GBonVentRepository,
 
-    val fCouleurAchatOperationRepositoryComposable: FVentCouleurOperationRepository,
+    val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
@@ -60,16 +60,16 @@ class ACentralCompoRepositoryProtoJuin9(
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperation? {
         val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
 
-        val bonVentKey = ouvertData.onVentGTransactionVentKeyId
+        val bonVentKey = ouvertData.onVentGBonVentKeyId
         val periodKey = ouvertData.ouvertHPeriodVentKeyId
              /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
             vent.keyID == couleurKey
         }?.parentProduitAncienId ?: return "0" // Get Long value and handle null cas*/
         val matchingOperation =
-            fCouleurAchatOperationRepositoryComposable.datasValue.find { operation ->
+            fVentCouleurOperationRepository.datasValue.find { operation ->
                 operation.parentCouleurDataBaseKey == couleurKey &&
                         operation.parentProduitAncienId == produitId && // Use parentProduitAncienId instead of parentProduitId
-                        operation.parentBonVentId == bonVentKey && // Fixed: use parentBonVentId instead of parentProduitId
+                        operation.parentGBonVentKeyId == bonVentKey && // Fixed: use parentBonVentId instead of parentProduitId
                         operation.parentEPeriodVentId == periodKey // Fixed: use parentEPeriodVentId instead of parentProduitId
             }
 
@@ -117,7 +117,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         fClientRepository.datasValue.count { client ->
-            val lastTransaction = gTransactionVentRepository.getClientLastTransaction(client.id)
+            val lastTransaction = gBonVentRepository.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 GTransactionVent.EtateActuellementEst.Cible,
             )
@@ -130,7 +130,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     val ouvertTransactionCommercial: GTransactionVent? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
-            gTransactionVentRepository.getClientLastTransactionParEtate(
+            gBonVentRepository.getClientLastTransactionParEtate(
                 it.id, GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
@@ -188,7 +188,7 @@ class ACentralCompoRepositoryProtoJuin9(
             indexCouleur: Int,
         ): String {
             return compt.ouvertHPeriodVentKeyId +
-                    "--${compt.onVentGTransactionVentKeyId}" +
+                    "--${compt.onVentGBonVentKeyId}" +
                     "--${bProduitDataBase.id}" +
                     "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }

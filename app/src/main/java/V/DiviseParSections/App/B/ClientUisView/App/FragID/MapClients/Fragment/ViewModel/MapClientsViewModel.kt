@@ -67,7 +67,7 @@ class MapClientsViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val transactionsState = aCentralCompoRepositoryProtoJuin9.gTransactionVentRepository
+    val transactionsState = aCentralCompoRepositoryProtoJuin9.gBonVentRepository
     val clientsState = aCentralCompoRepositoryProtoJuin9.fClientRepository
     val appState = aCentralCompoRepositoryProtoJuin9.comptAppState
 

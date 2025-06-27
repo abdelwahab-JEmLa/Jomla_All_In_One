@@ -35,7 +35,7 @@ import java.util.Locale
 fun TransactionVentInfosHeader(
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val repo = viewModel.uiStateCentralRepositorys.gTransactionVentRepository
+    val repo = viewModel.uiStateCentralRepositorys.gBonVentRepository
     val onVentData = repo.onVentData
 
     Box(
@@ -187,7 +187,7 @@ fun PeriodDetailsSection(
     ouvertPeriodKeyId: String,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val mainRepo = viewModel.uiStateCentralRepositorys.gTransactionVentRepository
+    val mainRepo = viewModel.uiStateCentralRepositorys.gBonVentRepository
     val ouvertData = mainRepo.datasValue.find { it.keyID == ouvertPeriodKeyId }
 
     if (ouvertData != null) {

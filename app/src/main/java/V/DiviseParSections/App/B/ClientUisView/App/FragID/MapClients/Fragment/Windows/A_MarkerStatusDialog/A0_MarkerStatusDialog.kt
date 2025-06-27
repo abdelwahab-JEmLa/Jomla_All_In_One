@@ -81,7 +81,7 @@ fun MarkerStatusDialog(
     }
 
     val isClientInCommandMode = remember(clientId, uiState) {
-        val lastTransaction = viewModel.aCentralCompoRepositoryProtoJuin9.gTransactionVentRepository.getClientLastTransaction(clientId)
+        val lastTransaction = viewModel.aCentralCompoRepositoryProtoJuin9.gBonVentRepository.getClientLastTransaction(clientId)
         lastTransaction?.etateActuellementEst == GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     }
 

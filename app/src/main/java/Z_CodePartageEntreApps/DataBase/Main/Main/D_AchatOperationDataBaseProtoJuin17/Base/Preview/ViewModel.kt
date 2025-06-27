@@ -11,7 +11,7 @@ class D_AchatOperationTestDatasViewModel(
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
 ) : ViewModel() {
       val mainData = a_CentralDatasHandlerProtoJuin9
-          .fCouleurAchatOperationRepositoryComposable
+          .fVentCouleurOperationRepository
           .datasValue
 
     data class UiStateSec9Frag1(val va: Int = 0)

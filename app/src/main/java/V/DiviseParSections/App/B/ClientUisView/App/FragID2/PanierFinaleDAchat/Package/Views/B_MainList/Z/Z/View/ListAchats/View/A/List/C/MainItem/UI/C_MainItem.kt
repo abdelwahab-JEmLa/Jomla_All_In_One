@@ -52,7 +52,7 @@ fun VentDisplayer_Sec2FragId2(
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
 ) {
-    val vent = viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+    val vent = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
         .datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v ->
         b1CouleurOuGoutProduitDataBaseRepository.datasValue

@@ -28,7 +28,7 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class GTransactionVentRepository(
+class GBonVentRepository(
     val gDataBaseTransactionCommercial: FVentCouleurOperationRepository,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
@@ -38,10 +38,10 @@ class GTransactionVentRepository(
     val datasState: State<List<GTransactionVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentGTransactionVentKeyId } }
+    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId } }
 
     val ouvertGTransactionVentKeyId =
-        (zAppComptRepositoryComposable.ouvertData?.onVentGTransactionVentKeyId ?: "")
+        (zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId ?: "")
 
     val ouvertData by derivedStateOf {
         datasValue.find {

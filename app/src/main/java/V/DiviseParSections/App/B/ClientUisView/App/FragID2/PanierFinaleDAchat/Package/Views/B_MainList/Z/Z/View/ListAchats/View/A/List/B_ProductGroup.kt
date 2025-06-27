@@ -150,7 +150,7 @@ fun ProductGroup(
                             provisoireMonPrix = newPrice,
                             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         )
-                        viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
+                        viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
                             .addOrUpdateData(updatedVent)
                     }
                 },

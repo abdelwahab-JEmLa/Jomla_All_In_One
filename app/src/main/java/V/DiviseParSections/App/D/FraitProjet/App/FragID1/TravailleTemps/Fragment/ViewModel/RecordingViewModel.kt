@@ -153,7 +153,7 @@ class RecordingViewModel(
     fun calculateNombreClientAvecCible(): Int {
         val count = a_CentralDatasHandlerProtoJuin9.fClientRepository.datasValue
             .count { client ->
-                a_CentralDatasHandlerProtoJuin9.gTransactionVentRepository
+                a_CentralDatasHandlerProtoJuin9.gBonVentRepository
                     .getClientLastTransactionParEtate(
                         client.id,
                         GTransactionVent.EtateActuellementEst.Cible

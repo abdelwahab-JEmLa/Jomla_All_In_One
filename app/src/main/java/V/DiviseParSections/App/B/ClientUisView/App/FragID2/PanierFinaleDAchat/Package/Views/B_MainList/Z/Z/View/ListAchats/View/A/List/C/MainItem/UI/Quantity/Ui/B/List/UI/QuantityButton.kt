@@ -41,7 +41,7 @@ fun QuantityButton(
     vent: FCouleurVentOperation
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.uiStateCentralRepositorys
-        .fCouleurAchatOperationRepositoryComposable
+        .fVentCouleurOperationRepository
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
 

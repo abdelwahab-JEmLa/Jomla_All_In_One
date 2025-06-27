@@ -19,12 +19,20 @@ import kotlinx.coroutines.withContext
 @Stable
 class FVentCouleurOperationRepository(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
-) {
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+
+    ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<FCouleurVentOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+
+    val onVentFilteredDatas by derivedStateOf {
+        datasValue.filter {
+            it.parentGBonVentKeyId == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId
+        }
+    }
 
     val filteredDatasValue by derivedStateOf {
         datasValue.filter {
@@ -91,6 +99,7 @@ class FVentCouleurOperationRepository(
 
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
     }
+
     fun getTestDate(): List<FCouleurVentOperation> {
         return emptyList()
     }
@@ -125,7 +134,7 @@ class FVentCouleurOperationRepository(
         return FCouleurVentOperation(
             parentCouleurDataBaseKey = relatedCouleur.key,
 
-            parentBonVentId = ouvertData.onVentGTransactionVentKeyId,
+            parentGBonVentKeyId = ouvertData.onVentGBonVentKeyId,
 
             parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
             parentProduitAncienId = relatedCouleur.parentBProduitOldID,
@@ -157,7 +166,7 @@ data class FCouleurVentOperation(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var parentCouleurDataBaseKey: String = "",
-    var parentBonVentId: String = "",
+    var parentGBonVentKeyId: String = "",
     var parentProduitId: String = "",
     var parentZAppComptID: String = "",
     var parentEPeriodVentId: String = "",

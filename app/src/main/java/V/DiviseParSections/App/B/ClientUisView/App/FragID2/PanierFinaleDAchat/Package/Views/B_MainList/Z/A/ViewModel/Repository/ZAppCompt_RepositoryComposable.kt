@@ -104,7 +104,7 @@ data class Z_AppCompt(
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var onVentGTransactionVentKeyId: String = getPushFireBase(ref),
+    var onVentGBonVentKeyId: String = getPushFireBase(ref),
     var ouvertGTransactionVentDebugNameKey: String = "",
 
     var onVentFClientKeyID: String = getPushFireBase(ref),

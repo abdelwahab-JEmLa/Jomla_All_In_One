@@ -40,7 +40,7 @@ fun TariffsButtonsSec7ID2(
     val uiState by viewModel.uiState.collectAsState()
 
     val bonAchatList =
-        viewModel.aCentralDatasHandlerProtoJuin9.gTransactionVentRepository.datasValue
+        viewModel.aCentralDatasHandlerProtoJuin9.gBonVentRepository.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
