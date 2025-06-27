@@ -1,10 +1,8 @@
-package Z_CodePartageEntreApps.Repository.Main.Proto
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial.EtateActuellementEst
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FAchatOperationCouleurRepositoryComposable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -35,8 +33,8 @@ class ETransactionCommercialCompoRepository(
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<C3_TransactionCommercial>>(emptyList())
-    val datasState: State<List<C3_TransactionCommercial>> = _datas
+    private val _datas = mutableStateOf<List<GmodelTransactionCommercial>>(emptyList())
+    val datasState: State<List<GmodelTransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = dAchatOperationCouleurRepositoryComposable.filteredDatasValue.lastOrNull {
@@ -45,7 +43,7 @@ class ETransactionCommercialCompoRepository(
 
     val ouvertData by derivedStateOf {
         datasValue.find {
-            it.bsonObjectId == lastMatchOA
+            it.keyID == lastMatchOA
         }
     }
 
@@ -81,32 +79,32 @@ class ETransactionCommercialCompoRepository(
     fun getClientLastTransactionParEtate(
         clientId: Long, etateActuellementEst: EtateActuellementEst =
             EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): C3_TransactionCommercial? {
+    ): GmodelTransactionCommercial? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
                         && it.etateActuellementEst == etateActuellementEst
             }
-            .maxByOrNull { it.bsonObjectId }
+            .maxByOrNull { it.keyID }
     }
 
-    fun getClientLastTransaction(clientId: Long): C3_TransactionCommercial? {
+    fun getClientLastTransaction(clientId: Long): GmodelTransactionCommercial? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
             }
-            .maxByOrNull { it.bsonObjectId }
+            .maxByOrNull { it.keyID }
     }
 
     fun updateLoadingProgress(progress: Float) {
         _loadingProgress.floatValue = progress
     }
 
-    fun updateDatas(newDatas: List<C3_TransactionCommercial>) {
+    fun updateDatas(newDatas: List<GmodelTransactionCommercial>) {
         _datas.value = newDatas
     }
 
-    fun addOrUpdateData(data: C3_TransactionCommercial) {
+    fun addOrUpdateData(data: GmodelTransactionCommercial) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
@@ -126,7 +124,7 @@ class ETransactionCommercialCompoRepository(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: C3_TransactionCommercial) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GmodelTransactionCommercial) {
         ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
             dataUpdate
         )
@@ -134,9 +132,9 @@ class ETransactionCommercialCompoRepository(
 }
 
 @Entity
-data class C3_TransactionCommercial(
+data class GmodelTransactionCommercial(
     @PrimaryKey
-    var bsonObjectId: String = getPushFireBase(ref),
+    var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
@@ -210,16 +208,16 @@ data class C3_TransactionCommercial(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun isSameEntity(other: C3_TransactionCommercial) =
-        bsonObjectId == other.bsonObjectId
+    fun isSameEntity(other: GmodelTransactionCommercial) =
+        keyID == other.keyID
                 && parentZAppComptID == other.parentZAppComptID
                 && parentPeriodeVentID == other.parentPeriodeVentID
 
     override fun equals(other: Any?) =
-        this === other || (other is C3_TransactionCommercial && isSameEntity(other))
+        this === other || (other is GmodelTransactionCommercial && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
-        bsonObjectId,
+        keyID,
         parentZAppComptNom,
         parentPeriodeVentID
     )

@@ -5,8 +5,6 @@ import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository.Main.Proto.ETransactionCommercialCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import android.content.Context
 import androidx.compose.runtime.Stable
@@ -121,7 +119,7 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                C3_TransactionCommercial.EtateActuellementEst.Cible,
+                GmodelTransactionCommercial.EtateActuellementEst.Cible,
             )
         }
     }
@@ -130,10 +128,10 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
-    val ouvertTransactionCommercial: C3_TransactionCommercial? by derivedStateOf {
+    val ouvertTransactionCommercial: GmodelTransactionCommercial? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             transactionCommercialState.getClientLastTransactionParEtate(
-                it.id, C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                it.id, GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
     }

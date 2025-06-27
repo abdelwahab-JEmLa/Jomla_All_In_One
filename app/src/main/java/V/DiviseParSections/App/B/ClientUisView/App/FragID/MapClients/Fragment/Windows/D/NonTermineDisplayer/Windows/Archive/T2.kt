@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +28,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<C3_TransactionCommercial>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<GmodelTransactionCommercial>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.Cible }
         }
     }
 
@@ -39,7 +39,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<C3_TransactionCo
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<C3_TransactionCommercial>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<GmodelTransactionCommercial>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,7 +50,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<C3_TransactionComm
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: C3_TransactionCommercial) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: GmodelTransactionCommercial) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -67,18 +67,18 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: C3_TransactionCommercial)
     }
 }
 
-fun testData(): List<C3_TransactionCommercial> {
+fun testData(): List<GmodelTransactionCommercial> {
     return listOf(
-        C3_TransactionCommercial(
+        GmodelTransactionCommercial(
             vid = 10L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
-            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.Cible
+            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.Cible
         ),
-        C3_TransactionCommercial(
+        GmodelTransactionCommercial(
             vid = 5L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
@@ -91,25 +91,25 @@ fun testData(): List<C3_TransactionCommercial> {
             vocaleKeyID = "",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
         ),
-        C3_TransactionCommercial(
+        GmodelTransactionCommercial(
             vid = 4L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
-            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
-        C3_TransactionCommercial(
+        GmodelTransactionCommercial(
             vid = 6L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",
-            etateActuellementEst = C3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = GmodelTransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
         )
     )
 }

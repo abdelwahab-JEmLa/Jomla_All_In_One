@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosListDepuitAncienDataBase: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var produitInfosList: SnapshotStateList<A_ProduitInfos> = mutableStateListOf(),
-    var bonAchatList: List<C3_TransactionCommercial> = emptyList(),
+    var bonAchatList: List<GmodelTransactionCommercial> = emptyList(),
     var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
 

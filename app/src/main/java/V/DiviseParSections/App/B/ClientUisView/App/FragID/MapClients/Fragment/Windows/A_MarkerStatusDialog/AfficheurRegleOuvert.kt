@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +24,7 @@ fun AfficheurRegleOuvert(
 ) {
     val clientId = relatedClients?.id ?: 0L
 
-    fun getLatestTransactionForClient(clientId: Long): C3_TransactionCommercial? {
+    fun getLatestTransactionForClient(clientId: Long): GmodelTransactionCommercial? {
         return uiState
             .c3_TransactionCommercialList
             .filter { it.clientAcheteurID == clientId }
@@ -66,14 +66,14 @@ fun AfficheurRegleOuvert(
                     text = "الحالة الحالية: ${latestTransaction?.etateActuellementEst?.nomArabe ?: ""}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )
 
-                C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                GmodelTransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,

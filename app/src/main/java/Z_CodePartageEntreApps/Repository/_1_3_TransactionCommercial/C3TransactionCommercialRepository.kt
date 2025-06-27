@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface C3TransactionCommercialRepository {
-    var modelDatasSnapList: SnapshotStateList<C3_TransactionCommercial>
+    var modelDatasSnapList: SnapshotStateList<GmodelTransactionCommercial>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
     val activeId: MutableStateFlow<Long>
@@ -13,11 +13,11 @@ interface C3TransactionCommercialRepository {
     suspend fun ensureDataIsInitialized()
 
     companion object {
-        const val TAG = "C3_TransactionCommercial"
+        const val TAG = "GmodelTransactionCommercial"
 
-        val sonDataBaseRef = C3_TransactionCommercial.caRef
+        val sonDataBaseRef = GmodelTransactionCommercial.caRef
 
     }
 
-    fun getOuvert_1_3_TransactionCommercial(): C3_TransactionCommercial?
+    fun getOuvert_1_3_TransactionCommercial(): GmodelTransactionCommercial?
 }

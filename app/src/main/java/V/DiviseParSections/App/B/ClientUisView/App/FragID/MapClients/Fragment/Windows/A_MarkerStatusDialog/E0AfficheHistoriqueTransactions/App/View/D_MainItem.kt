@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,9 +53,9 @@ import org.koin.compose.koinInject
 @Composable
 fun MainItem(
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
-    transaction: C3_TransactionCommercial,
+    transaction: GmodelTransactionCommercial,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    onClickToOpenTransaction: (C3_TransactionCommercial) -> Unit,
+    onClickToOpenTransaction: (GmodelTransactionCommercial) -> Unit,
 ) {
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
@@ -109,7 +109,7 @@ fun MainItem(
         }
     }
 
-    if (etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    if (etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeTransactionId != transaction.vid
     ) {
         LaunchedEffect(key1 = Unit) {
@@ -171,7 +171,7 @@ fun MainItem(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (etateActuellementEst == C3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                    if (etateActuellementEst == GmodelTransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
                                 onClickToOpenTransaction(transaction)

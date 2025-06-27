@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
-fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
+fun GmodelTransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     clickedClient: Long,
@@ -39,8 +39,8 @@ fun C3_TransactionCommercial.EtateActuellementEst.ButtonAutreEtates(
                 newEtate = newEtate,
             )
 
-            if (newEtate == C3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == C3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            if (newEtate == GmodelTransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == GmodelTransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
@@ -81,7 +81,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
-    newEtate: C3_TransactionCommercial.EtateActuellementEst,
+    newEtate: GmodelTransactionCommercial.EtateActuellementEst,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -111,7 +111,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
             updatedBonAchat
         )
     } else {
-        val newTransaction = C3_TransactionCommercial(
+        val newTransaction = GmodelTransactionCommercial(
             clientAcheteurID = clientId,
             nomClientConcerned = clientName,
             parentVID_1_4_PeriodeVent = periodId,

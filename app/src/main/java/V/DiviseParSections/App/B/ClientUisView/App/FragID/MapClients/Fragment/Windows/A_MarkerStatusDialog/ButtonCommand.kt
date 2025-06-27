@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,7 +32,7 @@ fun CommandButton(
     viewModel: MapClientsViewModel,
     clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
     uiState: UiState,
-    etateActuellementEst1: C3_TransactionCommercial.EtateActuellementEst,
+    etateActuellementEst1: GmodelTransactionCommercial.EtateActuellementEst,
     clientId: Long,
     selectedMarker: Marker,
     onUpdateLongAppSetting: () -> Unit,
@@ -111,8 +111,8 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
-    newEtate: C3_TransactionCommercial.EtateActuellementEst,
-    onAddNew: (C3_TransactionCommercial) -> Unit,
+    newEtate: GmodelTransactionCommercial.EtateActuellementEst,
+    onAddNew: (GmodelTransactionCommercial) -> Unit,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -139,7 +139,7 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
             updatedBonAchat
         )
     } else {
-        val newTrx = C3_TransactionCommercial(
+        val newTrx = GmodelTransactionCommercial(
             clientAcheteurID = clientId,
             nomClientConcerned = relatedClients?.nom!!,
             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,

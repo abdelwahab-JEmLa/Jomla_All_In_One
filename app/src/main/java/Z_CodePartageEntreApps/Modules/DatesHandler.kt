@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import Z_CodePartageEntreApps.Repository.Main.Proto.C3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GmodelTransactionCommercial
 import android.annotation.SuppressLint
 import android.util.Log
 import java.text.SimpleDateFormat
@@ -77,7 +77,7 @@ class DatesHandler {
         }
     }
 
-    fun debugTimestamps(transactions: List<C3_TransactionCommercial>, tag: String) {
+    fun debugTimestamps(transactions: List<GmodelTransactionCommercial>, tag: String) {
         Log.d(tag, "=== DEBUG TIMESTAMPS ===")
         transactions.forEachIndexed { index, transaction ->
             val date = java.util.Date(transaction.timestamps)
