@@ -177,16 +177,17 @@ fun ClientDetailsSection(
                 fontWeight = FontWeight.Medium
             )
 
-            val client = clientDetails
-            if (client != null) {
-                // Client details display code - replace with actual client properties
+            if (clientDetails != null) {
                 Text(
-                    text = "ID: ${ouvertClientId}",
+                    text = "ID: $ouvertClientId",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-
-                // Add other client details as needed based on your client data class
+                Text(
+                    text = "keyID: ${clientDetails.keyID}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
 
             } else if (ouvertClientId.isNotEmpty()) {
                 Text(
