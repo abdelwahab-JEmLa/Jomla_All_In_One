@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.ListAchats.View.A.List
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.FAchatOperationCouleurRepositoryComposable
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GDataBaseTransactionCommercial
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    fCouleurAchatOperationRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
+    fCouleurAchatOperationRepositoryComposable: GDataBaseTransactionCommercial,
     viewModel: ZViewModel_Sec1Frag3
 ) {
     val groupedAchats = fCouleurAchatOperationRepositoryComposable.datasValue.groupBy { it.parentProduitId }

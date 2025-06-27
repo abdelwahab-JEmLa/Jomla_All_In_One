@@ -28,8 +28,8 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class ETransactionCommercialCompoRepository(
-    val dAchatOperationCouleurRepositoryComposable: FAchatOperationCouleurRepositoryComposable,
+class GRepoTransactionCommercial(
+    val gDataBaseTransactionCommercial: GDataBaseTransactionCommercial,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -37,7 +37,7 @@ class ETransactionCommercialCompoRepository(
     val datasState: State<List<GmodelTransactionCommercial>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    val lastMatchOA = dAchatOperationCouleurRepositoryComposable.filteredDatasValue.lastOrNull {
+    val lastMatchOA = gDataBaseTransactionCommercial.filteredDatasValue.lastOrNull {
         it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentOuvert
     }?.parentBonVentId
 
