@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,7 @@ class AudioRecorderAndPlayHandler(
     override fun startRecording(
         context: Context,
         parentMessageVID: Long,
-        currentTransaction: TransactionCommercial?
+        currentTransaction: TransactionVent?
     ): Result<AudioHandlerInterface.RecordingSession> {
         return try {
             if (currentRecordingSession != null) {

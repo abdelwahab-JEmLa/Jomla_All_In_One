@@ -11,7 +11,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
@@ -40,7 +40,7 @@ import java.util.Date
 @Stable
 data class UiState(
     val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
-    val c3_TransactionCommercialList: List<TransactionCommercial> = emptyList(),
+    val c3_TransactionCommercialList: List<TransactionVent> = emptyList(),
     val activeCompt: _1_5_Vendeur? = null,
     val secteursList: List<E1SecteurDeClients> = emptyList(),
     val panelsGroupeList: List<Z_AutreStatesCompoRepository.PanelsGroupeButton> = emptyList(),
@@ -129,7 +129,7 @@ class MapClientsViewModel(
 
     }
 
-    fun getLastTransaction(client: B_ClientInfosProtoJuin3): TransactionCommercial? {
+    fun getLastTransaction(client: B_ClientInfosProtoJuin3): TransactionVent? {
         return transactionsState.getClientLastTransaction(
             client.id,
         )

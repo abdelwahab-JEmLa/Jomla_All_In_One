@@ -8,7 +8,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -31,8 +31,8 @@ data class SecID5FragID2UiState(
     val mainLoadingProgress: Float = 0f,
 
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
-    val sl_C_3_BonAchate: SnapshotStateList<TransactionCommercial> = SnapshotStateList(),
-    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<TransactionCommercial>>> = emptyList(),
+    val sl_C_3_BonAchate: SnapshotStateList<TransactionVent> = SnapshotStateList(),
+    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<TransactionVent>>> = emptyList(),
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
@@ -219,7 +219,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
         }
     }
 
-    fun openTransaction(data: TransactionCommercial): Unit {
+    fun openTransaction(data: TransactionVent): Unit {
         updateActiveComptIdClientOuvertPoutCeCompt(data.clientAcheteurID)
         navigateToCartScreen()
     }

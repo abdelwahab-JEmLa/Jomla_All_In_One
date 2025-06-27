@@ -28,7 +28,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val bClientsStateCompoRepository: B_ClientsStateCompoRepository,
-    val transactionCommercialState: GRepoTransactionCommercial,
+    val transactionCommercialState: GTransactionVentRepository,
 
     val fCouleurAchatOperationRepositoryComposable: FVentCouleurOperationRepository,
 
@@ -61,7 +61,7 @@ class ACentralCompoRepositoryProtoJuin9(
         val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
 
         val bonVentKey = ouvertData.ouvertF2BonVentId
-        val periodKey = ouvertData.ouvertF1PeriodVentId
+        val periodKey = ouvertData.ouvertHPeriodVentKeyId
              /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
             vent.keyID == couleurKey
         }?.parentProduitAncienId ?: return "0" // Get Long value and handle null cas*/
@@ -119,7 +119,7 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.datasValue.count { client ->
             val lastTransaction = transactionCommercialState.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                TransactionCommercial.EtateActuellementEst.Cible,
+                TransactionVent.EtateActuellementEst.Cible,
             )
         }
     }
@@ -128,10 +128,10 @@ class ACentralCompoRepositoryProtoJuin9(
         bClientsStateCompoRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
-    val ouvertTransactionCommercial: TransactionCommercial? by derivedStateOf {
+    val ouvertTransactionCommercial: TransactionVent? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             transactionCommercialState.getClientLastTransactionParEtate(
-                it.id, TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                it.id, TransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
     }
@@ -187,7 +187,7 @@ class ACentralCompoRepositoryProtoJuin9(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.ouvertF1PeriodVentId +
+            return compt.ouvertHPeriodVentKeyId +
                     "--${compt.ouvertF2BonVentId}" +
                     "--${bProduitDataBase.id}" +
                     "--${bProduitDataBase.id}_${indexCouleur + 1}"

@@ -14,7 +14,7 @@ class ASetterCentral(
     val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
     val bClientsStateCompoRepository = getter.bClientsStateCompoRepository
 
-    fun ouvrireUnNewBonVent(clientOldId: Long) {
+    fun ouvrireUneNewTransactionVent(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         zAppComptRepositoryComposable.addOrUpdateData(
             zAppComptRepositoryComposable.ouvertData!!.copy(

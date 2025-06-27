@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
@@ -15,7 +15,7 @@ fun MainFilter(
     dateStringName: DatesHandler,
     idClient: Long,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    onClickToOpenTransaction: (TransactionCommercial) -> Unit
+    onClickToOpenTransaction: (TransactionVent) -> Unit
 ) {
     val filteredGroupedTransactions = remember(uiState.transactionsDateToList_C_3_BonAchate, idClient) {
         uiState.transactionsDateToList_C_3_BonAchate

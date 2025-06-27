@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,7 +32,7 @@ fun CommandButton(
     viewModel: MapClientsViewModel,
     clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
     uiState: UiState,
-    etateActuellementEst1: TransactionCommercial.EtateActuellementEst,
+    etateActuellementEst1: TransactionVent.EtateActuellementEst,
     clientId: Long,
     selectedMarker: Marker,
     onUpdateLongAppSetting: () -> Unit,
@@ -60,7 +60,7 @@ fun CommandButton(
             }
 
             if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.aCentral.setter.ouvrireUnNewBonVent(
+                viewModel.aCentral.setter.ouvrireUneNewTransactionVent(
                     clientOldId = clientId,
                 )
             }
@@ -111,8 +111,8 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
-    newEtate: TransactionCommercial.EtateActuellementEst,
-    onAddNew: (TransactionCommercial) -> Unit,
+    newEtate: TransactionVent.EtateActuellementEst,
+    onAddNew: (TransactionVent) -> Unit,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -139,7 +139,7 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
             updatedBonAchat
         )
     } else {
-        val newTrx = TransactionCommercial(
+        val newTrx = TransactionVent(
             clientAcheteurID = clientId,
             nomClientConcerned = relatedClients?.nom!!,
             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,

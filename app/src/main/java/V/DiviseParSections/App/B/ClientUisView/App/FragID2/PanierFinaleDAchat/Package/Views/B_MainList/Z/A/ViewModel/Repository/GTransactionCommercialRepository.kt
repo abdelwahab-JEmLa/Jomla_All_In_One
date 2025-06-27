@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent.EtateActuellementEst
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.creatTimeTampDepuitStr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -28,13 +29,13 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class GRepoTransactionCommercial(
+class GTransactionVentRepository(
     val gDataBaseTransactionCommercial: FVentCouleurOperationRepository,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<TransactionCommercial>>(emptyList())
-    val datasState: State<List<TransactionCommercial>> = _datas
+    private val _datas = mutableStateOf<List<TransactionVent>>(emptyList())
+    val datasState: State<List<TransactionVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val lastMatchOA = gDataBaseTransactionCommercial.filteredDatasValue.lastOrNull {
@@ -79,7 +80,7 @@ class GRepoTransactionCommercial(
     fun getClientLastTransactionParEtate(
         clientId: Long, etateActuellementEst: EtateActuellementEst =
             EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): TransactionCommercial? {
+    ): TransactionVent? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -88,7 +89,7 @@ class GRepoTransactionCommercial(
             .maxByOrNull { it.keyID }
     }
 
-    fun getClientLastTransaction(clientId: Long): TransactionCommercial? {
+    fun getClientLastTransaction(clientId: Long): TransactionVent? {
         return datasValue
             .filter {
                 it.clientAcheteurID == clientId
@@ -100,11 +101,11 @@ class GRepoTransactionCommercial(
         _loadingProgress.floatValue = progress
     }
 
-    fun updateDatas(newDatas: List<TransactionCommercial>) {
+    fun updateDatas(newDatas: List<TransactionVent>) {
         _datas.value = newDatas
     }
 
-    fun addOrUpdateData(data: TransactionCommercial) {
+    fun addOrUpdateData(data: TransactionVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
@@ -124,7 +125,7 @@ class GRepoTransactionCommercial(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: TransactionCommercial) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: TransactionVent) {
         ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
             dataUpdate
         )
@@ -132,14 +133,18 @@ class GRepoTransactionCommercial(
 }
 
 @Entity
-data class TransactionCommercial(
+data class TransactionVent(
     @PrimaryKey
     var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
-    var parentPeriodeVentID: String = "p1",
     var parentZAppComptID: String = "b1",
+
+    //PeriodeVen
+    var parentPeriodeVentKeyID: String =  "",
+    var parentPeriodeVentStartTimestamp: Long= creatTimeTampDepuitStr("Juin-24 08:00 AM"),
+
 
     //Section Infos Forging Keys
     var clientAcheteurID: Long = 0L,
@@ -208,18 +213,18 @@ data class TransactionCommercial(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun isSameEntity(other: TransactionCommercial) =
+    fun isSameEntity(other: TransactionVent) =
         keyID == other.keyID
                 && parentZAppComptID == other.parentZAppComptID
-                && parentPeriodeVentID == other.parentPeriodeVentID
+                && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
 
     override fun equals(other: Any?) =
-        this === other || (other is TransactionCommercial && isSameEntity(other))
+        this === other || (other is TransactionVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         keyID,
         parentZAppComptNom,
-        parentPeriodeVentID
+        parentPeriodeVentKeyID
     )
 
     companion object {

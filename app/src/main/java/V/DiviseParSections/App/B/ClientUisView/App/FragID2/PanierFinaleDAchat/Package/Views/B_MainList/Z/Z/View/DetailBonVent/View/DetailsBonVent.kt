@@ -56,8 +56,8 @@ fun DetailsBonVent(
     val ouvertF2BonVentId = comptAppActuelle?.ouvertF2BonVentId ?: ""
     val ouvertClientId = comptAppActuelle?.ouvertClientOnVentAncienId.toString() ?: ""
     val ouvertClientNom = comptAppActuelle?.ouvertClientOnVentNom ?: ""
-    val ouvertPeriodId = comptAppActuelle?.ouvertF1PeriodVentId ?: ""
-    val ouvertPeriodStartTime = comptAppActuelle?.ouvertF1PeriodVentStartTimesTamp ?: 0L
+    val ouvertPeriodId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
+    val ouvertPeriodStartTime = comptAppActuelle?.ouvertHPeriodVentStartTimesTamp ?: 0L
 
     val clientDetails by remember(ouvertClientId) {
         derivedStateOf {

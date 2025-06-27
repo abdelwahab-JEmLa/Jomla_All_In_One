@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_Pr
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
@@ -103,7 +103,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is TransactionCommercial -> processDeleteOperation(
+                        is TransactionVent -> processDeleteOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -187,7 +187,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
             // Delete from Room database
             when (databaseDao) {
-                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as TransactionCommercial)
+                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as TransactionVent)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
                 is _1_4_PeriodeVentDao -> databaseDao.delete(data as _1_4_PeriodeVent)
                 is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
@@ -239,7 +239,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     when (data) {
-                        is TransactionCommercial -> processUpsertOperation(
+                        is TransactionVent -> processUpsertOperation(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
@@ -248,7 +248,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             onSuccess = { resultVid ->
                                 Log.d(
                                     TAG,
-                                    "Upsert completed for TransactionCommercial with VID: $resultVid"
+                                    "Upsert completed for TransactionVent with VID: $resultVid"
                                 )
                                 if (resultVid <= 0) {
                                     Log.e(
@@ -310,7 +310,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     ) where DataBase : Any {
         // Create proper copy based on data type
         val dataToUpsert = when (data) {
-            is TransactionCommercial -> data.copy() as DataBase
+            is TransactionVent -> data.copy() as DataBase
             is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
             else -> data // Fallback to original object if not add known data class
         }
@@ -332,8 +332,8 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as TransactionCommercial)
-                        Log.d(TAG, "Update result for TransactionCommercial: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as TransactionVent)
+                        Log.d(TAG, "Update result for TransactionVent: $result")
                         result
                     }
 
@@ -382,8 +382,8 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 val newVid = when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
                         val result =
-                            databaseDao.insertAvecRetureNewVid(dataToUpsert as TransactionCommercial)
-                        Log.d(TAG, "New VID for TransactionCommercial: $result")
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as TransactionVent)
+                        Log.d(TAG, "New VID for TransactionVent: $result")
                         result
                     }
 

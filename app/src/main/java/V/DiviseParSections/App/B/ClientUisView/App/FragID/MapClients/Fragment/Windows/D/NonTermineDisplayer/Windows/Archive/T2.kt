@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.TransactionVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +28,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<TransactionCommercial>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<TransactionVent>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == TransactionVent.EtateActuellementEst.Cible }
         }
     }
 
@@ -39,7 +39,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<TransactionComme
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<TransactionCommercial>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<TransactionVent>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,7 +50,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<TransactionCommerc
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: TransactionCommercial) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: TransactionVent) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -67,18 +67,18 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: TransactionCommercial) {
     }
 }
 
-fun testData(): List<TransactionCommercial> {
+fun testData(): List<TransactionVent> {
     return listOf(
-        TransactionCommercial(
+        TransactionVent(
             vid = 10L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.Cible
+            etateActuellementEst = TransactionVent.EtateActuellementEst.Cible
         ),
-        TransactionCommercial(
+        TransactionVent(
             vid = 5L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
@@ -91,25 +91,25 @@ fun testData(): List<TransactionCommercial> {
             vocaleKeyID = "",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            etateActuellementEst = TransactionVent.EtateActuellementEst.A_COMMANDE_CONFIRME
         ),
-        TransactionCommercial(
+        TransactionVent(
             vid = 4L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            etateActuellementEst = TransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
-        TransactionCommercial(
+        TransactionVent(
             vid = 6L,
             parentVID_1_4_PeriodeVent = 7L,
             clientAcheteurID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = TransactionVent.EtateActuellementEst.AVEC_MARCHANDISE
         )
     )
 }

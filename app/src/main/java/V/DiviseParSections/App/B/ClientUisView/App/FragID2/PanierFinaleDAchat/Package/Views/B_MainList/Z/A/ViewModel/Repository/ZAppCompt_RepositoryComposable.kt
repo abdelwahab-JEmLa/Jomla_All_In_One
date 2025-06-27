@@ -103,8 +103,7 @@ data class Z_AppCompt(
     //-----------------Vent Createur-----------
 
     //Section Parent Period Vent
-    var ouvertF1PeriodVentId: String = getPushFireBase(ref),
-    var ouvertF1PeriodVentStartTimesTamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
+    var ouvertHPeriodVentKeyId: String = getPushFireBase(ref),
 
     //Section Parent Transaction
     var ouvertF2BonVentId: String = getPushFireBase(ref),
