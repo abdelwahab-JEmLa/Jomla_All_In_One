@@ -6,8 +6,6 @@ import com.google.firebase.database.DatabaseReference
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
 ) {
-    fun getRelatedCouleur(produit: ArticlesBasesStatsTable, colorIndex: Int) =
-        getter.getRelatedCouleur(produit, colorIndex)
 
     fun genereUnPushKeyFireBase(ref: DatabaseReference ) = ref.push().key.toString()
 
@@ -33,7 +31,7 @@ class ASetterCentral(
         colorIndex: Int,
         quantity: Int,
     ) {
-        val relatedCouleur = getRelatedCouleur(produit, colorIndex)
+        val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)
         val data = zAppComptRepositoryComposable.ouvertData
 
         fCouleurVentOperation?.let { existingOperation ->
