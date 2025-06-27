@@ -12,10 +12,15 @@ class ASetterCentral(
     val bClientsStateCompoRepository = getter.bClientsStateCompoRepository
 
     fun ouvrireUneNewTransactionVent(clientOldId: Long) {
+
+        setParameterAuCompt(clientOldId)
+    }
+
+    private fun setParameterAuCompt(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         zAppComptRepositoryComposable.addOrUpdateData(
             zAppComptRepositoryComposable.ouvertData!!.copy(
-                ouvertF2BonVentId = genereUnPushKeyFireBase(Z_AppCompt.ref),
+                ouvertGTransactionVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
 
                 ouvertClientOnVentKey = client.keyID,
                 ouvertClientOnVentAncienId = client.id,

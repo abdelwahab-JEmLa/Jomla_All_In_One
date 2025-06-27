@@ -60,7 +60,7 @@ class ACentralCompoRepositoryProtoJuin9(
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperation? {
         val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
 
-        val bonVentKey = ouvertData.ouvertF2BonVentId
+        val bonVentKey = ouvertData.ouvertGTransactionVentKeyId
         val periodKey = ouvertData.ouvertHPeriodVentKeyId
              /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
             vent.keyID == couleurKey
@@ -188,7 +188,7 @@ class ACentralCompoRepositoryProtoJuin9(
             indexCouleur: Int,
         ): String {
             return compt.ouvertHPeriodVentKeyId +
-                    "--${compt.ouvertF2BonVentId}" +
+                    "--${compt.ouvertGTransactionVentKeyId}" +
                     "--${bProduitDataBase.id}" +
                     "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }

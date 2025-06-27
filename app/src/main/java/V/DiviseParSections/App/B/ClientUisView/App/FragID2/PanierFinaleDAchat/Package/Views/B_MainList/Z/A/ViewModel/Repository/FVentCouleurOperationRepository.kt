@@ -125,7 +125,7 @@ class FVentCouleurOperationRepository(
         return FCouleurVentOperation(
             parentCouleurDataBaseKey = relatedCouleur.key,
 
-            parentBonVentId = ouvertData.ouvertF2BonVentId,
+            parentBonVentId = ouvertData.ouvertGTransactionVentKeyId,
 
             parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
             parentProduitAncienId = relatedCouleur.parentBProduitOldID,

@@ -31,21 +31,25 @@ import java.util.Objects
 @Stable
 class GTransactionVentRepository(
     val gDataBaseTransactionCommercial: FVentCouleurOperationRepository,
-    val ancienRepo: A_MasterRepositorysGrpProtoJuin3
+    val ancienRepo: A_MasterRepositorysGrpProtoJuin3,
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<GTransactionVent>>(emptyList())
     val datasState: State<List<GTransactionVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    val lastMatchOA = gDataBaseTransactionCommercial.filteredDatasValue.lastOrNull {
-        it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentOuvert
-    }?.parentBonVentId
+    val ouvertGTransactionVentKeyId =
+        (zAppComptRepositoryComposable.ouvertData?.ouvertGTransactionVentKeyId ?: "")
 
     val ouvertData by derivedStateOf {
         datasValue.find {
-            it.keyID == lastMatchOA
+            it.keyID == ouvertGTransactionVentKeyId
         }
+            ?: GTransactionVent(
+                parentPeriodeVentKeyID =
+                    zAppComptRepositoryComposable.ouvertData?.ouvertGTransactionVentKeyId ?: ""
+            )
     }
 
 
@@ -66,11 +70,7 @@ class GTransactionVentRepository(
 
         composScope.launch {
             snapshotFlow {
-                ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin
-                    .repositorys_Model
-                    .c3TransactionCommercialRepository
-                    .modelDatasSnapList
-                    .toList()
+                ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList.toList()
             }.collect { list ->
                 updateDatas(list)
             }
@@ -78,23 +78,18 @@ class GTransactionVentRepository(
     }
 
     fun getClientLastTransactionParEtate(
-        clientId: Long, etateActuellementEst: EtateActuellementEst =
-            EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        clientId: Long,
+        etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): GTransactionVent? {
-        return datasValue
-            .filter {
-                it.clientAcheteurID == clientId
-                        && it.etateActuellementEst == etateActuellementEst
-            }
-            .maxByOrNull { it.keyID }
+        return datasValue.filter {
+            it.clientAcheteurID == clientId && it.etateActuellementEst == etateActuellementEst
+        }.maxByOrNull { it.keyID }
     }
 
     fun getClientLastTransaction(clientId: Long): GTransactionVent? {
-        return datasValue
-            .filter {
-                it.clientAcheteurID == clientId
-            }
-            .maxByOrNull { it.keyID }
+        return datasValue.filter {
+            it.clientAcheteurID == clientId
+        }.maxByOrNull { it.keyID }
     }
 
     fun updateLoadingProgress(progress: Float) {
@@ -134,16 +129,15 @@ class GTransactionVentRepository(
 
 @Entity
 data class GTransactionVent(
-    @PrimaryKey
-    var keyID: String = getPushFireBase(ref),
+    @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
     var parentZAppComptID: String = "b1",
 
     //PeriodeVen
-    var parentPeriodeVentKeyID: String =  "",
-    var parentPeriodeVentStartTimestamp: Long= creatTimeTampDepuitStr("Juin-24 08:00 AM"),
+    var parentPeriodeVentKeyID: String = "",
+    var parentPeriodeVentStartTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
 
     //Section Infos Forging Keys
@@ -180,8 +174,7 @@ data class GTransactionVent(
             val parent = "(${parentVID_1_4_PeriodeVent})"
             val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
 
-            val name =
-                etateActuellementEst.nomArabe
+            val name = etateActuellementEst.nomArabe
 
             val autre = "->($name)"
 
@@ -192,13 +185,20 @@ data class GTransactionVent(
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
-        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "تم تنفيذ المطلوب في "),
-        A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم تاكيد الطلبية"),
-        PourVoirPanie(android.R.color.holo_red_light, "للنظر"),
+        ON_MODE_COMMEND_ACTUELLEMENT(
+            android.R.color.holo_green_light, "تم تنفيذ المطلوب في "
+        ),
+        A_COMMANDE_CONFIRME(
+            android.R.color.holo_purple, "تم تاكيد الطلبية"
+        ),
+        PourVoirPanie(
+            android.R.color.holo_red_light, "للنظر"
+        ),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
-        AVEC_MARCHANDISE(R.color.couleur1, "عندو سلعة"),
-        ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
+        AVEC_MARCHANDISE(R.color.couleur1, "عندو سلعة"), ACHETEUR_NON_DISPO(
+            R.color.c2, "الشاري غائب"
+        ),
         FERME(android.R.color.darker_gray, "مغلق"),
 
         A_EVITE(android.R.color.black, "اقترح ان يتجنب لمدة اسبوعين"),
@@ -207,24 +207,23 @@ data class GTransactionVent(
 
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 
-        Cible(android.R.color.holo_red_light, "Cible"),
-        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
-        CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
+        Cible(
+            android.R.color.holo_red_light, "Cible"
+        ),
+        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"), CIBLE_PRIORITE_3(
+            android.R.color.holo_green_light, "CIBLE_PRIORITE_3"
+        ),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
     fun isSameEntity(other: GTransactionVent) =
-        keyID == other.keyID
-                && parentZAppComptID == other.parentZAppComptID
-                && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
+        keyID == other.keyID && parentZAppComptID == other.parentZAppComptID && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
 
     override fun equals(other: Any?) =
         this === other || (other is GTransactionVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
-        keyID,
-        parentZAppComptNom,
-        parentPeriodeVentKeyID
+        keyID, parentZAppComptNom, parentPeriodeVentKeyID
     )
 
     companion object {

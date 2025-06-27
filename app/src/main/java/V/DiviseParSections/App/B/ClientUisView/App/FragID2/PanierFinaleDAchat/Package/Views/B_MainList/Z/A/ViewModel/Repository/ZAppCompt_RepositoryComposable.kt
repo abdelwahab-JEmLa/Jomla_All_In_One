@@ -106,7 +106,7 @@ data class Z_AppCompt(
     var ouvertHPeriodVentKeyId: String = getPushFireBase(ref),
 
     //Section Parent Transaction
-    var ouvertF2BonVentId: String = getPushFireBase(ref),
+    var ouvertGTransactionVentKeyId: String = getPushFireBase(ref),
 
     var ouvertClientOnVentKey: String = getPushFireBase(ref),
     var ouvertClientOnVentAncienId: Long = 0L,

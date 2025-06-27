@@ -53,7 +53,7 @@ fun DetailsBonVent(
     val achatsRepository =
         viewModel.uiStateCentralRepositorys.fCouleurAchatOperationRepositoryComposable
 
-    val ouvertF2BonVentId = comptAppActuelle?.ouvertF2BonVentId ?: ""
+    val ouvertF2BonVentId = comptAppActuelle?.ouvertGTransactionVentKeyId ?: ""
     val ouvertClientId = comptAppActuelle?.ouvertClientOnVentAncienId.toString() ?: ""
     val ouvertClientNom = comptAppActuelle?.ouvertClientOnVentNom ?: ""
     val ouvertPeriodKeyId = comptAppActuelle?.ouvertHPeriodVentKeyId ?: ""
