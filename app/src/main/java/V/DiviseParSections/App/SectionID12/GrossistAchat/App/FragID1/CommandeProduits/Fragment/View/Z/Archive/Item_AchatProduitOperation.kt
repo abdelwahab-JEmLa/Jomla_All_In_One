@@ -81,8 +81,18 @@ fun Item_AchatProduitOperation(
         return
     }
 
-    Card() {
-        HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp,color= Color.Red)
+    View(models, Produit, colorsForProduct, periodFilter)
+}
+
+@Composable
+private fun View(
+    models: GroupeRepositorysProtoAvJuin3Model,
+    Produit: _1_2_ProduitAcheteOperation,
+    colorsForProduct: List<_1_1_CouleurAcheteOperation>,
+    periodFilter: Long?
+) {
+    Card {
+        HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)
 
         Column {
             Text(
