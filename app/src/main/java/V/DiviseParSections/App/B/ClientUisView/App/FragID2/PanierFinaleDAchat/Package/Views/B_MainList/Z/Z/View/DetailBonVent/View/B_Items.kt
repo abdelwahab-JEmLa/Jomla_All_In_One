@@ -47,7 +47,7 @@ fun TransactionVentInfosHeader(
                     )
                 )
             )
-            .padding(16.dp)
+            .padding(petitePaddine)
     ) {
         onVentData?.let { data ->
             with(data) {
@@ -224,7 +224,7 @@ fun ErrorCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(petitePaddine),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
         )
@@ -232,7 +232,7 @@ fun ErrorCard(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(petitePaddine),
             contentAlignment = Alignment.Center
         ) {
             Text(

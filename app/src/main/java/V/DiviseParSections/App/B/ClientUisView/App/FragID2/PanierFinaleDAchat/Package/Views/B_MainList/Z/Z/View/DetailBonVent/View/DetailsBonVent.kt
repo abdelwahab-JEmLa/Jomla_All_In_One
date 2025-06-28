@@ -33,7 +33,8 @@ import org.koin.compose.koinInject
 fun DetailsBonVentPrev() {
     DetailsBonVent()
 }
-val petitePaddine = 2.dp
+
+val petitePaddine = 4.dp //rename
 
 @Composable
 fun DetailsBonVent(
@@ -78,7 +79,7 @@ fun DetailsBonVent(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(petitePaddine),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     if (!isMinimized) {
@@ -108,7 +109,7 @@ fun DetailsBonVent(
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.TopEnd)
                     .padding(petitePaddine)
             ) {
                 Icon(
