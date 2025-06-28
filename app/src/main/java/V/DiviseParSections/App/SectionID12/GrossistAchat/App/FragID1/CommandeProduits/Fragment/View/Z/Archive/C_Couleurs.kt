@@ -1,5 +1,5 @@
 // C_Couleurs.kt
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.Archive
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.Z.Archive
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.B.Main.VIEW.AcheteursDeCetteProduit
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
