@@ -52,6 +52,7 @@ fun ButtonId5(
                         onImportSuccess()
                     }
                 }
+                viewModel.deleteAddMultiProduits()
             },
             modifier = Modifier.size(40.dp),
             containerColor = Color.Green

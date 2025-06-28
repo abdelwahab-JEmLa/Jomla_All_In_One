@@ -36,7 +36,7 @@ class A_ProduitDataBaseProtoJuin17(
         }
     }
 
-    private suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+     suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.bsonObjectId] = data

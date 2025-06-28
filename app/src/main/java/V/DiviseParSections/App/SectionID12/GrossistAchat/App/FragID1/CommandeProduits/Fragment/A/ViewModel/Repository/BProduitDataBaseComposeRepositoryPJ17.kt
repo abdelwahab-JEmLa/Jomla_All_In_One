@@ -191,6 +191,10 @@ data class ArticlesBasesStatsTable(
 
 
     companion object {
+        fun safeRemoveRef(): Unit {
+            ref.removeValue()
+        }
+
         val ref =
             Firebase.database.getReference(
                 "00_DataPrototype-04-02" +

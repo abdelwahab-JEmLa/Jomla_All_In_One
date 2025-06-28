@@ -130,7 +130,6 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
         writer.write(csvContent.toString())
     }
 }
-
 private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
     // Get all articles from database
     val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
@@ -138,28 +137,35 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
     // Create CSV content
     val csvContent = StringBuilder()
 
-    // Add CSV header - complete list of all fields
-    csvContent.append("keyID,idParentCategorie,nom,nombreUniteInt,nombreProduitDonSonCarton,dernierFireBaseUpdateTimestamps,prixVent,prixAchat,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles\n")
+    // Add CSV header - updated to match ArticlesBasesStatsTable schema
+    csvContent.append("keyID,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,dernierFireBaseUpdateTimestamps,idParentCategorie,positionDonSonCesFrereCategorieProduits,nom,nomMutable,etateActuelleOnFusionAvecBaseDonne,nombreUniteInt,nombreProduitDonSonCarton,heldPrioriteDemandAuGrossist,prixVent,cachePrixVent,prixAchat,prixAchatDernierTimeTempUpdate,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,afficheCesDetailPourComptBsonId,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles\n")
 
     // Add article data
     articles.forEach { article ->
-        csvContent.append("${article.id},")
+        csvContent.append("\"${article.keyID.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${article.bsonObjectId.replace("\"", "\"\"")}\",")
+        csvContent.append("${article.dernierTimeTampsSynchronisationAvecFireBase},")
+        csvContent.append("${article.dernierFireBaseUpdateTimestamps},")
         csvContent.append("${article.idParentCategorie ?: ""},")
-        csvContent.append("\"${article.nom.replace("\"", "\"\"")}\",") // Escape quotes in CSV
+        csvContent.append("${article.positionDonSonCesFrereCategorieProduits},")
+        csvContent.append("\"${article.nom.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${article.nomMutable.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${article.etateActuelleOnFusionAvecBaseDonne.name}\",")
         csvContent.append("${article.nombreUniteInt},")
         csvContent.append("${article.nombreProduitDonSonCarton},")
-        csvContent.append("${article.dernierFireBaseUpdateTimestamps},")
+        csvContent.append("${article.heldPrioriteDemandAuGrossist},")
         csvContent.append("${article.prixVent},")
+        csvContent.append("${article.cachePrixVent},")
         csvContent.append("${article.prixAchat},")
+        csvContent.append("${article.prixAchatDernierTimeTempUpdate},")
         csvContent.append("${article.clientPrixVentUnite},")
         csvContent.append("${article.actualiseSonImage},")
         csvContent.append("${article.actualiseSonImageTest2},")
-        csvContent.append("${article.disponibilityEtates},")
+        csvContent.append("\"${article.afficheCesDetailPourComptBsonId.replace("\"", "\"\"")}\",")
+        csvContent.append("\"${article.disponibilityEtates.name}\",")
         csvContent.append("\"${article.keyFireBase.replace("\"", "\"\"")}\",")
         csvContent.append("\"${article.nomArab.replace("\"", "\"\"")}\",")
         csvContent.append("\"${(article.autreNomDarticle ?: "").replace("\"", "\"\"")}\",")
-
-        // Additional fields that were missing
         csvContent.append("\"${(article.couleur1 ?: "").replace("\"", "\"\"")}\",")
         csvContent.append("${article.idcolor1},")
         csvContent.append("\"${(article.couleur2 ?: "").replace("\"", "\"\"")}\",")
@@ -190,7 +196,7 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
         csvContent.append("${article.articleHaveUniteImages},")
         csvContent.append("${article.itsNewArrivale},")
         csvContent.append("\"${article.imageDimention.replace("\"", "\"\"")}\",")
-        csvContent.append("${article.idForSearchArticles}\n") // Last field, no comma
+        csvContent.append("${article.idForSearchArticles}\n")
     }
 
     // Create file with fixed name

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentral
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
@@ -24,21 +25,28 @@ data class UiStateSec9Frag1(
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
     var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage = EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
-            .CATEGORIES_LIST,
+        .CATEGORIES_LIST,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
         Standart(Color.Gray, Icons.Default.Refresh),
         FastMove(Color.Blue, Icons.Default.TouchApp);
 
-        fun toggle(): ClickItemMode { return when (this) { Standart -> FastMove ; FastMove -> Standart } }
+        fun toggle(): ClickItemMode {
+            return when (this) {
+                Standart -> FastMove; FastMove -> Standart
+            }
+        }
     }
 }
 
 class EditeBaseDonneMainScreenIdS9ViewModel(
-    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    aCentral: ACentral,
     private val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
 ) : ViewModel() {
+    val a_CentralDatasHandlerProtoJuin9 = aCentral.getter
+    val setter = aCentral.setter
+
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
     val a_ProduitDataBaseComposeRepositoryPJ17 =
         a_CentralDatasHandlerProtoJuin9.bProduitDataBase_SubClassFunctionality
@@ -187,7 +195,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun getSelectedCategoryIds(): Set<Long> {
-        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }.map { it.id }.toSet()
+        return categoriesCompoRepository.datasValue.filter { it.cSelectionePourDeplace }
+            .map { it.id }.toSet()
     }
 
     fun addOrUpdateCategorie(categorie: CategoriesTabelle) {
@@ -200,6 +209,10 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun deleteAddMultiCategories(categories: List<CategoriesTabelle>) {
         categoriesCompoRepository.deleteAddMultiDatas(categories)
+    }
+
+    fun deleteAddMultiProduits() {
+        setter.deleteAddMultiDatas()
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
@@ -215,6 +228,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
         masterRepositorys.repoA_ProduitInfos.deleteData(data)
     }
+
     enum class ModeAffichage {
         CATEGORIES_LIST, PRODUCTS_LIST, REORDER_GRID
     }

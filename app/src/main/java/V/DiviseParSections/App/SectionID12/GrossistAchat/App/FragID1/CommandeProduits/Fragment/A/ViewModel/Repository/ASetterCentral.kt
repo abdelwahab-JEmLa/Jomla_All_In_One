@@ -1,9 +1,13 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
 import com.google.firebase.database.DatabaseReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
+    val bProduitDataBase_SubClassFunctionality: BProduitDataBaseComposeRepositoryPJ17,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
@@ -57,6 +61,17 @@ class ASetterCentral(
     companion object {
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
             return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        }
+    }
+
+    fun deleteAddMultiDatas() {
+       val  datas= bProduitDataBase_SubClassFunctionality.datasValue
+        CoroutineScope(Dispatchers.IO).launch {
+            bProduitDataBase_SubClassFunctionality.dao.deleteAll()
+            bProduitDataBase_SubClassFunctionality.dao.insertAll(datas)
+
+            ArticlesBasesStatsTable.safeRemoveRef()
+            bProduitDataBase_SubClassFunctionality.ancienRepo.batchFireBaseUpdateArticlesBasesStatsTable(datas)
         }
     }
 }
