@@ -35,10 +35,6 @@ fun TransactionVentInfosHeader(
     val repo = viewModel.uiStateCentralRepositorys.gBonVentRepository
     val onVentData = repo.onVentData
 
-    Text(repo.datasValue.size.toString())
-    Text(repo.datasValue.map { it.keyID }.toString())
-
-    Text(repo.datasValue.find { it.keyID=="-OTq95KjxbxwC3pIg2DU" }?.nomClientConcerned?:"")
 
     Box(
         modifier = Modifier
