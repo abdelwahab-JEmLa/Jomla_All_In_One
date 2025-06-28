@@ -22,10 +22,10 @@ class ASetterCentral(
                     GTransactionVent(
                         keyID = onVentGBonVentKeyId,
 
-                        parentPeriodeVentKeyID = ouvertHPeriodVentKeyId,
+                        parentPeriodeVentKeyID = onVentHPeriodVentKeyId,
                         parentPeriodeVentStartTimestamp = ouvertHPeriodVentTimestamp,
 
-                        parentHClientKeyID = ouvertClientOnVentAncienId,
+                        parentHClientKeyID = onVentFClientAncienId,
                         parentZAppComptNom = keyID
                     )
                 }
@@ -41,8 +41,8 @@ class ASetterCentral(
 
                 onVentFClientKeyID = client.keyID,
 
-                ouvertClientOnVentAncienId = client.id,
-                ouvertClientOnVentDebugNameKey = client.nom,
+                onVentFClientAncienId = client.id,
+                onVentFClientDebugNameKey = client.nom,
             )
         )
     }

@@ -141,9 +141,9 @@ class FVentCouleurOperationRepository(
             parentProduitKeyNom = relatedCouleur.parentBProduitNom,
 
             parentZAppComptID = ouvertData.bsonObjectId,
-            parentEPeriodVentId = ouvertData.ouvertHPeriodVentKeyId,
+            parentEPeriodVentId = ouvertData.onVentHPeriodVentKeyId,
 
-            parentClientName = ouvertData.ouvertClientOnVentDebugNameKey,
+            parentClientName = ouvertData.onVentFClientDebugNameKey,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
             type = FCouleurVentOperation.Type.CommandeDeLui,

@@ -61,7 +61,7 @@ class ACentralCompoRepositoryProtoJuin9(
         val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
 
         val bonVentKey = ouvertData.onVentGBonVentKeyId
-        val periodKey = ouvertData.ouvertHPeriodVentKeyId
+        val periodKey = ouvertData.onVentHPeriodVentKeyId
              /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
             vent.keyID == couleurKey
         }?.parentProduitAncienId ?: return "0" // Get Long value and handle null cas*/
@@ -187,7 +187,7 @@ class ACentralCompoRepositoryProtoJuin9(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.ouvertHPeriodVentKeyId +
+            return compt.onVentHPeriodVentKeyId +
                     "--${compt.onVentGBonVentKeyId}" +
                     "--${bProduitDataBase.id}" +
                     "--${bProduitDataBase.id}_${indexCouleur + 1}"

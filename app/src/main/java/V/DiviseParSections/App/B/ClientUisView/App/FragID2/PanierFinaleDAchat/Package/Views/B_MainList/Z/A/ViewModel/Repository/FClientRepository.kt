@@ -37,7 +37,7 @@ class FClientRepository(
     val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
-    val onVentClient by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentFClientKeyID } }
+    val onVentClient by derivedStateOf { datasValue.find { it.id == zAppComptRepositoryComposable.ouvertData?.onVentFClientAncienId } }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress

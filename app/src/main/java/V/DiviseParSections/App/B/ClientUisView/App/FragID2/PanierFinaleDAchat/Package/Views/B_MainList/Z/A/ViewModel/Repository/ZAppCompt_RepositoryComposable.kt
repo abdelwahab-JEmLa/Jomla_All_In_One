@@ -98,18 +98,18 @@ data class Z_AppCompt(
 
     //---------------------------------------------------Vent Createur--------------------------------------------------------------
     //Section Parent Period Vent
-    var ouvertHPeriodVentKeyId: String = getPushFireBase(ref),
-    var ouvertHPeriodVentDebugNameKey: String ="",
+    var onVentHPeriodVentKeyId: String = getPushFireBase(ref),
+    var onVentHPeriodVentDebugNameKey: String ="",
     var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
     var onVentGBonVentKeyId: String = getPushFireBase(ref),
-    var ouvertGTransactionVentDebugNameKey: String = "",
+    var onVentGTransactionVentDebugNameKey: String = "",
 
     var onVentFClientKeyID: String = getPushFireBase(ref),
-    var ouvertClientOnVentDebugNameKey: String = "",
-    var ouvertClientOnVentAncienId: Long = 0L,
+    var onVentFClientDebugNameKey: String = "",
+    var onVentFClientAncienId: Long = 0L,
 ) {
     init {
         if (nomMutable.isEmpty()) {
