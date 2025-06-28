@@ -1,8 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.logDebugIt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -42,6 +44,8 @@ class ZAppCompt_RepositoryComposable(
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }
+
+        datasValue[existingIndex].logDebugIt()
 
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -113,7 +117,7 @@ data class Z_AppCompt(
     //---------------------------------------------------Vent Createur--------------------------------------------------------------
     //Section Parent Period Vent
     var onVentHPeriodVentKeyId: String = getPushFireBase(ref),
-    var onVentHPeriodVentDebugNameKey: String ="",
+    var onVentHPeriodVentDebugNameKey: String = "",
     var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
@@ -195,7 +199,17 @@ data class Z_AppCompt(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
 
-        fun generePushKey()=genereUnPushKeyFireBase(ref)
+        fun generePushKey() = genereUnPushKeyFireBase(ref)
+
+        fun Z_AppCompt.logDebugIt() =
+            with(this) {
+                Log.d(
+                    "Z_AppCompt",
+                    "${keyID}/n"
+                            + " ${nom}/n"
+                            + " ${onVentFClientDebugNameKey}/n"
+            }
+        )
     }
 
     override fun equals(other: Any?) =

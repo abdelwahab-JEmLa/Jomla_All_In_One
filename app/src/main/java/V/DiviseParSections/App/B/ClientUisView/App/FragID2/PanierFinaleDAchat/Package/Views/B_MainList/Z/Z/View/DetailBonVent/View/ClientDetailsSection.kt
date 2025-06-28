@@ -31,10 +31,15 @@ fun ClientDetailsSection(
     val fClientRepository = viewModel.uiStateCentralRepositorys.fClientRepository
     val onVentClient = fClientRepository.onVentClient
 
-    isMinimized.ifFalse {
-        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+    if (onVentClient != null) {
+        Text(onVentClient.nom.toString())
     }
+    val onVentFClientDebugNameKey = viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable.ouvertData?.onVentFClientDebugNameKey
 
+    Text(onVentFClientDebugNameKey.toString())
+
+
+    isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
