@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.Sec8FWinID1ViewModel
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.ViewModel.CommandeProduitsViewModel
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A.ViewModel.CommandeProduitsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository

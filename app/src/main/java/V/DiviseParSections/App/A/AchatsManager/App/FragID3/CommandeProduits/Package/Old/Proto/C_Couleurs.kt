@@ -1,9 +1,8 @@
 // C_Couleurs.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto
 
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.ViewModel.CommandeProduitsViewModel
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.View.B.List.B.Main.VIEW.AcheteursDeCetteProduit
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.LoadingScreenB_ClientProtoJuin3
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -13,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
@@ -54,7 +50,6 @@ fun Couleurs(
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
-    buyerIds: List<Long>,
     models: GroupeRepositorysProtoAvJuin3Model,
     periodFilter: Long? = null,
 
@@ -272,7 +267,7 @@ fun Couleurs(
 
                         // Only display buyers if there are any and pass the updated client quantities map
                         if (allClientsMap.isNotEmpty()) {
-                            Acheteurs(clientQuantities = allClientsMap)
+                            AcheteursDeCetteProduit(clientQuantities = allClientsMap)
                         }
                     }
                 }
@@ -303,55 +298,3 @@ fun Couleurs(
     }
 }
 
-// Completely restructured Acheteurs to use the calculated client quantities
-@Composable
-fun Acheteurs(
-    viewModel: CommandeProduitsViewModel = koinViewModel(),
-    clientQuantities: Map<Long, Long>,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        val uiState by viewModel.uiState.collectAsState()
-        val progress = uiState.mainLoadingProgress
-        val datasB_ClientInfosProtoJuin3List by remember(uiState.B_ClientInfosProtoJuin3List) {
-            mutableStateOf(
-                uiState.B_ClientInfosProtoJuin3List
-            )
-        }
-        val clientDataBaseSnapList = datasB_ClientInfosProtoJuin3List
-
-        if (progress < 1.0f) {
-            LoadingScreenB_ClientProtoJuin3(progress)
-        } else {
-            // Display each client with their quantity
-            clientQuantities.forEach { (clientId, quantity) ->
-                // Skip clientAchteurs with zero quantity
-                if (quantity <= 0) return@forEach
-
-
-                val clientAchteurName = clientDataBaseSnapList.find {
-                    it.id == clientId
-                }?.nom ?: "ClientAchteur #$clientId"
-
-                Text(
-                    text = "$clientAchteurName ",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Qté: $quantity",
-                    fontWeight = FontWeight.Bold
-                )
-
-                // Add spacing between clientAchteurs
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-        }
-    }
-}

@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.Old.Proto.ViewModel
+package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A.ViewModel
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow

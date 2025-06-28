@@ -127,7 +127,6 @@ fun B_ProduitCommande(
             Couleurs(
                 Produit = Produit,
                 colorsForProduct = colorsForProduct,
-                buyerIds = buyerIds,
                 models = models,
                 periodFilter = periodFilter
             )

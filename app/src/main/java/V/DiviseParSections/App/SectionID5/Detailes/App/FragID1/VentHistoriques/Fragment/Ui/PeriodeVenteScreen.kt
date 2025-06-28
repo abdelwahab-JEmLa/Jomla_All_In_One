@@ -343,7 +343,7 @@ fun VendeurItem(vendeur: _012_ComptsVendeurs) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Acheteurs (${vendeur.child_013_Acheteurs.size})",
+                        text = "AcheteursDeCetteProduit (${vendeur.child_013_Acheteurs.size})",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
