@@ -233,7 +233,7 @@ fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
         ?.let {
             val text = with(couleur) {
                 "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentProduitKeyNom ?: "NO"} ${vent?.quantityAchete}"
+                        " V= ${vent?.parentBProduitNomDebug ?: "NO"} ${vent?.quantityAchete}"
             }
 
             Box(

@@ -80,7 +80,8 @@ class BProduitDataBaseComposeRepositoryPJ17(
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-  //  var keyID: String = "",
+    var keyID: String = getPushFireBase(ref),
+
     var bsonObjectId: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
@@ -169,11 +170,6 @@ data class ArticlesBasesStatsTable(
         PositionAvecCesFrereDefinie,
     }
 
-    fun withDernierTimeTampsSynchronisationAvecFireBase(): ArticlesBasesStatsTable {
-        return this.copy(
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
 
 
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {

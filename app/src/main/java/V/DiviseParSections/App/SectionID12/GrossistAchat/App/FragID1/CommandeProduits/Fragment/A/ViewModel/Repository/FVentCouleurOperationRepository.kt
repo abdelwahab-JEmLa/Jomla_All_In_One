@@ -33,6 +33,10 @@ class FVentCouleurOperationRepository(
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
+    val onVentFilteredDatasGroupedParProduitKey by derivedStateOf {
+        onVentFilteredDatas.groupBy { it.parentBProduitKeyId }
+    }
+
 
     init {
         composScope.launch {
@@ -124,12 +128,11 @@ class FVentCouleurOperationRepository(
         return FCouleurVentOperation(
             parentCouleurDataBaseKey = relatedCouleur.key,
 
-            parentEPeriodVentId = zCompt.onVentHPeriodVentKeyId,
+            parentEVentPeriodKeyId = zCompt.onVentHPeriodVentKeyId,
             parentGBonVentKeyId = zCompt.onVentGBonVentKeyId,
 
-            parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
-            parentProduitAncienId = relatedCouleur.parentBProduitOldID,
-            parentProduitKeyNom = relatedCouleur.parentBProduitNom,
+            parentBProduitKeyId = relatedCouleur.parentBProduitOldID.toString(),
+            parentBProduitNomDebug = relatedCouleur.parentBProduitNom,
 
             parentZAppComptID = zCompt.bsonObjectId,
 
@@ -151,17 +154,20 @@ data class FCouleurVentOperation(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var parentCouleurDataBaseKey: String = "",
 
-    var parentEPeriodVentId: String = "",
+    var parentEVentPeriodKeyId: String = "",
+    var parentEVentPeriodDebugName: String = "",
+
+    var parentBProduitKeyId: String = "",
+    var parentBProduitNomDebug: String = "",
+
+
     var parentEPeriodVentStartDate: Long = 0,
     var parentGBonVentKeyId: String = "",
 
-    var parentProduitId: String = "",
     var parentZAppComptID: String = "",
 
     var parentClientId: String = "",
     var parentClientName: String = "",
-    var parentProduitAncienId: Long = 0L,
-    var parentProduitKeyNom: String = "",
     var type: Type = Type.CommandeDeLui,
     var quantityAchete: Int = 0,
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,

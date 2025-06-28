@@ -26,7 +26,7 @@ internal fun MainList(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
     produitList: List<ArticlesBasesStatsTable>,
 ) {
-    val TAG ="MainList"
+    val TAG ="List_GroupeProduit"
     val categoriesCompoRepository = viewModel.categoriesCompoRepository
     val currentCategories = categoriesCompoRepository.datasValue
 

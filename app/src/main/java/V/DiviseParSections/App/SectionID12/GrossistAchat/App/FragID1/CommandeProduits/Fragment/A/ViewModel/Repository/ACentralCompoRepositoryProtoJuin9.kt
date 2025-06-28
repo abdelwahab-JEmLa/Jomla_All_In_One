@@ -68,7 +68,7 @@ class ACentralCompoRepositoryProtoJuin9(
                 operation.parentCouleurDataBaseKey == couleurKey &&
                         operation.parentProduitAncienId == produitId &&
                         operation.parentGBonVentKeyId == bonVentKey &&
-                        operation.parentEPeriodVentId == periodKey
+                        operation.parentEVentPeriodKeyId == periodKey
             }
 
         return matchingOperation

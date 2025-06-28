@@ -110,7 +110,7 @@ fun ExpandedMainItem_F2(
                 }
             }
 
-            // MainList of buyers and their purchases
+            // List_GroupeProduit of buyers and their purchases
             mainItem.bonsVentDeCetteCota.forEach { bonVent ->
                 Column(
                     modifier = Modifier

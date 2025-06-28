@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class GrossistAchatSec12FragID1_ViewModel(
-    val aCentral: ACentral,
+     aCentral: ACentral,
 ) : ViewModel() {
+    val getter = aCentral.getter
+
     data class UiState(
         val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
         val mainLoadingProgress: Float = 0f
