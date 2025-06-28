@@ -15,7 +15,6 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Objects
 
@@ -39,24 +38,38 @@ class ZAppCompt_RepositoryComposable(
         }
     }
 
-
     fun addOrUpdateData(data: Z_AppCompt) {
-        val dataUpdate =
-            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
-        val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
-
-        composScope.launch {
-            withContext(Dispatchers.Main.immediate) {
-                _datas.value = if (existingIndex >= 0) {
-                    datasValue.toMutableList().apply {
-                        this[existingIndex] = this[existingIndex].copy(
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                    }
-                } else datasValue + dataUpdate
-            }
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
         }
-        ancienRepo.addOrUpdatedDataBase(existingIndex, dataUpdate)
+
+        _datas.value = if (existingIndex >= 0) {
+            datasValue.toMutableList().apply {
+                val updatedItem = data.copy(
+                    keyID = datasValue[existingIndex].keyID,
+                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                )
+                this[existingIndex] = updatedItem
+            }
+        } else {
+            val newItem = data.copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+            datasValue + newItem
+        }
+
+        val dataForRepo = if (existingIndex >= 0) {
+            data.copy(
+                keyID = datasValue[existingIndex].keyID,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        } else {
+            data.copy(
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+        }
+
+        ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
 }
 
