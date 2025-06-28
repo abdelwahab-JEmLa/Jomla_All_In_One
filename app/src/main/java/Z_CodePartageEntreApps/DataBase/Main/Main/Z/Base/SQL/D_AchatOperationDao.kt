@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

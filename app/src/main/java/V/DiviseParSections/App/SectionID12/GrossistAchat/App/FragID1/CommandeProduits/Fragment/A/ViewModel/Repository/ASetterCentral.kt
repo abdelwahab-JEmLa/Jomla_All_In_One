@@ -1,0 +1,62 @@
+package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
+
+import com.google.firebase.database.DatabaseReference
+
+class ASetterCentral(
+    val getter: ACentralCompoRepositoryProtoJuin9,
+    val gTransactionVentRepository: GBonVentRepository,
+    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+) {
+    val bClientsStateCompoRepository = getter.fClientRepository
+
+    fun ouvrireUneNewTransactionVent(clientOldId: Long) {
+        val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
+        val newTransactionKey = GBonVent.generePushKey()
+
+        val zCompt = currentZCompt.copy(
+            onVentGBonVentKeyId = newTransactionKey,
+            onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+            onVentFClientKeyID = client.keyID,
+            onVentFClientAncienId = client.id,
+            onVentFClientDebugNameKey = client.nom,
+        )
+
+        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+
+        gTransactionVentRepository.addOrUpdateData(
+            GBonVent(
+                keyID = newTransactionKey,
+                parentPeriodeVentKeyID = zCompt.onVentHPeriodVentKeyId,
+                parentHClientOldID = clientOldId,
+                parentZAppComptCreateurKeyID = zCompt.keyID,
+                nomClientConcerned = client.nom,
+                parentHClientKeyID = client.id,
+                etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            )
+        )
+    }
+
+    fun acheterACaSetterCentral(
+        fCouleurVentOperation: FCouleurVentOperation? = null,
+        produit: ArticlesBasesStatsTable,
+        colorIndex: Int,
+        quantity: Int,
+    ) {
+        val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt
+
+        fCouleurVentOperation?.let { existingOperation ->
+            val updatedOperation = existingOperation.copy(quantityAchete = quantity)
+            getter.fVentCouleurOperationRepository.addOrUpdateData(updatedOperation)
+        } ?: zCompt?.let {
+            getter.fVentCouleurOperationRepository.acheterUneCouleur(it, relatedCouleur, quantity)
+        }
+    }
+
+    companion object {
+        fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
+            return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        }
+    }
+}
