@@ -52,9 +52,7 @@ fun Couleurs(
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     models: GroupeRepositorysProtoAvJuin3Model,
     periodFilter: Long? = null,
-
-    ) {
-    // Only proceed if the product is in ParentBonVentConfirme state
+) {
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }
@@ -96,16 +94,12 @@ fun Couleurs(
 
     val filteredColors = colorsForProduct
         .filter { color ->
-            // Basic filter conditions
             val basicCondition = color.totaleQuantity > 0 &&
                     color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
 
             if (!basicCondition) return@filter false
-
-            // If no period filter, accept all colors that meet basic condition
             if (periodFilter == null) return@filter true
 
-            // If period filter is set, check if this color belongs to add product in the specified period
             val parentProduct = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
@@ -116,17 +110,14 @@ fun Couleurs(
                     .firstOrNull { it.vid == id }?.parentPeriodeVentOldID
             }
 
-            // Return true if this color's BonAchat matches the period filter
             bonAchatPeriod == periodFilter
         }
         .distinctBy { it.couleurIndex_ParentVID }
 
-    // Don't display anything if no colors meet the criteria
     if (filteredColors.isEmpty()) {
         return
     }
 
-    // Add LazyRow state to detect if there are more items
     val lazyRowState = rememberLazyListState()
     val hasMoreItems by remember {
         derivedStateOf {
@@ -135,7 +126,6 @@ fun Couleurs(
         }
     }
 
-    // Add add Row to combine the LazyRow and indicator
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -149,21 +139,15 @@ fun Couleurs(
                     color = Color.Red
                 )
 
-                // Calculate expected total quantity - sum of all individual quantities for this color
-                // That respect the period filter if provided
                 val individualQuantities = colorsForProduct
                     .filter { color ->
-                        // Basic match on color index
                         val colorMatch =
                             color.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
                                     color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
 
                         if (!colorMatch) return@filter false
-
-                        // If no period filter, include all matching colors
                         if (periodFilter == null) return@filter true
 
-                        // If period filter exists, check if this color belongs to the filtered period
                         val parentProduct =
                             models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                                 .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
@@ -175,31 +159,24 @@ fun Couleurs(
                                 .firstOrNull { it.vid == id }?.parentPeriodeVentOldID
                         }
 
-                        // Return true if this color's BonAchat matches the period filter
                         bonAchatPeriod == periodFilter
                     }
 
-                // Calculate client quantities using add more reliable approach
-                val allClientsMap = mutableMapOf<Long, Long>() // Maps client ID to quantity
+                val allClientsMap = mutableMapOf<Long, Long>()
 
-                // For each color in our filtered list
                 individualQuantities.forEach { colorEntry ->
-                    // Find the parent product
                     val parentProduct =
                         models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                             .firstOrNull { it.vid == colorEntry.parentProduitAchateOperationVID }
 
-                    // Find the bonAchat
                     val bonAchatVid = parentProduct?.parent_1_3_TransactionCommercial
 
-                    // Find the client
                     if (bonAchatVid != null) {
                         val bonAchat = models.c3TransactionCommercialRepository.modelDatasSnapList
                             .firstOrNull { it.vid == bonAchatVid }
 
                         val clientId = bonAchat?.parentHClientOldID
 
-                        // Add to our client map if we found add valid client
                         if (clientId != null) {
                             val currentQuantity = allClientsMap.getOrDefault(clientId, 0L)
                             allClientsMap[clientId] = currentQuantity + colorEntry.totaleQuantity
@@ -207,10 +184,8 @@ fun Couleurs(
                     }
                 }
 
-                // Sum the client quantities
                 val clientQuantitiesSum = allClientsMap.values.sum()
 
-                // Get color name for this specific color using calculeCouleurHandler
                 val colorName = remember(Produit.produitAcheterID, Couleur.couleurIndex_ParentVID) {
                     val product = calculeCouleurHandler.findProductById(Produit.produitAcheterID)
                     product?.let {
@@ -241,9 +216,7 @@ fun Couleurs(
                                             .graphicsLayer(rotationZ = 45f)
                                     )
                                 }, qualityImage = 1
-
                             )
-                          //  AfficheKeyCouleurAvecVentDebugParAncienMethode(Produit,Couleur.couleurIndex_ParentVID.toInt())
 
                             Box(
                                 modifier = Modifier
@@ -255,7 +228,6 @@ fun Couleurs(
                                     ),
                             ) {
                                 Text(
-                                    // Use the client sum for display to ensure UI consistency
                                     text = "Qté: $clientQuantitiesSum",
                                     fontSize = 50.sp,
                                     fontWeight = FontWeight.Bold,
@@ -265,7 +237,6 @@ fun Couleurs(
                             }
                         }
 
-                        // Only display buyers if there are any and pass the updated client quantities map
                         if (allClientsMap.isNotEmpty()) {
                             AcheteursDeCetteProduit(clientQuantities = allClientsMap)
                         }
@@ -297,4 +268,3 @@ fun Couleurs(
         }
     }
 }
-
