@@ -11,7 +11,7 @@ class ASetterCentral(
 
     fun ouvrireUneNewTransactionVent(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
-        val currentZCompt = zAppComptRepositoryComposable.ouvertData!!
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
@@ -44,7 +44,7 @@ class ASetterCentral(
         quantity: Int,
     ) {
         val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)
-        val zCompt = zAppComptRepositoryComposable.ouvertData
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt
 
         fCouleurVentOperation?.let { existingOperation ->
             val updatedOperation = existingOperation.copy(quantityAchete = quantity)

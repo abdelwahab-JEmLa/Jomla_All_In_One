@@ -79,7 +79,7 @@ class WifiTransferDatas(
             when (messageType) {
                 WifiUpdateClientDisplayerStats.FilterProduitsParCatalogueBsonID -> {
                     appComptComposeRepositoryProtoJuin17.addOrUpdateData(
-                        appComptComposeRepositoryProtoJuin17.ouvertData!!.copy(
+                        appComptComposeRepositoryProtoJuin17.currentAppCompt!!.copy(
                             presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = content
                         )
                     )

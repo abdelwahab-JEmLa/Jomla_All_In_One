@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,7 @@ fun DetailsBonVent(
 
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
-    val comptAppActuelle = zAppComptRepositoryComposable.ouvertData
+    val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
 
     val fVentCouleurOperationRepository =
         viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
@@ -83,7 +84,7 @@ fun DetailsBonVent(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     if (!isMinimized) {
-                        TransactionVentInfosHeader(viewModel)
+                        GBonVentInfosHeader(viewModel)
                     }
                     if (!isMinimized) {
                         PeriodDetailsSection(

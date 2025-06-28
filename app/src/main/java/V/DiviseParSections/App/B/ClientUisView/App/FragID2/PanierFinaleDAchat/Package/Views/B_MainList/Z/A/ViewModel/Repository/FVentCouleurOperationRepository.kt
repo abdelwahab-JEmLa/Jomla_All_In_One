@@ -29,7 +29,7 @@ class FVentCouleurOperationRepository(
 
     val onVentFilteredDatas by derivedStateOf {
         datasValue.filter {
-            it.parentGBonVentKeyId == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId
+            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
 

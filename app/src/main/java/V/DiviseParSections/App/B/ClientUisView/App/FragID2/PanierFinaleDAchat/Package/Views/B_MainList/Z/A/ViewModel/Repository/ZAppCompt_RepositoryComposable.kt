@@ -30,7 +30,7 @@ class ZAppCompt_RepositoryComposable(
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val ouvertData by derivedStateOf {
+    val currentAppCompt by derivedStateOf {
         datasValue.firstOrNull { it.bsonObjectId == "b1" }
     }
 
@@ -45,7 +45,7 @@ class ZAppCompt_RepositoryComposable(
             ancien.keyID == data.keyID
         }
 
-        datasValue[existingIndex].logDebugIt()
+        Log.d("Z_AppCompt", existingIndex.toString())
 
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -72,6 +72,7 @@ class ZAppCompt_RepositoryComposable(
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
         }
+        dataForRepo.logDebugIt(nomVale = "dataForRepo")
 
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
@@ -201,15 +202,17 @@ data class Z_AppCompt(
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
 
-        fun Z_AppCompt.logDebugIt() =
-            with(this) {
-                Log.d(
-                    "Z_AppCompt",
-                    "${keyID}/n"
-                            + " ${nom}/n"
-                            + " ${onVentFClientDebugNameKey}/n"
-            }
-        )
+        // Alternative more concise version:
+        fun Z_AppCompt?.logDebugIt(nomVale: String = "") {
+            Log.d(
+                "Z_AppCompt",
+                nomVale + if (this != null) {
+                    "${keyID}\n ${nom}\n ${onVentFClientDebugNameKey}\n"
+                } else {
+                    "Z_AppCompt is null"
+                }
+            )
+        }
     }
 
     override fun equals(other: Any?) =

@@ -58,7 +58,7 @@ class ACentralCompoRepositoryProtoJuin9(
     }
     
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperation? {
-        val ouvertData = zAppComptRepositoryComposable.ouvertData ?: return null
+        val ouvertData = zAppComptRepositoryComposable.currentAppCompt ?: return null
 
         val bonVentKey = ouvertData.onVentGBonVentKeyId
         val periodKey = ouvertData.onVentHPeriodVentKeyId
@@ -89,7 +89,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
-            zAppComptRepositoryComposable.ouvertData?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+            zAppComptRepositoryComposable.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this

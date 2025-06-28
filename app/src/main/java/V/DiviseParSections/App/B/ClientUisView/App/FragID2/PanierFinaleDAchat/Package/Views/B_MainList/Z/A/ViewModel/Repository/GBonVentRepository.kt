@@ -37,7 +37,7 @@ class GBonVentRepository(
     val datasState: State<List<GBonVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
-    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId } }
+    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId } }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
