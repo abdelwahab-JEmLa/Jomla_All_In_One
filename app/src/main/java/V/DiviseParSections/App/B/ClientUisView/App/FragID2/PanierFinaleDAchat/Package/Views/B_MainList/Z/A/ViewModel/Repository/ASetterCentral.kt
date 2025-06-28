@@ -37,7 +37,6 @@ class ASetterCentral(
         )
     }
 
-
     fun acheterACaSetterCentral(
         fCouleurVentOperation: FCouleurVentOperation? = null,
         produit: ArticlesBasesStatsTable,
@@ -45,12 +44,12 @@ class ASetterCentral(
         quantity: Int,
     ) {
         val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)
-        val data = zAppComptRepositoryComposable.ouvertData
+        val zCompt = zAppComptRepositoryComposable.ouvertData
 
         fCouleurVentOperation?.let { existingOperation ->
             val updatedOperation = existingOperation.copy(quantityAchete = quantity)
             getter.fVentCouleurOperationRepository.addOrUpdateData(updatedOperation)
-        } ?: data?.let {
+        } ?: zCompt?.let {
             getter.fVentCouleurOperationRepository.acheterUneCouleur(it, relatedCouleur, quantity)
         }
     }

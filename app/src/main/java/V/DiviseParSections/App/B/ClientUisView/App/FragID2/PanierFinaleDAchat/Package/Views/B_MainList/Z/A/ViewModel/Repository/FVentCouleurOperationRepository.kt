@@ -94,15 +94,15 @@ class FVentCouleurOperationRepository(
     }
 
     fun acheterUneCouleur(
-        ouvertData: Z_AppCompt,
-        relatedCouleur: B1CouleurOuGoutProduitDataBase,
+        zCompt: Z_AppCompt,
+        relatedVentOperation: B1CouleurOuGoutProduitDataBase,
         quantity: Int,
     ) {
         composScope.launch {
             try {
                 val couleurVentOperation = createSafeCouleurVentOperation(
-                    relatedCouleur = relatedCouleur,
-                    ouvertData = ouvertData,
+                    relatedCouleur = relatedVentOperation,
+                    zCompt = zCompt,
                     quantity = quantity
                 )
 
@@ -117,22 +117,22 @@ class FVentCouleurOperationRepository(
 
     private fun createSafeCouleurVentOperation(
         relatedCouleur: B1CouleurOuGoutProduitDataBase,
-        ouvertData: Z_AppCompt,
+        zCompt: Z_AppCompt,
         quantity: Int
     ): FCouleurVentOperation {
         return FCouleurVentOperation(
             parentCouleurDataBaseKey = relatedCouleur.key,
 
-            parentGBonVentKeyId = ouvertData.onVentGBonVentKeyId,
+            parentEPeriodVentId = zCompt.onVentHPeriodVentKeyId,
+            parentGBonVentKeyId = zCompt.onVentGBonVentKeyId,
 
             parentProduitId = relatedCouleur.parentBProduitOldID.toString(),
             parentProduitAncienId = relatedCouleur.parentBProduitOldID,
             parentProduitKeyNom = relatedCouleur.parentBProduitNom,
 
-            parentZAppComptID = ouvertData.bsonObjectId,
-            parentEPeriodVentId = ouvertData.onVentHPeriodVentKeyId,
+            parentZAppComptID = zCompt.bsonObjectId,
 
-            parentClientName = ouvertData.onVentFClientDebugNameKey,
+            parentClientName = zCompt.onVentFClientDebugNameKey,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
             type = FCouleurVentOperation.Type.CommandeDeLui,

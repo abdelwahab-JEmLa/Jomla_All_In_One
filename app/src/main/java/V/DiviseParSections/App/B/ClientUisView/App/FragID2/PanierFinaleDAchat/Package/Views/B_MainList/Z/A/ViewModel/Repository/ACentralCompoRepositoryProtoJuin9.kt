@@ -62,28 +62,17 @@ class ACentralCompoRepositoryProtoJuin9(
 
         val bonVentKey = ouvertData.onVentGBonVentKeyId
         val periodKey = ouvertData.onVentHPeriodVentKeyId
-             /*  val produitId = fCouleurAchatOperationRepositoryComposable.datasValue.find { vent ->
-            vent.keyID == couleurKey
-        }?.parentProduitAncienId ?: return "0" // Get Long value and handle null cas*/
         val matchingOperation =
             fVentCouleurOperationRepository.datasValue.find { operation ->
                 operation.parentCouleurDataBaseKey == couleurKey &&
-                        operation.parentProduitAncienId == produitId && // Use parentProduitAncienId instead of parentProduitId
-                        operation.parentGBonVentKeyId == bonVentKey && // Fixed: use parentBonVentId instead of parentProduitId
-                        operation.parentEPeriodVentId == periodKey // Fixed: use parentEPeriodVentId instead of parentProduitId
+                        operation.parentProduitAncienId == produitId &&
+                        operation.parentGBonVentKeyId == bonVentKey &&
+                        operation.parentEPeriodVentId == periodKey
             }
 
         return matchingOperation
     }
 
-    fun getKeyID(produitID: Long, index: Int): String {
-        return createCouleurOnVentKey(
-            compt = zAppComptRepositoryComposable.ouvertData!!,
-            bProduitDataBase = bProduitDataBase_SubClassFunctionality
-                .datasValue.find { it.id == produitID }!!,
-            indexCouleur = index
-        )
-    }
 
     fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
