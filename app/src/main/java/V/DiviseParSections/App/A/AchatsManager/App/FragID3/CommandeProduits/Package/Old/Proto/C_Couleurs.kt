@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun Couleurs(
+fun LazyListCouleurVendu(
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
@@ -66,30 +66,6 @@ fun Couleurs(
             .launch {
                 articlesBasesStatsModel = database.ArticlesBasesStatsModelDao().getAll()
             }
-    }
-
-    fun getColorNameByIndex(colorIndex: Long?, productId: Long?): String? {
-        if (colorIndex == null || productId == null) return null
-
-        val article = articlesBasesStatsModel?.find {
-            try {
-                it.javaClass.getMethod("getIdArticle").invoke(it) == productId.toInt()
-            } catch (e: Exception) {
-                false
-            }
-        } ?: return null
-
-        return try {
-            when (colorIndex) {
-                0L -> article.javaClass.getMethod("getCouleur1").invoke(article) as? String
-                1L -> article.javaClass.getMethod("getCouleur2").invoke(article) as? String
-                2L -> article.javaClass.getMethod("getCouleur3").invoke(article) as? String
-                3L -> article.javaClass.getMethod("getCouleur4").invoke(article) as? String
-                else -> "Unknown color"
-            }
-        } catch (e: Exception) {
-            "Color name not available"
-        }
     }
 
     val filteredColors = colorsForProduct

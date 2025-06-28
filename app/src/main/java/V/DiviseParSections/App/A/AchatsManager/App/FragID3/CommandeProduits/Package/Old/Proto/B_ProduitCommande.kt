@@ -124,7 +124,7 @@ fun B_ProduitCommande(
                     ?: "_015_Produits inconnu", Modifier.padding(4.dp)
             )
 
-            Couleurs(
+            LazyListCouleurVendu(
                 Produit = Produit,
                 colorsForProduct = colorsForProduct,
                 models = models,
