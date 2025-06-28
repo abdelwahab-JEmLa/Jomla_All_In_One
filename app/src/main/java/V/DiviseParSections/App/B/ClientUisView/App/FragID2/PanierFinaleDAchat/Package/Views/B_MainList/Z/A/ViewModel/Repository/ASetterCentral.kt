@@ -8,44 +8,53 @@ class ASetterCentral(
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    fun genereUnPushKeyFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
     val bClientsStateCompoRepository = getter.fClientRepository
 
     fun ouvrireUneNewTransactionVent(clientOldId: Long) {
-        setParameterAuAppCompt(clientOldId)
-
-        val zAppComptRepositoryComposableOuvertData = zAppComptRepositoryComposable.ouvertData
-        if (zAppComptRepositoryComposableOuvertData != null) {
-            gTransactionVentRepository.addOrUpdateData(
-                with(zAppComptRepositoryComposableOuvertData) {
-                    GTransactionVent(
-                        keyID = onVentGBonVentKeyId,
-
-                        parentPeriodeVentKeyID = onVentHPeriodVentKeyId,
-                        parentPeriodeVentStartTimestamp = ouvertHPeriodVentTimestamp,
-
-                        parentHClientKeyID = onVentFClientAncienId,
-                        parentZAppComptNom = keyID
-                    )
-                }
-            )
-        }
-    }
-
-    private fun setParameterAuAppCompt(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
-        zAppComptRepositoryComposable.addOrUpdateData(
-            zAppComptRepositoryComposable.ouvertData!!.copy(
-                onVentGBonVentKeyId = genereUnPushKeyFireBase(Z_AppCompt.ref),
+        val currentZCompt = zAppComptRepositoryComposable.ouvertData!!
 
-                onVentFClientKeyID = client.keyID,
+        // Generate new transaction key
+        val newTransactionKey = GBonVent.generePushKey()
 
-                onVentFClientAncienId = client.id,
-                onVentFClientDebugNameKey = client.nom,
+        val zCompt = currentZCompt.copy(
+            onVentGBonVentKeyId = newTransactionKey,
+
+            // Debug information to help identify which client this transaction belongs to
+            onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+
+            onVentFClientKeyID = client.keyID,
+
+            onVentFClientAncienId = client.id,
+            onVentFClientDebugNameKey = client.nom,
+        )
+
+        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+
+        gTransactionVentRepository.addOrUpdateData(
+            GBonVent(
+                keyID = newTransactionKey,
+
+                // Fixed: Use the period key from the updated zCompt
+                parentPeriodeVentKeyID = zCompt.onVentHPeriodVentKeyId,
+
+                // Fixed: Use the client's old ID directly
+                parentHClientOldID = clientOldId,
+
+                // Fixed: Use the correct field name and value
+                parentZAppComptCreateurKeyID = zCompt.keyID,
+
+                // Additional fields that should be set
+                nomClientConcerned = client.nom,
+                parentHClientKeyID = client.id, // Assuming client has an id field
+
+                // Set the state to indicate this is a new transaction
+                etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         )
     }
+
 
     fun acheterACaSetterCentral(
         fCouleurVentOperation: FCouleurVentOperation? = null,
@@ -73,6 +82,12 @@ class ASetterCentral(
                     quantity = quantity
                 )
             }
+        }
+    }
+
+    companion object {
+        fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
+            return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
         }
     }
 }

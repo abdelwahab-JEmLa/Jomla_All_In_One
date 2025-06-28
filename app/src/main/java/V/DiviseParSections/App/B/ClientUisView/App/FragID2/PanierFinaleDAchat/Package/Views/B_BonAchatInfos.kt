@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.printReceipt
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 fun ColumnScope.BonVentInfos(
     viewModel: PanierFinaleDAchatViewModel,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
-    relativeBonAchate: GTransactionVent?,
+    relativeBonAchate: GBonVent?,
     itemCount: Int,
     formattedTotalPrice: String,
     showOrderSuccess: Boolean

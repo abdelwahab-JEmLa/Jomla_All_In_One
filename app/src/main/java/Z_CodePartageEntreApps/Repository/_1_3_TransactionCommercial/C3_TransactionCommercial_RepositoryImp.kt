@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -22,10 +22,10 @@ class C3_TransactionCommercial_RepositoryImp(
 ) : C3TransactionCommercialRepository {
     private val TAG = C3TransactionCommercialRepository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<GTransactionVent> =
+    override var modelDatasSnapList: SnapshotStateList<GBonVent> =
         mutableStateListOf()
 
-    val refModel = GTransactionVent.ref
+    val refModel = GBonVent.ref
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)
@@ -53,8 +53,8 @@ class C3_TransactionCommercial_RepositoryImp(
         }
     }
 
-    override fun getOuvert_1_3_TransactionCommercial(): GTransactionVent? {
-        return   GTransactionVent()
+    override fun getOuvert_1_3_TransactionCommercial(): GBonVent? {
+        return   GBonVent()
         //modelDatasSnapList.find { it.tagCeBonEstOuvertPourComptsIds }
     }
 
@@ -101,7 +101,7 @@ class C3_TransactionCommercial_RepositoryImp(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(GTransactionVent::class.java)?.let { entity ->
+                                child.getValue(GBonVent::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity = dao.getAll()
@@ -141,7 +141,7 @@ class C3_TransactionCommercial_RepositoryImp(
         })
     }
 
-    fun updateUiModel(updatedList: MutableList<GTransactionVent>) {
+    fun updateUiModel(updatedList: MutableList<GBonVent>) {
         modelDatasSnapList.clear()
         modelDatasSnapList.addAll(updatedList)
     }
@@ -220,9 +220,9 @@ class C3_TransactionCommercial_RepositoryImp(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<GTransactionVent>()
+                            val updatedList = mutableListOf<GBonVent>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(GTransactionVent::class.java)
+                                val data = dataSnapshot.getValue(GBonVent::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -298,11 +298,11 @@ class C3_TransactionCommercial_RepositoryImp(
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<GTransactionVent>()
+                    val dataList = mutableListOf<GBonVent>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(GTransactionVent::class.java)
+                            val data = dataSnapshot.getValue(GBonVent::class.java)
                             data?.let {
                                 dataList.add(it)
                             }

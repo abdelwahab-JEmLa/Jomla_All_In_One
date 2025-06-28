@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,7 +32,7 @@ fun CommandButton(
     viewModel: MapClientsViewModel,
     clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
     uiState: UiState,
-    etateActuellementEst1: GTransactionVent.EtateActuellementEst,
+    etateActuellementEst1: GBonVent.EtateActuellementEst,
     clientId: Long,
     selectedMarker: Marker,
     onUpdateLongAppSetting: () -> Unit,
@@ -111,8 +111,8 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
-    newEtate: GTransactionVent.EtateActuellementEst,
-    onAddNew: (GTransactionVent) -> Unit,
+    newEtate: GBonVent.EtateActuellementEst,
+    onAddNew: (GBonVent) -> Unit,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -139,7 +139,7 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
             updatedBonAchat
         )
     } else {
-        val newTrx = GTransactionVent(
+        val newTrx = GBonVent(
             parentHClientOldID = clientId,
             nomClientConcerned = relatedClients?.nom!!,
             parentPeriodeVentOldID = ceComptVendeurInsertBonsAchatAuPeriodID!!,

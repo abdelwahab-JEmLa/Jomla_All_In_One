@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +28,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<GTransactionVent>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == GTransactionVent.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == GBonVent.EtateActuellementEst.Cible }
         }
     }
 
@@ -39,7 +39,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<GTransactionVent
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<GTransactionVent>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -50,7 +50,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<GTransactionVent>)
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: GTransactionVent) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: GBonVent) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -67,18 +67,18 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: GTransactionVent) {
     }
 }
 
-fun testData(): List<GTransactionVent> {
+fun testData(): List<GBonVent> {
     return listOf(
-        GTransactionVent(
+        GBonVent(
             vid = 10L,
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 15L,
             nomClientConcerned = "3omar_yousef",
             timestamps = 1749010953513L,
             heurDebutInString = "05:22",
-            etateActuellementEst = GTransactionVent.EtateActuellementEst.Cible
+            etateActuellementEst = GBonVent.EtateActuellementEst.Cible
         ),
-        GTransactionVent(
+        GBonVent(
             vid = 5L,
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
@@ -91,25 +91,25 @@ fun testData(): List<GTransactionVent> {
             vocaleKeyID = "",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = GTransactionVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            etateActuellementEst = GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
         ),
-        GTransactionVent(
+        GBonVent(
             vid = 4L,
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748027276129L,
             heurDebutInString = "20:07",
-            etateActuellementEst = GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
-        GTransactionVent(
+        GBonVent(
             vid = 6L,
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             timestamps = 1748029628742L,
             heurDebutInString = "20:47",
-            etateActuellementEst = GTransactionVent.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
         )
     )
 }

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
-fun GTransactionVent.EtateActuellementEst.ButtonAutreEtates(
+fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     clickedClient: Long,
@@ -39,8 +39,8 @@ fun GTransactionVent.EtateActuellementEst.ButtonAutreEtates(
                 newEtate = newEtate,
             )
 
-            if (newEtate == GTransactionVent.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == GTransactionVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
@@ -81,7 +81,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
     uiState: UiState,
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
-    newEtate: GTransactionVent.EtateActuellementEst,
+    newEtate: GBonVent.EtateActuellementEst,
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -111,7 +111,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
             updatedBonAchat
         )
     } else {
-        val newTransaction = GTransactionVent(
+        val newTransaction = GBonVent(
             parentHClientOldID = clientId,
             nomClientConcerned = clientName,
             parentPeriodeVentOldID = periodId,

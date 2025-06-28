@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import androidx.compose.runtime.Stable
@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,10 +105,10 @@ data class Z_AppCompt(
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var onVentGBonVentKeyId: String = getPushFireBase(ref),
-    var onVentGTransactionVentDebugNameKey: String = "",
+    var onVentGBonVentKeyId: String = "",
+    var onVentGBonVentDebugNameKey: String = "",
 
-    var onVentFClientKeyID: String = getPushFireBase(ref),
+    var onVentFClientKeyID: String = "",
     var onVentFClientDebugNameKey: String = "",
     var onVentFClientAncienId: Long = 0L,
 ) {
@@ -123,6 +124,8 @@ data class Z_AppCompt(
 
 
     companion object {
+        fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
+
         fun creatTimeTampDepuitStr(dateString: String): Long {
             return try {
                 // Parse the French month and format
@@ -178,6 +181,8 @@ data class Z_AppCompt(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
+
+        fun generePushKey()=genereUnPushKeyFireBase(ref)
     }
 
     override fun equals(other: Any?) =
@@ -191,4 +196,5 @@ data class Z_AppCompt(
         bsonObjectId,
         nom,
     )
+
 }

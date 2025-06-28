@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent.EtateActuellementEst
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.creatTimeTampDepuitStr
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent.EtateActuellementEst
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -34,21 +33,11 @@ class GBonVentRepository(
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<GTransactionVent>>(emptyList())
-    val datasState: State<List<GTransactionVent>> = _datas
+    private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
+    val datasState: State<List<GBonVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId } }
-
-    val ouvertGTransactionVentKeyId =
-        (zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId ?: "")
-
-    val ouvertData by derivedStateOf {
-        datasValue.find {
-            it.keyID == ouvertGTransactionVentKeyId
-        }
-    }
-
 
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
@@ -77,13 +66,13 @@ class GBonVentRepository(
     fun getClientLastTransactionParEtate(
         clientId: Long,
         etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): GTransactionVent? {
+    ): GBonVent? {
         return datasValue.filter {
             it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.keyID }
     }
 
-    fun getClientLastTransaction(clientId: Long): GTransactionVent? {
+    fun getClientLastTransaction(clientId: Long): GBonVent? {
         return datasValue.filter {
             it.parentHClientOldID == clientId
         }.maxByOrNull { it.keyID }
@@ -93,11 +82,11 @@ class GBonVentRepository(
         _loadingProgress.floatValue = progress
     }
 
-    fun updateDatas(newDatas: List<GTransactionVent>) {
+    fun updateDatas(newDatas: List<GBonVent>) {
         _datas.value = newDatas
     }
 
-    fun addOrUpdateData(data: GTransactionVent) {
+    fun addOrUpdateData(data: GBonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
@@ -117,7 +106,7 @@ class GBonVentRepository(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GTransactionVent) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent) {
         ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
             dataUpdate
         )
@@ -125,15 +114,15 @@ class GBonVentRepository(
 }
 
 @Entity
-data class GTransactionVent(
-    @PrimaryKey var keyID: String = getPushFireBase(ref),
+data class GBonVent(
+    @PrimaryKey var keyID: String = "",
     var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
     //PeriodeVen
-    var parentPeriodeVentKeyID: String = getPushFireBase(ref),
-    var parentPeriodeVentStartTimestampStr: String = "Juin-24 08:00 AM",
+    var parentPeriodeVentKeyID: String = "",
+    var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
     var parentHClientKeyID: Long = 0L,
@@ -142,7 +131,6 @@ data class GTransactionVent(
 
     //Autres Infos ForgingKeys
     //PeriodeVen
-    var parentPeriodeVentStartTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
     var parentPeriodeVentOldID: Long = 0L,
 
     //Autres Infos ForgingKeys
@@ -217,11 +205,11 @@ data class GTransactionVent(
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 
-    fun isSameEntity(other: GTransactionVent) =
+    fun isSameEntity(other: GBonVent) =
         keyID == other.keyID && parentZAppComptCreateurKeyID == other.parentZAppComptCreateurKeyID && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
 
     override fun equals(other: Any?) =
-        this === other || (other is GTransactionVent && isSameEntity(other))
+        this === other || (other is GBonVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         keyID, parentZAppComptNom, parentPeriodeVentKeyID
@@ -229,7 +217,8 @@ data class GTransactionVent(
 
     companion object {
         val ref = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GTransactionVent"
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GBonVent"
         )
+        fun generePushKey()= genereUnPushKeyFireBase(ref)
     }
 }

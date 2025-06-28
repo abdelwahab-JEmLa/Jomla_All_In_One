@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GTransactionVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +24,7 @@ fun AfficheurRegleOuvert(
 ) {
     val clientId = relatedClients?.id ?: 0L
 
-    fun getLatestTransactionForClient(clientId: Long): GTransactionVent? {
+    fun getLatestTransactionForClient(clientId: Long): GBonVent? {
         return uiState
             .c3_TransactionCommercialList
             .filter { it.parentHClientOldID == clientId }
@@ -66,14 +66,14 @@ fun AfficheurRegleOuvert(
                     text = "الحالة الحالية: ${latestTransaction?.etateActuellementEst?.nomArabe ?: ""}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                GTransactionVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )
 
-                GTransactionVent.EtateActuellementEst.COMMANDE_LIVRAI
+                GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         uiState = uiState,
                         viewModel = viewModel,

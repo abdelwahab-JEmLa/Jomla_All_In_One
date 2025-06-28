@@ -27,9 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun TransactionVentInfosHeader(
@@ -37,6 +34,11 @@ fun TransactionVentInfosHeader(
 ) {
     val repo = viewModel.uiStateCentralRepositorys.gBonVentRepository
     val onVentData = repo.onVentData
+
+    Text(repo.datasValue.size.toString())
+    Text(repo.datasValue.map { it.keyID }.toString())
+
+    Text(repo.datasValue.find { it.keyID=="-OTq95KjxbxwC3pIg2DU" }?.nomClientConcerned?:"")
 
     Box(
         modifier = Modifier
@@ -218,14 +220,14 @@ fun PeriodDetailsSection(
                     fontWeight = FontWeight.Medium
                 )
 
-                if (ouvertData.parentPeriodeVentStartTimestamp > 0) {
+               /* if (ouvertData.parentPeriodeVentStartTimestamp > 0) {
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                     Text(
                         text = "Début: ${dateFormat.format(Date(ouvertData.parentPeriodeVentStartTimestamp))}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
-                }
+                }      */
             }
         }
     }

@@ -20,8 +20,7 @@ import kotlinx.coroutines.withContext
 class FVentCouleurOperationRepository(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
-
-    ) {
+) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
@@ -32,16 +31,6 @@ class FVentCouleurOperationRepository(
         datasValue.filter {
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.ouvertData?.onVentGBonVentKeyId
         }
-    }
-
-    val filteredDatasValue by derivedStateOf {
-        datasValue.filter {
-            it.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.ParentBonVentConfirme
-        }
-    }
-
-    companion object {
-        private const val TAG = "ColorOperation"
     }
 
     init {
@@ -150,14 +139,8 @@ class FVentCouleurOperationRepository(
         )
     }
 
-    private fun getCouleurNameByIndex(produit: ArticlesBasesStatsTable, colorIndex: Int): String {
-        return when (colorIndex) {
-            0 -> produit.couleur1 ?: "couleur1"
-            1 -> produit.couleur2 ?: "couleur2"
-            2 -> produit.couleur3 ?: "couleur3"
-            3 -> produit.couleur4 ?: "couleur4"
-            else -> "couleur${colorIndex + 1}"
-        }
+    companion object {
+        private const val TAG = "ColorOperation"
     }
 }
 
@@ -166,11 +149,14 @@ data class FCouleurVentOperation(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var parentCouleurDataBaseKey: String = "",
-    var parentGBonVentKeyId: String = "",
-    var parentProduitId: String = "",
-    var parentZAppComptID: String = "",
+
     var parentEPeriodVentId: String = "",
     var parentEPeriodVentStartDate: Long = 0,
+    var parentGBonVentKeyId: String = "",
+
+    var parentProduitId: String = "",
+    var parentZAppComptID: String = "",
+
     var parentClientId: String = "",
     var parentClientName: String = "",
     var parentProduitAncienId: Long = 0L,

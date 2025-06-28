@@ -119,7 +119,7 @@ class ACentralCompoRepositoryProtoJuin9(
         fClientRepository.datasValue.count { client ->
             val lastTransaction = gBonVentRepository.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                GTransactionVent.EtateActuellementEst.Cible,
+                GBonVent.EtateActuellementEst.Cible,
             )
         }
     }
@@ -128,10 +128,10 @@ class ACentralCompoRepositoryProtoJuin9(
         fClientRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
-    val ouvertTransactionCommercial: GTransactionVent? by derivedStateOf {
+    val ouvertTransactionCommercial: GBonVent? by derivedStateOf {
         clientOuSonMarqueMapEstOuvert?.let {
             gBonVentRepository.getClientLastTransactionParEtate(
-                it.id, GTransactionVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                it.id, GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         }
     }
