@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun List(
+fun MainList(
     modifier: Modifier,
     displayableProducts: List<_1_2_ProduitAcheteOperation>,
     models: GroupeRepositorysProtoAvJuin3Model

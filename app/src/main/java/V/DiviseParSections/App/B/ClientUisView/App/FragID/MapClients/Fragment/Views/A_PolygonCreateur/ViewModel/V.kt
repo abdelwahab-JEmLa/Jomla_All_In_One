@@ -65,13 +65,13 @@ class MapClientsViewModelss(
     var mapReloadTigger by mutableIntStateOf(0)
 
     var afficheLesJoursAuNoms by mutableStateOf(true)
-    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
+    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<MainList<String>>(
         emptyList()
     )
 
     // State for sectors
-    private val _secteurs = MutableStateFlow<List<E1SecteurDeClients>>(emptyList())
-    val secteurs: StateFlow<List<E1SecteurDeClients>> = _secteurs
+    private val _secteurs = MutableStateFlow<MainList<E1SecteurDeClients>>(emptyList())
+    val secteurs: StateFlow<MainList<E1SecteurDeClients>> = _secteurs
 
     // Current active sector for polygon creation
     private var _currentActiveSectorId = MutableStateFlow<Long?>(null)

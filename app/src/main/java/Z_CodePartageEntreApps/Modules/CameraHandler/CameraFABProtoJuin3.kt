@@ -1,9 +1,8 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.GrossistAchat.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne
+import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -86,7 +85,7 @@ fun CameraFABProtoJuin3(
                                 actualiseSonImageTest2 = 1,
                                 dernierFireBaseUpdateTimestamps = System.currentTimeMillis(),
                                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-                                etateActuelleOnFusionAvecBaseDonne =  EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
+                                etateActuelleOnFusionAvecBaseDonne =  ArticlesBasesStatsTable.EtateActuelleOnFusionAvecBaseDonne.CaprtureSonImage,
                                 idParentCategorie = activeCatalogue.premierCategorieId
                             )
 
