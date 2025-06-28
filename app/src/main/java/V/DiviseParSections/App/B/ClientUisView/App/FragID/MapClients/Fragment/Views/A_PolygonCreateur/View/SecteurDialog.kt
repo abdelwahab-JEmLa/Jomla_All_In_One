@@ -73,7 +73,7 @@ fun SecteurDialog(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // List_GroupeProduit of sectors
+                // List_GroupeAchatProduit of sectors
                 if (secteurs.isEmpty()) {
                     Text(
                         text = "لا توجد قطاعات حاليا", // No sectors currently

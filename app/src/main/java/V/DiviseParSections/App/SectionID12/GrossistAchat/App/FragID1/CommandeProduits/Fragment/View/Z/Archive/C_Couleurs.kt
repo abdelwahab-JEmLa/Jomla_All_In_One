@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun LazyListCouleurVendu(
+fun List_AchatCouleurOperation(
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,

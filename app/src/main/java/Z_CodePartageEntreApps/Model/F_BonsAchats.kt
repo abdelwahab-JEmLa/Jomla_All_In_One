@@ -105,7 +105,7 @@ interface J_AppInstalleDonTelephoneRepository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-    suspend fun onDataBaseChangeListnerAndLoad(): Pair<List_GroupeProduit<J_AppInstalleDonTelephone>, Flow<Float>>
+    suspend fun onDataBaseChangeListnerAndLoad(): Pair<List_GroupeAchatProduit<J_AppInstalleDonTelephone>, Flow<Float>>
     suspend fun updateUnSeulData(datas: SnapshotStateList<J_AppInstalleDonTelephone>)
     fun updatePhones()
 
@@ -266,7 +266,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
         }
     }
 
-    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List_GroupeProduit<J_AppInstalleDonTelephone>, Flow<Float>> {
+    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List_GroupeAchatProduit<J_AppInstalleDonTelephone>, Flow<Float>> {
         val progressFlow = MutableStateFlow(0f)
 
         return suspendCancellableCoroutine { continuation ->

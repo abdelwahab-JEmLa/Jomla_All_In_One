@@ -82,7 +82,7 @@ fun CatalogueSelectionDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Catalogue List_GroupeProduit
+                    // Catalogue List_GroupeAchatProduit
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {

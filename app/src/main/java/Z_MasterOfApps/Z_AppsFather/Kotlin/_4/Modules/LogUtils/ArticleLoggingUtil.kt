@@ -13,7 +13,7 @@ object ArticleLoggingUtil {
         positionedArticles: List<Map.Entry<ArticleInfosModel, MutableList<Map.Entry<ColourEtGoutInfosModel, Double>>>>,
         nonPositionedArticles: List<Map.Entry<ArticleInfosModel, MutableList<Map.Entry<ColourEtGoutInfosModel, Double>>>>
     ) {
-        Log.d(TAG, "=== Article List_GroupeProduit Update for Grossist: $grossistName ===")
+        Log.d(TAG, "=== Article List_GroupeAchatProduit Update for Grossist: $grossistName ===")
         Log.d(TAG, "Positioned Articles (${positionedArticles.size}):")
         positionedArticles.forEachIndexed { index, article ->
             Log.d(TAG, "${index + 1}. ${article.key.nom} (ID: ${article.key.id})")

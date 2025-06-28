@@ -33,6 +33,7 @@ class FVentCouleurOperationRepository(
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
+
     val onVentFilteredDatasGroupedParProduitKey by derivedStateOf {
         onVentFilteredDatas.groupBy { it.parentBProduitKeyId }
     }
@@ -159,6 +160,7 @@ data class FCouleurVentOperation(
 
     var parentBProduitKeyId: String = "",
     var parentBProduitNomDebug: String = "",
+    var parentProduitAncienId: Long = 0,
 
 
     var parentEPeriodVentStartDate: Long = 0,

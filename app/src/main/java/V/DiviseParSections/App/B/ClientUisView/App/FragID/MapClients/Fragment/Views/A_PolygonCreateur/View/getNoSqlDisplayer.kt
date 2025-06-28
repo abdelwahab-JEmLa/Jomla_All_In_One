@@ -10,7 +10,7 @@ suspend fun getNoSqlDisplayer(
     polygonDao: PolygonGeoLimiteDao,
     uiState: UiState,
     viewModel: MapClientsViewModel,
-): List_GroupeProduit<NoSqlSecteurDeClientsPolygonGeoLimite> {
+): List_GroupeAchatProduit<NoSqlSecteurDeClientsPolygonGeoLimite> {
     // Récupérer tous les secteurs
     val allSecteurs = uiState.e1SecteurDeClientsList
     Log.d("PolygonCreator", "Retrieved ${allSecteurs.size} sectors from database")

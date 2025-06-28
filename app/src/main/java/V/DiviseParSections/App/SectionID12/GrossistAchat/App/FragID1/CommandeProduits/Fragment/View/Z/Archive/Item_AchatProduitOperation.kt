@@ -1,6 +1,8 @@
-// B_ProduitCommande.kt
+// Item_AchatProduitOperation.kt
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.Z.Archive
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -15,12 +17,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
 @Composable
-fun B_ProduitCommande(
-    models: GroupeRepositorysProtoAvJuin3Model,
-    Produit: _1_2_ProduitAcheteOperation,
+fun Item_AchatProduitOperation(
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    groupeAchatProduit: Map.Entry<String, List<FCouleurVentOperation>>,
+    models: GroupeRepositorysProtoAvJuin3Model = koinInject(),
 ) {
+   val Produit= _1_2_ProduitAcheteOperation()
+
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }
@@ -75,15 +81,6 @@ fun B_ProduitCommande(
         return
     }
 
-    val buyerIds = remember {
-        val bonAchatIds = relevantProductInstances.map { it.parent_1_3_TransactionCommercial }.distinct()
-
-        models.c3TransactionCommercialRepository.modelDatasSnapList
-            .filter { it.vid in bonAchatIds }
-            .map { it.parentHClientOldID }
-            .distinct()
-    }
-
     Card() {
         HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp,color= Color.Red)
 
@@ -94,7 +91,7 @@ fun B_ProduitCommande(
                     ?: "_015_Produits inconnu", Modifier.padding(4.dp)
             )
 
-            LazyListCouleurVendu(
+            List_AchatCouleurOperation(
                 Produit = Produit,
                 colorsForProduct = colorsForProduct,
                 models = models,
