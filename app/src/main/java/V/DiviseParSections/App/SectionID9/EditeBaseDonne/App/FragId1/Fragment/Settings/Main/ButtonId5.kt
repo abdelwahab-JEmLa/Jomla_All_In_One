@@ -37,7 +37,12 @@ fun ButtonId5(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (showLabels) Text("Import Categories")
+        val text = "Delete ADD BProduitDataBase KCategorieProduitDataBase"
+
+        if (showLabels) {
+            Text(text)
+        }
+
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
@@ -46,7 +51,7 @@ fun ButtonId5(
                         viewModel.deleteAddMultiCategories(importedCategories)
                         Toast.makeText(
                             context,
-                            "Successfully imported ${importedCategories.size} categories",
+                            "Successfully $text",
                             Toast.LENGTH_LONG
                         ).show()
                         onImportSuccess()
