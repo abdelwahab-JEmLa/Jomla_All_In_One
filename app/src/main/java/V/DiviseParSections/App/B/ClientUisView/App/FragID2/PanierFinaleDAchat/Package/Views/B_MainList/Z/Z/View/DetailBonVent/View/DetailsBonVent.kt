@@ -65,7 +65,9 @@ fun DetailsBonVent(
             )
         }
     }
-    Text(fVentCouleurOperationRepository.onVentFilteredDatas.size)
+    Text(fVentCouleurOperationRepository.onVentFilteredDatas.size.toString())
+
+    Text(fVentCouleurOperationRepository.datasValue.first().keyID.toString())
     if (comptAppActuelle != null) {
         Scaffold(
             floatingActionButton = {
