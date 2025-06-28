@@ -13,7 +13,7 @@ class ZViewModel_Sec1Frag3(
     val uiStateCentralRepositorys = aCentral.getter
 
     data class UiState_Sec1Frag3(
-        val isMinimized: Boolean = true,
+        val isMinimized: Boolean = false,
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
@@ -29,7 +29,7 @@ class ZViewModel_Sec1Frag3(
 inline fun Boolean.ifTrue(block: () -> Unit) {
     if (this) block()
 }
-inline fun Boolean.ifFalse(block: () -> Unit) {
+inline fun Boolean.ifFalse(block: () -> Unit) {                             
     if (!this) block()
 }
 
