@@ -222,13 +222,13 @@ fun LazyListCouleurVendu(
         }
 
         if (hasMoreItems) {
-            AfficheIconAPlusieurItems()
+            AfficheIconVentMultiItems()
         }
     }
 }
 
 @Composable
-private fun AfficheIconAPlusieurItems() {
+private fun AfficheIconVentMultiItems() {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
