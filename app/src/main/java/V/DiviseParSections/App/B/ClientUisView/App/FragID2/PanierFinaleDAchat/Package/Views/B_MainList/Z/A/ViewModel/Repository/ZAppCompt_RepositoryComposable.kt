@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.Z_AppCompt.Companion.logDebugIt
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -18,7 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Objects
 
 @Stable
 class ZAppCompt_RepositoryComposable(
@@ -42,10 +40,9 @@ class ZAppCompt_RepositoryComposable(
 
     fun addOrUpdateData(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.keyID == data.keyID
+            ancien.bsonObjectId == data.bsonObjectId
         }
 
-        Log.d("Z_AppCompt", existingIndex.toString())
 
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -72,7 +69,6 @@ class ZAppCompt_RepositoryComposable(
                 dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
             )
         }
-        dataForRepo.logDebugIt(nomVale = "dataForRepo")
 
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
@@ -202,29 +198,19 @@ data class Z_AppCompt(
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
 
-        // Alternative more concise version:
         fun Z_AppCompt?.logDebugIt(nomVale: String = "") {
             Log.d(
                 "Z_AppCompt",
-                nomVale + if (this != null) {
-                    "${keyID}\n ${nom}\n ${onVentFClientDebugNameKey}\n"
-                } else {
-                    "Z_AppCompt is null"
-                }
+                infos(nomVale)
             )
         }
+
+        private fun Z_AppCompt?.infos(
+            nomVale: String
+        ) = nomVale + if (this != null) {
+            "${keyID}\n ${nom}\n ${onVentFClientDebugNameKey}\n"
+        } else {
+            "Z_AppCompt is null"
+        }
     }
-
-    override fun equals(other: Any?) =
-        this === other || (other is Z_AppCompt && isSameEntity(other))
-
-    fun isSameEntity(other: Z_AppCompt) =
-        bsonObjectId == other.bsonObjectId
-                && nom == other.nom
-
-    override fun hashCode() = Objects.hash(
-        bsonObjectId,
-        nom,
-    )
-
 }
