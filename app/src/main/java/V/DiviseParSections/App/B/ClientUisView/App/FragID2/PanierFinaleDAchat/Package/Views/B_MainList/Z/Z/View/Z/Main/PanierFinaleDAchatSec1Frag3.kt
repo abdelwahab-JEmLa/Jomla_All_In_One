@@ -13,16 +13,16 @@ fun PanierFinaleDAchatSec1Frag3(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
 ) {
-    val fCouleurAchatOperationRepositoryComposable =
+    val fVentCouleurOperationRepository =
         viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+
 
     Column {
         DetailsBonVent(viewModel = viewModel)
-
         MainList(
             modifier = modifier,
             viewModel = viewModel,
-            fCouleurAchatOperationRepositoryComposable = fCouleurAchatOperationRepositoryComposable
+            fVentCouleurOperationRepository = fVentCouleurOperationRepository
         )
     }
 }

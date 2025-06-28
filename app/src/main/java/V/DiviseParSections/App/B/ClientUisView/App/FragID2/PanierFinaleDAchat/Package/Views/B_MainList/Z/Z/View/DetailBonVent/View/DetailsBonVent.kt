@@ -2,11 +2,13 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -18,7 +20,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,28 +67,18 @@ fun DetailsBonVent(
             )
         }
     }
-    Text(fVentCouleurOperationRepository.onVentFilteredDatas.size.toString())
 
-    Text(fVentCouleurOperationRepository.datasValue.first().keyID.toString())
     if (comptAppActuelle != null) {
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { isMinimized = !isMinimized },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails"
-                    )
-                }
-            }
-        ) { paddingValues ->
+        // Use Box instead of Scaffold to avoid layout conflicts
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight() // This ensures it only takes the space it needs
+        ) {
             Card(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(paddingValues),
+                    .padding(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -113,6 +105,20 @@ fun DetailsBonVent(
 
                     CartSummarySection(cartSummary)
                 }
+            }
+
+            // FloatingActionButton positioned at bottom-end
+            FloatingActionButton(
+                onClick = { isMinimized = !isMinimized },
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails"
+                )
             }
         }
     } else {
