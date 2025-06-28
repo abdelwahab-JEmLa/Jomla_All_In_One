@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ifFalse
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ifTrue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,7 @@ fun ClientDetailsSection(
     val fClientRepository = viewModel.uiStateCentralRepositorys.fClientRepository
     val onVentClient = fClientRepository.onVentClient
 
-    isMinimized.ifTrue {
+    isMinimized.ifFalse {
         Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
     }
 

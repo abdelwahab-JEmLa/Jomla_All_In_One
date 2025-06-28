@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -106,12 +105,6 @@ fun CartSummarySection(cartSummary: CartSummary) {
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = "Résumé du Panier",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -156,10 +149,7 @@ fun CartSummarySection(cartSummary: CartSummary) {
                     fontWeight = FontWeight.Medium
                 )
             }
-            Divider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

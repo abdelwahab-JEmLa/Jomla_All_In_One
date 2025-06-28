@@ -13,7 +13,7 @@ class ZViewModel_Sec1Frag3(
     val uiStateCentralRepositorys = aCentral.getter
 
     data class UiState_Sec1Frag3(
-        val isMinimized: Boolean = false,
+        val isMinimized: Boolean = true,
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())

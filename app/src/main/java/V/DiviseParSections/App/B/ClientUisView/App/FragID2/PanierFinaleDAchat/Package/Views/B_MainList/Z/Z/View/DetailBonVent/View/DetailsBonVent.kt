@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.Z.View.DetailBonVent.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.ifTrue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +33,7 @@ import org.koin.compose.koinInject
 fun DetailsBonVentPrev() {
     DetailsBonVent()
 }
+val petitePaddine = 2.dp
 
 @Composable
 fun DetailsBonVent(
@@ -73,7 +73,7 @@ fun DetailsBonVent(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(petitePaddine),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -109,7 +109,7 @@ fun DetailsBonVent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp)
+                    .padding(petitePaddine)
             ) {
                 Icon(
                     imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
