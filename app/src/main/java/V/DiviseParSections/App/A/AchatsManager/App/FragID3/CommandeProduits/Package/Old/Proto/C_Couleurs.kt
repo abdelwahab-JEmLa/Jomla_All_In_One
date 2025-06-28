@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -222,25 +222,30 @@ fun LazyListCouleurVendu(
         }
 
         if (hasMoreItems) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                        shape = RoundedCornerShape(24.dp)
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "Plus d'articles",
-                    tint = Color.Red,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .width(32.dp)
-                        .height(32.dp)
-                )
-            }
+            AfficheIconAPlusieurItems()
         }
+    }
+}
+
+@Composable
+private fun AfficheIconAPlusieurItems() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(4.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(24.dp)
+            )
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = "Plus d'articles",
+            tint = Color.Red,
+            modifier = Modifier
+                .padding(8.dp)
+                .width(32.dp)
+                .height(32.dp)
+        )
     }
 }
