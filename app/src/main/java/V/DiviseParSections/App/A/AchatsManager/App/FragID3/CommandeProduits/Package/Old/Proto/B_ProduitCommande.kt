@@ -4,7 +4,6 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,30 +21,23 @@ fun B_ProduitCommande(
     models: GroupeRepositorysProtoAvJuin3Model,
     Produit: _1_2_ProduitAcheteOperation,
 ) {
-    val TAG = "B_ProduitCommande"
-
-    // Verify that this product has ParentBonVentConfirme status before proceeding
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }
 
-    // Get the current period filter
     val activeIdDe_1_5_Vendeur = models.activeIdDeA5Vendeur
 
-    // Derive the period filter as add remembered value
     val periodFilter = remember(activeIdDe_1_5_Vendeur) {
         models.repository_1_5_Vendeur
             .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
             ?.ceComptVendeurStartAffichePeriod
     }
 
-    // Create add map of BonAchat IDs to their periods
     val bonAchatPeriods = remember {
         models.c3TransactionCommercialRepository.modelDatasSnapList
             .associate { it.vid to it.parentPeriodeVentOldID }
     }
 
-    // Find all product instances with the same produitAcheterID (same base product)
     val allProductInstances = remember(Produit.produitAcheterID) {
         models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
             .filter {
@@ -54,7 +46,6 @@ fun B_ProduitCommande(
             }
     }
 
-    // If period filter is active, filter product instances by period
     val relevantProductInstances = remember(allProductInstances, periodFilter) {
         if (periodFilter != null) {
             allProductInstances.filter { product ->
@@ -66,48 +57,27 @@ fun B_ProduitCommande(
         }
     }
 
-    // Log information about product filtering if it's product 127
-    if (Produit.vid == 127L) {
-        Log.d(TAG, "Product 127: Found ${allProductInstances.size} instances, ${relevantProductInstances.size} match period $periodFilter")
-    }
-
-    // Get the product IDs that match our period filter
     val filteredProductVids = relevantProductInstances.map { it.vid }
 
-    // Get colors for the filtered product instances
     val colorsForProduct = remember(filteredProductVids) {
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
             .filter {
-                // Check if color belongs to add relevant product instance
                 it.parentProduitAchateOperationVID in filteredProductVids &&
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
     }
 
-    // Only proceed if there are available colors with quantity > 0
     val filteredColors = colorsForProduct
         .filter { it.totaleQuantity > 0 }
         .distinctBy { it.couleurIndex_ParentVID }
 
     if (filteredColors.isEmpty()) {
-        if (Produit.vid == 127L) {
-            Log.d(TAG, "Product 127: No valid colors found after filtering")
-        }
         return
     }
 
-    if (Produit.vid == 127L) {
-        Log.d(TAG, "Product 127: Displaying with ${filteredColors.size} colors")
-        filteredColors.forEach {
-            Log.d(TAG, "Color index: ${it.couleurIndex_ParentVID}, quantity: ${it.totaleQuantity}")
-        }
-    }
-
     val buyerIds = remember {
-        // Find all BonAchat IDs associated with filtered product instances
         val bonAchatIds = relevantProductInstances.map { it.parent_1_3_TransactionCommercial }.distinct()
 
-        // Get all client IDs from those BonAchat entries
         models.c3TransactionCommercialRepository.modelDatasSnapList
             .filter { it.vid in bonAchatIds }
             .map { it.parentHClientOldID }

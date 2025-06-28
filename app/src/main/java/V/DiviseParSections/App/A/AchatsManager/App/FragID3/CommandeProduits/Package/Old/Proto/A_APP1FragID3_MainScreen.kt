@@ -3,7 +3,6 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,17 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
-
 @Composable
 fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
-    val TAG = "APP2_FragID3_MainScreen"
-
     val activeIdDe_1_5_Vendeur = _0_0_HeadSQLRepositorys.repositorys_Model.activeIdDeA5Vendeur
 
-    // Get the period filter from the active vendor
     val periodFilter = _0_0_HeadSQLRepositorys
         .repositorys_Model.repository_1_5_Vendeur
         .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
@@ -39,43 +34,8 @@ fun A_APP1FragID3_MainScreen(
 
     val models = _0_0_HeadSQLRepositorys.repositorys_Model
 
-    // State to hold filtered products
     var displayableProducts by remember { mutableStateOf<List<_1_2_ProduitAcheteOperation>>(emptyList()) }
 
-    // Debug logging for periodFilter
-    LaunchedEffect(periodFilter) {
-        Log.d(TAG, "Active period filter: $periodFilter")
-    }
-
-    // Add specific logging for product with vid == 127
-    LaunchedEffect(models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList) {
-        val product127 = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.find { it.vid == 127L }
-        if (product127 != null) {
-            Log.d(TAG, "Product 127 found: status=${product127.etateActuellementEst}, produitAcheterID=${product127.produitAcheterID}")
-
-            // Check colors for product 127
-            val colorsForProduct127 = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                .filter { it.parentProduitAchateOperationVID == 127L }
-
-            Log.d(TAG, "Colors for product 127: ${colorsForProduct127.size}")
-            colorsForProduct127.forEach { color ->
-                Log.d(TAG, "Color for 127: status=${color.etateActuellementEst}, quantity=${color.totaleQuantity}")
-            }
-
-            // Check BonAchat for product 127
-            val bonAchatId = product127.parent_1_3_TransactionCommercial
-            val bonAchat = models.c3TransactionCommercialRepository.modelDatasSnapList.find { it.vid == bonAchatId }
-            if (bonAchat != null) {
-                Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentPeriodeVentOldID}, filter=$periodFilter")
-            } else {
-                Log.d(TAG, "BonAchat not found for product 127")
-            }
-        } else {
-            Log.d(TAG, "Product with vid=127 not found in modelDatasSnapList")
-        }
-    }
-
-    // Move heavy computation to LaunchedEffect with Dispatchers.Default
     LaunchedEffect(
         models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList,
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList,
@@ -83,101 +43,53 @@ fun A_APP1FragID3_MainScreen(
         periodFilter
     ) {
         withContext(Dispatchers.Default) {
-            // Create lookup maps for faster access
             val colorsByProductVid = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
                 .groupBy { it.parentProduitAchateOperationVID }
 
             val bonAchatsById = models.c3TransactionCommercialRepository.modelDatasSnapList
                 .associateBy { it.vid }
 
-            // Debug logging for period filtering
-            val bonAchatsPeriods = models.c3TransactionCommercialRepository.modelDatasSnapList
-                .map { "${it.vid}: ${it.parentPeriodeVentOldID}" }
-            Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
-
-            // First pass: find all products that meet the criteria
             val confirmedProducts = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                 .filter { product ->
-                    // Add specific logging for product 127 in the filtering process
-                    val isProduct127 = product.vid == 127L
-                    if (isProduct127) {
-                        Log.d(TAG, "Filtering product 127...")
-                    }
-
-                    // 1. Check ParentBonVentConfirme status
                     val hasConfirmedStatus = product.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
-                    if (isProduct127) {
-                        Log.d(TAG, "Product 127 ParentBonVentConfirme status check: $hasConfirmedStatus")
-                    }
 
                     if (!hasConfirmedStatus) {
                         return@filter false
                     }
 
-                    // 2. Check for valid colors with quantity > 0
                     val productColors = colorsByProductVid[product.vid] ?: emptyList()
                     val hasValidColors = productColors.any { color ->
                         color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                                 && color.totaleQuantity > 0
                     }
 
-                    if (isProduct127) {
-                        Log.d(TAG, "Product 127 colors check: found ${productColors.size} colors, hasValidColors=$hasValidColors")
-                        productColors.forEach {
-                            Log.d(TAG, "Product 127 color: status=${it.etateActuellementEst}, quantity=${it.totaleQuantity}")
-                        }
-                    }
-
                     if (!hasValidColors) {
                         return@filter false
                     }
 
-                    // 3. Period filter - only if add period filter is set
                     if (periodFilter != null) {
                         val bonAchat = bonAchatsById[product.parent_1_3_TransactionCommercial]
                         val productPeriod = bonAchat?.parentPeriodeVentOldID
 
-                        // Debug logging for this specific product's period
-                        if (isProduct127) {
-                            Log.d(TAG, "Product 127 period check: productPeriod=$productPeriod, filter=$periodFilter")
-                        }
-
-                        // Check if ANY associated BonAchats match the period filter (fixed logic)
                         val allBonAchats = models.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
                             .filter { it.produitAcheterID == product.produitAcheterID }
                             .map { it.parent_1_3_TransactionCommercial }
                             .distinct()
 
-                        // Get all periods for these BonAchats
                         val allPeriods = allBonAchats.mapNotNull { bonAchatId ->
                             bonAchatsById[bonAchatId]?.parentPeriodeVentOldID
                         }.distinct()
 
-                        // FIXED: Changed from allPeriodsMatch to anyPeriodMatches
-                        // Only include products where ANY associated periods match the filter
                         val anyPeriodMatches = allPeriods.any { it == periodFilter }
-
-                        if (isProduct127) {
-                            Log.d(TAG, "Product 127 (ID: ${product.produitAcheterID}) - allBonAchats: $allBonAchats")
-                            Log.d(TAG, "Product 127 - allPeriods: $allPeriods, anyPeriodMatches: $anyPeriodMatches")
-                        }
 
                         return@filter anyPeriodMatches
                     }
 
-                    // If no period filter is set, include the product
                     true
                 }
                 .distinctBy { it.produitAcheterID }
 
-            // Check if product 127 is in the final list
-            val product127InFinalList = confirmedProducts.any { it.vid == 127L }
-            Log.d(TAG, "Product 127 in final displayable list: $product127InFinalList")
-
             displayableProducts = confirmedProducts
-
-            // Log the final filtered products count
-            Log.d(TAG, "Final displayable products count: ${confirmedProducts.size}")
         }
     }
 
@@ -191,6 +103,5 @@ fun A_APP1FragID3_MainScreen(
                 B_ProduitCommande(models, produit)
             }
         }
-
     }
 }
