@@ -31,11 +31,6 @@ fun GBonVentInfosHeader(
     val repo = viewModel.uiStateCentralRepositorys.gBonVentRepository
     val onVentData = repo.onVentData
 
-    val currentAppCompt =
-        viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable.currentAppCompt
-
-    currentAppCompt?.onVentGBonVentDebugNameKey?.let { Text(it) }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
