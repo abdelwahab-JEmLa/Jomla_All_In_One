@@ -38,7 +38,7 @@ fun List_AchatCouleurOperation(
             }
         }
 
-        if (true) {
+        if (listAchatCouleur.size > 1) {
             AfficheIconVentMultiItems()
         }
     }
