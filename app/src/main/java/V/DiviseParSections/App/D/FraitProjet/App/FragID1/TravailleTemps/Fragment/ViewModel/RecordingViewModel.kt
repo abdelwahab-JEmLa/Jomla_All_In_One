@@ -151,7 +151,7 @@ class RecordingViewModel(
     }
 
     fun calculateNombreClientAvecCible(): Int {
-        val count = a_CentralDatasHandlerProtoJuin9.fClientRepository.datasValue
+        val count = a_CentralDatasHandlerProtoJuin9.hClientRepository.datasValue
             .count { client ->
                 a_CentralDatasHandlerProtoJuin9.gBonVentRepository
                     .getClientLastTransactionParEtate(

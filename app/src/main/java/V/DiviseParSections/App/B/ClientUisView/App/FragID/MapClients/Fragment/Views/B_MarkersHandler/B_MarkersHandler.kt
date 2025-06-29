@@ -76,8 +76,10 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
 ) {
+   val repo= viewModel.getter.hClientRepository
 
     val marker = Marker(mapView).apply {
+        val hClient= repo.datasValue.find { it.id.toString()==id }
         id = client.id.toString()
         position = GeoPoint(
             client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
@@ -96,8 +98,7 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
-                .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clickedMarker.id.toLong())
+            viewModel.updateDialogMapMarque(clickedMarker.id.toLong())
 
             if (showMarkerDetails) clickedMarker.showInfoWindow()
             true

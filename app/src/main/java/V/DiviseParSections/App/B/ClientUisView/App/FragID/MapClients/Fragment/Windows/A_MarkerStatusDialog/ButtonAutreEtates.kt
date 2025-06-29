@@ -45,7 +45,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
+                viewModel.getter.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
             }
         },

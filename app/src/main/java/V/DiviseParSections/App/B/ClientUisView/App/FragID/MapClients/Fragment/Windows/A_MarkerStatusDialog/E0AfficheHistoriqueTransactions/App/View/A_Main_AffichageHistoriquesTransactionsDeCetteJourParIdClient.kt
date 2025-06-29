@@ -12,7 +12,6 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
-    clientOldId: Long = 4,
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

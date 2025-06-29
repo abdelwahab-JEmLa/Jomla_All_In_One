@@ -77,9 +77,9 @@ fun MapContent(
     }
 
     LaunchedEffect(
-        viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.aCentralCompoRepositoryProtoJuin9.gBonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.aCentralCompoRepositoryProtoJuin9.fClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.gBonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.hClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
@@ -158,15 +158,18 @@ fun MapContent(
                 }
             )
         }
+        val getter = viewModel.getter
         val clientOuCaMarqueGpsEstOuvert =
-            viewModel.aCentralCompoRepositoryProtoJuin9
-            .clientOuSonMarqueMapEstOuvert
+            getter
+                .clientOuSonMarqueMapEstOuvert
 
-        if (clientOuCaMarqueGpsEstOuvert != null) {
+        if (clientOuCaMarqueGpsEstOuvert != null ||
+            !viewModel.getter.bOuvertDialogMapMarqueHClientKey.isNullOrBlank()
+        ) {
             MarkerStatusDialog(
                 viewModel = viewModel,
                 clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
-                mapView=mapView,
+                mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->

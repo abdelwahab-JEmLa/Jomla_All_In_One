@@ -19,11 +19,11 @@ data class SecID5FragID2UiState(
     val activeCompt: _1_5_Vendeur? = _1_5_Vendeur(),
     val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f,
-    val comptOnAfficheHistoriquesClientKeyId: String  = "-OTvJeEW-VPzKinmahQv"
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
     aCentral: ACentral,
+
     val a_CentralDatasHandlerProtoJuin9: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 

@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ACentral
-import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
@@ -51,7 +50,6 @@ data class UiState(
 
 class MapClientsViewModel(
     val aCentral: ACentral,
-    val aCentralCompoRepositoryProtoJuin9: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -69,9 +67,9 @@ class MapClientsViewModel(
         groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
 
     // Compose States
-    val transactionsState = aCentralCompoRepositoryProtoJuin9.gBonVentRepository
-    val clientsState = aCentralCompoRepositoryProtoJuin9.fClientRepository
-    val appState = aCentralCompoRepositoryProtoJuin9.comptAppState
+    val transactionsState = getter.gBonVentRepository
+    val clientsState = getter.hClientRepository
+    val appState = getter.comptAppState
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -92,7 +90,7 @@ class MapClientsViewModel(
             b_ClientInfosProtoJuin3List = clientsState.datasState.value,
             c3_TransactionCommercialList = transactionsState.datasState.value,
             activeCompt = appState.activeCompt,
-            mainLoadingProgress = aCentralCompoRepositoryProtoJuin9.loadingProgress!!,
+            mainLoadingProgress = getter.loadingProgress!!,
             isLoading = clientsState.isLoading,
             error = null
         )
@@ -110,7 +108,7 @@ class MapClientsViewModel(
         }
 
         viewModelScope.launch {
-            snapshotFlow { aCentralCompoRepositoryProtoJuin9.comptAppState.activeCompt }.collect { transactionsList ->
+            snapshotFlow { getter.comptAppState.activeCompt }.collect { transactionsList ->
                 updateUiState()
             }
         }
@@ -258,7 +256,7 @@ class MapClientsViewModel(
     }
 
     fun ouvreBonVent(idClientOuSonMarqueMapEstOuvert: Long): Unit {
-        aCentralCompoRepositoryProtoJuin9.comptAppState
+        getter.comptAppState
             .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
 
         if (idClientOuSonMarqueMapEstOuvert == 0L) {
@@ -273,6 +271,10 @@ class MapClientsViewModel(
     }
 
     fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
-         setter.ouvrireNewAppComptOnVentBonVentEtAddLe(clickedClient,newEtate)
+        setter.ouvrireNewAppComptOnVentBonVentEtAddLe(clickedClient, newEtate)
+    }
+
+    fun updateDialogMapMarque(clientOldId: Long) {
+        setter.updateDialogMapMarque(clientOldId)
     }
 }

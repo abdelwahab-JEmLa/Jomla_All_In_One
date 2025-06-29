@@ -125,6 +125,8 @@ data class Z_AppCompt(
     var onVentFClientKeyID: String = "",
     var onVentFClientDebugNameKey: String = "",
     var onVentFClientAncienId: Long = 0L,
+//------------------------------------------------------------------------------------------------------------------------------------------------
+    val bOuvertDialogMapMarqueHClientKey: String  = ""
 ) {
     init {
         if (nomMutable.isEmpty()) {

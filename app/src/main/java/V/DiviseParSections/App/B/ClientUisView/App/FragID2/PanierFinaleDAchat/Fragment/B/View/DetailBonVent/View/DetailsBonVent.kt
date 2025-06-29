@@ -160,7 +160,7 @@ fun DetailsBonVent(
 
                 FloatingActionButton(
                     onClick = {
-                        val fClientRepository = viewModel.uiStateCentralRepositorys.fClientRepository
+                        val fClientRepository = viewModel.uiStateCentralRepositorys.hClientRepository
 
                         printHandler.printVentReceipt(
                             context = context,

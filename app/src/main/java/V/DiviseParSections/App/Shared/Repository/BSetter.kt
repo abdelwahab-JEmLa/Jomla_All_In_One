@@ -19,14 +19,32 @@ class BSetter(
     val getter: AGetter,
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
-    val fClientRepository: HClientRepository,
+    val hClientRepository: HClientRepository,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val navigationHandler: FragmentNavigationHandler
 ) {
+
     private val setterScope = CoroutineScope(Dispatchers.IO)
 
-    val bClientsStateCompoRepository = getter.fClientRepository
+    val bClientsStateCompoRepository = getter.hClientRepository
+
+    fun updateDialogMapMarque(clientID :Long) {
+        val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
+
+        val zCompt = if (clientKey.isNullOrBlank()) {
+            currentZCompt.copy(
+                bOuvertDialogMapMarqueHClientKey = ""
+            )
+        } else {
+            currentZCompt.copy(
+                bOuvertDialogMapMarqueHClientKey = clientKey
+            )
+        }
+
+        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+    }
 
     fun ouvrireNewAppComptOnVentBonVentEtAddLe(
         clientOldId: Long,
@@ -127,12 +145,12 @@ class BSetter(
     fun deleteAddMultiClients() {
         val datas = bClientsStateCompoRepository.datasValue
         CoroutineScope(Dispatchers.IO).launch {
-            fClientRepository.dataBaseFactoryFClient.dao.deleteAll()
-            fClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
+            hClientRepository.dataBaseFactoryFClient.dao.deleteAll()
+            hClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
 
             HClientInfos.safeRemoveRef()
 
-            fClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
+            hClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
                 datas
             )
         }

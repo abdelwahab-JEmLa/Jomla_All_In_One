@@ -40,7 +40,7 @@ class AGetter(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val fClientRepository: HClientRepository,
+    val hClientRepository: HClientRepository,
     val gBonVentRepository: GBonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
@@ -53,11 +53,12 @@ class AGetter(
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
-) {
+    ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+    val bOuvertDialogMapMarqueHClientKey=zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
     // Fixed getVent function in AGetter.kt
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable,
@@ -122,7 +123,7 @@ class AGetter(
     }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
-        fClientRepository.datasValue.count { client ->
+        hClientRepository.datasValue.count { client ->
             val lastTransaction = gBonVentRepository.getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 GBonVent.EtateActuellementEst.Cible,
@@ -131,7 +132,7 @@ class AGetter(
     }
 
     val clientOuSonMarqueMapEstOuvert by derivedStateOf {
-        fClientRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
+        hClientRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
     }
 
     val ouvertTransactionCommercial: GBonVent? by derivedStateOf {
@@ -161,6 +162,22 @@ class AGetter(
     }
 
     companion object {
+        inline fun Long?.ifNotNullOrZero(block: () -> Unit) {
+            if (this != null && this != 0L) block()
+        }
+
+        inline fun String?.ifNotNullOrEmpty(block: () -> Unit) {
+            if (!this.isNullOrEmpty()) block()
+        }
+        
+        inline fun Boolean.ifTrue(block: () -> Unit) {
+            if (this) block()
+        }
+
+        inline fun Boolean.ifFalse(block: () -> Unit) {
+            if (!this) block()
+        }
+        
         val centralRef =
             Firebase.database.getReference(
                 "00_DataPrototype-04-02" +

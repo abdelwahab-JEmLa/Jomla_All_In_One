@@ -82,7 +82,7 @@ fun AfficheurRegleOuvert(
 
                 TextButton(
                     onClick = {
-                        viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
+                        viewModel.getter.comptAppState
                             .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
