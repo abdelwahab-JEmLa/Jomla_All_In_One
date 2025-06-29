@@ -35,13 +35,20 @@ fun CommandButton(
     etateActuellementEst1: GBonVent.EtateActuellementEst,
     clientId: Long,
     selectedMarker: Marker,
-    onUpdateLongAppSetting: () -> Unit,
     context: Context,
+    onUpdateLongAppSetting: () -> Unit,
 ) {
     val selectedMarkedID = selectedMarker.id.toLong()
 
     FilledTonalButton(
         onClick = {
+            upsertLenceCommandeRepoGroupedProtoAvantJuin3(
+                uiState = uiState,
+                viewModel = viewModel,
+                relatedClientID = clientId,
+                newEtate = etateActuellementEst1
+            )
+
             if (clientOuCaMarqueGpsEstOuvert != null) {
                 viewModel.ouvreBonVent(
                     clientOuCaMarqueGpsEstOuvert.id
@@ -87,7 +94,7 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     viewModel: MapClientsViewModel,
     relatedClientID: Long,
     newEtate: GBonVent.EtateActuellementEst,
-    onAddNew: (GBonVent) -> Unit,
+    onAddNew: (GBonVent) -> Unit ={},
 ) {
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)

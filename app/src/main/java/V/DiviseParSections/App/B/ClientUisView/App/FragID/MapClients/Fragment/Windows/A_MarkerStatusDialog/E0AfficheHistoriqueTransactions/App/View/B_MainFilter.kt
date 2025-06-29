@@ -2,8 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
@@ -17,8 +18,45 @@ fun MainFilter(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     onClickToOpenTransaction: (GBonVent) -> Unit
 ) {
-    val filteredGroupedTransactions = remember(uiState.transactionsDateToList_C_3_BonAchate, idClient) {
-        uiState.transactionsDateToList_C_3_BonAchate
+    val datasGBonVentRepository = viewModel.getter.gBonVentRepository.datasValue
+    val transactionsDateToListGBonVent: List<Pair<MVentPeriode, List<GBonVent>>> =
+        remember(datasGBonVentRepository) {
+            // Group transactions by date periods
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            datasGBonVentRepository.groupBy { transaction ->
+                // Extract date from transaction and create period
+                val transactionDate = transaction.parentPeriodeVentKeyID ?: ""
+                val period = try {
+                    val date = dateFormat.parse(transactionDate)
+                    val calendar = java.util.Calendar.getInstance().apply {
+                        time = date ?: java.util.Date()
+                    }
+                    val year = calendar.get(java.util.Calendar.YEAR)
+                    val month = calendar.get(java.util.Calendar.MONTH) + 1
+                    val startDate = String.format("%04d-%02d-01", year, month)
+                    val endDate = String.format("%04d-%02d-%02d", year, month,
+                        calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH))
+
+                    MVentPeriode(
+                        startDateInString = startDate,
+                        endDateInString = endDate,
+                    )
+                } catch (e: Exception) {
+                    // Default period for invalid dates
+                    MVentPeriode(
+                        startDateInString = "1970-01-01",
+                        endDateInString = "1970-01-31",
+                    )
+                }
+                period
+            }.map { (period, transactions) ->
+                Pair(period, transactions)
+            }
+        }
+
+    val filteredGroupedTransactions = remember(datasGBonVentRepository, idClient) {
+        transactionsDateToListGBonVent
             .map { (period, transactions) ->
                 val filteredTransactions = transactions.filter { transaction ->
                     transaction.parentHClientOldID == idClient

@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
@@ -10,8 +10,8 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._DataBaseFactory_MVentPeriodeImpl
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -25,7 +25,7 @@ data class UiState_StartUpScreen(
     var _1_1_CouleurAcheteOperationList: SnapshotStateList<_1_1_CouleurAcheteOperation> = mutableStateListOf(),
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
     var _C_3_BonAchateList: SnapshotStateList<GBonVent> = mutableStateListOf(),
-    var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
+    var _1_4_PeriodeVentList: SnapshotStateList<MVentPeriode> = mutableStateListOf(),
 
     var bonAchetOnCourseMntID: Long = 1,
     var isFilteringActive: Boolean = false,
@@ -42,7 +42,7 @@ class ViewModelFragment_StartUpScreen(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val C3_BonAchate_Repository: C3TransactionCommercialRepository,
-    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
+    val _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"
     val headModel= _0_0_HeadSQLRepositorys.repositorys_Model
@@ -86,13 +86,13 @@ class ViewModelFragment_StartUpScreen(
     }
 
 
-    fun addData_1_4_PeriodeVent(newPeriodeVent: _1_4_PeriodeVent): Unit {
+    fun addData_1_4_PeriodeVent(newPeriodeVent: MVentPeriode): Unit {
         viewModelScope.launch {
             _1_4_PeriodeVent_Repository.addData(newPeriodeVent)
         }
     }
 
-    fun updateUneSeulData_1_4_PeriodeVent_Repository(data: _1_4_PeriodeVent) {
+    fun updateUneSeulData_1_4_PeriodeVent_Repository(data: MVentPeriode) {
         viewModelScope.launch {
             _1_4_PeriodeVent_Repository.updateUnSeulData(data)
         }
@@ -118,7 +118,7 @@ class ViewModelFragment_StartUpScreen(
             _1_2_ProduitAcheteOperation_Repository as? _1_2_ProduitAcheteOperationRepositoryImpl
         repoImpl2?.cleanup()
 
-        val repoImpl4 = _1_4_PeriodeVent_Repository as? _1_4_PeriodeVentRepositoryImpl
+        val repoImpl4 = _1_4_PeriodeVent_Repository as? _DataBaseFactory_MVentPeriodeImpl
         repoImpl4?.cleanup()
     }
 }

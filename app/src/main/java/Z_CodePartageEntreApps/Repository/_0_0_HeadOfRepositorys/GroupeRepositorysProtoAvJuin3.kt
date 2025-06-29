@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -23,7 +23,7 @@ interface GroupeRepositorysProtoAvJuin3 {
 
 
     fun upsertUneDataEtReturnVID_1_4_PeriodeVent(
-        data: _1_4_PeriodeVent,
+        data: MVentPeriode,
         onSuccess: (Long) -> Unit = {},
     )
 

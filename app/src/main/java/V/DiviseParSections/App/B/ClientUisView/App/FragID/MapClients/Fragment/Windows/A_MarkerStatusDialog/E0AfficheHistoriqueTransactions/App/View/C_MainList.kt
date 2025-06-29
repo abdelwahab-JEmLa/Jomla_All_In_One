@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +20,7 @@ import java.util.Locale
 
 @Composable
 fun MainList(
-    filteredGroupedTransactions: List<Pair<_1_4_PeriodeVent, List<GBonVent>>>,
+    filteredGroupedTransactions: List<Pair<MVentPeriode, List<GBonVent>>>,
     dateStringName: DatesHandler,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     uiState: SecID5FragID2UiState,
@@ -95,7 +95,7 @@ fun MainList(
             }
         } else {
             Text(
-                text = if (uiState.transactionsDateToList_C_3_BonAchate.isNotEmpty())
+                text = if (filteredGroupedTransactions.isNotEmpty())
                     "لا توجد معاملات للعميل $idClient"
                 else "جاري تحميل البيانات...",
                 modifier = Modifier

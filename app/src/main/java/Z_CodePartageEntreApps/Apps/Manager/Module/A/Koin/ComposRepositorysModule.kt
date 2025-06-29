@@ -10,6 +10,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.Shared.Repository.ASetterCentral
+import V.DiviseParSections.App.Shared.Repository.MVentPeriodeRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
@@ -32,6 +33,7 @@ val composRepositorysModule = module {
     single { FVentCouleurOperationRepository(get(), get()) }
     single { GBonVentRepository(get(), get(), get()) }
     single { KAchatCouleurOperationRepository(get()) }
+    single { MVentPeriodeRepository(get(),get(),get(),) }
 
     single {
         ACentralCompoRepositoryProtoJuin9(
@@ -47,7 +49,7 @@ val composRepositorysModule = module {
             get(),
             get(),
             get(),
-            get(),
+            get(), get()
         )
     }
 

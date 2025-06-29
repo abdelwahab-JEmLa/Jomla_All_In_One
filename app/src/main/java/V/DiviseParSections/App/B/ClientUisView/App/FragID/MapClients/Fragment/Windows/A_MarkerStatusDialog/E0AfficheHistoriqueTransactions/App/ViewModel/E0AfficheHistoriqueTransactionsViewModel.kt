@@ -1,39 +1,25 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
-import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 data class SecID5FragID2UiState(
     val activeCompt: _1_5_Vendeur? = _1_5_Vendeur(),
     val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
-    val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
-    val sl_C_3_BonAchate: SnapshotStateList<GBonVent> = SnapshotStateList(),
-    val transactionsDateToList_C_3_BonAchate: List<Pair<_1_4_PeriodeVent, List<GBonVent>>> = emptyList(),
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
@@ -42,44 +28,13 @@ class E0AfficheHistoriqueTransactionsViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
-    private val navigationHandler: FragmentNavigationHandler
 ) : ViewModel() {
+    val getter = aCentral.getter
     val setter =aCentral.setter
+    val gBonVentRepository = getter.gBonVentRepository
+
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())
     val uiState: StateFlow<SecID5FragID2UiState> = _uiState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            a_MasterRepositorysGrpProtoJuin3.model.collect { masterModel ->
-                masterModel?.let { model ->
-                    _uiState.value = _uiState.value.copy(
-                        B_ClientInfosProtoJuin3List = model.b_ClientInfosProtoJuin3Repository?.modelListFlow
-                            ?: emptyList(),
-                        mainLoadingProgress = model.progress
-                    )
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            snapshotFlow {
-                a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
-                    .repositorys_Model
-                    .repository_1_5_Vendeur
-                    .modelDatasSnapList
-                    .toList()
-            }.collect { list ->
-                _uiState.value = _uiState.value.copy(
-                    activeCompt = a_CentralDatasHandlerProtoJuin9.comptAppState.activeCompt
-                )
-            }
-        }
-        viewModelScope.launch {
-            loadCollectSnapshotStateList()
-        }
-    }
-
-
 
     fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
         if (vocaleKeyID.isBlank()) {
@@ -112,14 +67,14 @@ class E0AfficheHistoriqueTransactionsViewModel(
                 }
             }
     }
-
+        /*
     private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repositoryMVentPeriode.ensureDataIsInitialized()
                 r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.ensureDataIsInitialized()
 
-                if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
+                if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repositoryMVentPeriode.modelDatasSnapList.isEmpty() ||
                     r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList.isEmpty()
                 ) {
                     addTestDataToFireBaseIfEmpty(
@@ -132,7 +87,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
                 withContext(Dispatchers.Main) {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
+                            sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repositoryMVentPeriode.modelDatasSnapList,
                             sl_C_3_BonAchate = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList,
                         )
                     }
@@ -141,7 +96,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
                 loadCollecttransactionsDateToList_1_3_TransactionCommercial()
 
                 launch {
-                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.let { repo ->
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repositoryMVentPeriode.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
@@ -209,11 +164,10 @@ class E0AfficheHistoriqueTransactionsViewModel(
                 e.printStackTrace()
             }
         }
-    }
+    }     */
 
     fun notifyDataChanged() {
         viewModelScope.launch {
-            loadCollectSnapshotStateList()
         }
     }
 

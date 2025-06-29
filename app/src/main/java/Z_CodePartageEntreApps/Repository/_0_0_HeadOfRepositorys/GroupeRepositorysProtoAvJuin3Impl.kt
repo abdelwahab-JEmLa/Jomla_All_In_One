@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
@@ -9,9 +9,9 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL.GBonVentDao
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.MVentPeriodeDao
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
@@ -41,7 +41,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     private val repo_1_1_CouleurAcheteOperation: _1_1_CouleurAcheteOperation_Repository,
     private val repo_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
     private val repo_1_3_TransactionCommercial: C3TransactionCommercialRepository,
-    private val _1_4_Repository: _1_4_PeriodeVent_Repository,
+    private val _1_4_Repository: DataBaseFactoryMVentPeriode,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
@@ -105,7 +105,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     when (data) {
                         is GBonVent -> processDeleteOperation(
                             data = data,
-                            databaseDao = appDatabase._1_3_TransactionCommercialDao(),
+                            databaseDao = appDatabase.GBonVentDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
                             databaseRef = C3TransactionCommercialRepository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
@@ -123,11 +123,11 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             onError = onError
                         )
 
-                        is _1_4_PeriodeVent -> processDeleteOperation(
+                        is MVentPeriode -> processDeleteOperation(
                             data = data,
-                            databaseDao = appDatabase._1_4_PeriodeVentDao(),
+                            databaseDao = appDatabase.MVentPeriodeDao(),
                             snapshotList = _1_4_Repository.modelDatasSnapList,
-                            databaseRef = _1_4_PeriodeVent_Repository.sonDataBaseRef,
+                            databaseRef = DataBaseFactoryMVentPeriode.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_4_PeriodeVent },
                             onSuccess = onSuccess,
                             onError = onError
@@ -187,9 +187,9 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
             // Delete from Room database
             when (databaseDao) {
-                is _1_3_TransactionCommercialDao -> databaseDao.delete(data as GBonVent)
+                is GBonVentDao -> databaseDao.delete(data as GBonVent)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
-                is _1_4_PeriodeVentDao -> databaseDao.delete(data as _1_4_PeriodeVent)
+                is MVentPeriodeDao -> databaseDao.delete(data as MVentPeriode)
                 is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
                 else -> {
                     Log.e(
@@ -241,7 +241,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     when (data) {
                         is GBonVent -> processUpsertOperation(
                             data = data,
-                            databaseDao = appDatabase._1_3_TransactionCommercialDao(),
+                            databaseDao = appDatabase.GBonVentDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
                             databaseRef = C3TransactionCommercialRepository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
@@ -330,7 +330,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
                 // Update existing data
                 when (databaseDao) {
-                    is _1_3_TransactionCommercialDao -> {
+                    is GBonVentDao -> {
                         val result =
                             databaseDao.insertAvecRetureNewVid(dataToUpsert as GBonVent)
                         Log.d(TAG, "Update result for GBonVent: $result")
@@ -380,7 +380,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
 
                 // Insert as new
                 val newVid = when (databaseDao) {
-                    is _1_3_TransactionCommercialDao -> {
+                    is GBonVentDao -> {
                         val result =
                             databaseDao.insertAvecRetureNewVid(dataToUpsert as GBonVent)
                         Log.d(TAG, "New VID for GBonVent: $result")
@@ -489,7 +489,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     }
 
     override fun upsertUneDataEtReturnVID_1_4_PeriodeVent(
-        data: _1_4_PeriodeVent,
+        data: MVentPeriode,
         onSuccess: (Long) -> Unit,
     ): Unit {
         try {
@@ -498,7 +498,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     if (dataToUpsert.vid > 0) {
-                        appDatabase._1_4_PeriodeVentDao().insert(dataToUpsert)
+                        appDatabase.MVentPeriodeDao().insert(dataToUpsert)
 
                         withContext(Dispatchers.Main) {
                             val index =
@@ -513,13 +513,13 @@ class GroupeRepositorysProtoAvJuin3Impl(
                         dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
                             "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
-                        _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
+                        DataBaseFactoryMVentPeriode.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         onSuccess(dataToUpsert.vid)
                     } else {
                         val newVid =
-                            appDatabase._1_4_PeriodeVentDao().insertAvecRetureNewVid(dataToUpsert)
+                            appDatabase.MVentPeriodeDao().insertAvecRetureNewVid(dataToUpsert)
 
                         dataToUpsert.vid = newVid
 
@@ -531,7 +531,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                         }
 
                         // Update Firebase using fireBaseKeyID as the key
-                        _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
+                        DataBaseFactoryMVentPeriode.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -703,7 +703,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
                     c3TransactionCommercialRepository = repo_1_3_TransactionCommercial,
                     activeVId_C3_BonAchate_Repository = activeId_1_3_BonAchat,
-                    repository_1_4_PeriodeVent = _1_4_Repository,
+                    repositoryMVentPeriode = _1_4_Repository,
                     repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,

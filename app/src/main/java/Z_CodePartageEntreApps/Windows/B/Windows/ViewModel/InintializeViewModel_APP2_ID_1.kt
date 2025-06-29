@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ class InintializeViewModel_StartUpScreen {
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         C3_BonAchate_Repository: C3TransactionCommercialRepository,
-        _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
         viewModelScope: CoroutineScope,
         checkInitializationComplete: () -> Unit,
@@ -107,7 +107,7 @@ class InintializeViewModel_StartUpScreen {
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         C3_BonAchate_Repository: C3TransactionCommercialRepository,
-        _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>
     ) {
         val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value
@@ -124,7 +124,7 @@ class InintializeViewModel_StartUpScreen {
         _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         C3_BonAchate_Repository: C3TransactionCommercialRepository,
-        _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
         uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
     ) {
         val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value

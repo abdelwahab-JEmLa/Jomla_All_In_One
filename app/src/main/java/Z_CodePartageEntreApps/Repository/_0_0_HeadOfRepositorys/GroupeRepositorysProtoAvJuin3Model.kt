@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repos
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import com.google.firebase.Firebase
@@ -22,7 +22,7 @@ class GroupeRepositorysProtoAvJuin3Model(
     val c3TransactionCommercialRepository: C3TransactionCommercialRepository,
     var activeVId_C3_BonAchate_Repository: MutableStateFlow<Long>,
 
-    val repository_1_4_PeriodeVent: _1_4_PeriodeVent_Repository,
+    val repositoryMVentPeriode: DataBaseFactoryMVentPeriode,
 
     val repository_1_5_Vendeur: _1_5_Vendeur_Repository,
 

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Frag
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 // Data class to represent UI state
 data class VendeursUiState(
     val vendeurs: List<_1_5_Vendeur> = emptyList(),
-    val periodes: List<_1_4_PeriodeVent> = emptyList(),
+    val periodes: List<MVentPeriode> = emptyList(),
     val activeVendeurId: Long = 0L,
     val activePeriodeId: Long = 0L,
 )
@@ -30,7 +30,7 @@ open class VendeursViewModel(
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
     private val vendeurRepository = repository.repositorys_Model.repository_1_5_Vendeur
-    private val periodeVentRepository = repository.repositorys_Model.repository_1_4_PeriodeVent
+    private val periodeVentRepository = repository.repositorys_Model.repositoryMVentPeriode
 
     init {
         // Initial load attempt
@@ -62,7 +62,7 @@ open class VendeursViewModel(
 
     fun addNewPeriode() {
         viewModelScope.launch {
-            val newPeriode = _1_4_PeriodeVent(
+            val newPeriode = MVentPeriode(
                 vendeur_ParentVID = uiState.value.activeVendeurId,
 
             )
@@ -138,8 +138,8 @@ open class VendeursViewModel(
     fun addTestData() {
         vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
         vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
-        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "1:mm"))
-        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "2:mm"))
+        periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "1:mm"))
+        periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "2:mm"))
         loadData()
     }
 }

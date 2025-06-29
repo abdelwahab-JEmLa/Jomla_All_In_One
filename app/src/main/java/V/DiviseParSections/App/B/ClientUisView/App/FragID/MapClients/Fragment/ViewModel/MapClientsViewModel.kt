@@ -50,13 +50,14 @@ data class UiState(
 )
 
 class MapClientsViewModel(
-    val  aCentral: ACentral,
+    val aCentral: ACentral,
     val aCentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
 ) : ViewModel() {
     val getter = aCentral.getter
+    val setter = aCentral.setter
 
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
@@ -260,10 +261,10 @@ class MapClientsViewModel(
         aCentralCompoRepositoryProtoJuin9.comptAppState
             .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
 
-        if (idClientOuSonMarqueMapEstOuvert== 0L) {
-            aCentral.setter.cleanFermeAppComptOnVentBonVent()
+        if (idClientOuSonMarqueMapEstOuvert == 0L) {
+            setter.cleanFermeAppComptOnVentBonVent()
         } else {
-            aCentral.setter.ouvrireNewAppComptOnVentBonVentEtAddLe(idClientOuSonMarqueMapEstOuvert)
+            setter.ouvrireNewAppComptOnVentBonVentEtAddLe(idClientOuSonMarqueMapEstOuvert)
         }
 
         updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)

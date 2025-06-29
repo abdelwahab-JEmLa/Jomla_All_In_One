@@ -46,6 +46,8 @@ class ACentralCompoRepositoryProtoJuin9(
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val kAchatRepository: KAchatCouleurOperationRepository,
 
+    val mVentPeriodeRepository: MVentPeriodeRepository,
+
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 

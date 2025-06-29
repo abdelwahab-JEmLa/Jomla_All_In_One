@@ -3,41 +3,41 @@ package Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Tes
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 
 suspend fun addHardcodedDataToFirebase(
     _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     C3_BonAchate_Repository: C3TransactionCommercialRepository,
-    _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+    _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
     active: Boolean = false
 ) {     /*
     try {
-        // Create _1_4_PeriodeVent test data first (top-level entity)
+        // Create MVentPeriode test data first (top-level entity)
         val periodeVentTestData = listOf(
-            _1_4_PeriodeVent(
+            MVentPeriode(
                 vid = 601L,
                 startDateInString = "2025-01-01",
                 endDateInString = "2025-01-31"
             ),
-            _1_4_PeriodeVent(
+            MVentPeriode(
                 vid = 602L,
                 startDateInString = "2025-02-01",
                 endDateInString = "2025-02-28"
             ),
-            _1_4_PeriodeVent(
+            MVentPeriode(
                 vid = 603L,
                 startDateInString = "2025-03-01",
                 endDateInString = "2025-03-31"
             ),
-            _1_4_PeriodeVent(
+            MVentPeriode(
                 vid = 604L,
                 startDateInString = "2025-04-01",
                 endDateInString = "2025-04-30"
             )
         )
 
-        // Create GBonVent test data with relations to _1_4_PeriodeVent
+        // Create GBonVent test data with relations to MVentPeriode
         val bonAchatTestData = listOf(
             // Original entries
             GBonVent(
@@ -255,18 +255,18 @@ suspend fun addHardcodedDataToFirebase(
         )
         if (active) {
             // Update repositories in order from top level to bottom level
-            // First _1_4_PeriodeVent (top level)
+            // First MVentPeriode (top level)
             withContext(Dispatchers.IO) {
-                val snapListPeriodeVent = mutableStateListOf<_1_4_PeriodeVent>()
+                val snapListPeriodeVent = mutableStateListOf<MVentPeriode>()
                 snapListPeriodeVent.addAll(periodeVentTestData)
-                _1_4_PeriodeVent_Repository.updateMultiDatas(snapListPeriodeVent)
+                DataBaseFactoryMVentPeriode.updateMultiDatas(snapListPeriodeVent)
                 Log.d(
                     TAG,
                     "Added ${periodeVentTestData.size} hardcoded _01_VentsNoSQl items to repository"
                 )
             }
 
-            // Then GBonVent (depends on _1_4_PeriodeVent)
+            // Then GBonVent (depends on MVentPeriode)
             withContext(Dispatchers.IO) {
                 val snapListBonAchat = mutableStateListOf<GBonVent>()
                 snapListBonAchat.addAll(bonAchatTestData)

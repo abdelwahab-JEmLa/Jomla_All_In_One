@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -295,7 +295,7 @@ fun VendeurItem(
 
 @Composable
 fun PeriodeItem(
-    periode: _1_4_PeriodeVent,
+    periode: MVentPeriode,
     isActive: Boolean,
     onPeriodeSelected: (Long) -> Unit,
     onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,

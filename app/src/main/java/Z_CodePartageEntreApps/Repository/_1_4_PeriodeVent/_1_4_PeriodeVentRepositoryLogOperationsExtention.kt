@@ -3,9 +3,9 @@ package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 import android.util.Log
 
 class _1_4_PeriodeVentRepositoryLogOperationsExtention(
-    private val repositoryImpl: _1_4_PeriodeVentRepositoryImpl
+    private val repositoryImpl: _DataBaseFactory_MVentPeriodeImpl
 ) {
-    private val TAG = _1_4_PeriodeVent_Repository.TAG
+    private val TAG = DataBaseFactoryMVentPeriode.TAG
 
     fun log(
         dataCount: Int,
@@ -15,7 +15,7 @@ class _1_4_PeriodeVentRepositoryLogOperationsExtention(
         isListenerActive: Boolean,
         isFlowListenerActive: Boolean
     ) {
-        Log.d(TAG, "_1_4_PeriodeVent_Repository status: ")
+        Log.d(TAG, "DataBaseFactoryMVentPeriode status: ")
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: $progressValue")

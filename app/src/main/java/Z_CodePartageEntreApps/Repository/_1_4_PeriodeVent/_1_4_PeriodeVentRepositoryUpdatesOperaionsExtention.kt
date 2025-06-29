@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -13,15 +13,15 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
-    private val repositoryImpl: _1_4_PeriodeVentRepositoryImpl
+    private val repositoryImpl: _DataBaseFactory_MVentPeriodeImpl
 ) {
-    private val TAG = _1_4_PeriodeVent_Repository.TAG
+    private val TAG = DataBaseFactoryMVentPeriode.TAG
 
     fun updateUnSeulData(
-        data: _1_4_PeriodeVent,
+        data: MVentPeriode,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
+        modelDatasSnapList: SnapshotStateList<MVentPeriode>
     ) {
         repositoryScope.launch(Dispatchers.Main) {
             val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
@@ -32,7 +32,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
         repositoryScope.launch(Dispatchers.IO) {
             try {
-                appDatabase._1_4_PeriodeVentDao().insert(data)
+                appDatabase.MVentPeriodeDao().insert(data)
                 firebaseUpdateData(data)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating data: ${e.message}")
@@ -41,10 +41,10 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
     }
 
     fun deleteUnSeulData(
-        data: _1_4_PeriodeVent,
+        data: MVentPeriode,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
+        modelDatasSnapList: SnapshotStateList<MVentPeriode>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -56,8 +56,8 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
-                    appDatabase._1_4_PeriodeVentDao().delete(data)
+                    DataBaseFactoryMVentPeriode.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    appDatabase.MVentPeriodeDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
                 }
@@ -68,10 +68,10 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
     }
 
     fun addData(
-        data: _1_4_PeriodeVent,
+        data: MVentPeriode,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
+        modelDatasSnapList: SnapshotStateList<MVentPeriode>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -80,8 +80,8 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
-                    appDatabase._1_4_PeriodeVentDao().insert(data)
+                    DataBaseFactoryMVentPeriode.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    appDatabase.MVentPeriodeDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
                 }
@@ -91,19 +91,19 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: _1_4_PeriodeVent) {
+    private suspend fun firebaseUpdateData(data: MVentPeriode) {
         try {
-            _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            DataBaseFactoryMVentPeriode.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
     }
 
     suspend fun updateMultiDatas(
-        datas: SnapshotStateList<_1_4_PeriodeVent>,
+        datas: SnapshotStateList<MVentPeriode>,
         isUpdating: AtomicBoolean,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>,
+        modelDatasSnapList: SnapshotStateList<MVentPeriode>,
         valueEventListener: ValueEventListener?,
         flowValueEventListener: ValueEventListener?,
         listenerLock: Any,
@@ -120,8 +120,8 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
             withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._1_4_PeriodeVentDao().deleteAll()
-                    appDatabase._1_4_PeriodeVentDao().insertAll(datasList)
+                    appDatabase.MVentPeriodeDao().deleteAll()
+                    appDatabase.MVentPeriodeDao().insertAll(datasList)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error updating Room database: ${e.message}")
                 }
@@ -134,7 +134,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_4_PeriodeVent_Repository.sonDataBaseRef.removeEventListener(
+                            DataBaseFactoryMVentPeriode.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -143,7 +143,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_4_PeriodeVent_Repository.sonDataBaseRef.removeEventListener(
+                            DataBaseFactoryMVentPeriode.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -157,7 +157,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _1_4_PeriodeVent_Repository.sonDataBaseRef.addValueEventListener(
+                            DataBaseFactoryMVentPeriode.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -166,7 +166,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _1_4_PeriodeVent_Repository.sonDataBaseRef.addValueEventListener(
+                            DataBaseFactoryMVentPeriode.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -186,9 +186,9 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private fun batchFireBaseSet(datas: List<_1_4_PeriodeVent>) {
+    private fun batchFireBaseSet(datas: List<MVentPeriode>) {
         try {
-            val reference = _1_4_PeriodeVent_Repository.sonDataBaseRef
+            val reference = DataBaseFactoryMVentPeriode.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

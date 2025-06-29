@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
@@ -26,7 +26,7 @@ data class UiState(
 
     val bonAchatList: List<GBonVent> = emptyList(),
 
-    val activePeriodeVent: _1_4_PeriodeVent? = _1_4_PeriodeVent(vid = 7L),
+    val activePeriodeVent: MVentPeriode? = MVentPeriode(vid = 7L),
     val isRecording: Boolean = false,
     val displayTime: String = "00:00:00",
     val currentDate: String = "",
@@ -139,13 +139,13 @@ class RecordingViewModel(
     }
 
     fun get_PeriodVentActive(
-    ): _1_4_PeriodeVent? {
+    ): MVentPeriode? {
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
             repositorysModel1.repository_1_5_Vendeur.modelDatasSnapList.find { it.vid == repositorysModel1.activeReactiveIdDe_1_5_Vendeur.value }?.ceComptVendeurInsertBonsAchatAuPeriodID
 
-        return repositorysModel1.repository_1_4_PeriodeVent.modelDatasSnapList.find {
+        return repositorysModel1.repositoryMVentPeriode.modelDatasSnapList.find {
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
         }
     }

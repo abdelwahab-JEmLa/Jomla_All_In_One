@@ -9,7 +9,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 
 @Dao
-interface _1_3_TransactionCommercialDao {
+interface GBonVentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAvecRetureNewVid(item: GBonVent): Long
 
