@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 class KAchatCouleurOperationRepository(
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
 ) {
-    private val sourceDatas by derivedStateOf { fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod }
+    private val sourceDatas by derivedStateOf { fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriodEtDeliveryTrouve }
     val datasValue by derivedStateOf { initImplimentaion() }
     val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy { it.listFCouleurVentOperation.first().parentBProduitInfosKeyId } }
 

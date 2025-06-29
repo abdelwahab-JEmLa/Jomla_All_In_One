@@ -25,16 +25,23 @@ class FVentCouleurOperationRepository(
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<FCouleurVentOperationInfos>>(emptyList())
-    val datasValue by derivedStateOf { _datas.value }
+    val datasValue by derivedStateOf {
+        _datas.value
+    }
+    val datasFiltered by derivedStateOf {
+        _datas.value
+    }
 
     val onVentFilteredDatas by derivedStateOf {
         datasValue.filter {
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
-    val datasFilteredParCurrentHVentPeriod by derivedStateOf {
+
+    val datasFilteredParCurrentHVentPeriodEtDeliveryTrouve by derivedStateOf {
         datasValue.filter {
             it.parentHVentPeriodKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+                    && it.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve
         }
     }
 

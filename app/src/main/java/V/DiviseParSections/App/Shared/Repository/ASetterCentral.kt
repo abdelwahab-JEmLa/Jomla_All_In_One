@@ -89,7 +89,7 @@ class ASetterCentral(
 
     fun updateListRelativeVentCouleurPrixVent(produitKey: String?, newPrix: Double) {
         val ventCouleursDuProduitKey =
-            fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
+            fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriodEtDeliveryTrouve
                 .filter { it.parentBProduitInfosKeyId == produitKey }
 
         ventCouleursDuProduitKey.forEach { vent ->
@@ -105,7 +105,7 @@ class ASetterCentral(
         val produitKey =
             getter.bProduitInfosRepository.datasValue.find { it.id == parentProduitOldId }?.keyID
         val ventCouleursDuProduitKey =
-            fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
+            fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriodEtDeliveryTrouve
                 .filter { it.parentBProduitInfosKeyId == produitKey }
 
         ventCouleursDuProduitKey.forEach { vent ->
@@ -116,7 +116,7 @@ class ASetterCentral(
     }
 
     fun ventCouleursDuProduitKey(produitKey: String) =
-        fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
+        fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriodEtDeliveryTrouve
             .filter { it.parentBProduitInfosKeyId == produitKey }
 
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {

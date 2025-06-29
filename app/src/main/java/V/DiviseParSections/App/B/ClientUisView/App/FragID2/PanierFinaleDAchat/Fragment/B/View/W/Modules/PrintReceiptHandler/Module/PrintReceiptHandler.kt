@@ -40,7 +40,7 @@ class PrintReceiptHandler {
 
             // Get all vents that are not removed from cart
             val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
-                vent.etateActuellementEst != FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE &&
+                vent.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve &&
                         vent.quantityAchete > 0
             }
 
