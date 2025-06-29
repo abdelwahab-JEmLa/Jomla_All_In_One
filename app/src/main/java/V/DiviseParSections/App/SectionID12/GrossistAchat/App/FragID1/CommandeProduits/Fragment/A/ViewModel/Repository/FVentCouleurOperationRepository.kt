@@ -37,11 +37,9 @@ class FVentCouleurOperationRepository(
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
-
-    val datasFilteredParCurrentHVentPeriodEtDeliveryTrouve by derivedStateOf {
+    val datasFilteredParCurrentHVentPeriod by derivedStateOf {
         datasValue.filter {
             it.parentHVentPeriodKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
-                    && it.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve
         }
     }
 

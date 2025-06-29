@@ -16,6 +16,7 @@ class ZViewModel_Sec1Frag3(
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,
         val panieMode: PanieMode = PanieMode.Delivery,
+        val filterNonTrouve: Boolean = true,
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
@@ -29,19 +30,26 @@ class ZViewModel_Sec1Frag3(
 
     enum class PanieMode {
         Delivery,
-        Vent, ;
+        Vent;
 
-        fun toggle(): Unit {}
+        fun toggle(): PanieMode {
+            return when (this) {
+                Delivery -> Vent
+                Vent -> Delivery
+            }
+        }
     }
 
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey:String): Unit {
-           setter.toggleEtateDeliveryNonTrouveVentOu(produitKey)
-    }
+    fun togglePanieMode() { _uiState.update { currentState -> currentState.copy(panieMode = currentState.panieMode.toggle()) } }
+    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) { setter.toggleEtateDeliveryNonTrouveVentOu(produitKey) }
+    fun toggelePanierFilterNonTrouve() { _uiState.update { currentState -> currentState.copy(filterNonTrouve = !currentState.filterNonTrouve) } }
 }
+
 inline fun Boolean.ifTrue(block: () -> Unit) {
     if (this) block()
 }
-inline fun Boolean.ifFalse(block: () -> Unit) {                             
+
+inline fun Boolean.ifFalse(block: () -> Unit) {
     if (!this) block()
 }
 

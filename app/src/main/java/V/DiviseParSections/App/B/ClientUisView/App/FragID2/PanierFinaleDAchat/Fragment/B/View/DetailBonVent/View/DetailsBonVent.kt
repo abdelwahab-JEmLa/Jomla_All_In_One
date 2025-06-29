@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -118,6 +122,50 @@ fun DetailsBonVent(
                     .padding(petitePaddine),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.togglePanieMode()
+                    },
+                    containerColor = when (uiState.panieMode) {
+                        ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50) // Green for Delivery
+                        ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3) // Blue for Vent
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = when (uiState.panieMode) {
+                            ZViewModel_Sec1Frag3.PanieMode.Delivery -> Icons.Default.LocalShipping
+                            ZViewModel_Sec1Frag3.PanieMode.Vent -> Icons.Default.Storefront
+                        },
+                        contentDescription = "Basculer mode: ${uiState.panieMode.name}",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.White
+                    )
+                }
+
+                // Filter toggle button
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.toggelePanierFilterNonTrouve()
+                    },
+                    containerColor = if (uiState.filterNonTrouve) {
+                        Color(0xFFFF5722) // Orange when filter is active
+                    } else {
+                        MaterialTheme.colorScheme.tertiary
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = if (uiState.filterNonTrouve)
+                            "Désactiver filtre Non trouvé"
+                        else
+                            "Activer filtre Non trouvé",
+                        modifier = Modifier.size(20.dp),
+                        tint = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary
+                    )
+                }
+
                 // Print button
                 FloatingActionButton(
                     onClick = {
