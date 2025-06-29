@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -25,10 +25,10 @@ import java.util.Locale
 @Stable
 class MVentPeriodeRepository(
     private val appDatabase: AppDatabase,
-    ancientProtoRepo: GroupeRepositorysProtoAvJuin3Model,
+    ancientProtoRepo: GroupeRepositorysProtoAvJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    val ancienRepoP1 = ancientProtoRepo.repositoryMVentPeriode
+    val ancienRepoP1 = ancientProtoRepo.repositorys_Model.repositoryMVentPeriode
 
     val dao = appDatabase.MVentPeriodeDao()
     val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
