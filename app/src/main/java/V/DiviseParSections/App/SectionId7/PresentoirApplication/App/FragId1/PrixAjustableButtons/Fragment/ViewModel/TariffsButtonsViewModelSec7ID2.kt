@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -36,10 +37,14 @@ data class UiState(
 )
 
 class TariffsButtonsViewModelSec7ID2(
+    aCentral: ACentral,
     val aCentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
+    val getter = aCentral.getter
+    val setter = aCentral.setter
+
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
     private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
@@ -72,6 +77,10 @@ class TariffsButtonsViewModelSec7ID2(
         loadTariffs()
     }
 
+    fun updateListRelativeVentCouleurPrixVent(parentProduitOldId: Long, newPrix: Double): Unit {
+         val produitKey =  getter.bProduitInfosRepository.datasValue.find { it.id==parentProduitOldId }?.keyID
+          setter.updateListRelativeVentCouleurPrixVent(produitKey,newPrix)
+    }
 
     private fun loadTariffs() {
         loadingJob?.cancel()
@@ -320,6 +329,11 @@ class TariffsButtonsViewModelSec7ID2(
         bonAchatCollectorJob?.cancel()
         produitAcheteOperationCollectorJob?.cancel()
         progressJob?.cancel()
+    }
+
+    fun deleteVents(parentProduitOldId: Long) {
+        setter.deleteVents(parentProduitOldId)
+
     }
 
 

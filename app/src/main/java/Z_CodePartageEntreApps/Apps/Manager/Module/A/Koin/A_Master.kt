@@ -1,18 +1,18 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.Sec8FWinID1ViewModel
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepositoryImpl
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
@@ -32,7 +32,6 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repos
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main.B1CouleurOuGoutProduitDataBaseTestDatasViewModel
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
@@ -42,6 +41,7 @@ import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Reposi
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.Preview.CategoriePrevViewModel
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
@@ -95,11 +95,27 @@ import org.koin.dsl.module
 val centralDataBasesModule = module {
     single { E_GroupedDataBasesRepositoryNonConnue(get(), get(), get(), get()) }
     single { A_MasterRepositorysGrpProtoJuin3(get(), get(), get(), get(), get()) }
-    single<GroupeRepositorysProtoAvJuin3> { GroupeRepositorysProtoAvJuin3Impl(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single<GroupeRepositorysProtoAvJuin3> {
+        GroupeRepositorysProtoAvJuin3Impl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 }
 
 val dataBaseProtoAvantJuin3Module = module {
-    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(false) }
+    single<_01_VentsHistoriquesDataBase_Repository> {
+        _01_VentsHistoriquesDataBase_RepositoryImpl(
+            false
+        )
+    }
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
     single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
@@ -130,8 +146,8 @@ val dataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
-    single { WifiTransferDatas(androidContext(),get(),) }
-    single { WDatabaseInitializationManager(get(),get(),get(),get(),) }
+    single { WifiTransferDatas(androidContext(), get()) }
+    single { WDatabaseInitializationManager(get(), get(), get(), get()) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }
@@ -143,22 +159,27 @@ val classesHandlersModule = module {
     single { A_FirebaseAudioStorageHelper() }
     single { AudioRecorderAndPlayHandler(get()) }
     single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
-    single<IRecordingHandler> { RecordingHandler(repository = get<K_TempTravailleRepository>(), coroutineScope = get<CoroutineScope>()) }
+    single<IRecordingHandler> {
+        RecordingHandler(
+            repository = get<K_TempTravailleRepository>(),
+            coroutineScope = get<CoroutineScope>()
+        )
+    }
 }
 
 val viewModelModule = module {
     //Sort Par ID
-    viewModel { B1CouleurOuGoutProduitDataBaseTestDatasViewModel(get(),) }
+    viewModel { B1CouleurOuGoutProduitDataBaseTestDatasViewModel(get()) }
 
-    viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get(),) }
-    viewModel { D_AchatOperationTestDatasViewModel(get(),) }
-    viewModel { ZViewModel_Sec1Frag3(get(),) }
+    viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get()) }
+    viewModel { D_AchatOperationTestDatasViewModel(get()) }
+    viewModel { ZViewModel_Sec1Frag3(get()) }
 
-    viewModel { Sec9FragId1ViewId2ViewModel(get(),) }
+    viewModel { Sec9FragId1ViewId2ViewModel(get()) }
 
     viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
-    viewModel { VendeurAfficheurInfosProduitViewModel(get(),get(),) }
+    viewModel { VendeurAfficheurInfosProduitViewModel(get(), get()) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
     viewModel { ViewModelMessageur(get(), get()) }
     viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
@@ -167,7 +188,7 @@ val viewModelModule = module {
     viewModel { EditeBaseDonneMainScreenIdS9ViewModel(get(), get()) }
     viewModel { GrossistAchatSec12FragID1_ViewModel(get()) }
     viewModel { ViewModelT2(get()) }
-    viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
+    viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get(), get()) }
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
@@ -176,8 +197,8 @@ val viewModelModule = module {
     viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
-    viewModel { HeadViewModel(androidContext(), get(),get(),get(),) }
-    viewModel { Sec8FWinID1ViewModel(androidContext(),get(),get(),get(),) }
+    viewModel { HeadViewModel(androidContext(), get(), get(), get()) }
+    viewModel { Sec8FWinID1ViewModel(androidContext(), get(), get(), get()) }
 
 }
 

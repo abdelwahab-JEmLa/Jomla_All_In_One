@@ -1,10 +1,10 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base
 
-import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager.Repository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBaseD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
+import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager.Repository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -103,5 +103,29 @@ class DataBaseFactoryDCouleurAchatOperation(
         }
         val firebaseRef = FCouleurVentOperationInfos.ref
         firebaseRef.updateChildren(updates).await()
+    }
+
+    fun delete(data: FCouleurVentOperationInfos) {
+        composScope.launch {
+            try {
+                // Delete from local database
+                dao.delete(data)
+
+                // Delete from Firebase
+                deleteFromFireBase(data)
+
+            } catch (e: Exception) {
+                // Handle error - could log or show user feedback
+            }
+        }
+    }
+
+    private suspend fun deleteFromFireBase(data: FCouleurVentOperationInfos) {
+        try {
+            val firebaseRef = FCouleurVentOperationInfos.ref
+            firebaseRef.child(data.keyID).removeValue().await()
+        } catch (e: Exception) {
+            // Handle Firebase delete error
+        }
     }
 }

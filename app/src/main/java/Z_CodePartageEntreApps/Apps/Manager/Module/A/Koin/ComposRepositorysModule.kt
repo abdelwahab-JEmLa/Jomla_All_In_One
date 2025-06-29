@@ -1,8 +1,5 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import V.DiviseParSections.App.Shared.Repository.ACentral
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.Shared.Repository.ASetterCentral
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository
@@ -10,6 +7,9 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVentRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.ASetterCentral
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
@@ -18,9 +18,9 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
-    single { ZAppCompt_RepositoryComposable( get(),) }
+    single { ZAppCompt_RepositoryComposable(get()) }
 
-    single { FClientRepository(get(),get(),) }
+    single { FClientRepository(get(), get()) }
     single { CCategoriesCompoRepository(get()) }
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
@@ -28,14 +28,30 @@ val composRepositorysModule = module {
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
     single { BProduitInfosRepository(get()) }
-    single { B1CouleurOuGoutProduitDataBaseRepository(get(),) }
-    single { FVentCouleurOperationRepository(get(),get(),) }
-    single { GBonVentRepository(get(),get(),get(),) }
-    single { KAchatCouleurOperationRepository(get(),) }
+    single { B1CouleurOuGoutProduitDataBaseRepository(get()) }
+    single { FVentCouleurOperationRepository(get(), get()) }
+    single { GBonVentRepository(get(), get(), get()) }
+    single { KAchatCouleurOperationRepository(get()) }
 
-    single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
+    single {
+        ACentralCompoRepositoryProtoJuin9(
+            context = androidContext(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
 
-    single { ASetterCentral(get(),get(),get(),get(),) }
+    single { ASetterCentral(get(), get(), get(), get(), get()) }
 
-    single { ACentral( get(), get(),) }
+    single { ACentral(get(), get()) }
 }

@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface D_AchatOperationDao {
+    @Delete
+    suspend fun delete(data: FCouleurVentOperationInfos)
+
     @Update
     suspend fun update(data: FCouleurVentOperationInfos)
 

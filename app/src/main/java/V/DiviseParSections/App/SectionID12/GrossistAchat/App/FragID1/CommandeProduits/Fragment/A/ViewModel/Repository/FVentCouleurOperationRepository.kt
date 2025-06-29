@@ -146,11 +146,25 @@ class FVentCouleurOperationRepository(
         )
     }
 
+    fun delete(data: FCouleurVentOperationInfos) {
+        composScope.launch {
+            try {
+                // Remove from local state
+                _datas.value = datasValue.filter { it.keyID != data.keyID }
+
+                // Delete from repository (database and Firebase)
+                ancienRepo.delete(data)
+
+            } catch (e: Exception) {
+                // Handle error - could log or show user feedback
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "ColorOperation"
 
-        fun String?.findData(repo :FVentCouleurOperationRepository) = repo.datasValue.find { it.keyID == this }
-
+        fun String?.findData(repo: FVentCouleurOperationRepository) = repo.datasValue.find { it.keyID == this }
     }
 }
 
@@ -171,14 +185,15 @@ data class FCouleurVentOperationInfos(
     var parentEPeriodVentStartDate: Long = 0,
     var parentGBonVentKeyId: String = "",
 
-    var parentZAppComptID: String = "",
 
+    var quantityAchete: Int = 0,
+    var provisoireMonPrix: Double = 0.0,
+
+    var parentZAppComptID: String = "",
     var parentClientInfosKeyID: String = "",
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
-    var quantityAchete: Int = 0,
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
-    var provisoireMonPrix: Double = 0.0,
     var achatParentBsonIDOld: String = "",
 ) {
     enum class EtateActuellementEst {
@@ -231,4 +246,3 @@ data class FCouleurVentOperationInfos(
         }
     }
 }
-

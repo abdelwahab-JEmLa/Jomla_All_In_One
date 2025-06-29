@@ -54,7 +54,10 @@ fun TariffsButtonsSec7ID2(
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             afficheButtons = false
             fermeDialog(latestTariffLocalData)
-
+            viewModel.updateListRelativeVentCouleurPrixVent(
+                parentProduitOldId=filterProductId,
+                newPrix = latestTariffLocalData.prixCurrency
+            )
         }
 
     // Cancellation callback
@@ -62,6 +65,9 @@ fun TariffsButtonsSec7ID2(
         Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
         afficheButtons = false
         onFermDialogeAvecAnllation()
+        viewModel.deleteVents(
+            parentProduitOldId=filterProductId,
+        )
     }
 
     if (afficheButtons) {
