@@ -22,10 +22,6 @@ interface GroupeRepositorysProtoAvJuin3 {
     fun upsertUneDataEtReturnVID_1_5_Vendeur(data: _1_5_Vendeur, onSuccess: (Long) -> Unit = {})
 
 
-    fun upsertUneDataEtReturnVID_1_4_PeriodeVent(
-        data: MVentPeriode,
-        onSuccess: (Long) -> Unit = {},
-    )
 
 
     fun <T> upsertUneDataEtReturnVID(data: T, onSuccess: (Long) -> Unit = {})

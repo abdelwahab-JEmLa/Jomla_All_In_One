@@ -1,20 +1,20 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL.GBonVentDao
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.MVentPeriodeDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.MVentPeriodeDao
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import android.util.Log
@@ -123,15 +123,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                             onError = onError
                         )
 
-                        is MVentPeriode -> processDeleteOperation(
-                            data = data,
-                            databaseDao = appDatabase.MVentPeriodeDao(),
-                            snapshotList = _1_4_Repository.modelDatasSnapList,
-                            databaseRef = DataBaseFactoryMVentPeriode.sonDataBaseRef,
-                            getFirebaseKey = { it.fireBaseKeyID_1_4_PeriodeVent },
-                            onSuccess = onSuccess,
-                            onError = onError
-                        )
 
                         is _1_5_Vendeur -> processDeleteOperation(
                             data = data,
@@ -488,63 +479,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
         }
     }
 
-    override fun upsertUneDataEtReturnVID_1_4_PeriodeVent(
-        data: MVentPeriode,
-        onSuccess: (Long) -> Unit,
-    ): Unit {
-        try {
-            val dataToUpsert = data.copy()
-
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    if (dataToUpsert.vid > 0) {
-                        appDatabase.MVentPeriodeDao().insert(dataToUpsert)
-
-                        withContext(Dispatchers.Main) {
-                            val index =
-                                _1_4_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
-                            if (index >= 0) {
-                                _1_4_Repository.modelDatasSnapList[index] = dataToUpsert
-                            } else {
-                                _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
-                            }
-                        }
-
-                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
-                            "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
-
-                        DataBaseFactoryMVentPeriode.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
-                            .setValue(dataToUpsert).await()
-
-                        onSuccess(dataToUpsert.vid)
-                    } else {
-                        val newVid =
-                            appDatabase.MVentPeriodeDao().insertAvecRetureNewVid(dataToUpsert)
-
-                        dataToUpsert.vid = newVid
-
-                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
-                            "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
-
-                        withContext(Dispatchers.Main) {
-                            _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
-                        }
-
-                        // Update Firebase using fireBaseKeyID as the key
-                        DataBaseFactoryMVentPeriode.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the new vid
-                        onSuccess(newVid)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error upserting data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
-        }
-    }
 
 
     override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
