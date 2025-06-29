@@ -86,7 +86,7 @@ fun MarkerStatusDialog(
     }
 
     fun dismissDialog() {
-        viewModel.updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+        viewModel.ouvreBonVent(0L)
     }
 
     fun handleDismiss() {
@@ -411,7 +411,7 @@ fun MarkerStatusDialog(
                                 onRemoveMark(marqueClick)
 
                                 viewModel
-                                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0L)
+                                    .ouvreBonVent(0L)
 
                             }
                             showDeleteConfirmationDialog = false

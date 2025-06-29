@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.Shared.Repository.ACentral
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
@@ -56,6 +56,7 @@ class MapClientsViewModel(
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
 ) : ViewModel() {
+    val getter = aCentral.getter
 
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
@@ -254,10 +255,19 @@ class MapClientsViewModel(
     fun startRecordIfNot() {
         recordingHandler.startRecordIfNot()
     }
-    fun updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert: Long): Unit {
+
+    fun ouvreBonVent(idClientOuSonMarqueMapEstOuvert: Long): Unit {
         aCentralCompoRepositoryProtoJuin9.comptAppState
             .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
+
+        if (idClientOuSonMarqueMapEstOuvert== 0L) {
+            aCentral.setter.cleanFermeAppComptOnVentBonVent()
+        } else {
+            aCentral.setter.ouvrireNewAppComptOnVentBonVentEtAddLe(idClientOuSonMarqueMapEstOuvert)
+        }
+
+        updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)
+        startRecordIfNot()
+
     }
-
-
 }

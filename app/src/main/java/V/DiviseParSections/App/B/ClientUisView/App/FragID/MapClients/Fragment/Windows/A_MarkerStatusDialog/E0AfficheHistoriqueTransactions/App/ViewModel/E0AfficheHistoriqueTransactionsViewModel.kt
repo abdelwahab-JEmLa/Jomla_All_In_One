@@ -1,14 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
+import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -36,12 +37,14 @@ data class SecID5FragID2UiState(
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
+    aCentral: ACentral,
     val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
     private val navigationHandler: FragmentNavigationHandler
 ) : ViewModel() {
+    val setter =aCentral.setter
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())
     val uiState: StateFlow<SecID5FragID2UiState> = _uiState.asStateFlow()
 
@@ -77,11 +80,6 @@ class E0AfficheHistoriqueTransactionsViewModel(
     }
 
 
-    fun navigateToCartScreen() {
-        viewModelScope.launch(Dispatchers.Main) {
-            navigationHandler.navigateToCartScreen()
-        }
-    }
 
     fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
         if (vocaleKeyID.isBlank()) {
@@ -221,7 +219,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
 
     fun openTransaction(data: GBonVent): Unit {
         updateActiveComptIdClientOuvertPoutCeCompt(data.parentHClientOldID)
-        navigateToCartScreen()
+        setter.ouvreExistedDataEtNavigeAuPanie(data.keyID)
     }
 
     fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {

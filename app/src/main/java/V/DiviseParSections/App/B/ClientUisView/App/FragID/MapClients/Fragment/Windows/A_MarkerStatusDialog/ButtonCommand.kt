@@ -42,30 +42,13 @@ fun CommandButton(
 
     FilledTonalButton(
         onClick = {
-            upsertLenceCommandeRepoGroupedProtoAvantJuin3(
-                uiState = uiState,
-                viewModel = viewModel,
-                relatedClientID = clientId,
-                newEtate = etateActuellementEst1
-            ) {
-
-            }
-
-
-            updateProtoIndex0(viewModel, selectedMarkedID, onUpdateLongAppSetting)
-
             if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.aCentralCompoRepositoryProtoJuin9.comptAppState
-                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(clientOuCaMarqueGpsEstOuvert.id)
-            }
-
-            if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.aCentral.setter.ouvrireUneNewTransactionVent(
-                    clientOldId = clientId,
+                viewModel.ouvreBonVent(
+                    clientOuCaMarqueGpsEstOuvert.id
                 )
-            }
 
-            viewModel.startRecordIfNot()
+                onUpdateLongAppSetting()
+            }
         },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -98,14 +81,6 @@ fun CommandButton(
     }
 }
 
-private fun updateProtoIndex0(
-    viewModel: MapClientsViewModel,
-    selectedMarkedID: Long,
-    onUpdateLongAppSetting: () -> Unit
-) {
-    viewModel.updateLongAppSetting(selectedMarkedID)
-    onUpdateLongAppSetting()
-}
 
 fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     uiState: UiState,

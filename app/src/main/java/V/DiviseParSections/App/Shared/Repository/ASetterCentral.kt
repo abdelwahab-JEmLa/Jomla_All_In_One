@@ -9,6 +9,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVentRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,10 +22,13 @@ class ASetterCentral(
     val fClientRepository: FClientRepository,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val navigationHandler: FragmentNavigationHandler
 ) {
+    private val setterScope = CoroutineScope(Dispatchers.IO)
+
     val bClientsStateCompoRepository = getter.fClientRepository
 
-    fun ouvrireUneNewTransactionVent(clientOldId: Long) {
+    fun ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId: Long) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
         val newTransactionKey = GBonVent.generePushKey()
@@ -51,6 +55,36 @@ class ASetterCentral(
             )
         )
     }
+
+    fun ouvreExistedDataEtNavigeAuPanie(keyID: String) {
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+            onVentGBonVentKeyId = keyID,
+        )
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        }
+        navigateToCartScreen()
+    }
+
+    fun navigateToCartScreen() {
+        setterScope.launch(Dispatchers.Main) {
+            navigationHandler.navigateToCartScreen()
+        }
+    }
+
+    fun cleanFermeAppComptOnVentBonVent() {
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+            onVentGBonVentKeyId = "",
+        )
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        }
+    }
+
+
+
 
     fun acheterACaSetterCentral(
         fCouleurVentOperation: FCouleurVentOperationInfos? = null,
@@ -144,5 +178,7 @@ class ASetterCentral(
             fVentCouleurOperationRepository.addOrUpdateData(vent.copy(etateDelivery = newState))
         }
     }
+
+
 
 }

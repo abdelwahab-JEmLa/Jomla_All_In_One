@@ -65,7 +65,6 @@ fun MapContent(
         initializeMapPosition(context, mapView, currentZoom)
     }
 
-    // Configure OSMDroid and handle cleanup
     DisposableEffect(context, mapReloadTrigger) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -159,7 +158,8 @@ fun MapContent(
                 }
             )
         }
-        val clientOuCaMarqueGpsEstOuvert = viewModel.aCentralCompoRepositoryProtoJuin9
+        val clientOuCaMarqueGpsEstOuvert =
+            viewModel.aCentralCompoRepositoryProtoJuin9
             .clientOuSonMarqueMapEstOuvert
 
         if (clientOuCaMarqueGpsEstOuvert != null) {
@@ -170,7 +170,6 @@ fun MapContent(
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->
-                   //showMarkerDialog = false
                     editingMarkerId = clientId
                     showEditMarkerMode = true
                 },

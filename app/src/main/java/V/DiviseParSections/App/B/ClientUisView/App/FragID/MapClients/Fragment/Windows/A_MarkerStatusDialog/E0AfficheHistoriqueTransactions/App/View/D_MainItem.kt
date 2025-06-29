@@ -52,9 +52,9 @@ import org.koin.compose.koinInject
 
 @Composable
 fun MainItem(
+    viewModel: E0AfficheHistoriqueTransactionsViewModel,
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     transaction: GBonVent,
-    viewModel: E0AfficheHistoriqueTransactionsViewModel,
     onClickToOpenTransaction: (GBonVent) -> Unit,
 ) {
     val datesHandler = DatesHandler()
@@ -175,6 +175,7 @@ fun MainItem(
                         IconButton(
                             onClick = {
                                 onClickToOpenTransaction(transaction)
+
                             }
                         ) {
                             Icon(
