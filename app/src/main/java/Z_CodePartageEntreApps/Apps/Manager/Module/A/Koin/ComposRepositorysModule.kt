@@ -51,7 +51,7 @@ val composRepositorysModule = module {
         )
     }
 
-    single { ASetterCentral(get(), get(), get(), get(), get(), get()) }
+    single { ASetterCentral(get(), get(), get(), get(), get(), get(), get(),) }
 
     single { ACentral(get(), get()) }
 }
