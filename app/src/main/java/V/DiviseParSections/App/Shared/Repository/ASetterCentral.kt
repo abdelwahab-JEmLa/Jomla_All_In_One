@@ -120,15 +120,13 @@ class ASetterCentral(
             .filter { it.parentBProduitInfosKeyId == produitKey }
 
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
-        ventCouleursDuProduitKey(produitKey)
-            .forEach {
-                fVentCouleurOperationRepository.addOrUpdateData(
-                    it.copy(
-                        etateDelivery = FCouleurVentOperationInfos.EtateDelivery.NonTrouve
-                    )
-                )
-            }
-    }
+        ventCouleursDuProduitKey(produitKey).forEach { vent ->
+            val newState = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve)
+                FCouleurVentOperationInfos.EtateDelivery.NonTrouve
+            else FCouleurVentOperationInfos.EtateDelivery.Trouve
 
+            fVentCouleurOperationRepository.addOrUpdateData(vent.copy(etateDelivery = newState))
+        }
+    }
 
 }
