@@ -33,7 +33,7 @@ val composRepositorysModule = module {
     single { GBonVentRepository(get(),get(),get(),) }
     single { KAchatCouleurOperationRepository(get(),) }
 
-    single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
+    single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
 
     single { ASetterCentral(get(),get(),get(),get(),) }
 
