@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.W.Filter.MainFilter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Composable
@@ -12,7 +13,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
-    idClient: Long = 4
+    clientOldId: Long = 4,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateStringName = DatesHandler()
@@ -20,7 +21,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     MainFilter(
         uiState = uiState,
         dateStringName = dateStringName,
-        idClient = idClient,
+        idClient = clientOldId,
         viewModel,
         onClickToOpenTransaction = viewModel::openTransaction
     )

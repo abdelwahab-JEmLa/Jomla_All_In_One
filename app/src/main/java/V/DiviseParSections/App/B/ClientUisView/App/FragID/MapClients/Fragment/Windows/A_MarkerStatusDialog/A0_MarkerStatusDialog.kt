@@ -256,7 +256,7 @@ fun MarkerStatusDialog(
 
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                             modifier = Modifier.fillMaxWidth(),
-                            idClient = clientId
+                            clientOldId = clientId
                         )
                     }
 

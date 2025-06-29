@@ -114,8 +114,20 @@ fun ClientEdites(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
+
             Text(
-                text = marqueClickRelativeClient?.keyID ?: "",
+                text = marqueClickRelativeClient?.keyID?.takeLast(4) ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = " ",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = marqueClickRelativeClient?.bsonObjectId?.takeLast(4) ?: "",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

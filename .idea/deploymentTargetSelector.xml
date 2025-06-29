@@ -32,9 +32,6 @@
       <SelectionState runConfigName="B1CouleurOuGoutProduitDataBaseTestDatas">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MainScreenPreview_APP2">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="MainScreenPreview_APP2 (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -42,6 +39,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="PanierFinaleDAchatSecBFrag3Preview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="AffichageHistoriquesTransactionsDeCetteJourParIdClientPRV">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

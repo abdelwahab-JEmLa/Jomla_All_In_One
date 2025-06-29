@@ -1,15 +1,18 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.W.Filter
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.Z.List.MainList
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.SecID5FragID2UiState
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun MainFilter(
     uiState: SecID5FragID2UiState,
@@ -19,6 +22,7 @@ fun MainFilter(
     onClickToOpenTransaction: (GBonVent) -> Unit
 ) {
     val datasGBonVentRepository = viewModel.getter.gBonVentRepository.datasValue
+
     val transactionsDateToListGBonVent: List<Pair<MVentPeriode, List<GBonVent>>> =
         remember(datasGBonVentRepository) {
             // Group transactions by date periods
@@ -74,5 +78,11 @@ fun MainFilter(
             }
     }
 
-    MainList(filteredGroupedTransactions, dateStringName, viewModel, uiState, idClient, onClickToOpenTransaction )
+    MainList(
+        filteredGroupedTransactions,
+        dateStringName,
+        viewModel,
+        idClient,
+        onClickToOpenTransaction
+    )
 }
