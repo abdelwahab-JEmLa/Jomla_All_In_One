@@ -23,21 +23,24 @@ import androidx.core.content.ContextCompat
 
 @Composable
 fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
-    uiState: UiState,
     viewModel: MapClientsViewModel,
+    uiState: UiState,
     clickedClient: Long,
 ) {
+
     val context = LocalContext.current
     val newEtate = this
 
     FilledTonalButton(
         onClick = {
-            upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
+         /*   upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
                 uiState = uiState,
                 viewModel = viewModel,
                 relatedClientID = clickedClient,
                 newEtate = newEtate,
-            )
+            )        */
+
+            viewModel.ajoutUnBonVentHistorique(clickedClient,newEtate)
 
             if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME

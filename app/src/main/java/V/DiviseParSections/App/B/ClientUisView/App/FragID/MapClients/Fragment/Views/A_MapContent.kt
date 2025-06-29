@@ -52,7 +52,7 @@ fun MapContent(
     var currentFilterMode by remember {
         mutableStateOf(
             if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur == 1L) {
-                MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                MapClientsViewModel.VisibleClientsNow.showAll
             } else {
                 MapClientsViewModel.VisibleClientsNow.showAll
             }

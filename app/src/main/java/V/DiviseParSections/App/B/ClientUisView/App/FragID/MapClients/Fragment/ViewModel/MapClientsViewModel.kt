@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -270,5 +270,9 @@ class MapClientsViewModel(
         updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)
         startRecordIfNot()
 
+    }
+
+    fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+         setter.ouvrireNewAppComptOnVentBonVentEtAddLe(clickedClient,newEtate)
     }
 }
