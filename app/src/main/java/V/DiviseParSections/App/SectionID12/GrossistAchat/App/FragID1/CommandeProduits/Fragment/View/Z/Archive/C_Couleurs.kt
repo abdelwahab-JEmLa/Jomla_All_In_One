@@ -1,13 +1,14 @@
-// C_Couleurs.kt
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.Z.Archive
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.Main.VIEW.AcheteursDeCetteProduit
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
+import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -52,6 +54,9 @@ fun List_AchatCouleurOperation(
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     models: GroupeRepositorysProtoAvJuin3Model,
     periodFilter: Long? = null,
+
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    listAchatCouleur: List<FCouleurVentOperation>,
 ) {
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
@@ -101,6 +106,36 @@ fun List_AchatCouleurOperation(
             lastVisibleItem < filteredColors.size - 1
         }
     }
+
+    View(
+        lazyRowState,
+        filteredColors,
+        colorsForProduct,
+        periodFilter,
+        models,
+        Produit,
+        calculeCouleurHandler,
+        hasMoreItems ,
+
+        viewModel = viewModel,
+        listAchatCouleur = listAchatCouleur,
+    )
+}
+
+@Composable
+private fun View(
+    lazyRowState: LazyListState,
+    filteredColors: List<_1_1_CouleurAcheteOperation>,
+    colorsForProduct: List<_1_1_CouleurAcheteOperation>,
+    periodFilter: Long?,
+    models: GroupeRepositorysProtoAvJuin3Model,
+    Produit: _1_2_ProduitAcheteOperation,
+    calculeCouleurHandler: CalculeCouleurHandler,
+    hasMoreItems: Boolean,
+
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    listAchatCouleur: List<FCouleurVentOperation>
+) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -172,57 +207,68 @@ fun List_AchatCouleurOperation(
                     }
                 }
 
-                Card(
-                    modifier = Modifier.background(Color.Red)
-                ) {
-                    Column {
-                        Box {
-                            A_GlideDisplayImageByKeyId_Proto_4_11(
-                                Produit.produitAcheterID,
-                                Couleur.couleurIndex_ParentVID + 1,
-                                360.dp,
-                                onImageNeExistePas = {
-                                    Text(
-                                        text = colorName ?: "NonTrouve",
-                                        fontSize = 55.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(40.dp)
-                                            .graphicsLayer(rotationZ = 45f)
-                                    )
-                                }, qualityImage = 1
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                                    .background(
-                                        color = Color.White.copy(alpha = 0.70f),
-                                        shape = RoundedCornerShape(10.dp)
-                                    ),
-                            ) {
-                                Text(
-                                    text = "Qté: $clientQuantitiesSum",
-                                    fontSize = 50.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                            }
-                        }
-
-                        if (allClientsMap.isNotEmpty()) {
-                            AcheteursDeCetteProduit(clientQuantities = allClientsMap)
-                        }
-                    }
-                }
+                Item_AchatCouleur(Produit, Couleur, colorName, clientQuantitiesSum, allClientsMap)
             }
         }
 
         if (hasMoreItems) {
             AfficheIconVentMultiItems()
+        }
+    }
+}
+
+@Composable
+private fun Item_AchatCouleur(
+    Produit: _1_2_ProduitAcheteOperation,
+    Couleur: _1_1_CouleurAcheteOperation,
+    colorName: String?,
+    clientQuantitiesSum: Long,
+    listClientDeProduit: MutableMap<Long, Long>
+) {
+    Card(
+        modifier = Modifier.background(Color.Red)
+    ) {
+        Column {
+            Box {
+                ImageDisplayerGlid_ProtoAvrile11(
+                    Produit.produitAcheterID,
+                    Couleur.couleurIndex_ParentVID + 1,
+                    360.dp,
+                    onImageNeExistePas = {
+                        Text(
+                            text = colorName ?: "NonTrouve",
+                            fontSize = 55.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(40.dp)
+                                .graphicsLayer(rotationZ = 45f)
+                        )
+                    }, qualityImage = 1
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .background(
+                            color = Color.White.copy(alpha = 0.70f),
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+                ) {
+                    Text(
+                        text = "Qté: $clientQuantitiesSum",
+                        fontSize = 50.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            }
+
+            if (listClientDeProduit.isNotEmpty()) {
+                AcheteursDeCetteProduit(clientQuantities = listClientDeProduit)
+            }
         }
     }
 }

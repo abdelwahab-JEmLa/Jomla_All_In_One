@@ -11,7 +11,7 @@ class GrossistAchatSec12FragID1_ViewModel(
      aCentral: ACentral,
 ) : ViewModel() {
     val getter = aCentral.getter
-
+   val fVentCouleurOperationRepository =getter.fVentCouleurOperationRepository
     data class UiState(
         val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
         val mainLoadingProgress: Float = 0f

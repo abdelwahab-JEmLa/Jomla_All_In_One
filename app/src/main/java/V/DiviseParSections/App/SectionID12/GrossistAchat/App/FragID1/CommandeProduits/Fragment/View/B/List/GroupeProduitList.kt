@@ -16,7 +16,7 @@ fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
 ) {
-    val repo = viewModel.getter.fVentCouleurOperationRepository
+    val repo = viewModel.fVentCouleurOperationRepository
 
     Box(
         modifier = modifier

@@ -3,7 +3,7 @@ package Views.FragId4_EStorePresentationToClient.Ui
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
-import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
+import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -67,7 +67,7 @@ fun B_CouleurAfficheur_F7(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            A_GlideDisplayImageByKeyId_Proto_4_11(
+            ImageDisplayerGlid_ProtoAvrile11(
                 produitVID = article.id,
                 couleurVID = colorIndex.toLong() + 1,
                 size = 600.dp,

@@ -33,7 +33,7 @@ import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun A_GlideDisplayImageByKeyId_Proto_4_11(
+fun ImageDisplayerGlid_ProtoAvrile11(
     produitVID: Long? = null,
     couleurVID: Long? = null,
     size: Dp? = null,

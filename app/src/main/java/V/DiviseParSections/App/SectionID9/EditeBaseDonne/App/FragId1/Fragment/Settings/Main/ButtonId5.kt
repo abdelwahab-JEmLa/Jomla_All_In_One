@@ -37,7 +37,7 @@ fun ButtonId5(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val text = "Delete ADD BProduitDataBase KCategorieProduitDataBase"
+        val text = "Delete ADD B et K "
 
         if (showLabels) {
             Text(text)

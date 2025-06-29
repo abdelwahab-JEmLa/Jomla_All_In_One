@@ -8,7 +8,6 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -25,7 +24,7 @@ fun Item_AchatProduitOperation(
     groupeAchatProduit: Map.Entry<String, List<FCouleurVentOperation>>,
     models: GroupeRepositorysProtoAvJuin3Model = koinInject(),
 ) {
-   val Produit= _1_2_ProduitAcheteOperation()
+    val Produit = _1_2_ProduitAcheteOperation()
 
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
@@ -81,7 +80,11 @@ fun Item_AchatProduitOperation(
         return
     }
 
-    View(models, Produit, colorsForProduct, periodFilter)
+    View(
+        models, Produit, colorsForProduct, periodFilter,
+        viewModel = viewModel,
+        groupeAchatProduit = groupeAchatProduit,
+        )
 }
 
 @Composable
@@ -89,24 +92,33 @@ private fun View(
     models: GroupeRepositorysProtoAvJuin3Model,
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
-    periodFilter: Long?
+    periodFilter: Long?,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    groupeAchatProduit: Map.Entry<String, List<FCouleurVentOperation>>
 ) {
-    Card {
-        HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)
+    val bProduitDataBase_SubClassFunctionality =
+        viewModel.getter.bProduitDataBase_SubClassFunctionality
+    val produit =
+        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == groupeAchatProduit.key }
 
-        Column {
-            Text(
-                models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                    .find { it.vid == Produit.produitAcheterID }?.nom
-                    ?: "_015_Produits inconnu", Modifier.padding(4.dp)
-            )
+    if (produit != null) {
+        Card {
+            HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)
 
-            List_AchatCouleurOperation(
-                Produit = Produit,
-                colorsForProduct = colorsForProduct,
-                models = models,
-                periodFilter = periodFilter
-            )
+            Column {
+                Text(
+                    produit.nom
+                )
+
+                List_AchatCouleurOperation(
+                    viewModel = viewModel,
+                    listAchatCouleur = groupeAchatProduit.value,
+                    Produit = Produit,
+                    colorsForProduct = colorsForProduct,
+                    models = models,
+                    periodFilter = periodFilter
+                )
+            }
         }
     }
 }
