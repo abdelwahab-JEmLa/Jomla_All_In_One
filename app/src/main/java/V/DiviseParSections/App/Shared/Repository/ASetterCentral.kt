@@ -102,7 +102,8 @@ class ASetterCentral(
     }
 
     fun deleteVents(parentProduitOldId: Long) {
-        val produitKey =  getter.bProduitInfosRepository.datasValue.find { it.id==parentProduitOldId }?.keyID
+        val produitKey =
+            getter.bProduitInfosRepository.datasValue.find { it.id == parentProduitOldId }?.keyID
         val ventCouleursDuProduitKey =
             fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
                 .filter { it.parentBProduitInfosKeyId == produitKey }
@@ -113,4 +114,21 @@ class ASetterCentral(
             )
         }
     }
+
+    fun ventCouleursDuProduitKey(produitKey: String) =
+        fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
+            .filter { it.parentBProduitInfosKeyId == produitKey }
+
+    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
+        ventCouleursDuProduitKey(produitKey)
+            .forEach {
+                fVentCouleurOperationRepository.addOrUpdateData(
+                    it.copy(
+                        etateDelivery = FCouleurVentOperationInfos.EtateDelivery.NonTrouve
+                    )
+                )
+            }
+    }
+
+
 }

@@ -5,6 +5,8 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
+import Views.Common.Components.ToastData
+import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import androidx.compose.foundation.background
@@ -72,10 +74,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val uiState by recordingViewModel.uiState.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val remainingClients = recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
+    val remainingClients =
+        recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
     val isDataLoading = currentAppCompt == null
-    val currentSelectedCatalogueId = currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
+    val currentSelectedCatalogueId =
+        currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
+    var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -101,6 +106,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         }
                     }
                 }
+
                 Lifecycle.Event.ON_PAUSE -> {
                     if (isRecording) {
                         recordingViewModel.onRecordingStopped()
@@ -108,6 +114,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     job?.cancel()
                     job = null
                 }
+
                 else -> {}
             }
         }
@@ -244,11 +251,33 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     filterProductId = idProduitActuelle,
-                    fermeDialog = onPourFermeWindows,
+                    fermeDialog = {
+                        onPourFermeWindows(D_TarificationInfos())
+                        val message = "تراضي"
+
+                        currentToast = ToastData(
+                            message = message,
+                            type = ToastType.SUCCESS,
+                            duration = 1500L
+                        )
+                    },
+
                     cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
-                    onFermDialogeAvecAnllation = onClickAnulationButton
+                    onFermDialogeAvecAnllation = { onClickAnulationButton()
+                        currentToast = ToastData(
+                            message = "تم الإلغاء",
+                            type = ToastType.INFO,
+                            duration = 1500L
+                        )
+                    }
                 )
             }
         }
+        // Show toast after logic execution
+        currentToast = ToastData(
+            message = "تم الإلغاء",
+            type = ToastType.INFO,
+            duration = 1500L
+        )
     }
 }

@@ -185,9 +185,10 @@ data class FCouleurVentOperationInfos(
     var parentEPeriodVentStartDate: Long = 0,
     var parentGBonVentKeyId: String = "",
 
-
+    //Mutable
     var quantityAchete: Int = 0,
     var provisoireMonPrix: Double = 0.0,
+    var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
 
     var parentZAppComptID: String = "",
     var parentClientInfosKeyID: String = "",
@@ -196,6 +197,11 @@ data class FCouleurVentOperationInfos(
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
     var achatParentBsonIDOld: String = "",
 ) {
+    enum class EtateDelivery{
+        Trouve,
+        NonTrouve
+    }
+
     enum class EtateActuellementEst {
         CreeSlote,
         ParentBonVentOuvert,

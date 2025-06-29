@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +25,11 @@ fun MainList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(groupedAchats.entries.toList()) { (productId, achatGroup) ->
+        items(groupedAchats.entries.toList()) { (productKeyId, achatGroup) ->
             ProductGroup(
                 bProduitDataBase_SubClassFunctionality= viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
                 viewModel = viewModel,
-                productId = productId,
+                productKeyId = productKeyId,
                 achats = achatGroup
             )
         }

@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
-import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
-import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
+import Views.Common.Components.ModernToastMessage
+import Views.Common.Components.ToastData
+import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
@@ -55,43 +55,41 @@ fun TariffsButtonsSec7ID2(
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
 
-            currentToast = ToastData(
-                message = message,
-                type = ToastType.SUCCESS,
-                duration = 2000L
-            )
-
+            // Execute the main logic first
             afficheButtons = false
             fermeDialog(latestTariffLocalData)
             viewModel.updateListRelativeVentCouleurPrixVent(
                 parentProduitOldId=filterProductId,
                 newPrix = latestTariffLocalData.prixCurrency
             )
+
+            // Show toast after logic execution
+            currentToast = ToastData(
+                message = message,
+                type = ToastType.SUCCESS,
+                duration = 1500L
+            )
         }
 
     // Cancellation callback
     val onClickAnulationButton: () -> Unit = {
-        currentToast = ToastData(
-            message = "تم الإلغاء",
-            type = ToastType.INFO,
-            duration = 2000L
-        )
-
+        // Execute the main logic first
         afficheButtons = false
         onFermDialogeAvecAnllation()
         viewModel.deleteVents(
             parentProduitOldId=filterProductId,
         )
+
+        // Show toast after logic execution
+        currentToast = ToastData(
+            message = "تم الإلغاء",
+            type = ToastType.INFO,
+            duration = 1500L
+        )
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // Modern Toast Component
-        ModernToastMessage(
-            toastData = currentToast,
-            onDismiss = { currentToast = null }
-        )
-
-        if (afficheButtons) {
+    if (afficheButtons) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (transactionComQuiFilterButtons != null) {
                     MainFilter(
@@ -109,6 +107,14 @@ fun TariffsButtonsSec7ID2(
                 }
             }
         }
+    }
+
+    // Toast shown independently of buttons visibility
+    if (currentToast != null) {
+        ModernToastMessage(
+            toastData = currentToast,
+            onDismiss = { currentToast = null }
+        )
     }
 }
 

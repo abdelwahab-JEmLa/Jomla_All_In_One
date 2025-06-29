@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +22,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
@@ -47,39 +51,68 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ProductGroup(
     viewModel: ZViewModel_Sec1Frag3,
-    productId: String,
+    productKeyId: String,
     achats: List<FCouleurVentOperationInfos>,
     modifier: Modifier = Modifier,
     bProduitDataBase_SubClassFunctionality: BProduitInfosRepository
 ) {
-    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.id.toString() == productId }
+    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val haptic = LocalHapticFeedback.current
     var showTotalQuantityDialog by remember { mutableStateOf(false) }
 
     val totalQuantity = achats.sumOf { it.quantityAchete }
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
-        ?: "Product #$productId"
+        ?: "Product #$productKeyId"
     val currentPrice = achats.firstOrNull()?.provisoireMonPrix ?: 0.0
+
+    // Check if any of the items have delivery state "NonTrouve"
+    val hasNonTrouveItems = achats.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+
+    // Check if ALL items have delivery state "NonTrouve" - for graying out the entire product
+    val allItemsNonTrouve = achats.isNotEmpty() && achats.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+
+    // Calculate alpha and colors based on delivery state
+    val contentAlpha = if (allItemsNonTrouve) 0.4f else 1.0f
+    val cardContainerColor = if (allItemsNonTrouve) {
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (allItemsNonTrouve) 2.dp else 6.dp
+        ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = cardContainerColor)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .graphicsLayer(alpha = contentAlpha)
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.secondaryContainer
+                        brush = if (allItemsNonTrouve) {
+                            Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                )
                             )
-                        )
+                        } else {
+                            Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                )
+                            )
+                        }
                     )
                     .padding(12.dp)
             ) {
@@ -93,40 +126,109 @@ fun ProductGroup(
                             text = productName,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = if (allItemsNonTrouve) {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            } else {
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            },
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
 
+                        // Add status indicator text for non-trouve items
+                        if (allItemsNonTrouve) {
+                            Text(
+                                text = "Non disponible",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
                     }
 
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .clickable {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showTotalQuantityDialog = true
-                            }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        // Toggle delivery state button
+                        IconButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                produit?.keyID?.let { key ->
+                                    viewModel.toggleEtateDeliveryNonTrouveVentOu(key)
+                                }
+                            },
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(
+                                    if (hasNonTrouveItems)
+                                        MaterialTheme.colorScheme.errorContainer.copy(
+                                            alpha = if (allItemsNonTrouve) 0.7f else 1.0f
+                                        )
+                                    else
+                                        MaterialTheme.colorScheme.primaryContainer.copy(
+                                            alpha = if (allItemsNonTrouve) 0.7f else 1.0f
+                                        )
+                                )
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "Total quantity",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.size(16.dp)
+                                imageVector = if (hasNonTrouveItems) Icons.Default.Cancel else Icons.Default.CheckCircle,
+                                contentDescription = if (hasNonTrouveItems) "Mark as found" else "Mark as not found",
+                                tint = if (hasNonTrouveItems) {
+                                    MaterialTheme.colorScheme.onErrorContainer.copy(
+                                        alpha = if (allItemsNonTrouve) 0.7f else 1.0f
+                                    )
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                                        alpha = if (allItemsNonTrouve) 0.7f else 1.0f
+                                    )
+                                },
+                                modifier = Modifier.size(20.dp)
                             )
-                            Text(
-                                text = totalQuantity.toString(),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
+                        }
+
+                        // Total quantity display
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (allItemsNonTrouve) {
+                                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            },
+                            modifier = Modifier
+                                .clickable(enabled = !allItemsNonTrouve) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    showTotalQuantityDialog = true
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ShoppingCart,
+                                    contentDescription = "Total quantity",
+                                    tint = if (allItemsNonTrouve) {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    },
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = totalQuantity.toString(),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (allItemsNonTrouve) {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -134,20 +236,28 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Price editor - disabled when all items are non-trouve
             PriceEditorFragID2(
                 currentPrice = currentPrice,
                 label = "Prix unitaire (toutes variantes)",
                 onPriceUpdate = { newPrice ->
-                    achats.forEach { vent ->
-                        val updatedVent = vent.copy(
-                            provisoireMonPrix = newPrice,
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                        viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
-                            .addOrUpdateData(updatedVent)
+                    if (!allItemsNonTrouve) {
+                        achats.forEach { vent ->
+                            val updatedVent = vent.copy(
+                                provisoireMonPrix = newPrice,
+                                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                            )
+                            viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+                                .addOrUpdateData(updatedVent)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
+                textColor = if (allItemsNonTrouve) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -162,8 +272,12 @@ fun ProductGroup(
                         .find { it.key == vent.parentCouleurInfosKeyID }?.let {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                tonalElevation = 2.dp,
-                                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                tonalElevation = if (allItemsNonTrouve) 1.dp else 2.dp,
+                                modifier = Modifier
+                                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                    .graphicsLayer(
+                                        alpha = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f
+                                    )
                             ) {
                                 VentDisplayer_Sec2FragId2(
                                     modifier = Modifier.padding(4.dp),
@@ -179,7 +293,8 @@ fun ProductGroup(
         }
     }
 
-    if (showTotalQuantityDialog && achats.isNotEmpty()) {
+    // Disable dialog when all items are non-trouve
+    if (showTotalQuantityDialog && achats.isNotEmpty() && !allItemsNonTrouve) {
         ModernQuantityDialog(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",

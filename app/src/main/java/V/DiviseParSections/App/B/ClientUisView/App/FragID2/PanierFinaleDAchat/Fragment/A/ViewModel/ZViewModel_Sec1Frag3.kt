@@ -11,6 +11,7 @@ class ZViewModel_Sec1Frag3(
     aCentral: ACentral,
 ) : ViewModel() {
     val uiStateCentralRepositorys = aCentral.getter
+    val setter = aCentral.setter
 
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,
@@ -33,6 +34,9 @@ class ZViewModel_Sec1Frag3(
         fun toggle(): Unit {}
     }
 
+    fun toggleEtateDeliveryNonTrouveVentOu(produitKey:String): Unit {
+           setter.toggleEtateDeliveryNonTrouveVentOu(produitKey)
+    }
 }
 inline fun Boolean.ifTrue(block: () -> Unit) {
     if (this) block()

@@ -1,5 +1,4 @@
-// File: ModernToast.kt
-package V.DiviseParSections.App.Shared.Modules.Ui.A.UI
+package Views.Common.Components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -53,40 +52,40 @@ fun ModernToastMessage(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    toastData?.let { data ->
-        LaunchedEffect(data) {
-            delay(data.duration)
-            onDismiss()
-        }
+    AnimatedVisibility(
+        visible = toastData != null,
+        enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                scaleIn(
+                    initialScale = 0.8f,
+                    animationSpec = tween(durationMillis = 300)
+                ),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
+                scaleOut(
+                    targetScale = 0.8f,
+                    animationSpec = tween(durationMillis = 300)
+                ),
+        modifier = modifier.zIndex(999f)
+    ) {
+        toastData?.let { data ->
+            LaunchedEffect(data) {
+                delay(data.duration)
+                onDismiss()
+            }
 
-        val (backgroundColor, icon) = when (data.type) {
-            ToastType.SUCCESS -> Color(0xFF10B981) to Icons.Default.CheckCircle
-            ToastType.WARNING -> Color(0xFFEF4444) to Icons.Default.Warning
-            ToastType.INFO -> Color(0xFF3B82F6) to Icons.Default.Info
-            ToastType.ERROR -> Color(0xFFEF4444) to Icons.Default.Warning
-        }
+            val (backgroundColor, icon) = when (data.type) {
+                ToastType.SUCCESS -> Color(0xFF10B981) to Icons.Default.CheckCircle
+                ToastType.WARNING -> Color(0xFFEF4444) to Icons.Default.Warning
+                ToastType.INFO -> Color(0xFF3B82F6) to Icons.Default.Info
+                ToastType.ERROR -> Color(0xFFEF4444) to Icons.Default.Warning
+            }
 
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
-                    scaleIn(
-                        initialScale = 0.8f,
-                        animationSpec = tween(durationMillis = 300)
-                    ),
-            exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
-                    scaleOut(
-                        targetScale = 0.8f,
-                        animationSpec = tween(durationMillis = 300)
-                    ),
-            modifier = modifier.zIndex(999f)
-        ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.TopCenter
             ) {
                 Card(
                     modifier = Modifier
-                        .padding(32.dp)
+                        .padding(top = 32.dp, start = 16.dp, end = 16.dp)
                         .shadow(
                             elevation = 12.dp,
                             shape = RoundedCornerShape(16.dp)
@@ -98,26 +97,26 @@ fun ModernToastMessage(
                     elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(24.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(24.dp)
                         )
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
 
                         Text(
                             text = data.message,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Medium,
                                 color = Color.White
                             ),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Start
                         )
                     }
                 }
