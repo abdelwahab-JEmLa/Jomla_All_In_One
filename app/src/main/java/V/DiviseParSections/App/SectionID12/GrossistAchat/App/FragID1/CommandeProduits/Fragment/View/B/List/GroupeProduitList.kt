@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.Z.Archive.Item_AchatProduitOperation
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.Main.VIEW.View_AchatProduitOperation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,7 @@ fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
 ) {
-    val repo = viewModel.fVentCouleurOperationRepository
+    val repo = viewModel.getter.kAchatRepository
 
     Box(
         modifier = modifier
@@ -24,8 +24,8 @@ fun List_GroupeAchatProduit(
             .padding(4.dp)
     ) {
         LazyColumn {
-            items(repo.onVentFilteredDatasGroupedParProduitKey.entries.toList()) { groupeAchatProduit ->
-                Item_AchatProduitOperation(
+            items(repo.bProduitKeyIDToListKAchatCouleurOperation.entries.toList()) { groupeAchatProduit ->
+                View_AchatProduitOperation(
                     viewModel = viewModel,
                     groupeAchatProduit = groupeAchatProduit
                 )

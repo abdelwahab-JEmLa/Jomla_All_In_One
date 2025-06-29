@@ -157,10 +157,10 @@ data class B1CouleurOuGoutProduitDataBase(
 @Composable
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
-    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
     keyCouleur: String,
-    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {},
-    size: Dp = 200.dp
+    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    size: Dp = 200.dp,
+    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
     val data = datas.find { it.key == keyCouleur }!!

@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVentRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
@@ -27,11 +28,14 @@ val composRepositorysModule = module {
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
     single { BProduitDataBaseComposeRepositoryPJ17(get()) }
+    single { B1CouleurOuGoutProduitDataBaseRepository(get(),) }
     single { FVentCouleurOperationRepository(get(),get(),) }
     single { GBonVentRepository(get(),get(),get(),) }
-    single { B1CouleurOuGoutProduitDataBaseRepository(get(),) }
+    single { KAchatCouleurOperationRepository(get(),) }
 
     single { ACentralCompoRepositoryProtoJuin9(context = androidContext(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),get(),) }
+
     single { ASetterCentral(get(),get(),get(),get(),) }
+
     single { ACentral( get(), get(),) }
 }

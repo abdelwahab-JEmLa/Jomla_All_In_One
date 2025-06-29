@@ -31,7 +31,7 @@ class ASetterCentral(
         gTransactionVentRepository.addOrUpdateData(
             GBonVent(
                 keyID = newTransactionKey,
-                parentPeriodeVentKeyID = zCompt.onVentHPeriodVentKeyId,
+                parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,
                 parentHClientOldID = clientOldId,
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 nomClientConcerned = client.nom,

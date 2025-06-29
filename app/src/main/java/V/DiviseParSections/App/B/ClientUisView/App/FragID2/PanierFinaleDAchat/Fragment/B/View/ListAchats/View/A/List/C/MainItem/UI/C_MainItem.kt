@@ -4,9 +4,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +56,7 @@ fun VentDisplayer_Sec2FragId2(
         .datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v ->
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find { it.key == v.parentCouleurDataBaseKey }
+            .find { it.key == v.parentCouleurInfosKeyID }
     }
 
     if (data == null) {
@@ -78,7 +78,7 @@ fun VentDisplayer_Sec2FragId2(
     var showQuantityDialog by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
 
-    val isRemoved = vent?.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+    val isRemoved = vent.etateActuellementEst == FCouleurVentOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
     val itemAlpha = if (isRemoved) 0.4f else 1.0f
     val colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
 

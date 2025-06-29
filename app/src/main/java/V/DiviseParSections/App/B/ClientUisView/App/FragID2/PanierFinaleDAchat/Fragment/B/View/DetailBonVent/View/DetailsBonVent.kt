@@ -52,7 +52,7 @@ fun DetailsBonVent(
     val fVentCouleurOperationRepository =
         viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
 
-    val ouvertPeriodKeyId = comptAppActuelle?.onVentHPeriodVentKeyId ?: ""
+    val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
 
     val cartSummary by remember {
         derivedStateOf {

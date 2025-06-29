@@ -11,7 +11,9 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val gBonVentRepository: GBonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+    val kAchatRepository: KAchatCouleurOperationRepository,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
@@ -61,13 +64,13 @@ class ACentralCompoRepositoryProtoJuin9(
         val ouvertData = zAppComptRepositoryComposable.currentAppCompt ?: return null
 
         val bonVentKey = ouvertData.onVentGBonVentKeyId
-        val periodKey = ouvertData.onVentHPeriodVentKeyId
+        val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation =
             fVentCouleurOperationRepository.datasValue.find { operation ->
-                operation.parentCouleurDataBaseKey == couleurKey &&
+                operation.parentCouleurInfosKeyID == couleurKey &&
                         operation.parentProduitAncienId == produitId &&
                         operation.parentGBonVentKeyId == bonVentKey &&
-                        operation.parentEVentPeriodKeyId == periodKey
+                        operation.parentHVentPeriodKeyId == periodKey
             }
 
         return matchingOperation
@@ -144,6 +147,13 @@ class ACentralCompoRepositoryProtoJuin9(
     }
 
     companion object {
+        val centralRef =
+            Firebase.database.getReference(
+                "00_DataPrototype-04-02" +
+                        "/_1_developingRef" +
+                        "/C_InfosSqlDataBases"
+            )
+
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         // Version that returns Result for better error handling
@@ -176,7 +186,7 @@ class ACentralCompoRepositoryProtoJuin9(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHPeriodVentKeyId +
+            return compt.onVentHVentPeriodKeyId +
                     "--${compt.onVentGBonVentKeyId}" +
                     "--${bProduitDataBase.id}" +
                     "--${bProduitDataBase.id}_${indexCouleur + 1}"

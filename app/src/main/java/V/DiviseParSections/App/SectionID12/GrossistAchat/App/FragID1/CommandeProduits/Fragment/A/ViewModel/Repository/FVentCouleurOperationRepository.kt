@@ -32,11 +32,11 @@ class FVentCouleurOperationRepository(
             it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
         }
     }
-
-    val onVentFilteredDatasGroupedParProduitKey by derivedStateOf {
-        onVentFilteredDatas.groupBy { it.parentBProduitKeyId }
+    val datasFilteredParCurrentHVentPeriod by derivedStateOf {
+        datasValue.filter {
+            it.parentHVentPeriodKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+        }
     }
-
 
     init {
         composScope.launch {
@@ -126,9 +126,9 @@ class FVentCouleurOperationRepository(
         quantity: Int
     ): FCouleurVentOperation {
         return FCouleurVentOperation(
-            parentCouleurDataBaseKey = relatedCouleur.key,
+            parentCouleurInfosKeyID = relatedCouleur.key,
 
-            parentEVentPeriodKeyId = zCompt.onVentHPeriodVentKeyId,
+            parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
             parentGBonVentKeyId = zCompt.onVentGBonVentKeyId,
 
             parentBProduitKeyId = relatedCouleur.parentBProduitOldID.toString(),
@@ -152,9 +152,9 @@ class FVentCouleurOperationRepository(
 data class FCouleurVentOperation(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var parentCouleurDataBaseKey: String = "",
+    var parentCouleurInfosKeyID: String = "",
 
-    var parentEVentPeriodKeyId: String = "",
+    var parentHVentPeriodKeyId: String = "",
     var parentEVentPeriodDebugName: String = "",
 
     var parentBProduitKeyId: String = "",
@@ -167,7 +167,7 @@ data class FCouleurVentOperation(
 
     var parentZAppComptID: String = "",
 
-    var parentClientId: String = "",
+    var parentClientInfosKeyID: String = "",
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
     var quantityAchete: Int = 0,
