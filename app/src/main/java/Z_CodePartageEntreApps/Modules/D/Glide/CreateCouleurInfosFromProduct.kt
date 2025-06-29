@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import android.util.Log
 import com.google.firebase.database.Exclude
@@ -10,7 +10,7 @@ import java.io.File
 
 data class CouleurInfosWithAchat(
     val couleurInfosList: List<FileCouleurInfos>,
-    val matchingAchat: FCouleurVentOperation?
+    val matchingAchat: FCouleurVentOperationInfos?
 )
 enum class Affiche {
     Image, Nom
@@ -19,7 +19,7 @@ enum class Affiche {
 data class FileCouleurInfos(
     @get:Exclude
     @Transient
-    val d_CouleurVentOperation: FCouleurVentOperation? = null, // FIXED: Made nullable
+    val d_CouleurVentOperation: FCouleurVentOperationInfos? = null, // FIXED: Made nullable
 
     val keyID: String = "",
     val bsonObjectId: BsonObjectId = BsonObjectId(),
@@ -92,11 +92,11 @@ data class FileCouleurInfos(
 
 fun createCouleurInfosFromProduct(
     produit: ArticlesBasesStatsTable?,
-    achats: List<FCouleurVentOperation>
+    achats: List<FCouleurVentOperationInfos>
 ): CouleurInfosWithAchat {
     val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
     val couleurInfosList = mutableListOf<FileCouleurInfos>()
-    var firstMatchingAchat: FCouleurVentOperation? = null
+    var firstMatchingAchat: FCouleurVentOperationInfos? = null
 
     val colorMappings = listOf(
         produit?.couleur1 to 0,

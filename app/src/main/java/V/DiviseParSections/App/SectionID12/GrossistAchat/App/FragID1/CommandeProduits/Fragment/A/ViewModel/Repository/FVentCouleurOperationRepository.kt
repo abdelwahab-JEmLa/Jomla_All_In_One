@@ -24,7 +24,7 @@ class FVentCouleurOperationRepository(
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
-    private val _datas = mutableStateOf<List<FCouleurVentOperation>>(emptyList())
+    private val _datas = mutableStateOf<List<FCouleurVentOperationInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     val onVentFilteredDatas by derivedStateOf {
@@ -60,9 +60,10 @@ class FVentCouleurOperationRepository(
         }
     }
 
-    fun addOrUpdateData(data: FCouleurVentOperation) {
+
+    fun addOrUpdateData(data: FCouleurVentOperationInfos) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperation.isSame(ancien = ancien, newData = data)
+            FCouleurVentOperationInfos.isSame(ancien = ancien, newData = data)
         }
 
         _datas.value = if (existingIndex >= 0) {
@@ -94,7 +95,7 @@ class FVentCouleurOperationRepository(
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
     }
 
-    fun getTestDate(): List<FCouleurVentOperation> {
+    fun getTestDate(): List<FCouleurVentOperationInfos> {
         return emptyList()
     }
 
@@ -124,8 +125,8 @@ class FVentCouleurOperationRepository(
         relatedCouleur: B1CouleurOuGoutProduitDataBase,
         zCompt: Z_AppCompt,
         quantity: Int
-    ): FCouleurVentOperation {
-        return FCouleurVentOperation(
+    ): FCouleurVentOperationInfos {
+        return FCouleurVentOperationInfos(
             parentCouleurInfosKeyID = relatedCouleur.key,
 
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
@@ -140,18 +141,21 @@ class FVentCouleurOperationRepository(
 
             parentClientName = zCompt.onVentFClientDebugNameKey,
             quantityAchete = quantity,
-            etateActuellementEst = FCouleurVentOperation.EtateActuellementEst.ChoisiQuantityConfirme,
-            type = FCouleurVentOperation.Type.CommandeDeLui,
+            etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.ChoisiQuantityConfirme,
+            type = FCouleurVentOperationInfos.Type.CommandeDeLui,
         )
     }
 
     companion object {
         private const val TAG = "ColorOperation"
+
+        fun String?.findData(repo :FVentCouleurOperationRepository) = repo.datasValue.find { it.keyID == this }
+
     }
 }
 
 @Entity
-data class FCouleurVentOperation(
+data class FCouleurVentOperationInfos(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var parentCouleurInfosKeyID: String = "",
@@ -192,7 +196,7 @@ data class FCouleurVentOperation(
     enum class Type { SiNonDispo, CommandeDeLui }
 
     /*       /*Metode Hash Proto**/
-        fun isSameEntity(other: FCouleurVentOperation) =
+        fun isSameEntity(other: FCouleurVentOperationInfos) =
             keyID == other.keyID ||
                     nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
                     parentProduitId == other.parentProduitId &&
@@ -208,17 +212,17 @@ data class FCouleurVentOperation(
         )
 
         override fun equals(other: Any?) =
-            this === other || (other is FCouleurVentOperation && isSameEntity(other))
+            this === other || (other is FCouleurVentOperationInfos && isSameEntity(other))
                       */
 
     companion object {
         val ref =
-            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/FCouleurVentOperation")
+            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/FCouleurVentOperationInfos")
 
 
         fun isSame(
-            ancien: FCouleurVentOperation,
-            newData: FCouleurVentOperation
+            ancien: FCouleurVentOperationInfos,
+            newData: FCouleurVentOperationInfos
         ): Boolean {
             val delimiterExistence =
                 ancien.keyID == newData.keyID

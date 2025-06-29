@@ -33,7 +33,7 @@ data class KAchatCouleurOperation(
     val parentCouleurInfosKeyID: String,
     val parentGrossistKeyID: String = generePushKey(),
     val sumAchatQantity: Int,
-    val listFCouleurVentOperation: List<FCouleurVentOperation>
+    val listFCouleurVentOperation: List<FCouleurVentOperationInfos>
 ) {
     companion object {
         fun generePushKey() =

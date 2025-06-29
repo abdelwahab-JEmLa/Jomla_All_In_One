@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base
 
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager.Repository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadCategoriesFromCsvD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init.onLoadFromFireBaseD_AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
@@ -16,8 +16,8 @@ import kotlinx.coroutines.tasks.await
 class DataBaseFactoryDCouleurAchatOperation(
     val dao: D_AchatOperationDao,
 ) {
-    val repoTAG = "FCouleurVentOperation"
-    val repoRef = FCouleurVentOperation.ref
+    val repoTAG = "FCouleurVentOperationInfos"
+    val repoRef = FCouleurVentOperationInfos.ref
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun init(
@@ -27,7 +27,7 @@ class DataBaseFactoryDCouleurAchatOperation(
         if (!dao.isTableEmpty()) return
 
         updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.4f)
-        val data: List<FCouleurVentOperation> = if (isInternetAvailable) {
+        val data: List<FCouleurVentOperationInfos> = if (isInternetAvailable) {
             updateRepoProgress(Repository.D_ACHAT_OPERATION.name, 0.6f)
             onLoadFromFireBaseD_AchatOperation()
         } else {
@@ -49,7 +49,7 @@ class DataBaseFactoryDCouleurAchatOperation(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(FCouleurVentOperation::class.java)?.let { entity ->
+                                child.getValue(FCouleurVentOperationInfos::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
@@ -82,7 +82,7 @@ class DataBaseFactoryDCouleurAchatOperation(
 
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
-        dataAvecTigerUpdate: FCouleurVentOperation
+        dataAvecTigerUpdate: FCouleurVentOperationInfos
     ) {
         composScope.launch {
             if (existingIndex >= 0) {
@@ -96,12 +96,12 @@ class DataBaseFactoryDCouleurAchatOperation(
     }
 
 
-    private suspend fun batchFireBaseUpdateD_AchatOperation(datas: List<FCouleurVentOperation>) {
+    private suspend fun batchFireBaseUpdateD_AchatOperation(datas: List<FCouleurVentOperationInfos>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.keyID] = data
         }
-        val firebaseRef = FCouleurVentOperation.ref
+        val firebaseRef = FCouleurVentOperationInfos.ref
         firebaseRef.updateChildren(updates).await()
     }
 }

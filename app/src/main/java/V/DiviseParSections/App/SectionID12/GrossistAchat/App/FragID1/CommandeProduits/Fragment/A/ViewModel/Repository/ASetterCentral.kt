@@ -42,7 +42,7 @@ class ASetterCentral(
     }
 
     fun acheterACaSetterCentral(
-        fCouleurVentOperation: FCouleurVentOperation? = null,
+        fCouleurVentOperation: FCouleurVentOperationInfos? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         quantity: Int,
