@@ -59,7 +59,7 @@ fun DetailsBonVent(
             val vents = fVentCouleurOperationRepository.onVentFilteredDatas
             CartSummary(
                 totalItems = vents.sumOf { it.quantityAchete },
-                totalProducts = vents.groupBy { it.parentBProduitKeyId }.size,
+                totalProducts = vents.groupBy { it.parentBProduitInfosKeyId }.size,
                 totalValue = vents.sumOf { it.quantityAchete * it.provisoireMonPrix },
                 itemsCount = vents.size
             )

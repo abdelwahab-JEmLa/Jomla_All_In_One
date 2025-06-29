@@ -18,7 +18,7 @@ fun MainList(
     viewModel: ZViewModel_Sec1Frag3
 ) {
     val groupedAchats = fVentCouleurOperationRepository
-        .onVentFilteredDatas.groupBy { it.parentBProduitKeyId }
+        .onVentFilteredDatas.groupBy { it.parentBProduitInfosKeyId }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),

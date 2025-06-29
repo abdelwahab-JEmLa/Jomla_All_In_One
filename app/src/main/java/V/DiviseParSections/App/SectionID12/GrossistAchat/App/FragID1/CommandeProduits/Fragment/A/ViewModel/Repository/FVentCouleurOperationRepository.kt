@@ -129,9 +129,11 @@ class FVentCouleurOperationRepository(
             parentCouleurInfosKeyID = relatedCouleur.key,
 
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
+
             parentGBonVentKeyId = zCompt.onVentGBonVentKeyId,
 
-            parentBProduitKeyId = relatedCouleur.parentBProduitOldID.toString(),
+            parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
+            parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentBProduitNomDebug = relatedCouleur.parentBProduitNom,
 
             parentZAppComptID = zCompt.bsonObjectId,
@@ -157,9 +159,9 @@ data class FCouleurVentOperation(
     var parentHVentPeriodKeyId: String = "",
     var parentEVentPeriodDebugName: String = "",
 
-    var parentBProduitKeyId: String = "",
+    var parentBProduitInfosKeyId: String = "",
     var parentBProduitNomDebug: String = "",
-    var parentProduitAncienId: Long = 0,
+    var parentProduitInfosOldId: Long = 0,
 
 
     var parentEPeriodVentStartDate: Long = 0,

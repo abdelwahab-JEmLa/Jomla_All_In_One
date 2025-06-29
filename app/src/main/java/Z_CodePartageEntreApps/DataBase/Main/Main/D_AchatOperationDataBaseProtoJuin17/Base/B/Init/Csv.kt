@@ -60,10 +60,10 @@ private fun parsedData(values: List<String>) = FCouleurVentOperation(
     keyID = values.getOrElse(0) { BsonObjectId().toHexString() },
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
     parentGBonVentKeyId = values.getOrElse(3) { "" },
-    parentBProduitKeyId = values.getOrElse(4) { "" },
+    parentBProduitInfosKeyId = values.getOrElse(4) { "" },
     parentZAppComptID = values.getOrElse(5) { "" },
     parentClientInfosKeyID = values.getOrElse(6) { "" },
-    parentProduitAncienId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
+    parentProduitInfosOldId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
         FCouleurVentOperation.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })

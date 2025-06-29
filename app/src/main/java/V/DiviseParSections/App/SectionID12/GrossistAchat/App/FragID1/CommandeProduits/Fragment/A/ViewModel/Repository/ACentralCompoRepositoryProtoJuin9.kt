@@ -68,7 +68,7 @@ class ACentralCompoRepositoryProtoJuin9(
         val matchingOperation =
             fVentCouleurOperationRepository.datasValue.find { operation ->
                 operation.parentCouleurInfosKeyID == couleurKey &&
-                        operation.parentProduitAncienId == produitId &&
+                        operation.parentProduitInfosOldId == produitId &&
                         operation.parentGBonVentKeyId == bonVentKey &&
                         operation.parentHVentPeriodKeyId == periodKey
             }

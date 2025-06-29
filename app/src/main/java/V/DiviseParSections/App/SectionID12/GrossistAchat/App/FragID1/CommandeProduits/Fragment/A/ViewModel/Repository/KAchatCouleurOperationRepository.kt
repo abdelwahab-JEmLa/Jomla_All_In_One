@@ -11,7 +11,7 @@ class KAchatCouleurOperationRepository(
 ) {
     private val sourceDatas by derivedStateOf { fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod }
     val datasValue by derivedStateOf { initImplimentaion() }
-    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy { it.listFCouleurVentOperation.first().parentBProduitKeyId } }
+    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy { it.listFCouleurVentOperation.first().parentBProduitInfosKeyId } }
 
     private fun initImplimentaion(): List<KAchatCouleurOperation> {
         val operations = sourceDatas.groupBy { it.parentCouleurInfosKeyID }
