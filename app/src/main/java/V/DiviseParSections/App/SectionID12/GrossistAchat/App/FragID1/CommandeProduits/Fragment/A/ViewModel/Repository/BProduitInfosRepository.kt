@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 
 @Stable
-class BProduitDataBaseComposeRepositoryPJ17(
+class BProduitInfosRepository(
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {
     val dao = ancienRepo.dao
@@ -171,7 +172,6 @@ data class ArticlesBasesStatsTable(
     }
 
 
-
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
@@ -187,7 +187,6 @@ data class ArticlesBasesStatsTable(
             dernierFireBaseUpdateTimestamps = System.currentTimeMillis()
         )
     }
-
 
 
     companion object {
@@ -217,6 +216,23 @@ data class ArticlesBasesStatsTable(
             val delimiterExistence =
                 ancien.id == newData.id
             return delimiterExistence
+        }
+
+        fun ArticlesBasesStatsTable?.logDebugIt(nomVale: String = "") {
+            Log.d(
+                "ArticlesBasesStatsTable",
+                infos(nomVale)
+            )
+        }
+
+        private fun ArticlesBasesStatsTable?.infos(
+            nomVale: String
+        ) = nomVale + if (this != null) {
+            keyID
+            "\n id = $id "
+            "\n keyID = $keyID "
+        } else {
+            "data is null"
         }
     }
 }

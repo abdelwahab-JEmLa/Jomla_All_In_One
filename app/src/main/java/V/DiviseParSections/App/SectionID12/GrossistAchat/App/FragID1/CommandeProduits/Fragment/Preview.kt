@@ -4,8 +4,4 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-@Preview
-@Composable
-fun MainScreenPreview_APP2() {
-    Screen_GrossistAchatSec12FragID1()
-}
+@Preview @Composable fun MainScreenPreview_APP2() { Screen_GrossistAchatSec12FragID1() }

@@ -27,7 +27,7 @@ fun MainList(
     ) {
         items(groupedAchats.entries.toList()) { (productId, achatGroup) ->
             ProductGroup(
-                bProduitDataBase_SubClassFunctionality= viewModel.uiStateCentralRepositorys.bProduitDataBase_SubClassFunctionality,
+                bProduitDataBase_SubClassFunctionality= viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
                 viewModel = viewModel,
                 productId = productId,
                 achats = achatGroup

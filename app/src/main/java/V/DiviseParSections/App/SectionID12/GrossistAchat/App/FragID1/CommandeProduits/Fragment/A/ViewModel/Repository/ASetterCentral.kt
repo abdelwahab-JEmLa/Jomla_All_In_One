@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
-    val bProduitDataBase_SubClassFunctionality: BProduitDataBaseComposeRepositoryPJ17,
+    val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {

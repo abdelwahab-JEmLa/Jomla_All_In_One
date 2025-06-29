@@ -23,7 +23,7 @@ class ACentralCompoRepositoryProtoJuin9(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
-    val bProduitDataBase_SubClassFunctionality: BProduitDataBaseComposeRepositoryPJ17,
+    val bProduitInfosRepository: BProduitInfosRepository,
     val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
@@ -87,7 +87,7 @@ class ACentralCompoRepositoryProtoJuin9(
 
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        bProduitDataBase_SubClassFunctionality.datasValue.filteredParCatalogueBsonId()
+        bProduitInfosRepository.datasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {

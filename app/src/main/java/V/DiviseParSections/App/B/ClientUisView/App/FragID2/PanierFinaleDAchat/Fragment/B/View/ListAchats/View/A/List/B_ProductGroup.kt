@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitDataBaseComposeRepositoryPJ17
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
@@ -50,7 +50,7 @@ fun ProductGroup(
     productId: String,
     achats: List<FCouleurVentOperation>,
     modifier: Modifier = Modifier,
-    bProduitDataBase_SubClassFunctionality: BProduitDataBaseComposeRepositoryPJ17
+    bProduitDataBase_SubClassFunctionality: BProduitInfosRepository
 ) {
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.id.toString() == productId }
     val haptic = LocalHapticFeedback.current

@@ -89,7 +89,7 @@ fun CameraFABProtoJuin3(
                                 idParentCategorie = activeCatalogue.premierCategorieId
                             )
 
-                            a_CentralCompoRepositoryProtoJuin9.bProduitDataBase_SubClassFunctionality.addOrUpdateData(updatedProduct)
+                            a_CentralCompoRepositoryProtoJuin9.bProduitInfosRepository.addOrUpdateData(updatedProduct)
 
 
                             Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()
@@ -112,7 +112,7 @@ fun CameraFABProtoJuin3(
     ) { isGranted ->
         if (isGranted) {
             pendingProduct = ArticlesBasesStatsTable(
-                id = a_CentralCompoRepositoryProtoJuin9.bProduitDataBase_SubClassFunctionality.datasValue.maxOf { it.id } + 1
+                id = a_CentralCompoRepositoryProtoJuin9.bProduitInfosRepository.datasValue.maxOf { it.id } + 1
             )
             showCameraDialog = true
         } else {

@@ -22,7 +22,7 @@ class PanierFinaleDAchatViewModel(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
-    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.bProduitDataBase_SubClassFunctionality
+    val a_ProduitDataBaseComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.bProduitInfosRepository
     val d_AchatOperationComposeRepositoryPJ17 = a_CentralDatasHandlerProtoJuin9.fVentCouleurOperationRepository
 
     private val _uiState = MutableStateFlow(UiState())

@@ -19,10 +19,10 @@ fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<KAchatCouleurOperation>>,
 ) {
-    val bProduitDataBase_SubClassFunctionality =
-        viewModel.getter.bProduitDataBase_SubClassFunctionality
-    val produit =
-        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == groupeAchatProduit.key }
+    val produit = viewModel.getter.bProduitInfosRepository.datasValue.find { it.keyID == groupeAchatProduit.key }
+
+    HorizontalDivider()
+    Text(groupeAchatProduit.key)
 
     if (produit != null) {
         Card {
