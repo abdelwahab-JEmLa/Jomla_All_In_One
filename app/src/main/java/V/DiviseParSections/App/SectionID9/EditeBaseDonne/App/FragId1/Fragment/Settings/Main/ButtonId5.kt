@@ -58,6 +58,7 @@ fun ButtonId5(
                     }
                 }
                 viewModel.deleteAddMultiProduits()
+                viewModel.deleteAddMultiClients()
             },
             modifier = Modifier.size(40.dp),
             containerColor = Color.Green

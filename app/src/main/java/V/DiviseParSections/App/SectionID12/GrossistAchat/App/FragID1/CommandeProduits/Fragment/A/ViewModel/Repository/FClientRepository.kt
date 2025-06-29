@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,7 @@ import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class FClientRepository(
+    val dataBaseFactoryFClient: DataBaseFactoryFClient,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
@@ -178,6 +180,7 @@ data class B_ClientInfosProtoJuin3(
     }
 
     companion object {
+
         fun createTestInstance(): List<B_ClientInfosProtoJuin3> {
             return emptyList()
         }
@@ -190,10 +193,12 @@ data class B_ClientInfosProtoJuin3(
 
         val ref = parent.child("B_ClientInfosProtoJuin3")
 
+        fun safeRemoveRef(): Unit { ref.removeValue() }
+
         fun removeRef(
             preparedData: B_ClientInfosProtoJuin3
         ) {
-            ArticlesBasesStatsTable.ref.child(preparedData.keyFireBase).removeValue()
+            ref.child(preparedData.keyFireBase).removeValue()
         }
     }
 }

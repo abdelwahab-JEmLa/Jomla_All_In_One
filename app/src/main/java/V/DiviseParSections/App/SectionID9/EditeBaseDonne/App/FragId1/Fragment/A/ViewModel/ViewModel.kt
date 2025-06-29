@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
+import V.DiviseParSections.App.Shared.Repository.ACentral
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
@@ -226,6 +226,10 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     fun deleteArticlesBasesStatsTable(data: ArticlesBasesStatsTable) {
         masterRepositorys.repoA_ProduitInfos.deleteData(data)
+    }
+
+    fun deleteAddMultiClients() {
+        setter.deleteAddMultiClients()
     }
 
     enum class ModeAffichage {

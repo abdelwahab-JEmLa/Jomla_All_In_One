@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.B_ClientInfosProtoJuin3Repository
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 data class MasterRepositorysModel(
     val repoStateA_ProduitInfos: A_ProduitInfosRepository.RepoState?,
-    val b_ClientInfosProtoJuin3Repository: B_ClientInfosProtoJuin3Repository.RepoState?,
+    val b_ClientInfosProtoJuin3Repository: DataBaseFactoryFClient.RepoState?,
     val repoStateC_CategorieProduitInfos: C_CategorieProduitInfosRepository.RepoState?,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository.RepoState?,
 
@@ -24,7 +24,7 @@ data class MasterRepositorysModel(
 
 class A_MasterRepositorysGrpProtoJuin3(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
-    val b_ClientInfosProtoJuin3Repository: B_ClientInfosProtoJuin3Repository,
+    val b_ClientInfosProtoJuin3Repository: DataBaseFactoryFClient,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
     val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
     val e_GroupedDataBasesRepositoryProtoAvant3Juin: GroupeRepositorysProtoAvJuin3,

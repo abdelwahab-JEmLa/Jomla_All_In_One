@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class B_ClientInfosProtoJuin3Repository(
+class DataBaseFactoryFClient(
     val context: Context,
     appDatabase: AppDatabase,
 ) {
-    val repoTAG = "B_ClientInfosProtoJuin3Repository"
+    val repoTAG = "DataBaseFactoryFClient"
 
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
@@ -54,6 +55,16 @@ class B_ClientInfosProtoJuin3Repository(
 
         if (!isListenerRegistered) {
             triggerUpdateFbParTimestampsListener()
+        }
+    }
+
+    fun batchFireBaseUpdate(datas: List<B_ClientInfosProtoJuin3>): Unit {
+        CoroutineScope(Dispatchers.IO).launch {
+            val updates = mutableMapOf<String, Any>()
+            datas.forEach { data ->
+                updates[data.bsonObjectId] = data
+            }
+            repoRef.updateChildren(updates).await()
         }
     }
 }

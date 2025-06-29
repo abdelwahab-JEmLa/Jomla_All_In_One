@@ -2,6 +2,8 @@ package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
@@ -16,6 +18,7 @@ class ASetterCentral(
     val getter: ACentralCompoRepositoryProtoJuin9,
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+    val fClientRepository: FClientRepository,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
@@ -82,6 +85,19 @@ class ASetterCentral(
 
             ArticlesBasesStatsTable.safeRemoveRef()
             bProduitDataBase_SubClassFunctionality.ancienRepo.batchFireBaseUpdateArticlesBasesStatsTable(
+                datas
+            )
+        }
+    }
+    fun deleteAddMultiClients() {
+        val datas = bClientsStateCompoRepository.datasValue
+        CoroutineScope(Dispatchers.IO).launch {
+            fClientRepository.dataBaseFactoryFClient.dao.deleteAll()
+            fClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
+
+            B_ClientInfosProtoJuin3.safeRemoveRef()
+
+            fClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
                 datas
             )
         }
