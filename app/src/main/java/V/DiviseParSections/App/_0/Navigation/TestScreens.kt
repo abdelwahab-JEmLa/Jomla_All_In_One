@@ -46,7 +46,7 @@ fun TestScreens(
     // Create navigation items list
     val navigationItems = listOf(
         NavigationItem(
-            title = "Panie",
+            title = "Panie AV 29Juin Proto  ",
             onClick = {
                 fragmentNavigationHandler.navigateToTestDataScreen()
                 onDismiss()

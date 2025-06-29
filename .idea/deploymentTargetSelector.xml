@@ -35,13 +35,13 @@
       <SelectionState runConfigName="PanierFinaleDAchatSecBFrag3Preview (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="DetailsBonVentPrev">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="MainScreenPreview_APP2">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="MainScreenPreview_APP2 (1)">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="GrossistAchatSec12FragID1Prev">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

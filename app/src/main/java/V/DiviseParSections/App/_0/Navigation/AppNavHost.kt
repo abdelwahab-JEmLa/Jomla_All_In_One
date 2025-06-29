@@ -164,7 +164,6 @@ fun AppNavHost(
                     val screenKey = rememberScreenKey(backStackEntry)
 
                     CleanupEffect {
-                        // Any cleanup needed for this screen
                     }
 
                     LaunchedEffect(Unit) {
@@ -173,7 +172,8 @@ fun AppNavHost(
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
-                            A_MainScreen_APP2_ID_2PanierFinaleDAchat()
+                            PanierFinaleDAchatSec1Frag3()
+
                         }
                     }
                 }
@@ -229,7 +229,7 @@ fun AppNavHost(
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
-                            PanierFinaleDAchatSec1Frag3()
+                            A_MainScreen_APP2_ID_2PanierFinaleDAchat()
                         }
                     }
                 }

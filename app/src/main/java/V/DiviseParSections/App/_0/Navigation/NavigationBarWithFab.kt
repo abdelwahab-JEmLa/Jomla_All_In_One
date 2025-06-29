@@ -62,7 +62,7 @@ fun NavigationBarWithFab(
     viewModelInitApp: ViewModelInitApp,
 ) {
     var showCatalogDialog by remember { mutableStateOf(false) }
-    var showDialogTests by remember { mutableStateOf(false) } // Add state for dialog tests
+    var showDialogTests by remember { mutableStateOf(false) }
     val fragmentNavigationHandler: FragmentNavigationHandler = koinInject()
 
     Box(
