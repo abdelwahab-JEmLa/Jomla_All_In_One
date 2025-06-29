@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +45,6 @@ fun DetailsBonVentPrev() {
 }
 
 val petitePaddine = 4.dp //rename
-
 @Composable
 fun DetailsBonVent(
     modifier: Modifier = Modifier,
@@ -68,23 +65,6 @@ fun DetailsBonVent(
 
     val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
 
-    val cartSummary by remember {
-        derivedStateOf {
-            val allVents = fVentCouleurOperationRepository.onVentFilteredDatas
-            // Filter only "Trouve" items for calculations
-            val ventsTrouve = allVents.filter {
-                it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve
-            }
-
-            CartSummary(
-                totalItems = ventsTrouve.sumOf { it.quantityAchete },
-                totalProducts = ventsTrouve.groupBy { it.parentBProduitInfosKeyId }.size,
-                totalValue = ventsTrouve.sumOf { it.quantityAchete * it.provisoireMonPrix },
-                itemsCount = ventsTrouve.size
-            )
-        }
-    }
-
     if (comptAppActuelle != null) {
         Box(
             modifier = modifier
@@ -100,7 +80,8 @@ fun DetailsBonVent(
             ) {
                 Column(
                     modifier = Modifier.padding(petitePaddine),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    // FIXED: Compact spacing when minimized
+                    verticalArrangement = Arrangement.spacedBy(if (isMinimized) 6.dp else 12.dp)
                 ) {
                     if (!isMinimized) {
                         GBonVentInfosHeader(viewModel)
@@ -115,7 +96,11 @@ fun DetailsBonVent(
                     ClientDetailsSection(
                         viewModel = viewModel,
                     )
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                    // FIXED: Only show divider when not minimized to save space
+                    if (!isMinimized) {
+                        Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    }
 
                     CartSummarySection(
                         viewModel,
@@ -151,7 +136,6 @@ fun DetailsBonVent(
                     )
                 }
 
-                // Filter toggle button
                 FloatingActionButton(
                     onClick = {
                         viewModel.toggelePanierFilterNonTrouve()
@@ -174,7 +158,6 @@ fun DetailsBonVent(
                     )
                 }
 
-                // Print button
                 FloatingActionButton(
                     onClick = {
                         val fClientRepository = viewModel.uiStateCentralRepositorys.fClientRepository
@@ -198,7 +181,6 @@ fun DetailsBonVent(
                     )
                 }
 
-                // Toggle visibility button
                 FloatingActionButton(
                     onClick = {
                         viewModel.toggleMinimizedState()

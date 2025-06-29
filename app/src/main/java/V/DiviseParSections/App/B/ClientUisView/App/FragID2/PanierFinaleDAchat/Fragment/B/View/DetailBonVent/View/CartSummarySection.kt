@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
     val repo = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
 
-    // Calculate separate summaries for found and not found items
     val summaryByDeliveryStatus by remember {
         derivedStateOf {
             val allVents = repo.onVentFilteredDatas
@@ -85,7 +85,8 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 summary = summaryByDeliveryStatus.trouveSummary,
                 icon = Icons.Default.CheckCircle,
                 iconTint = Color(0xFF4CAF50), // Green
-                showTotal = true
+                showTotal = true,
+                viewModel = viewModel
             )
         }
 
@@ -96,11 +97,12 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 summary = summaryByDeliveryStatus.nonTrouveSummary,
                 icon = Icons.Default.Error,
                 iconTint = Color(0xFFFF5722), // Orange/Red
-                showTotal = false
+                showTotal = false,
+                viewModel = viewModel
             )
         }
 
-        // Overall total (only for found items)
+        // Overall total (only for found items) - FIXED: Increased text size
         if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -108,12 +110,12 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
             ) {
                 Text(
                     text = "Total à Payer:",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.headlineSmall, // Increased from titleMedium
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = "${String.format("%.2f", summaryByDeliveryStatus.trouveSummary.totalValue)} DA",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.headlineSmall, // Increased from titleMedium
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -126,9 +128,10 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
 private fun SummarySection(
     title: String,
     summary: CartSummary,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     iconTint: Color,
-    showTotal: Boolean
+    showTotal: Boolean,
+    viewModel: ZViewModel_Sec1Frag3
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -156,20 +159,6 @@ private fun SummarySection(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "  Articles:",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "${summary.totalItems} unités",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -186,39 +175,6 @@ private fun SummarySection(
                 )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "  Variantes:",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "${summary.itemsCount} variantes",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            if (showTotal) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "  Sous-total:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "${String.format("%.2f", summary.totalValue)} DA",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = iconTint
-                    )
-                }
-            }
         }
     }
 }
