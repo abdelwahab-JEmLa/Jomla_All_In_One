@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,12 +70,17 @@ fun DetailsBonVent(
 
     val cartSummary by remember {
         derivedStateOf {
-            val vents = fVentCouleurOperationRepository.onVentFilteredDatas
+            val allVents = fVentCouleurOperationRepository.onVentFilteredDatas
+            // Filter only "Trouve" items for calculations
+            val ventsTrouve = allVents.filter {
+                it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve
+            }
+
             CartSummary(
-                totalItems = vents.sumOf { it.quantityAchete },
-                totalProducts = vents.groupBy { it.parentBProduitInfosKeyId }.size,
-                totalValue = vents.sumOf { it.quantityAchete * it.provisoireMonPrix },
-                itemsCount = vents.size
+                totalItems = ventsTrouve.sumOf { it.quantityAchete },
+                totalProducts = ventsTrouve.groupBy { it.parentBProduitInfosKeyId }.size,
+                totalValue = ventsTrouve.sumOf { it.quantityAchete * it.provisoireMonPrix },
+                itemsCount = ventsTrouve.size
             )
         }
     }
@@ -111,7 +117,9 @@ fun DetailsBonVent(
                     )
                     Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
 
-                    CartSummarySection(cartSummary)
+                    CartSummarySection(
+                        viewModel,
+                    )
                 }
             }
 
