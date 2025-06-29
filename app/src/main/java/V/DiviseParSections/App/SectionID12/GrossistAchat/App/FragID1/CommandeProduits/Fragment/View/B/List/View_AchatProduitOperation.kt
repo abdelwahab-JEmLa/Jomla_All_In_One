@@ -21,12 +21,6 @@ fun View_AchatProduitOperation(
 ) {
     val produit = viewModel.getter.bProduitInfosRepository.datasValue.find { it.keyID == groupeAchatProduit.key }
 
-     Column {
-         HorizontalDivider()
-         Text(groupeAchatProduit.key)
-     }
-
-
     if (produit != null) {
         Card {
             HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)

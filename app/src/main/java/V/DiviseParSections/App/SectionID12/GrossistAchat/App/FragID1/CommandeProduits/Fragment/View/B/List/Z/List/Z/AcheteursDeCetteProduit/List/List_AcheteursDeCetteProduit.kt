@@ -44,7 +44,7 @@ fun List_AcheteursDeCetteProduit(
 
             val achatQuantityDeCetteBonVent = viewModel.getter.fVentCouleurOperationRepository
                 .datasFilteredParCurrentHVentPeriod
-                .find { it.parentGBonVentKeyId == gBonVentKeyID }
+                .find { it.parentGBonVentKeyId == gBonVentKeyID }?.quantityAchete
 
             Text(
                 text = "Qté: $achatQuantityDeCetteBonVent",
