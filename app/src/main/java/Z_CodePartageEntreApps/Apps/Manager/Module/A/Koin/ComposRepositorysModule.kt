@@ -20,7 +20,7 @@ import org.koin.dsl.module
 val composRepositorysModule = module {
     single { ZAppCompt_RepositoryComposable(get()) }
 
-    single { FClientRepository(get(), get()) }
+    single { FClientRepository(get(), get(), get()) }
     single { CCategoriesCompoRepository(get()) }
     single { Z_ComptAppStateCompoRepositoryProtoAvanJuin17(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
@@ -51,7 +51,7 @@ val composRepositorysModule = module {
         )
     }
 
-    single { ASetterCentral(get(), get(), get(), get(), get()) }
+    single { ASetterCentral(get(), get(), get(), get(), get(), get()) }
 
     single { ACentral(get(), get()) }
 }
