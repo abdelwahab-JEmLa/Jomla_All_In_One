@@ -21,8 +21,11 @@ fun View_AchatProduitOperation(
 ) {
     val produit = viewModel.getter.bProduitInfosRepository.datasValue.find { it.keyID == groupeAchatProduit.key }
 
-    HorizontalDivider()
-    Text(groupeAchatProduit.key)
+     Column {
+         HorizontalDivider()
+         Text(groupeAchatProduit.key)
+     }
+
 
     if (produit != null) {
         Card {

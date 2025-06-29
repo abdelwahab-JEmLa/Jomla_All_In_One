@@ -42,7 +42,7 @@ import org.koin.compose.koinInject
 import java.io.File
 import kotlin.coroutines.resume
 
-class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
+class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
     val dao: B1CouleurOuGoutProduitDataBaseDao,
 ) {
     val repoTAG = "B1CouleurOuGoutProduitDataBase"
@@ -94,18 +94,14 @@ class DataBaseFactory_B1CouleurOuGoutProduitDataBase(
 
             val imageExists = imageFile.name != "NonTrouve.webp" &&
                     imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
-            /* val extensionDisponible = if (imageExists) {
-  buildString {
-      append(".")
-      append(imageFile.extension)
-  }
-} else "webp"    */
+
             if (imageExists || !couleur.isNullOrBlank()) {
                 val colorData = B1CouleurOuGoutProduitDataBase(
                     aAffiche = if (imageExists) B1CouleurOuGoutProduitDataBase.Type.Image else B1CouleurOuGoutProduitDataBase.Type.Nom,
                     nomImageFichieSansEtansion = if (imageExists) imageFile.nameWithoutExtension else "Non Dispo",
                     extensionDisponible = if (imageExists) imageFile.extension else "webp",
                     nomCouleurStrSiSonImageDispo = couleur ?: "",
+                    parentBProduitInfosKeyID = produit.keyID,
                     parentBProduitOldID = produit.id,
                     parentBProduitNom = produit.nom,
                     indexCouleurDansAncienProto = colorIndex

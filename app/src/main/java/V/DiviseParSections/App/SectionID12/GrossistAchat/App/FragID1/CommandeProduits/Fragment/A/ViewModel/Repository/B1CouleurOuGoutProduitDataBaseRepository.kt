@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import android.annotation.SuppressLint
@@ -46,7 +46,7 @@ enum class FilterQuery {
 
 @Stable
 class B1CouleurOuGoutProduitDataBaseRepository(
-    val mainInitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
+    val mainInitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -119,7 +119,6 @@ class B1CouleurOuGoutProduitDataBaseRepository(
     }
 }
 
-
 @Entity
 data class B1CouleurOuGoutProduitDataBase(
     @PrimaryKey
@@ -132,8 +131,11 @@ data class B1CouleurOuGoutProduitDataBase(
     val nomImageFichieSansEtansion: String = "Non Dispo",
     val nomCouleurStrSiSonImageDispo: String = "",
 
+    var parentBProduitInfosKeyID: String = "",
     var parentBProduitOldID: Long = 0,
     var parentBProduitNom: String = "",
+
+
     var indexCouleurDansAncienProto: Int = 0,
     val extensionDisponible: String = "webp", // Default extension
 ) {

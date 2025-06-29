@@ -19,12 +19,6 @@ class KAchatCouleurOperationRepository(
         return operations.map { (couleurKeyId, ventOperations) ->
             val totalQuantity = ventOperations.sumOf { it.quantityAchete }
 
-            // Collect unique GBonVent IDs from the grouped operations
-            val relativeGBonVentKeyIDs = ventOperations
-                .map { it.parentGBonVentKeyId }
-                .distinct()
-                .filter { it.isNotBlank() }
-
             KAchatCouleurOperation(
                 parentCouleurInfosKeyID = couleurKeyId,
                 sumAchatQantity = totalQuantity,

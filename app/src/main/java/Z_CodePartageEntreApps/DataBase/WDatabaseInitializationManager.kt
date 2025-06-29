@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
-import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
@@ -15,7 +15,7 @@ class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
     val appComptComposeRepositoryPJ17: ZAppCompt_RepositoryComposable,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
-    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseFactory_B1CouleurOuGoutProduitDataBase,
+    val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
