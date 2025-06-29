@@ -1,11 +1,13 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +39,7 @@ fun TariffsButtonsSec7ID2(
 
     val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
+    var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
     val bonAchatList =
@@ -51,7 +54,13 @@ fun TariffsButtonsSec7ID2(
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+            currentToast = ToastData(
+                message = message,
+                type = ToastType.SUCCESS,
+                duration = 2000L
+            )
+
             afficheButtons = false
             fermeDialog(latestTariffLocalData)
             viewModel.updateListRelativeVentCouleurPrixVent(
@@ -62,7 +71,12 @@ fun TariffsButtonsSec7ID2(
 
     // Cancellation callback
     val onClickAnulationButton: () -> Unit = {
-        Toast.makeText(context, "تم الإلغاء", Toast.LENGTH_SHORT).show()
+        currentToast = ToastData(
+            message = "تم الإلغاء",
+            type = ToastType.INFO,
+            duration = 2000L
+        )
+
         afficheButtons = false
         onFermDialogeAvecAnllation()
         viewModel.deleteVents(
@@ -70,8 +84,14 @@ fun TariffsButtonsSec7ID2(
         )
     }
 
-    if (afficheButtons) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Modern Toast Component
+        ModernToastMessage(
+            toastData = currentToast,
+            onDismiss = { currentToast = null }
+        )
+
+        if (afficheButtons) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (transactionComQuiFilterButtons != null) {
                     MainFilter(
@@ -84,18 +104,18 @@ fun TariffsButtonsSec7ID2(
                         filterProduitID = filterProductId.toInt(),
                         filterBonID = transactionComQuiFilterButtons.vid,
                         onClickPrixButton = onClickPrixButton,
-                        onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
+                        onClickAnulationButton = onClickAnulationButton
                     )
                 }
             }
-
         }
     }
 }
 
 @Composable
 private fun suspendFunction1(
-    produitInfosList: SnapshotStateList<A_ProduitInfos>, viewModel: TariffsButtonsViewModelSec7ID2
+    produitInfosList: SnapshotStateList<A_ProduitInfos>,
+    viewModel: TariffsButtonsViewModelSec7ID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {
         delay(500)

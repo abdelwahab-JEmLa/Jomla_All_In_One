@@ -118,6 +118,7 @@ fun DetailsBonVent(
                     contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails"
                 )
             }
+
         }
     } else {
         ErrorCard(modifier = modifier)

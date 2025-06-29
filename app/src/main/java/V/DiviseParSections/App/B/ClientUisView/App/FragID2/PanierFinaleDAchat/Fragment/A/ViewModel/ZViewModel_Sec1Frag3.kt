@@ -14,6 +14,7 @@ class ZViewModel_Sec1Frag3(
 
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,
+        val panieMode: PanieMode = PanieMode.Delivery,
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
@@ -23,6 +24,13 @@ class ZViewModel_Sec1Frag3(
         _uiState.update { currentState ->
             currentState.copy(isMinimized = !currentState.isMinimized)
         }
+    }
+
+    enum class PanieMode {
+        Delivery,
+        Vent, ;
+
+        fun toggle(): Unit {}
     }
 
 }
