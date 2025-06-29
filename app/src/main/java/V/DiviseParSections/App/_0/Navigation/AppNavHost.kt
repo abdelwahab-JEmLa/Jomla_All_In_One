@@ -303,7 +303,6 @@ fun AppNavHost(
     }
 }
 
-// DialogTestsScreen function REMOVED - now handled as dialog in NavigationBarWithFab
 
 /**
  * Creates client map navigation routes
