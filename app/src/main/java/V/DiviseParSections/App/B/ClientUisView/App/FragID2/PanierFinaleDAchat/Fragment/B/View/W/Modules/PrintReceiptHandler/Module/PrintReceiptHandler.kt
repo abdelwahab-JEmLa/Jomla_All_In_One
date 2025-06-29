@@ -1,12 +1,13 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import java.util.Locale
 
 class PrintReceiptHandler {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
+    private val TAG = "PrintReceiptHandler"
 
     data class ArticleImpression(
         val nomArticle: String,
@@ -24,72 +26,92 @@ class PrintReceiptHandler {
         val couleur: String? = null
     )
 
-    fun printReceipt(
+    // New method for current vent system
+    fun printVentReceipt(
         context: Context,
-        bonAchat: GBonVent?,
-        repositorysModel: GroupeRepositorysProtoAvJuin3Model,
-        scope: CoroutineScope? = null,
-        datasB_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3>
+        fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+        bProduitInfosRepository: BProduitInfosRepository,
+        b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
+        client: B_ClientInfosProtoJuin3?,
+        scope: CoroutineScope? = null
     ) {
-        if (bonAchat == null) return
-
         val printFunction = {
-            val client =
-                datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parentHClientOldID }
-            val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            val products = repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList
-                .filter {
-                    it.parent_1_3_TransactionCommercial == bonAchat.vid &&
-                            it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+            val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+
+            // Get all vents that are not removed from cart
+            val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
+                vent.etateActuellementEst != FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE &&
+                        vent.quantityAchete > 0
+            }
+
+            val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
+
+            activeVents.forEach { vent ->
+                // Get product details
+                val product = bProduitInfosRepository.datasValue.find {
+                    it.keyID == vent.parentBProduitInfosKeyId
                 }
 
-            val productMap = mutableMapOf<String, ArticleImpression>()
-            var totalAmount = 0.0
+                // Get color details
+                val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+                    it.key == vent.parentCouleurInfosKeyID
+                }
 
-            products.forEach { product ->
-                val productDetails =
-                    repositorysModel._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                        .find { it.vid == product.produitAcheterID }
-                val productName = productDetails?.nom ?: "_015_Produits"
-                val productPrice = if (product.provisoireMonPrix > 0.0) {
-                    product.provisoireMonPrix
+                val productName = product?.nom?.takeIf { it.isNotBlank() }
+                    ?: product?.nomMutable?.takeIf { it.isNotBlank() }
+                    ?: "Produit #${vent.parentBProduitInfosKeyId}"
+
+                val colorName = colorInfo?.nomCouleurStrSiSonImageDispo ?: "Couleur standard"
+                val articleName = if (colorName != "Couleur standard") {
+                    "$productName ($colorName)"
                 } else {
-                    productDetails?.monPrixVent ?: 0.0
+                    productName
                 }
 
-                val totalQuantity =
-                    repositorysModel._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                        .filter {
-                            it.parentProduitAchateOperationVID == product.vid &&
-                                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI &&
-                                    it.totaleQuantity > 0
-                        }
-                        .sumOf { it.totaleQuantity }
+                val article = ArticleImpression(
+                    nomArticle = articleName,
+                    quantite = vent.quantityAchete,
+                    prixUnitaire = vent.provisoireMonPrix,
+                    couleur = colorName
+                )
 
-                if (totalQuantity <= 0) return@forEach
+                if (productMap.containsKey(productName)) {
+                    productMap[productName]?.add(article)
+                } else {
+                    productMap[productName] = mutableListOf(article)
+                }
+            }
 
-                productMap[productName]?.let { existingArticle ->
-                    productMap[productName] = existingArticle.copy(
-                        quantite = existingArticle.quantite + totalQuantity
-                    )
-                } ?: run {
-                    productMap[productName] = ArticleImpression(
-                        nomArticle = productName,
-                        quantite = totalQuantity,
-                        prixUnitaire = productPrice
+            // Flatten articles and group similar items
+            val finalArticles = mutableListOf<ArticleImpression>()
+            productMap.values.forEach { articles ->
+                articles.groupBy { "${it.nomArticle}_${it.prixUnitaire}" }.forEach { (_, groupedArticles) ->
+                    val firstArticle = groupedArticles.first()
+                    val totalQuantity = groupedArticles.sumOf { it.quantite }
+                    finalArticles.add(
+                        firstArticle.copy(quantite = totalQuantity)
                     )
                 }
             }
 
-            val articles = productMap.values.toList()
-            totalAmount = articles.sumOf { it.quantite * it.prixUnitaire }
             val creditBalance = client?.currentCreditBalance ?: 0.0
+            val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
 
             val (texteImprimable, totalBon) = prepareTexteToPrint(
-                nomClient = client?.nom ?: "ClientAchteur",
+                nomClient = clientName,
                 dateString = dateString,
-                articles = articles,
+                articles = finalArticles,
                 ancienCredits = creditBalance
+            )
+
+            // Log the receipt content before printing
+            logReceiptContent(
+                clientName = clientName,
+                dateString = dateString,
+                articles = finalArticles,
+                totalBon = totalBon,
+                creditBalance = creditBalance,
+                receiptText = texteImprimable.toString()
             )
 
             val intent = Intent(PRINT_INTENT).apply {
@@ -163,6 +185,56 @@ class PrintReceiptHandler {
         }
 
         return Pair(texteImprimable, totaleBon)
+    }
+
+    /**
+     * Logs the receipt content for debugging and monitoring purposes
+     */
+    private fun logReceiptContent(
+        clientName: String,
+        dateString: String,
+        articles: List<ArticleImpression>,
+        totalBon: Double,
+        creditBalance: Double,
+        receiptText: String
+    ) {
+        Log.d(TAG, "=== RECEIPT PRINT LOG ===")
+        Log.d(TAG, "Client: $clientName")
+        Log.d(TAG, "Date: $dateString")
+        Log.d(TAG, "Articles count: ${articles.size}")
+
+        articles.forEachIndexed { index, article ->
+            val subtotal = round(article.prixUnitaire * article.quantite)
+            Log.d(TAG, "Article ${index + 1}: ${article.nomArticle}")
+            Log.d(TAG, "  - Quantity: ${article.quantite}")
+            Log.d(TAG, "  - Unit Price: ${round(article.prixUnitaire)}Da")
+            Log.d(TAG, "  - Subtotal: ${subtotal}Da")
+            if (article.couleur != null && article.couleur != "Couleur standard") {
+                Log.d(TAG, "  - Color: ${article.couleur}")
+            }
+        }
+
+        Log.d(TAG, "Total Amount: ${round(totalBon)}Da")
+        if (creditBalance < 0) {
+            Log.d(TAG, "Client Credit Balance: ${round(creditBalance)}Da")
+        }
+
+        Log.d(TAG, "=== RAW RECEIPT TEXT ===")
+        // Clean the receipt text for better readability in logs
+        val cleanedText = receiptText
+            .replace("<BIG>", "")
+            .replace("<CENTER>", "")
+            .replace("<SMALL>", "")
+            .replace("<LEFT>", "")
+            .replace("<NORMAL>", "")
+            .replace("<MEDIUM1>", "")
+            .replace("<MEDIUM2>", "")
+            .replace("<MEDIUM3>", "")
+            .replace("<BOLD>", "")
+            .replace("<BR>", "\n")
+
+        Log.d(TAG, cleanedText)
+        Log.d(TAG, "=== END RECEIPT LOG ===")
     }
 
     private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10
