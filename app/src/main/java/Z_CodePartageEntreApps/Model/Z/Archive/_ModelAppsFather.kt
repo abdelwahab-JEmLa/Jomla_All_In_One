@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
@@ -42,8 +42,8 @@ open class _ModelAppsFather(
         initial_Produits_Main_DataBase.toMutableStateList()
 
     @get:Exclude
-    var clientDataBase: SnapshotStateList<B_ClientInfosProtoJuin3> =
-        emptyList<B_ClientInfosProtoJuin3>().toMutableStateList()
+    var clientDataBase: SnapshotStateList<HClientInfos> =
+        emptyList<HClientInfos>().toMutableStateList()
 
     @get:Exclude
     var grossistsDataBase: SnapshotStateList<C_GrossistsDataBase> =

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.runtime.Composable
@@ -15,14 +15,14 @@ fun FragId1But_3(
     ControlButton(
         onClick = {
             // Toggle between the two TypeDeSonMagasine values
-            viewModel.auClickeCaUpdateClientPar = if ( viewModel.auClickeCaUpdateClientPar == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
-                B_ClientInfosProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
+            viewModel.auClickeCaUpdateClientPar = if ( viewModel.auClickeCaUpdateClientPar == HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+                HClientInfos.TypeDeSonMagasine.AlIMENTATION_GENERALE
             } else {
-                B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         },
         // Choose icon based on current state
-        icon = if ( viewModel.auClickeCaUpdateClientPar == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+        icon = if ( viewModel.auClickeCaUpdateClientPar == HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
             LottieJsonGetterR_Raw_Icons.atay
         } else {
             LottieJsonGetterR_Raw_Icons.alimentation

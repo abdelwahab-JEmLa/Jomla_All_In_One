@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -46,44 +46,44 @@ fun handleFilterMarkersClick(
 }
 
 fun filterClientsBasedOnMode(
-    clientDataBaseSnapList: List<B_ClientInfosProtoJuin3>,
+    clientDataBaseSnapList: List<HClientInfos>,
     currentFilterMode: MapClientsViewModel.VisibleClientsNow,
     viewModel: MapClientsViewModel,
-): List<B_ClientInfosProtoJuin3> {
+): List<HClientInfos> {
     return when (currentFilterMode) {
         MapClientsViewModel.VisibleClientsNow.showNonAbsentClientsOnly -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat != B_ClientInfosProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat != HClientInfos.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.affichePourCollecteurCommendes -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.Cible
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.VENDU_A_LUI
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.FERME
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.A_EVITE
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.AVEC_MARCHANDISE
-                        || it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                it.actuelleEtat == HClientInfos.DernierEtatAAffiche.Cible
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.VENDU_A_LUI
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.FERME
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.A_EVITE
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.AVEC_MARCHANDISE
+                        || it.actuelleEtat == HClientInfos.DernierEtatAAffiche.ACHETEUR_NON_DISPO
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
             clientDataBaseSnapList.filter {
-                it.actuelleEtat == B_ClientInfosProtoJuin3.DernierEtatAAffiche.CIBLE_POUR_2
+                it.actuelleEtat == HClientInfos.DernierEtatAAffiche.CIBLE_POUR_2
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.showAtayClients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                it.typeDeSonMagasine == HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.showAlimentionlients -> {
             clientDataBaseSnapList.filter {
-                it.typeDeSonMagasine == B_ClientInfosProtoJuin3.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                it.typeDeSonMagasine == HClientInfos.TypeDeSonMagasine.AlIMENTATION_GENERALE
             }
         }
 

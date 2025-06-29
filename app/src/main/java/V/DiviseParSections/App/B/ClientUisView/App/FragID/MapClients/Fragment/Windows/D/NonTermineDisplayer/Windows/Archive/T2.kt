@@ -74,7 +74,7 @@ fun testData(): List<GBonVent> {
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 15L,
             nomClientConcerned = "3omar_yousef",
-            timestamps = 1749010953513L,
+            creationTimestamps = 1749010953513L,
             heurDebutInString = "05:22",
             etateActuellementEst = GBonVent.EtateActuellementEst.Cible
         ),
@@ -83,7 +83,7 @@ fun testData(): List<GBonVent> {
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
-            timestamps = 1748029628555L,
+            creationTimestamps = 1748029628555L,
             heurDebutInString = "20:47",
             heurFinInString = "Non Defini",
             cActive = false,
@@ -98,7 +98,7 @@ fun testData(): List<GBonVent> {
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
-            timestamps = 1748027276129L,
+            creationTimestamps = 1748027276129L,
             heurDebutInString = "20:07",
             etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ),
@@ -107,7 +107,7 @@ fun testData(): List<GBonVent> {
             parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
-            timestamps = 1748029628742L,
+            creationTimestamps = 1748029628742L,
             heurDebutInString = "20:47",
             etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
         )

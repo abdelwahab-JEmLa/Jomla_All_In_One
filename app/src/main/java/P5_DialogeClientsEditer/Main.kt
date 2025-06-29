@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +50,8 @@ private const val TAG = "ClientSelectionDialog"
 
 @Composable
 fun ClientSelectionDialog(
-    clients: List<B_ClientInfosProtoJuin3>,
-    onClientSelected: (B_ClientInfosProtoJuin3) -> Unit,
+    clients: List<HClientInfos>,
+    onClientSelected: (HClientInfos) -> Unit,
     onDismiss: () -> Unit,
     soldArticle: List<SoldArticlesTabelle?>,
     viewModel: HeadViewModel
@@ -287,7 +287,7 @@ private fun ListHeader(text: String) {
 
 @Composable
 private fun ClientItem(
-    client: B_ClientInfosProtoJuin3,
+    client: HClientInfos,
     onClick: () -> Unit
 ) {
     LaunchedEffect(client.id) {

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import android.net.Uri
@@ -36,7 +36,7 @@ import java.io.FileOutputStream
 
 @Composable
 fun CameraFABProtoJuin3(
-    a_CentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9 = koinInject(),
+    a_CentralCompoRepositoryProtoJuin9: AGetter = koinInject(),
     size: Dp = 48.dp,
     containerColor: Color = Color(0xFF4CAF50),
     webPQuality: Int = 85,

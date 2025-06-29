@@ -1,6 +1,6 @@
 package Views.Package_4.SoldCartScreen.Components
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
@@ -124,7 +124,7 @@ fun CartItem(
     colors: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: B_ClientInfosProtoJuin3
+    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: HClientInfos
 ) {
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(
@@ -263,7 +263,7 @@ private fun ColorItemWithQuantity(
     colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
-    clientBuyerNow: B_ClientInfosProtoJuin3
+    clientBuyerNow: HClientInfos
 ) {
     ElevatedCard(
         modifier = modifier

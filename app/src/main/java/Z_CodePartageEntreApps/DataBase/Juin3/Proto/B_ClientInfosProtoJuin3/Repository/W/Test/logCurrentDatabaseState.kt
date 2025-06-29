@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -100,7 +100,7 @@ fun DataBaseFactoryFClient.setupLocalDbUpdateTracker() {
  * Détermine la source de la mise à jour basée sur les données
  */
 private fun DataBaseFactoryFClient.determineUpdateSource(
-    dataList: List<B_ClientInfosProtoJuin3>
+    dataList: List<HClientInfos>
 ): UpdateSource {
     return when {
         dataList.any { it.keyFireBase.contains("TEST_") } -> UpdateSource.FIREBASE_SYNC
@@ -113,7 +113,7 @@ private fun DataBaseFactoryFClient.determineUpdateSource(
  * Actions à effectuer quand la base de données locale est mise à jour
  */
 private fun DataBaseFactoryFClient.onLocalDatabaseUpdated(
-    updatedData: List<B_ClientInfosProtoJuin3>,
+    updatedData: List<HClientInfos>,
     updateState: LocalDbUpdateState
 ) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -154,7 +154,7 @@ private fun DataBaseFactoryFClient.onLocalDatabaseUpdated(
  * Valide la cohérence des données après mise à jour
  */
 private suspend fun DataBaseFactoryFClient.validateDataConsistency(
-    data: List<B_ClientInfosProtoJuin3>
+    data: List<HClientInfos>
 ) {
     withContext(Dispatchers.IO) {
         // Vérifier les doublons
@@ -180,7 +180,7 @@ private suspend fun DataBaseFactoryFClient.validateDataConsistency(
  * Met à jour les statistiques locales
  */
 private fun DataBaseFactoryFClient.updateLocalStatistics(
-    data: List<B_ClientInfosProtoJuin3>
+    data: List<HClientInfos>
 ) {
     val stats = mapOf(
         "total_clients" to data.size,
@@ -206,7 +206,7 @@ private fun DataBaseFactoryFClient.triggerUpdateNotifications(
  * Synchronise les changements récents avec Firebase
  */
 private fun DataBaseFactoryFClient.syncRecentChangesToFirebase(
-    data: List<B_ClientInfosProtoJuin3>
+    data: List<HClientInfos>
 ) {
     val recentChanges = data.filter {
         System.currentTimeMillis() - it.dernierTimeTampsSynchronisationAvecFireBase < 60000 // 1 minute
@@ -222,7 +222,7 @@ private fun DataBaseFactoryFClient.syncRecentChangesToFirebase(
  * Nettoie les données de test anciennes
  */
 private suspend fun DataBaseFactoryFClient.cleanupTestDataIfNeeded(
-    data: List<B_ClientInfosProtoJuin3>
+    data: List<HClientInfos>
 ) {
     withContext(Dispatchers.IO) {
         val testData = data.filter { it.keyFireBase.contains("TEST_") }
@@ -275,7 +275,7 @@ fun DataBaseFactoryFClient.testTriggerUpdateFbParTimestampsListener() {
                 Log.d(repoTAG, "Creating new test entity")
 
                 // Create new test entity
-                val testEntity = B_ClientInfosProtoJuin3(
+                val testEntity = HClientInfos(
                     nom = "TEST_ENTITY_${System.currentTimeMillis()}",
                     keyFireBase = "TEST_${System.currentTimeMillis()}",
                     cUnClientTemporaire = true,

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,41 +12,41 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface B_ClientInfosProtoJuin3Dao {
-    @Query("SELECT * FROM B_ClientInfosProtoJuin3 ")
-    suspend fun getAll(): MutableList<B_ClientInfosProtoJuin3>
+    @Query("SELECT * FROM HClientInfos ")
+    suspend fun getAll(): MutableList<HClientInfos>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: B_ClientInfosProtoJuin3)
+    suspend fun insert(category: HClientInfos)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<B_ClientInfosProtoJuin3>)
+    suspend fun insertAll(categories: List<HClientInfos>)
 
-    @Query("DELETE FROM B_ClientInfosProtoJuin3")
+    @Query("DELETE FROM HClientInfos")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(categories: List<B_ClientInfosProtoJuin3>)
+    suspend fun updateAll(categories: List<HClientInfos>)
 
-    @Query("SELECT * FROM B_ClientInfosProtoJuin3")
-    fun getAllFlow(): Flow<List<B_ClientInfosProtoJuin3>>
+    @Query("SELECT * FROM HClientInfos")
+    fun getAllFlow(): Flow<List<HClientInfos>>
 
     @Update
-    suspend fun updateData(data: B_ClientInfosProtoJuin3)
+    suspend fun updateData(data: HClientInfos)
 
     @Delete
-    suspend fun deleteData(data: B_ClientInfosProtoJuin3)
+    suspend fun deleteData(data: HClientInfos)
 
-    @Query("SELECT COUNT(*) FROM B_ClientInfosProtoJuin3")
+    @Query("SELECT COUNT(*) FROM HClientInfos")
     suspend fun getCount(): Int
 
     @Upsert
-    suspend fun upsert(data: B_ClientInfosProtoJuin3)
+    suspend fun upsert(data: HClientInfos)
 
     @Upsert
-    suspend fun upsertAllDatas(datas: List<B_ClientInfosProtoJuin3>)
+    suspend fun upsertAllDatas(datas: List<HClientInfos>)
 
     @Delete
-    suspend fun delete(item: B_ClientInfosProtoJuin3)
+    suspend fun delete(item: HClientInfos)
 
 
 }

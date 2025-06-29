@@ -55,16 +55,16 @@ open class ClientsMapFilterViewModel(
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->
             if (transaction.etateActuellementEst == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
                 // Get transaction date
-                val transactionDate = Date(transaction.timestamps)
+                val transactionDate = Date(transaction.creationTimestamps)
                 val cal = Calendar.getInstance()
                 cal.time = transactionDate
 
                 // Get start and end of day
-                val startDay = getStartOfDay(transaction.timestamps)
-                val endDay = getEndOfDay(transaction.timestamps)
+                val startDay = getStartOfDay(transaction.creationTimestamps)
+                val endDay = getEndOfDay(transaction.creationTimestamps)
 
                 // Calculate how many weeks ago this was
-                val weeksDifference = getWeeksDifference(today, transaction.timestamps)
+                val weeksDifference = getWeeksDifference(today, transaction.creationTimestamps)
 
                 // Get day name in Arabic
                 val dayFormat = SimpleDateFormat("EEEE", Locale("ar"))
@@ -117,8 +117,8 @@ open class ClientsMapFilterViewModel(
 
                 // Find all transactions for this day
                 val dayTransactions = allListrepo_0_0_HeadSQLRepositorys?.filter { transaction ->
-                    transaction.timestamps >= dayInfo.jourEstEntreTimeTemp.first &&
-                            transaction.timestamps <= dayInfo.jourEstEntreTimeTemp.second
+                    transaction.creationTimestamps >= dayInfo.jourEstEntreTimeTemp.first &&
+                            transaction.creationTimestamps <= dayInfo.jourEstEntreTimeTemp.second
                 } ?: emptyList()
 
                 jour.cesCommercialTransactions = dayTransactions

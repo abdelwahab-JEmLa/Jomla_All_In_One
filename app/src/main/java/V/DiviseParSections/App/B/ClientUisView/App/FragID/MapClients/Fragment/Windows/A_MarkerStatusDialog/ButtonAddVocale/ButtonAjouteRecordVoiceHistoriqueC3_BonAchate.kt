@@ -56,7 +56,7 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
                 it.parentHClientOldID == clientId &&
                         it.parentPeriodeVentOldID == ceComptVendeurInsertBonsAchatAuPeriodID
             }
-            .maxByOrNull { it.timestamps }
+            .maxByOrNull { it.creationTimestamps }
 
     val d_EtateMessageVocaleRepository = masterRepositorys.d_EtateMessageVocaleRepository
     val context = LocalContext.current

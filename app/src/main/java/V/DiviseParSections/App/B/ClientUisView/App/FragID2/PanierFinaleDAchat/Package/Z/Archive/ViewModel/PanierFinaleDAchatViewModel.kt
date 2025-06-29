@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f
 )
 class PanierFinaleDAchatViewModel(
-    val a_CentralDatasHandlerProtoJuin9 : ACentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9 : AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {

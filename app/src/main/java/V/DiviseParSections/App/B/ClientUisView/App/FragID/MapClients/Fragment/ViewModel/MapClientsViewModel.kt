@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ACentral
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
@@ -39,7 +39,7 @@ import java.util.Date
 
 @Stable
 data class UiState(
-    val b_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val b_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val c3_TransactionCommercialList: List<GBonVent> = emptyList(),
     val activeCompt: _1_5_Vendeur? = null,
     val secteursList: List<E1SecteurDeClients> = emptyList(),
@@ -51,7 +51,7 @@ data class UiState(
 
 class MapClientsViewModel(
     val aCentral: ACentral,
-    val aCentralCompoRepositoryProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    val aCentralCompoRepositoryProtoJuin9: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
@@ -76,11 +76,11 @@ class MapClientsViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    val bProto_ClientsDataBase: List<B_ClientInfosProtoJuin3>
+    val bProto_ClientsDataBase: List<HClientInfos>
         get() = clientsState.datasState.value
 
     // UI State variables
-    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
@@ -131,13 +131,13 @@ class MapClientsViewModel(
 
     }
 
-    fun getLastTransaction(client: B_ClientInfosProtoJuin3): GBonVent? {
+    fun getLastTransaction(client: HClientInfos): GBonVent? {
         return transactionsState.getClientLastTransaction(
             client.id,
         )
     }
 
-    fun updateData(client: B_ClientInfosProtoJuin3) {
+    fun updateData(client: HClientInfos) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.addOrUpdateData(client)
             clientsState.updateClient(client)
@@ -159,7 +159,7 @@ class MapClientsViewModel(
 
             val newnom = "ز.$newID"
 
-            val newClientAchteur = B_ClientInfosProtoJuin3().apply {
+            val newClientAchteur = HClientInfos().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -180,7 +180,7 @@ class MapClientsViewModel(
         }
     }
 
-    fun deleteUnSeulData(data: B_ClientInfosProtoJuin3) {
+    fun deleteUnSeulData(data: HClientInfos) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
             clientsState.removeClient(data.id)

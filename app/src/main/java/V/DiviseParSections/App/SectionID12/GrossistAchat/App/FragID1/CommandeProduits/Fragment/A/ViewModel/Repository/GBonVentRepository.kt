@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent.EtateActuellementEst
+import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -116,7 +116,7 @@ class GBonVentRepository(
 @Entity
 data class GBonVent(
     @PrimaryKey var keyID: String = "",
-    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
+    var creationTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
@@ -125,7 +125,8 @@ data class GBonVent(
     var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
-    var parentHClientKeyID: Long = 0L,
+    var parentHClientKeyID: String = "Non Defini",
+    var parentHClientOldID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
     var parentZAppComptCreateurKeyID: String = "b1",
 
@@ -134,7 +135,6 @@ data class GBonVent(
     var parentPeriodeVentOldID: Long = 0L,
 
     //Autres Infos ForgingKeys
-    var parentHClientOldID: Long = 0L,
 
     // Section InfosDeBase
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),

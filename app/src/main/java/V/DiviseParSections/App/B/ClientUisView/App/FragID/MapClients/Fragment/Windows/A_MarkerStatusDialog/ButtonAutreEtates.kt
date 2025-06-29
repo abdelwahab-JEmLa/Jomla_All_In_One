@@ -105,7 +105,7 @@ fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
 
     if (existingBonAchat != null) {
         val updatedBonAchat = existingBonAchat.copy(
-            timestamps = System.currentTimeMillis(),
+            creationTimestamps = System.currentTimeMillis(),
         )
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             updatedBonAchat

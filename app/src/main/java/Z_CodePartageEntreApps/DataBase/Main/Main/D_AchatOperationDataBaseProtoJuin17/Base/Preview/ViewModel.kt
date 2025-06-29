@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.AGetter
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class D_AchatOperationTestDatasViewModel(
-    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9: AGetter,
 ) : ViewModel() {
       val mainData = a_CentralDatasHandlerProtoJuin9
           .fVentCouleurOperationRepository

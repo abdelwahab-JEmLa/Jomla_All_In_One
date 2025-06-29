@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,11 +28,11 @@ import org.osmdroid.views.overlay.Marker
 fun ClientEdites(
     viewModel: MapClientsViewModel,
     marqueClick: Marker,
-    marqueClickRelativeClient: B_ClientInfosProtoJuin3?,
+    marqueClickRelativeClient: HClientInfos?,
     onDismiss: () -> Unit,
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
-    onClientTypeModeChange: (B_ClientInfosProtoJuin3.ClientTypeMode?) -> Unit = {},
+    onClientTypeModeChange: (HClientInfos.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
 ) {
@@ -76,10 +76,10 @@ fun ClientEdites(
                 .padding(end = 8.dp)
                 .clickable {
                     val newClientTypeMode = when (clientTypeMode) {
-                        B_ClientInfosProtoJuin3.ClientTypeMode.ANCIEN -> B_ClientInfosProtoJuin3.ClientTypeMode.NEVEAU
-                        B_ClientInfosProtoJuin3.ClientTypeMode.NEVEAU -> B_ClientInfosProtoJuin3.ClientTypeMode.EVITE
-                        B_ClientInfosProtoJuin3.ClientTypeMode.EVITE -> B_ClientInfosProtoJuin3.ClientTypeMode.ANCIEN
-                        null -> B_ClientInfosProtoJuin3.ClientTypeMode.NEVEAU
+                        HClientInfos.ClientTypeMode.ANCIEN -> HClientInfos.ClientTypeMode.NEVEAU
+                        HClientInfos.ClientTypeMode.NEVEAU -> HClientInfos.ClientTypeMode.EVITE
+                        HClientInfos.ClientTypeMode.EVITE -> HClientInfos.ClientTypeMode.ANCIEN
+                        null -> HClientInfos.ClientTypeMode.NEVEAU
                     }
 
                     // Update the client's type mode

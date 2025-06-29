@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
     val bonAchatList: List<GBonVent> = emptyList(),
@@ -37,7 +37,7 @@ data class UiState(
 )
 
 class RecordingViewModel(
-    val a_CentralDatasHandlerProtoJuin9: ACentralCompoRepositoryProtoJuin9,
+    val a_CentralDatasHandlerProtoJuin9: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,

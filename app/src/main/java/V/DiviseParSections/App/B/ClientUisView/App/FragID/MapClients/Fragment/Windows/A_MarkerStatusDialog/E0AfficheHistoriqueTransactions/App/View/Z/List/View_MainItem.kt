@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -48,45 +47,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 
 @Composable
-fun MainItem(
+fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
-    transaction: GBonVent,
-    onClickToOpenTransaction: (GBonVent) -> Unit,
+    bonVent: GBonVent,
 ) {
+    val audioRecorderAndPlayHandler=viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
-    val etateActuellementEst = transaction.etateActuellementEst
+    val etateActuellementEst = bonVent.etateActuellementEst
     val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
-    val hasVoiceMessage = transaction.vocaleKeyID.isNotEmpty()
+    val hasVoiceMessage = bonVent.vocaleKeyID.isNotEmpty()
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
     ) {
-        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isPlaying
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == bonVent.vid && playbackProgress.isPlaying
     }
 
     val isCurrentlyDownloading = remember(
         playbackProgress.isDownloading,
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
     ) {
-        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == transaction.vid && playbackProgress.isDownloading
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == bonVent.vid && playbackProgress.isDownloading
     }
 
-    LaunchedEffect(transaction.vid, isCurrentlyPlaying) {
+    LaunchedEffect(bonVent.vid, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
                 while (isCurrentlyPlaying && audioRecorderAndPlayHandler.isPlaying()) {
                     audioRecorderAndPlayHandler.updatePlaybackProgress()
                     delay(100)
-                    if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != transaction.vid) {
+                    if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != bonVent.vid) {
                         break
                     }
                 }
@@ -96,11 +93,11 @@ fun MainItem(
         }
     }
 
-    DisposableEffect(transaction.vid) {
+    DisposableEffect(bonVent.vid) {
         onDispose {
             try {
                 val currentSession = audioRecorderAndPlayHandler.getCurrentPlaybackSession()
-                if (currentSession?.parentMessageVID == transaction.vid) {
+                if (currentSession?.parentMessageVID == bonVent.vid) {
                     audioRecorderAndPlayHandler.stopPlayback()
                 }
             } catch (e: Exception) {
@@ -110,7 +107,7 @@ fun MainItem(
     }
 
     if (etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        && activeTransactionId != transaction.vid
+        && activeTransactionId != bonVent.vid
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
@@ -134,11 +131,11 @@ fun MainItem(
         ) {
             IconButton(
                 onClick = {
-                    if (transaction.vocaleKeyID.isNotEmpty()) {
-                        viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
+                    if (bonVent.vocaleKeyID.isNotEmpty()) {
+                        viewModel.deleteVoiceRecordingFromStorage(bonVent.vocaleKeyID) { success ->
                             if (success) {
                                 viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
-                                    transaction
+                                    bonVent
                                 )
                             } else {
                                 Toast.makeText(
@@ -149,7 +146,7 @@ fun MainItem(
                             }
                         }
                     } else {
-                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
+                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(bonVent)
                     }
                 },
                 modifier = Modifier.align(Alignment.TopStart)
@@ -174,14 +171,14 @@ fun MainItem(
                     if (etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
-                                onClickToOpenTransaction(transaction)
+                                viewModel.openTransaction(bonVent)
 
                             }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Select Transaction",
-                                tint = if (activeTransactionId == transaction.vid) {
+                                tint = if (activeTransactionId == bonVent.vid) {
                                     Color.White
                                 } else {
                                     if (blinkState.value) Color.Red else Color.Gray
@@ -191,7 +188,7 @@ fun MainItem(
                     }
 
                     Text(
-                        text = " الوقت: ${datesHandler.getDateAndTimStringAvecSeconds(transaction.timestamps).time}",
+                        text = " الوقت: ${datesHandler.getDateAndTimStringAvecSeconds(bonVent.creationTimestamps).time}",
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -234,14 +231,14 @@ fun MainItem(
                                             val playResult =
                                                 audioRecorderAndPlayHandler.startPlayback(
                                                     context = context,
-                                                    parentMessageVID = transaction.vid,
-                                                    firebaseUrl = transaction.vocaleKeyID,
+                                                    parentMessageVID = bonVent.vid,
+                                                    firebaseUrl = bonVent.vocaleKeyID,
                                                     onPlaybackComplete = {
-                                                        if (!transaction.sonVocaleEstEcoute) {
+                                                        if (!bonVent.sonVocaleEstEcoute) {
                                                             val currentTimestamp =
                                                                 datesHandler.getCurrentTimestamps()
                                                             viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                                                transaction.copy(
+                                                                bonVent.copy(
                                                                     sonVocaleEstEcoute = true,
                                                                     sonEcoutementEstFaitAutimestamps = currentTimestamp
                                                                 )
@@ -356,7 +353,7 @@ fun MainItem(
                                     )
                                 }
 
-                                transaction.sonVocaleEstEcoute -> {
+                                bonVent.sonVocaleEstEcoute -> {
                                     Column {
                                         Icon(
                                             imageVector = Icons.Default.Check,
@@ -364,9 +361,9 @@ fun MainItem(
                                             tint = Color.Green,
                                             modifier = Modifier.size(24.dp)
                                         )
-                                        if (transaction.sonEcoutementEstFaitAutimestamps > 0) {
+                                        if (bonVent.sonEcoutementEstFaitAutimestamps > 0) {
                                             Text(
-                                                text = datesHandler.getDateAndTimString(transaction.sonEcoutementEstFaitAutimestamps).time,
+                                                text = datesHandler.getDateAndTimString(bonVent.sonEcoutementEstFaitAutimestamps).time,
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White
                                             )

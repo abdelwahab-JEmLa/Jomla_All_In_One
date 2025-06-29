@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,7 +21,7 @@ fun DataBaseFactoryFClient.triggerUpdateFbParTimestampsListener() {
                     var updateCount = 0
                     for (child in snapshot.children) {
                         try {
-                            child.getValue(B_ClientInfosProtoJuin3::class.java)?.let { entity ->
+                            child.getValue(HClientInfos::class.java)?.let { entity ->
                                 val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
                                 val shouldUpdate = try {
                                     val localEntity = dao.getAll().find { it.keyFireBase == entityWithKey.keyFireBase }

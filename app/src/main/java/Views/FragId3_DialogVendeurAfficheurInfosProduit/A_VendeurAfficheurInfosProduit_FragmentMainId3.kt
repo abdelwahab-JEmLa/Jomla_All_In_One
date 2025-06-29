@@ -2,7 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
@@ -72,7 +72,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     modifier: Modifier = Modifier,
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     clickedCouleurIndex: Int,
     onFermDialoge: () -> Unit,
 ) {
@@ -165,7 +165,7 @@ fun ModernToastMessage(
 fun MainUi(
     viewModel: VendeurAfficheurInfosProduitViewModel,
     currentSale: SoldArticlesTabelle,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     viewModelInitApp: ViewModelInitApp,
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,

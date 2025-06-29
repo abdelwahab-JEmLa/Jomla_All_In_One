@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9.Companion.centralRef
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.centralRef
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue

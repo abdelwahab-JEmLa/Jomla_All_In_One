@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,7 @@ import java.util.Locale
 fun CommandButton(
     modifier: Modifier = Modifier,
     viewModel: MapClientsViewModel,
-    clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
+    clientOuCaMarqueGpsEstOuvert: HClientInfos?,
     uiState: UiState,
     etateActuellementEst1: GBonVent.EtateActuellementEst,
     clientId: Long,

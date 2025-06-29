@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,9 +11,9 @@ import com.google.firebase.database.database
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-    var keyID: String = ACentralCompoRepositoryProtoJuin9.getPushFireBase(ref),
+    var keyID: String = AGetter.getPushFireBase(ref),
 
-    var bsonObjectId: String = ACentralCompoRepositoryProtoJuin9.getPushFireBase(ref),
+    var bsonObjectId: String = AGetter.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 

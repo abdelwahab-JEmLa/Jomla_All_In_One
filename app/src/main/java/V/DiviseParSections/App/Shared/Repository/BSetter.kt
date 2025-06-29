@@ -2,8 +2,8 @@ package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
@@ -15,11 +15,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ASetterCentral(
-    val getter: ACentralCompoRepositoryProtoJuin9,
+class BSetter(
+    val getter: AGetter,
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
-    val fClientRepository: FClientRepository,
+    val fClientRepository: HClientRepository,
     val gTransactionVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val navigationHandler: FragmentNavigationHandler
@@ -50,7 +50,7 @@ class ASetterCentral(
                 parentHClientOldID = clientOldId,
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 nomClientConcerned = client.nom,
-                parentHClientKeyID = client.id,
+                parentHClientKeyID = client.keyID,
                 etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
         )
@@ -129,7 +129,7 @@ class ASetterCentral(
             fClientRepository.dataBaseFactoryFClient.dao.deleteAll()
             fClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
 
-            B_ClientInfosProtoJuin3.safeRemoveRef()
+            HClientInfos.safeRemoveRef()
 
             fClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
                 datas

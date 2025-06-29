@@ -2,105 +2,27 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
-fun MainList(
-    filteredGroupedTransactions: List<Pair<MVentPeriode, List<GBonVent>>>,
-    dateStringName: DatesHandler,
+fun View_MainList(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    idClient: Long,
-    onClickToOpenTransaction: (GBonVent) -> Unit,
+    listGBonVentFilteredByClientKeySorted: List<GBonVent>,
 ) {
-    val groupedByWeek = remember(filteredGroupedTransactions) {
-        filteredGroupedTransactions.groupBy { (period, _) ->
-            try {
-                val distanceWeek = dateStringName.getDistanceSemainParDateStr(period.startDateInString)
-                if (distanceWeek == "قبل 3 أسابيع" || distanceWeek.isEmpty()) {
-                    "الأسبوع من ${period.startDateInString}"
-                } else {
-                    distanceWeek
-                }
-            } catch (e: Exception) {
-                "الأسبوع من ${period.startDateInString}"
-            }
-        }
-    }
-
-    val sortedWeeks = remember(groupedByWeek) {
-        groupedByWeek.toList().sortedByDescending { (_, periodsInWeek) ->
-            try {
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                periodsInWeek.maxOfOrNull { (period, _) ->
-                    dateFormat.parse(period.startDateInString)?.time ?: 0L
-                } ?: 0L
-            } catch (e: Exception) {
-                0L
-            }
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        if (filteredGroupedTransactions.isNotEmpty()) {
-            sortedWeeks.forEach { (weekString, periodsInWeek) ->
-                C_1_Header_WeekHeaderItem(weekString)
-
-                val sortedPeriodsInWeek = periodsInWeek.sortedByDescending { (period, _) ->
-                    try {
-                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            .parse(period.startDateInString)?.time ?: 0L
-                    } catch (e: Exception) {
-                        0L
-                    }
-                }
-
-                sortedPeriodsInWeek.forEach { (period, transactions) ->
-                    val dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString)
-                    val startTime = period.heurDebutInString
-                    val endTime = period.endDateInString.ifEmpty { "الآن" }
-
-                    C_2_Header_PeriodHeaderItem(
-                        dayName = dayName,
-                        startTime = startTime,
-                        endTime = endTime
-                    )
-
-                    transactions.forEach { transaction ->
-                        MainItem(
-                            viewModel = viewModel,
-                            transaction = transaction,
-                            onClickToOpenTransaction = onClickToOpenTransaction
-                        )
-                    }
-                }
-            }
-        } else {
-            Text(
-                text = if (filteredGroupedTransactions.isNotEmpty())
-                    "لا توجد معاملات للعميل $idClient"
-                else "جاري تحميل البيانات...",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge
+        listGBonVentFilteredByClientKeySorted.forEach { transaction ->
+            View_MainItem(
+                viewModel = viewModel,
+                bonVent = transaction,
             )
         }
     }

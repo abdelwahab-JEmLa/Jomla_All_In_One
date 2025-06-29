@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ACentral
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ class GrossistAchatSec12FragID1_ViewModel(
     val getter = aCentral.getter
    val fVentCouleurOperationRepository =getter.fVentCouleurOperationRepository
     data class UiState(
-        val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+        val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
         val mainLoadingProgress: Float = 0f
     )
 

@@ -80,9 +80,9 @@ class DatesHandler {
     fun debugTimestamps(transactions: List<GBonVent>, tag: String) {
         Log.d(tag, "=== DEBUG TIMESTAMPS ===")
         transactions.forEachIndexed { index, transaction ->
-            val date = java.util.Date(transaction.timestamps)
+            val date = java.util.Date(transaction.creationTimestamps)
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            Log.d(tag, "Transaction $index: VID=${transaction.vid}, Timestamp=${transaction.timestamps}, Date=${dateFormat.format(date)}")
+            Log.d(tag, "Transaction $index: VID=${transaction.vid}, Timestamp=${transaction.creationTimestamps}, Date=${dateFormat.format(date)}")
         }
     }
 

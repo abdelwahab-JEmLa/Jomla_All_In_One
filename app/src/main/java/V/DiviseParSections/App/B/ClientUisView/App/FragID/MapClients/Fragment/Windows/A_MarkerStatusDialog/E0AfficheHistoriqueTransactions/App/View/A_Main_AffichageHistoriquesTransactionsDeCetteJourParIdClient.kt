@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.W.Filter.MainFilter
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,14 +15,9 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     clientOldId: Long = 4,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val dateStringName = DatesHandler()
 
     MainFilter(
-        uiState = uiState,
-        dateStringName = dateStringName,
-        idClient = clientOldId,
         viewModel,
-        onClickToOpenTransaction = viewModel::openTransaction
     )
 }
 

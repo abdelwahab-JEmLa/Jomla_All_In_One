@@ -7,7 +7,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -61,7 +61,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     scrollTiger: Int,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
@@ -132,7 +132,7 @@ fun MainUi(
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
@@ -427,7 +427,7 @@ fun ArticleGridWithScrollbar(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     viewModelInitApp: ViewModelInitApp,
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,

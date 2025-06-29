@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -46,7 +46,7 @@ fun addOuUpdateMapMarkers(
 
 fun addMarkersForFilteredClients(
     mapView: MapView,
-    clientsToShow: List<B_ClientInfosProtoJuin3>,
+    clientsToShow: List<HClientInfos>,
     viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
 ) {
@@ -72,7 +72,7 @@ fun addMarkersForFilteredClients(
 fun createAndAddMarker(
     viewModel: MapClientsViewModel,
     mapView: MapView,
-    client: B_ClientInfosProtoJuin3,
+    client: HClientInfos,
     context: Context,
     showMarkerDetails: Boolean,
 ) {
@@ -113,18 +113,18 @@ fun createAndAddMarker(
 
 private fun Marker.title(
     viewModel: MapClientsViewModel,
-    client: B_ClientInfosProtoJuin3,
+    client: HClientInfos,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
-        val timeStr = viewModel.getLastTransaction(client)?.timestamps?.let {
+        val timeStr = viewModel.getLastTransaction(client)?.creationTimestamps?.let {
             dateHandler.getDateAndTimString(it).time
         }
         val dayName = dateHandler.getArabicDayNameFromTimestamp(
-            viewModel.getLastTransaction(client)?.timestamps ?: 0
+            viewModel.getLastTransaction(client)?.creationTimestamps ?: 0
         )
         val distanceSemain =
-            dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.timestamps)
+            dateHandler.getAbrgDistanceSemain(viewModel.getLastTransaction(client)?.creationTimestamps)
 
         if (viewModel.getLastTransaction(client) != null) {
             "$distanceSemain.$dayName (${timeStr})" +
@@ -143,7 +143,7 @@ fun configureMarkerInfoWindow(
     mapView: MapView,
     context: Context,
     viewModel: MapClientsViewModel,
-    client: B_ClientInfosProtoJuin3,
+    client: HClientInfos,
 ) {
     val markerInfoWindowLayout = xmlResources
         .find { it.first == "marker_info_window" }?.second

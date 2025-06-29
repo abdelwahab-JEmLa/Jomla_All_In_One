@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 fun AfficheurRegleOuvert(
     uiState: UiState,
     viewModel: MapClientsViewModel,
-    relatedClients: B_ClientInfosProtoJuin3?,
+    relatedClients: HClientInfos?,
 ) {
     val clientId = relatedClients?.id ?: 0L
 
@@ -28,7 +28,7 @@ fun AfficheurRegleOuvert(
         return uiState
             .c3_TransactionCommercialList
             .filter { it.parentHClientOldID == clientId }
-            .maxByOrNull { it.timestamps }
+            .maxByOrNull { it.creationTimestamps }
     }
 
     val latestTransaction = relatedClients?.let { getLatestTransactionForClient(it.id) }

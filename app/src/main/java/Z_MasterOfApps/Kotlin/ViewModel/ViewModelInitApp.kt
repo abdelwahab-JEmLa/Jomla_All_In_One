@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.UiState
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val B_ClientInfosProtoJuin3List: List<B_ClientInfosProtoJuin3> = emptyList(),
+    val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 )
 

@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 
@@ -9,7 +9,7 @@ fun deleteColore(
     viewModelInitApp: ViewModelInitApp,
     colorIndex: Int,
     article: ArticlesBasesStatsTable,
-    clientBuyerNow: B_ClientInfosProtoJuin3
+    clientBuyerNow: HClientInfos
 ) {
     val colorId = when (colorIndex) {
         0 -> article.idcolor1

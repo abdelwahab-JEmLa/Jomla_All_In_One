@@ -27,7 +27,7 @@ data class C_GrossistsDataBase(
         enum class DernierEtateAAffiche(val color: Int, val nomEtateArabe: String)
     }
 
-    // B_ClientInfosProtoJuin3.kt - Updated companion object
+    // HClientInfos.kt - Updated companion object
     companion object {
         val sonAncienRef = firebaseDatabase.getReference("F_Suppliers")
 

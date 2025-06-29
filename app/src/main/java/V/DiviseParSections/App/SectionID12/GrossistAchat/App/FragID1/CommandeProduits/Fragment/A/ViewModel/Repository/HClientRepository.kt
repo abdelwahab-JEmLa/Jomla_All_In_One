@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -27,16 +27,16 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class FClientRepository(
+class HClientRepository(
     val dataBaseFactoryFClient: DataBaseFactoryFClient,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
-    val TAG_REPO = "FClientRepository"
+    val TAG_REPO = "HClientRepository"
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datas = mutableStateOf<List<B_ClientInfosProtoJuin3>>(emptyList())
-    val datasState: State<List<B_ClientInfosProtoJuin3>> = this._datas
+    private val _datas = mutableStateOf<List<HClientInfos>>(emptyList())
+    val datasState: State<List<HClientInfos>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
     val onVentClient by derivedStateOf {
@@ -68,7 +68,7 @@ class FClientRepository(
 
     }
 
-    fun findClientById(id: Long): B_ClientInfosProtoJuin3? {
+    fun findClientById(id: Long): HClientInfos? {
         return this._datas.value.find { it.id == id }
     }
 
@@ -76,16 +76,16 @@ class FClientRepository(
         this._datas.value = this._datas.value.filter { it.id != clientId }
     }
 
-    fun updateClients(newClients: List<B_ClientInfosProtoJuin3>) {
+    fun updateClients(newClients: List<HClientInfos>) {
         this._datas.value = newClients
         _isInitialized.value = true
     }
 
-    fun addClient(client: B_ClientInfosProtoJuin3) {
+    fun addClient(client: HClientInfos) {
         this._datas.value += client
     }
 
-    fun updateClient(updatedClient: B_ClientInfosProtoJuin3) {
+    fun updateClient(updatedClient: HClientInfos) {
         this._datas.value = this._datas.value.map { client ->
             if (client.id == updatedClient.id)
                 updatedClient.withProperKeyFireBaseAndTimeTamp()
@@ -95,7 +95,7 @@ class FClientRepository(
 }
 
 @Entity
-data class B_ClientInfosProtoJuin3(
+data class HClientInfos(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var keyID: String = getPushFireBase(ref),
@@ -171,7 +171,7 @@ data class B_ClientInfosProtoJuin3(
         )
     }
 
-    fun withProperKeyFireBaseAndTimeTamp(): B_ClientInfosProtoJuin3 {
+    fun withProperKeyFireBaseAndTimeTamp(): HClientInfos {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
             keyFireBase = safeKey,
@@ -181,7 +181,7 @@ data class B_ClientInfosProtoJuin3(
 
     companion object {
 
-        fun createTestInstance(): List<B_ClientInfosProtoJuin3> {
+        fun createTestInstance(): List<HClientInfos> {
             return emptyList()
         }
 
@@ -196,7 +196,7 @@ data class B_ClientInfosProtoJuin3(
         fun safeRemoveRef(): Unit { ref.removeValue() }
 
         fun removeRef(
-            preparedData: B_ClientInfosProtoJuin3
+            preparedData: HClientInfos
         ) {
             ref.child(preparedData.keyFireBase).removeValue()
         }

@@ -3,11 +3,11 @@ package V.DiviseParSections.App.Shared.Repository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVentRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
@@ -30,7 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class ACentralCompoRepositoryProtoJuin9(
+class AGetter(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
@@ -40,7 +40,7 @@ class ACentralCompoRepositoryProtoJuin9(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val fClientRepository: FClientRepository,
+    val fClientRepository: HClientRepository,
     val gBonVentRepository: GBonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
@@ -52,12 +52,13 @@ class ACentralCompoRepositoryProtoJuin9(
     val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
+
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    // Fixed getVent function in ACentralCompoRepositoryProtoJuin9.kt
+    // Fixed getVent function in AGetter.kt
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable,
         colorIndex: Int

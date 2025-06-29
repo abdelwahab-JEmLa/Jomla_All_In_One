@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 fun updateNewModelDeLachat(
     quantity: Int,
     currentSale: SoldArticlesTabelle?,
-    currentClient: B_ClientInfosProtoJuin3?,
+    currentClient: HClientInfos?,
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {

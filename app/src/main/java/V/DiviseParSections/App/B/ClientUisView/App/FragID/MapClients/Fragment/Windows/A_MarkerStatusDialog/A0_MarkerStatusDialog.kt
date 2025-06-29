@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,7 +51,7 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
-    clientOuCaMarqueGpsEstOuvert: B_ClientInfosProtoJuin3?,
+    clientOuCaMarqueGpsEstOuvert: HClientInfos?,
     mapView: MapView,
     uiState: UiState,
     onUpdateLongAppSetting: () -> Unit = {},
@@ -397,7 +397,7 @@ fun MarkerStatusDialog(
                                 }
 
                             clientToDelete?.let { client ->
-                                // Find and delete the corresponding B_ClientInfosProtoJuin3 object
+                                // Find and delete the corresponding HClientInfos object
                                 val relatedClient = viewModel.bProto_ClientsDataBase.find {
                                     it.id == client.id
                                 }

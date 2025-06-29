@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.FireBase.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.isRoomEmpty
@@ -11,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
 
-suspend fun DataBaseFactoryFClient.initializeDataReturn(): List<B_ClientInfosProtoJuin3> {
+suspend fun DataBaseFactoryFClient.initializeDataReturn(): List<HClientInfos> {
     return if (isRoomEmpty()) {
         val hasInternetConnection = isInternetAvailable(context)
 
@@ -44,15 +44,15 @@ suspend fun DataBaseFactoryFClient.initializeDataReturn(): List<B_ClientInfosPro
     }
 }
 
-private fun loadClientsFromCsv(): List<B_ClientInfosProtoJuin3> {
+private fun loadClientsFromCsv(): List<HClientInfos> {
     val csvBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
-    val csvFile = File(csvBasePath, "B_ClientInfosProtoJuin3.csv")
+    val csvFile = File(csvBasePath, "HClientInfos.csv")
 
     if (!csvFile.exists()) {
         return emptyList()
     }
 
-    val clients = mutableListOf<B_ClientInfosProtoJuin3>()
+    val clients = mutableListOf<HClientInfos>()
     var isFirstLine = true
 
     try {
@@ -82,7 +82,7 @@ private fun loadClientsFromCsv(): List<B_ClientInfosProtoJuin3> {
     return clients
 }
 
-private fun parseCsvLineToClient(line: String): B_ClientInfosProtoJuin3 {
+private fun parseCsvLineToClient(line: String): HClientInfos {
     val values = parseCsvValues(line)
 
     // Adjust the expected column count based on your CSV structure
@@ -90,7 +90,7 @@ private fun parseCsvLineToClient(line: String): B_ClientInfosProtoJuin3 {
         throw IllegalArgumentException("Invalid CSV format: expected at least 20 columns, got ${values.size}")
     }
 
-    return B_ClientInfosProtoJuin3(
+    return HClientInfos(
         id = values[0].toLongOrNull() ?: 0L,
         nom = values[1].takeIf { it.isNotBlank() } ?: "Non Defini",
         cretionTimestamps = values[2].toLongOrNull() ?: System.currentTimeMillis(),
@@ -103,16 +103,16 @@ private fun parseCsvLineToClient(line: String): B_ClientInfosProtoJuin3 {
         auFilterFAB = values[9].toBooleanStrictOrNull() ?: false,
         typeDeSonMagasine = values[10].let {
             try {
-                B_ClientInfosProtoJuin3.TypeDeSonMagasine.valueOf(it)
+                HClientInfos.TypeDeSonMagasine.valueOf(it)
             } catch (e: Exception) {
-                B_ClientInfosProtoJuin3.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         },
         clientTypeMode = values[11].let {
             try {
-                B_ClientInfosProtoJuin3.ClientTypeMode.valueOf(it)
+                HClientInfos.ClientTypeMode.valueOf(it)
             } catch (e: Exception) {
-                B_ClientInfosProtoJuin3.ClientTypeMode.NEVEAU
+                HClientInfos.ClientTypeMode.NEVEAU
             }
         },
         caMarqueGpsEstOuvert = values[12].toBooleanStrictOrNull() ?: false,
@@ -122,9 +122,9 @@ private fun parseCsvLineToClient(line: String): B_ClientInfosProtoJuin3 {
         snippet = values[16],
         actuelleEtat = values[17].let {
             try {
-                B_ClientInfosProtoJuin3.DernierEtatAAffiche.valueOf(it)
+                HClientInfos.DernierEtatAAffiche.valueOf(it)
             } catch (e: Exception) {
-                B_ClientInfosProtoJuin3.DernierEtatAAffiche.NON_DEFINI
+                HClientInfos.DernierEtatAAffiche.NON_DEFINI
             }
         },
         tagCeBonEstOuvertPourComptsIds = values[18],

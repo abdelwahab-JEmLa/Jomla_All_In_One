@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.triggerUpdateFbParTimestampsListener
@@ -25,12 +25,12 @@ class DataBaseFactoryFClient(
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
     data class RepoState(
-        val modelListFlow: List<B_ClientInfosProtoJuin3>,
+        val modelListFlow: List<HClientInfos>,
         val mainProgressRepo: Float
     )
 
     val dao = appDatabase.B_ClientInfosProtoJuin3Dao()
-    val repoRef = B_ClientInfosProtoJuin3.ref
+    val repoRef = HClientInfos.ref
     var isListenerRegistered = false
 
     init {
@@ -44,7 +44,7 @@ class DataBaseFactoryFClient(
         }
     }
 
-    suspend fun updateRepoState(data: List<B_ClientInfosProtoJuin3>) {
+    suspend fun updateRepoState(data: List<HClientInfos>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,
@@ -58,7 +58,7 @@ class DataBaseFactoryFClient(
         }
     }
 
-    fun batchFireBaseUpdate(datas: List<B_ClientInfosProtoJuin3>): Unit {
+    fun batchFireBaseUpdate(datas: List<HClientInfos>): Unit {
         CoroutineScope(Dispatchers.IO).launch {
             val updates = mutableMapOf<String, Any>()
             datas.forEach { data ->
