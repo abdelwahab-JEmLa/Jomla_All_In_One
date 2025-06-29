@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.ImageDisplayerProtoAvantJuin3
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components.checkImageExists
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -81,7 +81,6 @@ fun ArticleImageWithOverlay(
         }
     }
 }
-
 @Composable
 private fun AfficheKeyCouleurAvecVent(
     viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel,
@@ -104,13 +103,13 @@ private fun AfficheKeyCouleurAvecVent(
             ) {
                 Text(
                     text = text,
-                    color = Color.White,
+                    color = Color.White.copy(alpha = 0.001f), // Very low alpha for text
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .background(
-                            color = Color.Red,
+                            color = Color.Red.copy(alpha = 0.001f), // Very low alpha for background
                             shape = RoundedCornerShape(bottomStart = 8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)

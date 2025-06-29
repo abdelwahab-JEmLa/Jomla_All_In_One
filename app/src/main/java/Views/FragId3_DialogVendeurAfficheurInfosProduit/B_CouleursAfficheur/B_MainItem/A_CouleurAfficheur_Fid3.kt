@@ -345,13 +345,13 @@ fun B_CouleurAfficheur(
             ) {
                 Text(
                     text = text,
-                    color = Color.White,
+                    color = Color.Transparent,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(
-                            color = Color.Red,
+                            color = Color.Transparent, // Make background transparent
                             shape = RoundedCornerShape(bottomStart = 8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
