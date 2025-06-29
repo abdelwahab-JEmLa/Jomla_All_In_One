@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.ASetterCentral.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent.EtateActuellementEst
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Modules.DatesHandler

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context

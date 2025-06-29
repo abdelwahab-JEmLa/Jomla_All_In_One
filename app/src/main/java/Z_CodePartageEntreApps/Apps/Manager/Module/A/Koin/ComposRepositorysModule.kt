@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentral
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ASetterCentral
+import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.ASetterCentral
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FClientRepository

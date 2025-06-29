@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B_ClientInfosProtoJuin3
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase

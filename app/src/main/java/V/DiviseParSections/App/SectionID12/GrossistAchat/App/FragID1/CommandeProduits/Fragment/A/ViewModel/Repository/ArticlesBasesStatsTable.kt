@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import androidx.room.Entity
 import androidx.room.PrimaryKey

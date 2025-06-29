@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ACentralCompoRepositoryProtoJuin9
+import V.DiviseParSections.App.Shared.Repository.ACentralCompoRepositoryProtoJuin9
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
