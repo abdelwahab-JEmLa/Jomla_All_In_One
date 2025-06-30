@@ -180,13 +180,10 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            viewClientKeyByParent=viewClientKeyByParent,
-                                            modifier = Modifier
-                                                .height(60.dp)
-                                                ,
+                                            parentTestTag_ClientKey=viewClientKeyByParent,
+                                            modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
-                                            clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
-                                            etateActuellementEst1 = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )

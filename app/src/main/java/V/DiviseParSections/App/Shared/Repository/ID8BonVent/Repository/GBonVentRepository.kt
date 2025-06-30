@@ -165,6 +165,8 @@ data class GBonVent(
           ;
         companion object {
             const val keyModel= "ID8C2"
+             fun getKey(etate: EtateActuellementEst) =
+                "--$keyModel-${etate.name}"
         }
     }
 

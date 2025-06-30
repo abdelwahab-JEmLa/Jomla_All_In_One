@@ -53,7 +53,7 @@ val composRepositorysModule = module {
 
     single {
         BSetter(
-            get(), get(), get(), get(),
+            get(), get(), get(), get(),get(),
         )
     }
 
