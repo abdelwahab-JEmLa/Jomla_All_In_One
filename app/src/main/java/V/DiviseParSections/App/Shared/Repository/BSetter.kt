@@ -72,6 +72,74 @@ class BSetter(
             )
         )
     }
+    // Add these methods to BSetter class to replace the TODO implementations
+
+    fun ajouteNewBonVent(
+        key: String,
+        clientOldId: Long,
+        etate: GBonVent.EtateActuellementEst
+    ) {
+        val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
+
+        if (client != null && currentZCompt != null) {
+            // Update the current app compt with the new BonVent key
+            val updatedZCompt = currentZCompt.copy(
+                onVentGBonVentKeyId = key,
+                onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentFClientKeyID = client.keyID,
+                onVentFClientDebugNameKey = client.nom,
+            )
+
+            zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+
+            // Create and add the new BonVent
+            val newBonVent = GBonVent(
+                keyID = key,
+                parentPeriodeVentKeyID = currentZCompt.onVentHVentPeriodKeyId,
+                parentHClientOldID = clientOldId,
+                parentZAppComptCreateurKeyID = currentZCompt.keyID,
+                nomClientConcerned = client.nom,
+                parentHClientKeyID = client.keyID,
+                etateActuellementEst = etate
+            )
+
+            gBonVentRepository.addOrUpdateData(newBonVent)
+        }
+    }
+
+    fun updateComptAppErExistKey(
+        key: String,
+        clientOldId: Long,
+        etate: GBonVent.EtateActuellementEst
+    ) {
+        val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
+        val existingBonVent = gBonVentRepository.datasValue.find { it.keyID == key }
+
+        if (client != null && currentZCompt != null && existingBonVent != null) {
+            // Update the current app compt
+            val updatedZCompt = currentZCompt.copy(
+                onVentGBonVentKeyId = key,
+                onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentFClientKeyID = client.keyID,
+                onVentFClientDebugNameKey = client.nom,
+            )
+
+            zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+
+            // Update the existing BonVent
+            val updatedBonVent = existingBonVent.copy(
+                etateActuellementEst = etate,
+                nomClientConcerned = client.nom,
+                parentHClientKeyID = client.keyID,
+                parentHClientOldID = clientOldId
+            )
+
+            gBonVentRepository.addOrUpdateData(updatedBonVent)
+        }
+    }
+
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(

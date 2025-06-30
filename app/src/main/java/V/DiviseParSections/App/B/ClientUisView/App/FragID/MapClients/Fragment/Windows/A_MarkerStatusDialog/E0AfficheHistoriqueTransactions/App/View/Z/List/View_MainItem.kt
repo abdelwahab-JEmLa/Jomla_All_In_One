@@ -196,10 +196,11 @@ fun View_MainItem(
 
                     Text(
                         text = etateActuellementEst.nomArabe,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End
                     )
+
                     Text(
                         text =bonVent.keyID.takeLast(4) ,
                         style = MaterialTheme.typography.bodySmall,

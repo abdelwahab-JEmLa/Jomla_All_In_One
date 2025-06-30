@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,22 +23,45 @@ import androidx.core.content.ContextCompat
 @Composable
 fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
-    uiState: UiState,
     clickedClient: Long,
 ) {
+    val repo = viewModel.gBonVentRepo
+    val clientKey = findKeyByID(viewModel, clickedClient)
 
     val context = LocalContext.current
     val newEtate = this
 
     FilledTonalButton(
         onClick = {
-            viewModel.ajoutUnBonVentHistorique(clickedClient,newEtate)
+            // Check if the last BonVent data matches the criteria
+            val lastBonVent = repo.datasValue.lastOrNull()
+            val shouldUpdateLast = lastBonVent?.let { bonVent ->
+                bonVent.parentHClientKeyID == clientKey
+                        && bonVent.etateActuellementEst == newEtate
+                        && bonVent.parentPeriodeVentKeyID == viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+            } ?: false
+
+            if (shouldUpdateLast && lastBonVent != null) {
+                // Update the last BonVent using BSetter method
+                viewModel.setter.updateComptAppErExistKey(
+                    key = lastBonVent.keyID,
+                    clientOldId = clickedClient,
+                    etate = newEtate
+                )
+            } else {
+                // Create new BonVent with generated key using BSetter method
+                val newGeneratedKey = GBonVent.generePushKey()
+                viewModel.setter.ajouteNewBonVent(
+                    key = newGeneratedKey,
+                    clientOldId = clickedClient,
+                    etate = newEtate
+                )
+            }
 
             if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel
-                    .dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
             }
         },
         modifier = Modifier.fillMaxWidth(),
@@ -68,7 +90,20 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 contentDescription = newEtate.nomArabe,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(newEtate.nomArabe)
+
+            val data = repo.datasValue
+                .lastOrNull {
+                    it.parentHClientKeyID == clientKey
+                            && it.etateActuellementEst == newEtate
+                            && it.parentPeriodeVentKeyID == viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+                }
+
+            Text(data?.keyID?.takeLast(4)?.uppercase() ?: "new == ${GBonVent.generePushKey().takeLast(4).uppercase()}")
         }
     }
 }
+
+fun findKeyByID(
+    viewModel: MapClientsViewModel,
+    clickedClient: Long
+) = viewModel.getter.hClientRepository.datasValue.find { it.id == clickedClient }?.keyID

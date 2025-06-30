@@ -70,14 +70,12 @@ fun AfficheurRegleOuvert(
                 )
                 GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                     .ButtonAutreEtates(
-                        uiState = uiState,
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )
 
                 GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
-                        uiState = uiState,
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )

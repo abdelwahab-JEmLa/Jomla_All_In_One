@@ -277,4 +277,14 @@ class MapClientsViewModel(
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
         setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
     }
+
+    // Add these methods to MapClientsViewModel class
+
+    fun ajoutUnBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+        setter.ajouteNewBonVent(buttonNewKeyGenerateur, clickedClient, newEtate)
+    }
+
+    fun updateBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+        setter.updateComptAppErExistKey(buttonNewKeyGenerateur, clickedClient, newEtate)
+    }
 }

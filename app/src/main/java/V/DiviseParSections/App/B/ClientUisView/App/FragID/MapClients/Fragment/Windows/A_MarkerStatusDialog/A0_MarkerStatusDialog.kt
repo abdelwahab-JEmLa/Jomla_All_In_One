@@ -167,7 +167,6 @@ fun MarkerStatusDialog(
                                     item {
                                         GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
                                             .ButtonAutreEtates(
-                                                uiState = uiState,
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
@@ -190,7 +189,6 @@ fun MarkerStatusDialog(
                                     item {
                                         GBonVent.EtateActuellementEst.FERME
                                             .ButtonAutreEtates(
-                                                uiState = uiState,
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
@@ -198,7 +196,6 @@ fun MarkerStatusDialog(
                                     item {
                                         GBonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
                                             .ButtonAutreEtates(
-                                                uiState = uiState,
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
@@ -216,7 +213,6 @@ fun MarkerStatusDialog(
                                     item {
                                         GBonVent.EtateActuellementEst.Cible
                                             .ButtonAutreEtates(
-                                                uiState = uiState,
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
@@ -228,7 +224,6 @@ fun MarkerStatusDialog(
                                             item {
                                                 GBonVent.EtateActuellementEst.CIBLE_POUR_2
                                                     .ButtonAutreEtates(
-                                                        uiState = uiState,
                                                         viewModel = viewModel,
                                                         clickedClient = clientId,
                                                     )
