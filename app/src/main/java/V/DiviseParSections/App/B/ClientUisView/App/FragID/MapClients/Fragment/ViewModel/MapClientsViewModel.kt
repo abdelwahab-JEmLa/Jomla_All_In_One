@@ -55,6 +55,7 @@ class MapClientsViewModel(
     val getter = aCentral.getter
     val setter = aCentral.setter
 
+    val gBonVentRepo = getter.gBonVentRepository
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin

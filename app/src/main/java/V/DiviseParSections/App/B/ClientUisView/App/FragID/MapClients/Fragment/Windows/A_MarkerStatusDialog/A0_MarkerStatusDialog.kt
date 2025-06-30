@@ -58,6 +58,7 @@ fun MarkerStatusDialog(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
 ) {
+
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
         .find { marker ->
@@ -80,18 +81,13 @@ fun MarkerStatusDialog(
         editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
     }
 
-    val isClientInCommandMode = remember(clientId, uiState) {
-        val lastTransaction = viewModel.getter.getClientLastTransaction(clientId)
-        lastTransaction?.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    }
 
     fun dismissDialog() {
         viewModel.ouvreBonVent(0L)
     }
 
     fun handleDismiss() {
-        // Only show exit confirmation dialog if client is in command mode
-        if (isClientInCommandMode) {
+        if (viewModel.gBonVentRepo.onVentData!=null) {
             showExitConfirmationDialog = true
         } else {
             // Direct dismiss if not in command mode

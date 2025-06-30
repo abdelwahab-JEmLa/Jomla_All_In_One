@@ -31,6 +31,7 @@ class GBonVentRepository(
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
+
     val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId } }
 
     init {
@@ -109,17 +110,6 @@ data class GBonVent(
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
 ) {
-    val fireBaseKeyID_1_3_TransactionCommercial: String
-        get() {
-            val parent = "(${parentPeriodeVentOldID})"
-            val thisVal = "->(${parentHClientOldID}_($nomClientConcerned))"
-
-            val name = etateActuellementEst.nomArabe
-
-            val autre = "->($name)"
-
-            return "$parent$thisVal$autre"
-        }
 
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {

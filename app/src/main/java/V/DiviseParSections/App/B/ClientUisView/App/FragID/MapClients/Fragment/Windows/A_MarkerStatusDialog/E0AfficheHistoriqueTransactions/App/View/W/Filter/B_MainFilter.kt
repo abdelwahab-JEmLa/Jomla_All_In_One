@@ -15,7 +15,12 @@ fun MainFilter(
 
     val listGBonVentFilteredByClientKeySorted =
         datasGBonVentRepository
-            .filter { it.parentHClientKeyID ==  getter.bOuvertDialogMapMarqueHClientKey }
+            .filter {
+                it.parentHClientKeyID == getter
+                    .zAppComptRepositoryComposable
+                    .currentAppCompt
+                    ?.onVentFClientKeyID
+            }
             .sortedByDescending { it.creationTimestamps }
 
     View_MainList(
