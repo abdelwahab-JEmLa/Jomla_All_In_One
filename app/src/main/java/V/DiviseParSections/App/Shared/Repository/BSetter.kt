@@ -51,6 +51,7 @@ class BSetter(
         clientOldId: Long,
         newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ) {
+
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
         val newTransactionKey = GBonVent.generePushKey()
