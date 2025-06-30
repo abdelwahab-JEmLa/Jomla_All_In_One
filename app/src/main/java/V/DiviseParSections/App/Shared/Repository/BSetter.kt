@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -42,9 +43,24 @@ class BSetter(
             zAppComptRepositoryComposable.addOrUpdateData(zCompt)
         }
     }
+    val onVentHVentPeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
+    fun clientNom(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }?.nom
+
+    fun getKeyID8BonVent(
+        clientOldID: Long,
+        etate: GBonVent.EtateActuellementEst,
+    ): String {
+        val keyModel = GBonVent.keyModel
+        val ventPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + onVentHVentPeriodKeyByParent
+        val clientKeyByParent = HClientInfos.keyModel + "-" + clientNom(clientOldID)
+        val etateKey = GBonVent.EtateActuellementEst.keyModel + "-" + etate
+
+        return ("$keyModel---$ventPeriodKeyByParent--$clientKeyByParent--$etateKey")
+            .withOutFireBaseInvalidCharacters()
+    }
 
     fun upsertBonVent(
-        keyByParentBonVentOnClickButton: String = "ID8---ID7-Juin_30__8_00--ID2-3omar_youcef--ID8C2-Ferme"
+        keyByParentBonVentOnClickButton: String = ""
     ) {
         val existingData = gBonVentRepository.datasValue.find {
             it.keyByParent == keyByParentBonVentOnClickButton
@@ -56,7 +72,7 @@ class BSetter(
 
                 GBonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
-                    parentID2ClientKeyByParent = regexReturnParentKeysMap[GBonVent.keyModel] ?: "",
+                    parentID2ClientKeyByParent = regexReturnParentKeysMap[HClientInfos.keyModel] ?: "",
                     parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap[Z_AppCompt.keyModelValID7] ?: "",
                     parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap[GBonVent.EtateActuellementEst.keyModel] ?: ""
                 )

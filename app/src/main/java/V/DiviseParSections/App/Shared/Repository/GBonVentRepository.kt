@@ -44,7 +44,7 @@ class GBonVentRepository(
     fun addOrUpdateData(data: GBonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
-        val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
+        val existingIndex = datasValue.indexOfFirst { it.keyByParent == dataUpdate.keyByParent }
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
@@ -57,10 +57,10 @@ class GBonVentRepository(
                 }
             }
         }
-        ancienRepoUpsertUneDataEtReturnVID(dataUpdate, existingIndex)
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent) {
         dataBaseCreationFactory.set(dataUpdate)
     }
 
@@ -179,7 +179,7 @@ data class GBonVent(
     )
 
     companion object {
-        const val keyModel = "ID2"
+        const val keyModel = "ID8"
 
         fun getKeyByParent(
             ventPeriodKeyByParent: String = null.toString(),

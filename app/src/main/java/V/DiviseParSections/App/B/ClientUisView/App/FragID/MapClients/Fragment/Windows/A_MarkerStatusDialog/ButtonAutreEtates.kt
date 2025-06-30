@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -29,31 +28,17 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
 ) {
     val context = LocalContext.current
     val newEtate = this
-    val client = viewModel.getter.hClientRepository.findHClientInfos(clickedClient)
-    val ventPeriodKey = viewModel.getter.parametresAppComptNonSaved.activePeriodKeyByParent
-    val clientKey = client?.nom?.withOutFireBaseInvalidCharacters()!!
 
-    fun getKeyByParent(
-        ventPeriodKeyByParent: String = null.toString(),
-        clientKeyByParent: String = null.toString(),
-        etate: GBonVent.EtateActuellementEst,
-    ): String {
-        val etateKey = GBonVent.EtateActuellementEst.keyModel + "_" + etate
-        return ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--$etateKey")
-            .withOutFireBaseInvalidCharacters()
-    }
-
-    val keyHandBonVentOnClickButton = getKeyByParent(ventPeriodKey, clientKey, newEtate)
-
+    val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVent(clickedClient, newEtate)
     FilledTonalButton(
         onClick = {
-            /*  viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
+              viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
 
               if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                   || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
               ) {
                   viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-              }   */
+              }
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(

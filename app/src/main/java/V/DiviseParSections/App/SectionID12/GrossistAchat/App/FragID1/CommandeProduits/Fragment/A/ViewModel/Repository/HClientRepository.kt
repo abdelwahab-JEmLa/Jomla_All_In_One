@@ -187,6 +187,7 @@ data class HClientInfos(
     }
 
     companion object {
+        const val keyModel = "ID2"
 
         fun createTestInstance(): List<HClientInfos> {
             return emptyList()

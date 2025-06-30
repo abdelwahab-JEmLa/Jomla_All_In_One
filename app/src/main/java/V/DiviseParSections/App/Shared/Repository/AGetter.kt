@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
@@ -76,7 +77,7 @@ class AGetter(
         nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentZAppComptCreateurKeyID = comptKey,
         etateActuellementEst = etate,
-        parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel]
+        parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[HClientInfos.keyModel]
             ?: "",
         parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7]
             ?: "",
