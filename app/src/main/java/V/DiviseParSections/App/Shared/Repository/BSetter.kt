@@ -4,8 +4,6 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
@@ -44,18 +42,19 @@ class BSetter(
         }
     }
     val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
-    val onVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+    val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
 
-    fun clientNom(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }?.nom
+    fun client(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }
 
     fun getKeyID8BonVent(
         clientOldID: Long,
         etate: GBonVent.EtateActuellementEst,
     ): String {
-        val clientKeyByParent = HClientInfos.keyModel + "-" + clientNom(clientOldID)
-        val etateKey = GBonVent.EtateActuellementEst.keyModel + "-" + etate
+        val clientKeyByParent = client(clientOldID)?.getTempKeyByParent()
+        val keyModelToClientKeyByParent = HClientInfos.keyModel + "-" + clientKeyByParent
+        val keyModelToEtateKey = GBonVent.EtateActuellementEst.keyModel + "-" + etate
 
-        return ("$onVentHVentPeriodKeyByParent--$clientKeyByParent--$etateKey")
+        return ("$keyModelToOnVentHVentPeriodKeyByParent--$keyModelToClientKeyByParent--$keyModelToEtateKey")
             .withOutFireBaseInvalidCharacters()
     }
 
@@ -68,13 +67,14 @@ class BSetter(
 
         val data = existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             ?: run {
-                val regexReturnParentKeysMap = regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
+                val getKeyByParentDe = regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
+                val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
 
                 GBonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
-                    parentID7VentPeriodeKeyByParent = onVentHVentPeriodKeyByParent,
-                    parentID2ClientKeyByParent = regexReturnParentKeysMap[HClientInfos.keyModel] !!,
-                    parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap[GBonVent.EtateActuellementEst.keyModel] !!
+                    parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
+                    parentID2ClientKeyByParent = parentID2ClientKeyByParent,
+                    parentID8C2TypeTransactionKeyByParent = getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel] !!
                 )
             }
 

@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
+package V.DiviseParSections.App.Shared.Repository
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -137,7 +138,7 @@ data class HClientInfos(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
     fun getTempKeyByParent(): String {
-     return "---H-${this.nom.withOutFireBaseInvalidCharacters()}"
+     return this.nom.withOutFireBaseInvalidCharacters()
     }
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {

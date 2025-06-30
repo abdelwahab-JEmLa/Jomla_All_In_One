@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode

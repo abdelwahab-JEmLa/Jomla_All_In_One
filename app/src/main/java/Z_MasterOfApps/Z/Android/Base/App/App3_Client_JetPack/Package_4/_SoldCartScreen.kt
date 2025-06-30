@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 
