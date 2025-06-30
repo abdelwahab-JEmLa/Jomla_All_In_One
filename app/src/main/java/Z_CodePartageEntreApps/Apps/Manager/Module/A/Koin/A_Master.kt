@@ -141,7 +141,7 @@ val dataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
-    single { DebugKey() }
+    single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get()) }
     single { WDatabaseInitializationManager(get(), get(), get(), get()) }
 
@@ -174,9 +174,9 @@ val viewModelModule = module {
     viewModel { Sec9FragId1ViewId2ViewModel(get()) }
 
     viewModel { ViewModel_A4FragID1(get(), get()) }
-    viewModel { VendeurAfficheurInfosProduitViewModel(get(),) }
+    viewModel { VendeurAfficheurInfosProduitViewModel(get()) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
-    viewModel { ViewModelMessageur(get(),  get(), get(),) }
+    viewModel { ViewModelMessageur(get(), get(), get()) }
     viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
     viewModel { A_ProduitInfosViewModel(get()) }
     viewModel { CategoriePrevViewModel(get()) }
@@ -186,10 +186,10 @@ val viewModelModule = module {
     viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
-    viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(),) }
-    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), ) }
-    viewModel { VendeursViewModel( get(), get(), get(), ) }
-    viewModel { MapClientsViewModel(get(), get(), get(), get(), ) }
+    viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
+    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { VendeursViewModel(get(), get(), get()) }
+    viewModel { MapClientsViewModel(get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { HeadViewModel(androidContext(), get(), get(), get()) }
