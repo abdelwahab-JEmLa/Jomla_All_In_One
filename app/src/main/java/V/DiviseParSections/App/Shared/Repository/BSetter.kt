@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.BonVentOperation
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
+import com.google.firebase.database.DatabaseReference
 
 class BSetter(
     private val produitOperations: ProduitOperations,
@@ -13,7 +14,6 @@ class BSetter(
     private val clientOperations: ClientOperations,
     private val ventOperations: VentOperations,
 ) {
-
     fun ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId: Long, newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) = bonVentOperations.ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId, newEtate)
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() = bonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
@@ -52,6 +52,5 @@ class BSetter(
             key to value
         }
 
-        fun genereUnPushKeyFireBase(ref: Any): String = "generated_key_${System.currentTimeMillis()}"
-    }
+        fun genereUnPushKeyFireBase(ref: DatabaseReference): String { return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key") }    }
 }
