@@ -22,6 +22,7 @@ class WDatabaseInitializationManager(
     private val scope = CoroutineScope(Dispatchers.Main)
 
     enum class Repository {
+        GBonVentEntity,
         FCouleurVentOperation,
         Z_AppComptEntity,
         D_ACHAT_OPERATION,

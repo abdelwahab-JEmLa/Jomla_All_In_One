@@ -5,8 +5,6 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVentRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
@@ -63,7 +61,21 @@ class AGetter(
 
     val bOuvertDialogMapMarqueHClientKey = zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
 
-    // Fixed getVent function in AGetter.kt
+    fun getClientLastBonVentParEtate(
+        clientId: Long,
+        etateActuellementEst: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    ): GBonVent? {
+        return gBonVentRepository.datasValue.filter {
+            it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
+        }.maxByOrNull { it.keyID }
+    }
+
+    fun getClientLastTransaction(clientId: Long): GBonVent? {
+        return gBonVentRepository.datasValue.filter {
+            it.parentHClientOldID == clientId
+        }.maxByOrNull { it.keyID }
+    }
+
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable, colorIndex: Int
     ) = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
@@ -119,7 +131,7 @@ class AGetter(
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         hClientRepository.datasValue.count { client ->
-            val lastTransaction = gBonVentRepository.getClientLastTransaction(client.id)
+            val lastTransaction = getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 GBonVent.EtateActuellementEst.Cible,
             )

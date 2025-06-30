@@ -1,21 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 open class ClientsMapFilterViewModel(
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3? = null,
-) : ViewModel() {
+) : ViewModel() {      /*
     protected val allListrepo_0_0_HeadSQLRepositorys = repo_0_0_HeadSQLRepositorys
         ?.repositorys_Model
         ?.c3TransactionCommercialRepository
@@ -219,5 +209,5 @@ open class ClientsMapFilterViewModel(
         ALL,
         DatesHistoriqueTransactions,
         CIBLE,
-    }
+    }         */
 }

@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
@@ -61,8 +61,7 @@ class MapClientsViewModel(
     val b_ClientDataBaseRepository =
         a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model.e1SecteurDeClientsRepository
-    val c3_BonAchate_List =
-        groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList
+    val c3_BonAchate_List =getter.gBonVentRepository.datasValue
 
     // Compose States
     val transactionsState = getter.gBonVentRepository
@@ -86,7 +85,7 @@ class MapClientsViewModel(
     private fun updateUiState() {
         _uiState.value = UiState(
             b_ClientInfosProtoJuin3List = clientsState.datasState.value,
-            c3_TransactionCommercialList = transactionsState.datasState.value,
+            c3_TransactionCommercialList = transactionsState.datasValue,
             mainLoadingProgress = getter.loadingProgress!!,
             isLoading = clientsState.isLoading,
             error = null
@@ -99,7 +98,7 @@ class MapClientsViewModel(
 
     private fun initializeDataObservers() {
         viewModelScope.launch {
-            snapshotFlow { transactionsState.datasState.value }.collect { transactionsList ->
+            snapshotFlow { transactionsState.datasValue }.collect { transactionsList ->
                 updateUiState()
             }
         }
@@ -127,7 +126,7 @@ class MapClientsViewModel(
     }
 
     fun getLastTransaction(client: HClientInfos): GBonVent? {
-        return transactionsState.getClientLastTransaction(
+        return getter.getClientLastTransaction(
             client.id,
         )
     }

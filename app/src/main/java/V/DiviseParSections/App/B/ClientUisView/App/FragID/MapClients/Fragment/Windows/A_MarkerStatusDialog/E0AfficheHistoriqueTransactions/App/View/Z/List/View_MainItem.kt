@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.Z.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -56,7 +56,7 @@ fun View_MainItem(
     val audioRecorderAndPlayHandler=viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
     val etateActuellementEst = bonVent.etateActuellementEst
-    val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_C3_BonAchate_Repository.collectAsState()
+    val activeTransactionId = viewModel.getter.gBonVentRepository.onVentData?.vid
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()

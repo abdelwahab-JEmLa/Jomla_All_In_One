@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -9,7 +9,6 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._DataBaseFactory_MVentPeriodeImpl
 import androidx.compose.runtime.mutableStateListOf
@@ -41,7 +40,6 @@ class ViewModelFragment_StartUpScreen(
     val _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-    val C3_BonAchate_Repository: C3TransactionCommercialRepository,
     val _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"
@@ -58,7 +56,6 @@ class ViewModelFragment_StartUpScreen(
             initializerViewModel.waitForDataInitialization(
                 _1_1_CouleurAcheteOperation_Repository,
                 _1_2_ProduitAcheteOperation_Repository,
-                C3_BonAchate_Repository,
                 _1_4_PeriodeVent_Repository,
                 _uiState,
                 viewModelScope,
@@ -73,7 +70,6 @@ class ViewModelFragment_StartUpScreen(
                 Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
                     _1_1_CouleurAcheteOperation_Repository,
                     _1_2_ProduitAcheteOperation_Repository,
-                    C3_BonAchate_Repository,
                     _1_4_PeriodeVent_Repository,
                 )
             }
@@ -101,7 +97,6 @@ class ViewModelFragment_StartUpScreen(
         initializerViewModel.checkInitializationComplete(
             _1_1_CouleurAcheteOperation_Repository,
             _1_2_ProduitAcheteOperation_Repository,
-            C3_BonAchate_Repository,
             _1_4_PeriodeVent_Repository,
             _uiState,
         )

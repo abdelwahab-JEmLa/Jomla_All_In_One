@@ -39,12 +39,10 @@ class A_MasterRepositorysGrpProtoJuin3(
                 b_ClientInfosProtoJuin3Repository.repoState,
                 repoC_CategorieProduitInfos.repoState,
                 d_EtateMessageVocaleRepository.repoState,
-                e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3TransactionCommercialRepository.progressRepo,
             ) { repoA_ProduitInfos,
                 b_ClientInfosProtoJuin3Repository,
                 repoC_CategorieProduitInfos,
                 d_EtateMessageVocaleRepository ,
-                c3_BonAchate_Repository,
                 ->
                 val progressA = repoA_ProduitInfos?.mainProgressRepo ?: 0f
                 val progressC = repoC_CategorieProduitInfos?.mainProgressRepo ?: 0f
@@ -53,7 +51,6 @@ class A_MasterRepositorysGrpProtoJuin3(
                         progressA
                                 + progressC
                                 + progressD
-                                + c3_BonAchate_Repository
                                 + (b_ClientInfosProtoJuin3Repository?.mainProgressRepo ?: 0f)
                         ) / 2f
 

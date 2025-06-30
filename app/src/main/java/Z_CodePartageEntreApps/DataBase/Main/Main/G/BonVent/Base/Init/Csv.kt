@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Init
+package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import V.DiviseParSections.App.Shared.Repository.GBonVent
+import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import java.io.File
 
-fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_AppCompt> {
+fun DataBaseCreationFactoryGBonVent.onLoadCategoriesFromCsv(): MutableList<GBonVent> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
     val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "$repoEntityName.csv")
@@ -13,7 +13,7 @@ fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_App
         return mutableListOf() // Return empty list instead of nothing
     }
 
-    val datas = mutableListOf<Z_AppCompt>()
+    val datas = mutableListOf<GBonVent>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -44,11 +44,11 @@ fun Z_AppComptRepositoryProtoJuin17.onLoadCategoriesFromCsv(): MutableList<Z_App
         throw IllegalStateException("No data available from  or CSV")
     }
 }
-// For Z_AppComptEntity CSV
-fun parseCsvLine(line: String): Z_AppCompt {
-    val values = Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.parseCsvValues(line)
+// For GBonVentEntity CSV
+fun parseCsvLine(line: String): GBonVent {
+    val values = parseCsvValues(line)
 
-    if (values.size < 12) { // Adjust based on Z_AppComptEntity fields
+    if (values.size < 12) { // Adjust based on GBonVentEntity fields
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")
     }
 
@@ -56,7 +56,7 @@ fun parseCsvLine(line: String): Z_AppCompt {
 }
 
 
-private fun zAppcompt(values: List<String>) = Z_AppCompt(
+private fun zAppcompt(values: List<String>) = GBonVent(
 )
 
 

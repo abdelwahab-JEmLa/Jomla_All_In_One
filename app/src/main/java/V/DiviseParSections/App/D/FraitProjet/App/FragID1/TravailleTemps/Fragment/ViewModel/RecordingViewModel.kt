@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
@@ -37,15 +37,14 @@ data class UiState(
 )
 
 class RecordingViewModel(
-    val aGetter: AGetter,
+    val getter: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList =
-        groupeRepositorysProtoAvJuin3.repositorys_Model.c3TransactionCommercialRepository
+    val reposBonAchatList =getter.gBonVentRepository
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
@@ -115,7 +114,7 @@ class RecordingViewModel(
     private suspend fun collectBonAchatRepoModel() {
         Log.i(TAG, "collectBonAchatRepoModel")
 
-        snapshotFlow { reposBonAchatList.modelDatasSnapList.toList() }.collect { list ->
+        snapshotFlow { reposBonAchatList.datasValue.toList() }.collect { list ->
             log(list)
 
             updateUiState {
@@ -128,7 +127,7 @@ class RecordingViewModel(
 
 
     private suspend fun collectActiveVendeurId() {
-        snapshotFlow { aGetter.zAppComptRepositoryComposable.currentAppCompt }.collect { currentAppCompt ->
+        snapshotFlow { getter.zAppComptRepositoryComposable.currentAppCompt }.collect { currentAppCompt ->
             val activePeriodeVent = get_PeriodVentActive()
             updateUiState { currentState ->
                 currentState.copy(activePeriodeVent = activePeriodeVent)
@@ -142,7 +141,7 @@ class RecordingViewModel(
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
-            aGetter.zAppComptRepositoryComposable.currentAppCompt?.ceComptVendeurInsertBonsAchatAuPeriodID
+            getter.zAppComptRepositoryComposable.currentAppCompt?.ceComptVendeurInsertBonsAchatAuPeriodID
 
         return repositorysModel1.repositoryMVentPeriode.modelDatasSnapList.find {
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
@@ -150,10 +149,10 @@ class RecordingViewModel(
     }
 
     fun calculateNombreClientAvecCible(): Int {
-        val count = aGetter.hClientRepository.datasValue
+        val count = getter.hClientRepository.datasValue
             .count { client ->
-                aGetter.gBonVentRepository
-                    .getClientLastTransactionParEtate(
+                getter
+                    .getClientLastBonVentParEtate(
                         client.id,
                         GBonVent.EtateActuellementEst.Cible
                     ) != null

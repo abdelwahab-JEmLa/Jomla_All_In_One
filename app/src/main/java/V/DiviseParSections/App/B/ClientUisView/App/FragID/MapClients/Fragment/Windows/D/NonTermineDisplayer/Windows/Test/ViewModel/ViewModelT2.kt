@@ -14,8 +14,6 @@ class ViewModelT2(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    val c3_BonAchate_List = groupeRepositorysProtoAvJuin3.repositorys_Model
-        .c3TransactionCommercialRepository.modelDatasSnapList
 
     init {
         collecteMasterRepositorysDatasAuUiState()

@@ -122,7 +122,7 @@ class MapClientsViewModelss(
         }
     }
 
-    fun getClientLastTransactionParEtate(
+    fun getClientLastBonVentParEtate(
         client: HClientInfos
     ): GBonVent? {
         val historicalData = groupeRepositorysProtoAvJuin3

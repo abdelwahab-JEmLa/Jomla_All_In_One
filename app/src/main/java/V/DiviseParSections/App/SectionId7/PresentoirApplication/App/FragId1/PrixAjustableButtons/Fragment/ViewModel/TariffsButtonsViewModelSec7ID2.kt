@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -9,6 +9,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,9 +49,7 @@ class TariffsButtonsViewModelSec7ID2(
     private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
         ._2_1_ProduitsDataBase_Repository
 
-    private val repoC3_BonVent = repo_0_0_HeadSQLRepositorys
-        .repositorys_Model
-        .c3TransactionCommercialRepository
+    private val repoC3_BonVent = getter.gBonVentRepository
 
     private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
         .repositorys_Model
@@ -101,18 +100,16 @@ class TariffsButtonsViewModelSec7ID2(
                 progressJob = launch {
                     combine(
                         produitRepository.progressRepo,
-                        repoC3_BonVent.progressRepo,
                         repositoryC2_ProduitAcheteOperation.progressRepo,
                         groupedDataBasesRepository.mainProgressRepo
-                    ) { produitProgress, bonAchatProgress, produitAcheteProgress, sqlProgress ->
+                    ) { produitProgress, produitAcheteProgress, sqlProgress ->
 
                         val validProduitProgress = produitProgress.coerceIn(0f, 1f)
-                        val validBonAchatProgress = bonAchatProgress.coerceIn(0f, 1f)
                         val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f)
                         val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
 
                         val totalProgress =
-                            (validProduitProgress + validBonAchatProgress + validProduitAcheteProgress + validSqlProgress) / 4f
+                            (validProduitProgress +   validProduitAcheteProgress + validSqlProgress) / 4f
 
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -123,14 +120,14 @@ class TariffsButtonsViewModelSec7ID2(
                         }
 
                         Pair(
-                            Pair(validProduitProgress, validBonAchatProgress),
+                            validProduitProgress,
                             Pair(validProduitAcheteProgress, validSqlProgress)
                         )
                     }.collect { (firstPair, secondPair) ->
-                        val (produitProg, bonAchatProg) = firstPair
+                        val produitProg = firstPair
                         val (produitAcheteProg, sqlProg) = secondPair
 
-                        if (produitProg >= 1f && bonAchatProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) {
+                        if (produitProg >= 1f   && produitAcheteProg >= 1f && sqlProg >= 1f) {
                             _uiState.update {
                                 it.copy(
                                     isDataSyncing = false,
@@ -180,28 +177,16 @@ class TariffsButtonsViewModelSec7ID2(
 
                 bonAchatCollectorJob = launch {
                     try {
-                        val initialBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
+                        val initialBonAchatList = repoC3_BonVent.datasValue.toList()
 
                         _uiState.update { currentState ->
                             currentState.copy(bonAchatList = initialBonAchatList)
                         }
 
+                        // Fixed: Use snapshotFlow to observe changes in onVentData
                         launch {
-                            repoC3_BonVent.progressRepo.collect { progress ->
-                                if (progress >= 1f) {
-                                    delay(100)
-                                    val updatedBonAchatList =
-                                        repoC3_BonVent.modelDatasSnapList.toList()
-                                    _uiState.update {
-                                        it.copy(bonAchatList = updatedBonAchatList)
-                                    }
-                                }
-                            }
-                        }
-
-                        launch {
-                            repoC3_BonVent.activeId.collect { activeId ->
-                                val updatedBonAchatList = repoC3_BonVent.modelDatasSnapList.toList()
+                            snapshotFlow { repoC3_BonVent.onVentData }.collect { activeVentData ->
+                                val updatedBonAchatList = repoC3_BonVent.datasValue.toList()
                                 _uiState.update { it.copy(bonAchatList = updatedBonAchatList) }
                             }
                         }
@@ -210,7 +195,6 @@ class TariffsButtonsViewModelSec7ID2(
                         // Handle error silently
                     }
                 }
-
                 produitAcheteOperationCollectorJob = launch {
                     try {
                         val initialProduitAcheteList =

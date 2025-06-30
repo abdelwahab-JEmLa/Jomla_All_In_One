@@ -31,6 +31,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main.B1CouleurOuGoutProduitDataBaseTestDatasViewModel
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
+import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Preview.A_ProduitInfosViewModel
@@ -71,8 +72,6 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
-import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3_TransactionCommercial_RepositoryImp
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent.DataBaseFactoryMVentPeriode
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._DataBaseFactory_MVentPeriodeImpl
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
@@ -94,7 +93,6 @@ val centralDataBasesModule = module {
     single { A_MasterRepositorysGrpProtoJuin3(get(), get(), get(), get(), get()) }
     single<GroupeRepositorysProtoAvJuin3> {
         GroupeRepositorysProtoAvJuin3Impl(
-            get(),
             get(),
             get(),
             get(),
@@ -127,7 +125,7 @@ val dataBaseProtoAvantJuin3Module = module {
     single { DataBaseFactoryFClient(androidContext(), get()) }
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
-    single<C3TransactionCommercialRepository> { C3_TransactionCommercial_RepositoryImp(get()) }
+    single<DataBaseCreationFactoryGBonVent> { DataBaseCreationFactoryGBonVent(get()) }
     single { D_EtateMessageVocaleRepository(androidContext(), get()) }
     single { DataBaseFactoryDCouleurAchatOperation(get<AppDatabase>().D_AchatOperationDao()) }
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(get()) }
@@ -185,7 +183,7 @@ val viewModelModule = module {
     viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
-    viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
+    viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(),) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), ) }
     viewModel { VendeursViewModel( get(), get(), get(), ) }
     viewModel { MapClientsViewModel(get(), get(), get(), get(), ) }

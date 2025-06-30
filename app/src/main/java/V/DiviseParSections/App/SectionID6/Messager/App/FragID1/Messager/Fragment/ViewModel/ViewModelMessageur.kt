@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
@@ -42,10 +42,9 @@ class ViewModelMessageur(
             }
         }
 
+        val datasG = getter.gBonVentRepository.datasValue
         viewModelScope.launch {
-            val c3BonAchateList = masterRepositorys.e_GroupedDataBasesRepositoryProtoAvant3Juin
-                .repositorys_Model.c3TransactionCommercialRepository
-                .modelDatasSnapList.toList()
+            val c3BonAchateList = datasG.toList()
 
             _uiState.value = _uiState.value.copy(
                 c3_BonAchate = c3BonAchateList

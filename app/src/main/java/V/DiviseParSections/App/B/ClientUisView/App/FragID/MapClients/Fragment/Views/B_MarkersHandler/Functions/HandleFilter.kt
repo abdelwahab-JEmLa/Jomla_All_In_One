@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.GBonVent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -92,9 +92,9 @@ fun filterClientsBasedOnMode(
         }
 
         MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> {
+            val datas = viewModel.getter.gBonVentRepository.datasValue
             val clientsWithConfirmedProducts =
-                viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model
-                    .c3TransactionCommercialRepository.modelDatasSnapList
+                datas
                     .filter { bonAchat ->
                         bonAchat.etateActuellementEst == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                                 || bonAchat.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

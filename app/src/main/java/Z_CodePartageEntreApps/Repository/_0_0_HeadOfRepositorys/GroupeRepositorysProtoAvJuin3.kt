@@ -17,7 +17,6 @@ interface GroupeRepositorysProtoAvJuin3 {
 
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
-    fun notifyDataChanged_1_3_TransactionCommercial_Repository()
     fun upsertUneDataEtReturnVID_1_5_Vendeur(data: Z_AppCompt, onSuccess: (Long) -> Unit = {})
 
 

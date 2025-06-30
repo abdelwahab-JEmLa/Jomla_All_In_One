@@ -1,16 +1,13 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
+package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent.EtateActuellementEst
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
+import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.clientjetpack.R
@@ -28,61 +25,18 @@ import java.util.Objects
 
 @Stable
 class GBonVentRepository(
-    val ancienRepo: A_MasterRepositorysGrpProtoJuin3,
+    val dataBaseCreationFactory: DataBaseCreationFactoryGBonVent,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
-    val datasState: State<List<GBonVent>> = _datas
     val datasValue by derivedStateOf { _datas.value }
-
     val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId } }
-
-    private val _loadingProgress = mutableFloatStateOf(0f)
-    val loadingProgress: State<Float> = _loadingProgress
-
-    val size: Int by derivedStateOf { _datas.value.size }
-    val isEmpty: Boolean by derivedStateOf { _datas.value.isEmpty() }
 
     init {
         composScope.launch {
-            ancienRepo.model.collect { masterModel ->
-                masterModel?.let { model ->
-                    updateLoadingProgress(model.progress)
-                }
-            }
+            dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
-
-        composScope.launch {
-            snapshotFlow {
-                ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.c3TransactionCommercialRepository.modelDatasSnapList.toList()
-            }.collect { list ->
-                updateDatas(list)
-            }
-        }
-    }
-
-    fun getClientLastTransactionParEtate(
-        clientId: Long,
-        etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): GBonVent? {
-        return datasValue.filter {
-            it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
-        }.maxByOrNull { it.keyID }
-    }
-
-    fun getClientLastTransaction(clientId: Long): GBonVent? {
-        return datasValue.filter {
-            it.parentHClientOldID == clientId
-        }.maxByOrNull { it.keyID }
-    }
-
-    fun updateLoadingProgress(progress: Float) {
-        _loadingProgress.floatValue = progress
-    }
-
-    fun updateDatas(newDatas: List<GBonVent>) {
-        _datas.value = newDatas
     }
 
     fun addOrUpdateData(data: GBonVent) {
@@ -102,13 +56,11 @@ class GBonVentRepository(
             }
         }
 
-        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate,existingIndex)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent) {
-        ancienRepo.e_GroupedDataBasesRepositoryProtoAvant3Juin.upsertUneDataEtReturnVID(
-            dataUpdate
-        )
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int,) {
+        dataBaseCreationFactory.addOrUpdatedDataBase(dataUpdate,existingIndex)
     }
 }
 
