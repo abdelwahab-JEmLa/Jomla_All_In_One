@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -43,6 +44,7 @@ fun AfficheurRegleOuvert(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
+                .testTag("test")
         ) {
             val activeCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
 

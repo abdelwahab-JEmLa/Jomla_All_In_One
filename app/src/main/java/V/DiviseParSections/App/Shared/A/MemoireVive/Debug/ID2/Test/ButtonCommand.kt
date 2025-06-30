@@ -38,11 +38,12 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     viewClientKeyByParent: String,
 ) {
+    val tag = "$viewClientKeyByParent--${etateActuellementEst1.name}"
 
     FilledTonalButton(
         modifier = modifier
             .fillMaxWidth()
-            .testTag("$viewClientKeyByParent--${etateActuellementEst1.name}")
+            .testTag(tag)
         ,
         onClick = {
             if (clientOuCaMarqueGpsEstOuvert != null) {
