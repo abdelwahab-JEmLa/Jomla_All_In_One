@@ -30,21 +30,21 @@ class BSetter(
     val bClientsStateCompoRepository = getter.hClientRepository
 
 
-    fun updateDialogMapMarque(clientID :Long) {
+    fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
         val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
-        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
 
-        val zCompt = if (clientKey.isNullOrBlank()) {
-            currentZCompt.copy(
-                bOuvertDialogMapMarqueHClientKey = ""
-            )
-        } else {
-            currentZCompt.copy(
-                bOuvertDialogMapMarqueHClientKey = clientKey
-            )
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
+
+        val zCompt =
+            clientKey?.let {
+                currentZCompt?.copy(
+                    bOuvertDialogMapMarqueHClientKey = it
+                )
+            }
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
         }
-
-        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
     }
 
     fun ouvrireNewAppComptOnVentBonVentEtAddLe(
@@ -93,11 +93,22 @@ class BSetter(
             navigationHandler.navigateToCartScreen()
         }
     }
+
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             onVentFClientKeyID = "",
             onVentFClientDebugNameKey = "",
             onVentGBonVentKeyId = "",
+            bOuvertDialogMapMarqueHClientKey = ""
+        )
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        }
+    }
+
+    fun clear_bOuvertDialogMapMarqueHClientKey() {
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             bOuvertDialogMapMarqueHClientKey = ""
         )
 
@@ -116,6 +127,7 @@ class BSetter(
             zAppComptRepositoryComposable.addOrUpdateData(zCompt)
         }
     }
+
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             bOuvertDialogMapMarqueHClientKey = ""

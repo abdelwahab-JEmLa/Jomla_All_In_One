@@ -61,8 +61,7 @@ class AGetter(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val bOuvertDialogMapMarqueHClientKey =
-        zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
+    val bOuvertDialogMapMarqueHClientKey = zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
 
     // Fixed getVent function in AGetter.kt
     fun getRelatedCouleur(

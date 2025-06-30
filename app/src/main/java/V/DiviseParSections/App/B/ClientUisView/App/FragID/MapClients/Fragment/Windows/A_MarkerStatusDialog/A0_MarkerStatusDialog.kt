@@ -268,7 +268,9 @@ fun MarkerStatusDialog(
 
             // Floating dismiss button at bottom end
             FloatingActionButton(
-                onClick = { handleDismiss() },
+                onClick = {
+                    handleDismiss()
+                          },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
@@ -295,7 +297,7 @@ fun MarkerStatusDialog(
                         onClick = {
                             showExitConfirmationDialog = false
                             dismissDialog()
-                            viewModel.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+                            viewModel.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
                         }
                     ) {
                         Text("نعم")

@@ -98,7 +98,8 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-            viewModel.updateDialogMapMarque(clickedMarker.id.toLong())
+
+            viewModel.update_bOuvertDialogMapMarqueHClientKey(clickedMarker.id.toLong())
 
             if (showMarkerDetails) clickedMarker.showInfoWindow()
             true

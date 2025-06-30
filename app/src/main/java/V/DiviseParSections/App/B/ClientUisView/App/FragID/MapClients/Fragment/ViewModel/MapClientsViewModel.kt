@@ -267,8 +267,8 @@ class MapClientsViewModel(
         setter.ouvrireNewAppComptOnVentBonVentEtAddLe(clickedClient, newEtate)
     }
 
-    fun updateDialogMapMarque(clientOldId: Long) {
-        setter.updateDialogMapMarque(clientOldId)
+    fun update_bOuvertDialogMapMarqueHClientKey(clientOldId: Long) {
+        setter.update_bOuvertDialogMapMarqueHClientKey(clientOldId)
     }
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey(): Unit {
         setter.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
