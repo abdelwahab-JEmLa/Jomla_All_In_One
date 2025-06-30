@@ -32,26 +32,28 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
     val client = viewModel.getter.hClientRepository.findHClientInfos(clickedClient)
     val ventPeriodKey = viewModel.getter.parametresAppComptNonSaved.activePeriodKeyByParent
     val clientKey = client?.nom?.withOutFireBaseInvalidCharacters()!!
-    val etateKey = newEtate.name.withOutFireBaseInvalidCharacters()
 
     fun getKeyByParent(
         ventPeriodKeyByParent: String = null.toString(),
         clientKeyByParent: String = null.toString(),
-        etateKeyByParent: String = null.toString(),
-    ) = ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--ID8C2-$etateKeyByParent")
-        .withOutFireBaseInvalidCharacters()
+        etate: GBonVent.EtateActuellementEst,
+    ): String {
+        val etateKey = GBonVent.EtateActuellementEst.keyModel + "_" + etate
+        return ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--$etateKey")
+            .withOutFireBaseInvalidCharacters()
+    }
 
-    val keyHandBonVentOnClickButton = getKeyByParent(ventPeriodKey, clientKey, etateKey)
+    val keyHandBonVentOnClickButton = getKeyByParent(ventPeriodKey, clientKey, newEtate)
 
     FilledTonalButton(
         onClick = {
-          /*  viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
+            /*  viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
 
-            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-            ) {
-                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-            }   */
+              if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                  || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+              ) {
+                  viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+              }   */
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -80,9 +82,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 modifier = Modifier.padding(end = 8.dp)
             )
 
-
-            Text(keyHandBonVentOnClickButton, fontSize = 8.sp)
+            Text(keyHandBonVentOnClickButton, fontSize = 4.sp)
         }
     }
 }
-

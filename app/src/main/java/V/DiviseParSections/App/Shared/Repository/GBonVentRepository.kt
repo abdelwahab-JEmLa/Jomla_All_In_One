@@ -162,10 +162,7 @@ data class GBonVent(
             android.R.color.holo_green_light, "CIBLE_PRIORITE_3"
         ),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
-
-        ;
-        val keyModel= "ID8C2"
-
+          ;
         companion object {
             const val keyModel= "ID8C2"
         }

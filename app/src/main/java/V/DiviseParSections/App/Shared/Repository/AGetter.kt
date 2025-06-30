@@ -215,7 +215,7 @@ class AGetter(
         fun String?.withOutFireBaseInvalidCharacters(): String {
             val cleanedNom =
                 (this ?: "").replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?]"), "")
-                    .replace(Regex("\\s+"), "_").replace(Regex("_+"), "_").trim('_').take(40)
+                    .replace(Regex("\\s+"), "_").replace(Regex("_+"), "_").trim('_')
 
 
             return when {
