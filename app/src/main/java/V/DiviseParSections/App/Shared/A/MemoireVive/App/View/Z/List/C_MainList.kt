@@ -22,7 +22,7 @@ fun View_MainList(
     ) {
         // In C_MainList.kt
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
-            key(transaction.keyID) {
+            key(transaction.keyByParent) {
                 View_MainItem(
                     viewModel = viewModel,
                     bonVent = transaction,

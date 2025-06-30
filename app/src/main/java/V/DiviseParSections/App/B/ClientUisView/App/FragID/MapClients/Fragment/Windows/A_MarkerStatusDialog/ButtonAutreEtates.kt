@@ -67,7 +67,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 modifier = Modifier.padding(end = 8.dp)
             )
 
-            Text(keyHandBonVentOnClickButton, fontSize = 4.sp)
+            Text(keyHandBonVentOnClickButton, fontSize = 9.sp)
         }
     }
 }

@@ -43,19 +43,19 @@ class BSetter(
             zAppComptRepositoryComposable.addOrUpdateData(zCompt)
         }
     }
-    val onVentHVentPeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
+    val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
+    val onVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+
     fun clientNom(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }?.nom
 
     fun getKeyID8BonVent(
         clientOldID: Long,
         etate: GBonVent.EtateActuellementEst,
     ): String {
-        val keyModel = GBonVent.keyModel
-        val ventPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + onVentHVentPeriodKeyByParent
         val clientKeyByParent = HClientInfos.keyModel + "-" + clientNom(clientOldID)
         val etateKey = GBonVent.EtateActuellementEst.keyModel + "-" + etate
 
-        return ("$keyModel---$ventPeriodKeyByParent--$clientKeyByParent--$etateKey")
+        return ("$onVentHVentPeriodKeyByParent--$clientKeyByParent--$etateKey")
             .withOutFireBaseInvalidCharacters()
     }
 
@@ -72,9 +72,9 @@ class BSetter(
 
                 GBonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
-                    parentID2ClientKeyByParent = regexReturnParentKeysMap[HClientInfos.keyModel] ?: "",
-                    parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap[Z_AppCompt.keyModelValID7] ?: "",
-                    parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                    parentID7VentPeriodeKeyByParent = onVentHVentPeriodKeyByParent,
+                    parentID2ClientKeyByParent = regexReturnParentKeysMap[HClientInfos.keyModel] !!,
+                    parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap[GBonVent.EtateActuellementEst.keyModel] !!
                 )
             }
 
@@ -339,11 +339,9 @@ class BSetter(
         fun regexReturnParentKeysMap(keyByParent: String ): Map<String, String> {
             val parentKeysMap = mutableMapOf<String, String>()
 
-            // Split by double dashes to get individual key-value pairs
             val parts = keyByParent.split("--")
 
             for (part in parts) {
-                // Split each part by single dash to separate key from value
                 val keyValuePair = part.split("-", limit = 2)
                 if (keyValuePair.size == 2) {
                     val key = keyValuePair[0]
