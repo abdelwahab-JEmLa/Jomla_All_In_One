@@ -31,7 +31,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
 
     FilledTonalButton(
         onClick = {
-            viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
+            viewModel.setter.upsertBonVentSetter(keyHandBonVentOnClickButton)
 
             if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME

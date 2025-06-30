@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
-import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -256,7 +256,6 @@ class MapClientsViewModel(
         if (idClientOuSonMarqueMapEstOuvert == 0L) {
             setter.cleanFermeAppComptOnVentBonVent()
         } else {
-            setter.ouvrireNewAppComptOnVentBonVentEtAddLe(idClientOuSonMarqueMapEstOuvert)
         }
 
         updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)
@@ -264,7 +263,6 @@ class MapClientsViewModel(
     }
 
     fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
-        setter.ouvrireNewAppComptOnVentBonVentEtAddLe(clickedClient, newEtate)
     }
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientOldId: Long) {

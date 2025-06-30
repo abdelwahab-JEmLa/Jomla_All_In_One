@@ -5,7 +5,8 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -19,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.database.DatabaseReference
 
 class BSetter(
+    private val getter: AGetter,
     private val produitOperations: ProduitOperations,
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
     private val ventOperations: VentOperations,
 ) {
-    fun ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId: Long, newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) = id8BonVentOperations.ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId, newEtate)
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() = id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 
@@ -45,7 +46,12 @@ class BSetter(
 
     fun getKeyID8BonVent(clientId: Long, etate: GBonVent.EtateActuellementEst): String = id8BonVentOperations.getKeyID8BonVent(clientId, etate)
 
-    fun upsertBonVent(keyHandBonVent: String) = id8BonVentOperations.upsertBonVent(keyHandBonVent)
+    fun upsertBonVentSetter(keyHandBonVent: String) = upsertBonVent(
+        keyHandBonVent,
+        gBonVentRepository = getter.gBonVentRepository,
+        hClientRepository = getter.hClientRepository,
+        getter.parametresAppComptNonSaved
+    )
 
     fun acheterACaSetterCentral(fCouleurVentOperation: FCouleurVentOperationInfos? = null, produit: ArticlesBasesStatsTable, colorIndex: Int, quantity: Int) = ventOperations.acheterACaSetterCentral(fCouleurVentOperation, produit, colorIndex, quantity)
 

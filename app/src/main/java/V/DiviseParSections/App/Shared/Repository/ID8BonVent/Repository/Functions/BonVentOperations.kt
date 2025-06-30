@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
+package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
@@ -6,6 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.BSetter
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.Patch.BSetterP
 
 class BonVentOperations(

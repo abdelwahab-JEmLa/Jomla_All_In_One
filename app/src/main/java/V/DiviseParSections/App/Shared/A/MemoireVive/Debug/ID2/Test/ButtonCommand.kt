@@ -46,13 +46,8 @@ fun CommandButton(
             .testTag(tag)
         ,
         onClick = {
-            if (clientOuCaMarqueGpsEstOuvert != null) {
-                viewModel.ouvreBonVent(
-                    clientOuCaMarqueGpsEstOuvert.id
-                )
-
-                onUpdateLongAppSetting()
-            }
+            viewModel.setter.upsertBonVentSetter(tag)
+            onUpdateLongAppSetting()
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
