@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -34,16 +33,15 @@ fun TariffsButtonsSec7ID2(
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
-    val transactionComQuiFilterButtons =
-        viewModel.aCentralDatasHandlerProtoJuin9.ouvertTransactionCommercial
+    val bonVentComQuiFilterButtons =
+        viewModel.getter.gBonVentRepository.onVentData
 
-    val context = LocalContext.current
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
     val bonAchatList =
-        viewModel.aCentralDatasHandlerProtoJuin9.gBonVentRepository.datasValue
+        viewModel.getter.gBonVentRepository.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
@@ -91,7 +89,7 @@ fun TariffsButtonsSec7ID2(
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (transactionComQuiFilterButtons != null) {
+                if (bonVentComQuiFilterButtons != null) {
                     MainFilter(
                         viewModel=viewModel,
                         tarificationList = tarificationList,
@@ -100,7 +98,7 @@ fun TariffsButtonsSec7ID2(
                         produitInfosList = produitInfosList,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
-                        filterBonID = transactionComQuiFilterButtons.vid,
+                        filterBonID = bonVentComQuiFilterButtons.vid,
                         onClickPrixButton = onClickPrixButton,
                         onClickAnulationButton = onClickAnulationButton
                     )

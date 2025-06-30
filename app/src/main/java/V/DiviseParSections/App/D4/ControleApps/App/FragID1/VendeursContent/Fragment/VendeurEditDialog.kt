@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,16 +34,16 @@ import androidx.compose.ui.unit.dp
 @Composable
 private fun VP() {
     VendeurEditDialog(
-        _1_5_Vendeur(
+        Z_AppCompt(
         ),
     )
 }
 
 @Composable
 fun VendeurEditDialog(
-    vendeur: _1_5_Vendeur,
+    vendeur: Z_AppCompt,
     onDismiss: () -> Unit = {},
-    onConfirm: (_1_5_Vendeur) -> Unit = {}
+    onConfirm: (Z_AppCompt) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -153,8 +153,8 @@ fun VendeurEditDialog(
 
 @Composable
 private fun RowcConnectAuDevelopingDataBase(
-    mainData: _1_5_Vendeur,
-    onClick: (_1_5_Vendeur) -> Unit = {}
+    mainData: Z_AppCompt,
+    onClick: (Z_AppCompt) -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
@@ -24,7 +25,7 @@ class _1_5_VendeurRepositoryImpl(
 ) : _1_5_Vendeur_Repository {
     private val TAG = _1_5_Vendeur_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
+    override var modelDatasSnapList: SnapshotStateList<Z_AppCompt> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -50,7 +51,7 @@ class _1_5_VendeurRepositoryImpl(
     }
 
     override fun addDataAndReturneItVID(
-        data: _1_5_Vendeur,
+        data: Z_AppCompt,
         onAddSuccess: (Long) -> Unit
     ) {
         try {
@@ -106,7 +107,7 @@ class _1_5_VendeurRepositoryImpl(
         return vendor.vid
     }
 
-    override fun updateUnSeulData(data: _1_5_Vendeur) {
+    override fun updateUnSeulData(data: Z_AppCompt) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
@@ -199,9 +200,9 @@ class _1_5_VendeurRepositoryImpl(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<_1_5_Vendeur>()
+                            val updatedList = mutableListOf<Z_AppCompt>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_1_5_Vendeur::class.java)
+                                val data = dataSnapshot.getValue(Z_AppCompt::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -274,11 +275,11 @@ class _1_5_VendeurRepositoryImpl(
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<_1_5_Vendeur>()
+                    val dataList = mutableListOf<Z_AppCompt>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(_1_5_Vendeur::class.java)
+                            val data = dataSnapshot.getValue(Z_AppCompt::class.java)
                             data?.let {
                                 dataList.add(it)
                             }
@@ -327,15 +328,15 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
-    override fun deleteUnSeulData(data: _1_5_Vendeur) {
+    override fun deleteUnSeulData(data: Z_AppCompt) {
         updatesOperations.deleteUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override fun addData(data: _1_5_Vendeur) {
+    override fun addData(data: Z_AppCompt) {
         updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_5_Vendeur>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<Z_AppCompt>) {
         updatesOperations.updateMultiDatas(
             datas,
             isUpdating,

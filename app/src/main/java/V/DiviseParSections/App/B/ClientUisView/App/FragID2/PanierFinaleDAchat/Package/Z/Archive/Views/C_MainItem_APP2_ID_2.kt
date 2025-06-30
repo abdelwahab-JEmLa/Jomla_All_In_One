@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.Views
-
+              /*
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
@@ -397,3 +397,4 @@ fun C_MainItem_APP2_ID_2(
         }
     }
 }
+             */

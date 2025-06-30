@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -59,7 +59,7 @@ fun VendeursContent(
     uiState: VendeursUiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
-    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
+    onVendeurUpdate: (Z_AppCompt) -> Unit,
     modifier: Modifier = Modifier,
     onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
     viewModel: VendeursViewModel,
@@ -188,10 +188,10 @@ fun SectionDivider(
 
 @Composable
 fun VendeurItem(
-    vendeur: _1_5_Vendeur,
+    vendeur: Z_AppCompt,
     isActive: Boolean,
     onVendeurSelected: (Long) -> Unit,
-    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
+    onVendeurUpdate: (Z_AppCompt) -> Unit,
 ) {
     // State for dialog visibility
     var showEditDialog by remember { mutableStateOf(false) }

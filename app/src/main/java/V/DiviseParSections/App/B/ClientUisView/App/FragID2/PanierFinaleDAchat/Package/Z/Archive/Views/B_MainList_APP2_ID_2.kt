@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.Views
-
+    /*
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -87,3 +87,4 @@ private fun produitsBonAchatIDs(
 
         condition1 && condition2 && condition3
     }
+                            */

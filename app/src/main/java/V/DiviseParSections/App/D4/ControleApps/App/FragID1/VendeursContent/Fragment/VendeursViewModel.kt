@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_Perio
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 // Data class to represent UI state
 data class VendeursUiState(
-    val vendeurs: List<_1_5_Vendeur> = emptyList(),
+    val vendeurs: List<Z_AppCompt> = emptyList(),
     val periodes: List<MVentPeriode> = emptyList(),
     val activeVendeurId: Long = 0L,
     val activePeriodeId: Long = 0L,
@@ -98,13 +98,13 @@ open class VendeursViewModel(
         }
     }
 
-    fun update_1_5(data: _1_5_Vendeur): Unit {
+    fun update_1_5(data: Z_AppCompt): Unit {
         repository.upsertUneDataEtReturnVID_1_5_Vendeur(data)
     }
 
 
     // Add this method to the VendeursViewModel class
-    fun getActiveVendeur(): _1_5_Vendeur? {
+    fun getActiveVendeur(): Z_AppCompt? {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
         return vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
     }
@@ -136,8 +136,8 @@ open class VendeursViewModel(
 
     // Only for development/testing
     fun addTestData() {
-        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
-        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
+        vendeurRepository.addDataAndReturneItVID(Z_AppCompt(nom = "W"))
+        vendeurRepository.addDataAndReturneItVID(Z_AppCompt(nom = "M"))
         periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "1:mm"))
         periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "2:mm"))
         loadData()

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.Update
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import android.util.Log
@@ -20,10 +20,10 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
     private val TAG = _1_5_Vendeur_Repository.TAG
 
     fun updateUnSeulData(
-        data: _1_5_Vendeur,
+        data: Z_AppCompt,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
+        modelDatasSnapList: SnapshotStateList<Z_AppCompt>
     ) {
         repositoryScope.launch(Dispatchers.Main) {
             val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
@@ -43,10 +43,10 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
     }
 
     fun deleteUnSeulData(
-        data: _1_5_Vendeur,
+        data: Z_AppCompt,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
+        modelDatasSnapList: SnapshotStateList<Z_AppCompt>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -70,10 +70,10 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
     }
 
     fun addData(
-        data: _1_5_Vendeur,
+        data: Z_AppCompt,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
+        modelDatasSnapList: SnapshotStateList<Z_AppCompt>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -93,7 +93,7 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: _1_5_Vendeur) {
+    private suspend fun firebaseUpdateData(data: Z_AppCompt) {
         try {
             _1_5_Vendeur_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
@@ -102,10 +102,10 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
     }
 
     suspend fun updateMultiDatas(
-        datas: SnapshotStateList<_1_5_Vendeur>,
+        datas: SnapshotStateList<Z_AppCompt>,
         isUpdating: AtomicBoolean,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>,
+        modelDatasSnapList: SnapshotStateList<Z_AppCompt>,
         valueEventListener: ValueEventListener?,
         flowValueEventListener: ValueEventListener?,
         listenerLock: Any,
@@ -188,7 +188,7 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private fun batchFireBaseSet(datas: List<_1_5_Vendeur>) {
+    private fun batchFireBaseSet(datas: List<Z_AppCompt>) {
         try {
             val reference = _1_5_Vendeur_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()

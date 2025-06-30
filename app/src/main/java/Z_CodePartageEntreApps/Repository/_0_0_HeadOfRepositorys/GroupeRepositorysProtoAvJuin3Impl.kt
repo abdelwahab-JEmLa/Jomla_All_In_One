@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
@@ -124,7 +124,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                         )
 
 
-                        is _1_5_Vendeur -> processDeleteOperation(
+                        is Z_AppCompt -> processDeleteOperation(
                             data = data,
                             databaseDao = appDatabase._1_5_VendeurDao(),
                             snapshotList = _1_5_Repository.modelDatasSnapList,
@@ -181,7 +181,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 is GBonVentDao -> databaseDao.delete(data as GBonVent)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
                 is MVentPeriodeDao -> databaseDao.delete(data as MVentPeriode)
-                is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
+                is _1_5_VendeurDao -> databaseDao.delete(data as Z_AppCompt)
                 else -> {
                     Log.e(
                         TAG,
@@ -420,7 +420,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     }
 
     override fun upsertUneDataEtReturnVID_1_5_Vendeur(
-        data: _1_5_Vendeur,
+        data: Z_AppCompt,
         onSuccess: (Long) -> Unit,
     ): Unit {
         try {

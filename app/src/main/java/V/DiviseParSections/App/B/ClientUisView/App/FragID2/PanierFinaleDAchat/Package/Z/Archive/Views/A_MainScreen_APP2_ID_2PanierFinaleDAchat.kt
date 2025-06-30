@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.Views
-
+     /*
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import Z_CodePartageEntreApps.Proto.B.Par.App.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
@@ -154,3 +154,4 @@ private fun calcule_totalPrice(
     // Multiply the quantity by the price for this product
     productTotalQuantity * productPrice
 }
+                      */

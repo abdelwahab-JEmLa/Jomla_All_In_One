@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -38,17 +38,9 @@ fun CommandButton(
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
 ) {
-    val selectedMarkedID = selectedMarker.id.toLong()
 
     FilledTonalButton(
         onClick = {
-            upsertLenceCommandeRepoGroupedProtoAvantJuin3(
-                uiState = uiState,
-                viewModel = viewModel,
-                relatedClientID = clientId,
-                newEtate = etateActuellementEst1
-            )
-
             if (clientOuCaMarqueGpsEstOuvert != null) {
                 viewModel.ouvreBonVent(
                     clientOuCaMarqueGpsEstOuvert.id
@@ -99,9 +91,11 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
     }
-    val activeComptApp = uiState.activeCompt
+
+    val activeComptApp= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
+
     val clientId = relatedClients?.id ?: 0L
 
     val existingBonAchat = viewModel.c3_BonAchate_List.find {

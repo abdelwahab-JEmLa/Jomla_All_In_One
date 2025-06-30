@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository.Main.Proto
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -18,13 +18,13 @@ class Z_ComptAppStateCompoRepositoryProtoAvanJuin17(
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datas = mutableStateOf<List<_1_5_Vendeur>>(emptyList())
-    val datas: State<List<_1_5_Vendeur>> = _datas
+    private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
+    val datas: State<List<Z_AppCompt>> = _datas
     val datasValue by derivedStateOf { _datas.value }
 
     val activeCompt by derivedStateOf { getActiveComptPourCeTelephone() }
     val idClientOuSonMarqueMapEstOuvert by derivedStateOf {
-        activeCompt?.idClientOuSonMarqueMapEstOuvert ?: 0
+        activeCompt?.onVentFClientAncienId ?: 0
     }
 
     val size: Int by derivedStateOf { _datas.value.size }
@@ -43,16 +43,17 @@ class Z_ComptAppStateCompoRepositoryProtoAvanJuin17(
             }
         }
     }
-    fun getActiveComptPourCeTelephone(): _1_5_Vendeur? { return datasValue.find { it.vid == 1L } }
+    fun getActiveComptPourCeTelephone(): Z_AppCompt? { return datasValue.find { it.vid == 1L } }
+
 
     fun updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert: Long) {
-        val updatedCompt = activeCompt?.copy(idClientOuSonMarqueMapEstOuvert = idClientOuSonMarqueMapEstOuvert)
+        val updatedCompt = activeCompt?.copy(onVentFClientAncienId = idClientOuSonMarqueMapEstOuvert)
         addOrUpdateData(updatedCompt)
     }
 
-    fun addOrUpdateData(data: _1_5_Vendeur?) {
+    fun addOrUpdateData(data: Z_AppCompt?) {
         data?.let { dataSansProper ->
-            val newData= dataSansProper.withProperKeyFireBaseAndTimeTamp()
+            val newData= dataSansProper
             _datas.value = _datas.value.map {
                 if (it.vid == newData.vid)
                     newData
@@ -64,12 +65,12 @@ class Z_ComptAppStateCompoRepositoryProtoAvanJuin17(
         }
     }
 
-    private fun update_a_MasterRepositorysGrpProtoJuin3(newData: _1_5_Vendeur) {
+    private fun update_a_MasterRepositorysGrpProtoJuin3(newData: Z_AppCompt) {
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
             .repositorys_Model
             .repository_1_5_Vendeur
             .updateUnSeulData(newData)
     }
 
-    fun addOrUpdateDatasComposClass(datas: List<_1_5_Vendeur>) { _datas.value = datas }
+    fun addOrUpdateDatasComposClass(datas: List<Z_AppCompt>) { _datas.value = datas }
 }

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import android.os.Build
@@ -105,7 +105,7 @@ fun A_OptionsControlsButtons_Main(
                                     repositorysModel
                                         .repository_1_5_Vendeur
                                         .addDataAndReturneItVID(
-                                            _1_5_Vendeur()
+                                            Z_AppCompt()
                                         )
                                 },
                                 modifier = Modifier.size(40.dp),
@@ -113,7 +113,7 @@ fun A_OptionsControlsButtons_Main(
                             ) {
                                 Icon(
                                     Icons.Filled.PhoneAndroid,
-                                    contentDescription = "Add New _1_5_Vendeur"
+                                    contentDescription = "Add New Z_AppCompt"
                                 )
                             }
 

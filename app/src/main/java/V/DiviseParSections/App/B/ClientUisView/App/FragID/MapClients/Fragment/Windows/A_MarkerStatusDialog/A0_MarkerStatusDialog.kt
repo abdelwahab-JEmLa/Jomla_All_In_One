@@ -133,9 +133,9 @@ fun MarkerStatusDialog(
                             onShowPhoneDialogChange = { showPhoneDialog = it },
                         )
                     }
-
-                    uiState.activeCompt?.let { activeCompt ->
-                        if (activeCompt.idClientOuSonMarqueMapEstOuvert != 0L) {
+                     val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+                    activeCompt?.let { activeCompt ->
+                        if (activeCompt.onVentFClientAncienId != 0L) {
                             item {
                                 AfficheurRegleOuvert(
                                     uiState = uiState,
@@ -226,8 +226,8 @@ fun MarkerStatusDialog(
                                             )
                                     }
 
-                                    // Add null check for activeCompt before accessing vid property
-                                    uiState.activeCompt?.let { activeCompt ->
+                                    val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+                                    activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
                                             item {
                                                 GBonVent.EtateActuellementEst.CIBLE_POUR_2
@@ -295,6 +295,7 @@ fun MarkerStatusDialog(
                         onClick = {
                             showExitConfirmationDialog = false
                             dismissDialog()
+                            viewModel.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
                         }
                     ) {
                         Text("نعم")

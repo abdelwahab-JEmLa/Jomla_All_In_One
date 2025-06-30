@@ -9,7 +9,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.HClientInfos
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.deleteData
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto._1_5_Vendeur._1_5_Vendeur
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_AppCompt.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.GBonVent
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
@@ -116,7 +116,7 @@ class MapClientsViewModelss(
                     .toList()
             }.collect { list ->
                 _uiState.value = _uiState.value.copy(
-                    activeCompt = _1_5_Vendeur.getActiveComptPourCeTelephone(list)
+                    activeCompt = Z_AppCompt.getActiveComptPourCeTelephone(list)
                 )
             }
         }

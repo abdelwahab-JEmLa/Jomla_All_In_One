@@ -3,12 +3,12 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.deleteData
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
@@ -40,7 +40,6 @@ import java.util.Date
 data class UiState(
     val b_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val c3_TransactionCommercialList: List<GBonVent> = emptyList(),
-    val activeCompt: _1_5_Vendeur? = null,
     val secteursList: List<E1SecteurDeClients> = emptyList(),
     val panelsGroupeList: List<Z_AutreStatesCompoRepository.PanelsGroupeButton> = emptyList(),
     val mainLoadingProgress: Float = 0f,
@@ -89,7 +88,6 @@ class MapClientsViewModel(
         _uiState.value = UiState(
             b_ClientInfosProtoJuin3List = clientsState.datasState.value,
             c3_TransactionCommercialList = transactionsState.datasState.value,
-            activeCompt = appState.activeCompt,
             mainLoadingProgress = getter.loadingProgress!!,
             isLoading = clientsState.isLoading,
             error = null
@@ -256,9 +254,6 @@ class MapClientsViewModel(
     }
 
     fun ouvreBonVent(idClientOuSonMarqueMapEstOuvert: Long): Unit {
-        getter.comptAppState
-            .updateActiveComptIdClientOuSonMarqueMapEstOuvert(idClientOuSonMarqueMapEstOuvert)
-
         if (idClientOuSonMarqueMapEstOuvert == 0L) {
             setter.cleanFermeAppComptOnVentBonVent()
         } else {
@@ -267,7 +262,6 @@ class MapClientsViewModel(
 
         updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)
         startRecordIfNot()
-
     }
 
     fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
@@ -276,5 +270,9 @@ class MapClientsViewModel(
 
     fun updateDialogMapMarque(clientOldId: Long) {
         setter.updateDialogMapMarque(clientOldId)
+    }
+
+    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
+        setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
     }
 }

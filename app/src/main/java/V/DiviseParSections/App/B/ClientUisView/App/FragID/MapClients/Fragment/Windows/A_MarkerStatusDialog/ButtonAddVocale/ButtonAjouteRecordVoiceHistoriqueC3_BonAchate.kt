@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
@@ -46,8 +46,10 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     clientId: Long? = null,
 ) {
+   val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+
     val ceComptVendeurInsertBonsAchatAuPeriodID =
-        uiState.activeCompt
+        activeCompt
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     val currentTransaction =
@@ -149,8 +151,8 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
 
                                 // Create and save the voice message record to database
                                 val voiceMessageRecord = D_EtateMessageVocale(
-                                    idParent_1_5_Vendeur = uiState.activeCompt!!.vid,
-                                    nomParent_1_5_Vendeur = uiState.activeCompt.nom,
+                                    idParent_1_5_Vendeur = activeCompt!!.vid,
+                                    nomParent_1_5_Vendeur = activeCompt.nom,
                                     parentMessageVID = parentMessageVID,
                                     nom = D_EtateMessageVocale.Nom.ENVOYER,
                                     timestamps = DatesHandler().getCurrentTimestamps(),

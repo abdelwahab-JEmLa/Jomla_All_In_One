@@ -159,9 +159,9 @@ fun MapContent(
             )
         }
         val getter = viewModel.getter
+        val clientOldIdOuSonMarqueMapPasFerme = getter.clientOldIdOuSonMarqueMapPasFerme
         val clientOuCaMarqueGpsEstOuvert =
-            getter
-                .clientOuSonMarqueMapEstOuvert
+            getter.hClientRepository.datasValue.find { it.id == clientOldIdOuSonMarqueMapPasFerme }
 
         if (clientOuCaMarqueGpsEstOuvert != null ||
             !viewModel.getter.bOuvertDialogMapMarqueHClientKey.isNullOrBlank()

@@ -8,7 +8,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel.PanierFinaleDAchatViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.VendeursViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
@@ -178,8 +177,7 @@ val viewModelModule = module {
     viewModel { Sec9FragId1ViewId2ViewModel(get()) }
 
     viewModel { ViewModel_A4FragID1(get(), get()) }
-    viewModel { PanierFinaleDAchatViewModel(get(), get(), get()) }
-    viewModel { VendeurAfficheurInfosProduitViewModel(get(), get()) }
+    viewModel { VendeurAfficheurInfosProduitViewModel(get(),) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
     viewModel { ViewModelMessageur(get(), get()) }
     viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
@@ -188,13 +186,13 @@ val viewModelModule = module {
     viewModel { EditeBaseDonneMainScreenIdS9ViewModel(get(), get()) }
     viewModel { GrossistAchatSec12FragID1_ViewModel(get()) }
     viewModel { ViewModelT2(get()) }
-    viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get(), get()) }
+    viewModel { TariffsButtonsViewModelSec7ID2(get(), get(), get()) }
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get()) }
     viewModel { VendeursViewModel(get(), get()) }
-    viewModel { MapClientsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { MapClientsViewModel(get(), get(), get(), get(), ) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
     viewModel { HeadViewModel(androidContext(), get(), get(), get()) }

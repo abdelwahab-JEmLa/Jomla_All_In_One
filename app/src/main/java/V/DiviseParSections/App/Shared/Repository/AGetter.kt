@@ -131,17 +131,7 @@ class AGetter(
         }
     }
 
-    val clientOuSonMarqueMapEstOuvert by derivedStateOf {
-        hClientRepository.findClientById(comptAppState.idClientOuSonMarqueMapEstOuvert)
-    }
-
-    val ouvertTransactionCommercial: GBonVent? by derivedStateOf {
-        clientOuSonMarqueMapEstOuvert?.let {
-            gBonVentRepository.getClientLastTransactionParEtate(
-                it.id, GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            )
-        }
-    }
+    val clientOldIdOuSonMarqueMapPasFerme by derivedStateOf { zAppComptRepositoryComposable.currentAppCompt?.onVentFClientAncienId }
 
     init {
         composScope.launch {

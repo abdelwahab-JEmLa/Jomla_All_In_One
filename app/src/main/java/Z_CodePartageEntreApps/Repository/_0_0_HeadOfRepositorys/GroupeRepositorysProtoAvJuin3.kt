@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GroupeRepositorysProtoAvJuin3 {
@@ -19,7 +18,7 @@ interface GroupeRepositorysProtoAvJuin3 {
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_TransactionCommercial_Repository()
-    fun upsertUneDataEtReturnVID_1_5_Vendeur(data: _1_5_Vendeur, onSuccess: (Long) -> Unit = {})
+    fun upsertUneDataEtReturnVID_1_5_Vendeur(data: Z_AppCompt, onSuccess: (Long) -> Unit = {})
 
 
 

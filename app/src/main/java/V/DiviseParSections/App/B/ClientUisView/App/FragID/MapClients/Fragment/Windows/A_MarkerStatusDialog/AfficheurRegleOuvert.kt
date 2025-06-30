@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,7 +44,9 @@ fun AfficheurRegleOuvert(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            uiState.activeCompt?.let { activeCompt ->
+            val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+
+           activeCompt?.let { activeCompt ->
                 val relatedClientactiveTransaction =
                     viewModel.bProto_ClientsDataBase.find {
                         it.id == activeCompt.vid

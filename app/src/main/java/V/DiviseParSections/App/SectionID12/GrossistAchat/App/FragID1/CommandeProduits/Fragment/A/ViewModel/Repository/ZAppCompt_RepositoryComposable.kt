@@ -81,7 +81,7 @@ data class Z_AppCompt(
     var bsonObjectId: String = getPushFireBase(ref),
     var keyID: String = getPushFireBase(ref),
 
-    var id: String = "",
+    var vid: Long = 1,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     // Section InfosDeBase
@@ -125,8 +125,8 @@ data class Z_AppCompt(
     var onVentFClientKeyID: String = "",
     var onVentFClientDebugNameKey: String = "",
     var onVentFClientAncienId: Long = 0L,
-//------------------------------------------------------------------------------------------------------------------------------------------------
-    val bOuvertDialogMapMarqueHClientKey: String  = ""
+    //------------------------------------------------------------------------------------------------------------------------------------------------
+    val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {
     init {
         if (nomMutable.isEmpty()) {

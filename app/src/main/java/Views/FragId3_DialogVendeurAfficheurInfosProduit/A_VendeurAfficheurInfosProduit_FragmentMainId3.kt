@@ -183,10 +183,10 @@ fun MainUi(
     // Toast state management inside MainUi
     var showToast by remember { mutableStateOf(false) }
     val idProduitActuelle = currentSale.idArticle
-    val centralDatasHandler = viewModel.aCentralDatasHandlerProtoJuin9
-    val ouvertTransactionalCommercial = centralDatasHandler.ouvertTransactionCommercial
+    val getter = viewModel.getter
+    val onVentBonVent = getter.gBonVentRepository.onVentData
 
-    if (ouvertTransactionalCommercial == null) {
+    if (onVentBonVent == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -201,13 +201,12 @@ fun MainUi(
     }
 
     // Safe null handling for progress
-    val progressValue = centralDatasHandler.loadingProgress
+    val progressValue = getter.loadingProgress
     val isLoading = (progressValue ?: 0f) < 1.0f
 
     // Safe handling for client ID
-    val clientOuSonMarqueMapEstOuvert = centralDatasHandler.clientOuSonMarqueMapEstOuvert
-    val idClientActuelleDepui1_3 = clientOuSonMarqueMapEstOuvert?.id
-    if (idClientActuelleDepui1_3 == null) {
+    val clientOuSonMarqueMapEstOuvert = getter.clientOldIdOuSonMarqueMapPasFerme
+    if (clientOuSonMarqueMapEstOuvert == null) {
         // Handle case where there's no client
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -227,13 +226,13 @@ fun MainUi(
 
     LaunchedEffect(
         key1 = currentSale.idArticle,
-        key2 = idClientActuelleDepui1_3
+        key2 = clientOuSonMarqueMapEstOuvert
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
             repositorysModel.repositoryC2_ProduitAcheteOperation.modelDatasSnapList.find {
                 it.produitAcheterID == produitActuelle &&
-                        it.parent_1_3_TransactionCommercial == ouvertTransactionalCommercial.vid
+                        it.parent_1_3_TransactionCommercial == onVentBonVent.vid
             }
 
         parentCompose_1_2_ProduitAcheteOperationVid =
@@ -253,9 +252,9 @@ fun MainUi(
                 val newOperation = _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentIdClient = idClientActuelleDepui1_3,
+                    parentIdClient = clientOuSonMarqueMapEstOuvert,
                     provisoireMonPrix = articlesBaseStats?.prixVent ?: 0.0,
-                    parent_1_3_TransactionCommercial = ouvertTransactionalCommercial.vid
+                    parent_1_3_TransactionCommercial = onVentBonVent.vid
                 )
 
                 repositorysModel.repositoryC2_ProduitAcheteOperation.addDataAndReturneItVID(

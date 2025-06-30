@@ -96,6 +96,16 @@ class BSetter(
     fun cleanFermeAppComptOnVentBonVent() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             onVentGBonVentKeyId = "",
+            bOuvertDialogMapMarqueHClientKey = ""
+        )
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        }
+    }
+    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+            bOuvertDialogMapMarqueHClientKey = ""
         )
 
         if (zCompt != null) {

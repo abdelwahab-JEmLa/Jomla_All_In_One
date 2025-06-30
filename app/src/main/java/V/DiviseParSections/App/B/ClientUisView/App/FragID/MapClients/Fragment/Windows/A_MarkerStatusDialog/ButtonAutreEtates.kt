@@ -47,6 +47,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             ) {
                 viewModel.getter.comptAppState
                     .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
+
             }
         },
         modifier = Modifier.fillMaxWidth(),
