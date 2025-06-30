@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.App.View.Z.List
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

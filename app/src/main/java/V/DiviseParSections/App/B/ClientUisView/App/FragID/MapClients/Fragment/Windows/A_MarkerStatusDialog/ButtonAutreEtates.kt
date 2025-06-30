@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 
 @Composable
@@ -28,17 +27,17 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
 ) {
     val context = LocalContext.current
     val newEtate = this
-
     val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVent(clickedClient, newEtate)
+
     FilledTonalButton(
         onClick = {
-              viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
+            viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
 
-              if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                  || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-              ) {
-                  viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-              }
+            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            ) {
+                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+            }
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -66,8 +65,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 contentDescription = newEtate.nomArabe,
                 modifier = Modifier.padding(end = 8.dp)
             )
-
-            Text(keyHandBonVentOnClickButton, fontSize = 9.sp)
+            Text(newEtate.nomArabe)
         }
     }
 }

@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.BSetter
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import java.io.File
 

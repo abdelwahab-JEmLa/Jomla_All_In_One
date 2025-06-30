@@ -109,6 +109,8 @@ fun ClientEdites(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            viewModel.setter.id8BonVentOperations.ViewKey(marqueClickRelativeClient?.id)
+
             Text(
                 text = marqueClickRelativeClient?.nom ?: "ClientAchteur",
                 style = MaterialTheme.typography.titleLarge,

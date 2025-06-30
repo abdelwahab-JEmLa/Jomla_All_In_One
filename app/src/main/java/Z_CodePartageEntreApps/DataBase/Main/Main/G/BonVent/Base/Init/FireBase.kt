@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init
 
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume

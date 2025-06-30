@@ -2,29 +2,30 @@ package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.BonVentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import com.google.firebase.database.DatabaseReference
 
 class BSetter(
     private val produitOperations: ProduitOperations,
-    private val bonVentOperations: BonVentOperations,
+    val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
     private val ventOperations: VentOperations,
 ) {
-    fun ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId: Long, newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) = bonVentOperations.ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId, newEtate)
+    fun ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId: Long, newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) = id8BonVentOperations.ouvrireNewAppComptOnVentBonVentEtAddLe(clientOldId, newEtate)
 
-    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() = bonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() = id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 
-    fun ajouteNewBonVent(key: String, clientOldId: Long, etate: GBonVent.EtateActuellementEst) = bonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
+    fun ajouteNewBonVent(key: String, clientOldId: Long, etate: GBonVent.EtateActuellementEst) = id8BonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
 
-    fun updateComptAppErExistKey(key: String, clientOldId: Long, etate: GBonVent.EtateActuellementEst) = bonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
+    fun updateComptAppErExistKey(key: String, clientOldId: Long, etate: GBonVent.EtateActuellementEst) = id8BonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
 
-    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() = bonVentOperations.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
+    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() = id8BonVentOperations.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
 
-    fun cleanFermeAppComptOnVentBonVent() = bonVentOperations.clear_bOuvertDialogMapMarqueHClientKey()
+    fun cleanFermeAppComptOnVentBonVent() = id8BonVentOperations.clear_bOuvertDialogMapMarqueHClientKey()
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) = clientOperations.update_bOuvertDialogMapMarqueHClientKey(clientID)
 
@@ -33,9 +34,9 @@ class BSetter(
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
     fun deleteAddMultiDatas() = produitOperations.deleteAddMultiDatas()
 
-    fun getKeyID8BonVent(clientId: Long, etate: GBonVent.EtateActuellementEst): String = bonVentOperations.getKeyID8BonVent(clientId, etate)
+    fun getKeyID8BonVent(clientId: Long, etate: GBonVent.EtateActuellementEst): String = id8BonVentOperations.getKeyID8BonVent(clientId, etate)
 
-    fun upsertBonVent(keyHandBonVent: String) = bonVentOperations.upsertBonVent(keyHandBonVent)
+    fun upsertBonVent(keyHandBonVent: String) = id8BonVentOperations.upsertBonVent(keyHandBonVent)
 
     fun acheterACaSetterCentral(fCouleurVentOperation: FCouleurVentOperationInfos? = null, produit: ArticlesBasesStatsTable, colorIndex: Int, quantity: Int) = ventOperations.acheterACaSetterCentral(fCouleurVentOperation, produit, colorIndex, quantity)
 

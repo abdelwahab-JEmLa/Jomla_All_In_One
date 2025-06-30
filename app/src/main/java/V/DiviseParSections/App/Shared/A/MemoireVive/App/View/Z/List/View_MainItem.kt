@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.App.View.Z.List
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box

@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.Shared.A.MemoireVive.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +59,7 @@ fun MarkerStatusDialog(
     onRemoveMark: (Marker?) -> Unit,
 ) {
 
+
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
         .find { marker ->
@@ -106,6 +107,7 @@ fun MarkerStatusDialog(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
