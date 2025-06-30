@@ -20,7 +20,7 @@ class BSetter(
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val hClientRepository: HClientRepository,
-    val gTransactionVentRepository: GBonVentRepository,
+    val gBonVentRepository: GBonVentRepository,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
     val navigationHandler: FragmentNavigationHandler
 ) {
@@ -65,7 +65,7 @@ class BSetter(
 
         zAppComptRepositoryComposable.addOrUpdateData(zCompt)
 
-        gTransactionVentRepository.addOrUpdateData(
+        gBonVentRepository.addOrUpdateData(
             GBonVent(
                 keyID = newTransactionKey,
                 parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,

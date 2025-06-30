@@ -28,7 +28,6 @@ import java.util.Objects
 
 @Stable
 class GBonVentRepository(
-    val gDataBaseTransactionCommercial: FVentCouleurOperationRepository,
     val ancienRepo: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {

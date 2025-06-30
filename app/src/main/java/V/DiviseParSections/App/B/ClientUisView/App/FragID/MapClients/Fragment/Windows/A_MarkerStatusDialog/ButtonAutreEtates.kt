@@ -40,7 +40,6 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             ) {
                 viewModel
                     .dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-
             }
         },
         modifier = Modifier.fillMaxWidth(),
