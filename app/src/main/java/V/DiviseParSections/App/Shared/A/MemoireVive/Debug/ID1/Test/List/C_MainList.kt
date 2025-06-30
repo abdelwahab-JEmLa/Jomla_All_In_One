@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.App.View.Z.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

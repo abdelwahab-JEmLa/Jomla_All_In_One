@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent

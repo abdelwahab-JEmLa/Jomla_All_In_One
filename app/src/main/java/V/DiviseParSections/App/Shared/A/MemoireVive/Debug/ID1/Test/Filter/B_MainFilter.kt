@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.App.View.W.Filter
+package V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.W.Filter
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.App.View.Z.List.View_MainList
-import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List.View_MainList
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 

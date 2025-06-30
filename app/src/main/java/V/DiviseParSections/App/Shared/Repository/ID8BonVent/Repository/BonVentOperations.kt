@@ -7,8 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBa
 import V.DiviseParSections.App.Shared.Repository.BSetter
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.Patch.BSetterP
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 
 class BonVentOperations(
     private val getter: AGetter,
@@ -22,20 +20,21 @@ class BonVentOperations(
 
     fun client(clientOldID: Long) = hClientRepository.datasValue.find { it.id == clientOldID }
 
-    @Composable
-    fun ViewKey(
-        idClient: Long?,
-    ) {
-        val keyHandBonVentOnClickButton = getKeyID8BonVent(idClient)
-        Text(keyHandBonVentOnClickButton)
+    // Fixed: Separate the logic into a non-Composable function and a Composable function
+    fun getViewClientKeyByParent(idClient: Long?): String {
+        return getKeyID8BonVent(idClient)
     }
 
     fun getKeyID8BonVent(
         clientOldID: Long? = null,
         etate: GBonVent.EtateActuellementEst? = null,
     ): String {
+        val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
+        val keyModelToOnVentHVentPeriodKeyByParent =
+            Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+
         val keyModelToClientKeyByParent =
-            clientOldID?.let { HClientInfos.keyModel + "-" + client(clientOldID)?.getTempKeyByParent() }
+            clientOldID?.let { HClientInfos.keyModel + "-" + hClientRepository.datasValue.find { it.id == clientOldID }?.getTempKeyByParent() }
         val keyModelToEtateKey =
             etate?.let { "--" + GBonVent.EtateActuellementEst.keyModel + "-" + it.name }
                 ?: ""

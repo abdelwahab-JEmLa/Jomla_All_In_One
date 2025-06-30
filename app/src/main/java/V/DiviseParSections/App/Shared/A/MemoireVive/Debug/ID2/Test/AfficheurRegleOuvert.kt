@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

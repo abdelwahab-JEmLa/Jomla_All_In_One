@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepositoryImpl
-import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Test.ViewModel.ViewModelT2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
@@ -17,6 +16,9 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.DebugKey
+import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.ViewModelDebugFloatingButton
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -139,6 +141,7 @@ val dataBaseProtoAvantJuin3Module = module {
 }
 
 val classesHandlersModule = module {
+    single { DebugKey() }
     single { WifiTransferDatas(androidContext(), get()) }
     single { WDatabaseInitializationManager(get(), get(), get(), get()) }
 
@@ -161,7 +164,7 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
-    //Sort Par ID
+    viewModel { ViewModelDebugFloatingButton(get()) }
     viewModel { B1CouleurOuGoutProduitDataBaseTestDatasViewModel(get()) }
 
     viewModel { PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(get()) }

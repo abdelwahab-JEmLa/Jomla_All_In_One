@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
@@ -109,7 +109,6 @@ fun ClientEdites(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            viewModel.setter.id8BonVentOperations.ViewKey(marqueClickRelativeClient?.id)
 
             Text(
                 text = marqueClickRelativeClient?.nom ?: "ClientAchteur",

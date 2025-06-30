@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.HClientInfos

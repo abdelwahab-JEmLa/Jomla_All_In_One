@@ -2,11 +2,20 @@ package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.firebase.database.DatabaseReference
 
 class BSetter(
@@ -54,4 +63,29 @@ class BSetter(
         }
 
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String { return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key") }    }
+}
+
+@Composable
+fun ViewClientKeyByParenComposable(
+    viewClientKeyByParent: String,
+) {
+    Card(
+        modifier = Modifier
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.error
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text(
+                text = viewClientKeyByParent,
+                color = MaterialTheme.colorScheme.onError,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 2
+            )
+        }
+    }
 }

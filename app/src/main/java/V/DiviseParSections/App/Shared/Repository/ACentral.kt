@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
+import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.DebugKey
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 
 class ACentral(
@@ -9,5 +10,6 @@ class ACentral(
 )
 
 class ModulesCentral(
-    val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler
+    val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler,
+    val debugKey: DebugKey
 )

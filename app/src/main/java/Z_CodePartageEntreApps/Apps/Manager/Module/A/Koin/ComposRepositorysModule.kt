@@ -8,12 +8,12 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.BSetter
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.BonVentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.MVentPeriodeRepository
 import V.DiviseParSections.App.Shared.Repository.ModulesCentral
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
@@ -40,9 +40,9 @@ val composRepositorysModule = module {
 
     // Helper classes for BSetter
     single { BonVentOperations(get(), get(), get()) }
-    single { ClientOperations(get(),get(),) }
-    single { ProduitOperations(get(),) }
-    single { VentOperations(get(),get(),) }
+    single { ClientOperations(get(), get()) }
+    single { ProduitOperations(get()) }
+    single { VentOperations(get(), get()) }
 
     single {
         AGetter(
@@ -53,9 +53,10 @@ val composRepositorysModule = module {
 
     single {
         BSetter(
-            get(), get(),get(),get(),)
+            get(), get(), get(), get(),
+        )
     }
 
-    single { ModulesCentral(get()) }
+    single { ModulesCentral(get(), get()) }
     single { ACentral(get(), get(), get()) }
 }

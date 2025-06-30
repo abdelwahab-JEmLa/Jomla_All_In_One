@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
-import V.DiviseParSections.App.Shared.A.MemoireVive.App.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -58,7 +59,6 @@ fun MarkerStatusDialog(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
 ) {
-
 
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
@@ -82,19 +82,20 @@ fun MarkerStatusDialog(
         editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
     }
 
-
     fun dismissDialog() {
         viewModel.ouvreBonVent(0L)
     }
 
     fun handleDismiss() {
-        if (viewModel.gBonVentRepo.onVentData!=null) {
+        if (viewModel.gBonVentRepo.onVentData != null) {
             showExitConfirmationDialog = true
         } else {
-            // Direct dismiss if not in command mode
             dismissDialog()
         }
     }
+
+    val viewClientKeyByParent =
+        viewModel.setter.id8BonVentOperations.getViewClientKeyByParent(clientId)
 
     Dialog(
         onDismissRequest = { handleDismiss() },
@@ -105,7 +106,9 @@ fun MarkerStatusDialog(
         )
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("Box1:$viewClientKeyByParent")
         ) {
 
             ElevatedCard(
@@ -131,7 +134,7 @@ fun MarkerStatusDialog(
                             onShowPhoneDialogChange = { showPhoneDialog = it },
                         )
                     }
-                     val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+                    val activeCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
                     activeCompt?.let { activeCompt ->
                         if (activeCompt.onVentFClientAncienId != 0L) {
                             item {
@@ -148,7 +151,8 @@ fun MarkerStatusDialog(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
+                                .padding(vertical = 4.dp)
+                                .testTag("commandCard:viewClientKeyByParent:$viewClientKeyByParent"),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(
@@ -176,7 +180,10 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            modifier = Modifier.height(60.dp),
+                                            viewClientKeyByParent = viewClientKeyByParent,
+                                            modifier = Modifier
+                                                .height(60.dp)
+                                                .testTag("commandButton:$viewClientKeyByParent"),
                                             viewModel = viewModel,
                                             clientOuCaMarqueGpsEstOuvert = clientOuCaMarqueGpsEstOuvert,
                                             uiState = uiState,
@@ -237,7 +244,6 @@ fun MarkerStatusDialog(
                         }
                     }
 
-                    // Always show transaction history
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -252,18 +258,16 @@ fun MarkerStatusDialog(
                         )
                     }
 
-                    // Add bottom padding to avoid overlap with floating button
                     item {
                         Spacer(modifier = Modifier.height(80.dp))
                     }
                 }
             }
 
-            // Floating dismiss button at bottom end
             FloatingActionButton(
                 onClick = {
                     handleDismiss()
-                          },
+                },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
@@ -279,7 +283,6 @@ fun MarkerStatusDialog(
             }
         }
 
-        // Exit confirmation dialog - only shows when client is in command mode
         if (showExitConfirmationDialog) {
             AlertDialog(
                 onDismissRequest = { showExitConfirmationDialog = false },
@@ -306,7 +309,6 @@ fun MarkerStatusDialog(
             )
         }
 
-        // Rest of the dialogs remain the same...
         if (showEditDialog) {
             AlertDialog(
                 onDismissRequest = { showEditDialog = false },
@@ -392,17 +394,14 @@ fun MarkerStatusDialog(
                                 }
 
                             clientToDelete?.let { client ->
-                                // Find and delete the corresponding HClientInfos object
                                 val relatedClient = viewModel.bProto_ClientsDataBase.find {
                                     it.id == client.id
                                 }
 
-                                // Delete the client from repository
                                 relatedClient?.let {
                                     viewModel.deleteUnSeulData(it)
                                 }
 
-                                // Remove the marker from the map
                                 onRemoveMark(marqueClick)
 
                                 viewModel

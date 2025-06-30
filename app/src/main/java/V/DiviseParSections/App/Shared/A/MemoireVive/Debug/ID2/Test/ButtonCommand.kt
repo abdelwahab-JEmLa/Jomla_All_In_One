@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
@@ -39,6 +39,7 @@ fun CommandButton(
     selectedMarker: Marker,
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
+    viewClientKeyByParent: String,
 ) {
 
     FilledTonalButton(
