@@ -1,11 +1,12 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.View.Z.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.App.View.Z.List
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.E0AfficheHistoriqueTransactions.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.A.MemoireVive.App.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -19,11 +20,14 @@ fun View_MainList(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
+        // In C_MainList.kt
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
-            View_MainItem(
-                viewModel = viewModel,
-                bonVent = transaction,
-            )
+            key(transaction.keyID) {
+                View_MainItem(
+                    viewModel = viewModel,
+                    bonVent = transaction,
+                )
+            }
         }
     }
 }

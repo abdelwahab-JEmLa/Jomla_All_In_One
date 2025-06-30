@@ -72,9 +72,9 @@ class BSetter(
             )
         )
     }
-    // Add these methods to BSetter class to replace the TODO implementations
 
-    fun ajouteNewBonVent(
+    fun ajouteNewBonVent(      //<--
+    //TODO(1): pk quand je add new 
         key: String,
         clientOldId: Long,
         etate: GBonVent.EtateActuellementEst
@@ -83,7 +83,6 @@ class BSetter(
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
 
         if (client != null && currentZCompt != null) {
-            // Update the current app compt with the new BonVent key
             val updatedZCompt = currentZCompt.copy(
                 onVentGBonVentKeyId = key,
                 onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",

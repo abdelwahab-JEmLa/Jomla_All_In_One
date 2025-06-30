@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
@@ -42,23 +41,22 @@ class GBonVentRepository(
     }
 
     fun addOrUpdateData(data: GBonVent) {
-        val dataUpdate =
-            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
-        val existingIndex = datasValue.indexOfFirst { it.isSameEntity(dataUpdate) }
+        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
-                _datas.value = if (existingIndex >= 0) {
-                    datasValue.toMutableList().apply {
-                        this[existingIndex] = this[existingIndex].copy(
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
+                _datas.value = _datas.value.toMutableList().apply {
+                    val existingIndex = indexOfFirst { it.keyID == dataUpdate.keyID }
+                    if (existingIndex >= 0) {
+                        this[existingIndex] = dataUpdate
+                    } else {
+                        add(dataUpdate)
                     }
-                } else datasValue + dataUpdate
+                }
             }
         }
 
-        ancienRepoUpsertUneDataEtReturnVID(dataUpdate,existingIndex)
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate, -1)
     }
 
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int,) {
