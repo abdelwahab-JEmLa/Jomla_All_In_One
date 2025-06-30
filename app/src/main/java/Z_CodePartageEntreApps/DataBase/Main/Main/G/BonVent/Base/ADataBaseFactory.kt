@@ -115,4 +115,8 @@ class DataBaseCreationFactoryGBonVent(
         }
         repoRef.updateChildren(updates).await()
     }
+
+    fun delete(data: GBonVent) {
+
+    }
 }

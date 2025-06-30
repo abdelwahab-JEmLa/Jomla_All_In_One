@@ -154,14 +154,10 @@ class FVentCouleurOperationRepository(
     fun delete(data: FCouleurVentOperationInfos) {
         composScope.launch {
             try {
-                // Remove from local state
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
-
-                // Delete from repository (database and Firebase)
                 ancienRepo.delete(data)
 
             } catch (e: Exception) {
-                // Handle error - could log or show user feedback
             }
         }
     }

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
@@ -63,6 +64,21 @@ class GBonVentRepository(
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int,) {
         dataBaseCreationFactory.addOrUpdatedDataBase(dataUpdate,existingIndex)
     }
+    fun delete(data: GBonVent) {
+        composScope.launch {
+            try {
+                // Remove from local state
+                _datas.value = datasValue.filter { it.keyID != data.keyID }
+
+                // Delete from repository (database and Firebase)
+                dataBaseCreationFactory.delete(data)
+
+            } catch (e: Exception) {
+                // Handle error - could log or show user feedback
+            }
+        }
+    }
+
 }
 
 @Entity

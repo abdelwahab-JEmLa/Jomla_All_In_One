@@ -134,7 +134,7 @@ fun View_MainItem(
                     if (bonVent.vocaleKeyID.isNotEmpty()) {
                         viewModel.deleteVoiceRecordingFromStorage(bonVent.vocaleKeyID) { success ->
                             if (success) {
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
+                                viewModel.getter.gBonVentRepository.delete(
                                     bonVent
                                 )
                             } else {
@@ -197,6 +197,12 @@ fun View_MainItem(
                     Text(
                         text = etateActuellementEst.nomArabe,
                         style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        text =bonVent.keyID.takeLast(4) ,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End
                     )
