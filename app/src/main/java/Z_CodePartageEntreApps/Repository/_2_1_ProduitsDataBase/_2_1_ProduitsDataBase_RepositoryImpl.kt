@@ -327,8 +327,8 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
                 _2_1_ProduitsDataBase_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
 
-                // Log that the listener was set up
-                Log.d(TAG, "Firebase data change listener set up successfully")
+                // Log that the listener was upsert up
+                Log.d(TAG, "Firebase data change listener upsert up successfully")
             }
         }
     }

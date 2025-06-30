@@ -42,6 +42,20 @@ class BSetter(
         }
     }
 
+    fun upsertNewBonVentParDiplayed(
+        data: GBonVent
+    ) {
+        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt !!
+
+        val updatedZCompt = currentZCompt.copy(
+            onVentGBonVentKeyId = data.keyID,
+            onVentFClientKeyID =data.parentHClientKeyID,
+        )
+
+        zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+        gBonVentRepository.addOrUpdateData(data)
+    }
+
     fun ouvrireNewAppComptOnVentBonVentEtAddLe(
         clientOldId: Long,
         newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -73,8 +87,7 @@ class BSetter(
         )
     }
 
-    fun ajouteNewBonVent(      //<--
-    //TODO(1): pk quand je add new 
+    fun ajouteNewBonVent(
         key: String,
         clientOldId: Long,
         etate: GBonVent.EtateActuellementEst
@@ -92,7 +105,6 @@ class BSetter(
 
             zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
 
-            // Create and add the new BonVent
             val newBonVent = GBonVent(
                 keyID = key,
                 parentPeriodeVentKeyID = currentZCompt.onVentHVentPeriodKeyId,

@@ -357,7 +357,7 @@ class A_ProduitRepositoryImpl(
                 } finally {
                     // Restore listeners
                     synchronized(listenerLock) {
-                        // Only restore if not already set by another thread
+                        // Only restore if not already upsert by another thread
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
                             A_ProduitRepository.sonDataBaseRef.addValueEventListener(tempListener)
@@ -366,7 +366,7 @@ class A_ProduitRepositoryImpl(
                     }
 
                     synchronized(flowListenerLock) {
-                        // Only restore if not already set by another thread
+                        // Only restore if not already upsert by another thread
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
                             flowValueEventListener = tempFlowListener
                             A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(tempFlowListener)

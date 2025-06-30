@@ -7,10 +7,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GBonVentDao {
+    @Upsert
+    suspend fun upsert(data: GBonVent)
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAll(datas: List<GBonVent>)
 

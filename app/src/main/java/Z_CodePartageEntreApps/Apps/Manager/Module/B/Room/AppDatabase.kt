@@ -182,7 +182,7 @@ class ListLongConverter {
     }
 }
 
-// First, let's properly set up the DateConverter
+// First, let's properly upsert up the DateConverter
 class DateConverter {
     @TypeConverter
     fun toDate(timestamp: Long?): Date? {

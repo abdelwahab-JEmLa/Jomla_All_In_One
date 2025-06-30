@@ -19,6 +19,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
@@ -28,7 +29,9 @@ import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
     val gerantComptKey: String = "t1",
-)
+    val activePeriodKeyHand: String = "Juin_30__8_00",
+
+    )
 
 @Stable
 class AGetter(
@@ -53,13 +56,63 @@ class AGetter(
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {
-    val parametresAppComptNonSaved= ParametresAppComptNonSaved()
+    val parametresAppComptNonSaved = ParametresAppComptNonSaved()
 
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val bOuvertDialogMapMarqueHClientKey = zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
+    private val _bonVentCache = mutableStateOf<Map<String, GBonVent>>(emptyMap())
+
+    fun getBonVentForDisplay(
+        clientId: Long,
+        etate: GBonVent.EtateActuellementEst
+    ): Result<GBonVent> {
+        val currentTimeNormalized = System.currentTimeMillis() / (1000 * 10) // Convert milliseconds to 10-second intervals
+
+        val currentAppCompt = zAppComptRepositoryComposable.currentAppCompt
+        val periodKey = currentAppCompt?.onVentHVentPeriodKeyId
+        val clientKey = hClientRepository.findHClientInfos(clientId)?.keyID
+
+        val cacheKey = "${currentTimeNormalized}_${periodKey}_${clientKey}_${etate.name}"
+
+        _bonVentCache.value[cacheKey]?.let {
+            return Result.success(it)
+        }
+
+        if (clientKey == null || periodKey.isNullOrBlank()) {
+            return Result.failure(Exception("No Vent Period"))
+        }
+
+        val bonVent = gBonVentRepository.datasValue
+            .filter { bonVent ->
+                bonVent.parentHClientKeyID == clientKey &&
+                        bonVent.etateActuellementEst == etate &&
+                        bonVent.parentPeriodeVentKeyID == periodKey
+            }
+            .maxByOrNull { it.creationTimestamps } // Get the most recent one by creation timestamp
+            ?: createTempBonVent(clientId, clientKey, etate, periodKey, currentAppCompt.keyID)
+
+        _bonVentCache.value += (cacheKey to bonVent)
+
+        return Result.success(bonVent)
+    }
+
+    private fun createTempBonVent(
+        clientId: Long,
+        clientKey: String,
+        etate: GBonVent.EtateActuellementEst,
+        periodKey: String,
+        comptKey: String
+    ) = GBonVent(
+        keyID = GBonVent.generePushKey(),
+        parentHClientKeyID = clientKey,
+        parentHClientOldID = clientId,
+        etateActuellementEst = etate,
+        parentPeriodeVentKeyID = periodKey,
+        parentZAppComptCreateurKeyID = comptKey,
+        nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown"
+    )
 
     fun getClientLastBonVentParEtate(
         clientId: Long,
@@ -67,13 +120,13 @@ class AGetter(
     ): GBonVent? {
         return gBonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
-        }.maxByOrNull { it.keyID }
+        }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
     fun getClientLastTransaction(clientId: Long): GBonVent? {
         return gBonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId
-        }.maxByOrNull { it.keyID }
+        }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
     fun getRelatedCouleur(
@@ -101,12 +154,10 @@ class AGetter(
         return matchingOperation
     }
 
-
     fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
         b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
             it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
         }
-
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
         bProduitInfosRepository.datasValue.filteredParCatalogueBsonId()
@@ -182,18 +233,18 @@ class AGetter(
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         // Version that returns Result for better error handling
-        fun String?.withOutInvalidCharactersResult(): Result<String> {
+        fun String?.withOutFireBaseInvalidCharactersResult(): Result<String> {
             return try {
-                val result = this.withOutInvalidCharacters()
+                val result = this.withOutFireBaseInvalidCharacters()
                 Result.success(result)
             } catch (e: IllegalArgumentException) {
                 Result.failure(e)
             }
         }
 
-        fun String?.withOutInvalidCharacters(): String {
+        fun String?.withOutFireBaseInvalidCharacters(): String {
             val cleanedNom =
-                (this ?: "").replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?-]"), "")
+                (this ?: "").replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?]"), "")
                     .replace(Regex("\\s+"), "_").replace(Regex("_+"), "_").trim('_').take(40)
 
 

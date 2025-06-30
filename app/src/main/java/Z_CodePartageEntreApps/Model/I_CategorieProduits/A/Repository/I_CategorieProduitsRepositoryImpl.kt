@@ -400,7 +400,7 @@ class I_CategorieProduitsRepositoryImpl(
                 } finally {
                     // Restore listener
                     synchronized(listenerLock) {
-                        // Only restore if not already set by another thread
+                        // Only restore if not already upsert by another thread
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
                             I_CategorieProduitsRepository.caReference.addValueEventListener(tempListener)

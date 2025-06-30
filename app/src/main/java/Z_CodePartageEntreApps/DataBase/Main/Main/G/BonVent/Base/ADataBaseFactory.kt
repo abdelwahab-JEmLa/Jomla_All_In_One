@@ -91,22 +91,14 @@ class DataBaseCreationFactoryGBonVent(
         })
     }
 
-
-    fun addOrUpdatedDataBase(
+    fun set(
         dataAvecTigerUpdate: GBonVent,
-        existingIndex: Int
     ) {
         composScope.launch {
-            if (existingIndex >= 0) {
-                dao.update(dataAvecTigerUpdate)
+                dao.upsert(dataAvecTigerUpdate)
                 batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
-            } else {
-                dao.insert(dataAvecTigerUpdate)
-                batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
-            }
         }
     }
-
 
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<GBonVent>) {
         val updates = mutableMapOf<String, Any>()

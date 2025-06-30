@@ -138,7 +138,7 @@ class Startup_Extension(
 
     /**
      * Checks each product in the database and updates the idcolor1 field to 1
-     * if it's currently set to 0
+     * if it's currently upsert to 0
      */
     fun updateProductsIdColor1() {
         viewModelInitApp.viewModelScope.launch {

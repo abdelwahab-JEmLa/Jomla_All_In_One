@@ -81,7 +81,7 @@ class GenerativeAiViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _uiStateInterface.value = UiStateInterface.Loading
-                Log.d(TAG, "UI State set to Loading")
+                Log.d(TAG, "UI State upsert to Loading")
 
                 // Fetch data from Firebase
                 val snapshot = refSoldArticlesTabelle.get().await()
@@ -237,7 +237,7 @@ class GenerativeAiViewModel : ViewModel() {
     ) {
         Log.d(TAG, "sendPrompt() called with ${bitmaps.size} bitmaps and prompt: $prompt")
         _uiStateInterface.value = UiStateInterface.Loading
-        Log.d(TAG, "UI State set to Loading")
+        Log.d(TAG, "UI State upsert to Loading")
 
         viewModelScope.launch(Dispatchers.IO) {
             try {

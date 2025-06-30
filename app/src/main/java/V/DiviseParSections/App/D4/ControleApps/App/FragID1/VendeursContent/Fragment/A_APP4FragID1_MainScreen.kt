@@ -304,10 +304,10 @@ fun PeriodeItem(
 
     val activeVendeur = viewModel.getActiveVendeur()
 
-    // Check if this period is the one set for ceComptVendeurInsertBonsAchatAuPeriodID
+    // Check if this period is the one upsert for ceComptVendeurInsertBonsAchatAuPeriodID
     val isInsertPeriod = activeVendeur?.ceComptVendeurInsertBonsAchatAuPeriodID == periode.vid
 
-    // Check if this period is the one set for ceComptVendeurStartAffichePeriod
+    // Check if this period is the one upsert for ceComptVendeurStartAffichePeriod
     val isStartAffichePeriod = activeVendeur?.ceComptVendeurStartAffichePeriod == periode.vid
 
     // Determine background color based on whether this is the start display period

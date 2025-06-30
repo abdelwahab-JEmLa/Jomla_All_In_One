@@ -68,9 +68,7 @@ class HClientRepository(
 
     }
 
-    fun findClientById(id: Long): HClientInfos? {
-        return this._datas.value.find { it.id == id }
-    }
+    fun findHClientInfos(id: Long) = datasValue.find { it.id == id }
 
     fun removeClient(clientId: Long) {
         this._datas.value = this._datas.value.filter { it.id != clientId }
@@ -92,6 +90,7 @@ class HClientRepository(
             else client
         }
     }
+
 }
 
 @Entity

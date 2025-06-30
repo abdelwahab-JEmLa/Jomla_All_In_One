@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -41,12 +42,13 @@ class GBonVentRepository(
     }
 
     fun addOrUpdateData(data: GBonVent) {
-        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
-                    val existingIndex = indexOfFirst { it.keyID == dataUpdate.keyID }
                     if (existingIndex >= 0) {
                         this[existingIndex] = dataUpdate
                     } else {
@@ -55,33 +57,31 @@ class GBonVentRepository(
                 }
             }
         }
-
-        ancienRepoUpsertUneDataEtReturnVID(dataUpdate, -1)
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate, existingIndex)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int,) {
-        dataBaseCreationFactory.addOrUpdatedDataBase(dataUpdate,existingIndex)
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int) {
+        dataBaseCreationFactory.set(dataUpdate, )
     }
+
     fun delete(data: GBonVent) {
         composScope.launch {
             try {
-                // Remove from local state
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
-
-                // Delete from repository (database and Firebase)
                 dataBaseCreationFactory.delete(data)
-
             } catch (e: Exception) {
-                // Handle error - could log or show user feedback
             }
         }
     }
-
 }
 
 @Entity
 data class GBonVent(
     @PrimaryKey var keyID: String = "",
+    var key: String= getKey(),
+
+    var fireBasePushKey: String = generePushKey(),
+
     var creationTimestamps: Long = DatesHandler().getCurrentTimestamps(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
@@ -124,7 +124,6 @@ data class GBonVent(
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
 ) {
-
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
@@ -171,9 +170,16 @@ data class GBonVent(
     )
 
     companion object {
+        fun getKey(
+            ventPeriodKey: String= null.toString(),
+            clientKey: String= null.toString(),
+            etateKey: String= null.toString(),
+        ) = ("$ventPeriodKey--$clientKey--$etateKey").withOutFireBaseInvalidCharacters()
+
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GBonVent"
         )
-        fun generePushKey()= genereUnPushKeyFireBase(ref)
+
+        fun generePushKey() = genereUnPushKeyFireBase(ref)
     }
 }

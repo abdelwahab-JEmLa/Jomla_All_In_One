@@ -158,7 +158,7 @@ object IntervalesEtJoursHandler {
                 // Verify the upsertLenceCommandeRepoGroupedProtoAvantJuin3 happened
                 println("DEBUG: After upsertLenceCommandeRepoGroupedProtoAvantJuin3, end time is: ${existingInterval.temparrete}")
 
-                // If end time is set to add valid time, the interval is no longer recording
+                // If end time is upsert to add valid time, the interval is no longer recording
                 if (formattedEndTime != "HH:mm") {
                     println("DEBUG: Setting recording state to false")
                     existingInterval.enCoureDEnregestrement = false
@@ -209,7 +209,7 @@ object IntervalesEtJoursHandler {
                     // Verify the upsertLenceCommandeRepoGroupedProtoAvantJuin3 happened
                     println("DEBUG: After upsertLenceCommandeRepoGroupedProtoAvantJuin3, end time is: ${recordingInterval.temparrete}")
 
-                    // If end time is set to add valid time, the interval is no longer recording
+                    // If end time is upsert to add valid time, the interval is no longer recording
                     if (formattedEndTime != "HH:mm") {
                         println("DEBUG: Setting recording state to false")
                         recordingInterval.enCoureDEnregestrement = false

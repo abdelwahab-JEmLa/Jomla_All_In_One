@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.GBonVent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 
 @Composable
@@ -25,43 +28,23 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
 ) {
-    val repo = viewModel.gBonVentRepo
-    val clientKey = findKeyByID(viewModel, clickedClient)
-
     val context = LocalContext.current
     val newEtate = this
+    val client = viewModel.getter.hClientRepository.findHClientInfos(clickedClient)
+    val bonVent = viewModel.getter.getBonVentForDisplay(clickedClient, newEtate)
 
     FilledTonalButton(
         onClick = {
-            // Check if the last BonVent data matches the criteria
-            val lastBonVent = repo.datasValue.lastOrNull()
-            val shouldUpdateLast = lastBonVent?.let { bonVent ->
-                bonVent.parentHClientKeyID == clientKey
-                        && bonVent.etateActuellementEst == newEtate
-                        && bonVent.parentPeriodeVentKeyID == viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
-            } ?: false
+            bonVent.onSuccess { bonVentData ->
+                viewModel.setter.upsertNewBonVentParDiplayed(bonVentData)
 
-            if (shouldUpdateLast && lastBonVent != null) {
-                // Update the last BonVent using BSetter method
-                viewModel.setter.updateComptAppErExistKey(
-                    key = lastBonVent.keyID,
-                    clientOldId = clickedClient,
-                    etate = newEtate
-                )
-            } else {
-                // Create new BonVent with generated key using BSetter method
-                val newGeneratedKey = GBonVent.generePushKey()
-                viewModel.setter.ajouteNewBonVent(
-                    key = newGeneratedKey,
-                    clientOldId = clickedClient,
-                    etate = newEtate
-                )
-            }
-
-            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-            ) {
-                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+                if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                    || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                ) {
+                    viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+                }
+            }.onFailure { error ->
+                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
             }
         },
         modifier = Modifier.fillMaxWidth(),
@@ -90,20 +73,14 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 contentDescription = newEtate.nomArabe,
                 modifier = Modifier.padding(end = 8.dp)
             )
+            val ventPeriodKey = viewModel.getter.parametresAppComptNonSaved.activePeriodKeyHand
+            val clientKey = client?.nom?.withOutFireBaseInvalidCharacters()!!
+            val etateKey = newEtate.name.withOutFireBaseInvalidCharacters()
 
-            val data = repo.datasValue
-                .lastOrNull {
-                    it.parentHClientKeyID == clientKey
-                            && it.etateActuellementEst == newEtate
-                            && it.parentPeriodeVentKeyID == viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
-                }
+            val keyHandBonVentOnClickButton = GBonVent.getKey(ventPeriodKey, clientKey, etateKey)
 
-            Text(data?.keyID?.takeLast(4)?.uppercase() ?: "new == ${GBonVent.generePushKey().takeLast(4).uppercase()}")
+            Text(keyHandBonVentOnClickButton, fontSize = 8.sp)
         }
     }
 }
 
-fun findKeyByID(
-    viewModel: MapClientsViewModel,
-    clickedClient: Long
-) = viewModel.getter.hClientRepository.datasValue.find { it.id == clickedClient }?.keyID

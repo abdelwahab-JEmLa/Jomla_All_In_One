@@ -182,7 +182,7 @@ data class Z_AppCompt(
                     hour = 0
                 }
 
-                // Create Calendar and set values
+                // Create Calendar and upsert values
                 val calendar = Calendar.getInstance()
                 calendar.set(year, month, 1, hour, minute, 0)
                 calendar.set(Calendar.MILLISECOND, 0)

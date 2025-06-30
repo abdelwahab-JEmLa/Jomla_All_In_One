@@ -220,7 +220,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     if (dataList.isNotEmpty()) {
                         modelDatasSnapList.addAll(dataList)
                     }
-                    initialDataLoaded = true  // Make sure this is set
+                    initialDataLoaded = true  // Make sure this is upsert
                     progressRepo.value = 1.0f
                 }
             }

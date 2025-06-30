@@ -8,7 +8,7 @@ class FragmentNavigationHandler {
     // Use late initialization for the NavController
     private var _navController: NavController? = null
 
-    // Method to set the nav controller when it's available
+    // Method to upsert the nav controller when it's available
     fun setNavController(navController: NavController) {
         _navController = navController
     }
