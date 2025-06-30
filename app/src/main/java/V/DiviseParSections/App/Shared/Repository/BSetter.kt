@@ -69,10 +69,12 @@ class BSetter(
             ?: run {
                 val getKeyByParentDe = regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
                 val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
+                val client = hClientRepository.findHClientInfosByKeyByParent(parentID2ClientKeyByParent)
 
                 GBonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
                     parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
+                    parentHClientOldID = client.id,
                     parentID2ClientKeyByParent = parentID2ClientKeyByParent,
                     parentID8C2TypeTransactionKeyByParent = getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel] !!
                 )

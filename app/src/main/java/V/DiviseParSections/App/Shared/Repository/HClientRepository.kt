@@ -94,6 +94,11 @@ class HClientRepository(
         }
     }
 
+    fun findHClientInfosByKeyByParent(parentID2ClientKeyByParent: String): HClientInfos {
+        return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
+            ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
+    }
+
 }
 
 @Entity
@@ -138,7 +143,7 @@ data class HClientInfos(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
     fun getTempKeyByParent(): String {
-     return this.nom.withOutFireBaseInvalidCharacters()
+        return this.nom.withOutFireBaseInvalidCharacters()
     }
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
