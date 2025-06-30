@@ -57,7 +57,7 @@ class AGetter(
 ) {
     val parametresAppComptNonSaved = ParametresAppComptNonSaved()
 
-    private val composScope = CoroutineScope(Dispatchers.IO)
+     val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 

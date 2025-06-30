@@ -55,4 +55,9 @@ class FragmentNavigationHandler {
         }
     }
 
+    fun navigateTo(screen: Any) {
+                  //<--
+                  //TODO(1): regle
+    }
+
 }
