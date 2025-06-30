@@ -9,6 +9,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
@@ -29,9 +29,9 @@ import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
     val gerantComptKey: String = "t1",
-    val activePeriodKeyHand: String = "Juin_30__8_00",
-
-    )
+    val activePeriodKeyByParent: String = "Juin_30__8_00",
+    val startUpScree: Screen = Screen.A_ClientsLocationGps
+)
 
 @Stable
 class AGetter(
@@ -62,42 +62,6 @@ class AGetter(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    private val _bonVentCache = mutableStateOf<Map<String, GBonVent>>(emptyMap())
-
-    fun getBonVentForDisplay(
-        clientId: Long,
-        etate: GBonVent.EtateActuellementEst
-    ): Result<GBonVent> {
-        val currentTimeNormalized = System.currentTimeMillis() / (1000 * 10) // Convert milliseconds to 10-second intervals
-
-        val currentAppCompt = zAppComptRepositoryComposable.currentAppCompt
-        val periodKey = currentAppCompt?.onVentHVentPeriodKeyId
-        val clientKey = hClientRepository.findHClientInfos(clientId)?.keyID
-
-        val cacheKey = "${currentTimeNormalized}_${periodKey}_${clientKey}_${etate.name}"
-
-        _bonVentCache.value[cacheKey]?.let {
-            return Result.success(it)
-        }
-
-        if (clientKey == null || periodKey.isNullOrBlank()) {
-            return Result.failure(Exception("No Vent Period"))
-        }
-
-        val bonVent = gBonVentRepository.datasValue
-            .filter { bonVent ->
-                bonVent.parentHClientKeyID == clientKey &&
-                        bonVent.etateActuellementEst == etate &&
-                        bonVent.parentPeriodeVentKeyID == periodKey
-            }
-            .maxByOrNull { it.creationTimestamps } // Get the most recent one by creation timestamp
-            ?: createTempBonVent(clientId, clientKey, etate, periodKey, currentAppCompt.keyID)
-
-        _bonVentCache.value += (cacheKey to bonVent)
-
-        return Result.success(bonVent)
-    }
-
     private fun createTempBonVent(
         clientId: Long,
         clientKey: String,
@@ -106,12 +70,18 @@ class AGetter(
         comptKey: String
     ) = GBonVent(
         keyID = GBonVent.generePushKey(),
+        parentPeriodeVentKeyID = periodKey,
         parentHClientKeyID = clientKey,
         parentHClientOldID = clientId,
-        etateActuellementEst = etate,
-        parentPeriodeVentKeyID = periodKey,
+        nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentZAppComptCreateurKeyID = comptKey,
-        nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown"
+        etateActuellementEst = etate,
+        parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel]
+            ?: "",
+        parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7]
+            ?: "",
+        parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel]
+            ?: ""
     )
 
     fun getClientLastBonVentParEtate(

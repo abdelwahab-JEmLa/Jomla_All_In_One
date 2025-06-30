@@ -1,4 +1,4 @@
-// Updated AppNavHost.kt - Remove DialogTests composable route
+// Updated AppNavHost.kt - Fixed startup screen usage
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
@@ -62,6 +62,7 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
 ) {
+    val startUpScreen = headViewModel.getter.parametresAppComptNonSaved.startUpScree
     val uiState by headViewModel.uiState.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -96,7 +97,7 @@ fun AppNavHost(
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
-                startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+                startDestination = startUpScreen.route, // Fixed: Using the startup screen from parameters
                 modifier = Modifier.fillMaxSize()
             ) {
                 composable(
@@ -228,7 +229,7 @@ fun AppNavHost(
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
-                    //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
+                            //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
                         }
                     }
                 }

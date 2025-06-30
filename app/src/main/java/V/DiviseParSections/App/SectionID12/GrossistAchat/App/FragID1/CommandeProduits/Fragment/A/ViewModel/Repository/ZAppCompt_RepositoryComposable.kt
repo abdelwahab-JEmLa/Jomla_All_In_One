@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.ParametresAppComptNonSaved
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -81,6 +82,8 @@ data class Z_AppCompt(
     var bsonObjectId: String = getPushFireBase(ref),
     var keyID: String = getPushFireBase(ref),
 
+    var KeyByParent: String = "Abdelwahab",
+
     var vid: Long = 1,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
@@ -114,6 +117,8 @@ data class Z_AppCompt(
     //---------------------------------------------------Vent Createur--------------------------------------------------------------
     //Section Parent Period Vent
     var onVentHVentPeriodKeyId: String = getPushFireBase(ref),
+    var onVentHVentPeriodKeyByParent: String = ParametresAppComptNonSaved().activePeriodKeyByParent,
+
     var onVentHPeriodVentDebugNameKey: String = "",
     var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
@@ -140,6 +145,8 @@ data class Z_AppCompt(
 
 
     companion object {
+        const val keyModelValID7= "ID7"
+
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         fun creatTimeTampDepuitStr(dateString: String): Long {

@@ -7,6 +7,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -42,17 +43,25 @@ class BSetter(
         }
     }
 
-    fun upsertNewBonVentParDiplayed(
-        data: GBonVent
+    fun upsertBonVent(
+        keyByParentBonVentOnClickButton: String = "ID8---ID7-Juin_30__8_00--ID2-3omar_youcef--ID8C2-Ferme"
     ) {
-        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt !!
+        val existingData = gBonVentRepository.datasValue.find {
+            it.keyByParent == keyByParentBonVentOnClickButton
+        }
 
-        val updatedZCompt = currentZCompt.copy(
-            onVentGBonVentKeyId = data.keyID,
-            onVentFClientKeyID =data.parentHClientKeyID,
-        )
+        val data = existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+            ?: run {
+                val regexReturnParentKeysMap = regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
 
-        zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+                GBonVent(
+                    keyByParent = keyByParentBonVentOnClickButton,
+                    parentID2ClientKeyByParent = regexReturnParentKeysMap[GBonVent.keyModel] ?: "",
+                    parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap[Z_AppCompt.keyModelValID7] ?: "",
+                    parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                )
+            }
+
         gBonVentRepository.addOrUpdateData(data)
     }
 
@@ -60,7 +69,6 @@ class BSetter(
         clientOldId: Long,
         newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ) {
-
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
         val newTransactionKey = GBonVent.generePushKey()
@@ -78,11 +86,14 @@ class BSetter(
             GBonVent(
                 keyID = newTransactionKey,
                 parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,
-                parentHClientOldID = clientOldId,
-                parentZAppComptCreateurKeyID = zCompt.keyID,
-                nomClientConcerned = client.nom,
                 parentHClientKeyID = client.keyID,
-                etateActuellementEst = newEtate
+                parentHClientOldID = clientOldId,
+                nomClientConcerned = client.nom,
+                parentZAppComptCreateurKeyID = zCompt.keyID,
+                etateActuellementEst = newEtate,
+                parentID2ClientKeyByParent = regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+                parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
     }
@@ -108,11 +119,14 @@ class BSetter(
             val newBonVent = GBonVent(
                 keyID = key,
                 parentPeriodeVentKeyID = currentZCompt.onVentHVentPeriodKeyId,
-                parentHClientOldID = clientOldId,
-                parentZAppComptCreateurKeyID = currentZCompt.keyID,
-                nomClientConcerned = client.nom,
                 parentHClientKeyID = client.keyID,
-                etateActuellementEst = etate
+                parentHClientOldID = clientOldId,
+                nomClientConcerned = client.nom,
+                parentZAppComptCreateurKeyID = currentZCompt.keyID,
+                etateActuellementEst = etate,
+                parentID2ClientKeyByParent = regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+                parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
 
             gBonVentRepository.addOrUpdateData(newBonVent)
@@ -233,11 +247,7 @@ class BSetter(
         }
     }
 
-    companion object {
-        fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
-            return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
-        }
-    }
+
 
     fun deleteAddMultiDatas() {
         val datas = bProduitDataBase_SubClassFunctionality.datasValue
@@ -309,5 +319,29 @@ class BSetter(
         }
     }
 
+    companion object {
+        fun regexReturnParentKeysMap(keyByParent: String ): Map<String, String> {
+            val parentKeysMap = mutableMapOf<String, String>()
 
+            // Split by double dashes to get individual key-value pairs
+            val parts = keyByParent.split("--")
+
+            for (part in parts) {
+                // Split each part by single dash to separate key from value
+                val keyValuePair = part.split("-", limit = 2)
+                if (keyValuePair.size == 2) {
+                    val key = keyValuePair[0]
+                    val value = keyValuePair[1]
+                    parentKeysMap[key] = value
+                }
+            }
+
+            return parentKeysMap
+        }
+
+
+        fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
+            return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        }
+    }
 }

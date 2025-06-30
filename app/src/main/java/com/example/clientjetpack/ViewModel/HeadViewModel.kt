@@ -1,8 +1,8 @@
 package com.example.clientjetpack.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ACentral
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
@@ -70,8 +70,10 @@ open class HeadViewModel(
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-    val a_CentralCompoRepositoryProtoJuin9: AGetter
+    val central: ACentral
 ) : ViewModel() {
+    val getter = central.getter
+
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
@@ -80,7 +82,7 @@ open class HeadViewModel(
 
     private val connectionManager = WifiTransferDatas(
         context = context,
-        a_CentralCompoRepositoryProtoJuin9 = a_CentralCompoRepositoryProtoJuin9,
+        a_CentralCompoRepositoryProtoJuin9 = getter,
     ) { payload -> handleRetoureDataPayload(payload) }
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
@@ -178,8 +180,6 @@ open class HeadViewModel(
     private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
         _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
     }
-
-
 
 
     private fun getHostDevices(): List<String> {

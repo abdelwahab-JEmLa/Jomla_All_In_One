@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.GBonVent
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,21 +30,28 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
     val context = LocalContext.current
     val newEtate = this
     val client = viewModel.getter.hClientRepository.findHClientInfos(clickedClient)
-    val bonVent = viewModel.getter.getBonVentForDisplay(clickedClient, newEtate)
+    val ventPeriodKey = viewModel.getter.parametresAppComptNonSaved.activePeriodKeyByParent
+    val clientKey = client?.nom?.withOutFireBaseInvalidCharacters()!!
+    val etateKey = newEtate.name.withOutFireBaseInvalidCharacters()
+
+    fun getKeyByParent(
+        ventPeriodKeyByParent: String = null.toString(),
+        clientKeyByParent: String = null.toString(),
+        etateKeyByParent: String = null.toString(),
+    ) = ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--ID8C2-$etateKeyByParent")
+        .withOutFireBaseInvalidCharacters()
+
+    val keyHandBonVentOnClickButton = getKeyByParent(ventPeriodKey, clientKey, etateKey)
 
     FilledTonalButton(
         onClick = {
-            bonVent.onSuccess { bonVentData ->
-                viewModel.setter.upsertNewBonVentParDiplayed(bonVentData)
+          /*  viewModel.setter.upsertBonVent(keyHandBonVentOnClickButton)
 
-                if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                    || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                ) {
-                    viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-                }
-            }.onFailure { error ->
-                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-            }
+            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            ) {
+                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+            }   */
         },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
@@ -73,11 +79,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
                 contentDescription = newEtate.nomArabe,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            val ventPeriodKey = viewModel.getter.parametresAppComptNonSaved.activePeriodKeyHand
-            val clientKey = client?.nom?.withOutFireBaseInvalidCharacters()!!
-            val etateKey = newEtate.name.withOutFireBaseInvalidCharacters()
 
-            val keyHandBonVentOnClickButton = GBonVent.getKey(ventPeriodKey, clientKey, etateKey)
 
             Text(keyHandBonVentOnClickButton, fontSize = 8.sp)
         }

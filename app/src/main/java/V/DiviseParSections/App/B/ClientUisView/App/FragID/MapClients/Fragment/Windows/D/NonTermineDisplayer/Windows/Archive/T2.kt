@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.D.NonTermineDisplayer.Windows.Archive
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.BSetter
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,46 +72,58 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: GBonVent) {
 fun testData(): List<GBonVent> {
     return listOf(
         GBonVent(
-            vid = 10L,
-            parentPeriodeVentOldID = 7L,
+            creationTimestamps = 1749010953513L,
             parentHClientOldID = 15L,
             nomClientConcerned = "3omar_yousef",
-            creationTimestamps = 1749010953513L,
+            parentPeriodeVentOldID = 7L,
             heurDebutInString = "05:22",
-            etateActuellementEst = GBonVent.EtateActuellementEst.Cible
+            etateActuellementEst = GBonVent.EtateActuellementEst.Cible,
+            vid = 10L,
+            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         GBonVent(
-            vid = 5L,
-            parentPeriodeVentOldID = 7L,
+            creationTimestamps = 1748029628555L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
-            creationTimestamps = 1748029628555L,
+            parentPeriodeVentOldID = 7L,
             heurDebutInString = "20:47",
             heurFinInString = "Non Defini",
-            cActive = false,
-           // tagCeBonEstOuvertPourComptsIds = "false",
+            etateActuellementEst = GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
             vocaleKeyID = "",
+           // tagCeBonEstOuvertPourComptsIds = "false",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
-            etateActuellementEst = GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            cActive = false,
+            vid = 5L,
+            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         GBonVent(
-            vid = 4L,
-            parentPeriodeVentOldID = 7L,
-            parentHClientOldID = 4L,
-            nomClientConcerned = "abdelhamid",
             creationTimestamps = 1748027276129L,
-            heurDebutInString = "20:07",
-            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        ),
-        GBonVent(
-            vid = 6L,
-            parentPeriodeVentOldID = 7L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
+            parentPeriodeVentOldID = 7L,
+            heurDebutInString = "20:07",
+            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+            vid = 4L,
+            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+        ),
+        GBonVent(
             creationTimestamps = 1748029628742L,
+            parentHClientOldID = 4L,
+            nomClientConcerned = "abdelhamid",
+            parentPeriodeVentOldID = 7L,
             heurDebutInString = "20:47",
-            etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
+            etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE,
+            vid = 6L,
+            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         )
     )
 }

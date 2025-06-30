@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
 
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -70,6 +71,7 @@ class HClientRepository(
 
     fun findHClientInfos(id: Long) = datasValue.find { it.id == id }
 
+
     fun removeClient(clientId: Long) {
         this._datas.value = this._datas.value.filter { it.id != clientId }
     }
@@ -97,6 +99,8 @@ class HClientRepository(
 data class HClientInfos(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+    var keyByParent: String = "",
+
     var keyID: String = getPushFireBase(ref),
     var bsonObjectId: String = BsonObjectId().toHexString(),
 
@@ -132,6 +136,10 @@ data class HClientInfos(
     var keyFireBase: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
+    fun getTempKeyByParent(): String {
+     return "---H-${this.nom.withOutFireBaseInvalidCharacters()}"
+    }
+
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),

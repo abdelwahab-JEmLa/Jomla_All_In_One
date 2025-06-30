@@ -61,7 +61,7 @@ class GBonVentRepository(
     }
 
     private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent, existingIndex: Int) {
-        dataBaseCreationFactory.set(dataUpdate, )
+        dataBaseCreationFactory.set(dataUpdate)
     }
 
     fun delete(data: GBonVent) {
@@ -77,8 +77,9 @@ class GBonVentRepository(
 
 @Entity
 data class GBonVent(
-    @PrimaryKey var keyID: String = "",
-    var key: String= getKey(),
+    @PrimaryKey  var keyByParent: String = "null",
+
+    var keyID: String = "",
 
     var fireBasePushKey: String = generePushKey(),
 
@@ -92,6 +93,7 @@ data class GBonVent(
 
     //Section Infos ForgingKeys
     var parentHClientKeyID: String = "Non Defini",
+    var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
     var parentZAppComptCreateurKeyID: String = "b1",
@@ -123,6 +125,9 @@ data class GBonVent(
     var parentZAppComptNom: String = "",
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
+    val parentID2ClientKeyByParent: String,
+    val parentID7VentPeriodeKeyByParent: String,
+    val parentID8C2TypeTransactionKeyByParent: String,
 ) {
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
@@ -157,6 +162,13 @@ data class GBonVent(
             android.R.color.holo_green_light, "CIBLE_PRIORITE_3"
         ),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
+
+        ;
+        val keyModel= "ID8C2"
+
+        companion object {
+            const val keyModel= "ID8C2"
+        }
     }
 
     fun isSameEntity(other: GBonVent) =
@@ -170,11 +182,14 @@ data class GBonVent(
     )
 
     companion object {
-        fun getKey(
-            ventPeriodKey: String= null.toString(),
-            clientKey: String= null.toString(),
-            etateKey: String= null.toString(),
-        ) = ("$ventPeriodKey--$clientKey--$etateKey").withOutFireBaseInvalidCharacters()
+        const val keyModel = "ID2"
+
+        fun getKeyByParent(
+            ventPeriodKeyByParent: String = null.toString(),
+            clientKeyByParent: String = null.toString(),
+            etateKeyByParent: String = null.toString(),
+        ) = ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--ID8C2-$etateKeyByParent")
+            .withOutFireBaseInvalidCharacters()
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/GBonVent"

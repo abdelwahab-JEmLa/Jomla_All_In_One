@@ -4,6 +4,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.Shared.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.BSetter
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -119,11 +121,14 @@ fun upsertLenceCommandeRepoGroupedProtoAvantJuin3(
             parentHClientOldID = clientId,
             nomClientConcerned = relatedClients?.nom!!,
             parentPeriodeVentOldID = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-            etateActuellementEst = newEtate,
             heurDebutInString = SimpleDateFormat(
                 "HH:mm",
                 Locale.getDefault()
-            ).format(Date())
+            ).format(Date()),
+            etateActuellementEst = newEtate,
+            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         )
         viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
             newTrx

@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class DataBaseCreationFactoryGBonVent(
-    appDatabase:AppDatabase
+    appDatabase: AppDatabase
 ) {
     val dao = appDatabase.GBonVentDao()
 
-    val repoEntityName ="DataBaseCreationFactoryGBonVent"
+    val repoEntityName = "DataBaseCreationFactoryGBonVent"
     val repoTAG = repoEntityName
     var isListenerRegistered = false
 
@@ -64,7 +64,8 @@ class DataBaseCreationFactoryGBonVent(
                                 child.getValue(GBonVent::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
-                                        val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
+                                        val localEntity =
+                                            dao.getAll().find { it.keyID == entityWithKey.keyID }
                                         if (localEntity == null) {
                                             true
                                         } else {
@@ -79,9 +80,11 @@ class DataBaseCreationFactoryGBonVent(
                                         updateCount++
                                     }
                                 }
-                            } catch (e: Exception) {}
+                            } catch (e: Exception) {
+                            }
                         }
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
 
@@ -95,15 +98,15 @@ class DataBaseCreationFactoryGBonVent(
         dataAvecTigerUpdate: GBonVent,
     ) {
         composScope.launch {
-                dao.upsert(dataAvecTigerUpdate)
-                batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
+            dao.upsert(dataAvecTigerUpdate)
+            batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
         }
     }
 
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<GBonVent>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.keyID] = data
+            updates[data.fireBasePushKey] = data
         }
         repoRef.updateChildren(updates).await()
     }
