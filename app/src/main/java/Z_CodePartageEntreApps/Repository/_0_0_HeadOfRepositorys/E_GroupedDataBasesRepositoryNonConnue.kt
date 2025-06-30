@@ -25,14 +25,6 @@ class E_GroupedDataBasesRepositoryNonConnue(
 ) {
     val repositorysModel = repo_0_0_HeadSQLRepositorys.repositorys_Model
 
-    private val idComptActivePourCeTelep = repositorysModel.activeIdDeA5Vendeur
-
-    private val repository15Vendeur = repositorysModel.repository_1_5_Vendeur
-
-     private val findComptActive = repository15Vendeur
-        .modelDatasSnapList.find { it.vid == idComptActivePourCeTelep }
-
-    private val comptActuelle_migreSonDataBaseAuStart = findComptActive?.migreSonDataBaseAuStart ?: false
 
     private val repoCoroutineScope = CoroutineScope(Dispatchers.IO)
     private val _modelListFlow = MutableStateFlow<List<A0_DataBasesGroup>>(emptyList())
@@ -177,7 +169,6 @@ class E_GroupedDataBasesRepositoryNonConnue(
                     }
                     val hasFirebaseProducts = produitInfoList.isNotEmpty()
 
-                    migreOldDatas(comptActuelle_migreSonDataBaseAuStart)
 
                     val isRoomEmpty = !room.inlineCheckDataBaseIsNotEmpty<A_ProduitInfos>()
 
@@ -235,11 +226,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
 
                 fireBase.setListDataInlineFun<A_ProduitInfos>(newDataList)
 
-                if (findComptActive != null) {
-                    repository15Vendeur.addDataAndReturneItVID(
-                        findComptActive.copy(migreSonDataBaseAuStart = false)
-                    )
-                }
+
 
             } catch (migrationError: Exception) {
                 migrationError.printStackTrace()

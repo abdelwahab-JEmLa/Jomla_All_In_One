@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.C3TransactionCommercialRepository
@@ -24,7 +23,6 @@ class GroupeRepositorysProtoAvJuin3Model(
 
     val repositoryMVentPeriode: DataBaseFactoryMVentPeriode,
 
-    val repository_1_5_Vendeur: _1_5_Vendeur_Repository,
 
     val _2_1_ProduitsDataBase_Repository: _2_1_ProduitsDataBase_Repository,
 
@@ -32,9 +30,6 @@ class GroupeRepositorysProtoAvJuin3Model(
 
     val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
-    // FIXED: Make this reactive instead of add simple Long
-    var activeIdDeA5Vendeur: Long = 1L,
-    var activeReactiveIdDe_1_5_Vendeur: MutableStateFlow<Long> = MutableStateFlow(startActive),
     ) {
     companion object {
         fun getHeadSqlDataBaseRef(itsProductionMode:Boolean = false): DatabaseReference {

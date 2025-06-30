@@ -2,11 +2,9 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -42,7 +40,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
     private val repo_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
     private val repo_1_3_TransactionCommercial: C3TransactionCommercialRepository,
     private val _1_4_Repository: DataBaseFactoryMVentPeriode,
-    private val _1_5_Repository: _1_5_Vendeur_Repository,
 
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
@@ -57,7 +54,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
         repo_1_3_TransactionCommercial,
         activeId_1_3_BonAchat,
         _1_4_Repository,
-        _1_5_Repository,
 
         _2_1_Repository,
 
@@ -83,7 +79,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
             repo_1_2_ProduitAcheteOperation.ensureDataIsInitialized()
             repo_1_3_TransactionCommercial.ensureDataIsInitialized()
             _1_4_Repository.ensureDataIsInitialized()
-            _1_5_Repository.ensureDataIsInitialized()
 
             _2_1_Repository.ensureDataIsInitialized()
             _4_CouleurOperationCommand_Repository.ensureDataIsInitialized()
@@ -124,15 +119,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                         )
 
 
-                        is Z_AppCompt -> processDeleteOperation(
-                            data = data,
-                            databaseDao = appDatabase._1_5_VendeurDao(),
-                            snapshotList = _1_5_Repository.modelDatasSnapList,
-                            databaseRef = _1_5_Vendeur_Repository.sonDataBaseRef,
-                            getFirebaseKey = { it.vid.toString() },
-                            onSuccess = onSuccess,
-                            onError = onError
-                        )
 
                         else -> {
                             onError(IllegalArgumentException("Unsupported data type for deletion"))
@@ -181,7 +167,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 is GBonVentDao -> databaseDao.delete(data as GBonVent)
                 is _1_2_ProduitAcheteOperationDao -> databaseDao.delete(data as _1_2_ProduitAcheteOperation)
                 is MVentPeriodeDao -> databaseDao.delete(data as MVentPeriode)
-                is _1_5_VendeurDao -> databaseDao.delete(data as Z_AppCompt)
                 else -> {
                     Log.e(
                         TAG,
@@ -423,60 +408,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
         data: Z_AppCompt,
         onSuccess: (Long) -> Unit,
     ): Unit {
-        try {
-            // Create add copy of the data to work with
-            val dataToUpsert = data.copy()
-
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // Check if the data already exists (if it has add valid vid)
-                    if (dataToUpsert.vid > 0) {
-                        // Update existing data
-                        appDatabase._1_5_VendeurDao().insert(dataToUpsert)
-
-                        // Update in snapshot list
-                        withContext(Dispatchers.Main) {
-                            val index =
-                                _1_5_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
-                            if (index >= 0) {
-                                _1_5_Repository.modelDatasSnapList[index] = dataToUpsert
-                            } else {
-                                _1_5_Repository.modelDatasSnapList.add(dataToUpsert)
-                            }
-                        }
-
-                        // Update in Firebase
-                        _1_5_Vendeur_Repository.sonDataBaseRef.child(dataToUpsert.vid.toString())
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the existing vid
-                        onSuccess(dataToUpsert.vid)
-                    } else {
-                        // If no valid vid, upsertEtReturnSonNewVid as new (same as addDataAndReturneItVID)
-                        val newVid =
-                            appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(dataToUpsert)
-
-                        // Update the object with the new vid
-                        dataToUpsert.vid = newVid
-
-                        withContext(Dispatchers.Main) {
-                            _1_5_Repository.modelDatasSnapList.add(dataToUpsert)
-                        }
-
-                        // Update Firebase with the new vid
-                        _1_5_Vendeur_Repository.sonDataBaseRef.child(newVid.toString())
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the new vid
-                        onSuccess(newVid)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error upserting data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
-        }
     }
 
 
@@ -520,7 +451,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
     }
 
     override fun updateActiveIdDe_1_5_Vendeur(id: Long): Unit {
-        repositorys_Model.activeIdDeA5Vendeur = id
     }
 
     override fun notifyDataChanged_2_1_ProduitsDataBase_Repository() {
@@ -607,7 +537,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 repositoryScope.launch { repo_1_2_ProduitAcheteOperation.ensureDataIsInitialized() },
                 repositoryScope.launch { repo_1_3_TransactionCommercial.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
 
                 repositoryScope.launch { _2_1_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _4_CouleurOperationCommand_Repository.ensureDataIsInitialized() }
@@ -638,7 +567,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                     c3TransactionCommercialRepository = repo_1_3_TransactionCommercial,
                     activeVId_C3_BonAchate_Repository = activeId_1_3_BonAchat,
                     repositoryMVentPeriode = _1_4_Repository,
-                    repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
                     _4_CouleurOperationCommand_Repository = _4_CouleurOperationCommand_Repository,
@@ -666,7 +594,6 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 repo_1_2_ProduitAcheteOperation.progressRepo,
                 repo_1_3_TransactionCommercial.progressRepo,
                 _1_4_Repository.progressRepo,
-                _1_5_Repository.progressRepo,
 
                 _2_1_Repository.progressRepo,
                 _4_CouleurOperationCommand_Repository.progressRepo

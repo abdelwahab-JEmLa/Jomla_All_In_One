@@ -51,7 +51,9 @@ fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember {
         mutableStateOf(
-            if (viewModel.groupeRepositorysProtoAvJuin3.repositorys_Model.activeIdDeA5Vendeur == 1L) {
+            if ((viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.keyID
+                    ?: "") == viewModel.getter.parametresAppComptNonSaved.gerantComptKey
+            ) {
                 MapClientsViewModel.VisibleClientsNow.showAll
             } else {
                 MapClientsViewModel.VisibleClientsNow.showAll
@@ -77,7 +79,7 @@ fun MapContent(
     }
 
     LaunchedEffect(
-        viewModel.getter.comptAppState.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.zAppComptRepositoryComposable.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.gBonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.hClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },

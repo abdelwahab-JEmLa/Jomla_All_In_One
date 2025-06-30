@@ -1,10 +1,11 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,14 +23,16 @@ data class VendeursUiState(
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
+    val getter:AGetter,
     private val repository: GroupeRepositorysProtoAvJuin3,
     private val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
+
     private val list_01_VentsHistoriquesDataBase = repo_01_VentsHistoriquesDataBase_Repository.modelDatasSnapList
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
-    private val vendeurRepository = repository.repositorys_Model.repository_1_5_Vendeur
+    private val vendeurRepository = getter.zAppComptRepositoryComposable
     private val periodeVentRepository = repository.repositorys_Model.repositoryMVentPeriode
 
     init {
@@ -47,17 +50,19 @@ open class VendeursViewModel(
     }
 
     private fun loadData() {
-        val vendeurs = vendeurRepository.modelDatasSnapList
+        val vendeurs = vendeurRepository.datasValue
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = repository.repositorys_Model.activeIdDeA5Vendeur
+        val activeVendeurId = getter.zAppComptRepositoryComposable.currentAppCompt?.vid
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
-        _uiState.value = VendeursUiState(
-            vendeurs = vendeurs,
-            periodes = periodes,
-            activeVendeurId = activeVendeurId,
-            activePeriodeId = activePeriodeId
-        )
+        _uiState.value = activeVendeurId?.let {
+            VendeursUiState(
+                vendeurs = vendeurs,
+                periodes = periodes,
+                activeVendeurId = it,
+                activePeriodeId = activePeriodeId
+            )
+        }!!
     }
 
     fun addNewPeriode() {
@@ -87,15 +92,7 @@ open class VendeursViewModel(
     }
 
     private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
-        val currentVendeur =
-            vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 
-        // Update only if we found the vendor
-        currentVendeur?.let { vendeur ->
-            val updatedVendeur = vendeur.copy(ceComptVendeurStartAffichePeriod = id)
-            vendeurRepository.updateUnSeulData(updatedVendeur)
-        }
     }
 
     fun update_1_5(data: Z_AppCompt): Unit {
@@ -104,21 +101,11 @@ open class VendeursViewModel(
 
 
     // Add this method to the VendeursViewModel class
-    fun getActiveVendeur(): Z_AppCompt? {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
-        return vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
-    }
+    fun getActiveVendeur(): Z_AppCompt? =
+        getter.zAppComptRepositoryComposable.currentAppCompt
+
 
     fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {
-        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDeA5Vendeur
-        val currentVendeur =
-            vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
-
-        // Update only if we found the vendor
-        currentVendeur?.let { vendeur ->
-            val updatedVendeur = vendeur.copy(ceComptVendeurInsertBonsAchatAuPeriodID = periodId)
-            vendeurRepository.updateUnSeulData(updatedVendeur)
-        }
     }
 
     fun setActiveVendeur(id: Long) {
@@ -134,12 +121,4 @@ open class VendeursViewModel(
         update_1_5_ceComptVendeurStartAffichePeriod(id)
     }
 
-    // Only for development/testing
-    fun addTestData() {
-        vendeurRepository.addDataAndReturneItVID(Z_AppCompt(nom = "W"))
-        vendeurRepository.addDataAndReturneItVID(Z_AppCompt(nom = "M"))
-        periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "1:mm"))
-        periodeVentRepository.addDataAndReturneItVID(MVentPeriode(heurDebutInString = "2:mm"))
-        loadData()
-    }
 }

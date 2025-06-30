@@ -26,8 +26,6 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_V
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview.D_EtateMessageVocalePreviewViewModel
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_VendeurRepositoryImpl
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main.B1CouleurOuGoutProduitDataBaseTestDatasViewModel
@@ -104,7 +102,6 @@ val centralDataBasesModule = module {
             get(),
             get(),
             get(),
-            get()
         )
     }
 }
@@ -118,7 +115,6 @@ val dataBaseProtoAvantJuin3Module = module {
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
     single<DataBaseFactoryMVentPeriode> { _DataBaseFactory_MVentPeriodeImpl(get()) }
-    single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
     single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
     single<_4_CouleurOperationCommand_Repository> { _4_CouleurOperationCommand_RepositoryImpl(get()) }
 
@@ -179,7 +175,7 @@ val viewModelModule = module {
     viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { VendeurAfficheurInfosProduitViewModel(get(),) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
-    viewModel { ViewModelMessageur(get(), get()) }
+    viewModel { ViewModelMessageur(get(),  get(), get(),) }
     viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
     viewModel { A_ProduitInfosViewModel(get()) }
     viewModel { CategoriePrevViewModel(get()) }
@@ -190,8 +186,8 @@ val viewModelModule = module {
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
-    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get()) }
-    viewModel { VendeursViewModel(get(), get()) }
+    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), ) }
+    viewModel { VendeursViewModel( get(), get(), get(), ) }
     viewModel { MapClientsViewModel(get(), get(), get(), get(), ) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }

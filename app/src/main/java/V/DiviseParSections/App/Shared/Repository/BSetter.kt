@@ -29,6 +29,7 @@ class BSetter(
 
     val bClientsStateCompoRepository = getter.hClientRepository
 
+
     fun updateDialogMapMarque(clientID :Long) {
         val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
@@ -90,6 +91,18 @@ class BSetter(
     fun navigateToCartScreen() {
         setterScope.launch(Dispatchers.Main) {
             navigationHandler.navigateToCartScreen()
+        }
+    }
+    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
+        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+            onVentFClientKeyID = "",
+            onVentFClientDebugNameKey = "",
+            onVentGBonVentKeyId = "",
+            bOuvertDialogMapMarqueHClientKey = ""
+        )
+
+        if (zCompt != null) {
+            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
         }
     }
 

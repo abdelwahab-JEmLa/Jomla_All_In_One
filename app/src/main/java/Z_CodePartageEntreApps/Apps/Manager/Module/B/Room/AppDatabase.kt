@@ -14,7 +14,6 @@ import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.D_EtateMessageVocaleDao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_App.Base.Extension.DataBase._1_5_VendeurDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
@@ -120,7 +119,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _1_1_CouleurAcheteOperationDao(): _1_1_CouleurAcheteOperationDao
     abstract fun _1_2_ProduitAcheteOperationDao(): _1_2_ProduitAcheteOperationDao
 
-    abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
 
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao

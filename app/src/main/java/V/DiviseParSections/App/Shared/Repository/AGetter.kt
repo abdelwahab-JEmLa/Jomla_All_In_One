@@ -16,7 +16,6 @@ import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
-import Z_CodePartageEntreApps.Repository.Main.Proto.Z_ComptAppStateCompoRepositoryProtoAvanJuin17
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -28,6 +27,10 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
+data class ParametresAppComptNonSaved(
+    val gerantComptKey: String = "t1",
+)
 
 @Stable
 class AGetter(
@@ -49,28 +52,28 @@ class AGetter(
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
-    val comptAppState: Z_ComptAppStateCompoRepositoryProtoAvanJuin17,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
+) {
+    val parametresAppComptNonSaved= ParametresAppComptNonSaved()
 
-    ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val bOuvertDialogMapMarqueHClientKey=zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
+    val bOuvertDialogMapMarqueHClientKey =
+        zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
+
     // Fixed getVent function in AGetter.kt
     fun getRelatedCouleur(
-        produit: ArticlesBasesStatsTable,
-        colorIndex: Int
-    ) =
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find {
-                it.parentBProduitOldID == produit.id
-                        && it.indexCouleurDansAncienProto == colorIndex
-            }!!
+        produit: ArticlesBasesStatsTable, colorIndex: Int
+    ) = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+        it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
+    }!!
 
-    fun getVentForArticleAndColorInThisApp(article: ArticlesBasesStatsTable, colorIndex: Int): FCouleurVentOperationInfos? {
+    fun getVentForArticleAndColorInThisApp(
+        article: ArticlesBasesStatsTable, colorIndex: Int
+    ): FCouleurVentOperationInfos? {
         val relatedCouleur = relatedCouleurKeyParAncienMethod(article, colorIndex) ?: return null
         return getVent(relatedCouleur.key, article.id)
     }
@@ -80,25 +83,18 @@ class AGetter(
 
         val bonVentKey = ouvertData.onVentGBonVentKeyId
         val periodKey = ouvertData.onVentHVentPeriodKeyId
-        val matchingOperation =
-            fVentCouleurOperationRepository.datasValue.find { operation ->
-                operation.parentCouleurInfosKeyID == couleurKey &&
-                        operation.parentProduitInfosOldId == produitId &&
-                        operation.parentGBonVentKeyId == bonVentKey &&
-                        operation.parentHVentPeriodKeyId == periodKey
-            }
+        val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
+            operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentGBonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
+        }
 
         return matchingOperation
     }
 
 
     fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find {
-                it.parentBProduitOldID == produit.id
-                        && it.indexCouleurDansAncienProto == colorIndex
-            }
-
+        b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+            it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
+        }
 
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
@@ -112,9 +108,9 @@ class AGetter(
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
-        val categoriesInCatalogue = b3CategoriesCompoRepository.datasValue
-            .filter { it.catalogueParentId == targetCatalogue.id }
-            .map { it.id }
+        val categoriesInCatalogue =
+            b3CategoriesCompoRepository.datasValue.filter { it.catalogueParentId == targetCatalogue.id }
+                .map { it.id }
 
         return this.filter { product ->
             val categoryId = product.idParentCategorie
@@ -159,7 +155,7 @@ class AGetter(
         inline fun String?.ifNotNullOrEmpty(block: () -> Unit) {
             if (!this.isNullOrEmpty()) block()
         }
-        
+
         inline fun Boolean.ifTrue(block: () -> Unit) {
             if (this) block()
         }
@@ -167,13 +163,10 @@ class AGetter(
         inline fun Boolean.ifFalse(block: () -> Unit) {
             if (!this) block()
         }
-        
-        val centralRef =
-            Firebase.database.getReference(
-                "00_DataPrototype-04-02" +
-                        "/_1_developingRef" +
-                        "/C_InfosSqlDataBases"
-            )
+
+        val centralRef = Firebase.database.getReference(
+            "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
+        )
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
@@ -188,12 +181,9 @@ class AGetter(
         }
 
         fun String?.withOutInvalidCharacters(): String {
-            val cleanedNom = (this ?: "")
-                .replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?-]"), "")
-                .replace(Regex("\\s+"), "_")
-                .replace(Regex("_+"), "_")
-                .trim('_')
-                .take(40)
+            val cleanedNom =
+                (this ?: "").replace(Regex("[.#\$\\[\\]/®™©{}\"'`~!@%^&*()+=|\\\\:;<>?-]"), "")
+                    .replace(Regex("\\s+"), "_").replace(Regex("_+"), "_").trim('_').take(40)
 
 
             return when {
@@ -207,10 +197,7 @@ class AGetter(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHVentPeriodKeyId +
-                    "--${compt.onVentGBonVentKeyId}" +
-                    "--${bProduitDataBase.id}" +
-                    "--${bProduitDataBase.id}_${indexCouleur + 1}"
+            return compt.onVentHVentPeriodKeyId + "--${compt.onVentGBonVentKeyId}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }
     }
 }

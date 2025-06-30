@@ -2,10 +2,10 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -81,13 +81,13 @@ class E0AfficheHistoriqueTransactionsViewModel(
     }
 
     fun updateActiveComptIdClientOuvertPoutCeCompt(data: Long) {
-        val currentActiveCompt = _uiState.value.activeCompt ?: return
+     /*   val currentActiveCompt = _uiState.value.activeCompt ?: return
         _uiState.value = _uiState.value.copy(
             activeCompt = currentActiveCompt.copy(onVentFClientAncienId = data)
         )
 
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model
             .repository_1_5_Vendeur
-            .updateUnSeulData(currentActiveCompt.copy(onVentFClientAncienId = data))
+            .updateUnSeulData(currentActiveCompt.copy(onVentFClientAncienId = data))     */
     }
 }

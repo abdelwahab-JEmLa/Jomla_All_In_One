@@ -81,7 +81,6 @@ class ViewModelFragment_StartUpScreen(
     }
     private fun loadData() {
         _uiState.value = UiState_StartUpScreen(
-            itsManagerCompt= headModel.activeIdDeA5Vendeur > 0
         )
     }
 

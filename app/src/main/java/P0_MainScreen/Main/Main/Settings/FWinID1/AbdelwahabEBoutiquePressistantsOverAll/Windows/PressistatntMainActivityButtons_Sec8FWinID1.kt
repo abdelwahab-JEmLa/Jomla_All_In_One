@@ -75,7 +75,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val remainingClients =
-        recordingViewModel.a_CentralDatasHandlerProtoJuin9.nombreClientsOuLeurDernierEtateCible
+        recordingViewModel.aGetter.nombreClientsOuLeurDernierEtateCible
     val currentAppCompt = appComptComposeRepositoryProtoJuin17.currentAppCompt
     val isDataLoading = currentAppCompt == null
     val currentSelectedCatalogueId =

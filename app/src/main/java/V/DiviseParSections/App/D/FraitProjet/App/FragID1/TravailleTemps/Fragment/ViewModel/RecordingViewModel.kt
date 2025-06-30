@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
-import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravailleRepository
@@ -37,7 +37,7 @@ data class UiState(
 )
 
 class RecordingViewModel(
-    val a_CentralDatasHandlerProtoJuin9: AGetter,
+    val aGetter: AGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val groupeRepositorysProtoAvJuin3: GroupeRepositorysProtoAvJuin3,
     val recordingHandler: IRecordingHandler,
@@ -128,12 +128,11 @@ class RecordingViewModel(
 
 
     private suspend fun collectActiveVendeurId() {
-        groupeRepositorysProtoAvJuin3.repositorys_Model.activeReactiveIdDe_1_5_Vendeur.collect {
+        snapshotFlow { aGetter.zAppComptRepositoryComposable.currentAppCompt }.collect { currentAppCompt ->
             val activePeriodeVent = get_PeriodVentActive()
             updateUiState { currentState ->
                 currentState.copy(activePeriodeVent = activePeriodeVent)
             }
-            // Update client count after state change
             updateClientCountCache()
         }
     }
@@ -143,7 +142,7 @@ class RecordingViewModel(
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
-            repositorysModel1.repository_1_5_Vendeur.modelDatasSnapList.find { it.vid == repositorysModel1.activeReactiveIdDe_1_5_Vendeur.value }?.ceComptVendeurInsertBonsAchatAuPeriodID
+            aGetter.zAppComptRepositoryComposable.currentAppCompt?.ceComptVendeurInsertBonsAchatAuPeriodID
 
         return repositorysModel1.repositoryMVentPeriode.modelDatasSnapList.find {
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive
@@ -151,9 +150,9 @@ class RecordingViewModel(
     }
 
     fun calculateNombreClientAvecCible(): Int {
-        val count = a_CentralDatasHandlerProtoJuin9.hClientRepository.datasValue
+        val count = aGetter.hClientRepository.datasValue
             .count { client ->
-                a_CentralDatasHandlerProtoJuin9.gBonVentRepository
+                aGetter.gBonVentRepository
                     .getClientLastTransactionParEtate(
                         client.id,
                         GBonVent.EtateActuellementEst.Cible

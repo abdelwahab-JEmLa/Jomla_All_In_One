@@ -190,36 +190,43 @@ fun ButtonMessageVocale(
                         } else {
                             try {
                                 val idParent_1_5_Vendeur =
-                                    viewModel.masterRepositorys.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.activeIdDeA5Vendeur
+                                    viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.vid
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                val newEtate = D_EtateMessageVocale(
-                                    nomDeSonOriginaleFichie = originalFileName,
-                                    idParent_1_5_Vendeur = idParent_1_5_Vendeur,
-                                    nomParent_1_5_Vendeur = viewModel.masterRepositorys.e_GroupedDataBasesRepositoryProtoAvant3Juin.repositorys_Model.repository_1_5_Vendeur.modelDatasSnapList
-                                        .find { it.vid == idParent_1_5_Vendeur }?.nom ?: "Non Trouve",
-                                    parentMessageVID = parentMessageVID,
-                                    nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
-                                    timestamps = datesHandler.getCurrentTimestamps()
-                                )
+                                val newEtate = idParent_1_5_Vendeur?.let {
+                                    D_EtateMessageVocale(
+                                        nomDeSonOriginaleFichie = originalFileName,
+                                        idParent_1_5_Vendeur = it,
+                                        nomParent_1_5_Vendeur = "Non Definie",
+                                        parentMessageVID = parentMessageVID,
+                                        nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
+                                        timestamps = datesHandler.getCurrentTimestamps()
+                                    )
+                                }
 
-                                viewModel.addOrUpdateData(newEtate)
+                                if (newEtate != null) {
+                                    viewModel.addOrUpdateData(newEtate)
+                                }
                                 currentRecordingEtate = newEtate
 
-                                val startResult = audioHandler.startRecording(
-                                    context,
-                                    newEtate.parentMessageVID,
-                                    currentTransaction = null
-                                )
-
-                                if (startResult.isFailure) {
-                                    Toast.makeText(
+                                val startResult = newEtate?.let {
+                                    audioHandler.startRecording(
                                         context,
-                                        "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    return@launch
+                                        it.parentMessageVID,
+                                        currentTransaction = null
+                                    )
+                                }
+
+                                if (startResult != null) {
+                                    if (startResult.isFailure) {
+                                        Toast.makeText(
+                                            context,
+                                            "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@launch
+                                    }
                                 }
 
                                 isRecording = true

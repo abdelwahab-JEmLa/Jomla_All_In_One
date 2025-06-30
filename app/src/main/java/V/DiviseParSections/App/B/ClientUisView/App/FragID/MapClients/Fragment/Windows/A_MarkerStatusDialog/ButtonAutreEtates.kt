@@ -45,8 +45,8 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.getter.comptAppState
-                    .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)
+                viewModel
+                    .dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 
             }
         },
@@ -78,51 +78,5 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             )
             Text(newEtate.nomArabe)
         }
-    }
-}
-
-fun upsertLenceAutresStatesRepoGroupedProtoAvanJuin3(
-    uiState: UiState,
-    viewModel: MapClientsViewModel,
-    relatedClientID: Long,
-    newEtate: GBonVent.EtateActuellementEst,
-) {
-    val relatedClients = viewModel.bProto_ClientsDataBase.find {
-        it.id == (relatedClientID)
-    }
-    val activeComptApp = viewModel.appState.activeCompt
-
-    val ceComptVendeurInsertBonsAchatAuPeriodID =
-        activeComptApp?.ceComptVendeurInsertBonsAchatAuPeriodID
-
-    val clientId = relatedClients?.id ?: 0L
-    val clientName = relatedClients?.nom ?: "Unknown Client"
-    val periodId = ceComptVendeurInsertBonsAchatAuPeriodID ?: run {
-        return
-    }
-
-    val existingBonAchat = viewModel.c3_BonAchate_List.find {
-        it.parentHClientOldID == clientId
-                && it.parentPeriodeVentOldID == periodId
-                && it.etateActuellementEst == newEtate
-    }
-
-    if (existingBonAchat != null) {
-        val updatedBonAchat = existingBonAchat.copy(
-            creationTimestamps = System.currentTimeMillis(),
-        )
-        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-            updatedBonAchat
-        )
-    } else {
-        val newTransaction = GBonVent(
-            parentHClientOldID = clientId,
-            nomClientConcerned = clientName,
-            parentPeriodeVentOldID = periodId,
-            etateActuellementEst = newEtate,
-        )
-        viewModel.groupeRepositorysProtoAvJuin3.upsertUneDataEtReturnVID(
-            newTransaction
-        )
     }
 }

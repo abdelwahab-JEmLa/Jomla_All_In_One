@@ -44,9 +44,9 @@ fun AfficheurRegleOuvert(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+            val activeCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
 
-           activeCompt?.let { activeCompt ->
+            activeCompt?.let { activeCompt ->
                 val relatedClientactiveTransaction =
                     viewModel.bProto_ClientsDataBase.find {
                         it.id == activeCompt.vid
@@ -84,8 +84,8 @@ fun AfficheurRegleOuvert(
 
                 TextButton(
                     onClick = {
-                        viewModel.getter.comptAppState
-                            .updateActiveComptIdClientOuSonMarqueMapEstOuvert(0)                    },
+                        viewModel.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("إغلاق الفاتورة مع عدم وضع اي تقرير")

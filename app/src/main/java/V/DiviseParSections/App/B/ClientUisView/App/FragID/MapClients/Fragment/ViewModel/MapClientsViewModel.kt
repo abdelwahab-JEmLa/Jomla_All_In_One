@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.GBonVent
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -68,7 +67,7 @@ class MapClientsViewModel(
     // Compose States
     val transactionsState = getter.gBonVentRepository
     val clientsState = getter.hClientRepository
-    val appState = getter.comptAppState
+    val appState = getter.zAppComptRepositoryComposable
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -106,7 +105,7 @@ class MapClientsViewModel(
         }
 
         viewModelScope.launch {
-            snapshotFlow { getter.comptAppState.activeCompt }.collect { transactionsList ->
+            snapshotFlow { getter.zAppComptRepositoryComposable.currentAppCompt }.collect { transactionsList ->
                 updateUiState()
             }
         }
@@ -270,6 +269,9 @@ class MapClientsViewModel(
 
     fun updateDialogMapMarque(clientOldId: Long) {
         setter.updateDialogMapMarque(clientOldId)
+    }
+    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey(): Unit {
+        setter.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
     }
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
