@@ -2,15 +2,15 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.Shared.Repository.BSetter
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
-import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
@@ -38,7 +38,7 @@ val composRepositorysModule = module {
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
-    // Helper classes for BSetter
+    // Helper classes for BSetterFacade
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
@@ -52,11 +52,11 @@ val composRepositorysModule = module {
     }
 
     single {
-        BSetter(
+        BSetterFacade(
             get(), get(), get(), get(),get(),
         )
     }
 
     single { ModulesCentral(get(), get()) }
-    single { ACentral(get(), get(), get()) }
+    single { ACentralFacade(get(), get(), get()) }
 }

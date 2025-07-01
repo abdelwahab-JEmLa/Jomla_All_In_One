@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.Shared.Repository.Patch
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
@@ -284,7 +284,7 @@ class BSetterP (
     }
 
 
-    fun acheterACaSetterCentral(
+    fun (
         fCouleurVentOperation: FCouleurVentOperationInfos? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,

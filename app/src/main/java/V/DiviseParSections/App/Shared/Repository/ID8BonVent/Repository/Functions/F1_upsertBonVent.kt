@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
 import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init
 
 import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.BSetter
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import java.io.File
@@ -59,9 +59,9 @@ fun parseCsvLine(line: String): GBonVent {
 
 
 private fun zAppcompt(values: List<String>) = GBonVent(
-    parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-    parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-    parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+    parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+    parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
+    parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
 )
 
 

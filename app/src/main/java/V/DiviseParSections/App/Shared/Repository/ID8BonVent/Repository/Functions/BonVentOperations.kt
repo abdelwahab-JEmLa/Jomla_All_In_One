@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.Shared.Repository.BSetter
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 
@@ -52,11 +52,11 @@ class BonVentOperations(
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel]
+                parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
+                parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
 

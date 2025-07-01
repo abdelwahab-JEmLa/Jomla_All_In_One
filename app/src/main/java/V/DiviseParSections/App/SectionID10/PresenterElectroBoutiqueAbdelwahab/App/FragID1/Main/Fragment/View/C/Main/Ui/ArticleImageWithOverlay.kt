@@ -69,7 +69,7 @@ fun ArticleImageWithOverlay(
             ) {
                 onClickToOpenWindow(article, colorIndex)
 
-                viewModel.setter.acheterACaSetterCentral(
+                viewModel.setter.upsertVentCouleurOperationFacade(
                     fCouleurVentOperation = vent,
                     produit = article,
                     colorIndex = colorIndex,

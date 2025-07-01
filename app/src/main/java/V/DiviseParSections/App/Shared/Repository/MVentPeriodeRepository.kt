@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import android.util.Log

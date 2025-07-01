@@ -1,5 +1,5 @@
 
-// File: BSetter/Helper/ProduitOperations.kt
+// File: BSetterFacade/Helper/ProduitOperations.kt
 package V.DiviseParSections.App.Shared.Repository.Bsetter.Helper
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable

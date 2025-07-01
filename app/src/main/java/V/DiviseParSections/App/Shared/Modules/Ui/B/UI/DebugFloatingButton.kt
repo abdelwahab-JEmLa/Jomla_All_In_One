@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.B.UI
 
 import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.ACentral
+import V.DiviseParSections.App.Shared.Repository.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
@@ -72,7 +72,7 @@ class DebugKey(
 }
 
 class ViewModelDebugFloatingButton(
-    val ACentral: ACentral,
+    val ACentral: ACentralFacade,
 ) : ViewModel() {
     val debugKey = ACentral.modulesCentral.debugKey
     data class UiState(

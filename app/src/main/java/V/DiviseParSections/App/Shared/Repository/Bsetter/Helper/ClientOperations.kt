@@ -1,4 +1,4 @@
-// File: BSetter/Helper/ClientOperations.kt
+// File: BSetterFacade/Helper/ClientOperations.kt
 package V.DiviseParSections.App.Shared.Repository.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.AGetter

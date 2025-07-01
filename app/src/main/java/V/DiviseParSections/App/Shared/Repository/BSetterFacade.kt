@@ -1,17 +1,18 @@
 package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
-import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import com.google.firebase.database.DatabaseReference
 
-class BSetter(
+class BSetterFacade(
     private val getter: AGetter,
     private val produitOperations: ProduitOperations,
     val id8BonVentOperations: BonVentOperations,
@@ -64,12 +65,21 @@ class BSetter(
         )
     }
 
-    fun acheterACaSetterCentral(
+    fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: FCouleurVentOperationInfos? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         quantity: Int
-    ) = ventOperations.acheterACaSetterCentral(fCouleurVentOperation, produit, colorIndex, quantity)
+    ) {
+        upsertVentCouleurOperation(
+            fCouleurVentOperation,
+            produit,
+            colorIndex,
+            quantity,
+            getter.zAppComptRepositoryComposable,
+            getter,
+        )
+    }
 
     fun updateListRelativeVentCouleurPrixVent(produitKey: String?, newPrix: Double) =
         ventOperations.updateListRelativeVentCouleurPrixVent(produitKey, newPrix)

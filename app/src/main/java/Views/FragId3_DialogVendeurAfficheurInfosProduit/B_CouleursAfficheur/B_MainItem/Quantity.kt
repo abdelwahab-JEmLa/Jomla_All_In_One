@@ -63,7 +63,7 @@ fun QuantityButton(
 
             onClick()
 
-            viewModel.aCentral.setter.acheterACaSetterCentral(
+            viewModel.aCentral.setter.upsertVentCouleurOperationFacade(
                 vent,
                 produit = article,
                 colorIndex = colorIndex,

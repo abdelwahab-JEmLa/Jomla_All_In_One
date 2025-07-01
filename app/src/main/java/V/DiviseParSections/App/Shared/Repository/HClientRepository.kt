@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.getListDesParentKeys
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase

@@ -3,9 +3,9 @@ package V.DiviseParSections.App.Shared.Repository
 import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.DebugKey
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 
-class ACentral(
+class ACentralFacade(
     val getter: AGetter,
-    val setter: BSetter,
+    val setter: BSetterFacade,
     val modulesCentral : ModulesCentral
 )
 
