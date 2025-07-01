@@ -133,6 +133,11 @@ data class Z_AppCompt(
     //------------------------------------------------------------------------------------------------------------------------------------------------
     val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {
+
+    fun getKeyIdByParent(): String {
+        return nom.ifEmpty { "DefaultCompt" }
+    }
+
     init {
         if (nomMutable.isEmpty()) {
             nomMutable = getInitCreationName()

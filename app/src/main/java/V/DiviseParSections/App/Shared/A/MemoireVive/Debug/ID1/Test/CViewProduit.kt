@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
@@ -44,10 +43,8 @@ fun ViewProduit(
                     SemanticsPropertyKey(Z_AppCompt.keyModelValID7VentParent),
                     ParametresAppComptNonSaved().activePeriodKeyByParent
                 )
-                set(
-                    SemanticsPropertyKey(ArticlesBasesStatsTable.KeyTagModel),
-                    product.nom.withOutFireBaseInvalidCharacters()
-                )
+
+                set(product.getTempKeyByParent().key, product.getTempKeyByParent().value)
             },
         elevation = CardDefaults.cardElevation(2.dp)
     ) {

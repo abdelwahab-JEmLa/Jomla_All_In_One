@@ -9,6 +9,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
@@ -16,6 +17,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.AbstractMap
 
 @Stable
 class BProduitInfosRepository(
@@ -181,9 +183,13 @@ data class ArticlesBasesStatsTable(
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 ) {
-    fun getTempKeyByParent(): String {
-        return this.nom.withOutFireBaseInvalidCharacters()
+    fun getTempKeyByParent(): Map.Entry<SemanticsPropertyKey<String>, String> {
+        val semanticKey = SemanticsPropertyKey<String>(KeyTagModel)
+        val semanticValue = nom.withOutFireBaseInvalidCharacters()
+
+        return AbstractMap.SimpleEntry(semanticKey, semanticValue)
     }
+
 
     enum class EtateActuelleOnFusionAvecBaseDonne {
         CaprtureSonImage,
