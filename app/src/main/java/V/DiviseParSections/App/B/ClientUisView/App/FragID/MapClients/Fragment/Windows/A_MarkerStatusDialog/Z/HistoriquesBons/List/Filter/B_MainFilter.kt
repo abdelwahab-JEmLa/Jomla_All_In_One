@@ -7,10 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun MainFilter(vm: E0AfficheHistoriqueTransactionsViewModel, tagParentKey_Client: String) {
+fun MainFilter(
+    modifier: Modifier.Companion,
+    vm: E0AfficheHistoriqueTransactionsViewModel,
+    tagParentKey_Client: String
+) {
     val filtered = vm.getter.gBonVentRepository.datasValue.filter {
         HClientInfos.extractSonKeyByParent(it.keyByParent) == HClientInfos.extractSonKeyByParent(tagParentKey_Client)
     }.sortedByDescending { it.creationTimestamps }
 
-    View_MainList(vm, filtered, Modifier)
+    View_MainList(vm, filtered, modifier)
 }

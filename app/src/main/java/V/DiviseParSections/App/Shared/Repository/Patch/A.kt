@@ -1,10 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Patch
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.getListDesParentKeys
@@ -12,6 +8,10 @@ import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -284,7 +284,7 @@ class BSetterP (
     }
 
 
-    fun (
+    fun te(
         fCouleurVentOperation: FCouleurVentOperationInfos? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,

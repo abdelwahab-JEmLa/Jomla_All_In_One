@@ -29,8 +29,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             modifier =
                 Modifier
                     .padding(vertical = 8.dp)
-                    .testTag("A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient  $parentTag_ClientKey")
-                    //  .performClick()
+                    .testTag("A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient  $parentTag_ClientKey")//<--
                     .semantics {
                         contentDescription = "Liste filtrée des transactions"
                         testTag = "TransactionsList"
@@ -40,6 +39,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         )
 
         MainFilter(
+            Modifier,
             viewModel,
             parentTag_ClientKey
         )
