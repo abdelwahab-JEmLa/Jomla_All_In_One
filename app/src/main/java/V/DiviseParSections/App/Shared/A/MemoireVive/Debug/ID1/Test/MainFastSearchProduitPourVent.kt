@@ -52,109 +52,56 @@ fun MainFastSearchProduitPourVent(
     tag: String = ""
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repo = viewModel.getter.bProduitInfosRepository.datasValue
-    val categoriesRepo = viewModel.getter.b3CategoriesCompoRepository.datasValue
+    val products = viewModel.getter.bProduitInfosRepository.datasValue
+    val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
 
-    val tagParent_ID7VentPeriod = "--${Z_AppCompt.keyModel}-${ParametresAppComptNonSaved().gerantComptKeyByParent}--${Z_AppCompt.keyModelValID7VentParent}-${ParametresAppComptNonSaved().activePeriodKeyByParent}"
-    val keyCompose = SemanticsPropertyKey<String>(tagParent_ID7VentPeriod)
-
-    // Focus requester for search field
+    val tagParent = "--${Z_AppCompt.keyModel}-${ParametresAppComptNonSaved().gerantComptKeyByParent}--${Z_AppCompt.keyModelValID7VentParent}-${ParametresAppComptNonSaved().activePeriodKeyByParent}"
+    val keyCompose = SemanticsPropertyKey<String>(tagParent)
     val focusRequester = remember { FocusRequester() }
 
-    // Request focus when composable first loads
     LaunchedEffect(Unit) {
-        delay(100) // Small delay to ensure UI is ready
+        delay(100)
         focusRequester.requestFocus()
     }
 
     Surface(
-        modifier = modifier
-            .fillMaxSize()
-            .semantics {
-                set(keyCompose, tagParent_ID7VentPeriod)
+        modifier = modifier.fillMaxSize().semantics { set(keyCompose, tagParent) }
+    ) {
+        Column(Modifier.fillMaxSize().padding(16.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Recherche Rapide Produits",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                FloatingActionButton(
+                    onClick = viewModel::onAddNewProduct,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(Icons.Default.Add, "Ajouter produit")
+                }
             }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            // Header with Add button
-            HeaderSection(
-                onAddClick = { viewModel.onAddNewProduct() }
+
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = uiState.searchText,
+                onValueChange = viewModel::onSearchTextChange,
+                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                placeholder = { Text("Rechercher un produit...") },
+                leadingIcon = { Icon(Icons.Default.Search, "Rechercher") },
+                singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Search field that focuses on start
-            SearchField(
-                searchText = uiState.searchText,
-                onSearchTextChange = { viewModel.onSearchTextChange(it) },
-                focusRequester = focusRequester,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Product list
-            MainList(
-                products = repo,
-                categories = categoriesRepo,
-                searchFilter = uiState.searchText,
-                modifier = Modifier.fillMaxSize()
-            )
+            MainList(products, categories, uiState.searchText, Modifier.fillMaxSize())
         }
     }
-}
-
-@Composable
-private fun HeaderSection(
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Recherche Rapide Produits",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        FloatingActionButton(
-            onClick = onAddClick,
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Ajouter produit"
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchField(
-    searchText: String,
-    onSearchTextChange: (String) -> Unit,
-    focusRequester: FocusRequester,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = searchText,
-        onValueChange = onSearchTextChange,
-        modifier = modifier.focusRequester(focusRequester),
-        placeholder = { Text("Rechercher un produit...") },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Rechercher"
-            )
-        },
-        singleLine = true
-    )
 }
 
 @Composable
@@ -164,61 +111,40 @@ fun MainList(
     searchFilter: String,
     modifier: Modifier = Modifier
 ) {
-    // Create category map for lookup
-    val categoryMap = remember(categories) {
-        categories.associateBy { it.id }
-    }
+    val categoryMap = remember(categories) { categories.associateBy { it.id } }
+    val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
 
-    // Create catalogue map for lookup
-    val catalogues = remember {
-        B4CatalogueCategoriesRepository().associateBy { it.id }
-    }
-
-    // Filter and sort products based on search and category grouping
-    val categoryGroupedSortedProducts = remember(products, categories, searchFilter) {
-        // First filter by search if not empty
-        val filteredProducts = if (searchFilter.isBlank()) {
-            products
-        } else {
-            products.filter { product ->
-                product.nom.contains(searchFilter, ignoreCase = true) ||
-                        product.nomMutable.contains(searchFilter, ignoreCase = true) ||
-                        product.nomArab.contains(searchFilter, ignoreCase = true)
-            }
+    val filteredProducts = remember(products, searchFilter) {
+        if (searchFilter.isBlank()) products
+        else products.filter {
+            it.nom.contains(searchFilter, true) ||
+                    it.nomMutable.contains(searchFilter, true) ||
+                    it.nomArab.contains(searchFilter, true)
         }
+    }
 
-        // Separate regular products from orphan products
-        val (regularProducts, orphanProducts) = filteredProducts.partition { product ->
-            val categoryId = product.idParentCategorie ?: 0L
-            val category = categoryMap[categoryId]
+    val sortedProducts = remember(filteredProducts, categories) {               //<--
+    //TODO(2.C Relative Au Todo(1): 
+            //... utilise le ici 
+        val (regular, orphan) = filteredProducts.partition { product ->
+            val category = categoryMap[product.idParentCategorie ?: 0L]
             val catalogueId = category?.catalogueParentId ?: 4L
-
-            category != null &&
-                    catalogueId != 4L &&
-                    !category.nom.equals("NONE", ignoreCase = true)
+            category != null && catalogueId != 4L && !category.nom.equals("NONE", true)
         }
 
-        // Sort regular products by catalogue, then category, then position, then name
-        val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                val catalogueId = category?.catalogueParentId ?: 4L
-                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
-            }.thenBy { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+        val sortedRegular = regular.sortedWith(
+            compareBy<ArticlesBasesStatsTable> {
+                val category = categoryMap[it.idParentCategorie ?: 0L]
+                catalogues[category?.catalogueParentId ?: 4L]?.position ?: Int.MAX_VALUE
+            }.thenBy { categoryMap[it.idParentCategorie ?: 0L]?.position ?: Int.MAX_VALUE }
+                .thenBy { it.positionDonSonCesFrereCategorieProduits }
                 .thenBy { it.nom.lowercase() }
         )
 
-        // Sort orphan products
-        val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
-                    ?: "ZZZZZ_NO_CATEGORY"
+        val sortedOrphan = orphan.sortedWith(
+            compareBy<ArticlesBasesStatsTable> {
+                val category = categoryMap[it.idParentCategorie ?: 0L]
+                category?.nom?.takeIf { !it.equals("NONE", true) } ?: "ZZZZZ_NO_CATEGORY"
             }.thenBy { it.positionDonSonCesFrereCategorieProduits }
                 .thenBy { it.nom.lowercase() }
         )
@@ -226,35 +152,24 @@ fun MainList(
         sortedRegular + sortedOrphan
     }
 
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        if (searchFilter.isNotEmpty() && categoryGroupedSortedProducts.isEmpty()) {
+    LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Card(Modifier.fillMaxWidth()) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
+                        Modifier.fillMaxWidth().padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Aucun produit trouvé pour \"$searchFilter\"",
+                            "Aucun produit trouvé pour \"$searchFilter\"",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
             }
         } else {
-            items(categoryGroupedSortedProducts) { product ->
-                ViewProduit(
-                    product = product,
-                    category = categoryMap[product.idParentCategorie],
-                    modifier = Modifier.fillMaxWidth()
-                )
+            items(sortedProducts) { product ->
+                ViewProduit(product, categoryMap[product.idParentCategorie], Modifier.fillMaxWidth())
             }
         }
     }
@@ -266,52 +181,41 @@ fun ViewProduit(
     category: CategoriesTabelle?,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // Product name
+    Card(modifier, elevation = CardDefaults.cardElevation(2.dp)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
-                text = product.nom,
+                product.nom,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
-            // Arabic name if available
             if (product.nomArab.isNotEmpty()) {
                 Text(
-                    text = product.nomArab,
+                    product.nomArab,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Category and price info
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
-                        text = "Catégorie: ${category?.nom ?: "Non définie"}",
+                        "Catégorie: ${category?.nom ?: "Non définie"}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "Prix: ${product.prixVent} DA",
+                        "Prix: ${product.prixVent} DA",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )
                 }
 
-                // Availability indicator
                 Surface(
                     color = when (product.disponibilityEtates) {
                         V.DiviseParSections.App.Shared.Repository.DisponibilityEtates.DISPO ->
@@ -324,7 +228,7 @@ fun ViewProduit(
                     shape = MaterialTheme.shapes.small
                 ) {
                     Text(
-                        text = product.disponibilityEtates.nomArabe,
+                        product.disponibilityEtates.nomArabe,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onPrimary,

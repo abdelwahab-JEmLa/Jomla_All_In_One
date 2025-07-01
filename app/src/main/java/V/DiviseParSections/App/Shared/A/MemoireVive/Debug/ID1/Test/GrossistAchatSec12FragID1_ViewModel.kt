@@ -2,17 +2,13 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class ViewModelMainFastSearchProduitPourVent(
     aCentral: ACentralFacade,
@@ -46,44 +42,34 @@ class ViewModelMainFastSearchProduitPourVent(
 }
 
 @Stable
-class MainFilterSorter(
+class MainFilterSorter(    //->
+//TODO(FIXME):Fix erreur Class "MainFilterSorter" is never used  pk ce n ai pas utilise 
     private val products: List<ArticlesBasesStatsTable>,
     private val categories: List<CategoriesTabelle>
 ) {
-
     private val categoryMap = categories.associateBy { it.id }
     private val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
 
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
-        val (regularProducts, orphanProducts) = products.partition { product ->
-            val categoryId = product.idParentCategorie ?: 0L
-            val category = categoryMap[categoryId]
+    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by lazy {
+        val (regular, orphan) = products.partition { product ->
+            val category = categoryMap[product.idParentCategorie ?: 0L]
             val catalogueId = category?.catalogueParentId ?: 4L
-
-            category != null &&
-                    catalogueId != 4L &&
-                    !category.nom.equals("NONE", ignoreCase = true)
+            category != null && catalogueId != 4L && !category.nom.equals("NONE", true)
         }
 
-        val sortedRegular = regularProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                val catalogueId = category?.catalogueParentId ?: 4L
-                catalogues[catalogueId]?.position ?: Int.MAX_VALUE
-            }.thenBy { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                categoryMap[categoryId]?.position ?: Int.MAX_VALUE
-            }.thenBy { it.positionDonSonCesFrereCategorieProduits }
+        val sortedRegular = regular.sortedWith(
+            compareBy<ArticlesBasesStatsTable> {
+                val category = categoryMap[it.idParentCategorie ?: 0L]
+                catalogues[category?.catalogueParentId ?: 4L]?.position ?: Int.MAX_VALUE
+            }.thenBy { categoryMap[it.idParentCategorie ?: 0L]?.position ?: Int.MAX_VALUE }
+                .thenBy { it.positionDonSonCesFrereCategorieProduits }
                 .thenBy { it.nom.lowercase() }
         )
 
-        val sortedOrphan = orphanProducts.sortedWith(
-            compareBy<ArticlesBasesStatsTable> { product ->
-                val categoryId = product.idParentCategorie ?: 0L
-                val category = categoryMap[categoryId]
-                category?.nom?.takeIf { !it.equals("NONE", ignoreCase = true) }
-                    ?: "ZZZZZ_NO_CATEGORY"
+        val sortedOrphan = orphan.sortedWith(
+            compareBy<ArticlesBasesStatsTable> {
+                val category = categoryMap[it.idParentCategorie ?: 0L]
+                category?.nom?.takeIf { !it.equals("NONE", true) } ?: "ZZZZZ_NO_CATEGORY"
             }.thenBy { it.positionDonSonCesFrereCategorieProduits }
                 .thenBy { it.nom.lowercase() }
         )
@@ -96,10 +82,10 @@ class MainFilterSorter(
             categoryGroupedSortedProducts
         } else {
             categoryGroupedSortedProducts.filter { product ->
-                product.nom.contains(searchText, ignoreCase = true) ||
-                        product.nomMutable.contains(searchText, ignoreCase = true) ||
-                        product.nomArab.contains(searchText, ignoreCase = true) ||
-                        product.autreNomDarticle?.contains(searchText, ignoreCase = true) == true
+                product.nom.contains(searchText, true) ||
+                        product.nomMutable.contains(searchText, true) ||
+                        product.nomArab.contains(searchText, true) ||
+                        product.autreNomDarticle?.contains(searchText, true) == true
             }
         }
     }
