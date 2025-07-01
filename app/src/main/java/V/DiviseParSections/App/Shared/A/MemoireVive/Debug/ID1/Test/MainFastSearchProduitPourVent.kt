@@ -123,9 +123,7 @@ fun MainList(
         }
     }
 
-    val sortedProducts = remember(filteredProducts, categories) {               //<--
-    //TODO(2.C Relative Au Todo(1): 
-            //... utilise le ici 
+    val sortedProducts = remember(filteredProducts, categories) {
         val (regular, orphan) = filteredProducts.partition { product ->
             val category = categoryMap[product.idParentCategorie ?: 0L]
             val catalogueId = category?.catalogueParentId ?: 4L
