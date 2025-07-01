@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun View_MainList(
-    modifier: Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     listGBonVentFilteredByClientKeySorted: List<GBonVent>,
 ) {
@@ -21,6 +21,7 @@ fun View_MainList(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("View_MainList")
     ) {
         // In C_MainList.kt
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
