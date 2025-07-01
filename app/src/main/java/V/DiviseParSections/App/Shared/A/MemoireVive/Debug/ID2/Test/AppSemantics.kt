@@ -92,13 +92,9 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
         }
     }
 
-    // TODO(1): Perform click quand tout s'affiche
     LaunchedEffect(Unit) {
-        // Simuler un click automatique après affichage (par exemple pour la première transaction)
         if (transaction.id == "txn_001") {
             kotlinx.coroutines.delay(1000) // Attendre 1 seconde
-            // Le performClick se ferait normalement dans un test
-            // Ici on peut déclencher le click programmatiquement
             isSelected = true
             lastClickTime = System.currentTimeMillis().toString()
             println("Auto-click déclenché pour transaction: ${transaction.id}")
