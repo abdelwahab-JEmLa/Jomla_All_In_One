@@ -1,9 +1,11 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,18 +33,29 @@ fun ViewProduit(
     category: CategoriesTabelle?,
     modifier: Modifier = Modifier
 ) {
-    val semanticsInfo = parentSemanticsInfo.copy(
-        second = parentSemanticsInfo.second + "--" + ArticlesBasesStatsTable.KeyTagModel + "-" + product.nom.withOutFireBaseInvalidCharacters()
-    )
-
     Card(
         modifier
-        .semantics {
-            set(semanticsInfo.first, semanticsInfo.second)
-        }, elevation = CardDefaults.cardElevation(2.dp)) {
-        Column(Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
+            .semantics(mergeDescendants = true) { // It's often good practice to merge semantics for a composite element like Card
+                set(
+                    SemanticsPropertyKey(Z_AppCompt.keyModel),
+                    ParametresAppComptNonSaved().gerantComptKeyByParent
+                )
+                set(
+                    SemanticsPropertyKey(Z_AppCompt.keyModelValID7VentParent),
+                    ParametresAppComptNonSaved().activePeriodKeyByParent
+                )
+                set(
+                    SemanticsPropertyKey(ArticlesBasesStatsTable.KeyTagModel),
+                    product.nom.withOutFireBaseInvalidCharacters()
+                )
+            },
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Text(
                 product.nom,
                 style = MaterialTheme.typography.titleMedium,

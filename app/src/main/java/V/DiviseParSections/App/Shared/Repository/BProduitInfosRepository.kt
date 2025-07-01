@@ -212,7 +212,7 @@ data class ArticlesBasesStatsTable(
 
 
     companion object {
-        val KeyTagModel = "keyIDModel1"
+        val KeyTagModel = "IdKeyModel1"
 
         fun safeRemoveRef(): Unit {
             ref.removeValue()
