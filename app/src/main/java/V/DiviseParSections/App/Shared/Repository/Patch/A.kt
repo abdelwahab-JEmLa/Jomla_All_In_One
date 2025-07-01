@@ -3,8 +3,8 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
@@ -48,7 +48,7 @@ class BSetterP (
     }
 
     val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
-    val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+    val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
 
     fun client(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }
 
@@ -148,7 +148,7 @@ class BSetterP (
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
@@ -181,7 +181,7 @@ class BSetterP (
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
 

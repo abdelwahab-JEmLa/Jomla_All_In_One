@@ -21,7 +21,6 @@ class BSetter(
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val hClientRepository = getter.hClientRepository
 
-
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
         id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 

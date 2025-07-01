@@ -1,7 +1,6 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
+package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.Shared.Repository.ParametresAppComptNonSaved
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -145,7 +144,11 @@ data class Z_AppCompt(
 
 
     companion object {
-        const val keyModelValID7= "ID7"
+        const val keyModelValVentParent= "ID7"
+        fun extractSonKeyByParent(stringAExtractDepuit: String) =
+            stringAExtractDepuit.split("--").find { it.startsWith("$keyModelValVentParent-") }?.removePrefix("$keyModelValVentParent-") ?:
+            if (stringAExtractDepuit.startsWith("$keyModelValVentParent-")) stringAExtractDepuit.removePrefix("$keyModelValVentParent-").split("--").first() else null
+
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 

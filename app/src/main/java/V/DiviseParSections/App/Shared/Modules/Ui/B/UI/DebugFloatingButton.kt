@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Modules.Ui.B.UI
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ACentral
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
@@ -58,7 +58,7 @@ class DebugKey(
     ): String {
         val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
         val keyModelToOnVentHVentPeriodKeyByParent =
-            Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+            Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
 
         val keyModelToClientKeyByParent =
             clientOldID?.let { HClientInfos.keyModel + "-" + hClientRepository.datasValue.find { it.id == clientOldID }?.getTempKeyByParent() }

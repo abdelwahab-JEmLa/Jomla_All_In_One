@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
@@ -200,6 +199,9 @@ data class HClientInfos(
 
     companion object {
         const val keyModel = "ID2"
+        fun extractSonKeyByParent(stringAExtractDepuit: String) =
+            stringAExtractDepuit.split("--").find { it.startsWith("$keyModel-") }?.removePrefix("$keyModel-") ?:
+            if (stringAExtractDepuit.startsWith("$keyModel-")) stringAExtractDepuit.removePrefix("$keyModel-").split("--").first() else null
 
         fun createTestInstance(): List<HClientInfos> {
             return emptyList()

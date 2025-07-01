@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
@@ -16,7 +16,7 @@ fun upsertBonVent(
 ) {
     val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
     val keyModelToOnVentHVentPeriodKeyByParent =
-        Z_AppCompt.keyModelValID7 + "-" + activePeriodKeyByParent
+        Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
 
     val existingData = gBonVentRepository.datasValue.find {
         it.keyByParent == keyByParentBonVentOnClickButton
