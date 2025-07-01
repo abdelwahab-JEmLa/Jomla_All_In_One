@@ -15,9 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +38,7 @@ data class Transaction(
     val date: String
 )
 
+
 // Mock function - replace with your actual data source
 fun getTransactionsForClient(clientId: String): List<Transaction> {
     return listOf(
@@ -53,6 +52,8 @@ fun getTransactionsForClient(clientId: String): List<Transaction> {
 
 @Composable
 fun TransactionItem(transaction: Transaction, clientId: String) {
+    val ClientIdKey = SemanticsPropertyKey<String>("ClientId")
+
     var isSelected by remember { mutableStateOf(false) }
     var lastClickTime by remember { mutableStateOf("") }
 
@@ -71,18 +72,12 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { handleClick() }  // Ajouter clickable pour rendre l'item cliquable
-            .testTag("transaction_item_${transaction.id}")
             .semantics {
-                contentDescription = "Transaction ${transaction.type} de ${transaction.amount}€"
-                set(AppSemantics.ClientIdKey, clientId)
-                set(AppSemantics.TransactionIdKey, transaction.id)
-                set(AppSemantics.TransactionTypeKey, transaction.type)
-                set(AppSemantics.AmountKey, transaction.amount)
+                set(ClientIdKey, clientId)
                 set(AppSemantics.IsSelectedKey, isSelected)
-                set(AppSemantics.LastClickedKey, lastClickTime)
 
                 onClick {
-                    handleClick()
+                    isSelected=false
                     true
                 }
             }
@@ -97,6 +92,7 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
         }
     }
 
+    // TODO(1): Perform click quand tout s'affiche
     LaunchedEffect(Unit) {
         // Simuler un click automatique après affichage (par exemple pour la première transaction)
         if (transaction.id == "txn_001") {
