@@ -116,12 +116,12 @@ fun MainScreen(
         // Only navigate if needed, and don't force back to start every time
         if (productDisplayController.clientWindowsDisplayedProductId == null
             && productDisplayController.isHostPhone
-            && currentRoute != Screen.EditDatabaseWithCreateNewArticles.route
+            && currentRoute != Screen.FacadePresentoireProduits.route
             && navController.currentDestination != null
         ) {
 
             // Navigate to PresenterElectroBoutiqueAbdelwahab_Sec10Frag1 instead of A_ClientsLocationGps
-            navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+            navController.navigate(Screen.FacadePresentoireProduits.route) {
 
             }
         }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -60,6 +61,17 @@ fun TestScreens(
             contentColor = Color.Red,
             imageRes = R.drawable.panier_scree_shoot
         ),
+        NavigationItem(
+            title = "Test Produit Fast Search",
+            onClick = {
+                fragmentNavigationHandler.navigateToTestProduitFastSearchDialog()
+                onDismiss()
+            },
+            isImageItem = false,
+            icon = Icons.Default.Search,
+            contentColor = Color.Blue,
+            containerColor = Color(0xFFE3F2FD)
+        )
     )
 
     AlertDialog(

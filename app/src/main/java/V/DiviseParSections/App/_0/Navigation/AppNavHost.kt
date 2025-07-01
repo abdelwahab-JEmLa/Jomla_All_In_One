@@ -8,6 +8,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ID1Screen
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -101,7 +102,7 @@ fun AppNavHost(
                 modifier = Modifier.fillMaxSize()
             ) {
                 composable(
-                    route = Screen.EditDatabaseWithCreateNewArticles.route,
+                    route = Screen.FacadePresentoireProduits.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -212,7 +213,7 @@ fun AppNavHost(
 
                 // Product ordering screen
                 composable(
-                    route = Screen.FacadePresentoiProduits.route,
+                    route = Screen.EditDatabaseWithCreateNewArticles.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -230,6 +231,17 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
                             //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
+                        }
+                    }
+                }
+                // Test fragment screen (empty implementation)
+                composable(
+                    route = Screen.TestProduitFastSearchDialog.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            ID1Screen()
                         }
                     }
                 }
@@ -363,7 +375,7 @@ private fun CleanupEffect(onCleanup: () -> Unit) {
  * Navigate to main screen with proper back stack handling
  */
 private fun navigateToMainScreen(navController: NavHostController) {
-    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+    navController.navigate(Screen.FacadePresentoireProduits.route) {
         // Pop the current fragment off the back stack
         popUpTo(Screen.A_ClientsLocationGps.route) {
             inclusive = true

@@ -30,7 +30,7 @@ data class ParametresAppComptNonSaved(
     val gerantComptKeyByParent: String = "t1",
     val activePeriodKeyByParent: String = "Juin_30__8_00",
     val activeWindowsSearchProduit: Boolean = false,
-    val startUpScree: Screen = Screen.FacadePresentoiProduits
+    val startUpScree: Screen = Screen.FacadePresentoireProduits
 )
 
 @Stable
