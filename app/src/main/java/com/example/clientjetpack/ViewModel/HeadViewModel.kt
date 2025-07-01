@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ACentralFacade
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -16,7 +16,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SuppliersTabelle
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build

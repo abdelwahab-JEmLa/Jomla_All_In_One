@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Preview.Data.Test
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 
 fun testCategories(): List<CategoriesTabelle> {
     return listOf(

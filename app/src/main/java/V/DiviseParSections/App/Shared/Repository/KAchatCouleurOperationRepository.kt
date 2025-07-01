@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository
+package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos

@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.AGetter
@@ -16,8 +16,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.MVentPeriodeRepository
 import V.DiviseParSections.App.Shared.Repository.ModulesCentral
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
+import V.DiviseParSections.App.Shared.Repository.A_GroupeValuesA_ProduitsToB_Categories
+import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

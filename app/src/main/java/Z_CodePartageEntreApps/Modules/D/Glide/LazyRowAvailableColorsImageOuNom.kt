@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState

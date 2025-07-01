@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

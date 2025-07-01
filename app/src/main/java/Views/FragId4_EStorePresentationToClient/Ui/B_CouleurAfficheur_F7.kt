@@ -1,7 +1,7 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
 import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

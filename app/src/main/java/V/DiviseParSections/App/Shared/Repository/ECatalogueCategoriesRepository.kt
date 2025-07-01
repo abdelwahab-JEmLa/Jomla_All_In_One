@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive
+package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import androidx.compose.ui.graphics.Color

@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Z.HistoriquesBons.List.ViewModel
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import androidx.lifecycle.ViewModel

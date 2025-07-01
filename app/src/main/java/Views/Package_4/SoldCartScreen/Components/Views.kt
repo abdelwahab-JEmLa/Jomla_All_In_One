@@ -1,7 +1,7 @@
 package Views.Package_4.SoldCartScreen.Components
 
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

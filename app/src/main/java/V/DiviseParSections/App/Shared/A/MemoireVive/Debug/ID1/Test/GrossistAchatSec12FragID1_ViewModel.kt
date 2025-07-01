@@ -1,17 +1,29 @@
-package Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
+import V.DiviseParSections.App.Shared.Repository.ACentralFacade
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
+class ViewModelMainFastSearchProduitPourVent(
+    aCentral: ACentralFacade,
+) : ViewModel() {
+    val getter = aCentral.getter
+
+    data class UiState(
+        val v: String=""
+    )
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+}
+    /*
 @Stable
-class A_GroupeValuesA_ProduitsToB_Categories(
-    val a_ProduitDataBaseComposeRepositoryPJ17: BProduitInfosRepository,
-    val b3CategoriesCompoRepository: CCategoriesCompoRepository,
-) {
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
+class MainFilterSorter{
+
+    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {      //<--
+        //TODO(1): passe a aluit ce qui il faut
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
 
@@ -51,3 +63,4 @@ class A_GroupeValuesA_ProduitsToB_Categories(
         sortedRegular + sortedOrphan
     }
 }
+                   */

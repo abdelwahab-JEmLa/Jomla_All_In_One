@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.FilterQuery
+import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.FilterQuery
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.MainList
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.Ui.EmptyDataMessage
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.Ui.GenerationProgressScreen

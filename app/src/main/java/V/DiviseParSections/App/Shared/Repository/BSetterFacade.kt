@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import android.util.Log
 import com.google.firebase.database.Exclude
 import org.mongodb.kbson.BsonObjectId

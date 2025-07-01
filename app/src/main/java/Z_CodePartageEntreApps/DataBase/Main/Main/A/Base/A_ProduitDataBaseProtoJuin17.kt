@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

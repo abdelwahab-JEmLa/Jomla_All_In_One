@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.ProtoJuin3.Models
 
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
 import android.util.Log
 import androidx.room.PrimaryKey

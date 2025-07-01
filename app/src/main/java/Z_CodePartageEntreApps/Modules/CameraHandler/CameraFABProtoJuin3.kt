@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.CameraHandler
 
 import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.Shared.Module.Catalogue.CataloguesCaegorie
 import android.net.Uri
 import android.widget.Toast

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable

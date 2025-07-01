@@ -1,9 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
@@ -11,9 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Reposit
 import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.A_GroupeValuesA_ProduitsToB_Categories
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.B4CatalogueCategoriesRepository
-import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.CCategoriesCompoRepository
 import android.content.Context
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -30,7 +23,7 @@ data class ParametresAppComptNonSaved(
     val gerantComptKeyByParent: String = "t1",
     val activePeriodKeyByParent: String = "Juin_30__8_00",
     val activeWindowsSearchProduit: Boolean = false,
-    val startUpScree: Screen = Screen.FacadePresentoireProduits
+    val startUpScree: Screen = Screen.TestProduitFastSearchDialog
 )
 
 @Stable
