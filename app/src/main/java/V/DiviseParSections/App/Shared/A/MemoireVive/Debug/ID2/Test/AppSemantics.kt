@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -55,10 +56,21 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
     var isSelected by remember { mutableStateOf(false) }
     var lastClickTime by remember { mutableStateOf("") }
 
+    val handleClick = {
+        // Mettre à jour les valeurs des semantics keys au click
+        isSelected = !isSelected
+        lastClickTime = System.currentTimeMillis().toString()
+
+        println("Transaction cliquée: ${transaction.id}")
+        println("Nouvelle valeur IsSelected: $isSelected")
+        println("Timestamp du click: $lastClickTime")
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable { handleClick() }  // Ajouter clickable pour rendre l'item cliquable
             .testTag("transaction_item_${transaction.id}")
             .semantics {
                 contentDescription = "Transaction ${transaction.type} de ${transaction.amount}€"
@@ -70,14 +82,7 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
                 set(AppSemantics.LastClickedKey, lastClickTime)
 
                 onClick {
-                    // Mettre à jour les valeurs des semantics keys au click
-                    isSelected = !isSelected
-                    lastClickTime = System.currentTimeMillis().toString()
-
-                    println("Transaction cliquée: ${transaction.id}")
-                    println("Nouvelle valeur IsSelected: $isSelected")
-                    println("Timestamp du click: $lastClickTime")
-
+                    handleClick()
                     true
                 }
             }
@@ -93,10 +98,10 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
     }
 
     LaunchedEffect(Unit) {
+        // Simuler un click automatique après affichage (par exemple pour la première transaction)
         if (transaction.id == "txn_001") {
             kotlinx.coroutines.delay(1000) // Attendre 1 seconde
-            isSelected = true
-            lastClickTime = System.currentTimeMillis().toString()
+            handleClick()
             println("Auto-click déclenché pour transaction: ${transaction.id}")
         }
     }
