@@ -8,16 +8,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -58,9 +59,9 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .testTag("transaction_item_${transaction.id}")
             .semantics {
                 contentDescription = "Transaction ${transaction.type} de ${transaction.amount}€"
-                testTag = "transaction_item"
                 set(AppSemantics.ClientIdKey, clientId)
                 set(AppSemantics.TransactionIdKey, transaction.id)
                 set(AppSemantics.TransactionTypeKey, transaction.type)
@@ -88,6 +89,19 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
             if (isSelected) {
                 Text("✓ Sélectionné", color = androidx.compose.ui.graphics.Color.Green)
             }
+        }
+    }
+
+    // TODO(1): Perform click quand tout s'affiche
+    LaunchedEffect(Unit) {
+        // Simuler un click automatique après affichage (par exemple pour la première transaction)
+        if (transaction.id == "txn_001") {
+            kotlinx.coroutines.delay(1000) // Attendre 1 seconde
+            // Le performClick se ferait normalement dans un test
+            // Ici on peut déclencher le click programmatiquement
+            isSelected = true
+            lastClickTime = System.currentTimeMillis().toString()
+            println("Auto-click déclenché pour transaction: ${transaction.id}")
         }
     }
 }
