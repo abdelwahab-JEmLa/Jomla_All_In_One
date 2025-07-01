@@ -8,6 +8,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
@@ -208,6 +209,8 @@ data class ArticlesBasesStatsTable(
 
 
     companion object {
+        val KeyTagModel = SemanticsPropertyKey<String>("keyIDModel1")
+
         fun safeRemoveRef(): Unit {
             ref.removeValue()
         }

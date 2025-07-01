@@ -1,10 +1,18 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class ViewModelMainFastSearchProduitPourVent(
     aCentral: ACentralFacade,
@@ -12,22 +20,42 @@ class ViewModelMainFastSearchProduitPourVent(
     val getter = aCentral.getter
 
     data class UiState(
-        val v: String=""
+        val searchText: String = "",
+        val isLoading: Boolean = false,
+        val showAddDialog: Boolean = false
     )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun onSearchTextChange(newText: String) {
+        _uiState.value = _uiState.value.copy(searchText = newText)
+    }
+
+    fun onAddNewProduct() {
+        _uiState.value = _uiState.value.copy(showAddDialog = true)
+    }
+
+    fun onDismissAddDialog() {
+        _uiState.value = _uiState.value.copy(showAddDialog = false)
+    }
+
+    fun clearSearch() {
+        _uiState.value = _uiState.value.copy(searchText = "")
+    }
 }
-    /*
+
 @Stable
-class MainFilterSorter{
+class MainFilterSorter(
+    private val products: List<ArticlesBasesStatsTable>,
+    private val categories: List<CategoriesTabelle>
+) {
 
-    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {      //<--
-        //TODO(1): passe a aluit ce qui il faut
-        val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }
-        val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
+    private val categoryMap = categories.associateBy { it.id }
+    private val catalogues = B4CatalogueCategoriesRepository().associateBy { it.id }
 
-        val (regularProducts, orphanProducts) = a_ProduitDataBaseComposeRepositoryPJ17.datasValue.partition { product ->
+    val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
+        val (regularProducts, orphanProducts) = products.partition { product ->
             val categoryId = product.idParentCategorie ?: 0L
             val category = categoryMap[categoryId]
             val catalogueId = category?.catalogueParentId ?: 4L
@@ -62,5 +90,17 @@ class MainFilterSorter{
 
         sortedRegular + sortedOrphan
     }
+
+    fun filterBySearch(searchText: String): List<ArticlesBasesStatsTable> {
+        return if (searchText.isBlank()) {
+            categoryGroupedSortedProducts
+        } else {
+            categoryGroupedSortedProducts.filter { product ->
+                product.nom.contains(searchText, ignoreCase = true) ||
+                        product.nomMutable.contains(searchText, ignoreCase = true) ||
+                        product.nomArab.contains(searchText, ignoreCase = true) ||
+                        product.autreNomDarticle?.contains(searchText, ignoreCase = true) == true
+            }
+        }
+    }
 }
-                   */
