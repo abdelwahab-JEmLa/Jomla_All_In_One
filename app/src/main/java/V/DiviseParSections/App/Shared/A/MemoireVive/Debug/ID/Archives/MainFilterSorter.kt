@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID.Archives
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
@@ -6,7 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.runtime.Stable
 
 @Stable
-class MainFilterSorter(
+class MainFilterSorter(        //<--
+//TODO(1): Class "MainFilterSorter" is never used
     private val products: List<ArticlesBasesStatsTable>,
     private val categories: List<CategoriesTabelle>
 ) {

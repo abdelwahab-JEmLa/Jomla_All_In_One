@@ -21,19 +21,11 @@ class ViewModelMainFastSearchProduitPourVent(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun onSearchTextChange(newText: String) {
-        _uiState.value = _uiState.value.copy(searchText = newText)
+        _uiState.value.copy(searchText = newText).also { _uiState.value = it }
     }
 
     fun onAddNewProduct() {
         _uiState.value = _uiState.value.copy(showAddDialog = true)
-    }
-
-    fun onDismissAddDialog() {
-        _uiState.value = _uiState.value.copy(showAddDialog = false)
-    }
-
-    fun clearSearch() {
-        _uiState.value = _uiState.value.copy(searchText = "")
     }
 }
 
