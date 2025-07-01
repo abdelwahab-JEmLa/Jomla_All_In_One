@@ -244,7 +244,9 @@ fun MarkerStatusDialog(
                         Text(
                             text = "سجل المعاملات",
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier =
+                                Modifier.padding(vertical = 8.dp)
+                                    .testTag(viewModel.getter.gBonVentRepository.datasValue.map { it.etateActuellementEst }.toString())
                         )
 
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
