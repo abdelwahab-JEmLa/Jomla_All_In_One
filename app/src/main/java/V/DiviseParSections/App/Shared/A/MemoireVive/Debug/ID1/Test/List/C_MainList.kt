@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.List
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.petitePaddine
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List.View_MainItem
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
@@ -10,18 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun View_MainList(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     listGBonVentFilteredByClientKeySorted: List<GBonVent>,
+    modifier: Modifier =Modifier ,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .testTag("View_MainList")
+            .padding(petitePaddine)
+            .testTag(listGBonVentFilteredByClientKeySorted.size.toString())
     ) {
         // In C_MainList.kt
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
