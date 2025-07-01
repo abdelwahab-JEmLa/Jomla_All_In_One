@@ -9,6 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -16,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: E0AfficheHistoriqueTransactionsViewModel = koinViewModel(),
-    parentTestTag_ClientKey: String = "",
+    parentTag_ClientKey: String = "",
 ) {
     Column {
         Text(
@@ -25,12 +29,19 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             modifier =
                 Modifier
                     .padding(vertical = 8.dp)
-                    .testTag(parentTestTag_ClientKey)
+                    .testTag("A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient  $parentTag_ClientKey")
+                    //  .performClick()
+                    .semantics {
+                        contentDescription = "Liste filtrée des transactions"
+                        testTag = "TransactionsList"
+                        // Propriété personnalisée pour les tests
+                        set(SemanticsPropertyKey("ClientKey"), parentTag_ClientKey)
+                    }
         )
 
         MainFilter(
             viewModel,
+            parentTag_ClientKey
         )
     }
 }
-
