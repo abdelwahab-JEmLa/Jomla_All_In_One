@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
+import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl

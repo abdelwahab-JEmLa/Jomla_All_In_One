@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 fun upsertBonVent(
     keyByParentBonVentOnClickButton: String = "",

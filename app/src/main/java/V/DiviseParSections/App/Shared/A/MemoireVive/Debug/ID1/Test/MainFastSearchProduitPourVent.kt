@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
-import V.DiviseParSections.App.Shared.Repository.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

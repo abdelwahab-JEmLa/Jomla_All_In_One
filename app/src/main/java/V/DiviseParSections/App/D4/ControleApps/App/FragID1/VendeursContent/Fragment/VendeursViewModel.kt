@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -23,7 +23,7 @@ data class VendeursUiState(
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
-    val getter:AGetter,
+    val getter: AGetter,
     private val repository: GroupeRepositorysProtoAvJuin3,
     private val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {

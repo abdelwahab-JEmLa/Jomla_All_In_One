@@ -1,7 +1,7 @@
 // File: BSetterFacade/Helper/ClientOperations.kt
-package V.DiviseParSections.App.Shared.Repository.Bsetter.Helper
+package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
-import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import kotlinx.coroutines.CoroutineScope

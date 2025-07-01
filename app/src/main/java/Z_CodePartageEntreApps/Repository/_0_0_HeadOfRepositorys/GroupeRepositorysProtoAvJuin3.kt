@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GroupeRepositorysProtoAvJuin3 {

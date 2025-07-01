@@ -1,5 +1,9 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue

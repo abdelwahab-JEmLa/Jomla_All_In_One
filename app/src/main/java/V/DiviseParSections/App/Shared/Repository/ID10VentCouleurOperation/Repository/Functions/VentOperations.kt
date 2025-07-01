@@ -1,8 +1,8 @@
-package V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions
+package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 
 class VentOperations(
     private val getter: AGetter,

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
+import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

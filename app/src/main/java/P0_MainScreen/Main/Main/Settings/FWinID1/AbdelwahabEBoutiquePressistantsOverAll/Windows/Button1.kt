@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

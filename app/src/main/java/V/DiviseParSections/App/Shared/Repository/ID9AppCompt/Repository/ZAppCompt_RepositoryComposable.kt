@@ -1,6 +1,7 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
-import V.DiviseParSections.App.Shared.Repository.BSetterFacade.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log

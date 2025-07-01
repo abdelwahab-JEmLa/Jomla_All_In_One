@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL
 
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

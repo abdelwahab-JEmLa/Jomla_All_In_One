@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.DebugKey
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler

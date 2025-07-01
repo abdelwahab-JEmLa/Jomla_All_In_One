@@ -1,6 +1,6 @@
 
 // File: BSetterFacade/Helper/ProduitOperations.kt
-package V.DiviseParSections.App.Shared.Repository.Bsetter.Helper
+package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository

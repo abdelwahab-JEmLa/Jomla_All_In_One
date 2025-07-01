@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.Functions
+package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID9VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 
 fun upsertVentCouleurOperation(
     fCouleurVentOperation: FCouleurVentOperationInfos? = null,

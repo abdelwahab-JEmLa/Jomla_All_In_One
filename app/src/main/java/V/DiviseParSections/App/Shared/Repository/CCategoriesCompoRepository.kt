@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.Z_AppCompt.Companion.ref
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.ref
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.C.Update.addOrUpdateDatas

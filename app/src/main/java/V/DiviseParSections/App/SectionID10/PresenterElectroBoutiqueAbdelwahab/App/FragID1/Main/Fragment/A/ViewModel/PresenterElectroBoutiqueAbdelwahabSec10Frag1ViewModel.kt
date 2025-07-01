@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
-import V.DiviseParSections.App.Shared.Repository.MVentPeriode
+import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList

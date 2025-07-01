@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.UiState
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -36,7 +36,7 @@ data class UiState(
 
 
 class ViewModelInitApp(
-    aCentral:ACentralFacade,
+    aCentral: ACentralFacade,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val produitModelRepository: A_ProduitRepository,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
