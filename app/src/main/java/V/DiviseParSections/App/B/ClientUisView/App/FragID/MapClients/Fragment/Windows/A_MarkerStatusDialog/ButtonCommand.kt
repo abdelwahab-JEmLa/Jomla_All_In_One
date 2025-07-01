@@ -1,13 +1,14 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -16,43 +17,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
-fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
+fun CommandButton(
+    modifier: Modifier = Modifier,
     viewModel: MapClientsViewModel,
-    clickedClient: Long,
+    etateActuellementEst: GBonVent.EtateActuellementEst,
+    context: Context,
+    onUpdateLongAppSetting: () -> Unit,
+    parentTestTag_ClientKey: String,
 ) {
-    val context = LocalContext.current
-    val newEtate = this
-    val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVentSetter(clickedClient, newEtate)
+    val etateKey = GBonVent.EtateActuellementEst.getKey(etateActuellementEst)
+
+    val tag = "$parentTestTag_ClientKey$etateKey"
 
     FilledTonalButton(
-        onClick = {
-            viewModel.setter.upsertBonVentSetter(keyHandBonVentOnClickButton)
-
-            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-            ) {
-                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-            }
-        },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            .testTag(tag)
         ,
+        onClick = {
+            viewModel.setter.upsertBonVentSetter(tag)
+            onUpdateLongAppSetting()
+        },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
                     context,
-                    newEtate.color
+                    etateActuellementEst.color
                 )
             ).copy(alpha = 0.2f),
             contentColor = Color(
                 ContextCompat.getColor(
                     context,
-                    newEtate.color
+                    etateActuellementEst.color
                 )
             )
         )
@@ -63,11 +64,11 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = newEtate.nomArabe,
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(newEtate.nomArabe)
+            Text(etateActuellementEst.name)
         }
     }
 }

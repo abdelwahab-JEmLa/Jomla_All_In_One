@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ButtonAddVocale
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.ButtonAddVocale
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

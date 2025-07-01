@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.List
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Z.HistoriquesBons.List.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.petitePaddine
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List.View_MainItem
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.testTag
 fun View_MainList(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     listGBonVentFilteredByClientKeySorted: List<GBonVent>,
-    modifier: Modifier =Modifier ,
+    modifier: Modifier =Modifier,
 ) {
     Column(
         modifier = Modifier
