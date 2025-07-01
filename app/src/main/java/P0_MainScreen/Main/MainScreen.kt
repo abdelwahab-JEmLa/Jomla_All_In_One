@@ -3,6 +3,8 @@ package P0_MainScreen.Main
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ID1Screen
+import V.DiviseParSections.App.Shared.Repository.Z_AppCompt
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -55,9 +57,17 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: ViewModelInitApp = koinViewModel(),
+    viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
+    viewModel: HeadViewModel = koinViewModel(),
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
+    val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
+
+    val tag = "--${Z_AppCompt.keyModel}-${parametresAppComptNonSaved.gerantComptKeyByParent}" +
+            "--${Z_AppCompt.keyModelValID7VentParent}-${parametresAppComptNonSaved.activePeriodKeyByParent}"
+
+    val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
+
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
     val navigationHandler = koinInject<FragmentNavigationHandler>()
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
@@ -209,7 +219,7 @@ fun MainScreen(
                                         !isDisplayedConnexionWifiVisible
                                 },
                                 onToggleLockHost = { lockHost = !lockHost },
-                                viewModelInitApp = viewModel,
+                                viewModelInitApp = viewModelViewModelInitApp,
                                 headViewModel = headViewModel,
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
@@ -256,7 +266,7 @@ fun MainScreen(
                             targetCategoryId.value = it
                         },
                         modifier = Modifier.padding(bottom = 8.dp),
-                        viewModelInitApp = viewModel
+                        viewModelInitApp = viewModelViewModelInitApp
                     )
                 }
 
@@ -272,7 +282,7 @@ fun MainScreen(
                             articleStatsDataBase = displayProductDataBase,
                             colorsArticlesList = uiState.colorsArticlesTabelleModel,
                             reloadTrigger = 0, // Use state if needed
-                            modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModel
+                            modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModelViewModelInitApp
                         )
                     }
                 }
@@ -309,6 +319,9 @@ fun MainScreen(
                 }
                 if(isHostPhone) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
+                }
+                if(activeWindowsSearchProduit) {
+                    ID1Screen()
                 }
             }
         }

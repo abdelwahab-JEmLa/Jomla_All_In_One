@@ -32,7 +32,7 @@ fun MainFilter(
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: GBonVent(
             parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
             parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         )
     }

@@ -212,7 +212,7 @@ fun AppNavHost(
 
                 // Product ordering screen
                 composable(
-                    route = Screen.EditeProduitsBaseDonneS9.route,
+                    route = Screen.FacadePresentoiProduits.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {

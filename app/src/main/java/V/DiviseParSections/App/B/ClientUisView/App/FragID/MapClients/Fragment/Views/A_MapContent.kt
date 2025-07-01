@@ -53,7 +53,7 @@ fun MapContent(
     var currentFilterMode by remember {
         mutableStateOf(
             if ((viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.keyID
-                    ?: "") == viewModel.getter.parametresAppComptNonSaved.gerantComptKey
+                    ?: "") == viewModel.getter.parametresAppComptNonSaved.gerantComptKeyByParent
             ) {
                 MapClientsViewModel.VisibleClientsNow.showAll
             } else {

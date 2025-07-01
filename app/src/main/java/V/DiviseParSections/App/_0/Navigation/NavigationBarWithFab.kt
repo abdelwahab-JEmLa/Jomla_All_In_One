@@ -211,7 +211,7 @@ object NavigationItems {
         Screen.TravailleTempRecorder,
         Screen.CommandeProduits,
         Screen.ToggleFab,
-        Screen.EditeProduitsBaseDonneS9,
+        Screen.FacadePresentoiProduits,
         Screen.DialogTests
     )
 }
@@ -222,10 +222,10 @@ sealed class Screen(
     val title: String,
     val color: Color
 ) {
-    data object EditeProduitsBaseDonneS9 : Screen(
-        route = "EditeProduitsBaseDonneS9",
+    data object FacadePresentoiProduits : Screen(
+        route = "FacadePresentoiProduits",
         icon = Icons.Default.Dataset,
-        title = "EditeProduitsBaseDonneS9",
+        title = "FacadePresentoiProduits",
         color = Color(0xFF7B351D)
     )
 

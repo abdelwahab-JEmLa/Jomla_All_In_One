@@ -27,8 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
-    val gerantComptKey: String = "t1",
+    val gerantComptKeyByParent: String = "t1",
     val activePeriodKeyByParent: String = "Juin_30__8_00",
+    val activeWindowsSearchProduit: Boolean = false,
     val startUpScree: Screen = Screen.A_ClientsLocationGps
 )
 
@@ -77,7 +78,7 @@ class AGetter(
         etateActuellementEst = etate,
         parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[HClientInfos.keyModel]
             ?: "",
-        parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent]
+        parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
             ?: "",
         parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
             ?: ""

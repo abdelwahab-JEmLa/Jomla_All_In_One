@@ -48,7 +48,7 @@ class BSetterP (
     }
 
     val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
-    val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
+    val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     fun client(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }
 
@@ -148,7 +148,7 @@ class BSetterP (
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
@@ -181,7 +181,7 @@ class BSetterP (
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValVentParent] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
 

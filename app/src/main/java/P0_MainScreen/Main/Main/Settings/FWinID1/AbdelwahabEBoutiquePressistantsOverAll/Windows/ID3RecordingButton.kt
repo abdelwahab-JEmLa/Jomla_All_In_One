@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun Button3(
+fun ID3RecordingButton(
     isRecording: Boolean,
     showLabels: Boolean,
     displayTime: String,

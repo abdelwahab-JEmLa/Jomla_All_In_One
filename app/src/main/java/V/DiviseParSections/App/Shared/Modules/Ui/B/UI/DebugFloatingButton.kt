@@ -58,7 +58,7 @@ class DebugKey(
     ): String {
         val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
         val keyModelToOnVentHVentPeriodKeyByParent =
-            Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
+            Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
         val keyModelToClientKeyByParent =
             clientOldID?.let { HClientInfos.keyModel + "-" + hClientRepository.datasValue.find { it.id == clientOldID }?.getTempKeyByParent() }

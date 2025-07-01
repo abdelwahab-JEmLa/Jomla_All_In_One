@@ -15,7 +15,7 @@ fun getKeyID8BonVent(
 ): String {
     val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
     val keyModelToOnVentHVentPeriodKeyByParent =
-        Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
+        Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     val keyModelToClientKeyByParent =
         clientOldID?.let {

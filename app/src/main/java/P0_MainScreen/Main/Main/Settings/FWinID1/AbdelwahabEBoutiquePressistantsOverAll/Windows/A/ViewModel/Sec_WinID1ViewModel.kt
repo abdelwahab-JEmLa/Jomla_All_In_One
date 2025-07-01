@@ -1,23 +1,20 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.ACentral
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class Sec8FWinID1ViewModel(
-    val context: Context,
-
-    val a_CentralDatasHandlerProtoJuin9: AGetter,
+class ViewModelPresistantButtonsSec8FWinID1(
+    central:ACentral,
     val wifiTransferDatas: WifiTransferDatas,
-    val headViewModel: HeadViewModel,
 ) : ViewModel() {
-    val appComptComposeRepositoryProtoJuin17 = a_CentralDatasHandlerProtoJuin9.zAppComptRepositoryComposable
+    val getter=central.getter
+
+    val appComptComposeRepositoryProtoJuin17 = getter.zAppComptRepositoryComposable
     data class UiState(
         val f: Int = 0,
     )

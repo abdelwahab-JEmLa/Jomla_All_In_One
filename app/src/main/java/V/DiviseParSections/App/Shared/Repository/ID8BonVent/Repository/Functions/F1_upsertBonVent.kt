@@ -16,7 +16,7 @@ fun upsertBonVent(
 ) {
     val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
     val keyModelToOnVentHVentPeriodKeyByParent =
-        Z_AppCompt.keyModelValVentParent + "-" + activePeriodKeyByParent
+        Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     val existingData = gBonVentRepository.datasValue.find {
         it.keyByParent == keyByParentBonVentOnClickButton

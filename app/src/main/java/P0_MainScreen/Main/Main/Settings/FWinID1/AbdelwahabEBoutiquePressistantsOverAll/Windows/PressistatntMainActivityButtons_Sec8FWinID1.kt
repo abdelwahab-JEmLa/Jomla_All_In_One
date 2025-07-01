@@ -1,6 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.Sec8FWinID1ViewModel
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
@@ -54,7 +54,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
-    viewModel: Sec8FWinID1ViewModel = koinViewModel(),
+    viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     cLenceDepuitDialogeAchate: Boolean = false,
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
@@ -62,6 +62,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onClickAnulationButton: () -> Unit = {},
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
 ) {
+    val uiState by recordingViewModel.uiState.collectAsState()
+
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
@@ -71,7 +73,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     val isRecording by recordingViewModel.isRecording.collectAsState()
-    val uiState by recordingViewModel.uiState.collectAsState()
     val displayTime by recordingViewModel.displayTime.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val remainingClients =
@@ -208,36 +209,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         showCatalogueDialog = true
                     }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        FloatingActionButton(
-                            onClick = {
-                                showMessageurDialog = true
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = Color(0xFF0088CC),
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_telegram),
-                                contentDescription = "Ouvrir Messager",
-                                tint = Color.White
-                            )
-                        }
-                        if (showLabels) {
-                            Text(
-                                "Telegram Abdelwahab",
-                                modifier = Modifier
-                                    .background(Color(0xFF0088CC))
-                                    .padding(4.dp),
-                                color = Color.White
-                            )
-                        }
-                    }
+                    ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
 
                     if (!cLenceDepuitDialogeAchate) {
-                        Button3(
+                        ID3RecordingButton(
                             isRecording,
                             showLabels,
                             displayTime,
@@ -279,5 +254,38 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             type = ToastType.INFO,
             duration = 1500L
         )
+    }
+}
+
+@Composable
+private fun ID2MesasgerieTelegramme(showMessageurDialog: Boolean, showLabels: Boolean) {
+    var showMessageurDialog1 = showMessageurDialog         //<--
+    //TODO(1): regle pk Variable 'showMessageurDialog1' is assigned but never accessed
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = {
+                showMessageurDialog1 = true
+            },
+            modifier = Modifier.size(40.dp),
+            containerColor = Color(0xFF0088CC),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_telegram),
+                contentDescription = "Ouvrir Messager",
+                tint = Color.White
+            )
+        }
+        if (showLabels) {
+            Text(
+                "Telegram Abdelwahab",
+                modifier = Modifier
+                    .background(Color(0xFF0088CC))
+                    .padding(4.dp),
+                color = Color.White
+            )
+        }
     }
 }
