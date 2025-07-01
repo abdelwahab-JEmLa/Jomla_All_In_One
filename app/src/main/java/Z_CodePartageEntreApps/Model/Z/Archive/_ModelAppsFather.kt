@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
-import V.DiviseParSections.App.Shared.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos

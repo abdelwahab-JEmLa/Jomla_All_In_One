@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import V.DiviseParSections.App.Shared.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

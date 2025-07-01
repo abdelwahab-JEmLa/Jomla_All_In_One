@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
@@ -38,6 +38,7 @@ data class KAchatCouleurOperation(
     val listFCouleurVentOperation: List<FCouleurVentOperationInfos>
 ) {
     companion object {
+        val keyIDModel ="Model11"
         fun generePushKey() =
             centralRef.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
     }
