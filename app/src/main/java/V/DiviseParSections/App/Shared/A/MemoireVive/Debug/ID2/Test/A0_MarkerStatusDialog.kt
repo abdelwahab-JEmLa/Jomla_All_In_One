@@ -94,7 +94,7 @@ fun MarkerStatusDialog(
         }
     }
 
-    val viewClientKeyByParent =
+    val parentTestTag_ClientKey =
         viewModel.setter.id8BonVentOperations.getViewClientKeyByParent(clientId)
 
     Dialog(
@@ -108,7 +108,7 @@ fun MarkerStatusDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .testTag("Box1:$viewClientKeyByParent")
+                .testTag("Box1:$parentTestTag_ClientKey")
         ) {
 
             ElevatedCard(
@@ -152,7 +152,7 @@ fun MarkerStatusDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .testTag("commandCard:viewClientKeyByParent:$viewClientKeyByParent"),
+                                .testTag("commandCard:viewClientKeyByParent:$parentTestTag_ClientKey"),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(
@@ -180,7 +180,7 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            parentTestTag_ClientKey=viewClientKeyByParent,
+                                            parentTestTag_ClientKey = parentTestTag_ClientKey,
                                             modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
                                             etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
@@ -241,15 +241,9 @@ fun MarkerStatusDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "سجل المعاملات",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier =
-                                Modifier.padding(vertical = 8.dp)
-                                    .testTag(viewModel.getter.gBonVentRepository.datasValue.map { it.etateActuellementEst }.toString())
-                        )
 
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+                            parentTestTag_ClientKey = parentTestTag_ClientKey,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
