@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 
-private fun String.extractClientKey(keyComplet: String): String? {
-    return keyComplet
+private fun String.extractSonKey(keyComplete: String): String? {
+    return keyComplete
         .split("--${this}-")
         .getOrNull(1)
         ?.split("--")
@@ -21,13 +21,13 @@ private fun String.extractClientKey(keyComplet: String): String? {
 @Composable
 fun MainFilter(vm: E0AfficheHistoriqueTransactionsViewModel, keyParent_Client: String) {
     val data = vm.getter.gBonVentRepository.datasValue
-    val targetKey = HClientInfos.keyModel.extractClientKey(keyComplet = keyParent_Client)
+    val targetKey = HClientInfos.keyModel.extractSonKey(keyComplete = keyParent_Client)
 
     val filtered = data.filter {
-        HClientInfos.keyModel.extractClientKey(it.keyByParent) == targetKey
+        HClientInfos.keyModel.extractSonKey(it.keyByParent) == targetKey
     }.sortedByDescending { it.creationTimestamps }
 
     View_MainList(vm, filtered, Modifier
-        .testTag(Z_AppCompt.keyModelValID7.extractClientKey(keyComplet = keyParent_Client) ?: "")
+        .testTag(Z_AppCompt.keyModelValID7.extractSonKey(keyComplete = keyParent_Client) ?: "")
     )
 }

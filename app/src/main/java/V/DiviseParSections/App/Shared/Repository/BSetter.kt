@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.Bsetter.Helper.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import com.google.firebase.database.DatabaseReference
@@ -17,6 +18,9 @@ class BSetter(
     private val clientOperations: ClientOperations,
     private val ventOperations: VentOperations,
 ) {
+    val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
+    val hClientRepository = getter.hClientRepository
+
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
         id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
@@ -45,15 +49,21 @@ class BSetter(
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
     fun deleteAddMultiDatas() = produitOperations.deleteAddMultiDatas()
 
-    fun getKeyID8BonVent(clientId: Long, etate: GBonVent.EtateActuellementEst): String =
-        id8BonVentOperations.getKeyID8BonVent(clientId, etate)
+    fun getKeyID8BonVentSetter(clientId: Long, etate: GBonVent.EtateActuellementEst): String =
+        getKeyID8BonVent(
+            clientId, etate,
+            parametresAppComptNonSaved = parametresAppComptNonSaved,
+            hClientRepository = hClientRepository,
+        )
 
-    fun upsertBonVentSetter(keyHandBonVent: String) = upsertBonVent(
-        keyHandBonVent,
-        gBonVentRepository = getter.gBonVentRepository,
-        hClientRepository = getter.hClientRepository,
-        getter.parametresAppComptNonSaved
-    )
+    fun upsertBonVentSetter(keyHandBonVent: String) {
+        upsertBonVent(
+            keyHandBonVent,
+            gBonVentRepository = getter.gBonVentRepository,
+            hClientRepository = hClientRepository,
+            parametresAppComptNonSaved
+        )
+    }
 
     fun acheterACaSetterCentral(
         fCouleurVentOperation: FCouleurVentOperationInfos? = null,

@@ -27,7 +27,7 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
 ) {
     val context = LocalContext.current
     val newEtate = this
-    val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVent(clickedClient, newEtate)
+    val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVentSetter(clickedClient, newEtate)
 
     FilledTonalButton(
         onClick = {
