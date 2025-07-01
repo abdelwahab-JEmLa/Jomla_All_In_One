@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import android.util.Log
@@ -8,7 +9,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
@@ -180,8 +180,11 @@ data class ArticlesBasesStatsTable(
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
+) {
+    fun getTempKeyByParent(): String {
+        return this.nom.withOutFireBaseInvalidCharacters()
+    }
 
-    ) {
     enum class EtateActuelleOnFusionAvecBaseDonne {
         CaprtureSonImage,
         PrixAchatPriseDepuitGrossist,
@@ -209,7 +212,7 @@ data class ArticlesBasesStatsTable(
 
 
     companion object {
-        val KeyTagModel = SemanticsPropertyKey<String>("keyIDModel1")
+        val KeyTagModel = "keyIDModel1"
 
         fun safeRemoveRef(): Unit {
             ref.removeValue()

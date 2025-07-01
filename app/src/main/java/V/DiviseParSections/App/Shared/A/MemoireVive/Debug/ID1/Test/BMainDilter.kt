@@ -6,13 +6,15 @@ import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 
 @Composable
-fun MainList(
+fun MainFilterT1(
     products: List<ArticlesBasesStatsTable>,
     categories: List<CategoriesTabelle>,
     searchFilter: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    semanticsInfo: Pair<SemanticsPropertyKey<String>, String>
 ) {
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
@@ -53,6 +55,6 @@ fun MainList(
         sortedRegular + sortedOrphan
     }
 
-    MainList(modifier, searchFilter, sortedProducts, categoryMap)
+    MainListT1(modifier, searchFilter, sortedProducts, categoryMap,semanticsInfo)
 }
 

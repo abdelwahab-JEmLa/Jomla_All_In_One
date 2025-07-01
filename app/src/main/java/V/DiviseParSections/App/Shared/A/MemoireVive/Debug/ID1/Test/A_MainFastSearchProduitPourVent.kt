@@ -46,8 +46,12 @@ fun MainFastSearchProduitPourVent(
     val products = viewModel.getter.bProduitInfosRepository.datasValue
     val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
 
-    val tagParent = "--${Z_AppCompt.keyModel}-${ParametresAppComptNonSaved().gerantComptKeyByParent}--${Z_AppCompt.keyModelValID7VentParent}-${ParametresAppComptNonSaved().activePeriodKeyByParent}"
-    val keyCompose = SemanticsPropertyKey<String>(tagParent)
+    // Keep it as a single val that's a Pair
+    val semanticsInfo = Pair(
+        SemanticsPropertyKey<String>("MainFastSearchProduitPourVent"),
+        "--${Z_AppCompt.keyModel}-${ParametresAppComptNonSaved().gerantComptKeyByParent}--${Z_AppCompt.keyModelValID7VentParent}-${ParametresAppComptNonSaved().activePeriodKeyByParent}"
+    )
+
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -56,9 +60,15 @@ fun MainFastSearchProduitPourVent(
     }
 
     Surface(
-        modifier = modifier.fillMaxSize().semantics { set(keyCompose, tagParent) }
+        modifier = modifier
+            .fillMaxSize()
+            .semantics {
+                set(semanticsInfo.first, semanticsInfo.second)
+            }
     ) {
-        Column(Modifier.fillMaxSize().padding(16.dp)) {
+        Column(Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -82,7 +92,9 @@ fun MainFastSearchProduitPourVent(
             OutlinedTextField(
                 value = uiState.searchText,
                 onValueChange = viewModel::onSearchTextChange,
-                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 placeholder = { Text("Rechercher un produit...") },
                 leadingIcon = { Icon(Icons.Default.Search, "Rechercher") },
                 singleLine = true
@@ -90,8 +102,10 @@ fun MainFastSearchProduitPourVent(
 
             Spacer(Modifier.height(16.dp))
 
-            MainList(products, categories, uiState.searchText, Modifier.fillMaxSize())
+            // FIX: Corrected MainFilterT1 call
+            MainFilterT1(
+                products, categories, uiState.searchText, Modifier.fillMaxSize(),semanticsInfo
+            )
         }
     }
 }
-

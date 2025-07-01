@@ -14,14 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MainList(
+fun MainListT1(
     modifier: Modifier,
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
-    categoryMap: Map<Long, CategoriesTabelle>
+    categoryMap: Map<Long, CategoriesTabelle>,
+    semanticsInfo: Pair<SemanticsPropertyKey<String>, String>
 ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -43,6 +45,7 @@ fun MainList(
         } else {
             items(sortedProducts) { product ->
                 ViewProduit(
+                    semanticsInfo,
                     product,
                     categoryMap[product.idParentCategorie],
                     Modifier.fillMaxWidth()

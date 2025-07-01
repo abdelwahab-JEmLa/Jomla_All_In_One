@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
@@ -17,18 +18,31 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun ViewProduit(
+    parentSemanticsInfo: Pair<SemanticsPropertyKey<String>, String>,
     product: ArticlesBasesStatsTable,
     category: CategoriesTabelle?,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier, elevation = CardDefaults.cardElevation(2.dp)) {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+    val semanticsInfo = parentSemanticsInfo.copy(
+        second = parentSemanticsInfo.second + "--" + ArticlesBasesStatsTable.KeyTagModel + "-" + product.nom.withOutFireBaseInvalidCharacters()
+    )
+
+    Card(
+        modifier
+        .semantics {
+            set(semanticsInfo.first, semanticsInfo.second)
+        }, elevation = CardDefaults.cardElevation(2.dp)) {
+        Column(Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
             Text(
                 product.nom,
                 style = MaterialTheme.typography.titleMedium,
