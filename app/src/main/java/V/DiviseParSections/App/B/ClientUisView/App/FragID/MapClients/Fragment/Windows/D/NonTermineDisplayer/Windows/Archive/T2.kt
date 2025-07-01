@@ -79,9 +79,9 @@ fun testData(): List<GBonVent> {
             heurDebutInString = "05:22",
             etateActuellementEst = GBonVent.EtateActuellementEst.Cible,
             vid = 10L,
-            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         GBonVent(
             creationTimestamps = 1748029628555L,
@@ -97,9 +97,9 @@ fun testData(): List<GBonVent> {
             sonEcoutementEstFaitAutimestamps = 0L,
             cActive = false,
             vid = 5L,
-            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         GBonVent(
             creationTimestamps = 1748027276129L,
@@ -109,9 +109,9 @@ fun testData(): List<GBonVent> {
             heurDebutInString = "20:07",
             etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
             vid = 4L,
-            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         ),
         GBonVent(
             creationTimestamps = 1748029628742L,
@@ -121,9 +121,9 @@ fun testData(): List<GBonVent> {
             heurDebutInString = "20:47",
             etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             vid = 6L,
-            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         )
     )
 }

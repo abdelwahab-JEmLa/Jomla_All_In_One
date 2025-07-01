@@ -31,9 +31,9 @@ fun MainFilter(
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: GBonVent(
-            parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+            parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
         )
     }
 

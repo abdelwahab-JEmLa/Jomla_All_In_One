@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.Patch.BSetterP
 
 fun upsertBonVent(
     keyByParentBonVentOnClickButton: String = "",
@@ -26,10 +26,10 @@ fun upsertBonVent(
         existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             ?: run {
                 val getKeyByParentDe =
-                    BSetterP.regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
+                    getListDesParentKeys(keyByParentBonVentOnClickButton)
                 val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
                 val client =
-                    hClientRepository.findHClientInfosByKeyByParent(parentID2ClientKeyByParent)
+                    hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =
                     getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel]!!
 

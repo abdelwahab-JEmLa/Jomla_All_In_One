@@ -77,11 +77,11 @@ class AGetter(
         nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentZAppComptCreateurKeyID = comptKey,
         etateActuellementEst = etate,
-        parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[HClientInfos.keyModel]
+        parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[HClientInfos.keyModel]
             ?: "",
-        parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7]
+        parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7]
             ?: "",
-        parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel]
+        parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
             ?: ""
     )
 

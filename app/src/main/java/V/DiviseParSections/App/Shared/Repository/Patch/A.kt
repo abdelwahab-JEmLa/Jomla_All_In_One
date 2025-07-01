@@ -7,10 +7,11 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.AGetter
 import V.DiviseParSections.App.Shared.Repository.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
+import V.DiviseParSections.App.Shared.Repository.BSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -72,9 +73,9 @@ class BSetterP (
 
         val data = existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             ?: run {
-                val getKeyByParentDe = regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
+                val getKeyByParentDe = getListDesParentKeys(keyByParentBonVentOnClickButton)
                 val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
-                val client = hClientRepository.findHClientInfosByKeyByParent(parentID2ClientKeyByParent)
+                val client = hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =
                     getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel]!!
 
@@ -146,9 +147,9 @@ class BSetterP (
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-                parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
     }
@@ -179,9 +180,9 @@ class BSetterP (
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = regexReturnParentKeysMap("null")[GBonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7] ?: "",
-                parentID8C2TypeTransactionKeyByParent = regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7] ?: "",
+                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
             )
 
             gBonVentRepository.addOrUpdateData(newBonVent)
@@ -375,22 +376,6 @@ class BSetterP (
     }
 
     companion object {
-        fun regexReturnParentKeysMap(keyByParent: String ): Map<String, String> {
-            val parentKeysMap = mutableMapOf<String, String>()
-
-            val parts = keyByParent.split("--")
-
-            for (part in parts) {
-                val keyValuePair = part.split("-", limit = 2)
-                if (keyValuePair.size == 2) {
-                    val key = keyValuePair[0]
-                    val value = keyValuePair[1]
-                    parentKeysMap[key] = value
-                }
-            }
-
-            return parentKeysMap
-        }
 
 
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String {

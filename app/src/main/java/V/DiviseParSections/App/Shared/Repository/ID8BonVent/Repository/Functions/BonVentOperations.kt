@@ -8,7 +8,6 @@ import V.DiviseParSections.App.Shared.Repository.BSetter
 import V.DiviseParSections.App.Shared.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
-import V.DiviseParSections.App.Shared.Repository.Patch.BSetterP
 
 class BonVentOperations(
     private val getter: AGetter,
@@ -56,10 +55,10 @@ class BonVentOperations(
             existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
                 ?: run {
                     val getKeyByParentDe =
-                        BSetterP.regexReturnParentKeysMap(keyByParentBonVentOnClickButton)
+                        BSetter.getListDesParentKeys(keyByParentBonVentOnClickButton)
                     val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
                     val client =
-                        hClientRepository.findHClientInfosByKeyByParent(parentID2ClientKeyByParent)
+                        hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                     val parentID8C2TypeTransactionKeyByParent =
                         getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel]!!
 
@@ -133,11 +132,11 @@ class BonVentOperations(
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel]
+                parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7]
+                parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
         )
@@ -169,11 +168,11 @@ class BonVentOperations(
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.keyModel]
+                parentID2ClientKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = BSetter.regexReturnParentKeysMap("null")[Z_AppCompt.keyModelValID7]
+                parentID7VentPeriodeKeyByParent = BSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = BSetter.regexReturnParentKeysMap("null")[GBonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = BSetter.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
 

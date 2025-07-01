@@ -13,23 +13,22 @@ fun MainFilter(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     parentTag_ClientKey: String,
 ) {
+
+
+    val client= viewModel.getter.hClientRepository.findHClientInfosByKey(parentTag_ClientKey)
+
     val getter = viewModel.getter
     val datasGBonVentRepository = getter.gBonVentRepository.datasValue
 
     val listGBonVentFilteredByClientKeySorted =
         datasGBonVentRepository
             .filter {
-                it.parentHClientKeyID == getter
-                    .zAppComptRepositoryComposable
-                    .currentAppCompt
-                    ?.bOuvertDialogMapMarqueHClientKey
+                it.parentHClientKeyID == client.keyID
             }
             .sortedByDescending { it.creationTimestamps }
 
     View_MainList(
-        modifier = Modifier
-            .testTag("MainFilter")
-          ,
+        modifier = Modifier.testTag("MainFilter"),
         viewModel,
         listGBonVentFilteredByClientKeySorted,
     )
