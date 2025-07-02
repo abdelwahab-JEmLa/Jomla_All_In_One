@@ -1,10 +1,11 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.ViewVentCouleur_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.Modules.PriceEditor_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.Modules.PriceEditor_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Ui.ViewDisponibilityEtates
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.background
@@ -12,15 +13,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -169,39 +167,14 @@ fun ViewProduit_T1(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics {
-                        set(SemanticsPropertyKey("1vents"), relatedVents.map { it })
-                    },
-                contentPadding = PaddingValues(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(relatedVents) { vent ->
-                    viewModel.getter.b1CouleurOuGoutProduitDataBaseRepository.datasValue
-                        .find { it.key == vent.parentCouleurInfosKeyID }?.let {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                tonalElevation = if (allNonTrouve) 1.dp else 2.dp,
-                                modifier = Modifier
-                                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
-                                    .graphicsLayer(
-                                        alpha = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f
-                                    )
-                            ) {
-                                ViewVentCouleur_T1(
-                                    modifier = Modifier.padding(4.dp),
-                                    ventKey = vent.keyID,
-                                    size = 120.dp,
-                                    purchasedQuantity = vent.quantityAchete,
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
-                }
-            }
+            ListCouleurs(relatedVents, viewModel, allNonTrouve)
         }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    if (produit != null) {
+        ViewDisponibilityEtates(product = produit)
     }
 
     if (showDialog && relatedVents.isNotEmpty() && !allNonTrouve) {

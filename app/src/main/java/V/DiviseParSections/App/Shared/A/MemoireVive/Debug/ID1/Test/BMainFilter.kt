@@ -57,6 +57,6 @@ fun MainFilterT1(
         sortedRegular + sortedOrphan
     }
 
-    MainListT1(viewModel,modifier, searchFilter, sortedProducts, categoryMap,semanticsInfo)
+    MainListT1(modifier, searchFilter, sortedProducts)
 }
 

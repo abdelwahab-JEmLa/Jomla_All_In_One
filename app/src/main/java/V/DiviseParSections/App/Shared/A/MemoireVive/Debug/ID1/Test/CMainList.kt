@@ -1,9 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.ViewProduit
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.ViewProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainListT1(
-    viewModel: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier,
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
-    categoryMap: Map<Long, CategoriesTabelle>,
-    semanticsInfo: Pair<SemanticsPropertyKey<String>, String>
 ) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (searchFilter.isNotEmpty() && sortedProducts.isEmpty()) {
@@ -47,9 +41,8 @@ fun MainListT1(
             }
         } else {
             items(sortedProducts) { product ->
-                ViewProduit(
-                    viewModel,
-                    product,
+                ViewProduit_T1(
+                    productKeyId= product.keyID,
                 )
             }
         }
