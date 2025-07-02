@@ -81,6 +81,15 @@ class B1CouleurOuGoutProduitDataBaseRepository(
             dao.getAllFlow().collect { _datas.value = it }
         }
     }
+    fun getCouleursDeProduitAvecIndex(
+        produit: ArticlesBasesStatsTable,
+        colorIndex: Int
+    ) =
+        datasValue
+            .find {
+                it.parentBProduitOldID == produit.id
+                        && it.indexCouleurDansAncienProto == colorIndex
+            }!!
 
     fun setFilterTextSearch(text: String) {
         _filterTextSearch.value = text

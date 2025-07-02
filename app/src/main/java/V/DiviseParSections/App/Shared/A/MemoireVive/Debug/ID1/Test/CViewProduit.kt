@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.sp
 fun ViewProduit(
     viewModel: ViewModelMainFastSearchProduitPourVent,
     product: ArticlesBasesStatsTable,
-    category: CategoriesTabelle?,
-    modifier: Modifier = Modifier
+    category: CategoriesTabelle?
 ) {
     val getter = viewModel.getter
+    val repoCouleur = getter.b1CouleurOuGoutProduitDataBaseRepository
     val onVentData = getter.gBonVentRepository.onVentData
 
     val relativeVent by remember {
@@ -105,28 +105,38 @@ fun ViewProduit(
                     )
                 }
 
-                Surface(
-                    color = when (product.disponibilityEtates) {
-                        DisponibilityEtates.DISPO ->
-                            MaterialTheme.colorScheme.primary
+                val couleurIdx0 = repoCouleur.getCouleursDeProduitAvecIndex(product, 0)
 
-                        DisponibilityEtates.NON_DISPO ->
-                            MaterialTheme.colorScheme.error
+                //<--
+                //TODO(1): ajout affiche image du couleur index 0
 
-                        DisponibilityEtates.PETITE_PROBABILITY ->
-                            MaterialTheme.colorScheme.tertiary
-                    },
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Text(
-                        product.disponibilityEtates.nomArabe,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 10.sp
-                    )
-                }
+                ViewDisponibilityEtates(product)
             }
         }
+    }
+}
+
+@Composable
+private fun ViewDisponibilityEtates(product: ArticlesBasesStatsTable) {
+    Surface(
+        color = when (product.disponibilityEtates) {
+            DisponibilityEtates.DISPO ->
+                MaterialTheme.colorScheme.primary
+
+            DisponibilityEtates.NON_DISPO ->
+                MaterialTheme.colorScheme.error
+
+            DisponibilityEtates.PETITE_PROBABILITY ->
+                MaterialTheme.colorScheme.tertiary
+        },
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(
+            product.disponibilityEtates.nomArabe,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 10.sp
+        )
     }
 }

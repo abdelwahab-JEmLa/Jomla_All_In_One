@@ -49,7 +49,6 @@ fun MainListT1(
                     viewModel,
                     product,
                     categoryMap[product.idParentCategorie],
-                    Modifier.fillMaxWidth()
                 )
             }
         }
