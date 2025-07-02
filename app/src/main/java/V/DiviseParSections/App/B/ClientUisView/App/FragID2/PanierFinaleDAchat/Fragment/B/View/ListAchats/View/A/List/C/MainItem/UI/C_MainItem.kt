@@ -104,7 +104,8 @@ fun VentDisplayer_Sec2FragId2(
                             onClickToOpenWindow = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 showQuantityDialog = true
-                            }
+                            },
+                            ventKey = ventKey
                         )
                     }
                     B1CouleurOuGoutProduitDataBase.Type.Nom -> {

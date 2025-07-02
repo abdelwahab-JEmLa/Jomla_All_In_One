@@ -129,9 +129,7 @@ fun ViewVentCouleur_T1(
         )
     }
 
-    // CORRECTION 4: Améliorer la gestion du cas où data est null
     if (data == null) {
-        // Au lieu d'afficher une erreur, créer une couleur par défaut
         Card(
             modifier = modifierAvecSemanticsTestTag
                 .fillMaxWidth()
@@ -154,7 +152,6 @@ fun ViewVentCouleur_T1(
                         colorName = produit?.nom ?: "Couleur inconnue",
                         onClickToOpenWindow = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            viewModel.showQuantityDialog(ventKey)
                         }
                     )
 
@@ -197,6 +194,7 @@ fun ViewVentCouleur_T1(
                 when (data.aAffiche) {
                     B1CouleurOuGoutProduitDataBase.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
+                            ventKey=ventKey,
                             modifier = Modifier.size(size),
                             imageFile = imageFile,
                             colorName = data.nomCouleurStrSiSonImageDispo,

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -36,6 +37,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
+import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
 @SuppressLint("CheckResult")
@@ -48,7 +50,9 @@ fun ImageDisplayerGlide_Sec2FragID2(
     contentScale: ContentScale = ContentScale.Fit,
     imageSize: DpSize,
     colorFilter: ColorFilter? = null,
-    onClickToOpenWindow: () -> Unit = {}
+    onClickToOpenWindow: () -> Unit = {},
+    viewModel: ViewModelsProduit_T1 = koinViewModel(),
+    ventKey: String,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val blurRadius by animateFloatAsState(
@@ -67,7 +71,6 @@ fun ImageDisplayerGlide_Sec2FragID2(
     ) {
         Box(
             modifier = Modifier
-                .clickable { onClickToOpenWindow() }
                 .size(imageSize.width, imageSize.height)
         ) {
             if (imageExists && imageFile != null) {
@@ -77,6 +80,10 @@ fun ImageDisplayerGlide_Sec2FragID2(
                     contentScale = contentScale,
                     colorFilter = colorFilter, // Apply the colorFilter here
                     modifier = Modifier
+                        .clickable {
+                            viewModel.showQuantityDialog(ventKey)
+                            onClickToOpenWindow()
+                        }
                         .fillMaxSize()
                         .clip(RoundedCornerShape(4.dp))
                         .graphicsLayer {
