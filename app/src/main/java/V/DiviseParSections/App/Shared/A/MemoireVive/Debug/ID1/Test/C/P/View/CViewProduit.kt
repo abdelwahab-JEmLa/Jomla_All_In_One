@@ -39,7 +39,6 @@ fun ViewProduit(
         )
     }
 
-    // Get all vents related to this product
     val relatedVents = remember(product.keyID) {
         getter.fVentCouleurOperationRepository.datasValue
             .filter { it.parentBProduitInfosKeyId == product.keyID }
