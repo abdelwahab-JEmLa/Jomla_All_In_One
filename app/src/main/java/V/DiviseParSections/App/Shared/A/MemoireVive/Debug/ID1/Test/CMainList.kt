@@ -49,7 +49,6 @@ fun MainListT1(
                 ViewProduit(
                     viewModel,
                     product,
-                    categoryMap[product.idParentCategorie],
                 )
             }
         }
