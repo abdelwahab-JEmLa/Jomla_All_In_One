@@ -48,43 +48,20 @@ fun ViewVentCouleur_T1(
     purchasedQuantity: Int = 0,
     viewModel: ViewModelsProduit_T1
 ) {
-    val vent = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
-        .datasValue.find { it.keyID == ventKey }
-    val data = vent?.let { v ->
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find { it.key == v.parentCouleurInfosKeyID }
-    }
+    val vent = viewModel.fVentCouleurOperationRepository.datasValue.find { it.keyID == ventKey }
+    val data = vent?.let { v -> b1CouleurOuGoutProduitDataBaseRepository.datasValue.find { it.key == v.parentCouleurInfosKeyID } }
 
-    if (data == null) {
-        Card(modifier = modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Color data not found",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-        return
-    }
-
-    // Use ViewModel state instead of local state
     val dialogStates by viewModel.dialogStates.collectAsState()
     val showQuantityDialog = dialogStates.quantityDialogStates[ventKey] ?: false
 
-    val haptic = LocalHapticFeedback.current
-
-    // Use ViewModel business logic functions
     val isRemoved = viewModel.isVentRemoved(vent)
     val itemAlpha = viewModel.getItemAlpha(isRemoved)
     val colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
 
-    val imageFile by derivedStateOf {
-        viewModel.getImageFile(data.nomImageFichieSansEtansion, data.extensionDisponible)
-    }
+    val imageFile by derivedStateOf { data?.let { viewModel.getImageFile(it.nomImageFichieSansEtansion, data.extensionDisponible) } }
+    val haptic = LocalHapticFeedback.current
+
+    if (data == null) { NoFondCard(modifier); return }
 
     Card(modifier = modifier.fillMaxWidth().alpha(itemAlpha)) {
         Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
@@ -164,6 +141,24 @@ fun ViewVentCouleur_T1(
                 onDismiss = { viewModel.hideQuantityDialog(ventKey) },
                 viewModel = viewModel,
                 vent = it
+            )
+        }
+    }
+}
+
+@Composable
+private fun NoFondCard(modifier: Modifier) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Color data not found",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
             )
         }
     }
