@@ -7,8 +7,6 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
-import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -42,52 +38,20 @@ fun ViewProduit_T1(
     val produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val getter = viewModel.aCentral.getter
-    val onVentData = getter.gBonVentRepository.onVentData
 
     val relatedVents by remember {
         derivedStateOf {
             getter.fVentCouleurOperationRepository.datasValue
                 .filter { it.parentBProduitInfosKeyId == productKeyId }
-                .ifEmpty {
-                    val currentAppCompt = getter.zAppComptRepositoryComposable.currentAppCompt
-                    listOf(
-                        FCouleurVentOperationInfos(
-                            parentZAppComptID = currentAppCompt?.keyID
-                                ?: "Non Definie",
-                            parentDebugInfosID9AppCompt = currentAppCompt?.nom?: "Non Definie",
-
-                            parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
-                            parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().parentDebugInfosID7VentPeriod,
-
-                            parentGBonVentKeyId = onVentData.keyID,
-                            parentDebugInfosID8BonVent = onVentData.nomClientConcerned,
-
-                            parentBProduitInfosKeyId = productKeyId  ,
-                            parentDebugInfosID1Produit = produit?.nom?: "Non Definie",
-                        )
-                    )
-                }
         }
     }
 
-    val modifierAvecSemanticsTestTag = Modifier.semantics(mergeDescendants = true) {
-        set(
-            SemanticsPropertyKey("1 relativeVent"),
-            relatedVents.first()
-        )
-        set(
-            SemanticsPropertyKey("4 onVentData"),
-            onVentData
-        )
-    }
 
     val haptic = LocalHapticFeedback.current
 
-    // Use ViewModel state instead of local state
     val dialogStates by viewModel.dialogStates.collectAsState()
     val showDialog = dialogStates.productDialogStates[productKeyId] ?: false
 
-    // Use ViewModel business logic functions instead of local calculations
     val totalQuantity = viewModel.getTotalQuantity(relatedVents)
     val productName = viewModel.getProductName(produit, productKeyId)
     val currentPrice = viewModel.getCurrentPrice(relatedVents)
@@ -95,7 +59,7 @@ fun ViewProduit_T1(
     val allNonTrouve = viewModel.allNonTrouve(relatedVents)
 
     Card(
-        modifier = modifierAvecSemanticsTestTag
+        modifier = Modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),
@@ -149,7 +113,7 @@ fun ViewProduit_T1(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ListCouleurs(relatedVents, viewModel, allNonTrouve)
+            ListCouleurs(produit,relatedVents, viewModel, allNonTrouve)
         }
     }
 
