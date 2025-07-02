@@ -104,6 +104,7 @@ fun MainFastSearchProduitPourVent(
 
             // FIX: Corrected MainFilterT1 call
             MainFilterT1(
+                viewModel,
                 products, categories, uiState.searchText, Modifier.fillMaxSize(),semanticsInfo
             )
         }

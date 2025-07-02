@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainListT1(
+    viewModel: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier,
     searchFilter: String,
     sortedProducts: List<ArticlesBasesStatsTable>,
@@ -45,7 +46,7 @@ fun MainListT1(
         } else {
             items(sortedProducts) { product ->
                 ViewProduit(
-                    semanticsInfo,
+                    viewModel,
                     product,
                     categoryMap[product.idParentCategorie],
                     Modifier.fillMaxWidth()

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSav
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -27,25 +30,49 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ViewProduit(
-    parentSemanticsInfo: Pair<SemanticsPropertyKey<String>, String>,
+    viewModel: ViewModelMainFastSearchProduitPourVent,
     product: ArticlesBasesStatsTable,
     category: CategoriesTabelle?,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier
-            .semantics(mergeDescendants = true) { // It's often good practice to merge semantics for a composite element like Card
-                set(
-                    SemanticsPropertyKey(Z_AppCompt.keyModel),
-                    ParametresAppComptNonSaved().gerantComptKeyByParent
-                )
-                set(
-                    SemanticsPropertyKey(Z_AppCompt.keyModelValID7VentParent),
-                    ParametresAppComptNonSaved().activePeriodKeyByParent
-                )
+    val getter = viewModel.getter
+    val  ventOpList = getter.fVentCouleurOperationRepository.datasValue
 
-                set(product.getTempKeyByParent().key, product.getTempKeyByParent().value)
-            },
+    val parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyByParent
+    val onVentData = getter.gBonVentRepository.onVentData
+    val parentGBonVentKeyId = onVentData.keyID
+    val parentBProduitInfosKeyId = product.keyID
+
+    val relativeVent by remember { mutableStateOf(
+        ventOpList.find { it.parentBProduitInfosKeyId== parentBProduitInfosKeyId }
+            ?: FCouleurVentOperationInfos(
+                parentHVentPeriodKeyId = parentHVentPeriodKeyId,
+                parentGBonVentKeyId = parentGBonVentKeyId,
+                parentBProduitInfosKeyId= parentBProduitInfosKeyId
+            )
+    ) }
+    val modifierSemanticsTestTag=  Modifier.semantics(mergeDescendants = true) {
+        set(
+            SemanticsPropertyKey("1parentHVentPeriodKeyId"),
+            relativeVent.parentHVentPeriodKeyId
+        )
+        set(
+            SemanticsPropertyKey("2parentGBonVentKeyId"),
+            relativeVent.parentGBonVentKeyId
+        )
+        set(
+            SemanticsPropertyKey("3 parentBProduitInfosKeyId"),
+            relativeVent.parentBProduitInfosKeyId
+        )
+        set(
+            SemanticsPropertyKey("4 onVentData"),
+            onVentData
+        )
+
+    }
+
+    Card(
+        modifierSemanticsTestTag,
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(

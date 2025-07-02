@@ -1,8 +1,9 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -33,7 +34,11 @@ class GBonVentRepository(
     private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val onVentData by derivedStateOf { datasValue.find { it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId } }
+    val onVentData by derivedStateOf { datasValue.find {
+        it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
+    } ?: GBonVent(
+        parentPeriodeVentKeyID = ParametresAppComptNonSaved().activePeriodKeyByParent
+    )}
 
     init {
         composScope.launch {
@@ -77,9 +82,9 @@ class GBonVentRepository(
 
 @Entity
 data class GBonVent(
-    @PrimaryKey  var keyByParent: String = "null",
+    @PrimaryKey var keyByParent: String = "null",
 
-    var keyID: String = "",
+    var keyID: String = generePushKey(),
 
     var fireBasePushKey: String = generePushKey(),
 
@@ -125,9 +130,9 @@ data class GBonVent(
     var parentZAppComptNom: String = "",
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
-    val parentID2ClientKeyByParent: String,
-    val parentID7VentPeriodeKeyByParent: String,
-    val parentID8C2TypeTransactionKeyByParent: String,
+    val parentID2ClientKeyByParent: String = "",
+    val parentID7VentPeriodeKeyByParent: String = "",
+    val parentID8C2TypeTransactionKeyByParent: String = "",
 ) {
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
@@ -162,10 +167,11 @@ data class GBonVent(
             android.R.color.holo_green_light, "CIBLE_PRIORITE_3"
         ),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
-          ;
+        ;
+
         companion object {
-            const val keyModel= "ID8C2"
-             fun getKey(etate: EtateActuellementEst) =
+            const val keyModel = "ID8C2"
+            fun getKey(etate: EtateActuellementEst) =
                 "--$keyModel-${etate.name}"
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 
 @Composable
 fun MainFilterT1(
+    viewModel: ViewModelMainFastSearchProduitPourVent,
     products: List<ArticlesBasesStatsTable>,
     categories: List<CategoriesTabelle>,
     searchFilter: String,
@@ -55,6 +56,6 @@ fun MainFilterT1(
         sortedRegular + sortedOrphan
     }
 
-    MainListT1(modifier, searchFilter, sortedProducts, categoryMap,semanticsInfo)
+    MainListT1(viewModel,modifier, searchFilter, sortedProducts, categoryMap,semanticsInfo)
 }
 
