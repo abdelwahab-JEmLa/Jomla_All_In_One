@@ -4,11 +4,19 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
-import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,8 +24,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,26 +46,28 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProductGroup(
-    viewModel: ZViewModel_Sec1Frag3,
-    productKeyId: String,
-    achats: List<FCouleurVentOperationInfos>,
     modifier: Modifier = Modifier,
-    bProduitDataBase_SubClassFunctionality: BProduitInfosRepository
+    viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
+    productKeyId: String,
+    vents: List<FCouleurVentOperationInfos>,
 ) {
+   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getter.bProduitInfosRepository
+
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = achats.sumOf { it.quantityAchete }
+    val totalQuantity = vents.sumOf { it.quantityAchete }
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
-    val currentPrice = achats.firstOrNull()?.provisoireMonPrix ?: 0.0
-    val hasNonTrouve = achats.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    val allNonTrouve = achats.isNotEmpty() && achats.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    val currentPrice = vents.firstOrNull()?.provisoireMonPrix ?: 0.0
+    val hasNonTrouve = vents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -83,7 +103,7 @@ fun ProductGroup(
                 label = "Prix unitaire (toutes variantes)",
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
-                        achats.forEach { vent ->
+                        vents.forEach { vent ->
                             viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
                                 .addOrUpdateData(vent.copy(
                                     provisoireMonPrix = price,
@@ -104,7 +124,7 @@ fun ProductGroup(
                 contentPadding = PaddingValues(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(achats) { vent ->
+                items(vents) { vent ->
                     viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
                         .find { it.key == vent.parentCouleurInfosKeyID }?.let {
                             Surface(
@@ -130,7 +150,7 @@ fun ProductGroup(
         }
     }
 
-    if (showDialog && achats.isNotEmpty() && !allNonTrouve) {
+    if (showDialog && vents.isNotEmpty() && !allNonTrouve) {
         ModernQuantityDialog(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
@@ -138,7 +158,7 @@ fun ProductGroup(
             onDissmiss_showQuantityDialog = { showDialog = false },
             onDismiss = { showDialog = false },
             viewModel = viewModel,
-            vent = achats.first().copy(quantityAchete = totalQuantity)
+            vent = vents.first().copy(quantityAchete = totalQuantity)
         )
     }
 }

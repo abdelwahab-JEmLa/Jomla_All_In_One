@@ -27,11 +27,9 @@ fun MainList(
     val groupedAchats by remember {
         derivedStateOf {
             val filteredData = if (uiState.filterNonTrouve) {
-                // When filterNonTrouve is true, show only items that are NOT NonTrouve (i.e., found items)
                 fVentCouleurOperationRepository.onVentFilteredDatas
                     .filter { it.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
             } else {
-                // When filterNonTrouve is false, show all items
                 fVentCouleurOperationRepository.onVentFilteredDatas
             }
 
@@ -49,7 +47,7 @@ fun MainList(
                 bProduitDataBase_SubClassFunctionality = viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
                 viewModel = viewModel,
                 productKeyId = productKeyId,
-                achats = achatGroup
+                vents = achatGroup
             )
         }
     }
