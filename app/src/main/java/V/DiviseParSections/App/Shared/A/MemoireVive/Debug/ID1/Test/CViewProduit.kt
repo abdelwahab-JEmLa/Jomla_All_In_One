@@ -36,21 +36,18 @@ fun ViewProduit(
     modifier: Modifier = Modifier
 ) {
     val getter = viewModel.getter
-    val ventOpList = getter.fVentCouleurOperationRepository.datasValue
-
     val onVentData = getter.gBonVentRepository.onVentData
-    val parentGBonVentKeyId = onVentData.keyID
-    val parentBProduitInfosKeyId = product.keyID
 
     val relativeVent by remember {
         mutableStateOf(
-            ventOpList.find { it.parentBProduitInfosKeyId == parentBProduitInfosKeyId }
+            getter.fVentCouleurOperationRepository.datasValue
+                .find { it.parentBProduitInfosKeyId == product.keyID }
                 ?: FCouleurVentOperationInfos(
                     parentZAppComptID = getter.zAppComptRepositoryComposable.currentAppCompt?.keyID
                         ?: "Non Definie",
                     parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
-                    parentGBonVentKeyId = parentGBonVentKeyId,
-                    parentBProduitInfosKeyId = parentBProduitInfosKeyId
+                    parentGBonVentKeyId = onVentData.keyID,
+                    parentBProduitInfosKeyId = product.keyID
                 )
         )
     }
