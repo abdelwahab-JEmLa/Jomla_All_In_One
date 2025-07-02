@@ -24,7 +24,7 @@ fun MainList(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val groupedAchats by remember {
+    val groupedVents by remember {
         derivedStateOf {
             val filteredData = if (uiState.filterNonTrouve) {
                 fVentCouleurOperationRepository.onVentFilteredDatas
@@ -42,9 +42,8 @@ fun MainList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(groupedAchats.entries.toList()) { (productKeyId, achatGroup) ->
+        items(groupedVents.entries.toList()) { (productKeyId, achatGroup) ->
             ProductGroup(
-                bProduitDataBase_SubClassFunctionality = viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
                 viewModel = viewModel,
                 productKeyId = productKeyId,
                 vents = achatGroup
