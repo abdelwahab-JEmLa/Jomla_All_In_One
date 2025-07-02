@@ -200,7 +200,20 @@ data class FCouleurVentOperationInfos(
     var type: Type = Type.CommandeDeLui,
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
     var achatParentBsonIDOld: String = "",
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val parentDebugInfosID9AppCompt:String ="",
+    val parentDebugInfosID7VentPeriod:String="",
+    val parentDebugInfosID8BonVent:String="",
+    val parentDebugInfosID1Produit:String="",
+    val parentDebugInfosID3CouleurProduit:String="",
 ) {
+    data class Parents(
+        val parentDebugInfosID9AppCompt:String ="",
+        val parentDebugInfosID7VentPeriod:String="",
+        val parentDebugInfosID1Produit:String="",
+        val parentDebugInfosID3CouleurProduit:String="",
+    )
+
     enum class EtateDelivery{
         Trouve,
         NonTrouve
@@ -219,26 +232,6 @@ data class FCouleurVentOperationInfos(
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }
-
-    /*       /*Metode Hash Proto**/
-        fun isSameEntity(other: FCouleurVentOperationInfos) =
-            keyID == other.keyID ||
-                    nomImageFichieOuApellationDuCouleur == other.nomImageFichieOuApellationDuCouleur &&
-                    parentProduitId == other.parentProduitId &&
-                    parentBonVentId == other.parentBonVentId &&
-                    parentZAppComptID == other.parentZAppComptID
-
-        override fun hashCode() = Objects.hash(
-            keyID,
-            nomImageFichieOuApellationDuCouleur,
-            parentProduitId,
-            parentBonVentId,
-            parentZAppComptID
-        )
-
-        override fun equals(other: Any?) =
-            this === other || (other is FCouleurVentOperationInfos && isSameEntity(other))
-                      */
 
     companion object {
         val ref =

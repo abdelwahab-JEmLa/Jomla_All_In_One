@@ -44,7 +44,7 @@ import java.io.File
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun VentDisplayer_T1(
+fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
     ventKey: String,
     b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),

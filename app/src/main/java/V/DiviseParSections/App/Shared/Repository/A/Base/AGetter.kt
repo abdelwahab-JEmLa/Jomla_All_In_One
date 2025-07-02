@@ -34,7 +34,10 @@ import kotlinx.coroutines.launch
 data class ParametresAppComptNonSaved(
     val gerantComptKeyByParent: String = "t1",
     val activePeriodKeyByParent: String = "Juin_30__8_00",
+
     val activePeriodKeyId: String = "-OU9Xi8t6tbGKf_IisuB",
+    val parentDebugInfosID7VentPeriod: String = "Juin_30__8_00",
+
     val activeWindowsSearchProduit: Boolean = false,
     val startUpScree: Screen = Screen.TestProduitFastSearchDialog
 )

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.Lis
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.VentDisplayer_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.ViewVentCouleur_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.Modules.PriceEditor_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
@@ -57,10 +57,11 @@ import org.koin.androidx.compose.koinViewModel
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
     productKeyId: String,
-    viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
+    viewModel: ZViewModel_Sec1Frag3 = koinViewModel(),
 ) {
-    val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getter.bProduitInfosRepository
-
+    val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
+    val produit =
+        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val getter = viewModel.aCentral.getter
     val onVentData = getter.gBonVentRepository.onVentData
 
@@ -70,21 +71,26 @@ fun ViewProduit_T1(
                 .filter { it.parentBProduitInfosKeyId == productKeyId }
                 .ifEmpty {
                     // If no vents found, create a default one
+                    val currentAppCompt = getter.zAppComptRepositoryComposable.currentAppCompt
                     listOf(
                         FCouleurVentOperationInfos(
-                            parentZAppComptID = getter.zAppComptRepositoryComposable.currentAppCompt?.keyID
+                            parentZAppComptID = currentAppCompt?.keyID
                                 ?: "Non Definie",
+                            parentDebugInfosID9AppCompt = currentAppCompt?.nom?: "Non Definie",
+
                             parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
+                            parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().parentDebugInfosID7VentPeriod,
+
                             parentGBonVentKeyId = onVentData.keyID,
-                            parentBProduitInfosKeyId = productKeyId
+                            parentDebugInfosID8BonVent = onVentData.nomClientConcerned,
+
+                            parentBProduitInfosKeyId = productKeyId  ,
+                            parentDebugInfosID1Produit = produit?.nom?: "Non Definie",
                         )
                     )
                 }
         }
     }
-
-    // Use the list of vents instead of single vent
-    val vents = relatedVents
 
     val modifierAvecSemanticsTestTag = Modifier.semantics(mergeDescendants = true) {
         set(
@@ -97,17 +103,19 @@ fun ViewProduit_T1(
         )
     }
 
-    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = vents.sumOf { it.quantityAchete }
+    val totalQuantity = relatedVents.sumOf { it.quantityAchete }
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
-    val currentPrice = vents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    val hasNonTrouve = vents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    val currentPrice = relatedVents.firstOrNull()?.provisoireMonPrix ?: 0.0
+    val hasNonTrouve =
+        relatedVents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    val allNonTrouve =
+        relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifierAvecSemanticsTestTag
@@ -120,7 +128,9 @@ fun ViewProduit_T1(
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp).graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
+            modifier = Modifier
+                .padding(16.dp)
+                .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader_T1(
                 productName = productName,
@@ -144,12 +154,14 @@ fun ViewProduit_T1(
                 label = "Prix unitaire (toutes variantes)",
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
-                        vents.forEach { vent ->
+                        relatedVents.forEach { vent ->
                             viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
-                                .addOrUpdateData(vent.copy(
-                                    provisoireMonPrix = price,
-                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                ))
+                                .addOrUpdateData(
+                                    vent.copy(
+                                        provisoireMonPrix = price,
+                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                    )
+                                )
                         }
                     }
                 },
@@ -161,11 +173,15 @@ fun ViewProduit_T1(
             Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        set(SemanticsPropertyKey("1vents"), relatedVents.map { it })
+                    },
                 contentPadding = PaddingValues(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(vents) { vent ->
+                items(relatedVents) { vent ->
                     viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
                         .find { it.key == vent.parentCouleurInfosKeyID }?.let {
                             Surface(
@@ -177,7 +193,7 @@ fun ViewProduit_T1(
                                         alpha = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f
                                     )
                             ) {
-                                VentDisplayer_T1(
+                                ViewVentCouleur_T1(
                                     modifier = Modifier.padding(4.dp),
                                     ventKey = vent.keyID,
                                     size = 120.dp,
@@ -191,7 +207,7 @@ fun ViewProduit_T1(
         }
     }
 
-    if (showDialog && vents.isNotEmpty() && !allNonTrouve) {
+    if (showDialog && relatedVents.isNotEmpty() && !allNonTrouve) {
         ModernQuantityDialog_T1(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
@@ -199,7 +215,7 @@ fun ViewProduit_T1(
             onDissmiss_showQuantityDialog = { showDialog = false },
             onDismiss = { showDialog = false },
             viewModel = viewModel,
-            vent = vents.first().copy(quantityAchete = totalQuantity)
+            vent = relatedVents.first().copy(quantityAchete = totalQuantity)
         )
     }
 }

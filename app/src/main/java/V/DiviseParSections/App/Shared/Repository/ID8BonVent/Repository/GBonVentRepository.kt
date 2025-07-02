@@ -37,6 +37,7 @@ class GBonVentRepository(
     val onVentData by derivedStateOf { datasValue.find {
         it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
     } ?: GBonVent(
+        nomClientConcerned = "Generated",
         parentPeriodeVentKeyID = ParametresAppComptNonSaved().activePeriodKeyByParent
     )}
 

@@ -150,13 +150,16 @@ data class Z_AppCompt(
 
 
     companion object {
-        const val keyModel= "ID9"
-
-        const val keyModelValID7VentParent= "ID7"
+        const val keyModel = "ID9"
+        const val keyModelValID7VentParent = "ID7"
 
         fun extractSonKeyByParent(stringAExtractDepuit: String) =
-            stringAExtractDepuit.split("--").find { it.startsWith("$keyModelValID7VentParent-") }?.removePrefix("$keyModelValID7VentParent-") ?:
-            if (stringAExtractDepuit.startsWith("$keyModelValID7VentParent-")) stringAExtractDepuit.removePrefix("$keyModelValID7VentParent-").split("--").first() else null
+            stringAExtractDepuit.split("--").find { it.startsWith("$keyModelValID7VentParent-") }
+                ?.removePrefix("$keyModelValID7VentParent-") ?: if (stringAExtractDepuit.startsWith(
+                    "$keyModelValID7VentParent-"
+                )
+            ) stringAExtractDepuit.removePrefix("$keyModelValID7VentParent-").split("--")
+                .first() else null
 
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
