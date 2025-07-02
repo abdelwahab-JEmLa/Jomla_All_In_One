@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -45,177 +46,97 @@ import androidx.compose.ui.unit.dp
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ViewVentCouleur_T1(
+    color: B1CouleurOuGoutProduitDataBase,
     modifier: Modifier = Modifier,
-    ventKey: String,
     size: Dp = 200.dp,
-    purchasedQuantity: Int = 0,
     viewModel: ViewModelsProduit_T1,
     produit: ArticlesBasesStatsTable?
 ) {
-    val b1CouleurOuGoutProduitDataBaseRepository =
-        viewModel.b1CouleurOuGoutProduitDataBaseRepository
-    val fVentCouleurOperationRepository = viewModel.fVentCouleurOperationRepository
-    val zAppComptRepositoryComposable = viewModel.getter.zAppComptRepositoryComposable
-    val getter = viewModel.aCentral.getter
-    val onVentData = getter.gBonVentRepository.onVentData
-
-    val vent = fVentCouleurOperationRepository.datasValue.find { it.keyID == ventKey }
-
-    // CORRECTION 1: Chercher la couleur par son keyID directement
-    val data = vent?.let { v ->
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
-            it.key == v.parentCouleurInfosKeyID
-        }
-    } ?: run {
-        // CORRECTION 2: Si pas de vent, essayer de trouver la couleur par le produit
-        produit?.let { p ->
-            b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
-                it.parentBProduitOldID == p.id
+    val existingVent = remember(produit?.keyID, color.key) {
+        derivedStateOf {
+            viewModel.fVentCouleurOperationRepository.datasValue.find {
+                it.parentBProduitInfosKeyId == produit?.keyID && it.parentCouleurInfosKeyID == color.key
             }
         }
-    }
+    }.value
 
+    val appCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+    val onVentData = viewModel.aCentral.getter.gBonVentRepository.onVentData
     val dialogStates by viewModel.dialogStates.collectAsState()
-    val showQuantityDialog = dialogStates.quantityDialogStates[ventKey] ?: false
+    val haptic = LocalHapticFeedback.current
 
-    val isRemoved = viewModel.isVentRemoved(vent)
+    val ventKey = existingVent?.keyID ?: ""
+    val quantity = existingVent?.quantityAchete ?: 0
+    val showDialog = ventKey.isNotEmpty() && (dialogStates.quantityDialogStates[ventKey] ?: false)
+    val isRemoved = existingVent?.let { viewModel.isVentRemoved(it) } ?: false
     val itemAlpha = viewModel.getItemAlpha(isRemoved)
     val colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
 
     val imageFile by derivedStateOf {
-        data?.let {
-            viewModel.getImageFile(
-                it.nomImageFichieSansEtansion,
-                data.extensionDisponible
+        viewModel.getImageFile(color.nomImageFichieSansEtansion, color.extensionDisponible)
+    }
+
+    val defaultVent by remember {
+        derivedStateOf {
+            FCouleurVentOperationInfos(
+                keyID = "vent_${color.key}_${produit?.keyID}",
+                parentZAppComptID = appCompt?.keyID ?: "Non Definie",
+                parentDebugInfosID9AppCompt = appCompt?.nom ?: "Non Definie",
+                parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
+                parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().parentDebugInfosID7VentPeriod,
+                parentGBonVentKeyId = onVentData.keyID,
+                parentDebugInfosID8BonVent = onVentData.nomClientConcerned,
+                parentBProduitInfosKeyId = produit?.keyID ?: "",
+                parentDebugInfosID1Produit = produit?.nom ?: "Non Definie",
+                parentCouleurInfosKeyID = color.key,
+                parentBProduitNomDebug = produit?.nom ?: "",
+                parentProduitInfosOldId = produit?.id ?: 0L,
+                parentClientName = appCompt?.nom ?: "",
+                quantityAchete = 0,
+                etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.CreeSlote
             )
         }
     }
 
-    val haptic = LocalHapticFeedback.current
-    val productKeyId = produit?.keyID ?: ""
-
-    val relatedVents by remember {
-        derivedStateOf {
-            fVentCouleurOperationRepository.datasValue
-                .filter { it.parentBProduitInfosKeyId == productKeyId }
-                .ifEmpty {
-                    val currentAppCompt = zAppComptRepositoryComposable.currentAppCompt
-                    listOf(
-                        FCouleurVentOperationInfos(
-                            parentZAppComptID = currentAppCompt?.keyID ?: "Non Definie",
-                            parentDebugInfosID9AppCompt = currentAppCompt?.nom ?: "Non Definie",
-                            parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
-                            parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().parentDebugInfosID7VentPeriod,
-                            parentGBonVentKeyId = onVentData.keyID,
-                            parentDebugInfosID8BonVent = onVentData.nomClientConcerned,
-                            parentBProduitInfosKeyId = productKeyId,
-                            parentDebugInfosID1Produit = produit?.nom ?: "Non Definie",
-                            // CORRECTION 3: Ajouter la relation avec la couleur
-                            parentCouleurInfosKeyID = data?.key ?: ""
-                        )
-                    )
-                }
+    val onItemClick = {
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        val vent = existingVent ?: defaultVent
+        if (existingVent == null) {
+            viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
         }
-    }
-
-    val modifierAvecSemanticsTestTag = Modifier.semantics(mergeDescendants = true) {
-        set(
-            SemanticsPropertyKey("1 relativeVent"),
-            relatedVents.first()
-        )
-        set(
-            SemanticsPropertyKey("4 onVentData"),
-            onVentData
-        )
-    }
-
-    if (data == null) {
-        Card(
-            modifier = modifierAvecSemanticsTestTag
-                .fillMaxWidth()
-                .alpha(itemAlpha)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(5.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .size(size),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Afficher un placeholder avec le nom du produit
-                    ColorNameDisplayer_Sec2FragID2(
-                        modifier = Modifier.size(size),
-                        colorName = produit?.nom ?: "Couleur inconnue",
-                        onClickToOpenWindow = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        }
-                    )
-
-                    if (purchasedQuantity > 0 && !isRemoved) {
-                        BadgedBox(
-                            badge = {
-                                Badge(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ) {
-                                    Text(
-                                        text = purchasedQuantity.toString(),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            },
-                            modifier = Modifier.align(Alignment.BottomEnd)
-                        ) {
-                            Box(modifier = Modifier.size(16.dp))
-                        }
-                    }
-                }
-            }
-        }
-        return
+        viewModel.showQuantityDialog(vent.keyID)
     }
 
     Card(
-        modifier = modifierAvecSemanticsTestTag
+        modifier = Modifier
+            .semantics(mergeDescendants = true) {
+                set(SemanticsPropertyKey("1 relativeVent"), existingVent ?: defaultVent)
+                set(SemanticsPropertyKey("4 onVentData"), onVentData)
+            }
             .fillMaxWidth()
             .alpha(itemAlpha)
+            .graphicsLayer(alpha = if (existingVent?.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                when (data.aAffiche) {
+                when (color.aAffiche) {
                     B1CouleurOuGoutProduitDataBase.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
-                            ventKey=ventKey,
+                            ventKey = ventKey,
                             modifier = Modifier.size(size),
                             imageFile = imageFile,
-                            colorName = data.nomCouleurStrSiSonImageDispo,
+                            colorName = color.nomCouleurStrSiSonImageDispo,
                             contentScale = ContentScale.Crop,
                             imageSize = DpSize(size, size),
                             colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
-                            onClickToOpenWindow = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                viewModel.showQuantityDialog(ventKey)
-                            }
+                            onClickToOpenWindow = onItemClick
                         )
                     }
-
                     B1CouleurOuGoutProduitDataBase.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
-                            colorName = data.nomCouleurStrSiSonImageDispo,
-                            onClickToOpenWindow = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                viewModel.showQuantityDialog(ventKey)
-                            }
+                            colorName = color.nomCouleurStrSiSonImageDispo,
+                            onClickToOpenWindow = onItemClick
                         )
                     }
                 }
@@ -236,7 +157,7 @@ fun ViewVentCouleur_T1(
                     }
                 }
 
-                if (purchasedQuantity > 0 && !isRemoved) {
+                if (quantity > 0 && !isRemoved) {
                     BadgedBox(
                         badge = {
                             Badge(
@@ -244,7 +165,7 @@ fun ViewVentCouleur_T1(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(
-                                    text = purchasedQuantity.toString(),
+                                    text = quantity.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -259,16 +180,14 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (showQuantityDialog) {
-        vent?.let {
-            ModernQuantityDialog_T1(
-                colorName = data.nomCouleurStrSiSonImageDispo,
-                currentQuantity = purchasedQuantity,
-                onDissmiss_showQuantityDialog = { viewModel.hideQuantityDialog(ventKey) },
-                onDismiss = { viewModel.hideQuantityDialog(ventKey) },
-                viewModel = viewModel,
-                vent = it
-            )
-        }
+    if (showDialog && existingVent != null) {
+        ModernQuantityDialog_T1(
+            colorName = color.nomCouleurStrSiSonImageDispo,
+            currentQuantity = quantity,
+            onDissmiss_showQuantityDialog = { viewModel.hideQuantityDialog(ventKey) },
+            onDismiss = { viewModel.hideQuantityDialog(ventKey) },
+            viewModel = viewModel,
+            vent = existingVent
+        )
     }
 }

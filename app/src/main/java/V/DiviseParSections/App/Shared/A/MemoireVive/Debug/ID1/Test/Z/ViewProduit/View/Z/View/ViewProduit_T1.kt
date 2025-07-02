@@ -7,6 +7,8 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,13 +33,25 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
-    productKeyId: String,
+    product: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
 ) {
-    val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
-    val produit =
-        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val getter = viewModel.aCentral.getter
+    val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
+    val b1CouleurOuGoutProduitDataBaseRepository = viewModel.b1CouleurOuGoutProduitDataBaseRepository
+    val productKeyId = product.keyID
+    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+
+    // Fixed: Changed from List<Map.Entry<...>> to Pair<ArticlesBasesStatsTable, List<B1CouleurOuGoutProduitDataBase>>
+    val produitWithColors by remember(product.id, b1CouleurOuGoutProduitDataBaseRepository.datasValue) {
+        derivedStateOf {
+            val relatedColors = b1CouleurOuGoutProduitDataBaseRepository.datasValue
+                .filter { it.parentBProduitOldID == product.id }
+                .sortedBy { it.indexCouleurDansAncienProto }
+
+            Pair(product, relatedColors)
+        }
+    }
 
     val relatedVents by remember {
         derivedStateOf {
@@ -45,7 +59,6 @@ fun ViewProduit_T1(
                 .filter { it.parentBProduitInfosKeyId == productKeyId }
         }
     }
-
 
     val haptic = LocalHapticFeedback.current
 
@@ -113,7 +126,8 @@ fun ViewProduit_T1(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ListCouleurs(produit,relatedVents, viewModel, allNonTrouve)
+            // Updated call to ListCouleurs with the new structure
+            ListCouleurs(produitWithColors, viewModel)
         }
     }
 
@@ -135,4 +149,3 @@ fun ViewProduit_T1(
         )
     }
 }
-

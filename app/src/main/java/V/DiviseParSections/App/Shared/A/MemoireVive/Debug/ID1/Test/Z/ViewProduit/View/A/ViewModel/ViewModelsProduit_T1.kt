@@ -13,8 +13,8 @@ class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.getter
-    val fVentCouleurOperationRepository= getter.fVentCouleurOperationRepository
     val b1CouleurOuGoutProduitDataBaseRepository =getter.b1CouleurOuGoutProduitDataBaseRepository
+    val fVentCouleurOperationRepository= getter.fVentCouleurOperationRepository
     val setter = aCentral.setter
 
     data class UiState_Sec1Frag3(

@@ -42,7 +42,7 @@ fun MainListT1(
         } else {
             items(sortedProducts) { product ->
                 ViewProduit_T1(
-                    productKeyId= product.keyID,
+                    product= product,
                 )
             }
         }
