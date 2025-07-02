@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.ViewProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement

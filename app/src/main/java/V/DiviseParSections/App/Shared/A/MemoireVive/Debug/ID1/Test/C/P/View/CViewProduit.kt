@@ -1,19 +1,16 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.ViewProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -35,7 +31,6 @@ fun ViewProduit(
     category: CategoriesTabelle?
 ) {
     val getter = viewModel.getter
-    val repoCouleur = getter.b1CouleurOuGoutProduitDataBaseRepository
     val onVentData = getter.gBonVentRepository.onVentData
 
     val relativeVent by remember {
@@ -52,6 +47,12 @@ fun ViewProduit(
         )
     }
 
+    // Get all vents related to this product
+    val relatedVents = remember(product.keyID) {
+        getter.fVentCouleurOperationRepository.datasValue
+            .filter { it.parentBProduitInfosKeyId == product.keyID }
+    }
+
     val modifierAvecSemanticsTestTag = Modifier.semantics(mergeDescendants = true) {
         set(
             SemanticsPropertyKey("1 relativeVent"),
@@ -63,56 +64,17 @@ fun ViewProduit(
         )
     }
 
-    Card(
-        modifierAvecSemanticsTestTag,
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                product.nom,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+    Column(modifier = modifierAvecSemanticsTestTag) {
+        // Use ViewProduit_T1 for the main product display
+        ViewProduit_T1(
+            productKeyId = product.keyID,
+            vents = relatedVents
+        )
 
-            if (product.nomArab.isNotEmpty()) {
-                Text(
-                    product.nomArab,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(Modifier.height(8.dp))
-
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        "Catégorie: ${category?.nom ?: "Non définie"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "Prix: ${product.prixVent} DA",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                val couleurIdx0 = repoCouleur.getCouleursDeProduitAvecIndex(product, 0)
-
-                //<--
-                //TODO(1): ajout affiche image du couleur index 0
-
-                ViewDisponibilityEtates(product)
-            }
-        }
+        // Show availability status
+        ViewDisponibilityEtates(product = product)
     }
 }
 

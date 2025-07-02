@@ -1,9 +1,10 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.VentDisplayer_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.Modules.PriceEditor_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProductGroup(
+fun ViewProduit_T1(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
     productKeyId: String,
@@ -81,7 +82,7 @@ fun ProductGroup(
         Column(
             modifier = Modifier.padding(16.dp).graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
-            ProductHeader(
+            ProductHeader_T1(
                 productName = productName,
                 allNonTrouve = allNonTrouve,
                 hasNonTrouve = hasNonTrouve,
@@ -98,19 +99,17 @@ fun ProductGroup(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            PriceEditorFragID2(
+            PriceEditor_T1(
                 currentPrice = currentPrice,
                 label = "Prix unitaire (toutes variantes)",
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
                         vents.forEach { vent ->
                             viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
-                                .addOrUpdateData(
-                                    vent.copy(
-                                        provisoireMonPrix = price,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                )
+                                .addOrUpdateData(vent.copy(
+                                    provisoireMonPrix = price,
+                                    dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+                                ))
                         }
                     }
                 },
@@ -138,7 +137,7 @@ fun ProductGroup(
                                         alpha = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f
                                     )
                             ) {
-                                VentDisplayer_Sec2FragId2(
+                                VentDisplayer_T1(
                                     modifier = Modifier.padding(4.dp),
                                     ventKey = vent.keyID,
                                     size = 120.dp,
@@ -153,7 +152,7 @@ fun ProductGroup(
     }
 
     if (showDialog && vents.isNotEmpty() && !allNonTrouve) {
-        ModernQuantityDialog(
+        ModernQuantityDialog_T1(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
             currentQuantity = totalQuantity,
@@ -166,7 +165,7 @@ fun ProductGroup(
 }
 
 @Composable
-private fun ProductHeader(
+private fun ProductHeader_T1(
     productName: String,
     allNonTrouve: Boolean,
     hasNonTrouve: Boolean,
