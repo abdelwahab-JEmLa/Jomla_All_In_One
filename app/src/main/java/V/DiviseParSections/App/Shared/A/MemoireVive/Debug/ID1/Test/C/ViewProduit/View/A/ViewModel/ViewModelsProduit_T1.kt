@@ -12,8 +12,9 @@ import java.io.File
 class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-    val uiStateCentralRepositorys = aCentral.getter
-    val fVentCouleurOperationRepository= uiStateCentralRepositorys.fVentCouleurOperationRepository
+    val getter = aCentral.getter
+    val fVentCouleurOperationRepository= getter.fVentCouleurOperationRepository
+    val b1CouleurOuGoutProduitDataBaseRepository =getter.b1CouleurOuGoutProduitDataBaseRepository
     val setter = aCentral.setter
 
     data class UiState_Sec1Frag3(

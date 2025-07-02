@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,19 +35,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
     ventKey: String,
-    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
     size: Dp = 200.dp,
     purchasedQuantity: Int = 0,
     viewModel: ViewModelsProduit_T1
 ) {
-    val vent = viewModel.fVentCouleurOperationRepository.datasValue.find { it.keyID == ventKey }
+    val b1CouleurOuGoutProduitDataBaseRepository = viewModel.b1CouleurOuGoutProduitDataBaseRepository
+    val fVentCouleurOperationRepository = viewModel.fVentCouleurOperationRepository
+
+    val vent = fVentCouleurOperationRepository.datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v -> b1CouleurOuGoutProduitDataBaseRepository.datasValue.find { it.key == v.parentCouleurInfosKeyID } }
 
     val dialogStates by viewModel.dialogStates.collectAsState()

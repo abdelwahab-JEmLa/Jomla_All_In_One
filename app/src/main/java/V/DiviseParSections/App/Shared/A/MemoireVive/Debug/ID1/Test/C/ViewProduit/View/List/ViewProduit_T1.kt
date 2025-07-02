@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.ViewVentCouleur_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.Modules.PriceEditor_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
@@ -152,7 +152,7 @@ fun ViewProduit_T1(
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
                         relatedVents.forEach { vent ->
-                            viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+                            viewModel.getter.fVentCouleurOperationRepository
                                 .addOrUpdateData(
                                     vent.copy(
                                         provisoireMonPrix = price,
@@ -179,7 +179,7 @@ fun ViewProduit_T1(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(relatedVents) { vent ->
-                    viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+                    viewModel.getter.b1CouleurOuGoutProduitDataBaseRepository.datasValue
                         .find { it.key == vent.parentCouleurInfosKeyID }?.let {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
