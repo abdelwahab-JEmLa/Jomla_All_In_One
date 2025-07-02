@@ -5,6 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.VentDisplayer_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.Modules.PriceEditor_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +46,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,11 +56,46 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
-    viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
     productKeyId: String,
-    vents: List<FCouleurVentOperationInfos>,
+    viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
 ) {
-   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getter.bProduitInfosRepository
+    val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getter.bProduitInfosRepository
+
+    val getter = viewModel.aCentral.getter
+    val onVentData = getter.gBonVentRepository.onVentData
+
+    val relatedVents by remember {
+        derivedStateOf {
+            getter.fVentCouleurOperationRepository.datasValue
+                .filter { it.parentBProduitInfosKeyId == productKeyId }
+                .ifEmpty {
+                    // If no vents found, create a default one
+                    listOf(
+                        FCouleurVentOperationInfos(
+                            parentZAppComptID = getter.zAppComptRepositoryComposable.currentAppCompt?.keyID
+                                ?: "Non Definie",
+                            parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
+                            parentGBonVentKeyId = onVentData.keyID,
+                            parentBProduitInfosKeyId = productKeyId
+                        )
+                    )
+                }
+        }
+    }
+
+    // Use the list of vents instead of single vent
+    val vents = relatedVents
+
+    val modifierAvecSemanticsTestTag = Modifier.semantics(mergeDescendants = true) {
+        set(
+            SemanticsPropertyKey("1 relativeVent"),
+            relatedVents.first()
+        )
+        set(
+            SemanticsPropertyKey("4 onVentData"),
+            onVentData
+        )
+    }
 
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val haptic = LocalHapticFeedback.current
@@ -71,7 +110,8 @@ fun ViewProduit_T1(
     val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifierAvecSemanticsTestTag
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
