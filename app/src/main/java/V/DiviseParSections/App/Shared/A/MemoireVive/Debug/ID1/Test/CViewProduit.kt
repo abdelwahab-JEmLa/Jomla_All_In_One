@@ -38,7 +38,6 @@ fun ViewProduit(
     val getter = viewModel.getter
     val  ventOpList = getter.fVentCouleurOperationRepository.datasValue
 
-    val parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyByParent
     val onVentData = getter.gBonVentRepository.onVentData
     val parentGBonVentKeyId = onVentData.keyID
     val parentBProduitInfosKeyId = product.keyID
@@ -46,29 +45,21 @@ fun ViewProduit(
     val relativeVent by remember { mutableStateOf(
         ventOpList.find { it.parentBProduitInfosKeyId== parentBProduitInfosKeyId }
             ?: FCouleurVentOperationInfos(
-                parentHVentPeriodKeyId = parentHVentPeriodKeyId,
+                parentZAppComptID = getter.zAppComptRepositoryComposable.currentAppCompt?.keyID?:"Non Definie",
+                parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
                 parentGBonVentKeyId = parentGBonVentKeyId,
                 parentBProduitInfosKeyId= parentBProduitInfosKeyId
             )
     ) }
     val modifierSemanticsTestTag=  Modifier.semantics(mergeDescendants = true) {
         set(
-            SemanticsPropertyKey("1parentHVentPeriodKeyId"),
-            relativeVent.parentHVentPeriodKeyId
-        )
-        set(
-            SemanticsPropertyKey("2parentGBonVentKeyId"),
-            relativeVent.parentGBonVentKeyId
-        )
-        set(
-            SemanticsPropertyKey("3 parentBProduitInfosKeyId"),
-            relativeVent.parentBProduitInfosKeyId
+            SemanticsPropertyKey("1 relativeVent"),
+            relativeVent
         )
         set(
             SemanticsPropertyKey("4 onVentData"),
             onVentData
         )
-
     }
 
     Card(
