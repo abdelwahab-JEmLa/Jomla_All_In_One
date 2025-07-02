@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.DisponibilityEtates

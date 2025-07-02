@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.lifecycle.ViewModel

@@ -1,8 +1,8 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.B.List.QuantityGrid
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.B.List.QuantityGrid_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -28,7 +28,7 @@ fun ModernQuantityDialog_T1(
     currentQuantity: Int,
     onDissmiss_showQuantityDialog: () -> Unit,
     onDismiss: () -> Unit,
-    viewModel: ZViewModel_Sec1Frag3,
+    viewModel: ViewModelsProduit_T1,
     vent: FCouleurVentOperationInfos
 ) {
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }
@@ -57,7 +57,7 @@ fun ModernQuantityDialog_T1(
         },
         text = {
             Column {
-                QuantityGrid(
+                QuantityGrid_T1(
                     clickUpdate = clickUpdate, // FIXED: Pass the click update mode parameter
                     vent = vent,
                     currentQuantity = selectedQuantity,

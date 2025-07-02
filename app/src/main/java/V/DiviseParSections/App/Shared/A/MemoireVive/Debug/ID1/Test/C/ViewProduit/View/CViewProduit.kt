@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.ViewProduit_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.ViewProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

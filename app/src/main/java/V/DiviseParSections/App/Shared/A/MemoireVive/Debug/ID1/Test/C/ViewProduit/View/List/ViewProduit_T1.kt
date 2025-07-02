@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.ViewVentCouleur_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.Modules.PriceEditor_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.ViewVentCouleur_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.Modules.PriceEditor_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.background
@@ -34,11 +34,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +56,7 @@ import org.koin.androidx.compose.koinViewModel
 fun ViewProduit_T1(
     modifier: Modifier = Modifier,
     productKeyId: String,
-    viewModel: ZViewModel_Sec1Frag3 = koinViewModel(),
+    viewModel: ViewModelsProduit_T1 = koinViewModel(),
 ) {
     val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
     val produit =
@@ -70,7 +69,6 @@ fun ViewProduit_T1(
             getter.fVentCouleurOperationRepository.datasValue
                 .filter { it.parentBProduitInfosKeyId == productKeyId }
                 .ifEmpty {
-                    // If no vents found, create a default one
                     val currentAppCompt = getter.zAppComptRepositoryComposable.currentAppCompt
                     listOf(
                         FCouleurVentOperationInfos(
@@ -103,19 +101,18 @@ fun ViewProduit_T1(
         )
     }
 
-
     val haptic = LocalHapticFeedback.current
-    var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = relatedVents.sumOf { it.quantityAchete }
-    val productName = produit?.nom?.takeIf { it.isNotBlank() }
-        ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
-        ?: "Product #$productKeyId"
-    val currentPrice = relatedVents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    val hasNonTrouve =
-        relatedVents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    val allNonTrouve =
-        relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    // Use ViewModel state instead of local state
+    val dialogStates by viewModel.dialogStates.collectAsState()
+    val showDialog = dialogStates.productDialogStates[productKeyId] ?: false
+
+    // Use ViewModel business logic functions instead of local calculations
+    val totalQuantity = viewModel.getTotalQuantity(relatedVents)
+    val productName = viewModel.getProductName(produit, productKeyId)
+    val currentPrice = viewModel.getCurrentPrice(relatedVents)
+    val hasNonTrouve = viewModel.hasNonTrouve(relatedVents)
+    val allNonTrouve = viewModel.allNonTrouve(relatedVents)
 
     Card(
         modifier = modifierAvecSemanticsTestTag
@@ -143,7 +140,7 @@ fun ViewProduit_T1(
                 },
                 onQuantityClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    showDialog = true
+                    viewModel.showProductDialog(productKeyId)
                 }
             )
 
@@ -212,8 +209,8 @@ fun ViewProduit_T1(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
             currentQuantity = totalQuantity,
-            onDissmiss_showQuantityDialog = { showDialog = false },
-            onDismiss = { showDialog = false },
+            onDissmiss_showQuantityDialog = { viewModel.hideProductDialog(productKeyId) },
+            onDismiss = { viewModel.hideProductDialog(productKeyId) },
             viewModel = viewModel,
             vent = relatedVents.first().copy(quantityAchete = totalQuantity)
         )

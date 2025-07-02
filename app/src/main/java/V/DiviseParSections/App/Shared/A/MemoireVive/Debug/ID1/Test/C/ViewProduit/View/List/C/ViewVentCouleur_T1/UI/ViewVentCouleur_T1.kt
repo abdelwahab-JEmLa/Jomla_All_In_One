@@ -1,12 +1,11 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,7 +37,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import java.io.File
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -50,7 +46,7 @@ fun ViewVentCouleur_T1(
     b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
     size: Dp = 200.dp,
     purchasedQuantity: Int = 0,
-    viewModel: ZViewModel_Sec1Frag3
+    viewModel: ViewModelsProduit_T1
 ) {
     val vent = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
         .datasValue.find { it.keyID == ventKey }
@@ -75,18 +71,19 @@ fun ViewVentCouleur_T1(
         return
     }
 
-    var showQuantityDialog by remember { mutableStateOf(false) }
+    // Use ViewModel state instead of local state
+    val dialogStates by viewModel.dialogStates.collectAsState()
+    val showQuantityDialog = dialogStates.quantityDialogStates[ventKey] ?: false
+
     val haptic = LocalHapticFeedback.current
 
-    val isRemoved = vent.etateActuellementEst == FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-    val itemAlpha = if (isRemoved) 0.4f else 1.0f
+    // Use ViewModel business logic functions
+    val isRemoved = viewModel.isVentRemoved(vent)
+    val itemAlpha = viewModel.getItemAlpha(isRemoved)
     val colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
 
     val imageFile by derivedStateOf {
-        if (data.nomImageFichieSansEtansion != "Non Dispo") {
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
-                "${data.nomImageFichieSansEtansion}.${data.extensionDisponible}")
-        } else null
+        viewModel.getImageFile(data.nomImageFichieSansEtansion, data.extensionDisponible)
     }
 
     Card(modifier = modifier.fillMaxWidth().alpha(itemAlpha)) {
@@ -103,7 +100,7 @@ fun ViewVentCouleur_T1(
                             colorFilter = colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showQuantityDialog = true
+                                viewModel.showQuantityDialog(ventKey)
                             }
                         )
                     }
@@ -113,7 +110,7 @@ fun ViewVentCouleur_T1(
                             colorName = data.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showQuantityDialog = true
+                                viewModel.showQuantityDialog(ventKey)
                             }
                         )
                     }
@@ -163,8 +160,8 @@ fun ViewVentCouleur_T1(
             ModernQuantityDialog_T1(
                 colorName = data.nomCouleurStrSiSonImageDispo,
                 currentQuantity = purchasedQuantity,
-                onDissmiss_showQuantityDialog = { showQuantityDialog = false },
-                onDismiss = { showQuantityDialog = false },
+                onDissmiss_showQuantityDialog = { viewModel.hideQuantityDialog(ventKey) },
+                onDismiss = { viewModel.hideQuantityDialog(ventKey) },
                 viewModel = viewModel,
                 vent = it
             )

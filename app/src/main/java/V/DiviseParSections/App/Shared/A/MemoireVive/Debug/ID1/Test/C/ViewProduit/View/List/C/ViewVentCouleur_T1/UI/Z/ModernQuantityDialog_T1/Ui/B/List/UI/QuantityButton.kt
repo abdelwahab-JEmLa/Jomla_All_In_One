@@ -1,9 +1,9 @@
 // Enhanced QuantityButton.kt - Fixed TODOs
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.P.View.List.C.MainItem.UI.Quantity.Ui.B.List.UI
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.List.C.ViewVentCouleur_T1.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.C.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 fun QuantityButton_T1(
     modifier: Modifier = Modifier,
     clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
-    viewModel: ZViewModel_Sec1Frag3,
+    viewModel: ViewModelsProduit_T1,
     newQuantity: Int,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {},
