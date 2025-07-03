@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.Modules.PriceEditor_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ProductHeader_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ViewDisponibilityEtates
@@ -86,41 +85,12 @@ fun ViewProduit_T1(
             ProductHeader_T1(
                 productName = productName,
                 allNonTrouve = allNonTrouve,
-                hasNonTrouve = hasNonTrouve,
                 totalQuantity = totalQuantity,
-                onToggleDelivery = {
-                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    produit?.keyID?.let { viewModel.toggleEtateDeliveryNonTrouveVentOu(it) }
-                },
                 onQuantityClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     viewModel.showProductDialog(productKeyId)
                 }
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            PriceEditor_T1(
-                currentPrice = currentPrice,
-                label = "Prix unitaire (toutes variantes)",
-                onPriceUpdate = { price ->
-                    if (!allNonTrouve) {
-                        relatedVents.forEach { vent ->
-                            viewModel.getter.fVentCouleurOperationRepository
-                                .addOrUpdateData(
-                                    vent.copy(
-                                        provisoireMonPrix = price,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                )
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                textColor = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
             Spacer(modifier = Modifier.height(12.dp))
 
             ListCouleurs(produitWithColors, viewModel)
@@ -130,7 +100,8 @@ fun ViewProduit_T1(
     Spacer(modifier = Modifier.height(8.dp))
 
     if (produit != null) {
-        ViewDisponibilityEtates(product = produit)
+        ViewDisponibilityEtates(product = produit)      //<--
+        //TODO(1): fait que ca soit a l iterieur du view produit 
     }
 
     if (showDialog && relatedVents.isNotEmpty() && !allNonTrouve) {

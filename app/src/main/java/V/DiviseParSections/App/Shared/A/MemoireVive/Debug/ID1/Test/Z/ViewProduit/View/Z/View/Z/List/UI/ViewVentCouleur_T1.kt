@@ -7,10 +7,25 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import androidx.compose.foundation.layout.*
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,13 +41,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun ViewVentCouleur_T1(
-    color: B1CouleurOuGoutProduitDataBase,
     modifier: Modifier = Modifier,
-    size: Dp = 200.dp,
+    color: B1CouleurOuGoutProduitDataBase,
+    produit: ArticlesBasesStatsTable?,
     viewModel: ViewModelsProduit_T1,
-    produit: ArticlesBasesStatsTable?
+    size: Dp = 200.dp
 ) {
     val existingVent by remember(produit?.keyID, color.key) {
         derivedStateOf { viewModel.calculateExistingVent(produit, color) }

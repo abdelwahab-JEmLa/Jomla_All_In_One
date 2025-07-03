@@ -7,7 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.SemanticsPropertyKey
 
 @Composable
 fun MainFilterT1(
@@ -16,8 +15,8 @@ fun MainFilterT1(
     categories: List<CategoriesTabelle>,
     searchFilter: String,
     modifier: Modifier = Modifier,
-    semanticsInfo: Pair<SemanticsPropertyKey<String>, String>
-) {
+) {   //<--
+//TODO(1): fait que la list start empty quent erice ca afficeh 
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
 

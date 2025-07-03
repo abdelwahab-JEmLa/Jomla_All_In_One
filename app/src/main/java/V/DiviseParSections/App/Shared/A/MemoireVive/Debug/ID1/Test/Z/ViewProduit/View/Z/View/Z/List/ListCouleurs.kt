@@ -18,11 +18,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ListCouleurs(
-    // Updated parameter to use Pair instead of List<Map.Entry<...>>
     produitWithColors: Pair<ArticlesBasesStatsTable, List<B1CouleurOuGoutProduitDataBase>>,
     viewModel: ViewModelsProduit_T1,
 ) {
-    // Simplified access to product and colors
     val produit = produitWithColors.first
     val colors = produitWithColors.second
 
@@ -38,11 +36,11 @@ fun ListCouleurs(
                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
             ) {
                 ViewVentCouleur_T1(
-                    produit = produit,
-                    color=color,
                     modifier = Modifier.padding(4.dp),
-                    size = 120.dp,
-                    viewModel = viewModel
+                    color=color,
+                    produit = produit,
+                    viewModel = viewModel,
+                    size = 120.dp
                 )
             }
         }

@@ -32,9 +32,7 @@ import androidx.compose.ui.unit.dp
  fun ProductHeader_T1(
     productName: String,
     allNonTrouve: Boolean,
-    hasNonTrouve: Boolean,
     totalQuantity: Int,
-    onToggleDelivery: () -> Unit,
     onQuantityClick: () -> Unit
 ) {
     Box(
@@ -88,7 +86,6 @@ import androidx.compose.ui.unit.dp
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ToggleButton(allNonTrouve, hasNonTrouve, onToggleDelivery)
                 QuantityDisplay(allNonTrouve, totalQuantity, onQuantityClick)
             }
         }

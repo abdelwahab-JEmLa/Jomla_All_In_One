@@ -16,23 +16,20 @@ import java.io.File
 class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-
     val getter = aCentral.getter
     val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
     val fVentCouleurOperationRepository = getter.fVentCouleurOperationRepository
     val setter = aCentral.setter
 
-    data class UiState_Sec1Frag3(
-        val isMinimized: Boolean = true,
-        val panieMode: PanieMode = PanieMode.Delivery,
+    data class UiState(
         val filterNonTrouve: Boolean = true,
-        val ventUIStates: Map<String, ViewVentUIState> = emptyMap(),
         val quantityDialogStates: Map<String, Boolean> = emptyMap(),
         val productDialogStates: Map<String, Boolean> = emptyMap()
     )
 
     data class ViewVentUIState(
-        val ventKey: String = "",
+        val ventKey: String = "",    //<--
+        //TODO(1): delace tout don UiState
         val quantity: Int = 0,
         val showDialog: Boolean = false,
         val isRemoved: Boolean = false,
@@ -40,16 +37,8 @@ class ViewModelsProduit_T1(
         val colorMatrix: ColorMatrix? = null
     )
 
-    private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
-    val uiState: StateFlow<UiState_Sec1Frag3> = _uiState.asStateFlow()
-
-    enum class PanieMode { Delivery, Vent; fun toggle() = if (this == Delivery) Vent else Delivery }
-    enum class ClickUpdate { CouleurQua, TotalQua }
-
-    fun toggleMinimizedState() = _uiState.update { it.copy(isMinimized = !it.isMinimized) }
-    fun togglePanieMode() = _uiState.update { it.copy(panieMode = it.panieMode.toggle()) }
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) = setter.toggleEtateDeliveryNonTrouveVentOu(produitKey)
-    fun toggelePanierFilterNonTrouve() = _uiState.update { it.copy(filterNonTrouve = !it.filterNonTrouve) }
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun showQuantityDialog(ventKey: String) = _uiState.update {
         it.copy(quantityDialogStates = it.quantityDialogStates + (ventKey to true))
@@ -67,7 +56,7 @@ class ViewModelsProduit_T1(
         it.copy(productDialogStates = it.productDialogStates + (productKey to false))
     }
 
-    fun calculateUIState(existingVent: FCouleurVentOperationInfos?, uiState: UiState_Sec1Frag3): ViewVentUIState {
+    fun calculateUIState(existingVent: FCouleurVentOperationInfos?, uiState: UiState): ViewVentUIState {
         val ventKey = existingVent?.keyID ?: ""
         val isRemoved = existingVent?.etateActuellementEst == FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
         return ViewVentUIState(
