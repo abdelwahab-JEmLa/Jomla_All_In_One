@@ -1,7 +1,11 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,158 +16,117 @@ import java.io.File
 class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
+
     val getter = aCentral.getter
-    val b1CouleurOuGoutProduitDataBaseRepository =getter.b1CouleurOuGoutProduitDataBaseRepository
-    val fVentCouleurOperationRepository= getter.fVentCouleurOperationRepository
+    val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
+    val fVentCouleurOperationRepository = getter.fVentCouleurOperationRepository
     val setter = aCentral.setter
 
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,
         val panieMode: PanieMode = PanieMode.Delivery,
         val filterNonTrouve: Boolean = true,
+        val ventUIStates: Map<String, ViewVentUIState> = emptyMap(),
+        val quantityDialogStates: Map<String, Boolean> = emptyMap(),
+        val productDialogStates: Map<String, Boolean> = emptyMap()
     )
 
-    // Dialog states for different components
-    data class DialogStates(
-        val quantityDialogStates: Map<String, Boolean> = emptyMap(), // ventKey -> showDialog
-        val productDialogStates: Map<String, Boolean> = emptyMap()   // productKey -> showDialog
+    data class ViewVentUIState(
+        val ventKey: String = "",
+        val quantity: Int = 0,
+        val showDialog: Boolean = false,
+        val isRemoved: Boolean = false,
+        val itemAlpha: Float = 1.0f,
+        val colorMatrix: ColorMatrix? = null
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
     val uiState: StateFlow<UiState_Sec1Frag3> = _uiState.asStateFlow()
 
-    private val _dialogStates = MutableStateFlow(DialogStates())
-    val dialogStates: StateFlow<DialogStates> = _dialogStates.asStateFlow()
+    enum class PanieMode { Delivery, Vent; fun toggle() = if (this == Delivery) Vent else Delivery }
+    enum class ClickUpdate { CouleurQua, TotalQua }
 
-    fun toggleMinimizedState() {
-        _uiState.update { currentState ->
-            currentState.copy(isMinimized = !currentState.isMinimized)
+    fun toggleMinimizedState() = _uiState.update { it.copy(isMinimized = !it.isMinimized) }
+    fun togglePanieMode() = _uiState.update { it.copy(panieMode = it.panieMode.toggle()) }
+    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) = setter.toggleEtateDeliveryNonTrouveVentOu(produitKey)
+    fun toggelePanierFilterNonTrouve() = _uiState.update { it.copy(filterNonTrouve = !it.filterNonTrouve) }
+
+    fun showQuantityDialog(ventKey: String) = _uiState.update {
+        it.copy(quantityDialogStates = it.quantityDialogStates + (ventKey to true))
+    }
+
+    fun hideQuantityDialog(ventKey: String) = _uiState.update {
+        it.copy(quantityDialogStates = it.quantityDialogStates + (ventKey to false))
+    }
+
+    fun showProductDialog(productKey: String) = _uiState.update {
+        it.copy(productDialogStates = it.productDialogStates + (productKey to true))
+    }
+
+    fun hideProductDialog(productKey: String) = _uiState.update {
+        it.copy(productDialogStates = it.productDialogStates + (productKey to false))
+    }
+
+    fun calculateUIState(existingVent: FCouleurVentOperationInfos?, uiState: UiState_Sec1Frag3): ViewVentUIState {
+        val ventKey = existingVent?.keyID ?: ""
+        val isRemoved = existingVent?.etateActuellementEst == FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+        return ViewVentUIState(
+            ventKey = ventKey,
+            quantity = existingVent?.quantityAchete ?: 0,
+            showDialog = ventKey.isNotEmpty() && (uiState.quantityDialogStates[ventKey] ?: false),
+            isRemoved = isRemoved,
+            itemAlpha = if (isRemoved) 0.4f else 1.0f,
+            colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
+        )
+    }
+
+    fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: B1CouleurOuGoutProduitDataBase) =
+        fVentCouleurOperationRepository.datasValue.find {
+            it.parentBProduitInfosKeyId == produit?.keyID && it.parentCouleurInfosKeyID == color.key
         }
-    }
 
-    enum class PanieMode {
-        Delivery,
-        Vent;
+    fun createDefaultVent(color: B1CouleurOuGoutProduitDataBase, produit: ArticlesBasesStatsTable?, appCompt: Any?, onVentData: Any) =
+        FCouleurVentOperationInfos(
+            keyID = "vent_${color.key}_${produit?.keyID}",
+            parentZAppComptID = extractField(appCompt, "keyID") ?: "Non Definie",
+            parentDebugInfosID9AppCompt = extractField(appCompt, "nom") ?: "Non Definie",
+            parentHVentPeriodKeyId = ParametresAppComptNonSaved().activePeriodKeyId,
+            parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().parentDebugInfosID7VentPeriod,
+            parentGBonVentKeyId = extractField(onVentData, "keyID") ?: "",
+            parentDebugInfosID8BonVent = extractField(onVentData, "nomClientConcerned") ?: "",
+            parentBProduitInfosKeyId = produit?.keyID ?: "",
+            parentDebugInfosID1Produit = produit?.nom ?: "Non Definie",
+            parentCouleurInfosKeyID = color.key,
+            parentBProduitNomDebug = produit?.nom ?: "",
+            parentProduitInfosOldId = produit?.id ?: 0L,
+            parentClientName = extractField(appCompt, "nom") ?: "Non Definie",
+            quantityAchete = 0,
+            etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.CreeSlote
+        )
 
-        fun toggle(): PanieMode {
-            return when (this) {
-                Delivery -> Vent
-                Vent -> Delivery
-            }
-        }
-    }
+    private fun extractField(obj: Any?, fieldName: String): String? = try {
+        obj?.javaClass?.getDeclaredField(fieldName)?.apply { isAccessible = true }?.get(obj) as? String
+    } catch (e: Exception) { null }
 
-    fun togglePanieMode() {
-        _uiState.update { currentState ->
-            currentState.copy(panieMode = currentState.panieMode.toggle())
-        }
-    }
+    fun getImageFile(nomImageFichieSansEtansion: String, extensionDisponible: String): File? =
+        if (nomImageFichieSansEtansion != "Non Dispo")
+            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", "$nomImageFichieSansEtansion.$extensionDisponible")
+        else null
 
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
-        setter.toggleEtateDeliveryNonTrouveVentOu(produitKey)
-    }
-
-    fun toggelePanierFilterNonTrouve() {
-        _uiState.update { currentState ->
-            currentState.copy(filterNonTrouve = !currentState.filterNonTrouve)
-        }
-    }
-
-    // Dialog management functions
-    fun showQuantityDialog(ventKey: String) {
-        _dialogStates.update { currentState ->
-            currentState.copy(
-                quantityDialogStates = currentState.quantityDialogStates + (ventKey to true)
-            )
-        }
-    }
-
-    fun hideQuantityDialog(ventKey: String) {
-        _dialogStates.update { currentState ->
-            currentState.copy(
-                quantityDialogStates = currentState.quantityDialogStates + (ventKey to false)
-            )
-        }
-    }
-
-    fun showProductDialog(productKey: String) {
-        _dialogStates.update { currentState ->
-            currentState.copy(
-                productDialogStates = currentState.productDialogStates + (productKey to true)
-            )
-        }
-    }
-
-    fun hideProductDialog(productKey: String) {
-        _dialogStates.update { currentState ->
-            currentState.copy(
-                productDialogStates = currentState.productDialogStates + (productKey to false)
-            )
-        }
-    }
-
-    // Business logic functions for UI calculations
-    fun isVentRemoved(vent: FCouleurVentOperationInfos?): Boolean {
-        return vent?.etateActuellementEst == FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-    }
-
-    fun getItemAlpha(isRemoved: Boolean): Float {
-        return if (isRemoved) 0.4f else 1.0f
-    }
-
-    fun getImageFile(nomImageFichieSansEtansion: String, extensionDisponible: String): File? {
-        return if (nomImageFichieSansEtansion != "Non Dispo") {
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
-                "${nomImageFichieSansEtansion}.${extensionDisponible}")
-        } else null
-    }
-
-    fun getTotalQuantity(relatedVents: List<FCouleurVentOperationInfos>): Int {
-        return relatedVents.sumOf { it.quantityAchete }
-    }
+    fun getTotalQuantity(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.sumOf { it.quantityAchete }
 
     fun getProductName(produit: Any?, productKeyId: String): String {
-        // Assuming produit has nom and nomMutable properties
-        val nom = when {
-            produit != null -> {
-                // Use reflection or cast to appropriate type to get nom and nomMutable
-                // This is a simplified version - you'll need to adapt based on your actual data structure
-                try {
-                    val nomField = produit.javaClass.getDeclaredField("nom")
-                    nomField.isAccessible = true
-                    val nom = nomField.get(produit) as? String
-
-                    if (nom?.isNotBlank() == true) {
-                        nom
-                    } else {
-                        val nomMutableField = produit.javaClass.getDeclaredField("nomMutable")
-                        nomMutableField.isAccessible = true
-                        nomMutableField.get(produit) as? String
-                    }
-                } catch (e: Exception) {
-                    null
-                }
-            }
-            else -> null
+        val nom = produit?.let {
+            try {
+                val nomField = it.javaClass.getDeclaredField("nom").apply { isAccessible = true }
+                (nomField.get(it) as? String)?.takeIf { it.isNotBlank() }
+                    ?: it.javaClass.getDeclaredField("nomMutable").apply { isAccessible = true }.get(it) as? String
+            } catch (e: Exception) { null }
         }
-
         return nom?.takeIf { it.isNotBlank() } ?: "Product #$productKeyId"
     }
 
-    fun getCurrentPrice(relatedVents: List<FCouleurVentOperationInfos>): Double {
-        return relatedVents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    }
-
-    fun hasNonTrouve(relatedVents: List<FCouleurVentOperationInfos>): Boolean {
-        return relatedVents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    }
-
-    fun allNonTrouve(relatedVents: List<FCouleurVentOperationInfos>): Boolean {
-        return relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    }
-
-    enum class ClickUpdate {
-        CouleurQua,
-        TotalQua
-    }
+    fun getCurrentPrice(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.firstOrNull()?.provisoireMonPrix ?: 0.0
+    fun hasNonTrouve(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    fun allNonTrouve(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
 }

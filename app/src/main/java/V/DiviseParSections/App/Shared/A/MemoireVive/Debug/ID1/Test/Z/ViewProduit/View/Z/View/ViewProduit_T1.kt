@@ -8,7 +8,6 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +41,6 @@ fun ViewProduit_T1(
     val productKeyId = product.keyID
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
 
-    // Fixed: Changed from List<Map.Entry<...>> to Pair<ArticlesBasesStatsTable, List<B1CouleurOuGoutProduitDataBase>>
     val produitWithColors by remember(product.id, b1CouleurOuGoutProduitDataBaseRepository.datasValue) {
         derivedStateOf {
             val relatedColors = b1CouleurOuGoutProduitDataBaseRepository.datasValue
@@ -61,9 +59,8 @@ fun ViewProduit_T1(
     }
 
     val haptic = LocalHapticFeedback.current
-
-    val dialogStates by viewModel.dialogStates.collectAsState()
-    val showDialog = dialogStates.productDialogStates[productKeyId] ?: false
+    val uiState by viewModel.uiState.collectAsState()
+    val showDialog = uiState.productDialogStates[productKeyId] ?: false
 
     val totalQuantity = viewModel.getTotalQuantity(relatedVents)
     val productName = viewModel.getProductName(produit, productKeyId)
@@ -126,7 +123,6 @@ fun ViewProduit_T1(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Updated call to ListCouleurs with the new structure
             ListCouleurs(produitWithColors, viewModel)
         }
     }
