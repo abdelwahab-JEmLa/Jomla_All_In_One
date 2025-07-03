@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager

@@ -12,7 +12,7 @@ class BonVentOperations(
     private val gBonVentRepository: GBonVentRepository,
     private val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable
 ) {
-    val hClientRepository = getter.hClientRepository
+    val hClientRepository = getter.iD2ClientRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
 

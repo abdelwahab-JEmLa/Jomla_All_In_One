@@ -1,9 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -127,13 +127,31 @@ fun ID4ClientSearchButton(
                         leadingIcon = {
                             IconButton(
                                 onClick = {
-                                    createNewClient(
-                                        searchQuery,
-                                        locationTracker,
-                                        hClientRepository,
-                                        zAppComptRepositoryComposable,
-                                        onClientSelected
+                                    val currentLocation = locationTracker?.getCurrentPosition()
+
+                                    val newClient = HClientInfos(
+                                        nom = searchQuery.ifEmpty { "Err Definition" },
+                                        title = searchQuery.ifEmpty { "Nouveau Client" },
+                                        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
+                                        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
+                                        caMarqueGpsEstOuvert = currentLocation != null,
+                                        snippet = if (currentLocation != null) {
+                                            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
+                                                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
+                                        } else {
+                                            "Position non disponible"
+                                        }
                                     )
+
+                                    hClientRepository.upsertData(newClient)
+
+                                    zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
+                                        val updatedAppCompt = appCompt.copy(onVentFClientKeyID = newClient.keyID)
+                                        zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
+                                    }
+
+                                    onClientSelected(newClient)
+
                                     resetSearchMode {
                                         isSearchMode = false
                                         searchQuery = ""
@@ -198,44 +216,11 @@ fun ID4ClientSearchButton(
     }
 }
 
-@SuppressLint("DefaultLocale")
-private fun createNewClient(
-    query: String,
-    locationTracker: LocationTracker?,
-    hClientRepository: HClientRepository,
-    zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
-    onClientSelected: (HClientInfos) -> Unit
-) {
-    val currentLocation = locationTracker?.getCurrentPosition()
-
-    val newClient = HClientInfos(
-        nom = query.ifEmpty { "Err Definition" },
-        title = query.ifEmpty { "Nouveau Client" },
-        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
-        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
-        caMarqueGpsEstOuvert = currentLocation != null,
-        snippet = if (currentLocation != null) {
-            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
-                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
-        } else {
-            "Position non disponible"
-        }
-    )
-
-    hClientRepository.upsertData(newClient)
-
-    zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
-        val updatedAppCompt = appCompt.copy(onVentFClientKeyID = newClient.keyID)
-        zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
-    }
-
-    onClientSelected(newClient)
-}
-
 private inline fun resetSearchMode(action: () -> Unit) {
     action()
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
     client: HClientInfos,

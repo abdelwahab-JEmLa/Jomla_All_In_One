@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.ProcessPositioningInFactoryID1
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -30,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -41,7 +44,8 @@ fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val products = viewModel.getter.bProduitInfosRepository.datasValue
+    val bProduitInfosRepository= uiState.bProduitInfosRepository
+    val products = bProduitInfosRepository.datasValue
     val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
 
     val focusRequester = remember { FocusRequester() }
@@ -66,17 +70,14 @@ fun MainFastSearchProduitPourVent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
+                    val iD2ClientRepository = uiState.iD2ClientRepository .onVentClient
+                    
+                    Text(     //<--
+                    //TODO(1): affiche ici on vent client nom 
                         "Recherche Rapide Produits",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-                    FloatingActionButton(
-                        onClick = viewModel::onAddNewProduct,
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Default.Add, "Ajouter produit")
-                    }
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -88,8 +89,67 @@ fun MainFastSearchProduitPourVent(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     placeholder = { Text("Rechercher un produit...") },
-                    leadingIcon = { Icon(Icons.Default.Search, "Rechercher") },
-                    singleLine = true
+                    singleLine = true,
+                    leadingIcon = {
+                        val searchQuery = uiState.searchText
+                        val newProduit = ArticlesBasesStatsTable(
+                            id = if (uiState.bProduitInfosRepository.datasValue.isNotEmpty()) {
+                                uiState.bProduitInfosRepository.datasValue.maxOf { it.id } + 1
+                            } else {
+                                1L
+                            },
+                            nom = searchQuery.ifEmpty { "Nouveau Produit" },
+                            processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
+                        )
+
+                        val newCouleurP = B1CouleurOuGoutProduitDataBase(
+                            parentBProduitOldID = newProduit.id,
+                            parentBProduitInfosKeyID = newProduit.keyID,
+                            processPositioningInFactory = B1CouleurOuGoutProduitDataBase.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                        )
+
+                        IconButton(
+                            onClick = {
+                                // Add new product to repository
+                                uiState.bProduitInfosRepository.upsert(newProduit)
+
+                                // Add corresponding color data
+                                uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(newCouleurP)
+
+                                // Update current app account if available
+                                uiState.zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
+                                    val updatedAppCompt = appCompt.copy(
+                                        onVentID1ProduitInfosKeyID = newProduit.keyID,
+                                        onVentID1ProduitInfosDebugName = newProduit.nom
+                                    )
+                                    uiState.zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Créer nouveau produit",
+                                modifier = Modifier.semantics(mergeDescendants = true) {
+                                    set(SemanticsPropertyKey("DebugID1"), newProduit)
+                                    set(SemanticsPropertyKey("DebugID1C2"), newCouleurP)
+                                }
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        if (uiState.searchText.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.onSearchTextChange("")
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Effacer le texte"
+                                )
+                            }
+                        }
+                    }
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -99,10 +159,6 @@ fun MainFastSearchProduitPourVent(
                     products, categories, uiState.searchText, Modifier.fillMaxSize(),
                 )
             }
-
-            PressistatntMainActivityButtons_Sec8FWinID1(cLenceDepuitDialogeAchate=true)    //<--
-            //TODO(1): ajout un button au click se change au outlned search du client list de cette zone gps de  5 metre 
-            //ajjou trealing + qui update on vent defautl val  client au current pos avec le searche text et lence on commande aussi au click un des droop dow menuu 
         }
     }
 }

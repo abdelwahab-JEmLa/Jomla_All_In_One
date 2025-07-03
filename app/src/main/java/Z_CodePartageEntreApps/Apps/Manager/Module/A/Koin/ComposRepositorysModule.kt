@@ -6,12 +6,12 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable

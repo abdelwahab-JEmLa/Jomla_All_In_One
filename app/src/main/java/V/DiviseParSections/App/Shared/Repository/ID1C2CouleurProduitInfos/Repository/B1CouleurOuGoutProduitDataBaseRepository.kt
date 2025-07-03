@@ -1,7 +1,8 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
@@ -137,7 +138,8 @@ data class B1CouleurOuGoutProduitDataBase(
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    val aAffiche: Type = Type.Image,
+    val processPositioningInFactory: ProcessPositioningInFactory = ProcessPositioningInFactory.CreeAuGeneralHandler,
+    val aAffiche: Type = Type.Nom,
     val nomImageFichieSansEtansion: String = "Non Dispo",
     val nomCouleurStrSiSonImageDispo: String = "",
 
@@ -149,7 +151,8 @@ data class B1CouleurOuGoutProduitDataBase(
     var indexCouleurDansAncienProto: Int = 0,
     val extensionDisponible: String = "webp", // Default extension
 ) {
-    enum class Type { Image, Nom }
+    enum class Type { Nom,Image }
+    enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
 
     companion object {
         val ref =

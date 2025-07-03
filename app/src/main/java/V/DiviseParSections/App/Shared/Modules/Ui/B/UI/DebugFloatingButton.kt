@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
@@ -45,7 +45,7 @@ import kotlin.math.roundToInt
 class DebugKey(
     val getter: AGetter,
 ) {
-    val hClientRepository = getter.hClientRepository
+    val hClientRepository = getter.iD2ClientRepository
 
      var keyByParent = mutableStateOf("")
 

@@ -44,7 +44,7 @@ fun ProductItem(
     var showNameEditor by remember { mutableStateOf(false) }
 
     fun updateProduct(updatedProduct: ArticlesBasesStatsTable) {
-        mainComposRepository.addOrUpdateData(updatedProduct)
+        mainComposRepository.upsert(updatedProduct)
     }
 
     // Delete confirmation dialog

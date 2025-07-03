@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
@@ -149,7 +149,7 @@ class RecordingViewModel(
     }
 
     fun calculateNombreClientAvecCible(): Int {
-        val count = getter.hClientRepository.datasValue
+        val count = getter.iD2ClientRepository.datasValue
             .count { client ->
                 getter
                     .getClientLastBonVentParEtate(

@@ -82,7 +82,7 @@ fun MapContent(
     LaunchedEffect(
         viewModel.getter.zAppComptRepositoryComposable.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.gBonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.getter.hClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.iD2ClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
@@ -166,14 +166,14 @@ fun MapContent(
             getter.zAppComptRepositoryComposable.currentAppCompt?.onVentFClientKeyID
 
         val onVentFClient =
-            getter.hClientRepository.datasValue.find { it.keyID == onVentFClientKeyID }
+            getter.iD2ClientRepository.datasValue.find { it.keyID == onVentFClientKeyID }
 
         val bOuvertDialogMapMarqueHClientKey =
             viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
 
         // Find client by bOuvertDialogMapMarqueHClientKey when onVentFClient is null
         val clientFromMarkerKey = if (onVentFClient == null && !bOuvertDialogMapMarqueHClientKey.isNullOrBlank()) {
-            getter.hClientRepository.datasValue.find { it.keyID == bOuvertDialogMapMarqueHClientKey }
+            getter.iD2ClientRepository.datasValue.find { it.keyID == bOuvertDialogMapMarqueHClientKey }
         } else null
 
         if (bOuvertDialogMapMarqueHClientKey != null) {

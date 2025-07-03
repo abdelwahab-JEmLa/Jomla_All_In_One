@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -76,7 +76,7 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
 ) {
-   val repo= viewModel.getter.hClientRepository
+   val repo= viewModel.getter.iD2ClientRepository
 
     val marker = Marker(mapView).apply {
         val hClient= repo.datasValue.find { it.id.toString()==id }

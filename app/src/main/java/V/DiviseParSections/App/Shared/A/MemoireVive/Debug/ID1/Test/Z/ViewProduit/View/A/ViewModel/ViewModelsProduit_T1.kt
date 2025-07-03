@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel

@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
@@ -60,7 +60,7 @@ class AGetter(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val hClientRepository: HClientRepository,
+    val iD2ClientRepository: HClientRepository,
     val gBonVentRepository: GBonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
@@ -89,7 +89,7 @@ class AGetter(
         parentPeriodeVentKeyID = periodKey,
         parentHClientKeyID = clientKey,
         parentHClientOldID = clientId,
-        nomClientConcerned = hClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
+        nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentZAppComptCreateurKeyID = comptKey,
         etateActuellementEst = etate,
         parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[HClientInfos.keyModel]
@@ -167,7 +167,7 @@ class AGetter(
     }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
-        hClientRepository.datasValue.count { client ->
+        iD2ClientRepository.datasValue.count { client ->
             val lastTransaction = getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 GBonVent.EtateActuellementEst.Cible,

@@ -89,7 +89,7 @@ fun CameraFABProtoJuin3(
                                 idParentCategorie = activeCatalogue.premierCategorieId
                             )
 
-                            a_CentralCompoRepositoryProtoJuin9.bProduitInfosRepository.addOrUpdateData(updatedProduct)
+                            a_CentralCompoRepositoryProtoJuin9.bProduitInfosRepository.upsert(updatedProduct)
 
 
                             Toast.makeText(context, "Produit WebP créé: ${updatedProduct.nom}", Toast.LENGTH_SHORT).show()

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository
+package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
@@ -46,9 +46,7 @@ class HClientRepository(
     val onVentClient by derivedStateOf {
         datasValue.find { it.id == zAppComptRepositoryComposable.currentAppCompt?.onVentFClientAncienId }
     }
-    val onVentClientAvecDefaultSiNull by derivedStateOf {
-        onVentClient?: HClientInfos()
-    }
+
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
     val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }

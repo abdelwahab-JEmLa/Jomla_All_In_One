@@ -215,7 +215,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {
-        a_ProduitDataBaseComposeRepositoryPJ17.addOrUpdateData(data)
+        a_ProduitDataBaseComposeRepositoryPJ17.upsert(data)
     }
 
     fun addOrUpdateProduits(datas: List<ArticlesBasesStatsTable>) {

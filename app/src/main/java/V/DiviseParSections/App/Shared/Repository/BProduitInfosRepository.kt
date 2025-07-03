@@ -37,7 +37,7 @@ class BProduitInfosRepository(
         }
     }
 
-    fun addOrUpdateData(data: ArticlesBasesStatsTable) {
+    fun upsert(data: ArticlesBasesStatsTable) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ArticlesBasesStatsTable.compareEntre(ancien = ancien, newData = data)
         }
@@ -107,6 +107,8 @@ data class ArticlesBasesStatsTable(
     var bsonObjectId: String = AGetter.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
+
+    val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
 
     //S P Ids
     var idParentCategorie: Long? = null,
@@ -190,6 +192,7 @@ data class ArticlesBasesStatsTable(
         return AbstractMap.SimpleEntry(semanticKey, semanticValue)
     }
 
+    enum class ProcessPositioningInFactoryID1 { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
 
     enum class EtateActuelleOnFusionAvecBaseDonne {
         CaprtureSonImage,

@@ -2,7 +2,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.lifecycle.ViewModel
@@ -23,7 +23,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
         val f: Int = 0,
     )
     private val _uiState = MutableStateFlow(UiState(
-        hClientRepository=getter.hClientRepository,
+        hClientRepository=getter.iD2ClientRepository,
         zAppComptRepositoryComposable=getter.zAppComptRepositoryComposable
     ))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

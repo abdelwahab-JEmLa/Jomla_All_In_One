@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.HClientInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.addOrUpdateData
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.upsert
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_AppCompt.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
@@ -291,7 +291,7 @@ class MapClientsViewModelss(
 
     fun updateData(client: HClientInfos): Unit {
         viewModelScope.launch {
-            b_ClientDataBaseRepository.addOrUpdateData(client)
+            b_ClientDataBaseRepository.upsert(client)
         }
 
         mapReloadTigger++
@@ -324,7 +324,7 @@ class MapClientsViewModelss(
             }
 
             viewModelScope.launch {
-                b_ClientDataBaseRepository.addOrUpdateData(newClientAchteur)
+                b_ClientDataBaseRepository.upsert(newClientAchteur)
             }
         } catch (e: Exception) {
             // Error handling

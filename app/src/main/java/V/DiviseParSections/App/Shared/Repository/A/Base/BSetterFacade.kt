@@ -20,7 +20,7 @@ class BSetterFacade(
     private val ventOperations: VentOperations,
 ) {
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
-    val hClientRepository = getter.hClientRepository
+    val hClientRepository = getter.iD2ClientRepository
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
         id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()

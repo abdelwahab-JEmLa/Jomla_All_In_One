@@ -131,6 +131,10 @@ data class Z_AppCompt(
     var onVentFClientKeyPush: String = "",
     var onVentFClientDebugNameKey: String = "",
     var onVentFClientAncienId: Long = 0L,
+
+    var onVentID1ProduitInfosKeyID: String = "",
+    var onVentID1ProduitInfosDebugName: String = "",
+
     //------------------------------------------------------------------------------------------------------------------------------------------------
     val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {
