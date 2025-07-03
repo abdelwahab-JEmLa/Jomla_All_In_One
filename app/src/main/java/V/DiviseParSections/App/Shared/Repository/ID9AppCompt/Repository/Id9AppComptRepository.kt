@@ -39,7 +39,7 @@ class Id9AppComptRepository(
         }
     }
 
-    fun addOrUpdateData(data: Z_AppCompt) {
+    fun upsert(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.bsonObjectId == data.bsonObjectId
         }
@@ -117,15 +117,15 @@ data class Z_AppCompt(
     //---------------------------------------------------Vent Createur--------------------------------------------------------------
     //Section Parent Period Vent
     var onVentHVentPeriodKeyId: String = getPushFireBase(ref),
-    var onVentHVentPeriodKeyByParent: String = ParametresAppComptNonSaved().activePeriodKeyByParent,
+    var onVentHVentPeriodKeyByParent: String = ParametresAppComptNonSaved().keyIdId7VentPeriod,
 
     var onVentHPeriodVentDebugNameKey: String = "",
     var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var onVentId8BonVentKeyId: String = "",
-    var onVentGBonVentDebugNameKey: String = "",
+    var id8BonVentonVentKey: String = "",
+    var id8BonVentDebugNameKey: String = "",
 
     var onVentID1ProduitInfosKeyID: String = "",
     var onVentID1ProduitInfosDebugName: String = "",

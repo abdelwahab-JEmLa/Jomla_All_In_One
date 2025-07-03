@@ -14,7 +14,7 @@ fun upsertBonVent(
     hClientRepository: ID2ClientRepository,
     parametresAppComptNonSaved: ParametresAppComptNonSaved,
 ) {
-    val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
+    val activePeriodKeyByParent = parametresAppComptNonSaved.keyIdId7VentPeriod
     val keyModelToOnVentHVentPeriodKeyByParent =
         Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 

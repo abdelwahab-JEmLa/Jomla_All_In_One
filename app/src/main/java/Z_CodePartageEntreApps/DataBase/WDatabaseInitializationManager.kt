@@ -119,7 +119,7 @@ class WDatabaseInitializationManager(
                 mainInitDataBaseProgressEtate = loadingProgress
             )
 
-            appComptComposeRepositoryPJ17.addOrUpdateData(updatedAppCompt)
+            appComptComposeRepositoryPJ17.upsert(updatedAppCompt)
         }
     }
 

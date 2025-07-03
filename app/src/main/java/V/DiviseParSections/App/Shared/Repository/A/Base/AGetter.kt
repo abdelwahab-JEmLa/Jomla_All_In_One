@@ -35,11 +35,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
-    val gerantComptKeyByParent: String = "t1",
-    val activePeriodKeyByParent: String = "Juin_30__8_00",
+    val keyIdId9AppComptInfos: String = "t1",
+    val debugNameId9AppComptInfos: String = "Abdelwahab",
 
-    val activePeriodKeyId: String = "-OU9Xi8t6tbGKf_IisuB",
-    val parentDebugInfosID7VentPeriod: String = "Juin_30__8_00",
+    val keyIdId7VentPeriod: String = "-OU9Xi8t6tbGKf_IisuB",
+    val debugNameId7VentPeriod: String = "Juin_30__8_00",
 
     val activeWindowsSearchProduit: Boolean = false,
     val startUpScree: Screen = Screen.TestProduitFastSearchDialog
@@ -86,11 +86,11 @@ class AGetter(
         comptKey: String
     ) = GBonVent(
         keyID = GBonVent.generePushKey(),
-        parentPeriodeVentKeyID = periodKey,
+        parentKeyId7VentPeriod = periodKey,
         parentId2ClientInfosKeyID = clientKey,
         parentHClientOldID = clientId,
         nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
-        parentZAppComptCreateurKeyID = comptKey,
+        parentKeyId9AppComptInfos = comptKey,
         etateActuellementEst = etate,
         parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[HClientInfos.keyModel]
             ?: "",
@@ -131,7 +131,7 @@ class AGetter(
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperationInfos? {
         val ouvertData = id9AppComptRepository.currentAppCompt ?: return null
 
-        val bonVentKey = ouvertData.onVentId8BonVentKeyId
+        val bonVentKey = ouvertData.id8BonVentonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
             operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentGBonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
@@ -251,7 +251,7 @@ class AGetter(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHVentPeriodKeyId + "--${compt.onVentId8BonVentKeyId}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
+            return compt.onVentHVentPeriodKeyId + "--${compt.id8BonVentonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }
     }
 }

@@ -37,7 +37,7 @@ class FVentCouleurOperationRepository(
 
     val onVentFilteredDatas by derivedStateOf {
         datasValue.filter {
-            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentId8BonVentKeyId
+            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.id8BonVentonVentKey
         }
     }
     val datasFilteredParCurrentHVentPeriod by derivedStateOf {
@@ -139,7 +139,7 @@ class FVentCouleurOperationRepository(
 
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
 
-            parentGBonVentKeyId = zCompt.onVentId8BonVentKeyId,
+            parentGBonVentKeyId = zCompt.id8BonVentonVentKey,
 
             parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,

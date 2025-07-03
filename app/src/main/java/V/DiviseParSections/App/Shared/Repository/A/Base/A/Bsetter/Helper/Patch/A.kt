@@ -43,11 +43,11 @@ class BSetterP (
             }
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 
-    val activePeriodKeyByParent = getter.parametresAppComptNonSaved.activePeriodKeyByParent
+    val activePeriodKeyByParent = getter.parametresAppComptNonSaved.keyIdId7VentPeriod
     val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     fun client(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }
@@ -130,20 +130,20 @@ class BSetterP (
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
-            onVentId8BonVentKeyId = newTransactionKey,
-            onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+            id8BonVentonVentKey = newTransactionKey,
+            id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
         )
 
-        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        zAppComptRepositoryComposable.upsert(zCompt)
 
         gBonVentRepository.upsert(
             GBonVent(
                 keyID = newTransactionKey,
-                parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,
+                parentKeyId7VentPeriod = zCompt.onVentHVentPeriodKeyId,
                 parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
-                parentZAppComptCreateurKeyID = zCompt.keyID,
+                parentKeyId9AppComptInfos = zCompt.keyID,
                 etateActuellementEst = newEtate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
                 parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
@@ -162,19 +162,19 @@ class BSetterP (
 
         if (client != null && currentZCompt != null) {
             val updatedZCompt = currentZCompt.copy(
-                onVentId8BonVentKeyId = key,
-                onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+                id8BonVentonVentKey = key,
+                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
             )
 
-            zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+            zAppComptRepositoryComposable.upsert(updatedZCompt)
 
             val newBonVent = GBonVent(
                 keyID = key,
-                parentPeriodeVentKeyID = currentZCompt.onVentHVentPeriodKeyId,
+                parentKeyId7VentPeriod = currentZCompt.onVentHVentPeriodKeyId,
                 parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
-                parentZAppComptCreateurKeyID = currentZCompt.keyID,
+                parentKeyId9AppComptInfos = currentZCompt.keyID,
                 etateActuellementEst = etate,
                 parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
                 parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
@@ -197,11 +197,11 @@ class BSetterP (
         if (client != null && currentZCompt != null && existingBonVent != null) {
             // Update the current app compt
             val updatedZCompt = currentZCompt.copy(
-                onVentId8BonVentKeyId = key,
-                onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+                id8BonVentonVentKey = key,
+                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
             )
 
-            zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
+            zAppComptRepositoryComposable.upsert(updatedZCompt)
 
             // Update the existing BonVent
             val updatedBonVent = existingBonVent.copy(
@@ -218,11 +218,11 @@ class BSetterP (
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentId8BonVentKeyId = keyID,
+            id8BonVentonVentKey = keyID,
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
         navigateToCartScreen()
     }
@@ -235,12 +235,12 @@ class BSetterP (
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentId8BonVentKeyId = "",
+            id8BonVentonVentKey = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 
@@ -250,18 +250,18 @@ class BSetterP (
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 
     fun cleanFermeAppComptOnVentBonVent() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentId8BonVentKeyId = "",
+            id8BonVentonVentKey = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 
@@ -271,7 +271,7 @@ class BSetterP (
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 

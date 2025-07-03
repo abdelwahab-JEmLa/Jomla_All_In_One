@@ -19,20 +19,20 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
-            onVentId8BonVentKeyId = newTransactionKey,
-            onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
+            id8BonVentonVentKey = newTransactionKey,
+            id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
         )
 
-        zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+        zAppComptRepositoryComposable.upsert(zCompt)
 
         gBonVentRepository.upsert(
             GBonVent(
                 keyID = newTransactionKey,
-                parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,
+                parentKeyId7VentPeriod = zCompt.onVentHVentPeriodKeyId,
                 parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
-                parentZAppComptCreateurKeyID = zCompt.keyID,
+                parentKeyId9AppComptInfos = zCompt.keyID,
                 etateActuellementEst = newEtate,
                 parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel]
                     ?: "",

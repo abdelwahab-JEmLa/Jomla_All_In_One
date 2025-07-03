@@ -36,15 +36,19 @@ class Id8BonVentRepository(
 
     val defaultId8BonVent by derivedStateOf {
         GBonVent(
-            nomClientConcerned = "Generated",
-            parentPeriodeVentKeyID = ParametresAppComptNonSaved().activePeriodKeyByParent
+            nomClientConcerned = "Default Data",
+            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
+            parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
+
+            parentKeyId7VentPeriod = ParametresAppComptNonSaved().keyIdId7VentPeriod ,
+            parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod ,
         )
     }
 
     val onVentId8BonVent by derivedStateOf {
         datasValue.find {
-            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentId8BonVentKeyId
-        }
+            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.id8BonVentonVentKey
+        }?: defaultId8BonVent
     }
 
     init {
@@ -95,12 +99,16 @@ data class GBonVent(
 
     var fireBasePushKey: String = generePushKey(),
 
-    var creationTimestamps: Long = DatesHandler().getCurrentTimestamps(),
+    var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
 
     //Section Forging Keys
     //PeriodeVen
-    var parentPeriodeVentKeyID: String = "",
+    var parentKeyId7VentPeriod: String = "",
+    var parentDebugNameId7VentPeriod: String = "",
+
+    var parentPeriodeVentOldID: Long = 0L,
+
     var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
@@ -110,11 +118,12 @@ data class GBonVent(
     var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
-    var parentZAppComptCreateurKeyID: String = "b1",
+
+    var parentKeyId9AppComptInfos: String = "b1",
+    var parentDebugNameId9AppComptInfos: String = "",
 
     //Autres Infos ForgingKeys
     //PeriodeVen
-    var parentPeriodeVentOldID: Long = 0L,
 
     //Autres Infos ForgingKeys
 
@@ -196,13 +205,13 @@ data class GBonVent(
     }
 
     fun isSameEntity(other: GBonVent) =
-        keyID == other.keyID && parentZAppComptCreateurKeyID == other.parentZAppComptCreateurKeyID && parentPeriodeVentKeyID == other.parentPeriodeVentKeyID
+        keyID == other.keyID && parentKeyId9AppComptInfos == other.parentKeyId9AppComptInfos && parentKeyId7VentPeriod == other.parentKeyId7VentPeriod
 
     override fun equals(other: Any?) =
         this === other || (other is GBonVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
-        keyID, parentZAppComptNom, parentPeriodeVentKeyID
+        keyID, parentZAppComptNom, parentKeyId7VentPeriod
     )
 
     companion object {

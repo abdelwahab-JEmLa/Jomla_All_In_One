@@ -63,8 +63,8 @@ fun MainScreen(
 ) {
     val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
 
-    val tag = "--${Z_AppCompt.keyModel}-${parametresAppComptNonSaved.gerantComptKeyByParent}" +
-            "--${Z_AppCompt.keyModelValID7VentParent}-${parametresAppComptNonSaved.activePeriodKeyByParent}"
+    val tag = "--${Z_AppCompt.keyModel}-${parametresAppComptNonSaved.keyIdId9AppComptInfos}" +
+            "--${Z_AppCompt.keyModelValID7VentParent}-${parametresAppComptNonSaved.keyIdId7VentPeriod}"
 
     val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
 

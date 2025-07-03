@@ -28,17 +28,17 @@ class ClientOperations(
             }
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
     }
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentId8BonVentKeyId = keyID,
+            id8BonVentonVentKey = keyID,
         )
 
         if (zCompt != null) {
-            zAppComptRepositoryComposable.addOrUpdateData(zCompt)
+            zAppComptRepositoryComposable.upsert(zCompt)
         }
         navigateToCartScreen()
     }

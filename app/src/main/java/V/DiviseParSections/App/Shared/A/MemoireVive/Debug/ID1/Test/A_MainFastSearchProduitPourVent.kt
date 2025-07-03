@@ -101,7 +101,7 @@ fun MainFastSearchProduitPourVent(
                                         onVentID1ProduitInfosKeyID = newProduit.keyID,
                                         onVentID1ProduitInfosDebugName = newProduit.nom
                                     )
-                                    uiState.zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
+                                    uiState.zAppComptRepositoryComposable.upsert(updatedAppCompt)
                                 }
                             }
                         ) {

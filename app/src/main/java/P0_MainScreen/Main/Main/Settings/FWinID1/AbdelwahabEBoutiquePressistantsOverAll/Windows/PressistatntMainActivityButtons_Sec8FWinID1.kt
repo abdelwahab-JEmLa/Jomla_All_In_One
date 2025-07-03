@@ -170,7 +170,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 val updatedAppCompt = appCompt.copy(
                     presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId = catalogueId
                 )
-                appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
+                appComptComposeRepositoryProtoJuin17.upsert(updatedAppCompt)
 
                 viewModel.sendOrderAuPresentoireDevice(catalogueId)
 

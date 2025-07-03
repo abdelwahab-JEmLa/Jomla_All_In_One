@@ -19,6 +19,8 @@ class BSetterFacade(
     private val clientOperations: ClientOperations,
     private val ventOperations: VentOperations,
 ) {
+    val id8BonVentRepository = getter.id8BonVentRepository
+    val id9AppComptRepository = getter.id9AppComptRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val hClientRepository = getter.iD2ClientRepository
 
@@ -57,21 +59,28 @@ class BSetterFacade(
         )
 
 
-    fun lenceNeveauBonVentFacade(keyHandBonVent: String, id8BonVent: GBonVent? =null) {
-        val id8BonVentRepository= getter.id8BonVentRepository
-        val datas= getter.id8BonVentRepository.datasValue
-        id8BonVent?.let {
-            id8BonVentRepository.defaultId8BonVent.copy(
+    fun lenceNeveauBonVentFacade(keyHandBonVent: String, id8BonVent: GBonVent? = null) {
+        val newData = id8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
+        val currentAppCompt = id9AppComptRepository.currentAppCompt
 
+        if (newData != null) {
+            id8BonVentRepository.upsert(newData)
+            currentAppCompt?.copy(
+                id8BonVentonVentKey = newData.keyID,
+                id8BonVentDebugNameKey = newData.keyID,
+            )?.let {
+                id9AppComptRepository.upsert(
+                    it
+                )
+            }
+        } else {
+            upsertBonVent(
+                keyHandBonVent,
+                gBonVentRepository = getter.id8BonVentRepository,
+                hClientRepository = hClientRepository,
+                parametresAppComptNonSaved
             )
         }
-
-        upsertBonVent(
-            keyHandBonVent,
-            gBonVentRepository = getter.id8BonVentRepository,
-            hClientRepository = hClientRepository,
-            parametresAppComptNonSaved
-        )
     }
 
     fun upsertVentCouleurOperationFacade(
@@ -99,7 +108,7 @@ class BSetterFacade(
         ventOperations.toggleEtateDeliveryNonTrouveVentOu(produitKey)
 
     companion object {
-        fun getListDesParentKeys(keyByParent :String): Map<String, String> =
+        fun getListDesParentKeys(keyByParent: String): Map<String, String> =
             Regex("(\\w+)-(\\w+)").findAll(keyByParent).associate { match ->
                 val (key, value) = match.destructured
                 key to value

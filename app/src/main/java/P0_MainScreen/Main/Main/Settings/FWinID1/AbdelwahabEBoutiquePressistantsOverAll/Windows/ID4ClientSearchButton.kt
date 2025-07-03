@@ -94,8 +94,15 @@ fun ID4ClientSearchButton(
     ) {
         if (!isSearchMode) {
             FloatingActionButton(
+                modifier = Modifier
+                    .size(40.dp)
+                    .semantics(mergeDescendants = true) {
+                        set(
+                            SemanticsPropertyKey("DebugID1=onVentId8BonVent"),
+                            onVentId8BonVent
+                        )
+                    },
                 onClick = { isSearchMode = true },
-                modifier = Modifier.size(40.dp),
                 containerColor = Color(0xFF4CAF50)
             ) {
                 Icon(
@@ -183,15 +190,19 @@ fun ID4ClientSearchButton(
 
                             val updatedAppCompt =
                                 zAppComptRepositoryComposable.currentAppCompt?.copy(
-                                    onVentId8BonVentKeyId = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-                                    onVentGBonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentId2ClientInfosDebugKey
+                                    id8BonVentonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
+                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentId2ClientInfosDebugKey
                                 )
 
                             IconButton(
                                 onClick = {
                                     hClientRepository.upsertData(newClient)
                                     id8BonVentRepository.upsert(updatedDefaultOnVentID8BonVentEtAdd)
-                                    if (updatedAppCompt != null) { zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt) }
+                                    if (updatedAppCompt != null) {
+                                        zAppComptRepositoryComposable.upsert(
+                                            updatedAppCompt
+                                        )
+                                    }
 
                                     onClientSelected(newClient)
 
