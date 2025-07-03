@@ -24,6 +24,9 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
@@ -41,9 +44,11 @@ data class ParametresAppComptNonSaved(
     val activeWindowsSearchProduit: Boolean = false,
     val startUpScree: Screen = Screen.TestProduitFastSearchDialog
 )
+
 data class IDsModels(
-     val ID2HClientInfos :String= "ID2",
+    val ID2HClientInfos: String = "ID2",
 )
+
 @Stable
 class AGetter(
     private val context: Context,
@@ -69,7 +74,7 @@ class AGetter(
 ) {
     val parametresAppComptNonSaved = ParametresAppComptNonSaved()
 
-     val composScope = CoroutineScope(Dispatchers.IO)
+    val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
@@ -191,6 +196,13 @@ class AGetter(
     }
 
     companion object {
+        // Fixed: This should be a function that returns a Modifier
+        fun modifierAcDebugSemantics(hClientRepository: HClientRepository? =null): Modifier {
+            return Modifier.semantics(mergeDescendants = true) {
+                set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
+            }
+        }
+
         inline fun Long?.ifNotNullOrZero(block: () -> Unit) {
             if (this != null && this != 0L) block()
         }

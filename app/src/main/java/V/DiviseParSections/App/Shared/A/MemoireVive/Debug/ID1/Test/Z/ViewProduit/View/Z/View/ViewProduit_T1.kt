@@ -63,8 +63,6 @@ fun ViewProduit_T1(
 
     val totalQuantity = viewModel.getTotalQuantity(relatedVents)
     val productName = viewModel.getProductName(produit, productKeyId)
-    val currentPrice = viewModel.getCurrentPrice(relatedVents)
-    val hasNonTrouve = viewModel.hasNonTrouve(relatedVents)
     val allNonTrouve = viewModel.allNonTrouve(relatedVents)
 
     Card(

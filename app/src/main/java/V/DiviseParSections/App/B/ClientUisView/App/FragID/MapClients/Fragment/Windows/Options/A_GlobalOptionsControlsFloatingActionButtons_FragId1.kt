@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
+import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.rememberLocationTracker
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons

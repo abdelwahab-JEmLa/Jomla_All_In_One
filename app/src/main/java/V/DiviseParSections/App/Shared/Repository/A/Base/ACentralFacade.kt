@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPl
 class ACentralFacade(
     val getter: AGetter,
     val setter: BSetterFacade,
-    val modulesCentral : ModulesCentral
+    val modulesCentral: ModulesCentral
 )
 
 class ModulesCentral(

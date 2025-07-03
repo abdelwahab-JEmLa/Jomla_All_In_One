@@ -1,5 +1,6 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 // Additional imports needed at the top of the file:
+import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
 import androidx.compose.foundation.background
@@ -18,9 +19,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -125,10 +126,12 @@ fun ID4ClientSearchButton(
                             unfocusedContainerColor = Color.White,
                             disabledContainerColor = Color.White,
                         ),
-                        leadingIcon = {
+                        leadingIcon = {         //<--
+                        //TODO(1): fait que ca soit un + add au click 
                             Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Rechercher"
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                modifier = AGetter.modifierAcDebugSemantics()
                             )
                         },
                         trailingIcon = {

@@ -8,6 +8,9 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJu
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.content.Context
+import android.location.Location
+import android.location.LocationManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
@@ -45,7 +48,9 @@ class HClientRepository(
     val onVentClient by derivedStateOf {
         datasValue.find { it.id == zAppComptRepositoryComposable.currentAppCompt?.onVentFClientAncienId }
     }
-
+    val onVentClientAvecDefaultSiNull by derivedStateOf {
+        onVentClient?: HClientInfos()
+    }
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
     val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }
@@ -111,9 +116,9 @@ class HClientRepository(
 data class HClientInfos(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-    var keyByParent: String = "",
-
     var keyID: String = getPushFireBase(ref),
+
+    var keyByParent: String = "",
     var bsonObjectId: String = BsonObjectId().toHexString(),
 
     //Infos De Base
@@ -132,10 +137,9 @@ data class HClientInfos(
     var typeDeSonMagasine: TypeDeSonMagasine = TypeDeSonMagasine.ATAYAT_MOUKASSARAT,
     var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,
 
-    // Section GpsLocation
     var caMarqueGpsEstOuvert: Boolean = false,
-    var latitude: Double = 0.0,
-    var longitude: Double = 0.0,
+    var latitude: Double = getCurrentDefaultLatitude(),
+    var longitude: Double = getCurrentDefaultLongitude(),
     var title: String = "",
     var snippet: String = "",
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
@@ -152,6 +156,36 @@ data class HClientInfos(
         return this.nom.withOutFireBaseInvalidCharacters()
     }
 
+    fun getCurrentPosition(context: Context): Location? {
+        return try {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+            // Try GPS first
+            val gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            if (gpsLocation != null) {
+                return gpsLocation
+            }
+
+            // Fallback to network location
+            val networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            if (networkLocation != null) {
+                return networkLocation
+            }
+
+            null
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun updateLocationFromCurrentPosition(context: Context) {
+        getCurrentPosition(context)?.let { location ->
+            latitude = location.latitude
+            longitude = location.longitude
+        }
+    }
+
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
@@ -164,7 +198,7 @@ data class HClientInfos(
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
         A_EVITE(android.R.color.black, "يتجنب"),
-        CLIENT_ABSENT(android.R.color.darker_gray, "عميل غائب") // Add this line
+        CLIENT_ABSENT(android.R.color.darker_gray, "عميل غائب")
     }
 
     enum class TypeDeSonMagasine(val color: Int, val nomArabe: String) {
@@ -200,6 +234,18 @@ data class HClientInfos(
 
     companion object {
         const val keyModel = "ID2"
+
+        // Helper functions for default location values
+        fun getCurrentDefaultLatitude(): Double {
+            // Returns 0.0 as default, but can be updated using updateLocationFromCurrentPosition()
+            return 0.0
+        }
+
+        fun getCurrentDefaultLongitude(): Double {
+            // Returns 0.0 as default, but can be updated using updateLocationFromCurrentPosition()
+            return 0.0
+        }
+
         fun extractSonKeyByParent(stringAExtractDepuit: String) =
             stringAExtractDepuit.split("--").find { it.startsWith("$keyModel-") }?.removePrefix("$keyModel-") ?:
             if (stringAExtractDepuit.startsWith("$keyModel-")) stringAExtractDepuit.removePrefix("$keyModel-").split("--").first() else null

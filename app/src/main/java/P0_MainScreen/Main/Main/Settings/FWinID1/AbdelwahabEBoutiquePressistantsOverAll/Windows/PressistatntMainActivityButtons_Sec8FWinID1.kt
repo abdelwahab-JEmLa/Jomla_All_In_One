@@ -65,10 +65,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    val  clients = uiState.hClientRepository.datasValue
-
-    val uiState_recordingViewModel by recordingViewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
