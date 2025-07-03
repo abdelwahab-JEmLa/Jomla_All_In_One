@@ -184,7 +184,7 @@ fun MainUi(
     var showToast by remember { mutableStateOf(false) }
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent = getter.gBonVentRepository.onVentData
+    val onVentBonVent = getter.id8BonVentRepository.onVentData
 
     if (onVentBonVent == null) {
         Box(

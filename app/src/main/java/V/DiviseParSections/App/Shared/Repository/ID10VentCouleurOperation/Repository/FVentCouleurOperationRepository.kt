@@ -143,7 +143,7 @@ class FVentCouleurOperationRepository(
 
             parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
-            parentBProduitNomDebug = relatedCouleur.parentBProduitNom,
+            parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
 
             parentZAppComptID = zCompt.bsonObjectId,
 

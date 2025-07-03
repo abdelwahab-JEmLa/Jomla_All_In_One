@@ -60,7 +60,7 @@ private fun LazyRowProduitGroup(
             // Group header
             Text(
                 text = if (parentId != null) {
-                    "Product Group: ${items.firstOrNull()?.parentBProduitNom ?: "Unknown"} (ID: $parentId)"
+                    "Product Group: ${items.firstOrNull()?.parentId1ProduitInfosDebugName ?: "Unknown"} (ID: $parentId)"
                 } else {
                     "Ungrouped Items"
                 },

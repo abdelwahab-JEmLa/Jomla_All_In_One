@@ -27,7 +27,7 @@ fun PeriodDetailsSection(
     ouvertPeriodKeyId: String,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val mainRepo = viewModel.uiStateCentralRepositorys.gBonVentRepository
+    val mainRepo = viewModel.uiStateCentralRepositorys.id8BonVentRepository
     val ouvertData = mainRepo.datasValue.find { it.keyID == ouvertPeriodKeyId }
 
     if (ouvertData != null) {

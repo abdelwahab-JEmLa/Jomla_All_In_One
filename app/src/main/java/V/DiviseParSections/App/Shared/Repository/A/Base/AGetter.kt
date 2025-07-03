@@ -61,7 +61,7 @@ class AGetter(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val iD2ClientRepository: HClientRepository,
-    val gBonVentRepository: GBonVentRepository,
+    val id8BonVentRepository: GBonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val kAchatRepository: KAchatCouleurOperationRepository,
@@ -104,13 +104,13 @@ class AGetter(
         clientId: Long,
         etateActuellementEst: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): GBonVent? {
-        return gBonVentRepository.datasValue.filter {
+        return id8BonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
     fun getClientLastTransaction(clientId: Long): GBonVent? {
-        return gBonVentRepository.datasValue.filter {
+        return id8BonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }

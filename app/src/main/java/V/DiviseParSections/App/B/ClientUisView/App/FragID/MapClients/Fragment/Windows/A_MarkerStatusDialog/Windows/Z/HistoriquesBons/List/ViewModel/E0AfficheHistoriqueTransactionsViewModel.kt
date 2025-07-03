@@ -33,7 +33,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
     val setter =aCentral.setter
     val audioRecorderAndPlayHandler =aCentral.modulesCentral.audioRecorderAndPlayHandler
 
-    val gBonVentRepository = getter.gBonVentRepository
+    val gBonVentRepository = getter.id8BonVentRepository
 
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())
     val uiState: StateFlow<SecID5FragID2UiState> = _uiState.asStateFlow()

@@ -55,17 +55,17 @@ class MapClientsViewModel(
     val getter = aCentral.getter
     val setter = aCentral.setter
 
-    val gBonVentRepo = getter.gBonVentRepository
+    val gBonVentRepo = getter.id8BonVentRepository
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
     val b_ClientDataBaseRepository =
         a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model.e1SecteurDeClientsRepository
-    val c3_BonAchate_List =getter.gBonVentRepository.datasValue
+    val c3_BonAchate_List =getter.id8BonVentRepository.datasValue
 
     // Compose States
-    val transactionsState = getter.gBonVentRepository
+    val transactionsState = getter.id8BonVentRepository
     val clientsState = getter.iD2ClientRepository
     val appState = getter.zAppComptRepositoryComposable
 

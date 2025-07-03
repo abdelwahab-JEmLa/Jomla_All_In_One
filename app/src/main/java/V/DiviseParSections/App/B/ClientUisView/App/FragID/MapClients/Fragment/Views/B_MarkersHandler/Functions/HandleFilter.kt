@@ -92,7 +92,7 @@ fun filterClientsBasedOnMode(
         }
 
         MapClientsViewModel.VisibleClientsNow.showClientsWithConfirmedProducts -> {
-            val datas = viewModel.getter.gBonVentRepository.datasValue
+            val datas = viewModel.getter.id8BonVentRepository.datasValue
             val clientsWithConfirmedProducts =
                 datas
                     .filter { bonAchat ->

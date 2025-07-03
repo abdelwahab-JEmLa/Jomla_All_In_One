@@ -59,7 +59,7 @@ class BSetterFacade(
     fun upsertBonVentSetter(keyHandBonVent: String) {
         upsertBonVent(
             keyHandBonVent,
-            gBonVentRepository = getter.gBonVentRepository,
+            gBonVentRepository = getter.id8BonVentRepository,
             hClientRepository = hClientRepository,
             parametresAppComptNonSaved
         )

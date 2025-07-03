@@ -81,7 +81,7 @@ fun MapContent(
 
     LaunchedEffect(
         viewModel.getter.zAppComptRepositoryComposable.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.getter.gBonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.id8BonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.iD2ClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },

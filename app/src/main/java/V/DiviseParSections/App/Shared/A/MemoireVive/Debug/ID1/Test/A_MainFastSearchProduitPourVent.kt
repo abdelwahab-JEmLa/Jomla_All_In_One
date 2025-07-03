@@ -4,10 +4,8 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.V
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.ProcessPositioningInFactoryID1
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,13 +24,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -65,23 +60,6 @@ fun MainFastSearchProduitPourVent(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val iD2ClientRepository = uiState.iD2ClientRepository .onVentClient
-                    
-                    Text(     //<--
-                    //TODO(1): affiche ici on vent client nom 
-                        "Recherche Rapide Produits",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(Modifier.height(16.dp))
-
                 OutlinedTextField(
                     value = uiState.searchText,
                     onValueChange = viewModel::onSearchTextChange,
@@ -98,13 +76,14 @@ fun MainFastSearchProduitPourVent(
                             } else {
                                 1L
                             },
-                            nom = searchQuery.ifEmpty { "Nouveau Produit" },
+                            nom = searchQuery.ifEmpty { "Err definition" },
                             processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
                         )
 
                         val newCouleurP = B1CouleurOuGoutProduitDataBase(
                             parentBProduitOldID = newProduit.id,
                             parentBProduitInfosKeyID = newProduit.keyID,
+                            parentId1ProduitInfosDebugName = newProduit.nom,
                             processPositioningInFactory = B1CouleurOuGoutProduitDataBase.ProcessPositioningInFactory.CreeDepuitRechercheRapid
                         )
 

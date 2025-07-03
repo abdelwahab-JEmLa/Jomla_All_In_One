@@ -34,14 +34,14 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
-        viewModel.getter.gBonVentRepository.onVentData
+        viewModel.getter.id8BonVentRepository.onVentData
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
     val bonAchatList =
-        viewModel.getter.gBonVentRepository.datasValue
+        viewModel.getter.id8BonVentRepository.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList

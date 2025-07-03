@@ -28,7 +28,7 @@ fun List_AcheteursDeCetteProduit(
     ) {
         listGBonVentKeyID.forEach { gBonVentKeyID ->
             val gBonVent =
-                viewModel.getter.gBonVentRepository.datasValue.find { it.keyID == gBonVentKeyID }
+                viewModel.getter.id8BonVentRepository.datasValue.find { it.keyID == gBonVentKeyID }
             val lClient =
                 viewModel.getter.iD2ClientRepository.datasValue.find { it.id == gBonVent?.parentHClientOldID }
 

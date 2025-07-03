@@ -61,7 +61,7 @@ class B1CouleurOuGoutProduitDataBaseRepository(
                 datasValue.filter { d ->
                     listOf(
                         d.nomCouleurStrSiSonImageDispo,
-                        d.parentBProduitNom,
+                        d.parentId1ProduitInfosDebugName,
                         d.nomImageFichieSansEtansion,
                         d.parentBProduitOldID.toString()
                     ).any { it.contains(filterTextSearch.value, true) }
@@ -145,7 +145,7 @@ data class B1CouleurOuGoutProduitDataBase(
 
     var parentBProduitInfosKeyID: String = "",
     var parentBProduitOldID: Long = 0,
-    var parentBProduitNom: String = "",
+    var parentId1ProduitInfosDebugName: String = "",
 
 
     var indexCouleurDansAncienProto: Int = 0,

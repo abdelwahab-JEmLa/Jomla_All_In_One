@@ -103,7 +103,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
                     nomCouleurStrSiSonImageDispo = couleur ?: "",
                     parentBProduitInfosKeyID = produit.keyID,
                     parentBProduitOldID = produit.id,
-                    parentBProduitNom = produit.nom,
+                    parentId1ProduitInfosDebugName = produit.nom,
                     indexCouleurDansAncienProto = colorIndex
                 )
 

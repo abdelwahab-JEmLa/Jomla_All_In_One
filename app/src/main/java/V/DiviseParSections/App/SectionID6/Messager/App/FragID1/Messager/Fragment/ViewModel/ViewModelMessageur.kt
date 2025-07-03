@@ -42,7 +42,7 @@ class ViewModelMessageur(
             }
         }
 
-        val datasG = getter.gBonVentRepository.datasValue
+        val datasG = getter.id8BonVentRepository.datasValue
         viewModelScope.launch {
             val c3BonAchateList = datasG.toList()
 

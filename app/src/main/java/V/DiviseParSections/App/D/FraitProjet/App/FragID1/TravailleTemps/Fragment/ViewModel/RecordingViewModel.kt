@@ -44,7 +44,7 @@ class RecordingViewModel(
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList =getter.gBonVentRepository
+    val reposBonAchatList =getter.id8BonVentRepository
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())

@@ -59,7 +59,7 @@ fun ViewVentCouleur_T1(
     }
 
     val appCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
-    val onVentData = viewModel.aCentral.getter.gBonVentRepository.onVentData
+    val onVentData = viewModel.aCentral.getter.id8BonVentRepository.onVentData
 
     val haptic = LocalHapticFeedback.current
 

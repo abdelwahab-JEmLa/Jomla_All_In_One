@@ -33,7 +33,7 @@ fun GBonVentInfosHeader(
     viewModel: ZViewModel_Sec1Frag3,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repo = viewModel.uiStateCentralRepositorys.gBonVentRepository
+    val repo = viewModel.uiStateCentralRepositorys.id8BonVentRepository
     val onVentData = repo.onVentData
     val fVentCouleurOperationRepository = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
 
