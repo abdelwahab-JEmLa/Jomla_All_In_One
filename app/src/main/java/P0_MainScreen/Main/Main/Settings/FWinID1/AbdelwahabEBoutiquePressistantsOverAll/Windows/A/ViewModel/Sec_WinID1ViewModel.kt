@@ -1,6 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.lifecycle.ViewModel
@@ -13,12 +14,15 @@ class ViewModelPresistantButtonsSec8FWinID1(
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
     val getter=central.getter
-
     val appComptComposeRepositoryProtoJuin17 = getter.zAppComptRepositoryComposable
+
     data class UiState(
+        val hClientRepository: HClientRepository,
         val f: Int = 0,
     )
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(UiState(
+        hClientRepository=getter.hClientRepository
+    ))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun sendOrderAuPresentoireDevice(catalogueBsonID:String): Unit {

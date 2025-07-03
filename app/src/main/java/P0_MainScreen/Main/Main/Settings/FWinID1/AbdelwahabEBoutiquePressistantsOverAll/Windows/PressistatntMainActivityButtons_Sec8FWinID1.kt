@@ -5,6 +5,8 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
+import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -19,6 +21,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -36,13 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,8 +64,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     onClickAnulationButton: () -> Unit = {},
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
 ) {
-    val uiState by recordingViewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
+    val  clients = uiState.hClientRepository.datasValue
+
+    val uiState_recordingViewModel by recordingViewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17
     val showButtons by remember { mutableStateOf(true) }
     val showLabels by remember { mutableStateOf(true) }
@@ -211,6 +216,27 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
 
+                    ID4ClientSearchButton(
+                        showLabels = showLabels,
+                        hClientRepository = uiState.hClientRepository,
+                        onClientSelected = { selectedClient ->
+                            // Handle client selection here
+                            currentToast = ToastData(
+                                message = "Client sélectionné: ${selectedClient.nom}",
+                                type = ToastType.SUCCESS,
+                                duration = 2000L
+                            )
+
+                            // Update current client in app state if needed
+                            currentAppCompt?.let { appCompt ->
+                                val updatedAppCompt = appCompt.copy(
+                                    onVentFClientAncienId = selectedClient.id
+                                )
+                                appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
+                            }
+                        }
+                    )
+
                     if (!cLenceDepuitDialogeAchate) {
                         ID3RecordingButton(
                             isRecording,
@@ -258,31 +284,44 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 }
 
 @Composable
-private fun ID2MesasgerieTelegramme(showMessageurDialog: Boolean, showLabels: Boolean) {
-    var showMessageurDialog1 = showMessageurDialog         //<--
-    //TODO(1): regle pk Variable 'showMessageurDialog1' is assigned but never accessed
+fun Button1(
+    appComptComposeRepositoryProtoJuin17: ZAppCompt_RepositoryComposable,
+    showLabels: Boolean,
+    onClickPourAfficheDialog: () -> Unit = {}
+) {
+    val catalogues = B4CatalogueCategoriesRepository()
+    val catalogueId = appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+    val buttonAFficheAuCata = catalogues.find { it.key == catalogueId }
+
+    // Get the catalogue name and color, with fallbacks
+    val catalogueName = buttonAFficheAuCata?.nom ?: "Catalogues"
+    val buttonBackgroundColor = buttonAFficheAuCata?.couleur ?: Color(0xFF9C27B0)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         FloatingActionButton(
             onClick = {
-                showMessageurDialog1 = true
+                onClickPourAfficheDialog()
             },
             modifier = Modifier.size(40.dp),
-            containerColor = Color(0xFF0088CC),
+            containerColor = buttonBackgroundColor,
         ) {
+            val iconColor = Color.Black
+
             Icon(
-                painter = painterResource(id = R.drawable.ic_telegram),
-                contentDescription = "Ouvrir Messager",
-                tint = Color.White
+                imageVector = Icons.Default.Category,
+                contentDescription = "Sélectionner Catalogue",
+                tint = iconColor
             )
         }
+
         if (showLabels) {
             Text(
-                "Telegram Abdelwahab",
+                text = catalogueName, // Now displays the actual catalogue name
                 modifier = Modifier
-                    .background(Color(0xFF0088CC))
+                    .background(buttonBackgroundColor)
                     .padding(4.dp),
                 color = Color.White
             )

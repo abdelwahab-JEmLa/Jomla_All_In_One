@@ -100,7 +100,9 @@ fun MainFastSearchProduitPourVent(
                 )
             }
 
-            PressistatntMainActivityButtons_Sec8FWinID1(cLenceDepuitDialogeAchate=true)
+            PressistatntMainActivityButtons_Sec8FWinID1(cLenceDepuitDialogeAchate=true)    //<--
+            //TODO(1): ajout un button au click se change au outlned search du client list de cette zone gps de  5 metre 
+            //ajjou trealing + qui update on vent defautl val  client au current pos avec le searche text et lence on commande aussi au click un des droop dow menuu 
         }
     }
 }

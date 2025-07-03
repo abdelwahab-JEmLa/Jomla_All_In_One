@@ -28,8 +28,7 @@ class ViewModelsProduit_T1(
     )
 
     data class ViewVentUIState(
-        val ventKey: String = "",    //<--
-        //TODO(1): delace tout don UiState
+        val ventKey: String = "",
         val quantity: Int = 0,
         val showDialog: Boolean = false,
         val isRemoved: Boolean = false,

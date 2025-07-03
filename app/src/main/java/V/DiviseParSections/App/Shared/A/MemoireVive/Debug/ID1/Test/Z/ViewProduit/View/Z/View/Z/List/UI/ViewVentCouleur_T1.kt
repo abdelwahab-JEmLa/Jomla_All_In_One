@@ -50,13 +50,17 @@ fun ViewVentCouleur_T1(
     viewModel: ViewModelsProduit_T1,
     size: Dp = 200.dp
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    //<--
+//TODO(1): regle pour trouve comment lence le update vent bon apre le ferm avec confirme 
     val existingVent by remember(produit?.keyID, color.key) {
         derivedStateOf { viewModel.calculateExistingVent(produit, color) }
     }
 
     val appCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
     val onVentData = viewModel.aCentral.getter.gBonVentRepository.onVentData
-    val uiState by viewModel.uiState.collectAsState()
+
     val haptic = LocalHapticFeedback.current
 
     val defaultVent by remember {
