@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import android.util.Log
@@ -26,7 +26,7 @@ import java.util.Locale
 class MVentPeriodeRepository(
     private val appDatabase: AppDatabase,
     ancientProtoRepo: GroupeRepositorysProtoAvJuin3,
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val zAppComptRepositoryComposable: Id9AppComptRepository,
 ) {
     val ancienRepoP1 = ancientProtoRepo.repositorys_Model.repositoryMVentPeriode
 

@@ -67,7 +67,7 @@ class MapClientsViewModel(
     // Compose States
     val transactionsState = getter.id8BonVentRepository
     val clientsState = getter.iD2ClientRepository
-    val appState = getter.zAppComptRepositoryComposable
+    val appState = getter.id9AppComptRepository
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -105,7 +105,7 @@ class MapClientsViewModel(
         }
 
         viewModelScope.launch {
-            snapshotFlow { getter.zAppComptRepositoryComposable.currentAppCompt }.collect { transactionsList ->
+            snapshotFlow { getter.id9AppComptRepository.currentAppCompt }.collect { transactionsList ->
                 updateUiState()
             }
         }

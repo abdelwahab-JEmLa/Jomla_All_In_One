@@ -34,7 +34,7 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitDialogeAchate: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
-        viewModel.getter.id8BonVentRepository.onVentData
+        viewModel.getter.id8BonVentRepository.onVentId8BonVent
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }

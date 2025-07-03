@@ -185,7 +185,7 @@ class TariffsButtonsViewModelSec7ID2(
 
                         // Fixed: Use snapshotFlow to observe changes in onVentData
                         launch {
-                            snapshotFlow { repoC3_BonVent.onVentData }.collect { activeVentData ->
+                            snapshotFlow { repoC3_BonVent.onVentId8BonVent }.collect { activeVentData ->
                                 val updatedBonAchatList = repoC3_BonVent.datasValue.toList()
                                 _uiState.update { it.copy(bonAchatList = updatedBonAchatList) }
                             }

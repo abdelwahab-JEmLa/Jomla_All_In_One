@@ -1,9 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,12 +54,20 @@ import kotlinx.coroutines.delay
 @SuppressLint("DefaultLocale")
 @Composable
 fun ID4ClientSearchButton(
-    hClientRepository: HClientRepository,
-    zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
+    hClientRepository: ID2ClientRepository,
+    zAppComptRepositoryComposable: Id9AppComptRepository,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
     onClientSelected: (HClientInfos) -> Unit = {}
 ) {
+
+    var isTextCollapsed by remember { mutableStateOf(false) }
+
+    val id8BonVentRepository = uiState.id8BonVentRepository
+    val onVentId8BonVent = id8BonVentRepository.onVentId8BonVent
+    val defaultId8BonVent = id8BonVentRepository.defaultId8BonVent
+
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
@@ -97,10 +106,27 @@ fun ID4ClientSearchButton(
 
             if (showLabels) {
                 Text(
-                    text = "Rechercher Client",
+                    text = if (isTextCollapsed) {
+                        // Collapsed state - show only client name or short text
+                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                            onVentId8BonVent.nomClientConcerned
+                        } else {
+                            "Client"
+                        }
+                    } else {
+                        // Expanded state - show full text with timestamp
+                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                            "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
+                        } else {
+                            "Rechercher Client"
+                        }
+                    },
                     modifier = Modifier
                         .background(Color(0xFF4CAF50))
-                        .padding(4.dp),
+                        .padding(4.dp)
+                        .clickable {
+                            isTextCollapsed = !isTextCollapsed
+                        },
                     color = Color.White
                 )
             }
@@ -125,30 +151,46 @@ fun ID4ClientSearchButton(
                             disabledContainerColor = Color.White,
                         ),
                         leadingIcon = {
+                            val currentLocation = locationTracker?.getCurrentPosition()
+
+                            val newClient = HClientInfos(
+                                nom = searchQuery.ifEmpty { "Err Definition" },
+                                title = searchQuery.ifEmpty { "Nouveau Client" },
+                                latitude = currentLocation?.latitude
+                                    ?: HClientInfos.getCurrentDefaultLatitude(),
+                                longitude = currentLocation?.longitude
+                                    ?: HClientInfos.getCurrentDefaultLongitude(),
+                                caMarqueGpsEstOuvert = currentLocation != null,
+                                snippet = if (currentLocation != null) {
+                                    "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
+                                            "Lng: ${
+                                                String.format(
+                                                    "%.6f",
+                                                    currentLocation.longitude
+                                                )
+                                            }"
+                                } else {
+                                    "Position non disponible"
+                                }
+                            )
+
+                            val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
+                                creationTimestamps = System.currentTimeMillis(),
+                                parentId2ClientInfosKeyID = newClient.keyID,
+                                parentId2ClientInfosDebugKey = newClient.nom
+                            )
+
+                            val updatedAppCompt =
+                                zAppComptRepositoryComposable.currentAppCompt?.copy(
+                                    onVentId8BonVentKeyId = updatedDefaultOnVentID8BonVentEtAdd.keyID,
+                                    onVentGBonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentId2ClientInfosDebugKey
+                                )
+
                             IconButton(
                                 onClick = {
-                                    val currentLocation = locationTracker?.getCurrentPosition()
-
-                                    val newClient = HClientInfos(
-                                        nom = searchQuery.ifEmpty { "Err Definition" },
-                                        title = searchQuery.ifEmpty { "Nouveau Client" },
-                                        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
-                                        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
-                                        caMarqueGpsEstOuvert = currentLocation != null,
-                                        snippet = if (currentLocation != null) {
-                                            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
-                                                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
-                                        } else {
-                                            "Position non disponible"
-                                        }
-                                    )
-
                                     hClientRepository.upsertData(newClient)
-
-                                    zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
-                                        val updatedAppCompt = appCompt.copy(onVentFClientKeyID = newClient.keyID)
-                                        zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
-                                    }
+                                    id8BonVentRepository.upsert(updatedDefaultOnVentID8BonVentEtAdd)
+                                    if (updatedAppCompt != null) { zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt) }
 
                                     onClientSelected(newClient)
 
@@ -163,7 +205,10 @@ fun ID4ClientSearchButton(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Créer nouveau client",
                                     modifier = Modifier.semantics(mergeDescendants = true) {
-                                        set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
+                                        set(
+                                            SemanticsPropertyKey("DebugID1=HClientInfos"),
+                                            HClientInfos()
+                                        )
                                     }
                                 )
                             }
@@ -258,7 +303,12 @@ fun ClientSearchItem(
             }
             if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
                 Text(
-                    text = "📍 ${String.format("%.4f", client.latitude)}, ${String.format("%.4f", client.longitude)}",
+                    text = "📍 ${String.format("%.4f", client.latitude)}, ${
+                        String.format(
+                            "%.4f",
+                            client.longitude
+                        )
+                    }",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50)
                 )

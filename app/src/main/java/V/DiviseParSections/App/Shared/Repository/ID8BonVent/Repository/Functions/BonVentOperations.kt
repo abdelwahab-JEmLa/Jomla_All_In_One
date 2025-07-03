@@ -1,16 +1,16 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 class BonVentOperations(
     private val getter: AGetter,
-    private val gBonVentRepository: GBonVentRepository,
-    private val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable
+    private val gBonVentRepository: Id8BonVentRepository,
+    private val zAppComptRepositoryComposable: Id9AppComptRepository
 ) {
     val hClientRepository = getter.iD2ClientRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
@@ -36,10 +36,8 @@ class BonVentOperations(
 
         if (client != null && currentZCompt != null) {
             val updatedZCompt = currentZCompt.copy(
-                onVentGBonVentKeyId = key,
+                onVentId8BonVentKeyId = key,
                 onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
-                onVentFClientKeyID = client.keyID,
-                onVentFClientDebugNameKey = client.nom,
             )
 
             zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
@@ -47,7 +45,7 @@ class BonVentOperations(
             val newBonVent = GBonVent(
                 keyID = key,
                 parentPeriodeVentKeyID = currentZCompt.onVentHVentPeriodKeyId,
-                parentHClientKeyID = client.keyID,
+                parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = currentZCompt.keyID,
@@ -60,7 +58,7 @@ class BonVentOperations(
                     ?: ""
             )
 
-            gBonVentRepository.addOrUpdateData(newBonVent)
+            gBonVentRepository.upsert(newBonVent)
         }
     }
 
@@ -76,10 +74,8 @@ class BonVentOperations(
         if (client != null && currentZCompt != null && existingBonVent != null) {
             // Update the current app compt
             val updatedZCompt = currentZCompt.copy(
-                onVentGBonVentKeyId = key,
+                onVentId8BonVentKeyId = key,
                 onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
-                onVentFClientKeyID = client.keyID,
-                onVentFClientDebugNameKey = client.nom,
             )
 
             zAppComptRepositoryComposable.addOrUpdateData(updatedZCompt)
@@ -88,11 +84,11 @@ class BonVentOperations(
             val updatedBonVent = existingBonVent.copy(
                 etateActuellementEst = etate,
                 nomClientConcerned = client.nom,
-                parentHClientKeyID = client.keyID,
+                parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId
             )
 
-            gBonVentRepository.addOrUpdateData(updatedBonVent)
+            gBonVentRepository.upsert(updatedBonVent)
         }
     }
 
@@ -108,9 +104,7 @@ class BonVentOperations(
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentFClientKeyID = "",
-            onVentFClientDebugNameKey = "",
-            onVentGBonVentKeyId = "",
+            onVentId8BonVentKeyId = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 

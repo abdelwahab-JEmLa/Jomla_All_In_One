@@ -34,7 +34,7 @@ fun GBonVentInfosHeader(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val repo = viewModel.uiStateCentralRepositorys.id8BonVentRepository
-    val onVentData = repo.onVentData
+    val onVentData = repo.onVentId8BonVent
     val fVentCouleurOperationRepository = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
 
     // Determine colors based on delivery state and filter mode

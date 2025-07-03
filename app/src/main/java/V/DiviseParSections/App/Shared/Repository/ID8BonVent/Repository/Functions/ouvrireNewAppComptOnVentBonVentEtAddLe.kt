@@ -1,37 +1,35 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
     clientOldId: Long,
     newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-    hClientRepository: HClientRepository,
-    zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
-    gBonVentRepository: GBonVentRepository,
+    hClientRepository: ID2ClientRepository,
+    zAppComptRepositoryComposable: Id9AppComptRepository,
+    gBonVentRepository: Id8BonVentRepository,
     ) {
         val client = hClientRepository.datasValue.find { it.id == clientOldId }!!
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
-            onVentGBonVentKeyId = newTransactionKey,
+            onVentId8BonVentKeyId = newTransactionKey,
             onVentGBonVentDebugNameKey = "(${client.nom})=${client.id}",
-            onVentFClientKeyID = client.keyID,
-            onVentFClientDebugNameKey = client.nom,
         )
 
         zAppComptRepositoryComposable.addOrUpdateData(zCompt)
 
-        gBonVentRepository.addOrUpdateData(
+        gBonVentRepository.upsert(
             GBonVent(
                 keyID = newTransactionKey,
                 parentPeriodeVentKeyID = zCompt.onVentHVentPeriodKeyId,
-                parentHClientKeyID = client.keyID,
+                parentId2ClientInfosKeyID = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
                 parentZAppComptCreateurKeyID = zCompt.keyID,

@@ -57,7 +57,7 @@ fun DetailsBonVent(
     val printHandler = remember { PrintReceiptHandler() }
 
     val zAppComptRepositoryComposable =
-        viewModel.uiStateCentralRepositorys.zAppComptRepositoryComposable
+        viewModel.uiStateCentralRepositorys.id9AppComptRepository
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
 
     val fVentCouleurOperationRepository =
@@ -167,7 +167,7 @@ fun DetailsBonVent(
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
                             bProduitInfosRepository = viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
                             b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository,
-                            client = fClientRepository.onVentClient,
+                            client = fClientRepository.onVentId2ClientInfos,
                             scope = scope
                         )
                     },

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 
@@ -11,7 +11,7 @@ fun getKeyID8BonVent(
     clientOldID: Long? = null,
     etate: GBonVent.EtateActuellementEst? = null,
     parametresAppComptNonSaved: ParametresAppComptNonSaved,
-    hClientRepository: HClientRepository,
+    hClientRepository: ID2ClientRepository,
 ): String {
     val activePeriodKeyByParent = parametresAppComptNonSaved.activePeriodKeyByParent
     val keyModelToOnVentHVentPeriodKeyByParent =

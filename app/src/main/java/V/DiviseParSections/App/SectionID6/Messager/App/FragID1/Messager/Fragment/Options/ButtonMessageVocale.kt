@@ -190,7 +190,7 @@ fun ButtonMessageVocale(
                         } else {
                             try {
                                 val idParent_1_5_Vendeur =
-                                    viewModel.getter.zAppComptRepositoryComposable.currentAppCompt?.vid
+                                    viewModel.getter.id9AppComptRepository.currentAppCompt?.vid
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 

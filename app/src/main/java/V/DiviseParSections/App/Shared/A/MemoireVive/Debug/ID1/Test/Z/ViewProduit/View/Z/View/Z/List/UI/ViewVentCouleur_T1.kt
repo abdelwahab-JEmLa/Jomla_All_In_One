@@ -58,8 +58,8 @@ fun ViewVentCouleur_T1(
         derivedStateOf { viewModel.calculateExistingVent(produit, color) }
     }
 
-    val appCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
-    val onVentData = viewModel.aCentral.getter.id8BonVentRepository.onVentData
+    val appCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
+    val onVentData = viewModel.aCentral.getter.id8BonVentRepository.onVentId8BonVent
 
     val haptic = LocalHapticFeedback.current
 

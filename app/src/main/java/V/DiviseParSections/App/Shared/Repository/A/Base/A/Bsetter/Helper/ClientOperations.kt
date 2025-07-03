@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 class ClientOperations(
     private val getter: AGetter,
 
-    private val hClientRepository: HClientRepository
+    private val hClientRepository: ID2ClientRepository
 ) {
-    val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
+    val zAppComptRepositoryComposable = getter.id9AppComptRepository
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
         val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
@@ -34,7 +34,7 @@ class ClientOperations(
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentGBonVentKeyId = keyID,
+            onVentId8BonVentKeyId = keyID,
         )
 
         if (zCompt != null) {

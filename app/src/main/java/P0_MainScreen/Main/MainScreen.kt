@@ -131,7 +131,7 @@ fun MainScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val currentAppCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+            val currentAppCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
             val hideAppScreen = currentAppCompt?.hideAppScreen ?: false
 
             if (!shouldShowContent) {

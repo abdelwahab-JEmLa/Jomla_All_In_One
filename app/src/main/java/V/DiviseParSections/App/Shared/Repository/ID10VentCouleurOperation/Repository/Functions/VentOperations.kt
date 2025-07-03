@@ -8,7 +8,7 @@ class VentOperations(
     private val getter: AGetter,
     private val fVentCouleurOperationRepository: FVentCouleurOperationRepository
 ) {
-    val zAppComptRepositoryComposable = getter.zAppComptRepositoryComposable
+    val zAppComptRepositoryComposable = getter.id9AppComptRepository
 
 
 

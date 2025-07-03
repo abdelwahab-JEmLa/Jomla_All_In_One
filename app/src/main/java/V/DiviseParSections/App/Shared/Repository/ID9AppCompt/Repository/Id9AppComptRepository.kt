@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @Stable
-class ZAppCompt_RepositoryComposable(
+class Id9AppComptRepository(
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17
 ) {
     val dao = ancienRepo.dao
@@ -124,13 +124,8 @@ data class Z_AppCompt(
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var onVentGBonVentKeyId: String = "",
+    var onVentId8BonVentKeyId: String = "",
     var onVentGBonVentDebugNameKey: String = "",
-
-    var onVentFClientKeyID: String = "",
-    var onVentFClientKeyPush: String = "",
-    var onVentFClientDebugNameKey: String = "",
-    var onVentFClientAncienId: Long = 0L,
 
     var onVentID1ProduitInfosKeyID: String = "",
     var onVentID1ProduitInfosDebugName: String = "",
@@ -237,7 +232,7 @@ data class Z_AppCompt(
         private fun Z_AppCompt?.infos(
             nomVale: String
         ) = nomVale + if (this != null) {
-            "${keyID}\n ${nom}\n ${onVentFClientDebugNameKey}\n"
+            "${keyID}\n ${nom}\n "
         } else {
             "Z_AppCompt is null"
         }

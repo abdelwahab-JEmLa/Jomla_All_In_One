@@ -28,7 +28,7 @@ fun ClientDetailsSection(
     val isMinimized = uiState.isMinimized
 
     val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
-    val onVentClient = fClientRepository.onVentClient
+    val onVentClient = fClientRepository.onVentId2ClientInfos
 
     isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
 

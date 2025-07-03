@@ -1,17 +1,17 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
@@ -60,15 +60,15 @@ class AGetter(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val iD2ClientRepository: HClientRepository,
-    val id8BonVentRepository: GBonVentRepository,
+    val iD2ClientRepository: ID2ClientRepository,
+    val id8BonVentRepository: Id8BonVentRepository,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val kAchatRepository: KAchatCouleurOperationRepository,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val id9AppComptRepository: Id9AppComptRepository,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {
@@ -87,7 +87,7 @@ class AGetter(
     ) = GBonVent(
         keyID = GBonVent.generePushKey(),
         parentPeriodeVentKeyID = periodKey,
-        parentHClientKeyID = clientKey,
+        parentId2ClientInfosKeyID = clientKey,
         parentHClientOldID = clientId,
         nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentZAppComptCreateurKeyID = comptKey,
@@ -129,9 +129,9 @@ class AGetter(
     }
 
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperationInfos? {
-        val ouvertData = zAppComptRepositoryComposable.currentAppCompt ?: return null
+        val ouvertData = id9AppComptRepository.currentAppCompt ?: return null
 
-        val bonVentKey = ouvertData.onVentGBonVentKeyId
+        val bonVentKey = ouvertData.onVentId8BonVentKeyId
         val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
             operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentGBonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
@@ -151,7 +151,7 @@ class AGetter(
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
-            zAppComptRepositoryComposable.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+            id9AppComptRepository.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
@@ -175,7 +175,6 @@ class AGetter(
         }
     }
 
-    val clientOldIdOuSonMarqueMapPasFerme by derivedStateOf { zAppComptRepositoryComposable.currentAppCompt?.onVentFClientAncienId }
 
     init {
         composScope.launch {
@@ -197,7 +196,7 @@ class AGetter(
 
     companion object {
         // Fixed: This should be a function that returns a Modifier
-        fun modifierAcDebugSemantics(hClientRepository: HClientRepository? =null): Modifier {
+        fun modifierAcDebugSemantics(hClientRepository: ID2ClientRepository? =null): Modifier {
             return Modifier.semantics(mergeDescendants = true) {
                 set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
             }
@@ -252,7 +251,7 @@ class AGetter(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHVentPeriodKeyId + "--${compt.onVentGBonVentKeyId}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
+            return compt.onVentHVentPeriodKeyId + "--${compt.onVentId8BonVentKeyId}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }
     }
 }

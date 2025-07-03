@@ -3,7 +3,8 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -31,20 +32,24 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class HClientRepository(
+class ID2ClientRepository(
     val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val zAppComptRepositoryComposable: Id9AppComptRepository,
+    val id8BonVentRepository: Id8BonVentRepository,
 ) {
-    val TAG_REPO = "HClientRepository"
+    val TAG_REPO = "ID2ClientRepository"
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<HClientInfos>>(emptyList())
     val datasState: State<List<HClientInfos>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
-    val onVentClient by derivedStateOf {
-        datasValue.find { it.id == zAppComptRepositoryComposable.currentAppCompt?.onVentFClientAncienId }
+    val onVentId2ClientInfos by derivedStateOf {
+        datasValue.find {
+            it.keyID ==
+                    id8BonVentRepository.onVentId8BonVent.parentId2ClientInfosKeyID
+        }
     }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -83,6 +88,7 @@ class HClientRepository(
         this._datas.value = newClients
         _isInitialized.value = true
     }
+
     fun addClient(client: HClientInfos) {
         this._datas.value += client
     }
@@ -122,6 +128,7 @@ class HClientRepository(
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
             ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
     }
+
     fun findHClientInfosByKey(key: String): HClientInfos {
         val parentID2ClientKeyByParent = getListDesParentKeys(key)[HClientInfos.keyModel]
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
@@ -173,7 +180,6 @@ data class HClientInfos(
     fun getTempKeyByParent(): String {
         return this.nom.withOutFireBaseInvalidCharacters()
     }
-
 
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
@@ -237,8 +243,11 @@ data class HClientInfos(
         }
 
         fun extractSonKeyByParent(stringAExtractDepuit: String) =
-            stringAExtractDepuit.split("--").find { it.startsWith("$keyModel-") }?.removePrefix("$keyModel-") ?:
-            if (stringAExtractDepuit.startsWith("$keyModel-")) stringAExtractDepuit.removePrefix("$keyModel-").split("--").first() else null
+            stringAExtractDepuit.split("--").find { it.startsWith("$keyModel-") }
+                ?.removePrefix("$keyModel-")
+                ?: if (stringAExtractDepuit.startsWith("$keyModel-")) stringAExtractDepuit.removePrefix(
+                    "$keyModel-"
+                ).split("--").first() else null
 
         fun createTestInstance(): List<HClientInfos> {
             return emptyList()
@@ -252,7 +261,9 @@ data class HClientInfos(
 
         val ref = parent.child("B_ClientInfosProtoJuin3")
 
-        fun safeRemoveRef(): Unit { ref.removeValue() }
+        fun safeRemoveRef(): Unit {
+            ref.removeValue()
+        }
 
         fun removeRef(
             preparedData: HClientInfos

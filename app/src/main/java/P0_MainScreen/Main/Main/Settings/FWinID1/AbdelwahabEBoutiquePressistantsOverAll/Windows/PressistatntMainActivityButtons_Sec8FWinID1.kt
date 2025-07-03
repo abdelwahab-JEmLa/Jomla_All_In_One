@@ -6,7 +6,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -213,6 +213,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
 
                     ID4ClientSearchButton(
+                        uiState=uiState,
                         hClientRepository = uiState.hClientRepository,
                         zAppComptRepositoryComposable = uiState.zAppComptRepositoryComposable,
                         showLabels = showLabels,
@@ -223,13 +224,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 type = ToastType.SUCCESS,
                                 duration = 2000L
                             )
-
-                            currentAppCompt?.let { appCompt ->
-                                val updatedAppCompt = appCompt.copy(
-                                    onVentFClientAncienId = selectedClient.id
-                                )
-                                appComptComposeRepositoryProtoJuin17.addOrUpdateData(updatedAppCompt)
-                            }
                         }
                     )
 
@@ -281,7 +275,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 @Composable
 fun Button1(
-    appComptComposeRepositoryProtoJuin17: ZAppCompt_RepositoryComposable,
+    appComptComposeRepositoryProtoJuin17: Id9AppComptRepository,
     showLabels: Boolean,
     onClickPourAfficheDialog: () -> Unit = {}
 ) {

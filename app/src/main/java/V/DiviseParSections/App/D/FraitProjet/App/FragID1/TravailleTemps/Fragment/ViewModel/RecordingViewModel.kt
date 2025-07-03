@@ -127,7 +127,7 @@ class RecordingViewModel(
 
 
     private suspend fun collectActiveVendeurId() {
-        snapshotFlow { getter.zAppComptRepositoryComposable.currentAppCompt }.collect { currentAppCompt ->
+        snapshotFlow { getter.id9AppComptRepository.currentAppCompt }.collect { currentAppCompt ->
             val activePeriodeVent = get_PeriodVentActive()
             updateUiState { currentState ->
                 currentState.copy(activePeriodeVent = activePeriodeVent)
@@ -141,7 +141,7 @@ class RecordingViewModel(
         val repositorysModel1 = groupeRepositorysProtoAvJuin3.repositorys_Model
 
         val ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive =
-            getter.zAppComptRepositoryComposable.currentAppCompt?.ceComptVendeurInsertBonsAchatAuPeriodID
+            getter.id9AppComptRepository.currentAppCompt?.ceComptVendeurInsertBonsAchatAuPeriodID
 
         return repositorysModel1.repositoryMVentPeriode.modelDatasSnapList.find {
             it.vid == ceComptVendeurInsertBonsAchatAuPeriodID_ComptPeriodActive

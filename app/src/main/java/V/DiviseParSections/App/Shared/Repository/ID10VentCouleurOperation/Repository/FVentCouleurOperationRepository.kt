@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repos
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 @Stable
 class FVentCouleurOperationRepository(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val zAppComptRepositoryComposable: Id9AppComptRepository,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -37,7 +37,7 @@ class FVentCouleurOperationRepository(
 
     val onVentFilteredDatas by derivedStateOf {
         datasValue.filter {
-            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
+            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentId8BonVentKeyId
         }
     }
     val datasFilteredParCurrentHVentPeriod by derivedStateOf {
@@ -139,7 +139,7 @@ class FVentCouleurOperationRepository(
 
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
 
-            parentGBonVentKeyId = zCompt.onVentGBonVentKeyId,
+            parentGBonVentKeyId = zCompt.onVentId8BonVentKeyId,
 
             parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
@@ -147,7 +147,6 @@ class FVentCouleurOperationRepository(
 
             parentZAppComptID = zCompt.bsonObjectId,
 
-            parentClientName = zCompt.onVentFClientDebugNameKey,
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.ChoisiQuantityConfirme,
             type = FCouleurVentOperationInfos.Type.CommandeDeLui,

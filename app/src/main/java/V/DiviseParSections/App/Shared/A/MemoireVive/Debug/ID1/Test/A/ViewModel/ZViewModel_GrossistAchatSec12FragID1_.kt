@@ -3,9 +3,9 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientRepository
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +17,14 @@ class ViewModelMainFastSearchProduitPourVent(
     val getter = aCentral.getter
 
     data class UiState(
-        val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+        val zAppComptRepositoryComposable: Id9AppComptRepository,
         val bProduitInfosRepository: BProduitInfosRepository,
         val searchText: String = "",
         val isLoading: Boolean = false,
         val showAddDialog: Boolean = false,
         val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
-        val iD2ClientRepository: HClientRepository,
-        val id8BonVentRepository: GBonVentRepository
+        val iD2ClientRepository: ID2ClientRepository,
+        val id8BonVentRepository: Id8BonVentRepository
     )
 
     private val _uiState = MutableStateFlow(
@@ -33,7 +33,7 @@ class ViewModelMainFastSearchProduitPourVent(
             id8BonVentRepository = aCentral.getter.id8BonVentRepository,
             iD2ClientRepository = aCentral.getter.iD2ClientRepository,
             b1CouleurOuGoutProduitDataBaseRepository = aCentral.getter.b1CouleurOuGoutProduitDataBaseRepository,
-            zAppComptRepositoryComposable = aCentral.getter.zAppComptRepositoryComposable,
+            zAppComptRepositoryComposable = aCentral.getter.id9AppComptRepository,
         )
     )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

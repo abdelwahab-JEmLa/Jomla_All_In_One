@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -26,20 +26,26 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class GBonVentRepository(
+class Id8BonVentRepository(
     val dataBaseCreationFactory: DataBaseCreationFactoryGBonVent,
-    val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    val zAppComptRepositoryComposable: Id9AppComptRepository,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val onVentData by derivedStateOf { datasValue.find {
-        it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentGBonVentKeyId
-    } ?: GBonVent(
-        nomClientConcerned = "Generated",
-        parentPeriodeVentKeyID = ParametresAppComptNonSaved().activePeriodKeyByParent
-    )}
+    val defaultId8BonVent by derivedStateOf {
+        GBonVent(
+            nomClientConcerned = "Generated",
+            parentPeriodeVentKeyID = ParametresAppComptNonSaved().activePeriodKeyByParent
+        )
+    }
+
+    val onVentId8BonVent by derivedStateOf {
+        datasValue.find {
+            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentId8BonVentKeyId
+        } ?: defaultId8BonVent
+    }
 
     init {
         composScope.launch {
@@ -47,7 +53,7 @@ class GBonVentRepository(
         }
     }
 
-    fun addOrUpdateData(data: GBonVent) {
+    fun upsert(data: GBonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyByParent == dataUpdate.keyByParent }
@@ -98,7 +104,9 @@ data class GBonVent(
     var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
-    var parentHClientKeyID: String = "Non Defini",
+    var parentId2ClientInfosKeyID: String = "Non Defini",
+    var parentId2ClientInfosDebugKey: String = "",
+
     var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,
     var nomClientConcerned: String = "Non Defini",
@@ -135,6 +143,16 @@ data class GBonVent(
     val parentID7VentPeriodeKeyByParent: String = "",
     val parentID8C2TypeTransactionKeyByParent: String = "",
 ) {
+
+    fun getCreationTimeString(): String {
+        return try {
+            val date = Date(creationTimestamps)
+            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(date)
+        } catch (e: Exception) {
+            "00:00:00"
+        }
+    }
+
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),

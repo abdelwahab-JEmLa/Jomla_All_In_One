@@ -32,7 +32,7 @@ open class VendeursViewModel(
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
-    private val vendeurRepository = getter.zAppComptRepositoryComposable
+    private val vendeurRepository = getter.id9AppComptRepository
     private val periodeVentRepository = repository.repositorys_Model.repositoryMVentPeriode
 
     init {
@@ -52,7 +52,7 @@ open class VendeursViewModel(
     private fun loadData() {
         val vendeurs = vendeurRepository.datasValue
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = getter.zAppComptRepositoryComposable.currentAppCompt?.vid
+        val activeVendeurId = getter.id9AppComptRepository.currentAppCompt?.vid
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = activeVendeurId?.let {
@@ -102,7 +102,7 @@ open class VendeursViewModel(
 
     // Add this method to the VendeursViewModel class
     fun getActiveVendeur(): Z_AppCompt? =
-        getter.zAppComptRepositoryComposable.currentAppCompt
+        getter.id9AppComptRepository.currentAppCompt
 
 
     fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {

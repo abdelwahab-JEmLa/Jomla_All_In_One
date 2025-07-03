@@ -87,7 +87,7 @@ fun MarkerStatusDialog(
     }
 
     fun handleDismiss() {
-        if (viewModel.gBonVentRepo.onVentData != null) {
+        if (viewModel.gBonVentRepo.onVentId8BonVent != null) {
             showExitConfirmationDialog = true
         } else {
             dismissDialog()
@@ -134,9 +134,10 @@ fun MarkerStatusDialog(
                             onShowPhoneDialogChange = { showPhoneDialog = it },
                         )
                     }
-                    val activeCompt = viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+                    val activeCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
+                    val activeClient = viewModel.getter.iD2ClientRepository.onVentId2ClientInfos
                     activeCompt?.let { activeCompt ->
-                        if (activeCompt.onVentFClientAncienId != 0L) {
+                        if (activeClient != null) {
                             item {
                                 AfficheurRegleOuvert(
                                     uiState = uiState,
@@ -221,7 +222,7 @@ fun MarkerStatusDialog(
                                             )
                                     }
 
-                                    val activeCompt= viewModel.getter.zAppComptRepositoryComposable.currentAppCompt
+                                    val activeCompt= viewModel.getter.id9AppComptRepository.currentAppCompt
                                     activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
                                             item {

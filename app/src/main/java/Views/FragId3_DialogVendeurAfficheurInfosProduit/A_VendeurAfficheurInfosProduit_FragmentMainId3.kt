@@ -184,7 +184,7 @@ fun MainUi(
     var showToast by remember { mutableStateOf(false) }
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent = getter.id8BonVentRepository.onVentData
+    val onVentBonVent = getter.id8BonVentRepository.onVentId8BonVent
 
     if (onVentBonVent == null) {
         Box(
@@ -205,7 +205,7 @@ fun MainUi(
     val isLoading = (progressValue ?: 0f) < 1.0f
 
     // Safe handling for client ID
-    val clientOuSonMarqueMapEstOuvert = getter.clientOldIdOuSonMarqueMapPasFerme
+    val clientOuSonMarqueMapEstOuvert = getter.iD2ClientRepository.onVentId2ClientInfos
     if (clientOuSonMarqueMapEstOuvert == null) {
         // Handle case where there's no client
         Box(
@@ -252,7 +252,7 @@ fun MainUi(
                 val newOperation = _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentIdClient = clientOuSonMarqueMapEstOuvert,
+                    parentIdClient = clientOuSonMarqueMapEstOuvert.id,
                     provisoireMonPrix = articlesBaseStats?.prixVent ?: 0.0,
                     parent_1_3_TransactionCommercial = onVentBonVent.vid
                 )

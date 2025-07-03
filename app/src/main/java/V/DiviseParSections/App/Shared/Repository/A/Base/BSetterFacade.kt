@@ -76,7 +76,7 @@ class BSetterFacade(
             produit,
             colorIndex,
             quantity,
-            getter.zAppComptRepositoryComposable,
+            getter.id9AppComptRepository,
             getter,
         )
     }
