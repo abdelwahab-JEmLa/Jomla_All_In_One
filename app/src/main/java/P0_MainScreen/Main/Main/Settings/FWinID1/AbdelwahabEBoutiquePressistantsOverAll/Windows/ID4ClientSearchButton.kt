@@ -113,8 +113,7 @@ fun ID4ClientSearchButton(
             }
 
             if (showLabels) {
-                if (onVentId8BonVent != null) {
-                    Text(
+                Text(
                         text = if (isTextCollapsed) {
                             if (onVentId8BonVent.nomClientConcerned.isNotBlank() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
                                 onVentId8BonVent.nomClientConcerned
@@ -136,7 +135,6 @@ fun ID4ClientSearchButton(
                             },
                         color = Color.White
                     )
-                }
             }
         } else {
             Column {
