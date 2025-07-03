@@ -210,10 +210,10 @@ private fun createNewClient(
 
     val newClient = HClientInfos(
         nom = query.ifEmpty { "Err Definition" },
+        title = query.ifEmpty { "Nouveau Client" },
         latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
         longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
         caMarqueGpsEstOuvert = currentLocation != null,
-        title = query.ifEmpty { "Nouveau Client" },
         snippet = if (currentLocation != null) {
             "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
                     "Lng: ${String.format("%.6f", currentLocation.longitude)}"
