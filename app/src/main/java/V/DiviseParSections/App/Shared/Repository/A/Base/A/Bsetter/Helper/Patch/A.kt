@@ -4,8 +4,8 @@ import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
@@ -321,12 +321,12 @@ class BSetterP (
     fun deleteAddMultiClients() {
         val datas = bClientsStateCompoRepository.datasValue
         CoroutineScope(Dispatchers.IO).launch {
-            hClientRepository.dataBaseFactoryFClient.dao.deleteAll()
-            hClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
+            hClientRepository.dataBaseCreationFactory.dao.deleteAll()
+            hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
             HClientInfos.safeRemoveRef()
 
-            hClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
+            hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas
             )
         }

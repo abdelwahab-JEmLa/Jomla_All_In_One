@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 
-suspend fun DataBaseFactoryFClient.isRoomEmpty(): Boolean {
+suspend fun dataBaseCreationFactoryMID2ClientRepository.isRoomEmpty(): Boolean {
     return dao.getCount() == 0
 }
 

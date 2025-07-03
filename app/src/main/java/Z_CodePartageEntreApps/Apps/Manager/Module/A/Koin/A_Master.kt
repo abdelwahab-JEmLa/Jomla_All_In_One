@@ -24,7 +24,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.ViewModelDebugFloatingButt
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test.B_ClientInfosProtoJuin3PreviewViewModel
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
@@ -126,7 +126,7 @@ val dataBaseProtoAvantJuin3Module = module {
     single { DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(get<AppDatabase>().B1CouleurOuGoutProduitDataBaseDao()) }
 
 
-    single { DataBaseFactoryFClient(androidContext(), get()) }
+    single { dataBaseCreationFactoryMID2ClientRepository(androidContext(), get()) }
     single { C_CategorieProduitInfosRepository(androidContext(), get()) }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
     single<DataBaseCreationFactoryGBonVent> { DataBaseCreationFactoryGBonVent(get()) }

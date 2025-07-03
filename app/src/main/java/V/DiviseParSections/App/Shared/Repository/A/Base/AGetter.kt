@@ -7,8 +7,8 @@ import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable

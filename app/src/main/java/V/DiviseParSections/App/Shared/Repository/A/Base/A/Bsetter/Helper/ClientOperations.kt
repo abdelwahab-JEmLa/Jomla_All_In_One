@@ -2,8 +2,8 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,12 +55,12 @@ class ClientOperations(
     fun deleteAddMultiClients() {
         val datas = hClientRepository.datasValue
         CoroutineScope(Dispatchers.IO).launch {
-            hClientRepository.dataBaseFactoryFClient.dao.deleteAll()
-            hClientRepository.dataBaseFactoryFClient.dao.insertAll(datas)
+            hClientRepository.dataBaseCreationFactory.dao.deleteAll()
+            hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
             HClientInfos.safeRemoveRef()
 
-            hClientRepository.dataBaseFactoryFClient.batchFireBaseUpdate(
+            hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas
             )
         }

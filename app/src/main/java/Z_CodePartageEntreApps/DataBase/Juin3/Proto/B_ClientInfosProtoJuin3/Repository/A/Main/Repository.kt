@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main
 
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.triggerUpdateFbParTimestampsListener
@@ -15,11 +15,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class DataBaseFactoryFClient(
+class dataBaseCreationFactoryMID2ClientRepository(
     val context: Context,
     appDatabase: AppDatabase,
 ) {
-    val repoTAG = "DataBaseFactoryFClient"
+    val repoTAG = "dataBaseCreationFactoryMID2ClientRepository"
+    private val factoryScope = CoroutineScope(Dispatchers.IO)
 
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
@@ -57,12 +58,20 @@ class DataBaseFactoryFClient(
             triggerUpdateFbParTimestampsListener()
         }
     }
+    fun set(
+        dataAvecTigerUpdate: HClientInfos,
+    ) {
+        factoryScope.launch {
+            dao.upsert(dataAvecTigerUpdate)
+            batchFireBaseUpdate(listOf(dataAvecTigerUpdate))
+        }
+    }
 
     fun batchFireBaseUpdate(datas: List<HClientInfos>): Unit {
         CoroutineScope(Dispatchers.IO).launch {
             val updates = mutableMapOf<String, Any>()
             datas.forEach { data ->
-                updates[data.bsonObjectId] = data
+                updates[data.keyID] = data
             }
             repoRef.updateChildren(updates).await()
         }

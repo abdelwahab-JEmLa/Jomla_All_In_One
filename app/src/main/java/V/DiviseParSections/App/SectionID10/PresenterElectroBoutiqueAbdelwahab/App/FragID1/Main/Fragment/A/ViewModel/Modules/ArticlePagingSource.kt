@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

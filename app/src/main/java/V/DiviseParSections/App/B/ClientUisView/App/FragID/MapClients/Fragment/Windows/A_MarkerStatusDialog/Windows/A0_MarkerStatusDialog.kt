@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

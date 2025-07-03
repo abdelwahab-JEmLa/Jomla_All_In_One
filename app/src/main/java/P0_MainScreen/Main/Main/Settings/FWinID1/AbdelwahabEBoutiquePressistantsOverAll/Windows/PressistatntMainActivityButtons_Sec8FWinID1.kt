@@ -213,8 +213,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
 
                     ID4ClientSearchButton(
-                        showLabels = showLabels,
                         hClientRepository = uiState.hClientRepository,
+                        zAppComptRepositoryComposable = uiState.zAppComptRepositoryComposable,
+                        showLabels = showLabels,
                         onClientSelected = { selectedClient ->
                             // Handle client selection here
                             currentToast = ToastData(
@@ -223,7 +224,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 duration = 2000L
                             )
 
-                            // Update current client in app state if needed
                             currentAppCompt?.let { appCompt ->
                                 val updatedAppCompt = appCompt.copy(
                                     onVentFClientAncienId = selectedClient.id

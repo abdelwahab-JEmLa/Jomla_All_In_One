@@ -55,6 +55,7 @@ class LocationTracker(
                 return gpsLocation
             }
 
+            // Fallback to network location if GPS is not available
             val networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             if (networkLocation != null) {
                 currentLocation = networkLocation

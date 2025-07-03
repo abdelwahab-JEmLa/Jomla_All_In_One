@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test
 
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 
 // Extension pour ajouter des méthodes utilitaires de suivi
-fun DataBaseFactoryFClient.logCurrentDatabaseState() {
+fun dataBaseCreationFactoryMID2ClientRepository.logCurrentDatabaseState() {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val currentData = dao.getAll()
@@ -60,7 +60,7 @@ enum class UpdateSource {
 /**
  * Extension pour suivre les mises à jour de la base de données locale
  */
-fun DataBaseFactoryFClient.setupLocalDbUpdateTracker() {
+fun dataBaseCreationFactoryMID2ClientRepository.setupLocalDbUpdateTracker() {
     val _localDbUpdateState = MutableStateFlow(LocalDbUpdateState())
     val localDbUpdateState: StateFlow<LocalDbUpdateState> = _localDbUpdateState.asStateFlow()
 
@@ -99,7 +99,7 @@ fun DataBaseFactoryFClient.setupLocalDbUpdateTracker() {
 /**
  * Détermine la source de la mise à jour basée sur les données
  */
-private fun DataBaseFactoryFClient.determineUpdateSource(
+private fun dataBaseCreationFactoryMID2ClientRepository.determineUpdateSource(
     dataList: List<HClientInfos>
 ): UpdateSource {
     return when {
@@ -112,7 +112,7 @@ private fun DataBaseFactoryFClient.determineUpdateSource(
 /**
  * Actions à effectuer quand la base de données locale est mise à jour
  */
-private fun DataBaseFactoryFClient.onLocalDatabaseUpdated(
+private fun dataBaseCreationFactoryMID2ClientRepository.onLocalDatabaseUpdated(
     updatedData: List<HClientInfos>,
     updateState: LocalDbUpdateState
 ) {
@@ -153,7 +153,7 @@ private fun DataBaseFactoryFClient.onLocalDatabaseUpdated(
 /**
  * Valide la cohérence des données après mise à jour
  */
-private suspend fun DataBaseFactoryFClient.validateDataConsistency(
+private suspend fun dataBaseCreationFactoryMID2ClientRepository.validateDataConsistency(
     data: List<HClientInfos>
 ) {
     withContext(Dispatchers.IO) {
@@ -179,7 +179,7 @@ private suspend fun DataBaseFactoryFClient.validateDataConsistency(
 /**
  * Met à jour les statistiques locales
  */
-private fun DataBaseFactoryFClient.updateLocalStatistics(
+private fun dataBaseCreationFactoryMID2ClientRepository.updateLocalStatistics(
     data: List<HClientInfos>
 ) {
     val stats = mapOf(
@@ -195,7 +195,7 @@ private fun DataBaseFactoryFClient.updateLocalStatistics(
 /**
  * Déclenche les notifications de mise à jour
  */
-private fun DataBaseFactoryFClient.triggerUpdateNotifications(
+private fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateNotifications(
     updateState: LocalDbUpdateState
 ) {
     // Ici, vous pouvez ajouter des notifications push, des callbacks UI, etc.
@@ -205,7 +205,7 @@ private fun DataBaseFactoryFClient.triggerUpdateNotifications(
 /**
  * Synchronise les changements récents avec Firebase
  */
-private fun DataBaseFactoryFClient.syncRecentChangesToFirebase(
+private fun dataBaseCreationFactoryMID2ClientRepository.syncRecentChangesToFirebase(
     data: List<HClientInfos>
 ) {
     val recentChanges = data.filter {
@@ -221,7 +221,7 @@ private fun DataBaseFactoryFClient.syncRecentChangesToFirebase(
 /**
  * Nettoie les données de test anciennes
  */
-private suspend fun DataBaseFactoryFClient.cleanupTestDataIfNeeded(
+private suspend fun dataBaseCreationFactoryMID2ClientRepository.cleanupTestDataIfNeeded(
     data: List<HClientInfos>
 ) {
     withContext(Dispatchers.IO) {
@@ -247,7 +247,7 @@ private suspend fun DataBaseFactoryFClient.cleanupTestDataIfNeeded(
  * Test function to trigger Firebase timestamp listener by creating or updating add test entity
  * This function helps verify that the Firebase listener is working correctly
  */
-fun DataBaseFactoryFClient.testTriggerUpdateFbParTimestampsListener() {
+fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestampsListener() {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             Log.d(repoTAG, "Starting Firebase listener test")

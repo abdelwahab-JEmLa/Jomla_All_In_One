@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Function
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 
-fun DataBaseFactoryFClient.getMaxIdPlus1(): Long {
+fun dataBaseCreationFactoryMID2ClientRepository.getMaxIdPlus1(): Long {
     val currentData = _repoState.value?.modelListFlow ?: emptyList()
     return if (currentData.isEmpty()) {
         1L

@@ -1,16 +1,13 @@
-package V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository
+package V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import android.content.Context
-import android.location.Location
-import android.location.LocationManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
@@ -30,11 +27,12 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
 class HClientRepository(
-    val dataBaseFactoryFClient: DataBaseFactoryFClient,
+    val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
 ) {
@@ -87,9 +85,31 @@ class HClientRepository(
         this._datas.value = newClients
         _isInitialized.value = true
     }
-
     fun addClient(client: HClientInfos) {
         this._datas.value += client
+    }
+
+    fun upsertData(data: HClientInfos) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    if (existingIndex >= 0) {
+                        this[existingIndex] = dataUpdate
+                    } else {
+                        add(dataUpdate)
+                    }
+                }
+            }
+        }
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+    }
+
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: HClientInfos) {
+        dataBaseCreationFactory.set(dataUpdate)
     }
 
     fun updateClient(updatedClient: HClientInfos) {
@@ -156,35 +176,7 @@ data class HClientInfos(
         return this.nom.withOutFireBaseInvalidCharacters()
     }
 
-    fun getCurrentPosition(context: Context): Location? {
-        return try {
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-            // Try GPS first
-            val gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            if (gpsLocation != null) {
-                return gpsLocation
-            }
-
-            // Fallback to network location
-            val networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-            if (networkLocation != null) {
-                return networkLocation
-            }
-
-            null
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    fun updateLocationFromCurrentPosition(context: Context) {
-        getCurrentPosition(context)?.let { location ->
-            latitude = location.latitude
-            longitude = location.longitude
-        }
-    }
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
@@ -198,7 +190,7 @@ data class HClientInfos(
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         FERME(android.R.color.darker_gray, "مغلق"),
         A_EVITE(android.R.color.black, "يتجنب"),
-        CLIENT_ABSENT(android.R.color.darker_gray, "عميل غائب")
+        CLIENT_ABSENT(android.R.color.darker_gray, "عميل غائب"),
     }
 
     enum class TypeDeSonMagasine(val color: Int, val nomArabe: String) {

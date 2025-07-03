@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init
 
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.DataBaseFactoryFClient
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.FireBase.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.isRoomEmpty
 import android.content.Context
@@ -11,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
 
-suspend fun DataBaseFactoryFClient.initializeDataReturn(): List<HClientInfos> {
+suspend fun dataBaseCreationFactoryMID2ClientRepository.initializeDataReturn(): List<HClientInfos> {
     return if (isRoomEmpty()) {
         val hasInternetConnection = isInternetAvailable(context)
 

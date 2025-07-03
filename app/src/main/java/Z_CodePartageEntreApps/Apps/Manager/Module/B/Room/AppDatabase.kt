@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode

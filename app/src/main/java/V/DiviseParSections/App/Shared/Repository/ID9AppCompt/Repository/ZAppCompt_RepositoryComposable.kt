@@ -128,6 +128,7 @@ data class Z_AppCompt(
     var onVentGBonVentDebugNameKey: String = "",
 
     var onVentFClientKeyID: String = "",
+    var onVentFClientKeyPush: String = "",
     var onVentFClientDebugNameKey: String = "",
     var onVentFClientAncienId: Long = 0L,
     //------------------------------------------------------------------------------------------------------------------------------------------------

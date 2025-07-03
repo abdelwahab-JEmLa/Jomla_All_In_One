@@ -1,8 +1,10 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
-// Additional imports needed at the top of the file:
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
+
+import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,14 +44,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ID4ClientSearchButton(
-    showLabels: Boolean,
     hClientRepository: HClientRepository,
+    zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    showLabels: Boolean,
+    locationTracker: LocationTracker? = null,
     onClientSelected: (HClientInfos) -> Unit = {}
 ) {
     var isSearchMode by remember { mutableStateOf(false) }
@@ -57,13 +64,10 @@ fun ID4ClientSearchButton(
     var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
 
-    val clients = hClientRepository.datasValue
-
-    // Debounced search effect
     LaunchedEffect(searchQuery) {
-        delay(300) // Debounce delay
+        delay(300)
         if (searchQuery.isNotEmpty()) {
-            filteredClients = clients.filter { client ->
+            filteredClients = hClientRepository.datasValue.filter { client ->
                 client.nom.contains(searchQuery, ignoreCase = true) ||
                         client.numTelephone.contains(searchQuery, ignoreCase = true)
             }
@@ -79,13 +83,10 @@ fun ID4ClientSearchButton(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (!isSearchMode) {
-            // Normal button mode
             FloatingActionButton(
-                onClick = {
-                    isSearchMode = true
-                },
+                onClick = { isSearchMode = true },
                 modifier = Modifier.size(40.dp),
-                containerColor = Color(0xFF4CAF50), // Green color for GPS/search
+                containerColor = Color(0xFF4CAF50)
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
@@ -104,7 +105,6 @@ fun ID4ClientSearchButton(
                 )
             }
         } else {
-            // Search mode
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -112,9 +112,7 @@ fun ID4ClientSearchButton(
                 ) {
                     OutlinedTextField(
                         value = searchQuery,
-                        onValueChange = {
-                            searchQuery = it
-                        },
+                        onValueChange = { searchQuery = it },
                         modifier = Modifier
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
@@ -126,20 +124,40 @@ fun ID4ClientSearchButton(
                             unfocusedContainerColor = Color.White,
                             disabledContainerColor = Color.White,
                         ),
-                        leadingIcon = {         //<--
-                        //TODO(1): fait que ca soit un + add au click 
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                modifier = AGetter.modifierAcDebugSemantics()
-                            )
+                        leadingIcon = {
+                            IconButton(
+                                onClick = {
+                                    createNewClient(
+                                        searchQuery,
+                                        locationTracker,
+                                        hClientRepository,
+                                        zAppComptRepositoryComposable,
+                                        onClientSelected
+                                    )
+                                    resetSearchMode {
+                                        isSearchMode = false
+                                        searchQuery = ""
+                                        showDropdown = false
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Créer nouveau client",
+                                    modifier = Modifier.semantics(mergeDescendants = true) {
+                                        set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
+                                    }
+                                )
+                            }
                         },
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    isSearchMode = false
-                                    searchQuery = ""
-                                    showDropdown = false
+                                    resetSearchMode {
+                                        isSearchMode = false
+                                        searchQuery = ""
+                                        showDropdown = false
+                                    }
                                 }
                             ) {
                                 Icon(
@@ -151,7 +169,6 @@ fun ID4ClientSearchButton(
                     )
                 }
 
-                // Dropdown list
                 if (showDropdown) {
                     Card(
                         modifier = Modifier
@@ -165,9 +182,11 @@ fun ID4ClientSearchButton(
                                     client = client,
                                     onClick = {
                                         onClientSelected(client)
-                                        isSearchMode = false
-                                        searchQuery = ""
-                                        showDropdown = false
+                                        resetSearchMode {
+                                            isSearchMode = false
+                                            searchQuery = ""
+                                            showDropdown = false
+                                        }
                                     }
                                 )
                             }
@@ -177,13 +196,44 @@ fun ID4ClientSearchButton(
             }
         }
     }
+}
 
-    // Auto-focus when entering search mode
-    LaunchedEffect(isSearchMode) {
-        if (isSearchMode) {
-            // Focus will be handled by the FocusRequester
+@SuppressLint("DefaultLocale")
+private fun createNewClient(
+    query: String,
+    locationTracker: LocationTracker?,
+    hClientRepository: HClientRepository,
+    zAppComptRepositoryComposable: ZAppCompt_RepositoryComposable,
+    onClientSelected: (HClientInfos) -> Unit
+) {
+    val currentLocation = locationTracker?.getCurrentPosition()
+
+    val newClient = HClientInfos(
+        nom = query.ifEmpty { "Err Definition" },
+        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
+        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
+        caMarqueGpsEstOuvert = currentLocation != null,
+        title = query.ifEmpty { "Nouveau Client" },
+        snippet = if (currentLocation != null) {
+            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
+                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
+        } else {
+            "Position non disponible"
         }
+    )
+
+    hClientRepository.upsertData(newClient)
+
+    zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
+        val updatedAppCompt = appCompt.copy(onVentFClientKeyID = newClient.keyID)
+        zAppComptRepositoryComposable.addOrUpdateData(updatedAppCompt)
     }
+
+    onClientSelected(newClient)
+}
+
+private inline fun resetSearchMode(action: () -> Unit) {
+    action()
 }
 
 @Composable
@@ -199,7 +249,6 @@ fun ClientSearchItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Client state indicator
         Box(
             modifier = Modifier
                 .size(12.dp)
@@ -209,9 +258,7 @@ fun ClientSearchItem(
                 )
         )
 
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = client.nom,
                 style = MaterialTheme.typography.bodyMedium,
@@ -224,9 +271,15 @@ fun ClientSearchItem(
                     color = Color.Gray
                 )
             }
+            if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
+                Text(
+                    text = "📍 ${String.format("%.4f", client.latitude)}, ${String.format("%.4f", client.longitude)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF4CAF50)
+                )
+            }
         }
 
-        // Client type icon
         Icon(
             imageVector = client.clientTypeMode.icon,
             contentDescription = null,

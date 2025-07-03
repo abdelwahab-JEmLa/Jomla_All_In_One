@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.ZAppCompt_RepositoryComposable
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import V.DiviseParSections.App.Shared.Repository.ID2HClientInfos.Repository.HClientRepository
+import V.DiviseParSections.App.Shared.Repository.MID2ClientRepository.Repository.HClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVentRepository
 
