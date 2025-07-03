@@ -48,7 +48,7 @@ class ID2ClientRepository(
     val onVentId2ClientInfos by derivedStateOf {
         datasValue.find {
             it.keyID ==
-                    id8BonVentRepository.onVentId8BonVent.parentId2ClientInfosKeyID
+                    id8BonVentRepository.onVentId8BonVent?.parentId2ClientInfosKeyID
         }
     }
 

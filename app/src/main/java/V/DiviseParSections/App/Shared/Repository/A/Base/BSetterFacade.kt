@@ -3,13 +3,13 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import com.google.firebase.database.DatabaseReference
 
 class BSetterFacade(
@@ -56,7 +56,16 @@ class BSetterFacade(
             hClientRepository = hClientRepository,
         )
 
-    fun upsertBonVentSetter(keyHandBonVent: String) {
+
+    fun lenceNeveauBonVentFacade(keyHandBonVent: String, id8BonVent: GBonVent? =null) {
+        val id8BonVentRepository= getter.id8BonVentRepository
+        val datas= getter.id8BonVentRepository.datasValue
+        id8BonVent?.let {
+            id8BonVentRepository.defaultId8BonVent.copy(
+
+            )
+        }
+
         upsertBonVent(
             keyHandBonVent,
             gBonVentRepository = getter.id8BonVentRepository,

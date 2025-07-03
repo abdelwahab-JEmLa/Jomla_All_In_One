@@ -89,7 +89,8 @@ fun ID4ClientSearchButton(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
     ) {
         if (!isSearchMode) {
             FloatingActionButton(
@@ -105,30 +106,30 @@ fun ID4ClientSearchButton(
             }
 
             if (showLabels) {
-                Text(
-                    text = if (isTextCollapsed) {
-                        // Collapsed state - show only client name or short text
-                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                            onVentId8BonVent.nomClientConcerned
+                if (onVentId8BonVent != null) {
+                    Text(
+                        text = if (isTextCollapsed) {
+                            if (onVentId8BonVent.nomClientConcerned.isNotBlank() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                                onVentId8BonVent.nomClientConcerned
+                            } else {
+                                "Client"
+                            }
                         } else {
-                            "Client"
-                        }
-                    } else {
-                        // Expanded state - show full text with timestamp
-                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                            "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
-                        } else {
-                            "Rechercher Client"
-                        }
-                    },
-                    modifier = Modifier
-                        .background(Color(0xFF4CAF50))
-                        .padding(4.dp)
-                        .clickable {
-                            isTextCollapsed = !isTextCollapsed
+                            if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                                "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
+                            } else {
+                                "Rechercher Client"
+                            }
                         },
-                    color = Color.White
-                )
+                        modifier = Modifier
+                            .background(Color(0xFF4CAF50))
+                            .padding(4.dp)
+                            .clickable {
+                                isTextCollapsed = !isTextCollapsed
+                            },
+                        color = Color.White
+                    )
+                }
             }
         } else {
             Column {

@@ -50,10 +50,8 @@ fun upsertBonVent(
 
 private fun findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent: String): GBonVent.EtateActuellementEst {
     return try {
-        // Try to find the enum value by name
         GBonVent.EtateActuellementEst.valueOf(parentID8C2TypeTransactionKeyByParent)
     } catch (e: IllegalArgumentException) {
-        // If direct valueOf fails, try to match by ordinal or other patterns
         when (parentID8C2TypeTransactionKeyByParent.uppercase()) {
             "ON_MODE_COMMEND_ACTUELLEMENT" -> GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             "A_COMMANDE_CONFIRME" -> GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME

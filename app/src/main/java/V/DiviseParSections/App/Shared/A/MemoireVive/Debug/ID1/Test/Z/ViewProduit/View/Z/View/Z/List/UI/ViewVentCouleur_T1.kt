@@ -5,8 +5,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +64,11 @@ fun ViewVentCouleur_T1(
     val haptic = LocalHapticFeedback.current
 
     val defaultVent by remember {
-        derivedStateOf { viewModel.createDefaultVent(color, produit, appCompt, onVentData) }
+        derivedStateOf { onVentData?.let {
+            viewModel.createDefaultVent(color, produit, appCompt,
+                it
+            )
+        } }
     }
 
     val ventUIState = remember(existingVent, uiState) {
@@ -101,9 +105,13 @@ fun ViewVentCouleur_T1(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val vent = existingVent ?: defaultVent
                                 if (existingVent == null) {
-                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
+                                    if (vent != null) {
+                                        viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
+                                    }
                                 }
-                                viewModel.showQuantityDialog(vent.keyID)
+                                if (vent != null) {
+                                    viewModel.showQuantityDialog(vent.keyID)
+                                }
                             }
                         )
                     }
@@ -115,9 +123,13 @@ fun ViewVentCouleur_T1(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val vent = existingVent ?: defaultVent
                                 if (existingVent == null) {
-                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
+                                    if (vent != null) {
+                                        viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
+                                    }
                                 }
-                                viewModel.showQuantityDialog(vent.keyID)
+                                if (vent != null) {
+                                    viewModel.showQuantityDialog(vent.keyID)
+                                }
                             }
                         )
                     }

@@ -40,7 +40,7 @@ fun CommandButton(
             .testTag(tag)
         ,
         onClick = {
-            viewModel.setter.upsertBonVentSetter(tag)
+            viewModel.setter.lenceNeveauBonVentFacade(tag)
             onUpdateLongAppSetting()
         },
         colors = ButtonDefaults.filledTonalButtonColors(

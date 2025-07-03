@@ -3,8 +3,10 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,7 +75,7 @@ class ViewModelsProduit_T1(
             it.parentBProduitInfosKeyId == produit?.keyID && it.parentCouleurInfosKeyID == color.key
         }
 
-    fun createDefaultVent(color: B1CouleurOuGoutProduitDataBase, produit: ArticlesBasesStatsTable?, appCompt: Any?, onVentData: Any) =
+    fun createDefaultVent(color: B1CouleurOuGoutProduitDataBase, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
         FCouleurVentOperationInfos(
             keyID = "vent_${color.key}_${produit?.keyID}",
             parentZAppComptID = extractField(appCompt, "keyID") ?: "Non Definie",
