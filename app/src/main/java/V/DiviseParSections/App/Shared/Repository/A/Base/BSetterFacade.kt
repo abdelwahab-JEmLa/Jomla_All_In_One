@@ -10,6 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import com.google.firebase.database.DatabaseReference
 
 class BSetterFacade(
@@ -61,24 +62,34 @@ class BSetterFacade(
 
     fun lenceNeveauBonVentFacade(keyHandBonVent: String, id8BonVent: GBonVent? = null) {
         val newData = id8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
-        val currentAppCompt = id9AppComptRepository.currentAppCompt
 
         if (newData != null) {
-            id8BonVentRepository.upsert(newData)
-            currentAppCompt?.copy(
-                id8BonVentonVentKey = newData.keyID,
-                id8BonVentDebugNameKey = newData.keyID,
-            )?.let {
-                id9AppComptRepository.upsert(
-                    it
-                )
-            }
+            ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(newData, id9AppComptRepository)
         } else {
             upsertBonVent(
                 keyHandBonVent,
                 gBonVentRepository = getter.id8BonVentRepository,
                 hClientRepository = hClientRepository,
                 parametresAppComptNonSaved
+            )
+        }
+    }
+
+    fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
+        id8BonVent: GBonVent,
+        id9AppComptRepository: Repo9AppCompt
+    ) {
+        val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())
+        val currentAppCompt = id9AppComptRepository.currentAppCompt
+
+        id8BonVentRepository.upsert(newData)
+
+        currentAppCompt?.copy(
+            id8BonVentonVentKey = newData.keyID,
+            id8BonVentDebugNameKey = newData.keyID,
+        )?.let {
+            id9AppComptRepository.upsert(
+                it
             )
         }
     }

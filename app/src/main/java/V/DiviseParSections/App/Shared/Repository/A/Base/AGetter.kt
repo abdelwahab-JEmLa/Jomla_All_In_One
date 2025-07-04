@@ -10,8 +10,8 @@ import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
@@ -61,14 +61,14 @@ class AGetter(
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val iD2ClientRepository: ID2ClientRepository,
-    val id8BonVentRepository: Id8BonVentRepository,
+    val id8BonVentRepository: Repo8BonVent,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val kAchatRepository: KAchatCouleurOperationRepository,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
-    val id9AppComptRepository: Id9AppComptRepository,
+    val id9AppComptRepository: Repo9AppCompt,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {

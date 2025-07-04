@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repos
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 @Stable
 class FVentCouleurOperationRepository(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
-    val zAppComptRepositoryComposable: Id9AppComptRepository,
+    val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())

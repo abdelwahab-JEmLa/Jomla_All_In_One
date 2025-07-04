@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @Stable
-class Id9AppComptRepository(
-    private val ancienRepo: Z_AppComptRepositoryProtoJuin17
+class Repo9AppCompt(
+    private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
 ) {
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO)

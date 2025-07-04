@@ -3,14 +3,14 @@ package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repos
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 
 fun upsertVentCouleurOperation(
     fCouleurVentOperation: FCouleurVentOperationInfos? = null,
     produit: ArticlesBasesStatsTable,
     colorIndex: Int,
     quantity: Int,
-    zAppComptRepositoryComposable: Id9AppComptRepository,
+    zAppComptRepositoryComposable: Repo9AppCompt,
     getter: AGetter,
 ) {
     val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)

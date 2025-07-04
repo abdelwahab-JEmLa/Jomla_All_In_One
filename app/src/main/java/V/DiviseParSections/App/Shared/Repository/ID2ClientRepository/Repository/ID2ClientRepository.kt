@@ -3,8 +3,8 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
@@ -35,8 +35,8 @@ import org.mongodb.kbson.BsonObjectId
 class ID2ClientRepository(
     val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    val zAppComptRepositoryComposable: Id9AppComptRepository,
-    val id8BonVentRepository: Id8BonVentRepository,
+    val zAppComptRepositoryComposable: Repo9AppCompt,
+    val id8BonVentRepository: Repo8BonVent,
 ) {
     val TAG_REPO = "ID2ClientRepository"
     private val composScope = CoroutineScope(Dispatchers.IO)

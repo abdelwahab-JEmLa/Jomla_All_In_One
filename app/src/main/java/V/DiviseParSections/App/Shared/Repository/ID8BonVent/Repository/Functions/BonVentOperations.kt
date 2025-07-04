@@ -3,14 +3,14 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 class BonVentOperations(
     private val getter: AGetter,
-    private val gBonVentRepository: Id8BonVentRepository,
-    private val zAppComptRepositoryComposable: Id9AppComptRepository
+    private val gBonVentRepository: Repo8BonVent,
+    private val zAppComptRepositoryComposable: Repo9AppCompt
 ) {
     val hClientRepository = getter.iD2ClientRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved

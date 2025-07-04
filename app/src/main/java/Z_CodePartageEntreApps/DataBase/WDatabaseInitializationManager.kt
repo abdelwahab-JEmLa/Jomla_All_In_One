@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
@@ -13,7 +13,7 @@ import kotlinx.coroutines.sync.withLock
 
 class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
-    val appComptComposeRepositoryPJ17: Id9AppComptRepository,
+    val appComptComposeRepositoryPJ17: Repo9AppCompt,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
     val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.runtime.Stable
@@ -26,9 +26,9 @@ import java.util.Locale
 import java.util.Objects
 
 @Stable
-class Id8BonVentRepository(
+class Repo8BonVent(
     val dataBaseCreationFactory: DataBaseCreationFactoryGBonVent,
-    val zAppComptRepositoryComposable: Id9AppComptRepository,
+    val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
@@ -73,6 +73,20 @@ class Id8BonVentRepository(
                 }
             }
         }
+        ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
+    }
+
+    fun add(data: GBonVent) {
+        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                        add(dataUpdate)
+                }
+            }
+        }
+
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 

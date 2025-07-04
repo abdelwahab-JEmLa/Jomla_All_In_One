@@ -2,8 +2,8 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.lifecycle.ViewModel
@@ -21,9 +21,9 @@ class ViewModelPresistantButtonsSec8FWinID1(
     data class UiState(
         val hClientRepository: ID2ClientRepository,
         val expandButon: Map.Entry<Button, Boolean>? = null,
-        val zAppComptRepositoryComposable: Id9AppComptRepository,
+        val zAppComptRepositoryComposable: Repo9AppCompt,
         val f: Int = 0,
-        val id8BonVentRepository: Id8BonVentRepository,
+        val id8BonVentRepository: Repo8BonVent,
     ) {
         enum class Button(val nom: String) { ID4("ClientSearchButton") }
     }

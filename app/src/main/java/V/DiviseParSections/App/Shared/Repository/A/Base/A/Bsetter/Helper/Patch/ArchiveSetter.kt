@@ -9,8 +9,8 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
@@ -23,8 +23,8 @@ class BSetterP (
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
     val hClientRepository: ID2ClientRepository,
-    val gBonVentRepository: Id8BonVentRepository,
-    val zAppComptRepositoryComposable: Id9AppComptRepository,
+    val gBonVentRepository: Repo8BonVent,
+    val zAppComptRepositoryComposable: Repo9AppCompt,
     val navigationHandler: FragmentNavigationHandler
 ) {
     private val setterScope = CoroutineScope(Dispatchers.IO)

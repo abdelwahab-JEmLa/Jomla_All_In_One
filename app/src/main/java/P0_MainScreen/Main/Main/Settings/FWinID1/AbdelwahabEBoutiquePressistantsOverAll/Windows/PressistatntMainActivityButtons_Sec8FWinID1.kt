@@ -6,7 +6,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -275,7 +275,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
 @Composable
 fun Button1(
-    appComptComposeRepositoryProtoJuin17: Id9AppComptRepository,
+    appComptComposeRepositoryProtoJuin17: Repo9AppCompt,
     showLabels: Boolean,
     onClickPourAfficheDialog: () -> Unit = {}
 ) {

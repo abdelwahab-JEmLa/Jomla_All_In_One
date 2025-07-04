@@ -4,8 +4,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Id9AppComptRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +17,14 @@ class ViewModelMainFastSearchProduitPourVent(
     val getter = aCentral.getter
 
     data class UiState(
-        val zAppComptRepositoryComposable: Id9AppComptRepository,
+        val zAppComptRepositoryComposable: Repo9AppCompt,
         val bProduitInfosRepository: BProduitInfosRepository,
         val searchText: String = "",
         val isLoading: Boolean = false,
         val showAddDialog: Boolean = false,
         val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
         val iD2ClientRepository: ID2ClientRepository,
-        val id8BonVentRepository: Id8BonVentRepository
+        val id8BonVentRepository: Repo8BonVent
     )
 
     private val _uiState = MutableStateFlow(

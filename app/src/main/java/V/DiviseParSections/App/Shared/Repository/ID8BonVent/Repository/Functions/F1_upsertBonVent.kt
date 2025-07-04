@@ -5,12 +5,12 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSav
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Id8BonVentRepository
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 fun upsertBonVent(
     keyByParentBonVentOnClickButton: String = "",
-    gBonVentRepository: Id8BonVentRepository,
+    gBonVentRepository: Repo8BonVent,
     hClientRepository: ID2ClientRepository,
     parametresAppComptNonSaved: ParametresAppComptNonSaved,
 ) {
