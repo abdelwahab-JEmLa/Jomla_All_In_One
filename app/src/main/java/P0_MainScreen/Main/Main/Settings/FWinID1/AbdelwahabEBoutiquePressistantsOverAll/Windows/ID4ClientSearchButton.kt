@@ -307,6 +307,7 @@ private fun CreateNewClientIcon(
 
     IconButton(
         onClick = {
+            viewModel.setter.addNewM2ClientInfos(newClient)
             viewModel.setter.addNewM8BonVent(updatedDefaultOnVentID8BonVentEtAdd)
             if (updatedAppCompt != null) {
                 viewModel.setter.updateM9AppCompt(updatedAppCompt)

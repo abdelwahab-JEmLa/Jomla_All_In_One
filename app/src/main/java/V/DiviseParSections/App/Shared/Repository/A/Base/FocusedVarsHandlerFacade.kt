@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -72,11 +73,13 @@ class GetterFocusedVars(
 
 @Stable
 class SetterFocusedVars(
+    val Repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
     val repo9AppCompt: Repo9AppCompt,
 ) {
     fun addNewM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
     fun updateM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+    fun addNewM2ClientInfos(newClient: HClientInfos)  = Repo2Client.addClient(newClient)
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
