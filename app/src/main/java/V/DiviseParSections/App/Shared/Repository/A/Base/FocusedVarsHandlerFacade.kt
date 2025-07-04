@@ -67,7 +67,7 @@ private fun focuceBonVentAuAppCompt(
 ) {
     currentAppCompt?.copy(
         id8BonVentonVentKey = newData.keyID,
-        id8BonVentDebugNameKey = newData.keyID,
+        id8BonVentDebugNameKey = newData.dataDebugInfos,
     )?.let {
         id9AppComptRepository.upsert(
             it

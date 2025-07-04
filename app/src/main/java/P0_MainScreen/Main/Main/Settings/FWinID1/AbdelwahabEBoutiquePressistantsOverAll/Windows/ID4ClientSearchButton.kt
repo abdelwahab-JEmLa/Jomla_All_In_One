@@ -188,14 +188,14 @@ fun ID4ClientSearchButton(
 
                             val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
                                 creationTimestamps = System.currentTimeMillis(),
-                                parentKeyM2ClientInfos = newClient.keyID,
-                                parentDebugNameM2ClientInfos = newClient.nom
+                                parentM2ClientInfosKey = newClient.keyID,
+                                parentM2ClientInfosDebugName = newClient.nom
                             )
 
                             val updatedAppCompt =
                                 zAppComptRepositoryComposable.currentAppCompt?.copy(
                                     id8BonVentonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentDebugNameM2ClientInfos
+                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
                                 )
 
                             IconButton(
@@ -285,23 +285,24 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val (semanticsKey, semanticsValue) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
+
+    val newM8BonVent = semanticsValue.copy(
+        dataDebugInfos = client.nom,
+
+        parentM2ClientInfosKey = client.keyID,
+        parentM2ClientInfosDebugName = client.nom
+    )
+
     Row(
         modifier = Modifier
             .semantics {
                 set(
-                    semanticsKey, semanticsValue.copy(
-                        parentKeyM2ClientInfos = client.keyID,
-                        parentDebugNameM2ClientInfos = client.nom
-                    )
+                    semanticsKey, newM8BonVent
                 )
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.focuceAddNewM8BonVent(
-                    uiState.getter.defaultId8BonVent.copy(
-
-                    )
-                )
+                viewModel.setter.focuceAddNewM8BonVent(newM8BonVent)
                 onClick()
             }
             .padding(12.dp),

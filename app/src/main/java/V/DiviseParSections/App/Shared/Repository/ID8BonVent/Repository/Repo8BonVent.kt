@@ -115,6 +115,7 @@ data class GBonVent(
 
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
+    var dataDebugInfos: String = "",
 
     //Section Forging Keys
     //PeriodeVen
@@ -126,8 +127,8 @@ data class GBonVent(
     var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
-    var parentKeyM2ClientInfos: String = "Non Defini",
-    var parentDebugNameM2ClientInfos: String = "",
+    var parentM2ClientInfosKey: String = "Non Defini",
+    var parentM2ClientInfosDebugName: String = "",
 
     var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,

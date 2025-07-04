@@ -29,7 +29,7 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
             GBonVent(
                 keyID = newTransactionKey,
                 parentKeyId7VentPeriod = zCompt.onVentHVentPeriodKeyId,
-                parentKeyM2ClientInfos = client.keyID,
+                parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = zCompt.keyID,
