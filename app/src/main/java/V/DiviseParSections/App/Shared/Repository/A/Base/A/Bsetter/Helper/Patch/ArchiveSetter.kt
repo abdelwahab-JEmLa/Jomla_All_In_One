@@ -130,8 +130,8 @@ class BSetterP (
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
-            id8BonVentonVentKey = newTransactionKey,
-            id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+            onVentM8BonVentKey = newTransactionKey,
+            onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
         )
 
         zAppComptRepositoryComposable.upsert(zCompt)
@@ -162,8 +162,8 @@ class BSetterP (
 
         if (client != null && currentZCompt != null) {
             val updatedZCompt = currentZCompt.copy(
-                id8BonVentonVentKey = key,
-                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentM8BonVentKey = key,
+                onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
             )
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
@@ -197,8 +197,8 @@ class BSetterP (
         if (client != null && currentZCompt != null && existingBonVent != null) {
             // Update the current app compt
             val updatedZCompt = currentZCompt.copy(
-                id8BonVentonVentKey = key,
-                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentM8BonVentKey = key,
+                onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
             )
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
@@ -218,7 +218,7 @@ class BSetterP (
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            id8BonVentonVentKey = keyID,
+            onVentM8BonVentKey = keyID,
         )
 
         if (zCompt != null) {
@@ -235,7 +235,7 @@ class BSetterP (
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            id8BonVentonVentKey = "",
+            onVentM8BonVentKey = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 
@@ -256,7 +256,7 @@ class BSetterP (
 
     fun cleanFermeAppComptOnVentBonVent() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            id8BonVentonVentKey = "",
+            onVentM8BonVentKey = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 

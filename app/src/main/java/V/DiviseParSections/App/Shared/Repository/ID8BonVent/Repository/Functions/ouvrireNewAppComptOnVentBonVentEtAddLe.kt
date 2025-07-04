@@ -19,8 +19,8 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
         val newTransactionKey = GBonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
-            id8BonVentonVentKey = newTransactionKey,
-            id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+            onVentM8BonVentKey = newTransactionKey,
+            onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
         )
 
         zAppComptRepositoryComposable.upsert(zCompt)

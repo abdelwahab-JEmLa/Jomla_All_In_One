@@ -86,8 +86,8 @@ class BSetterFacade(
         id8BonVentRepository.upsert(newData)
 
         currentAppCompt?.copy(
-            id8BonVentonVentKey = newData.keyID,
-            id8BonVentDebugNameKey = newData.keyID,
+            onVentM8BonVentKey = newData.keyID,
+            onVentM8BonVentDebugInfos = newData.keyID,
         )?.let {
             id9AppComptRepository.upsert(
                 it

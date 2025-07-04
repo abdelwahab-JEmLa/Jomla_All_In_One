@@ -36,8 +36,8 @@ class BonVentOperations(
 
         if (client != null && currentZCompt != null) {
             val updatedZCompt = currentZCompt.copy(
-                id8BonVentonVentKey = key,
-                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentM8BonVentKey = key,
+                onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
             )
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
@@ -74,8 +74,8 @@ class BonVentOperations(
         if (client != null && currentZCompt != null && existingBonVent != null) {
             // Update the current app compt
             val updatedZCompt = currentZCompt.copy(
-                id8BonVentonVentKey = key,
-                id8BonVentDebugNameKey = "(${client.nom})=${client.id}",
+                onVentM8BonVentKey = key,
+                onVentM8BonVentDebugInfos = "(${client.nom})=${client.id}",
             )
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
@@ -104,7 +104,7 @@ class BonVentOperations(
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            id8BonVentonVentKey = "",
+            onVentM8BonVentKey = "",
             bOuvertDialogMapMarqueHClientKey = ""
         )
 

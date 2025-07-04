@@ -47,7 +47,7 @@ class Repo8BonVent(
 
     val onVentId8BonVent by derivedStateOf {
         datasValue.find {
-            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.id8BonVentonVentKey
+            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
         }?: defaultId8BonVent
     }
 

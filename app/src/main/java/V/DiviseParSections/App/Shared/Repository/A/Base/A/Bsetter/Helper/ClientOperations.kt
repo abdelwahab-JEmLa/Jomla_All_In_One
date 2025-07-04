@@ -34,7 +34,7 @@ class ClientOperations(
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            id8BonVentonVentKey = keyID,
+            onVentM8BonVentKey = keyID,
         )
 
         if (zCompt != null) {

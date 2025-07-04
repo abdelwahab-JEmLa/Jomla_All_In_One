@@ -131,7 +131,7 @@ class AGetter(
     fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperationInfos? {
         val ouvertData = id9AppComptRepository.currentAppCompt ?: return null
 
-        val bonVentKey = ouvertData.id8BonVentonVentKey
+        val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
             operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentGBonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
@@ -251,7 +251,7 @@ class AGetter(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHVentPeriodKeyId + "--${compt.id8BonVentonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
+            return compt.onVentHVentPeriodKeyId + "--${compt.onVentM8BonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }
     }
 }

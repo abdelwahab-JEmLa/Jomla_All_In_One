@@ -124,8 +124,8 @@ data class Z_AppCompt(
     var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
 
     //Section Parent Transaction
-    var id8BonVentonVentKey: String = "",
-    var id8BonVentDebugNameKey: String = "",
+    var onVentM8BonVentKey: String = "",
+    var onVentM8BonVentDebugInfos: String = "",
 
     var onVentID1ProduitInfosKeyID: String = "",
     var onVentID1ProduitInfosDebugName: String = "",

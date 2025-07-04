@@ -9,18 +9,18 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 
-class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars, )
+class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars)
 
 @Stable
 class GetterFocusedVars(
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
 ) {
-    val currentAppCompt by derivedStateOf { repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" } }
+    val currentM9AppCompt by derivedStateOf { repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" } }
 
     val onVentId8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find {
-            it.keyID == repo9AppCompt.currentAppCompt?.id8BonVentonVentKey
+            it.keyID == repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
         } ?: defaultId8BonVent
     }
 
@@ -35,10 +35,31 @@ class GetterFocusedVars(
         )
     }
 
-    fun getSemantics_defaultId8BonVent(): Pair<SemanticsPropertyKey<GBonVent>, GBonVent> {
-        return Pair(SemanticsPropertyKey("DebugID1=defaultId8BonVent"), defaultId8BonVent)
+    fun getSemantics_defaultId8BonVent(): Pair<SemanticsKeys, SemanticsValues> {
+        val semanticsKeys = SemanticsKeys(
+            m8Key = SemanticsPropertyKey("DebugID1=defaultId8BonVent"),
+            m9Key = SemanticsPropertyKey("DebugID1=currentM9AppCompt")
+        )
+
+        val semanticsValues = SemanticsValues(
+            m8Value = defaultId8BonVent,
+            m9Value = currentM9AppCompt
+        )
+
+        return Pair(semanticsKeys, semanticsValues)
     }
+
+    data class SemanticsKeys(
+        val m8Key: SemanticsPropertyKey<GBonVent>,
+        val m9Key: SemanticsPropertyKey<Z_AppCompt?>
+    )
+
+    data class SemanticsValues(
+        val m8Value: GBonVent,
+        val m9Value: Z_AppCompt?
+    )
 }
+
 
 @Stable
 class SetterFocusedVars(
@@ -66,8 +87,8 @@ private fun focuceBonVentAuAppCompt(
     id9AppComptRepository: Repo9AppCompt
 ) {
     currentAppCompt?.copy(
-        id8BonVentonVentKey = newData.keyID,
-        id8BonVentDebugNameKey = newData.dataDebugInfos,
+        onVentM8BonVentKey = newData.keyID,
+        onVentM8BonVentDebugInfos = newData.dataDebugInfos,
     )?.let {
         id9AppComptRepository.upsert(
             it

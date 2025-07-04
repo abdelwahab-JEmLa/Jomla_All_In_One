@@ -194,8 +194,8 @@ fun ID4ClientSearchButton(
 
                             val updatedAppCompt =
                                 zAppComptRepositoryComposable.currentAppCompt?.copy(
-                                    id8BonVentonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
+                                    onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
+                                    onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
                                 )
 
                             IconButton(
@@ -284,30 +284,35 @@ fun ClientSearchItem(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val (semanticsKey, semanticsValue) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
+    val (semanticsKeys, semanticsValues) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
 
-    val newM8BonVent = semanticsValue.copy(
+    val afterUpdateSemanticsValues = semanticsValues.m8Value.copy(
         dataDebugInfos = client.nom,
 
         parentM2ClientInfosKey = client.keyID,
         parentM2ClientInfosDebugName = client.nom
     )
 
+    val afterUpdateSemanticsValues_m9Value = semanticsValues.m9Value?.copy(
+        onVentM8BonVentKey = afterUpdateSemanticsValues.keyID,
+        onVentM8BonVentDebugInfos = afterUpdateSemanticsValues.dataDebugInfos
+    )
+
     Row(
         modifier = Modifier
             .semantics {
-                set(
-                    semanticsKey, newM8BonVent
-                )
+                set(semanticsKeys.m8Key, afterUpdateSemanticsValues)
+                set(semanticsKeys.m9Key, afterUpdateSemanticsValues_m9Value)
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.focuceAddNewM8BonVent(newM8BonVent)
+                viewModel.setter.focuceAddNewM8BonVent(afterUpdateSemanticsValues)
                 onClick()
             }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Box(
             modifier = Modifier
                 .size(12.dp)
@@ -347,7 +352,7 @@ fun ClientSearchItem(
                 modifier = Modifier.size(16.dp)
             )
             Icon(
-                imageVector =  Icons.Default.Receipt,
+                imageVector = Icons.Default.Receipt,
                 contentDescription = null,
                 tint = client.clientTypeMode.color,
                 modifier = Modifier.size(16.dp)
