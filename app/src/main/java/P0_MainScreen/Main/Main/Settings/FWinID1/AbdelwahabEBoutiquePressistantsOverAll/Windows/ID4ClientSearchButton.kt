@@ -114,12 +114,7 @@ fun ID4ClientSearchButton(
                         )
                     },
                 onClick = {
-                    performSearchButtonClick(
-                        coroutineScope = coroutineScope,
-                        onSearchModeChange = { isSearchMode = it },
-                        onSearchQueryChange = { searchQuery = it },
-                        focusRequester = focusRequester
-                    )
+                    isSearchMode = true
                 },
                 containerColor = Color(0xFF4CAF50)
             ) {
