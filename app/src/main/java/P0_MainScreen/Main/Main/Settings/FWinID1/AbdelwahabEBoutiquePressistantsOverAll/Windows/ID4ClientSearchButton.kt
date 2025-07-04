@@ -274,7 +274,8 @@ private inline fun resetSearchMode(action: () -> Unit) {
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
-    client: HClientInfos, onClick: () -> Unit
+    client: HClientInfos,
+    onClick: () -> Unit
 ) {
     Row(modifier = Modifier
         .semantics {
