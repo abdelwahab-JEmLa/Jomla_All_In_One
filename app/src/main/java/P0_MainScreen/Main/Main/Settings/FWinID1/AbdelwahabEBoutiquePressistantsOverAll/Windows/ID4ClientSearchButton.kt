@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -283,20 +284,24 @@ fun ClientSearchItem(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
+    val (semanticsKey, semanticsValue) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
     Row(
         modifier = Modifier
             .semantics {
-                val (semanticsKey, semanticsValue) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
-                set(semanticsKey, semanticsValue.copy(
-                    parentKeyM2ClientInfos = client.keyID,
-                    parentDebugNameM2ClientInfos = client.nom
-                ))
+                set(
+                    semanticsKey, semanticsValue.copy(
+                        parentKeyM2ClientInfos = client.keyID,
+                        parentDebugNameM2ClientInfos = client.nom
+                    )
+                )
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.focuceAddNewM8BonVent(uiState.getter.defaultId8BonVent.copy(
+                viewModel.setter.focuceAddNewM8BonVent(
+                    uiState.getter.defaultId8BonVent.copy(
 
-                ))
+                    )
+                )
                 onClick()
             }
             .padding(12.dp),
@@ -333,12 +338,19 @@ fun ClientSearchItem(
                 )
             }
         }
-
-        Icon(
-            imageVector = client.clientTypeMode.icon,
-            contentDescription = null,
-            tint = client.clientTypeMode.color,
-            modifier = Modifier.size(16.dp)
-        )
+        Row {
+            Icon(
+                imageVector = client.clientTypeMode.icon,
+                contentDescription = null,
+                tint = client.clientTypeMode.color,
+                modifier = Modifier.size(16.dp)
+            )
+            Icon(
+                imageVector =  Icons.Default.Receipt,
+                contentDescription = null,
+                tint = client.clientTypeMode.color,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
