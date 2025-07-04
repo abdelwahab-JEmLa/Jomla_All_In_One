@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference
 
 class BSetterFacade(
     private val getter: AGetter,
+    val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
     private val produitOperations: ProduitOperations,
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
@@ -60,11 +61,11 @@ class BSetterFacade(
         )
 
 
-    fun lenceNeveauBonVentFacade(keyHandBonVent: String, id8BonVent: GBonVent? = null) {
-        val newData = id8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
+    fun lenceNeveauBonVentFacade(keyHandBonVent: String, m8BonVent: GBonVent? = null) {
+        val newData = m8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
 
         if (newData != null) {
-            ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(newData, id9AppComptRepository)
+            focusedVarsHandlerFacade.setter.focuceM8BonVent(m8BonVent)
         } else {
             upsertBonVent(
                 keyHandBonVent,

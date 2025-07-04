@@ -217,8 +217,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         hClientRepository = uiState.hClientRepository,
                         zAppComptRepositoryComposable = uiState.zAppComptRepositoryComposable,
                         showLabels = showLabels,
-                        onClientSelected = { selectedClient ->
-                            // Handle client selection here
+                        onClientSelectedToToast = { selectedClient ->
                             currentToast = ToastData(
                                 message = "Client sélectionné: ${selectedClient.nom}",
                                 type = ToastType.SUCCESS,

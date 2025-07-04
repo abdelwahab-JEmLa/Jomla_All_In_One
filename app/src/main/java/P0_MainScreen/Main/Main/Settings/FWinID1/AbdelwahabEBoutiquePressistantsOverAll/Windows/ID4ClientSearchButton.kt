@@ -59,7 +59,7 @@ fun ID4ClientSearchButton(
     zAppComptRepositoryComposable: Repo9AppCompt,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
-    onClientSelected: (HClientInfos) -> Unit = {}
+    onClientSelectedToToast: (HClientInfos) -> Unit = {}
 ) {
 
     var isTextCollapsed by remember { mutableStateOf(false) }
@@ -77,8 +77,10 @@ fun ID4ClientSearchButton(
         delay(300)
         if (searchQuery.isNotEmpty()) {
             filteredClients = hClientRepository.datasValue.filter { client ->
-                client.nom.contains(searchQuery, ignoreCase = true) ||
-                        client.numTelephone.contains(searchQuery, ignoreCase = true)
+                client.nom.contains(searchQuery, ignoreCase = true) || client.numTelephone.contains(
+                    searchQuery,
+                    ignoreCase = true
+                )
             }
             showDropdown = filteredClients.isNotEmpty()
         } else {
@@ -98,12 +100,9 @@ fun ID4ClientSearchButton(
                     .size(40.dp)
                     .semantics(mergeDescendants = true) {
                         set(
-                            SemanticsPropertyKey("DebugID1=onVentId8BonVent"),
-                            onVentId8BonVent
+                            SemanticsPropertyKey("DebugID1=onVentId8BonVent"), onVentId8BonVent
                         )
-                    },
-                onClick = { isSearchMode = true },
-                containerColor = Color(0xFF4CAF50)
+                    }, onClick = { isSearchMode = true }, containerColor = Color(0xFF4CAF50)
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
@@ -114,27 +113,25 @@ fun ID4ClientSearchButton(
 
             if (showLabels) {
                 Text(
-                        text = if (isTextCollapsed) {
-                            if (onVentId8BonVent.nomClientConcerned.isNotBlank() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                                onVentId8BonVent.nomClientConcerned
-                            } else {
-                                "Client"
-                            }
+                    text = if (isTextCollapsed) {
+                        if (onVentId8BonVent.nomClientConcerned.isNotBlank() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                            onVentId8BonVent.nomClientConcerned
                         } else {
-                            if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                                "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
-                            } else {
-                                "Rechercher Client"
-                            }
-                        },
-                        modifier = Modifier
-                            .background(Color(0xFF4CAF50))
-                            .padding(4.dp)
-                            .clickable {
-                                isTextCollapsed = !isTextCollapsed
-                            },
-                        color = Color.White
-                    )
+                            "Client"
+                        }
+                    } else {
+                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                            "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
+                        } else {
+                            "Rechercher Client"
+                        }
+                    }, modifier = Modifier
+                        .background(Color(0xFF4CAF50))
+                        .padding(4.dp)
+                        .clickable {
+                            isTextCollapsed = !isTextCollapsed
+                        }, color = Color.White
+                )
             }
         } else {
             Column {
@@ -143,12 +140,15 @@ fun ID4ClientSearchButton(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
                         modifier = Modifier
+                            .semantics {
+
+                            }
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
                             .focusRequester(remember { FocusRequester() }),
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
                         placeholder = { Text("Nom ou téléphone...") },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -168,13 +168,16 @@ fun ID4ClientSearchButton(
                                     ?: HClientInfos.getCurrentDefaultLongitude(),
                                 caMarqueGpsEstOuvert = currentLocation != null,
                                 snippet = if (currentLocation != null) {
-                                    "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
-                                            "Lng: ${
-                                                String.format(
-                                                    "%.6f",
-                                                    currentLocation.longitude
-                                                )
-                                            }"
+                                    "Lat: ${
+                                        String.format(
+                                            "%.6f",
+                                            currentLocation.latitude
+                                        )
+                                    }, " + "Lng: ${
+                                        String.format(
+                                            "%.6f", currentLocation.longitude
+                                        )
+                                    }"
                                 } else {
                                     "Position non disponible"
                                 }
@@ -202,15 +205,14 @@ fun ID4ClientSearchButton(
                                         )
                                     }
 
-                                    onClientSelected(newClient)
+                                    onClientSelectedToToast(newClient)
 
                                     resetSearchMode {
                                         isSearchMode = false
                                         searchQuery = ""
                                         showDropdown = false
                                     }
-                                }
-                            ) {
+                                }) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = "Créer nouveau client",
@@ -219,8 +221,7 @@ fun ID4ClientSearchButton(
                                             SemanticsPropertyKey("DebugID1=HClientInfos"),
                                             HClientInfos()
                                         )
-                                    }
-                                )
+                                    })
                             }
                         },
                         trailingIcon = {
@@ -231,15 +232,12 @@ fun ID4ClientSearchButton(
                                         searchQuery = ""
                                         showDropdown = false
                                     }
-                                }
-                            ) {
+                                }) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Fermer"
+                                    imageVector = Icons.Default.Close, contentDescription = "Fermer"
                                 )
                             }
-                        }
-                    )
+                        })
                 }
 
                 if (showDropdown) {
@@ -252,16 +250,14 @@ fun ID4ClientSearchButton(
                         LazyColumn {
                             items(filteredClients) { client ->
                                 ClientSearchItem(
-                                    client = client,
-                                    onClick = {
-                                        onClientSelected(client)
+                                    client = client, onClick = {
+                                        onClientSelectedToToast(client)
                                         resetSearchMode {
                                             isSearchMode = false
                                             searchQuery = ""
                                             showDropdown = false
                                         }
-                                    }
-                                )
+                                    })
                             }
                         }
                     }
@@ -278,23 +274,22 @@ private inline fun resetSearchMode(action: () -> Unit) {
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
-    client: HClientInfos,
-    onClick: () -> Unit
+    client: HClientInfos, onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(12.dp),
+    Row(modifier = Modifier
+        .semantics {
+
+        }
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             modifier = Modifier
                 .size(12.dp)
                 .background(
-                    color = Color(client.actuelleEtat.color),
-                    shape = CircleShape
+                    color = Color(client.actuelleEtat.color), shape = CircleShape
                 )
         )
 
@@ -315,12 +310,9 @@ fun ClientSearchItem(
                 Text(
                     text = "📍 ${String.format("%.4f", client.latitude)}, ${
                         String.format(
-                            "%.4f",
-                            client.longitude
+                            "%.4f", client.longitude
                         )
-                    }",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF4CAF50)
+                    }", style = MaterialTheme.typography.bodySmall, color = Color(0xFF4CAF50)
                 )
             }
         }
