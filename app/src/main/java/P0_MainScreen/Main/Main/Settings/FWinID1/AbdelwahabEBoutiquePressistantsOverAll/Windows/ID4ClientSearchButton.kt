@@ -301,7 +301,7 @@ private fun CreateNewClientIcon(
         parentM2ClientInfosDebugName = newClient.nom
     )
 
-    val updatedAppCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+    val updatedAppCompt = viewModel.getterFocucedVars.currentM9AppCompt?.copy(
         onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
         onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
     )
@@ -319,11 +319,11 @@ private fun CreateNewClientIcon(
             onResetSearchMode()
         },
         modifier = Modifier.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("Debug M8BonVent"), updatedDefaultOnVentID8BonVentEtAdd)
+            set(SemanticsPropertyKey("Debug  new M8BonVent"), updatedDefaultOnVentID8BonVentEtAdd)
 
             set(
-                semanticsKeys.m9Key,
-                semanticsValues.m9Value
+                SemanticsPropertyKey("Debug currentM9AppCompt avec  new M8BonVent"),
+                updatedAppCompt
             )
         }
     ) {
