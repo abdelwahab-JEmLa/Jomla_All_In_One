@@ -107,7 +107,10 @@ fun ID4ClientSearchButton(
                     .size(40.dp)
                     .semantics(mergeDescendants = true) {
                         set(
-                            SemanticsPropertyKey("DebugID1=onVentId8BonVent"), onVentId8BonVent
+                            SemanticsPropertyKey("D1Debug== onVentId8BonVent"), onVentId8BonVent
+                        )
+                        set(
+                            SemanticsPropertyKey("D1Debug== currentM9AppCompt"), viewModel.getterFocucedVars.currentM9AppCompt
                         )
                     },
                 onClick = {
@@ -167,12 +170,9 @@ fun ID4ClientSearchButton(
                         ),
                         leadingIcon = {
                             CreateNewClientIcon(
-                                viewModel=viewModel,
                                 searchQuery = searchQuery,
                                 locationTracker = locationTracker,
                                 defaultId8BonVent = defaultId8BonVent,
-                                hClientRepository = hClientRepository,
-                                zAppComptRepositoryComposable = zAppComptRepositoryComposable,
                                 onClientSelectedToToast = onClientSelectedToToast,
                                 onResetSearchMode = {
                                     resetSearchMode {
@@ -180,7 +180,8 @@ fun ID4ClientSearchButton(
                                         searchQuery = ""
                                         showDropdown = false
                                     }
-                                }
+                                },
+                                viewModel=viewModel
                             )
                         },
                         trailingIcon = {
@@ -271,8 +272,6 @@ private fun CreateNewClientIcon(
     searchQuery: String,
     locationTracker: LocationTracker?,
     defaultId8BonVent: GBonVent,
-    hClientRepository: Repo2Client,
-    zAppComptRepositoryComposable: Repo9AppCompt,
     onClientSelectedToToast: (HClientInfos) -> Unit,
     onResetSearchMode: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
@@ -303,10 +302,8 @@ private fun CreateNewClientIcon(
 
     val updatedAppCompt = viewModel.getterFocucedVars.currentM9AppCompt?.copy(
         onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-        onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
+        onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.debugInfos
     )
-
-    val (semanticsKeys, semanticsValues) = viewModel.getterFocucedVars.getSemantics()
 
     IconButton(
         onClick = {
