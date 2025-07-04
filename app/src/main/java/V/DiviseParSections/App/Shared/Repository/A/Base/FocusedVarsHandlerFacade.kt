@@ -44,7 +44,7 @@ class GetterFocusedVars(
         }
     }
 
-    fun getSemantics_defaultId8BonVent(): Pair<SemanticsKeys, SemanticsValues> {
+    fun getSemantics(): Pair<SemanticsKeys, SemanticsValues> {
         val semanticsKeys = SemanticsKeys(
             m8Key = SemanticsPropertyKey("DebugID1=defaultId8BonVent"),
             m9Key = SemanticsPropertyKey("DebugID1=currentM9AppCompt")

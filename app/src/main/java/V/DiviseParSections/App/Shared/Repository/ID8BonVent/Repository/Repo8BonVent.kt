@@ -115,7 +115,7 @@ data class GBonVent(
 
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
-    var dataDebugInfos: String = "",
+    var debugInfos: String = "",
 
     //Section Forging Keys
     //PeriodeVen

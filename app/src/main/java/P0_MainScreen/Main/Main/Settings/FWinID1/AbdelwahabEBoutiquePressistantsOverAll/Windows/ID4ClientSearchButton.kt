@@ -51,9 +51,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -66,10 +64,11 @@ fun ID4ClientSearchButton(
     onClientSelectedToToast: (HClientInfos) -> Unit = {},
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    var isTextCollapsed by remember { mutableStateOf(false) }
     val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
-
     val getter = focusedVarsHandlerFacade.getter
+
+    var isTextCollapsed by remember { mutableStateOf(false) }
+
     val onVentId8BonVent = getter.onVentId8BonVent
     val defaultId8BonVent = getter.defaultId8BonVent
 
@@ -168,6 +167,7 @@ fun ID4ClientSearchButton(
                         ),
                         leadingIcon = {
                             CreateNewClientIcon(
+                                viewModel=viewModel,
                                 searchQuery = searchQuery,
                                 locationTracker = locationTracker,
                                 defaultId8BonVent = defaultId8BonVent,
@@ -244,23 +244,6 @@ private suspend fun performInitialSearch(
     }
 }
 
-// Extracted function for search button click
-private fun performSearchButtonClick(
-    coroutineScope: CoroutineScope,
-    onSearchModeChange: (Boolean) -> Unit,
-    onSearchQueryChange: (String) -> Unit,
-    focusRequester: FocusRequester
-) {
-    if (false) {
-        onSearchModeChange(true)
-        coroutineScope.launch {
-            delay(100)
-            onSearchQueryChange("mah")
-            focusRequester.requestFocus()
-        }
-    }
-}
-
 // Extracted function for client search logic
 private suspend fun performClientSearch(
     searchQuery: String,
@@ -282,7 +265,7 @@ private suspend fun performClientSearch(
     }
 }
 
-// Extracted composable for the create new client icon
+@SuppressLint("DefaultLocale")
 @Composable
 private fun CreateNewClientIcon(
     searchQuery: String,
@@ -291,7 +274,8 @@ private fun CreateNewClientIcon(
     hClientRepository: Repo2Client,
     zAppComptRepositoryComposable: Repo9AppCompt,
     onClientSelectedToToast: (HClientInfos) -> Unit,
-    onResetSearchMode: () -> Unit
+    onResetSearchMode: () -> Unit,
+    viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val currentLocation = locationTracker?.getCurrentPosition()
 
@@ -310,6 +294,8 @@ private fun CreateNewClientIcon(
     )
 
     val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
+        debugInfos = newClient.nom,
+
         creationTimestamps = System.currentTimeMillis(),
         parentM2ClientInfosKey = newClient.keyID,
         parentM2ClientInfosDebugName = newClient.nom
@@ -320,22 +306,30 @@ private fun CreateNewClientIcon(
         onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
     )
 
+    val (semanticsKeys, semanticsValues) = viewModel.getterFocucedVars.getSemantics()
+
     IconButton(
         onClick = {
-            hClientRepository.upsertData(newClient)
+            viewModel.setter.addNewM8BonVent(updatedDefaultOnVentID8BonVentEtAdd)
             if (updatedAppCompt != null) {
-                zAppComptRepositoryComposable.upsert(updatedAppCompt)
+                viewModel.setter.updateM9AppCompt(updatedAppCompt)
             }
+
             onClientSelectedToToast(newClient)
             onResetSearchMode()
+        },
+        modifier = Modifier.semantics(mergeDescendants = true) {
+            set(SemanticsPropertyKey("Debug M8BonVent"), updatedDefaultOnVentID8BonVentEtAdd)
+
+            set(
+                semanticsKeys.m9Key,
+                semanticsValues.m9Value
+            )
         }
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Créer nouveau client",
-            modifier = Modifier.semantics(mergeDescendants = true) {
-                set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
-            }
         )
     }
 }
@@ -352,17 +346,17 @@ fun ClientSearchItem(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val (semanticsKeys, semanticsValues) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
+    val (semanticsKeys, semanticsValues) = uiState.focusedVarsHandlerFacade.getter.getSemantics()
 
     val afterUpdateSemanticsValues = semanticsValues.m8Value.copy(
-        dataDebugInfos = client.nom,
+        debugInfos = client.nom,
         parentM2ClientInfosKey = client.keyID,
         parentM2ClientInfosDebugName = client.nom
     )
 
     val afterUpdateSemanticsValues_m9Value = semanticsValues.m9Value?.copy(
         onVentM8BonVentKey = afterUpdateSemanticsValues.keyID,
-        onVentM8BonVentDebugInfos = afterUpdateSemanticsValues.dataDebugInfos
+        onVentM8BonVentDebugInfos = afterUpdateSemanticsValues.debugInfos
     )
 
     Row(
