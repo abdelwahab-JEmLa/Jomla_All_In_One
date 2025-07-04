@@ -126,8 +126,8 @@ data class GBonVent(
     var parentPeriodeVentStartTimestampStr: String = "",
 
     //Section Infos ForgingKeys
-    var parentId2ClientInfosKeyID: String = "Non Defini",
-    var parentId2ClientInfosDebugKey: String = "",
+    var parentKeyM2ClientInfos: String = "Non Defini",
+    var parentDebugNameM2ClientInfos: String = "",
 
     var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,

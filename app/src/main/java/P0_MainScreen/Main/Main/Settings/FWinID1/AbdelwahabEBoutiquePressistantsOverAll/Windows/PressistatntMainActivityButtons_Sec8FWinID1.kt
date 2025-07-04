@@ -213,6 +213,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
 
                     ID4ClientSearchButton(
+                        viewModel=viewModel,
                         uiState=uiState,
                         hClientRepository = uiState.hClientRepository,
                         zAppComptRepositoryComposable = uiState.zAppComptRepositoryComposable,

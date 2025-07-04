@@ -87,7 +87,7 @@ class AGetter(
     ) = GBonVent(
         keyID = GBonVent.generePushKey(),
         parentKeyId7VentPeriod = periodKey,
-        parentId2ClientInfosKeyID = clientKey,
+        parentKeyM2ClientInfos = clientKey,
         parentHClientOldID = clientId,
         nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
         parentKeyId9AppComptInfos = comptKey,

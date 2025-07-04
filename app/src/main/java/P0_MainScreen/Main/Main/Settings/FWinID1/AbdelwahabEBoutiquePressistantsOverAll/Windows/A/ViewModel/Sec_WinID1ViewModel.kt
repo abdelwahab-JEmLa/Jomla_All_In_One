@@ -1,6 +1,9 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -16,18 +19,25 @@ class ViewModelPresistantButtonsSec8FWinID1(
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
     val getter=central.getter
+    val  setter =central.focusedVarsHandlerFacade.setter
     val appComptComposeRepositoryProtoJuin17 = getter.id9AppComptRepository
 
     data class UiState(
+        val setter: SetterFocusedVars,
+        val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
+        val getter: GetterFocusedVars,
         val hClientRepository: ID2ClientRepository,
+        val id8BonVentRepository: Repo8BonVent,
         val expandButon: Map.Entry<Button, Boolean>? = null,
         val zAppComptRepositoryComposable: Repo9AppCompt,
         val f: Int = 0,
-        val id8BonVentRepository: Repo8BonVent,
     ) {
         enum class Button(val nom: String) { ID4("ClientSearchButton") }
     }
     private val _uiState = MutableStateFlow(UiState(
+        focusedVarsHandlerFacade =central.focusedVarsHandlerFacade,
+        getter =central.focusedVarsHandlerFacade.getter,
+        setter =central.focusedVarsHandlerFacade.setter,
         id8BonVentRepository =getter.id8BonVentRepository,
         hClientRepository =getter.iD2ClientRepository,
         zAppComptRepositoryComposable =getter.id9AppComptRepository

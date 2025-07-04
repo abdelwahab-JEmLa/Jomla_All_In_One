@@ -65,7 +65,7 @@ class BSetterFacade(
         val newData = m8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
 
         if (newData != null) {
-            focusedVarsHandlerFacade.setter.focuceM8BonVent(m8BonVent)
+            focusedVarsHandlerFacade.setter.focuceAddNewM8BonVent(m8BonVent)
         } else {
             upsertBonVent(
                 keyHandBonVent,

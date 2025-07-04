@@ -55,18 +55,20 @@ import kotlinx.coroutines.delay
 @Composable
 fun ID4ClientSearchButton(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
+
     hClientRepository: ID2ClientRepository,
     zAppComptRepositoryComposable: Repo9AppCompt,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
-    onClientSelectedToToast: (HClientInfos) -> Unit = {}
+    onClientSelectedToToast: (HClientInfos) -> Unit = {},
+    viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-
     var isTextCollapsed by remember { mutableStateOf(false) }
+    val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
 
-    val id8BonVentRepository = uiState.id8BonVentRepository
-    val onVentId8BonVent = id8BonVentRepository.onVentId8BonVent
-    val defaultId8BonVent = id8BonVentRepository.defaultId8BonVent
+    val getter = focusedVarsHandlerFacade.getter
+    val onVentId8BonVent = getter.onVentId8BonVent
+    val defaultId8BonVent = getter.defaultId8BonVent
 
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -185,20 +187,19 @@ fun ID4ClientSearchButton(
 
                             val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
                                 creationTimestamps = System.currentTimeMillis(),
-                                parentId2ClientInfosKeyID = newClient.keyID,
-                                parentId2ClientInfosDebugKey = newClient.nom
+                                parentKeyM2ClientInfos = newClient.keyID,
+                                parentDebugNameM2ClientInfos = newClient.nom
                             )
 
                             val updatedAppCompt =
                                 zAppComptRepositoryComposable.currentAppCompt?.copy(
                                     id8BonVentonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentId2ClientInfosDebugKey
+                                    id8BonVentDebugNameKey = updatedDefaultOnVentID8BonVentEtAdd.parentDebugNameM2ClientInfos
                                 )
 
                             IconButton(
                                 onClick = {
                                     hClientRepository.upsertData(newClient)
-                                    id8BonVentRepository.upsert(updatedDefaultOnVentID8BonVentEtAdd)
                                     if (updatedAppCompt != null) {
                                         zAppComptRepositoryComposable.upsert(
                                             updatedAppCompt
@@ -250,7 +251,10 @@ fun ID4ClientSearchButton(
                         LazyColumn {
                             items(filteredClients) { client ->
                                 ClientSearchItem(
-                                    client = client, onClick = {
+                                    viewModel = viewModel,
+                                    uiState = uiState,
+                                    client = client,
+                                    onClick = {
                                         onClientSelectedToToast(client)
                                         resetSearchMode {
                                             isSearchMode = false
@@ -275,15 +279,27 @@ private inline fun resetSearchMode(action: () -> Unit) {
 @Composable
 fun ClientSearchItem(
     client: HClientInfos,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
+    viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    Row(modifier = Modifier
-        .semantics {
+    Row(
+        modifier = Modifier
+            .semantics {
+                val (semanticsKey, semanticsValue) = uiState.focusedVarsHandlerFacade.getter.getSemantics_defaultId8BonVent()
+                set(semanticsKey, semanticsValue.copy(
+                    parentKeyM2ClientInfos = client.keyID,
+                    parentDebugNameM2ClientInfos = client.nom
+                ))
+            }
+            .fillMaxWidth()
+            .clickable {
+                viewModel.setter.focuceAddNewM8BonVent(uiState.getter.defaultId8BonVent.copy(
 
-        }
-        .fillMaxWidth()
-        .clickable { onClick() }
-        .padding(12.dp),
+                ))
+                onClick()
+            }
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(

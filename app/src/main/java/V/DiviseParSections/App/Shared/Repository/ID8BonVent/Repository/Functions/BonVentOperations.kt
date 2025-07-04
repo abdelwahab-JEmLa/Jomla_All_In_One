@@ -45,7 +45,7 @@ class BonVentOperations(
             val newBonVent = GBonVent(
                 keyID = key,
                 parentKeyId7VentPeriod = currentZCompt.onVentHVentPeriodKeyId,
-                parentId2ClientInfosKeyID = client.keyID,
+                parentKeyM2ClientInfos = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = currentZCompt.keyID,
@@ -84,7 +84,7 @@ class BonVentOperations(
             val updatedBonVent = existingBonVent.copy(
                 etateActuellementEst = etate,
                 nomClientConcerned = client.nom,
-                parentId2ClientInfosKeyID = client.keyID,
+                parentKeyM2ClientInfos = client.keyID,
                 parentHClientOldID = clientOldId
             )
 

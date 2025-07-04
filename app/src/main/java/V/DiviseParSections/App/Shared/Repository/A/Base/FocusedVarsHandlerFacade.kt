@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 
 class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars, )
 
@@ -33,6 +34,10 @@ class GetterFocusedVars(
             parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
         )
     }
+
+    fun getSemantics_defaultId8BonVent(): Pair<SemanticsPropertyKey<GBonVent>, GBonVent> {
+        return Pair(SemanticsPropertyKey("DebugID1=defaultId8BonVent"), defaultId8BonVent)
+    }
 }
 
 @Stable
@@ -40,7 +45,7 @@ class SetterFocusedVars(
     val id8BonVentRepository: Repo8BonVent,
     val id9AppComptRepository: Repo9AppCompt,
 ) {
-    fun focuceM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, id8BonVentRepository, id9AppComptRepository)
+    fun focuceAddNewM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, id8BonVentRepository, id9AppComptRepository)
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
