@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiTransferDatas
@@ -26,7 +26,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
         val setter: SetterFocusedVars,
         val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
         val getter: GetterFocusedVars,
-        val hClientRepository: ID2ClientRepository,
+        val hClientRepository: Repo2Client,
         val id8BonVentRepository: Repo8BonVent,
         val expandButon: Map.Entry<Button, Boolean>? = null,
         val zAppComptRepositoryComposable: Repo9AppCompt,

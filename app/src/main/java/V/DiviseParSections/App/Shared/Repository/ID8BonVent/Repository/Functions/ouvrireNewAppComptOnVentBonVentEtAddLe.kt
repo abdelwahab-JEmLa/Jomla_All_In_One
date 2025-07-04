@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -10,7 +10,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
     clientOldId: Long,
     newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-    hClientRepository: ID2ClientRepository,
+    hClientRepository: Repo2Client,
     zAppComptRepositoryComposable: Repo9AppCompt,
     gBonVentRepository: Repo8BonVent,
     ) {

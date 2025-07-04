@@ -3,7 +3,8 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -58,8 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ID4ClientSearchButton(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
-
-    hClientRepository: ID2ClientRepository,
+    hClientRepository: Repo2Client,
     zAppComptRepositoryComposable: Repo9AppCompt,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
@@ -80,29 +81,22 @@ fun ID4ClientSearchButton(
     var showDropdown by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    // Auto-trigger search mode with "mah" input after delay
+    // Extracted function for performing click and search
     LaunchedEffect(Unit) {
-        delay(2000) // Wait 2 seconds after component loads
-        isSearchMode = true
-        delay(500) // Small delay to ensure UI is updated
-        searchQuery = "mah"
-        focusRequester.requestFocus()
+        performInitialSearch(
+            onSearchModeChange = { isSearchMode = it },
+            onSearchQueryChange = { searchQuery = it },
+            focusRequester = focusRequester
+        )
     }
 
     LaunchedEffect(searchQuery) {
-        delay(300)
-        if (searchQuery.isNotEmpty()) {
-            filteredClients = hClientRepository.datasValue.filter { client ->
-                client.nom.contains(searchQuery, ignoreCase = true) || client.numTelephone.contains(
-                    searchQuery,
-                    ignoreCase = true
-                )
-            }
-            showDropdown = filteredClients.isNotEmpty()
-        } else {
-            filteredClients = emptyList()
-            showDropdown = false
-        }
+        performClientSearch(
+            searchQuery = searchQuery,
+            hClientRepository = hClientRepository,
+            onFilteredClientsChange = { filteredClients = it },
+            onShowDropdownChange = { showDropdown = it }
+        )
     }
 
     Row(
@@ -120,13 +114,12 @@ fun ID4ClientSearchButton(
                         )
                     },
                 onClick = {
-                    isSearchMode = true
-                    // Auto-fill with "mah" when manually clicked
-                    coroutineScope.launch {
-                        delay(100)
-                        searchQuery = "mah"
-                        focusRequester.requestFocus()
-                    }
+                    performSearchButtonClick(
+                        coroutineScope = coroutineScope,
+                        onSearchModeChange = { isSearchMode = it },
+                        onSearchQueryChange = { searchQuery = it },
+                        focusRequester = focusRequester
+                    )
                 },
                 containerColor = Color(0xFF4CAF50)
             ) {
@@ -138,16 +131,14 @@ fun ID4ClientSearchButton(
             }
 
             if (showLabels) {
+                val nomClient = getter.onVentId2ClientInfos?.nom ?: ""
+
                 Text(
                     text = if (isTextCollapsed) {
-                        if (onVentId8BonVent.nomClientConcerned.isNotBlank() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                            onVentId8BonVent.nomClientConcerned
-                        } else {
-                            "Client"
-                        }
+                        nomClient
                     } else {
                         if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                            "${onVentId8BonVent.nomClientConcerned} - ${onVentId8BonVent.getCreationTimeString()}"
+                            "$nomClient - ${onVentId8BonVent.getCreationTimeString()}"
                         } else {
                             "Rechercher Client"
                         }
@@ -172,7 +163,7 @@ fun ID4ClientSearchButton(
                             }
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
-                            .focusRequester(focusRequester), // Use the focusRequester here
+                            .focusRequester(focusRequester),
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         placeholder = { Text("Nom ou téléphone...") },
@@ -183,71 +174,21 @@ fun ID4ClientSearchButton(
                             disabledContainerColor = Color.White,
                         ),
                         leadingIcon = {
-                            val currentLocation = locationTracker?.getCurrentPosition()
-
-                            val newClient = HClientInfos(
-                                nom = searchQuery.ifEmpty { "Err Definition" },
-                                title = searchQuery.ifEmpty { "Nouveau Client" },
-                                latitude = currentLocation?.latitude
-                                    ?: HClientInfos.getCurrentDefaultLatitude(),
-                                longitude = currentLocation?.longitude
-                                    ?: HClientInfos.getCurrentDefaultLongitude(),
-                                caMarqueGpsEstOuvert = currentLocation != null,
-                                snippet = if (currentLocation != null) {
-                                    "Lat: ${
-                                        String.format(
-                                            "%.6f",
-                                            currentLocation.latitude
-                                        )
-                                    }, " + "Lng: ${
-                                        String.format(
-                                            "%.6f", currentLocation.longitude
-                                        )
-                                    }"
-                                } else {
-                                    "Position non disponible"
-                                }
-                            )
-
-                            val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
-                                creationTimestamps = System.currentTimeMillis(),
-                                parentM2ClientInfosKey = newClient.keyID,
-                                parentM2ClientInfosDebugName = newClient.nom
-                            )
-
-                            val updatedAppCompt =
-                                zAppComptRepositoryComposable.currentAppCompt?.copy(
-                                    onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-                                    onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
-                                )
-
-                            IconButton(
-                                onClick = {
-                                    hClientRepository.upsertData(newClient)
-                                    if (updatedAppCompt != null) {
-                                        zAppComptRepositoryComposable.upsert(
-                                            updatedAppCompt
-                                        )
-                                    }
-
-                                    onClientSelectedToToast(newClient)
-
+                            CreateNewClientIcon(
+                                searchQuery = searchQuery,
+                                locationTracker = locationTracker,
+                                defaultId8BonVent = defaultId8BonVent,
+                                hClientRepository = hClientRepository,
+                                zAppComptRepositoryComposable = zAppComptRepositoryComposable,
+                                onClientSelectedToToast = onClientSelectedToToast,
+                                onResetSearchMode = {
                                     resetSearchMode {
                                         isSearchMode = false
                                         searchQuery = ""
                                         showDropdown = false
                                     }
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Créer nouveau client",
-                                    modifier = Modifier.semantics(mergeDescendants = true) {
-                                        set(
-                                            SemanticsPropertyKey("DebugID1=HClientInfos"),
-                                            HClientInfos()
-                                        )
-                                    })
-                            }
+                                }
+                            )
                         },
                         trailingIcon = {
                             IconButton(
@@ -295,6 +236,117 @@ fun ID4ClientSearchButton(
     }
 }
 
+// Extracted function for initial search setup
+private suspend fun performInitialSearch(
+    onSearchModeChange: (Boolean) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    focusRequester: FocusRequester
+) {
+    if (false) {
+        delay(2000)
+        onSearchModeChange(true)
+        delay(500)
+        onSearchQueryChange("mah")
+        focusRequester.requestFocus()
+    }
+}
+
+// Extracted function for search button click
+private fun performSearchButtonClick(
+    coroutineScope: CoroutineScope,
+    onSearchModeChange: (Boolean) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    focusRequester: FocusRequester
+) {
+    if (false) {
+        onSearchModeChange(true)
+        coroutineScope.launch {
+            delay(100)
+            onSearchQueryChange("mah")
+            focusRequester.requestFocus()
+        }
+    }
+}
+
+// Extracted function for client search logic
+private suspend fun performClientSearch(
+    searchQuery: String,
+    hClientRepository: Repo2Client,
+    onFilteredClientsChange: (List<HClientInfos>) -> Unit,
+    onShowDropdownChange: (Boolean) -> Unit
+) {
+    delay(300)
+    if (searchQuery.isNotEmpty()) {
+        val filtered = hClientRepository.datasValue.filter { client ->
+            client.nom.contains(searchQuery, ignoreCase = true) ||
+                    client.numTelephone.contains(searchQuery, ignoreCase = true)
+        }
+        onFilteredClientsChange(filtered)
+        onShowDropdownChange(filtered.isNotEmpty())
+    } else {
+        onFilteredClientsChange(emptyList())
+        onShowDropdownChange(false)
+    }
+}
+
+// Extracted composable for the create new client icon
+@Composable
+private fun CreateNewClientIcon(
+    searchQuery: String,
+    locationTracker: LocationTracker?,
+    defaultId8BonVent: GBonVent,
+    hClientRepository: Repo2Client,
+    zAppComptRepositoryComposable: Repo9AppCompt,
+    onClientSelectedToToast: (HClientInfos) -> Unit,
+    onResetSearchMode: () -> Unit
+) {
+    val currentLocation = locationTracker?.getCurrentPosition()
+
+    val newClient = HClientInfos(
+        nom = searchQuery.ifEmpty { "Err Definition" },
+        title = searchQuery.ifEmpty { "Nouveau Client" },
+        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
+        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
+        caMarqueGpsEstOuvert = currentLocation != null,
+        snippet = if (currentLocation != null) {
+            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
+                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
+        } else {
+            "Position non disponible"
+        }
+    )
+
+    val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
+        creationTimestamps = System.currentTimeMillis(),
+        parentM2ClientInfosKey = newClient.keyID,
+        parentM2ClientInfosDebugName = newClient.nom
+    )
+
+    val updatedAppCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
+        onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
+        onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.parentM2ClientInfosDebugName
+    )
+
+    IconButton(
+        onClick = {
+            hClientRepository.upsertData(newClient)
+            if (updatedAppCompt != null) {
+                zAppComptRepositoryComposable.upsert(updatedAppCompt)
+            }
+            onClientSelectedToToast(newClient)
+            onResetSearchMode()
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Créer nouveau client",
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
+            }
+        )
+    }
+}
+
 private inline fun resetSearchMode(action: () -> Unit) {
     action()
 }
@@ -311,7 +363,6 @@ fun ClientSearchItem(
 
     val afterUpdateSemanticsValues = semanticsValues.m8Value.copy(
         dataDebugInfos = client.nom,
-
         parentM2ClientInfosKey = client.keyID,
         parentM2ClientInfosDebugName = client.nom
     )
@@ -329,7 +380,12 @@ fun ClientSearchItem(
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.focuceAddNewM8BonVent(afterUpdateSemanticsValues)
+                viewModel.setter.addNewM8BonVent(afterUpdateSemanticsValues)
+
+                if (afterUpdateSemanticsValues_m9Value != null) {
+                    viewModel.setter.updateM9AppCompt(afterUpdateSemanticsValues_m9Value)
+                }
+
                 onClick()
             }
             .padding(12.dp),
@@ -360,10 +416,10 @@ fun ClientSearchItem(
             if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
                 Text(
                     text = "📍 ${String.format("%.4f", client.latitude)}, ${
-                        String.format(
-                            "%.4f", client.longitude
-                        )
-                    }", style = MaterialTheme.typography.bodySmall, color = Color(0xFF4CAF50)
+                        String.format("%.4f", client.longitude)
+                    }",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF4CAF50)
                 )
             }
         }

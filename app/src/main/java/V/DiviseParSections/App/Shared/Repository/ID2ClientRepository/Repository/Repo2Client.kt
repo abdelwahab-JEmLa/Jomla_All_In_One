@@ -32,13 +32,13 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 
 @Stable
-class ID2ClientRepository(
+class Repo2Client(
     val dataBaseCreationFactory: dataBaseCreationFactoryMID2ClientRepository,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val zAppComptRepositoryComposable: Repo9AppCompt,
     val id8BonVentRepository: Repo8BonVent,
 ) {
-    val TAG_REPO = "ID2ClientRepository"
+    val TAG_REPO = "Repo2Client"
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<HClientInfos>>(emptyList())

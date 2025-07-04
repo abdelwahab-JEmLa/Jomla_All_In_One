@@ -14,7 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -28,7 +28,7 @@ import org.koin.dsl.module
 val composRepositorysModule = module {
     single { Repo9AppCompt(get()) }
 
-    single { ID2ClientRepository(get(), get(), get(),get(), ) }
+    single { Repo2Client(get(), get(), get(),get(), ) }
     single { CCategoriesCompoRepository(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
 
@@ -48,7 +48,7 @@ val composRepositorysModule = module {
     single { VentOperations(get(), get()) }
 
 
-    single { GetterFocusedVars(get(), get()) }
+    single { GetterFocusedVars(get(), get(), get()) }
     single { SetterFocusedVars(get(), get()) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 

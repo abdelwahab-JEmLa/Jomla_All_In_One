@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -11,7 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 fun upsertBonVent(
     keyByParentBonVentOnClickButton: String = "",
     gBonVentRepository: Repo8BonVent,
-    hClientRepository: ID2ClientRepository,
+    hClientRepository: Repo2Client,
     parametresAppComptNonSaved: ParametresAppComptNonSaved,
 ) {
     val activePeriodKeyByParent = parametresAppComptNonSaved.keyIdId7VentPeriod

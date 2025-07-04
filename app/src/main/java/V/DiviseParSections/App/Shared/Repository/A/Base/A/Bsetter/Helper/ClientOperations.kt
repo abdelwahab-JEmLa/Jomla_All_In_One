@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class ClientOperations(
     private val getter: AGetter,
 
-    private val hClientRepository: ID2ClientRepository
+    private val hClientRepository: Repo2Client
 ) {
     val zAppComptRepositoryComposable = getter.id9AppComptRepository
 

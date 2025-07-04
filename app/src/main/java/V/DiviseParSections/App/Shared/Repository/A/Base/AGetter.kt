@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -60,7 +60,7 @@ class AGetter(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val iD2ClientRepository: ID2ClientRepository,
+    val iD2ClientRepository: Repo2Client,
     val id8BonVentRepository: Repo8BonVent,
 
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
@@ -196,7 +196,7 @@ class AGetter(
 
     companion object {
         // Fixed: This should be a function that returns a Modifier
-        fun modifierAcDebugSemantics(hClientRepository: ID2ClientRepository? =null): Modifier {
+        fun modifierAcDebugSemantics(hClientRepository: Repo2Client? =null): Modifier {
             return Modifier.semantics(mergeDescendants = true) {
                 set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
             }

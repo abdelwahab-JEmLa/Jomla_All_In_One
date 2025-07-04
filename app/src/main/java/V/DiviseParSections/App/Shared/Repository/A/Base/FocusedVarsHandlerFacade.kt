@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -13,6 +14,7 @@ class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: Setter
 
 @Stable
 class GetterFocusedVars(
+    Repo2Client: Repo2Client,
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
 ) {
@@ -33,6 +35,13 @@ class GetterFocusedVars(
             parentKeyId7VentPeriod = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
         )
+    }
+
+    val onVentId2ClientInfos by derivedStateOf {
+        Repo2Client.datasValue.find {
+            it.keyID ==
+                    onVentId8BonVent.parentM2ClientInfosKey
+        }
     }
 
     fun getSemantics_defaultId8BonVent(): Pair<SemanticsKeys, SemanticsValues> {
@@ -63,35 +72,17 @@ class GetterFocusedVars(
 
 @Stable
 class SetterFocusedVars(
-    val id8BonVentRepository: Repo8BonVent,
-    val id9AppComptRepository: Repo9AppCompt,
+    val repo8BonVent: Repo8BonVent,
+    val repo9AppCompt: Repo9AppCompt,
 ) {
-    fun focuceAddNewM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, id8BonVentRepository, id9AppComptRepository)
+    fun addNewM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
+    fun updateM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
     id8BonVent: GBonVent,
     id8BonVentRepository: Repo8BonVent,
-    id9AppComptRepository: Repo9AppCompt
 ) {
-    val currentAppCompt = id9AppComptRepository.currentAppCompt
-
     val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())
     id8BonVentRepository.add(newData)
-    focuceBonVentAuAppCompt(currentAppCompt, newData, id9AppComptRepository)
-}
-
-private fun focuceBonVentAuAppCompt(
-    currentAppCompt: Z_AppCompt?,
-    newData: GBonVent,
-    id9AppComptRepository: Repo9AppCompt
-) {
-    currentAppCompt?.copy(
-        onVentM8BonVentKey = newData.keyID,
-        onVentM8BonVentDebugInfos = newData.dataDebugInfos,
-    )?.let {
-        id9AppComptRepository.upsert(
-            it
-        )
-    }
 }

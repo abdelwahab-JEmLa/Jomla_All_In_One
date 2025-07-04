@@ -7,7 +7,7 @@ import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.ID2ClientRepository
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -22,7 +22,7 @@ class BSetterP (
     val getter: AGetter,
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
     val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
-    val hClientRepository: ID2ClientRepository,
+    val hClientRepository: Repo2Client,
     val gBonVentRepository: Repo8BonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,
     val navigationHandler: FragmentNavigationHandler
