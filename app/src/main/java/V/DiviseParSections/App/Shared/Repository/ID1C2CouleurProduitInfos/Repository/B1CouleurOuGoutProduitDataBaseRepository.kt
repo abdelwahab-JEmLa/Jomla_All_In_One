@@ -139,7 +139,7 @@ data class B1CouleurOuGoutProduitDataBase(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     val processPositioningInFactory: ProcessPositioningInFactory = ProcessPositioningInFactory.CreeAuGeneralHandler,
-    val aAffiche: Type = Type.Nom,
+    val aAffiche: Type = Type.Image,
     val nomImageFichieSansEtansion: String = "Non Dispo",
     val nomCouleurStrSiSonImageDispo: String = "",
 

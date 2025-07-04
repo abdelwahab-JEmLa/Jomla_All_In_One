@@ -52,8 +52,6 @@ fun ViewVentCouleur_T1(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    //<--
-//TODO(1): regle pour trouve comment lence le update vent bon apre le ferm avec confirme 
     val existingVent by remember(produit?.keyID, color.key) {
         derivedStateOf { viewModel.calculateExistingVent(produit, color) }
     }
@@ -82,6 +80,7 @@ fun ViewVentCouleur_T1(
     Card(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
+                set(SemanticsPropertyKey("1Debug== Couleur "), color)
                 set(SemanticsPropertyKey("1 relativeVent"), existingVent ?: defaultVent)
                 set(SemanticsPropertyKey("4 onVentData"), onVentData)
             }
