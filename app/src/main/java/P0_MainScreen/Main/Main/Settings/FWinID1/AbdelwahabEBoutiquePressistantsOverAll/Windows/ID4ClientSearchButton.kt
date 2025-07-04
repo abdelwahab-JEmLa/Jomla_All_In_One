@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -66,6 +68,7 @@ fun ID4ClientSearchButton(
 ) {
     var isTextCollapsed by remember { mutableStateOf(false) }
     val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
+    val coroutineScope = rememberCoroutineScope()
 
     val getter = focusedVarsHandlerFacade.getter
     val onVentId8BonVent = getter.onVentId8BonVent
@@ -75,6 +78,16 @@ fun ID4ClientSearchButton(
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+
+    // Auto-trigger search mode with "mah" input after delay
+    LaunchedEffect(Unit) {
+        delay(2000) // Wait 2 seconds after component loads
+        isSearchMode = true
+        delay(500) // Small delay to ensure UI is updated
+        searchQuery = "mah"
+        focusRequester.requestFocus()
+    }
 
     LaunchedEffect(searchQuery) {
         delay(300)
@@ -105,7 +118,17 @@ fun ID4ClientSearchButton(
                         set(
                             SemanticsPropertyKey("DebugID1=onVentId8BonVent"), onVentId8BonVent
                         )
-                    }, onClick = { isSearchMode = true }, containerColor = Color(0xFF4CAF50)
+                    },
+                onClick = {
+                    isSearchMode = true
+                    // Auto-fill with "mah" when manually clicked
+                    coroutineScope.launch {
+                        delay(100)
+                        searchQuery = "mah"
+                        focusRequester.requestFocus()
+                    }
+                },
+                containerColor = Color(0xFF4CAF50)
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
@@ -149,7 +172,7 @@ fun ID4ClientSearchButton(
                             }
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
-                            .focusRequester(remember { FocusRequester() }),
+                            .focusRequester(focusRequester), // Use the focusRequester here
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         placeholder = { Text("Nom ou téléphone...") },
