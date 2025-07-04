@@ -41,7 +41,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,7 +68,6 @@ fun ID4ClientSearchButton(
 ) {
     var isTextCollapsed by remember { mutableStateOf(false) }
     val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
-    val coroutineScope = rememberCoroutineScope()
 
     val getter = focusedVarsHandlerFacade.getter
     val onVentId8BonVent = getter.onVentId8BonVent
