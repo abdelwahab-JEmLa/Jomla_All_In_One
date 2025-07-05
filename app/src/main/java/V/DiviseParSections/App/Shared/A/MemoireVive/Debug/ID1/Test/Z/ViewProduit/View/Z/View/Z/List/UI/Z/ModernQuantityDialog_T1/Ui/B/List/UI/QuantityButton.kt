@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun QuantityButton_T1(
     modifier: Modifier = Modifier,
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     viewModel: ViewModelsProduit_T1,
+    vent: M10OperationVentCouleur,
     newQuantity: Int,
+    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     isSelected: Boolean,
-    onClick: (Int) -> Unit = {},
-    vent: M10OperationVentCouleur
+    onClick: (Int) -> Unit = {}
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.getter
         .repo10OperationVentCouleur
@@ -66,7 +66,6 @@ fun QuantityButton_T1(
 
                 when(clickUpdate) {
                     ClickUpdate.CouleurQua -> {
-                        // Original functionality - update single color quantity
                         vent.let { existingVent ->
                             val updatedVent = if (newQuantity == 0) {
                                 existingVent.copy(

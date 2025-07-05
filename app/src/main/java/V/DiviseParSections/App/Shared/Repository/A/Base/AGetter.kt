@@ -64,6 +64,7 @@ class AGetter(
     val id8BonVentRepository: Repo8BonVent,
 
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+
     val kAchatRepository: KAchatCouleurOperationRepository,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,

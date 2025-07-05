@@ -77,6 +77,12 @@ class GetterFocusedVars(
         repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
     }
 
+    val onVentM8BonVentM10OperationVentFilteredList by derivedStateOf {
+        repo10OperationVentCouleur.datasValue.filter {
+            it.parentM8BonVentKeyId == (currentM9AppCompt?.onVentM8BonVentKey ?: "")
+        }
+    }
+
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {

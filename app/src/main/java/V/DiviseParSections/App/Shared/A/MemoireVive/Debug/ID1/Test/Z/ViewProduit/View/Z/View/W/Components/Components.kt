@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
@@ -20,8 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -108,10 +107,14 @@ fun QuantityDisplay(
     produit: ArticlesBasesStatsTable,
     onClick: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val getter = viewModel.focusedVarsHandlerFacade.getter
+    val getter = viewModel.getterFocusedVarsHandlerFacade
 
-    val operationsForThisProduct = getter.getDatasM10OperationVentCouleurPourProduit(produit,)
+    val onVentM8BonVentM10OperationVentFilteredList = viewModel.getterFocusedVarsHandlerFacade
+        .onVentM8BonVentM10OperationVentFilteredList
+    val operationsForThisProduct = onVentM8BonVentM10OperationVentFilteredList
+        .filter {
+            it.parentM1ProduitInfosKeyId == produit.keyID
+        }
 
     val totalQuantity = operationsForThisProduct.sumOf { it.quantityAchete }
 
@@ -124,6 +127,8 @@ fun QuantityDisplay(
                 viewModel.showProductDialog(produit.keyID)
                 onClick()
             }
+            .getSemanticsTag("onVentM8BonVentM10OperationVentFilteredList",onVentM8BonVentM10OperationVentFilteredList)
+            .getSemanticsTag("operationsForThisProduct",operationsForThisProduct)
             .getSemanticsTagFocucedVars(getter)
     ) {
         Row(
