@@ -89,20 +89,18 @@ fun TariffsButtonsSec7ID2(
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (bonVentComQuiFilterButtons != null) {
-                    MainFilter(
-                        viewModel=viewModel,
-                        tarificationList = tarificationList,
-                        bonAchatList = bonAchatList,
-                        produitAcheteOperationList = produitAcheteOperationList,
-                        produitInfosList = produitInfosList,
-                        showLabels = showLabels,
-                        filterProduitID = filterProductId.toInt(),
-                        filterBonID = bonVentComQuiFilterButtons.vid,
-                        onClickPrixButton = onClickPrixButton,
-                        onClickAnulationButton = onClickAnulationButton
-                    )
-                }
+                MainFilter(
+                    viewModel=viewModel,
+                    tarificationList = tarificationList,
+                    bonAchatList = bonAchatList,
+                    produitAcheteOperationList = produitAcheteOperationList,
+                    produitInfosList = produitInfosList,
+                    showLabels = showLabels,
+                    filterProduitID = filterProductId.toInt(),
+                    filterBonID = bonVentComQuiFilterButtons.vid,
+                    onClickPrixButton = onClickPrixButton,
+                    onClickAnulationButton = onClickAnulationButton
+                )
             }
         }
     }
