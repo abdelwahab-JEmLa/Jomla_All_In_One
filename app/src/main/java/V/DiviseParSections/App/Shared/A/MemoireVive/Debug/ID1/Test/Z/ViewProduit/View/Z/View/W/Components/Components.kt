@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
@@ -127,28 +126,6 @@ fun ProductHeader_T1(
         }
     }
 
-    // Fixed: Check if dialog should be shown for this specific product
-    val getter = viewModel.getterFocusedVarsHandlerFacade
-    val ouvertDialogProduit = getter.ouvertDialogChoixQuantityPourProduitM1ProduitInfos
-
-    if (ouvertDialogProduit?.keyID == produit.keyID) {
-        // Get the focused M10OperationVentCouleur
-        val focusedOperation = getter.onVentM3CouleurProduitInfos
-
-        focusedOperation?.let { operation ->
-            VentProduitQuantityDialog_T1(
-                produit = produit,
-                vent = operation,
-                viewModel = viewModel,
-                clickUpdate = ClickUpdate.CouleurQua, // Default to color quantity update
-                colorName = operation.parentM3CouleurProduitDebugInfos,
-                currentQuantity = operation.quantityAchete,
-                onDismiss = {
-                    viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
-                }
-            )
-        }
-    }
 }
 
 @Composable
@@ -177,16 +154,19 @@ fun QuantityDisplay(
         modifier = Modifier
             .clickable(enabled = !allNonTrouve) {
                 // Fixed: Open dialog for this specific product
-                viewModel.setterFocusedVarsHandlerFacade.ouvrireM1ProduitDialogChoisireQuantityFacade(produit)
+                viewModel.setterFocusedVarsHandlerFacade.ouvrireM1ProduitDialogChoisireQuantityFacade(
+                    produit
+                )
                 onQuantityClickToHaptic()
             }
-            .getSemanticsTag("dialogChoisireQuantityM1ProduitInfosDebugName",
+            .getSemanticsTag(
+                "dialogChoisireQuantityM1ProduitInfosDebugName",
                 getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
             )
-            .getSemanticsTag("dialogChoisireQuantityM1ProduitInfosDebugName",
-                getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID,1
+            .getSemanticsTag(
+                "dialogChoisireQuantityM1ProduitInfosDebugName",
+                getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID, 1
             )
-            .getSemanticsTagFocucedVars(getter)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -216,7 +196,6 @@ fun VentProduitQuantityDialog_T1(
     produit: ArticlesBasesStatsTable,
     vent: M10OperationVentCouleur,
     viewModel: ViewModelsProduit_T1,
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     colorName: String,
     currentQuantity: Int,
     onDismiss: () -> Unit = {}
@@ -253,7 +232,6 @@ fun VentProduitQuantityDialog_T1(
             Column {
                 QuantityGridM1Produit_T1(
                     produit = produit,
-                    clickUpdate = clickUpdate,
                     vent = vent,
                     currentQuantity = selectedQuantity,
                     onQuantitySelected = { newQuantity ->
@@ -293,7 +271,6 @@ fun QuantityGridM1Produit_T1(
     onQuantitySelected: (Int) -> Unit,
     viewModel: ViewModelsProduit_T1,
     vent: M10OperationVentCouleur,
-    clickUpdate: ClickUpdate
 ) {
     var showExtendedRange by remember { mutableStateOf(false) }
 
@@ -354,14 +331,12 @@ fun QuantityGridM1Produit_T1(
             items(quantities.size) { index ->
                 val quantityNumber = quantities[index]
                 QuantityButtonM1Produit_T1(
-                    modifier = Modifier.fillMaxWidth(),
                     produit = produit,
-                    clickUpdate = clickUpdate,
+                    modifier = Modifier.fillMaxWidth(),
                     viewModel = viewModel,
                     newQuantity = quantityNumber,
                     isSelected = quantityNumber == currentQuantity,
-                    onClick = onQuantitySelected,
-                    vent = vent
+                    onClick = onQuantitySelected
                 )
             }
         }
@@ -371,17 +346,16 @@ fun QuantityGridM1Produit_T1(
 @Composable
 fun QuantityButtonM1Produit_T1(
     produit: ArticlesBasesStatsTable,
-    vent: M10OperationVentCouleur,
     modifier: Modifier = Modifier,
     viewModel: ViewModelsProduit_T1,
     newQuantity: Int,
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {}
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.getter.repo10OperationVentCouleur
-    val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVentM8BonVentM10OperationVentFilteredList
-        .filter { it.parentM1ProduitInfosKeyId == produit.keyID }
+    val ventsDuProduit =
+        viewModel.getterFocusedVarsHandlerFacade.onVentM8BonVentM10OperationVentFilteredList
+            .filter { it.parentM1ProduitInfosKeyId == produit.keyID }
 
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -404,58 +378,26 @@ fun QuantityButtonM1Produit_T1(
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onClick(newQuantity)
+                if (ventsDuProduit.isNotEmpty()) {
+                    val quantityPerItem = newQuantity / ventsDuProduit.size
+                    val remainder = newQuantity % ventsDuProduit.size
 
-                when (clickUpdate) {
-                    ClickUpdate.CouleurQua -> {
-                        // Handle individual color quantity update
-                        val updatedVent = vent.copy(
-                            quantityAchete = newQuantity,
-                            etateActuellementEst = if (newQuantity == 0) {
-                                M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                            } else {
+                    ventsDuProduit.forEachIndexed { index, ventItem ->
+                        val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
+                        val updatedVent = ventItem.copy(
+                            quantityAchete = itemQuantity,
+                            etateActuellementEst = if (itemQuantity > 0) {
                                 M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
+                            } else {
+                                M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                             },
                             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                         )
-
-                        fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                        viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
+                        fCouleurAchatOperationRepositoryComposable.addOrUpdateData(
+                            updatedVent
+                        )
                     }
-                    ClickUpdate.TotalQua -> {
-                        // Handle total product quantity update by distributing across all colors
-                        if (ventsDuProduit.isNotEmpty()) {
-                            if (newQuantity == 0) {
-                                // Remove all quantities for this product
-                                ventsDuProduit.forEach { ventItem ->
-                                    val updatedVent = ventItem.copy(
-                                        quantityAchete = 0,
-                                        etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                                }
-                            } else {
-                                // Distribute quantity across all colors for this product
-                                val quantityPerItem = newQuantity / ventsDuProduit.size
-                                val remainder = newQuantity % ventsDuProduit.size
-
-                                ventsDuProduit.forEachIndexed { index, ventItem ->
-                                    val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
-                                    val updatedVent = ventItem.copy(
-                                        quantityAchete = itemQuantity,
-                                        etateActuellementEst = if (itemQuantity > 0) {
-                                            M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
-                                        } else {
-                                            M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                                        },
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                                }
-                            }
-                            viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
-                        }
-                    }
+                    viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
                 }
             },
         shape = RoundedCornerShape(16.dp),

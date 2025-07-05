@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ProductHeader_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.VentProduitQuantityDialog_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -63,12 +64,6 @@ fun ViewProduit_T1(
 
     val haptic = LocalHapticFeedback.current
 
-    val showDialog = remember(viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos, productKeyId) {
-        val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
-        onVentM3?.parentM1ProduitInfosKeyId == (productKeyId ?: false)
-    }
-
-    val totalQuantity = viewModel.getTotalQuantity(relatedVents)
     val productName = viewModel.getProductName(produit, productKeyId)
     val allNonTrouve = viewModel.allNonTrouve(relatedVents)
 
@@ -110,5 +105,32 @@ fun ViewProduit_T1(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+    val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
+    val ouvertDialogProduit =
+        getterFocusedVarsHandlerFacade.ouvertDialogChoixQuantityPourProduitM1ProduitInfos
 
+    // Fixed: Show dialog for this specific product with proper operation handling
+    if (produit != null && ouvertDialogProduit?.keyID == produit.keyID) {
+        // Get the first available operation for this product, or create a default one
+        val operationForDialog = relatedVents.firstOrNull()
+            ?: getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+                parentM1ProduitInfosKeyId = produit.keyID,
+                parentM1ProduitDebugInfos = produit.nom,
+                parentM3CouleurProduitDebugInfos = "Default Color",
+                quantityAchete = 0
+            )
+
+        operationForDialog?.let { operation ->
+            VentProduitQuantityDialog_T1(
+                produit = produit,
+                vent = operation,
+                viewModel = viewModel,
+                colorName = operation.parentM3CouleurProduitDebugInfos,
+                currentQuantity = operation.quantityAchete,
+                onDismiss = {
+                    viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
+                }
+            )
+        }
+    }
 }
