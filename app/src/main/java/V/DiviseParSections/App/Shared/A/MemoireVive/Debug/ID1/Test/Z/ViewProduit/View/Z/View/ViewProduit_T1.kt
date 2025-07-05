@@ -121,7 +121,6 @@ fun ViewProduit_T1(
         operationForDialog?.let { operation ->
             VentProduitQuantityDialog_T1(
                 produit = produit,
-                vent = operation,
                 viewModel = viewModel,
                 colorName = operation.parentM3CouleurProduitDebugInfos,
                 currentQuantity = operation.quantityAchete,

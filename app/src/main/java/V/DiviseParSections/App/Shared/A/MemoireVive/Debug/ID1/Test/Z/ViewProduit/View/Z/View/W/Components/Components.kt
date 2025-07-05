@@ -1,18 +1,12 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,90 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-
-@Composable
-fun ProductHeader_T1(
-    produit: ArticlesBasesStatsTable,
-    viewModel: ViewModelsProduit_T1,
-    productName: String,
-    allNonTrouve: Boolean,
-    onQuantityClickToHaptic: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = if (allNonTrouve) {
-                        listOf(
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                        )
-                    } else {
-                        listOf(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    }
-                )
-            )
-            .padding(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = productName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onPrimaryContainer,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (allNonTrouve) {
-                    Text(
-                        text = "Non disponible",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                QuantityDisplay(
-                    produit = produit,
-                    viewModel = viewModel,
-                    allNonTrouve = allNonTrouve,
-                ) {
-                    onQuantityClickToHaptic()
-                }
-            }
-        }
-    }
-
-}
 
 @Composable
 fun QuantityDisplay(
@@ -194,7 +109,6 @@ fun QuantityDisplay(
 @Composable
 fun VentProduitQuantityDialog_T1(
     produit: ArticlesBasesStatsTable,
-    vent: M10OperationVentCouleur,
     viewModel: ViewModelsProduit_T1,
     colorName: String,
     currentQuantity: Int,
@@ -232,7 +146,6 @@ fun VentProduitQuantityDialog_T1(
             Column {
                 QuantityGridM1Produit_T1(
                     produit = produit,
-                    vent = vent,
                     currentQuantity = selectedQuantity,
                     onQuantitySelected = { newQuantity ->
                         selectedQuantity = newQuantity
@@ -270,7 +183,6 @@ fun QuantityGridM1Produit_T1(
     currentQuantity: Int,
     onQuantitySelected: (Int) -> Unit,
     viewModel: ViewModelsProduit_T1,
-    vent: M10OperationVentCouleur,
 ) {
     var showExtendedRange by remember { mutableStateOf(false) }
 
@@ -343,98 +255,3 @@ fun QuantityGridM1Produit_T1(
     }
 }
 
-@Composable
-fun QuantityButtonM1Produit_T1(
-    produit: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier,
-    viewModel: ViewModelsProduit_T1,
-    newQuantity: Int,
-    isSelected: Boolean,
-    onClick: (Int) -> Unit = {}
-) {
-    val fCouleurAchatOperationRepositoryComposable = viewModel.getter.repo10OperationVentCouleur
-    val ventsDuProduit =
-        viewModel.getterFocusedVarsHandlerFacade.onVentM8BonVentM10OperationVentFilteredList
-            .filter { it.parentM1ProduitInfosKeyId == produit.keyID }
-
-    val haptic = LocalHapticFeedback.current
-    val interactionSource = remember { MutableInteractionSource() }
-
-    // Use the separated animation functions
-    val animations = rememberQuantityButtonAnimations(isSelected)
-
-    Surface(
-        modifier = modifier
-            .scale(animations.scale)
-            .size(56.dp)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = ripple(
-                    bounded = true,
-                    radius = 28.dp,
-                    color = if (isSelected) Color.White.copy(alpha = 0.3f)
-                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                )
-            ) {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                onClick(newQuantity)
-                if (ventsDuProduit.isNotEmpty()) {
-                    val quantityPerItem = newQuantity / ventsDuProduit.size
-                    val remainder = newQuantity % ventsDuProduit.size
-
-                    ventsDuProduit.forEachIndexed { index, ventItem ->
-                        val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
-                        val updatedVent = ventItem.copy(
-                            quantityAchete = itemQuantity,
-                            etateActuellementEst = if (itemQuantity > 0) {
-                                M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
-                            } else {
-                                M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                            },
-                            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                        )
-                        fCouleurAchatOperationRepositoryComposable.addOrUpdateData(
-                            updatedVent
-                        )
-                    }
-                    viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
-                }
-            },
-        shape = RoundedCornerShape(16.dp),
-        color = animations.backgroundColor,
-        shadowElevation = if (isSelected) 8.dp else 2.dp,
-        border = if (isSelected) {
-            BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
-        } else {
-            BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-        }
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .padding(8.dp)
-                .then(
-                    if (isSelected) {
-                        Modifier.background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    Color.Transparent
-                                ),
-                                radius = 40f
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    } else Modifier
-                )
-        ) {
-            Text(
-                text = newQuantity.toString(),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                color = animations.textColor,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}

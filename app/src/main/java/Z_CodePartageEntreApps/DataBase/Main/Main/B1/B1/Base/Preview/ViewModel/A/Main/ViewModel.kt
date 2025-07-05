@@ -12,10 +12,10 @@ class B1CouleurOuGoutProduitDataBaseTestDatasViewModel(
     val a_CentralDatasHandlerProtoJuin9: AGetter,
 ) : ViewModel() {
     val b1CouleurOuGoutProduitDataBaseRepository =
-        a_CentralDatasHandlerProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository
+        a_CentralDatasHandlerProtoJuin9.repo3CouleurProduitInfos
 
     val mainRepo = a_CentralDatasHandlerProtoJuin9
-        .b1CouleurOuGoutProduitDataBaseRepository
+        .repo3CouleurProduitInfos
 
 
     data class UiState(

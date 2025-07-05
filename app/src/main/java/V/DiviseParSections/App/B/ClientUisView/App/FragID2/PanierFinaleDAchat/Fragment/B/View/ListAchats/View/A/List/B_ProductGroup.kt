@@ -127,7 +127,7 @@ fun ProductGroup(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(vents) { vent ->
-                    viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+                    viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
                         .find { it.key == vent.parentM3CouleurProduitInfosKeyID }?.let {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),

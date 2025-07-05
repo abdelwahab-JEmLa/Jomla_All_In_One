@@ -166,7 +166,7 @@ fun DetailsBonVent(
                             context = context,
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
                             bProduitInfosRepository = viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
-                            b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository,
+                            b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
                             client = fClientRepository.onVentId2ClientInfos,
                             scope = scope
                         )

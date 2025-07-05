@@ -113,7 +113,7 @@ class Repo3CouleurProduitInfos(
             produit: ArticlesBasesStatsTable,
             colorIndex: Int
         ) =
-            aCentralCompoRepositoryProtoJuin9.b1CouleurOuGoutProduitDataBaseRepository.datasValue
+            aCentralCompoRepositoryProtoJuin9.repo3CouleurProduitInfos.datasValue
                 .find {
                     it.parentBProduitOldID == produit.id
                             && it.indexCouleurDansAncienProto == colorIndex

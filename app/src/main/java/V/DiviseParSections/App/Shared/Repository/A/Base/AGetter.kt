@@ -2,7 +2,6 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -14,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
 import V.DiviseParSections.App._0.Navigation.Screen
@@ -55,7 +55,7 @@ class AGetter(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val bProduitInfosRepository: RepoM1ProduitInfos,
-    val b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
+    val repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
@@ -118,7 +118,7 @@ class AGetter(
 
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable, colorIndex: Int
-    ) = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+    ) = repo3CouleurProduitInfos.datasValue.find {
         it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
     }!!
 
@@ -142,7 +142,7 @@ class AGetter(
     }
 
     fun relatedCouleurKeyParAncienMethod(produit: ArticlesBasesStatsTable, colorIndex: Int) =
-        b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+        repo3CouleurProduitInfos.datasValue.find {
             it.parentBProduitOldID == produit.id && it.indexCouleurDansAncienProto == colorIndex
         }
 
