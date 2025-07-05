@@ -57,26 +57,7 @@ fun ViewVentCouleur_T1(
     val uiState by viewModel.uiState.collectAsState()
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
 
-    val existingVent by remember(produit?.keyID, m3CouleurProduitInfos.key) {
-        derivedStateOf { viewModel.calculateExistingVent(produit, m3CouleurProduitInfos) }
-    }
-    val haptic = LocalHapticFeedback.current
-
-    fun handelUiAction(haptic: HapticFeedback) {
-        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-    }
-
-    val ventUIState = remember(existingVent, uiState) {
-        derivedStateOf { viewModel.calculateUIState(existingVent, uiState) }
-    }.value
-
-    val imageFile by derivedStateOf {
-        viewModel.getImageFile(
-            m3CouleurProduitInfos.nomImageFichieSansEtansion,
-            m3CouleurProduitInfos.extensionDisponible
-        )
-    }
-    val defaultM3CouleurProduitInfos = with(m3CouleurProduitInfos) {
+    val defaultM3CouleurProduitInfos =
         produit?.let {
             val parentM1ProduitDebugInfos = produit.nom
             getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
@@ -85,20 +66,39 @@ fun ViewVentCouleur_T1(
                 parentM1ProduitInfosKeyId = it.keyID,
                 parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
                 //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                parentM3CouleurProduitInfosKeyID = key,
-                parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + indexCouleurDansAncienProto,
+                parentM3CouleurProduitInfosKeyID = m3CouleurProduitInfos.key,
+                parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3CouleurProduitInfos.indexCouleurDansAncienProto,
             )
         }
-    }
 
-    val onVentM3CouleurProduitInfos = getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
-
-    val shouldShowDialog by remember(onVentM3CouleurProduitInfos, m3CouleurProduitInfos.key) {
+    val relatedVent by remember{
         derivedStateOf {
-            onVentM3CouleurProduitInfos?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
+            getter.onVentM8BonVentM10OperationVentFilteredList.find { it.parentM3CouleurProduitInfosKeyID==m3CouleurProduitInfos.key }
         }
     }
 
+    val haptic = LocalHapticFeedback.current
+
+    fun handelUiAction(haptic: HapticFeedback) {
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
+    val ventUIState = remember(relatedVent, uiState) {
+        derivedStateOf { viewModel.calculateUIState(relatedVent, uiState) }
+    }.value
+
+    val imageFile by derivedStateOf {
+        viewModel.getImageFile(
+            m3CouleurProduitInfos.nomImageFichieSansEtansion,
+            m3CouleurProduitInfos.extensionDisponible
+        )
+    }
+
+    val shouldShowDialog by remember(relatedVent, m3CouleurProduitInfos.key) {
+        derivedStateOf {
+            relatedVent?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -107,7 +107,7 @@ fun ViewVentCouleur_T1(
             )
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
-            .graphicsLayer(alpha = if (existingVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
+            .graphicsLayer(alpha = if (relatedVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
         Column(
             modifier = Modifier
@@ -143,7 +143,7 @@ fun ViewVentCouleur_T1(
                                 vent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
-                                    onVentM3CouleurProduitInfos
+                                    relatedVent
                                 )
                                 handelUiAction(haptic)
                             },
@@ -158,7 +158,7 @@ fun ViewVentCouleur_T1(
                                 vent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
-                                    onVentM3CouleurProduitInfos
+                                    relatedVent
                                 )
                                 handelUiAction(haptic)
                             })
@@ -189,7 +189,7 @@ fun ViewVentCouleur_T1(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(
-                                    text = "nothing".toString(),
+                                    text = relatedVent?.quantityAchete.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -203,8 +203,7 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    // Fixed: Show dialog based on focused state instead of local UI state
-    if (shouldShowDialog && existingVent != null) {
+    if (shouldShowDialog && relatedVent != null) {
         ModernQuantityDialog_T1(
             colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
             currentQuantity = ventUIState.quantity,
@@ -225,7 +224,7 @@ fun ViewVentCouleur_T1(
                 )
             },
             viewModel = viewModel,
-            vent = existingVent!!
+            vent = relatedVent!!
         )
     }
 }
