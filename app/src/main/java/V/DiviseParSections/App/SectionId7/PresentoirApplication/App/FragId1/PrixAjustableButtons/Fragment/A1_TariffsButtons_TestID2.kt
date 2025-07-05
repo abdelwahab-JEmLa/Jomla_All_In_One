@@ -8,6 +8,7 @@ import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,10 +46,32 @@ fun TariffsButtonsSec7ID2(
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
 
-    val keyID =
-        viewModel.aCentral.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur?.keyID
+    // Watch for changes in the focused product
+    val focusedProduct by remember {
+        derivedStateOf {
+            viewModel.aCentral.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur
+        }
+    }
+
+    // React to focused product changes
+    LaunchedEffect(focusedProduct) {
+        Log.d("TariffsButtons", "focusedProduct changed: ${focusedProduct?.nom}")
+        if (focusedProduct != null) {
+            afficheButtons = true
+        }
+    }
+
+    // Also react to cLenceDepuitFragmentsSepecialicteDeVents changes
+    LaunchedEffect(cLenceDepuitFragmentsSepecialicteDeVents) {
+        Log.d("TariffsButtons", "cLenceDepuitFragmentsSepecialicteDeVents changed: $cLenceDepuitFragmentsSepecialicteDeVents")
+        if (cLenceDepuitFragmentsSepecialicteDeVents) {
+            afficheButtons = true
+        }
+    }
+
+    val keyID = focusedProduct?.keyID
     val datasValuedeM1ProduitInfos = viewModel.aCentral.getter.repoM1ProduitInfos.datasValue
-    val filterProductId = datasValuedeM1ProduitInfos.find { it.keyID==keyID }?.id
+    val filterProductId = datasValuedeM1ProduitInfos.find { it.keyID == keyID }?.id
     val m1produitInfos by remember {
         derivedStateOf {
             datasValuedeM1ProduitInfos.find { it.id.toInt().toLong() == filterProductId }
@@ -66,8 +89,8 @@ fun TariffsButtonsSec7ID2(
             fermeDialog(latestTariffLocalData)
 
             viewModel.updateListRelativeVentCouleurPrixVent(
-                listFocusedM10OpeVentCouleurParPrixDifineur= viewModel.aCentral.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
-                m1produitInfos =m1produitInfos,
+                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentral.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
+                m1produitInfos = m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )
 
@@ -85,7 +108,7 @@ fun TariffsButtonsSec7ID2(
         onFermDialogeAvecAnllation()
         if (filterProductId != null) {
             viewModel.deleteVents(
-                parentProduitOldId= filterProductId,
+                parentProduitOldId = filterProductId,
             )
         }
 
@@ -97,12 +120,14 @@ fun TariffsButtonsSec7ID2(
         )
     }
 
+    Log.d("TariffsButtons", "Rendering - afficheButtons: $afficheButtons, filterProductId: $filterProductId")
+
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (filterProductId != null) {
                     MainFilter(
-                        viewModel=viewModel,
+                        viewModel = viewModel,
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
                         produitAcheteOperationList = produitAcheteOperationList,
@@ -113,6 +138,8 @@ fun TariffsButtonsSec7ID2(
                         onClickPrixButton = onClickPrixButton,
                         onClickAnulationButton = onClickAnulationButton
                     )
+                } else {
+                    Log.d("TariffsButtons", "filterProductId is null, not showing MainFilter")
                 }
             }
         }

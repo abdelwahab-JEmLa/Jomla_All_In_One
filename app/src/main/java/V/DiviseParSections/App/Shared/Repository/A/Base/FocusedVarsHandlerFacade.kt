@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -26,15 +27,16 @@ class GetterFocusedVars(
     repoM1ProduitInfos: RepoM1ProduitInfos,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
     repo8BonVent: Repo8BonVent,
-    repo9AppCompt: Repo9AppCompt,
+    private val repo9AppCompt: Repo9AppCompt,  // Make private to ensure we use the observable version
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
+    // Use collectAsState or observe the repository state directly
     val currentM9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" }
     }
 
     val onVentM8BonVent by derivedStateOf {
-        val targetKey = repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
+        val targetKey = currentM9AppCompt?.onVentM8BonVentKey // Use currentM9AppCompt instead of repo9AppCompt.currentAppCompt
         repo8BonVent.datasValue.find { it.keyID == targetKey }
     }
 
@@ -68,14 +70,23 @@ class GetterFocusedVars(
         }
     }
 
+    // This is the key fix - make sure this derivedStateOf is reactive to currentM9AppCompt changes
     val focusedM1ProduitInfosAuPrixDifineur by derivedStateOf {
-        repoM1ProduitInfos.datasValue.find {
-            it.keyID == (currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId ?: "")
-        }
+        val keyId = currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId
+        Log.d("FocusedVarsDebug", "focusedM1ProduitInfosAuPrixDifineur - keyId: $keyId")
+
+        val result = repoM1ProduitInfos.datasValue.find { it.keyID == keyId }
+        Log.d("FocusedVarsDebug", "focusedM1ProduitInfosAuPrixDifineur - result: ${result?.nom}")
+
+        result
     }
+
     val listFocusedM10OpeVentCouleurParPrixDifineur by derivedStateOf {
+        val keyId = focusedM1ProduitInfosAuPrixDifineur?.keyID
+        Log.d("FocusedVarsDebug", "listFocusedM10OpeVentCouleurParPrixDifineur - using keyId: $keyId")
+
         repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == (focusedM1ProduitInfosAuPrixDifineur?.keyID ?: "")
+            it.parentM8BonVentKeyId == (keyId ?: "")
         }
     }
 
@@ -86,7 +97,7 @@ class GetterFocusedVars(
     }
 
     val onVentM3CouleurProduitInfos by derivedStateOf {
-        val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
+        val targetKey = currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID // Use currentM9AppCompt instead of repo9AppCompt.currentAppCompt
         repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
     }
 
@@ -103,6 +114,7 @@ class GetterFocusedVars(
                 put("currentM9AppCompt", getter.currentM9AppCompt ?: "null")
                 put("onVentM8BonVent", getter.onVentM8BonVent)
                 put("onVentM2ClientInfos", getter.onVentM2ClientInfos ?: "null")
+                put("focusedM1ProduitInfosAuPrixDifineur", getter.focusedM1ProduitInfosAuPrixDifineur?.nom ?: "null")
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
@@ -158,6 +170,27 @@ class SetterFocusedVars(
             produit,
         )
 
+    fun focucePourPrixDeM1ProduitFacade(produit: ArticlesBasesStatsTable) {
+        Log.d("FocusedVarsDebug", "focucePourPrixDeM1ProduitFacade called with produit: ${produit.nom}, keyID: ${produit.keyID}")
+
+        // Make sure we have a valid current app compt before trying to update
+        val currentAppCompt = getterFocusedVars.currentM9AppCompt
+        if (currentAppCompt == null) {
+            Log.e("FocusedVarsDebug", "currentM9AppCompt is null, cannot focus product")
+            return
+        }
+
+        focucePourPrixDeM1Produit(
+            produit.keyID,
+            getterFocusedVars,
+            repo9AppCompt
+        )
+
+        // Add a small delay to ensure the state update has propagated
+        // This is a workaround - ideally your repository should handle this properly
+        Log.d("FocusedVarsDebug", "Updated focusedAuPrixDifineurM1ProduitInfosKeyId to: ${produit.keyID}")
+    }
+
     fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
         updateCurrentAppComptDialogProduit(getterFocusedVars, repo9AppCompt)
         focucePourPrixDeM1Produit(
@@ -177,19 +210,35 @@ fun focucePourPrixDeM1Produit(
     getterFocusedVars: GetterFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
-    repo9AppCompt.upsert(
-        getterFocusedVars.currentM9AppCompt!!.copy(
-            focusedAuPrixDifineurM1ProduitInfosKeyId = produitKey,
-        )
+    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    if (currentAppCompt == null) {
+        Log.e("FocusedVarsDebug", "Cannot focus product - currentM9AppCompt is null")
+        return
+    }
+
+    Log.d("FocusedVarsDebug", "focucePourPrixDeM1Produit - setting focusedAuPrixDifineurM1ProduitInfosKeyId to: $produitKey")
+
+    val updatedAppCompt = currentAppCompt.copy(
+        focusedAuPrixDifineurM1ProduitInfosKeyId = produitKey,
     )
+
+    repo9AppCompt.upsert(updatedAppCompt)
+
+    Log.d("FocusedVarsDebug", "focucePourPrixDeM1Produit - upserted app compt with keyId: $produitKey")
 }
 
 fun anulleFocucePourPrixDeM1Produit(
     getterFocusedVars: GetterFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
+    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    if (currentAppCompt == null) {
+        Log.e("FocusedVarsDebug", "Cannot nullify focus - currentM9AppCompt is null")
+        return
+    }
+
     repo9AppCompt.upsert(
-        getterFocusedVars.currentM9AppCompt!!.copy(
+        currentAppCompt.copy(
             focusedAuPrixDifineurM1ProduitInfosKeyId = "null",
         )
     )
@@ -200,8 +249,14 @@ fun updateCurrentAppComptDialogProduit(
     repo9AppCompt: Repo9AppCompt,
     produit: ArticlesBasesStatsTable? = null
 ) {
+    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    if (currentAppCompt == null) {
+        Log.e("FocusedVarsDebug", "Cannot update dialog product - currentM9AppCompt is null")
+        return
+    }
+
     repo9AppCompt.upsert(
-        getterFocusedVars.currentM9AppCompt!!.copy(
+        currentAppCompt.copy(
             dialogChoisireQuantityM1ProduitInfosKeyID = produit?.keyID ?: "null",
             dialogChoisireQuantityM1ProduitInfosDebugName = produit?.nom ?: "null",
         )
@@ -213,8 +268,14 @@ fun focuceOnVentM3CouleurProduitInfos(
     getterFocusedVars: GetterFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
+    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    if (currentAppCompt == null) {
+        Log.e("FocusedVarsDebug", "Cannot focus couleur product - currentM9AppCompt is null")
+        return
+    }
+
     repo9AppCompt.upsert(
-        getterFocusedVars.currentM9AppCompt!!.copy(
+        currentAppCompt.copy(
             onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur?.debugInfos ?: "null",
             onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur?.keyID ?: "null",
         )

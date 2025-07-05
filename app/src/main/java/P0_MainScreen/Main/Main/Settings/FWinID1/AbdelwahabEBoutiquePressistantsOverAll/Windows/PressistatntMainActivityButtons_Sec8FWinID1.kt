@@ -197,6 +197,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val cLenceDepuitFragmentsSepecialicteDeVents =
+            (cLenceDepuitFragmentsSepecialisteDeVents
+                    || itsFragmentProduitFastSearchDialog
+                    && viewModel.central.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -210,15 +214,17 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 .padding(16.dp)
         ) {
 
-            val cLenceDepuitFragmentsSepecialicteDeVents =
-                (cLenceDepuitFragmentsSepecialisteDeVents
-                        || itsFragmentProduitFastSearchDialog
-                        && viewModel.central.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur != null)
 
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)
+                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)    //<--
+                //TODO(2.C Relative Au Todo(1):
+                //... ici ca affiche      [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
+                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
+                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
+                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
+                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
                 ,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

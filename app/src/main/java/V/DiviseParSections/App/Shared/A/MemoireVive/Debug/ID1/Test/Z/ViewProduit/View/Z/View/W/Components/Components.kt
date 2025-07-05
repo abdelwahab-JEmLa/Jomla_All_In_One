@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -62,46 +63,78 @@ fun QuantityDisplay(
 
     val totalQuantity = operationsForThisProduct.sumOf { it.quantityAchete }
 
-    Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        else MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .clickable(enabled = !allNonTrouve) {
-                // Fixed: Open dialog for this specific product
-                viewModel.setterFocusedVarsHandlerFacade.ouvrireM1ProduitDialogChoisireQuantityFacade(
-                    produit
-                )
-                onQuantityClickToHaptic()
-            }
-            .getSemanticsTag(
-                "dialogChoisireQuantityM1ProduitInfosDebugName",
-                getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
-            )
-            .getSemanticsTag(
-                "dialogChoisireQuantityM1ProduitInfosDebugName",
-                getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID, 1
-            )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        // Quantity Card
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clickable(enabled = !allNonTrouve) {
+                    // Fixed: Open dialog for this specific product
+                    viewModel.setterFocusedVarsHandlerFacade.ouvrireM1ProduitDialogChoisireQuantityFacade(
+                        produit
+                    )
+                    onQuantityClickToHaptic()
+                }
+                .getSemanticsTag(
+                    "dialogChoisireQuantityM1ProduitInfosDebugName",
+                    getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
+                )
+                .getSemanticsTag(
+                    "dialogChoisireQuantityM1ProduitInfosDebugName",
+                    getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID, 1
+                )
         ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "Total quantity",
-                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                else MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(16.dp)
-            )
-            Text(
-                text = totalQuantity.toString(),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                else MaterialTheme.colorScheme.onPrimary
-            )
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "Total quantity",
+                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = totalQuantity.toString(),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        // Price Card - Separate card
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.secondary,
+            modifier = Modifier
+                .clickable(enabled = !allNonTrouve) {
+                    viewModel.setterFocusedVarsHandlerFacade.focucePourPrixDeM1ProduitFacade(produit)
+                    onQuantityClickToHaptic()
+                }
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AttachMoney,
+                    contentDescription = "Price",
+                    tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }
