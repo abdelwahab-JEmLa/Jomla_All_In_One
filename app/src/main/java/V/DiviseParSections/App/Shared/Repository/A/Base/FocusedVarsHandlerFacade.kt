@@ -8,12 +8,16 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import android.annotation.SuppressLint
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
+import kotlinx.coroutines.delay
 
 class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars)
 
@@ -45,8 +49,7 @@ class GetterFocusedVars(
 
     val onVentId2ClientInfos by derivedStateOf {
         Repo2Client.datasValue.find {
-            it.keyID ==
-                    onVentId8BonVent.parentM2ClientInfosKey
+            it.keyID == onVentId8BonVent.parentM2ClientInfosKey
         }
     }
 
@@ -60,30 +63,34 @@ class GetterFocusedVars(
     fun Modifier.getModifierAcSemantics(): Modifier {
         return Modifier.semantics {
             set(
-                SemanticsPropertyKey("1D == [currentM9AppCompt]"),
-                currentM9AppCompt
+                SemanticsPropertyKey("1D == [currentM9AppCompt]"), currentM9AppCompt
             )
         }
     }
-    companion object{
-        @SuppressLint("ModifierFactoryUnreferencedReceiver")
-        fun Modifier.getSemanticsTag1(nomVal :String, data:Any): Modifier {
-            return Modifier.semantics {
-                set(
-                    SemanticsPropertyKey("1D == [$nomVal]"),
-                    data
-                )
+}
 
-            }
+object DebugsTests {
+    @SuppressLint("ModifierFactoryUnreferencedReceiver")
+    fun Modifier.getSemanticsTag(nomVal: String, data: Any, index: Int = 0): Modifier {
+        return this.semantics {
+            set(
+                SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data
+            )
         }
+    }
 
-        @SuppressLint("ModifierFactoryUnreferencedReceiver")
-        fun Modifier.getSemanticsTag(nomVal :String, data:Any,index :Int= 0): Modifier {
-            return this.semantics {
-                set(
-                    SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"),
-                    data
-                )
+    var shouldPerformInitialSearch = true
+
+    @Composable
+    fun DebugTestsPerformInitialSearch(
+        enabled: Boolean, onSearchQueryChange: (String) -> Unit, focusRequester: FocusRequester
+    ) {
+        LaunchedEffect(enabled) {
+            if (enabled) {
+                delay(2000)
+                onSearchQueryChange("sor")
+                focusRequester.requestFocus()
+                shouldPerformInitialSearch = false
             }
         }
     }
