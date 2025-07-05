@@ -110,7 +110,8 @@ fun ID4ClientSearchButton(
                             SemanticsPropertyKey("D1Debug== onVentId8BonVent"), onVentId8BonVent
                         )
                         set(
-                            SemanticsPropertyKey("D1Debug== currentM9AppCompt"), viewModel.getterFocucedVars.currentM9AppCompt
+                            SemanticsPropertyKey("D1Debug== currentM9AppCompt"),
+                            viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt
                         )
                     },
                 onClick = {
@@ -181,7 +182,7 @@ fun ID4ClientSearchButton(
                                         showDropdown = false
                                     }
                                 },
-                                viewModel=viewModel
+                                viewModel = viewModel
                             )
                         },
                         trailingIcon = {
@@ -211,7 +212,6 @@ fun ID4ClientSearchButton(
                             items(filteredClients) { client ->
                                 ClientSearchItem(
                                     viewModel = viewModel,
-                                    uiState = uiState,
                                     client = client,
                                     onClick = {
                                         onClientSelectedToToast(client)
@@ -300,7 +300,7 @@ private fun CreateNewClientIcon(
         parentM2ClientInfosDebugName = newClient.nom
     )
 
-    val updatedAppCompt = viewModel.getterFocucedVars.currentM9AppCompt?.copy(
+    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
         onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
         onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.debugInfos
     )
@@ -341,34 +341,35 @@ private inline fun resetSearchMode(action: () -> Unit) {
 fun ClientSearchItem(
     client: HClientInfos,
     onClick: () -> Unit,
-    uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val (semanticsKeys, semanticsValues) = uiState.focusedVarsHandlerFacade.getter.getSemantics()
 
-    val afterUpdateSemanticsValues = semanticsValues.m8Value.copy(
+    val updatedDefaultId8BonVent = viewModel.getterFocusedVarsHandlerFacade.defaultId8BonVent.copy(
         debugInfos = client.nom,
         parentM2ClientInfosKey = client.keyID,
         parentM2ClientInfosDebugName = client.nom
     )
 
-    val afterUpdateSemanticsValues_m9Value = semanticsValues.m9Value?.copy(
-        onVentM8BonVentKey = afterUpdateSemanticsValues.keyID,
-        onVentM8BonVentDebugInfos = afterUpdateSemanticsValues.debugInfos
+    val newCurrentM9AppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
+        onVentM8BonVentKey = updatedDefaultId8BonVent.keyID,
+        onVentM8BonVentDebugInfos = updatedDefaultId8BonVent.debugInfos
     )
 
     Row(
         modifier = Modifier
             .semantics {
-                set(semanticsKeys.m8Key, afterUpdateSemanticsValues)
-                set(semanticsKeys.m9Key, afterUpdateSemanticsValues_m9Value)
+                set(
+                    SemanticsPropertyKey("1D == [updatedDefaultId8BonVent]"),
+                    updatedDefaultId8BonVent
+                )
+                set(SemanticsPropertyKey("2D == [newCurrentM9AppCompt]"), newCurrentM9AppCompt)
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.addNewM8BonVent(afterUpdateSemanticsValues)
+                viewModel.setter.addNewM8BonVent(updatedDefaultId8BonVent)
 
-                if (afterUpdateSemanticsValues_m9Value != null) {
-                    viewModel.setter.updateM9AppCompt(afterUpdateSemanticsValues_m9Value)
+                if (newCurrentM9AppCompt != null) {
+                    viewModel.setter.updateM9AppCompt(newCurrentM9AppCompt)
                 }
 
                 onClick()

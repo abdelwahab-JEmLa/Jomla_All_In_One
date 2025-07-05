@@ -81,12 +81,12 @@ fun ViewProduit_T1(
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader_T1(
+                produit=product,
+                viewModel=viewModel,
                 productName = productName,
                 allNonTrouve = allNonTrouve,
-                totalQuantity = totalQuantity,
-                onQuantityClick = {
+                onQuantityClickToHaptic = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    viewModel.showProductDialog(productKeyId)
                 }
             )
             Spacer(modifier = Modifier.height(12.dp))

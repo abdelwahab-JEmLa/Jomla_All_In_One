@@ -20,7 +20,7 @@ fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     achatCouleur: KAchatCouleurOperation
 ) {
-    val listGBonVentKeyID = achatCouleur.listFCouleurVentOperation.map { it.parentGBonVentKeyId }
+    val listGBonVentKeyID = achatCouleur.listFCouleurVentOperation.map { it.parentM8BonVentKeyId }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +44,7 @@ fun List_AcheteursDeCetteProduit(
 
             val achatQuantityDeCetteBonVent = viewModel.getter.fVentCouleurOperationRepository
                 .datasFilteredParCurrentHVentPeriod
-                .find { it.parentGBonVentKeyId == gBonVentKeyID }?.quantityAchete
+                .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantityAchete
 
             Text(
                 text = "Qté: $achatQuantityDeCetteBonVent",

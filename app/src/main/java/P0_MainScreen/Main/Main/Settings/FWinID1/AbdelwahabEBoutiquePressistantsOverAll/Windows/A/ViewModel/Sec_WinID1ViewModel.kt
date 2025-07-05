@@ -19,8 +19,8 @@ class ViewModelPresistantButtonsSec8FWinID1(
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
     val getter=central.getter
-    val  setterFocucedVars =central.focusedVarsHandlerFacade.setter
-    val  getterFocucedVars =central.focusedVarsHandlerFacade.getter
+    val  setterFocusedVarsHandlerFacade =central.focusedVarsHandlerFacade.setter
+    val  getterFocusedVarsHandlerFacade =central.focusedVarsHandlerFacade.getter
     val  setter =central.focusedVarsHandlerFacade.setter
     val appComptComposeRepositoryProtoJuin17 = getter.id9AppComptRepository
 

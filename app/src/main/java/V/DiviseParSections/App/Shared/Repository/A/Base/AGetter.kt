@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -63,7 +63,7 @@ class AGetter(
     val iD2ClientRepository: Repo2Client,
     val id8BonVentRepository: Repo8BonVent,
 
-    val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+    val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
     val kAchatRepository: KAchatCouleurOperationRepository,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
@@ -134,7 +134,7 @@ class AGetter(
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
-            operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentGBonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
+            operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
         }
 
         return matchingOperation

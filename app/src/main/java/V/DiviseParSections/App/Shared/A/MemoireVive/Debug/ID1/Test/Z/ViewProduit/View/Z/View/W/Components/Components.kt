@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,15 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +31,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun ProductHeader_T1(
+fun ProductHeader_T1(
+    viewModel: ViewModelsProduit_T1,
     productName: String,
     allNonTrouve: Boolean,
-    totalQuantity: Int,
-    onQuantityClick: () -> Unit
+    onQuantityClickToHaptic: () -> Unit,
+    produit: ArticlesBasesStatsTable
 ) {
     Box(
         modifier = Modifier
@@ -86,41 +89,41 @@ import androidx.compose.ui.unit.dp
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                QuantityDisplay(allNonTrouve, totalQuantity, onQuantityClick)
+                QuantityDisplay(
+                    produit = produit,
+                    viewModel = viewModel,
+                    allNonTrouve = allNonTrouve,
+                ) {
+                    onQuantityClickToHaptic()
+                }
             }
         }
     }
 }
 
 @Composable
- fun ToggleButton(allNonTrouve: Boolean, hasNonTrouve: Boolean, onClick: () -> Unit) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            )
-    ) {
-        Icon(
-            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.CheckCircle,
-            contentDescription = if (hasNonTrouve) "Mark as found" else "Mark as not found",
-            tint = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f),
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
+fun QuantityDisplay(
+    viewModel: ViewModelsProduit_T1,
+    allNonTrouve: Boolean,
+    produit: ArticlesBasesStatsTable,
+    onClick: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
-@Composable
- fun QuantityDisplay(allNonTrouve: Boolean, totalQuantity: Int, onClick: () -> Unit) {
+    val totalQuantity =
+        viewModel.focusedVarsHandlerFacade.getter.onVentM10OperationVentCouleurListFiltered.sumOf { it.quantityAchete }
+
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
         else MaterialTheme.colorScheme.primary,
-        modifier = Modifier.clickable(enabled = !allNonTrouve) { onClick() }
+        modifier = Modifier
+            .clickable(enabled = !allNonTrouve) {
+                viewModel.showProductDialog(produit.keyID)
+                onClick()
+            }
+            .getSemanticsTag("productDialogStates",uiState.productDialogStates)
+            .getSemanticsTag("produit",produit,1)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),

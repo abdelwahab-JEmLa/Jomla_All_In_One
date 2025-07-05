@@ -11,8 +11,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
@@ -36,7 +36,7 @@ val composRepositorysModule = module {
 
     single { BProduitInfosRepository(get()) }
     single { B1CouleurOuGoutProduitDataBaseRepository(get()) }
-    single { FVentCouleurOperationRepository(get(), get()) }
+    single { Repo10OperationVentCouleur(get(), get()) }
     single { Repo8BonVent(get(), get()) }
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
@@ -48,7 +48,7 @@ val composRepositorysModule = module {
     single { VentOperations(get(), get()) }
 
 
-    single { GetterFocusedVars(get(), get(), get()) }
+    single { GetterFocusedVars(get(), get(),get(),get(),) }
     single { SetterFocusedVars(get(), get(), get(), ) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 

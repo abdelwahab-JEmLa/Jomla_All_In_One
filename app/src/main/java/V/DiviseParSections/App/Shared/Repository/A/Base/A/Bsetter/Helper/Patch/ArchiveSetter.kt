@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class BSetterP (
     val getter: AGetter,
     val bProduitDataBase_SubClassFunctionality: BProduitInfosRepository,
-    val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+    val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
     val hClientRepository: Repo2Client,
     val gBonVentRepository: Repo8BonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,

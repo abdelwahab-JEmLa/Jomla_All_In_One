@@ -23,7 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -45,10 +47,53 @@ fun MainFastSearchProduitPourVent(
 
     val focusRequester = remember { FocusRequester() }
 
+    // Local state for immediate UI updates
+    var localSearchText by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
         delay(100)
         focusRequester.requestFocus()
     }
+
+    // Debounce effect - triggers search after user stops typing
+    LaunchedEffect(localSearchText) {
+        if (localSearchText.isNotEmpty()) {
+            delay(500) // 500ms debounce delay
+            // Only update the viewModel's search text after the delay
+            viewModel.onSearchTextChange(localSearchText)
+        } else {
+            // Clear search immediately when text is empty
+            viewModel.onSearchTextChange("")
+        }
+    }
+
+    // Control for initial search
+    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
+
+    @Composable
+    fun debugTestsPerformInitialSearch(
+        enabled: Boolean,
+        onSearchQueryChange: (String) -> Unit,
+        focusRequester: FocusRequester
+    ) {
+        LaunchedEffect(enabled) {
+            if (enabled) {
+                delay(2000) // Wait 2 seconds after component loads
+                onSearchQueryChange("sor")
+                focusRequester.requestFocus()
+                shouldPerformInitialSearch = false // Disable after first execution
+            }
+        }
+    }
+
+    // Use the separated performInitialSearch
+    debugTestsPerformInitialSearch(
+        enabled = shouldPerformInitialSearch,
+        onSearchQueryChange = { searchText ->
+            localSearchText = searchText
+        },
+        focusRequester = focusRequester
+    )
 
     Surface(
         modifier = modifier
@@ -61,15 +106,18 @@ fun MainFastSearchProduitPourVent(
                     .padding(16.dp)
             ) {
                 OutlinedTextField(
-                    value = uiState.searchText,
-                    onValueChange = viewModel::onSearchTextChange,
+                    // Use local state for immediate UI feedback
+                    value = localSearchText,
+                    onValueChange = { newText ->
+                        localSearchText = newText
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     placeholder = { Text("Rechercher un produit...") },
                     singleLine = true,
                     leadingIcon = {
-                        val searchQuery = uiState.searchText
+                        val searchQuery = localSearchText
                         val newProduit = ArticlesBasesStatsTable(
                             id = if (uiState.bProduitInfosRepository.datasValue.isNotEmpty()) {
                                 uiState.bProduitInfosRepository.datasValue.maxOf { it.id } + 1
@@ -116,10 +164,10 @@ fun MainFastSearchProduitPourVent(
                         }
                     },
                     trailingIcon = {
-                        if (uiState.searchText.isNotEmpty()) {
+                        if (localSearchText.isNotEmpty()) {
                             IconButton(
                                 onClick = {
-                                    viewModel.onSearchTextChange("")
+                                    localSearchText = ""
                                 }
                             ) {
                                 Icon(

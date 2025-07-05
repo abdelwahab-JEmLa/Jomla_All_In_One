@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -29,7 +29,7 @@ class PrintReceiptHandler {
     // New method for current vent system
     fun printVentReceipt(
         context: Context,
-        fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+        fVentCouleurOperationRepository: Repo10OperationVentCouleur,
         bProduitInfosRepository: BProduitInfosRepository,
         b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
         client: HClientInfos?,

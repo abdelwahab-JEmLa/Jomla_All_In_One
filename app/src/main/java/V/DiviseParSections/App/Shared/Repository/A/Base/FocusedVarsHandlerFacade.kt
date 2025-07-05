@@ -1,15 +1,19 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 
 class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars)
 
@@ -18,6 +22,7 @@ class GetterFocusedVars(
     Repo2Client: Repo2Client,
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
+    Repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
     val currentM9AppCompt by derivedStateOf { repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" } }
 
@@ -45,29 +50,43 @@ class GetterFocusedVars(
         }
     }
 
-    fun getSemantics(): Pair<SemanticsKeys, SemanticsValues> {
-        val semanticsKeys = SemanticsKeys(
-            m8Key = SemanticsPropertyKey("DebugID1=defaultId8BonVent"),
-            m9Key = SemanticsPropertyKey("DebugID1=currentM9AppCompt")
-        )
-
-        val semanticsValues = SemanticsValues(
-            m8Value = defaultId8BonVent,
-            m9Value = currentM9AppCompt
-        )
-
-        return Pair(semanticsKeys, semanticsValues)
+    val onVentM10OperationVentCouleurListFiltered by derivedStateOf {
+        Repo10OperationVentCouleur.datasValue.filter {
+            it.parentM8BonVentKeyId == currentM9AppCompt?.onVentM8BonVentKey
+        }
     }
 
-    data class SemanticsKeys(
-        val m8Key: SemanticsPropertyKey<GBonVent>,
-        val m9Key: SemanticsPropertyKey<Z_AppCompt?>
-    )
+    @SuppressLint("ModifierFactoryUnreferencedReceiver")
+    fun Modifier.getModifierAcSemantics(): Modifier {
+        return Modifier.semantics {
+            set(
+                SemanticsPropertyKey("1D == [currentM9AppCompt]"),
+                currentM9AppCompt
+            )
+        }
+    }
+    companion object{
+        @SuppressLint("ModifierFactoryUnreferencedReceiver")
+        fun Modifier.getSemanticsTag1(nomVal :String, data:Any): Modifier {
+            return Modifier.semantics {
+                set(
+                    SemanticsPropertyKey("1D == [$nomVal]"),
+                    data
+                )
 
-    data class SemanticsValues(
-        val m8Value: GBonVent,
-        val m9Value: Z_AppCompt?
-    )
+            }
+        }
+
+        @SuppressLint("ModifierFactoryUnreferencedReceiver")
+        fun Modifier.getSemanticsTag(nomVal :String, data:Any,index :Int= 0): Modifier {
+            return this.semantics {
+                set(
+                    SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"),
+                    data
+                )
+            }
+        }
+    }
 }
 
 
@@ -77,9 +96,11 @@ class SetterFocusedVars(
     val repo8BonVent: Repo8BonVent,
     val repo9AppCompt: Repo9AppCompt,
 ) {
-    fun addNewM8BonVent(id8BonVent: GBonVent) = ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
+    fun addNewM8BonVent(id8BonVent: GBonVent) =
+        ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
+
     fun updateM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
-    fun addNewM2ClientInfos(newClient: HClientInfos)  = Repo2Client.addClient(newClient)
+    fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(

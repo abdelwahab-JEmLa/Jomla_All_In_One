@@ -59,7 +59,7 @@ fun parseCsvLine(line: String): FCouleurVentOperationInfos {
 private fun parsedData(values: List<String>) = FCouleurVentOperationInfos(
     keyID = values.getOrElse(0) { BsonObjectId().toHexString() },
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
-    parentGBonVentKeyId = values.getOrElse(3) { "" },
+    parentM8BonVentKeyId = values.getOrElse(3) { "" },
     parentBProduitInfosKeyId = values.getOrElse(4) { "" },
     parentZAppComptID = values.getOrElse(5) { "" },
     parentClientInfosKeyID = values.getOrElse(6) { "" },

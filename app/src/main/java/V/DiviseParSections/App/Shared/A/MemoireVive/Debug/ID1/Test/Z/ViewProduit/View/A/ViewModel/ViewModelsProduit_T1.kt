@@ -19,6 +19,7 @@ class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.getter
+    val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
     val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
     val fVentCouleurOperationRepository = getter.fVentCouleurOperationRepository
     val setter = aCentral.setter
@@ -82,7 +83,7 @@ class ViewModelsProduit_T1(
             parentDebugInfosID9AppCompt = extractField(appCompt, "nom") ?: "Non Definie",
             parentHVentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
-            parentGBonVentKeyId = extractField(onVentData, "keyID") ?: "",
+            parentM8BonVentKeyId = extractField(onVentData, "keyID") ?: "",
             parentDebugInfosID8BonVent = extractField(onVentData, "nomClientConcerned") ?: "",
             parentBProduitInfosKeyId = produit?.keyID ?: "",
             parentDebugInfosID1Produit = produit?.nom ?: "Non Definie",
@@ -116,7 +117,5 @@ class ViewModelsProduit_T1(
         return nom?.takeIf { it.isNotBlank() } ?: "Product #$productKeyId"
     }
 
-    fun getCurrentPrice(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    fun hasNonTrouve(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
     fun allNonTrouve(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
 }

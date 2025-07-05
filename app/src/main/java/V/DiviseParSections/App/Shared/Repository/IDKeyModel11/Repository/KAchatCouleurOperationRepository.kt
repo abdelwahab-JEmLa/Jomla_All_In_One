@@ -2,14 +2,14 @@ package V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FVentCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 
 @Stable
 class KAchatCouleurOperationRepository(
-    val fVentCouleurOperationRepository: FVentCouleurOperationRepository,
+    val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
 ) {
     private val sourceDatas by derivedStateOf { fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod }
     val datasValue by derivedStateOf { initImplimentaion() }

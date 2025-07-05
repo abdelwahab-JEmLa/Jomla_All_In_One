@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class FVentCouleurOperationRepository(
+class Repo10OperationVentCouleur(
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
@@ -37,9 +37,10 @@ class FVentCouleurOperationRepository(
 
     val onVentFilteredDatas by derivedStateOf {
         datasValue.filter {
-            it.parentGBonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
+            it.parentM8BonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
         }
     }
+
     val datasFilteredParCurrentHVentPeriod by derivedStateOf {
         datasValue.filter {
             it.parentHVentPeriodKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
@@ -139,7 +140,7 @@ class FVentCouleurOperationRepository(
 
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
 
-            parentGBonVentKeyId = zCompt.onVentM8BonVentKey,
+            parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
 
             parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
@@ -167,7 +168,7 @@ class FVentCouleurOperationRepository(
     companion object {
         private const val TAG = "ColorOperation"
 
-        fun String?.findData(repo: FVentCouleurOperationRepository) = repo.datasValue.find { it.keyID == this }
+        fun String?.findData(repo: Repo10OperationVentCouleur) = repo.datasValue.find { it.keyID == this }
     }
 }
 
@@ -186,7 +187,7 @@ data class FCouleurVentOperationInfos(
 
 
     var parentEPeriodVentStartDate: Long = 0,
-    var parentGBonVentKeyId: String = "",
+    var parentM8BonVentKeyId: String = "",
 
     //Mutable
     var quantityAchete: Int = 0,
