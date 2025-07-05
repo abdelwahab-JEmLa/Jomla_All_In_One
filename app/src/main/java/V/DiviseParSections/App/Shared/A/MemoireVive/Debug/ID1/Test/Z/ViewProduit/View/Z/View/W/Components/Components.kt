@@ -110,8 +110,13 @@ fun QuantityDisplay(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    val onVentM10OperationVentCouleurListFiltered = viewModel.focusedVarsHandlerFacade.getter
+        .onVentM10OperationVentCouleurListFiltered
+
     val totalQuantity =
-        viewModel.focusedVarsHandlerFacade.getter.onVentM10OperationVentCouleurListFiltered.sumOf { it.quantityAchete }
+        onVentM10OperationVentCouleurListFiltered
+            .filter { it.parentBProduitInfosKeyId==produit.keyID }
+            .sumOf { it.quantityAchete }
 
     Surface(
         shape = RoundedCornerShape(20.dp),
