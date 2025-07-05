@@ -90,15 +90,17 @@ fun ViewVentCouleur_T1(
     }
     val defaultM3CouleurProduitInfos =
         with(m3CouleurProduitInfos) {
-            getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
-                //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                parentM1ProduitInfosKeyId = parentBProduitInfosKeyID,
-                parentM1ProduitDebugInfos = parentId1ProduitInfosDebugName,
-                //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                parentM3CouleurProduitInfosKeyID = key,
-                parentM3CouleurProduitDebugInfos = parentId1ProduitInfosDebugName + indexCouleurDansAncienProto,
-
-                )
+            produit?.let {
+                val parentM1ProduitDebugInfos = produit.nom
+                getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+                    //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                    parentM1ProduitInfosKeyId = it.keyID,
+                    parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
+                    //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                    parentM3CouleurProduitInfosKeyID = key,
+                    parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + indexCouleurDansAncienProto,
+                    )
+            }
         }
 
     val vent =

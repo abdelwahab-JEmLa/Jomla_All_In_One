@@ -12,6 +12,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -112,27 +113,30 @@ class GetterFocusedVars(
         }
     }
 }
+
 object DebugsTests {
     const val TAG = "DebugsTests"
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0): Modifier {
+        log(nomVal, index, data)
+
+        return this.semantics(mergeDescendants = true) {
+            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
+        }
+    }
+
+    private fun log(nomVal: String, index: Int, data: Any?) {
         val logTag = "Debug_${nomVal}_${index + 1}"
         val dataString = when (data) {
             null -> "null"
             is String -> data
             is Number -> data.toString()
             is Boolean -> data.toString()
-            else -> data.toString().take(100) // Limit length for logging
+            else -> data.toString().take(100)
         }
 
-        // Log the data for debugging purposes
-        android.util.Log.d(TAG, "[$logTag] $nomVal = $dataString")
-
-        return this.semantics(mergeDescendants = true) {
-            // Fix: Use dataString instead of data to ensure "null" is displayed when data is null
-            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
-        }
+        Log.d(TAG, "[$logTag] $nomVal = $dataString")
     }
 
     var shouldPerformInitialSearch = true
