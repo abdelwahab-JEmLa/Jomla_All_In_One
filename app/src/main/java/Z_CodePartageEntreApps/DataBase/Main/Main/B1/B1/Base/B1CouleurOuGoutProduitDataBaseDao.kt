@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,30 +11,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface B1CouleurOuGoutProduitDataBaseDao {
-    @Query("SELECT * FROM B1CouleurOuGoutProduitDataBase")
-    fun getAllFlow(): Flow<List<B1CouleurOuGoutProduitDataBase>>
+    @Query("SELECT * FROM M3CouleurProduitInfos")
+    fun getAllFlow(): Flow<List<M3CouleurProduitInfos>>
 
     @Update
-    suspend fun update(data: B1CouleurOuGoutProduitDataBase)
+    suspend fun update(data: M3CouleurProduitInfos)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: B1CouleurOuGoutProduitDataBase)
+    suspend fun insert(category: M3CouleurProduitInfos)
 
     @Delete
-    suspend fun delete(article: B1CouleurOuGoutProduitDataBase)
+    suspend fun delete(article: M3CouleurProduitInfos)
 
-    @Query("SELECT * FROM B1CouleurOuGoutProduitDataBase ")
-    suspend fun getAll(): MutableList<B1CouleurOuGoutProduitDataBase>
+    @Query("SELECT * FROM M3CouleurProduitInfos ")
+    suspend fun getAll(): MutableList<M3CouleurProduitInfos>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(articlesBasesStatTabelles: List<B1CouleurOuGoutProduitDataBase>)
+    suspend fun insertAll(articlesBasesStatTabelles: List<M3CouleurProduitInfos>)
 
-    @Query("DELETE FROM B1CouleurOuGoutProduitDataBase")
+    @Query("DELETE FROM M3CouleurProduitInfos")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM B1CouleurOuGoutProduitDataBase")
+    @Query("SELECT COUNT(*) FROM M3CouleurProduitInfos")
     suspend fun getCount(): Int
 
-    @Query("SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE 0 END FROM B1CouleurOuGoutProduitDataBase")
+    @Query("SELECT CASE WHEN COUNT(*) = 0 THEN 1 ELSE 0 END FROM M3CouleurProduitInfos")
     suspend fun isTableEmpty(): Boolean
 }

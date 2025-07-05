@@ -13,7 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -35,7 +35,7 @@ val composRepositorysModule = module {
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
     single { BProduitInfosRepository(get()) }
-    single { B1CouleurOuGoutProduitDataBaseRepository(get()) }
+    single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(get(), get()) }
     single { Repo8BonVent(get(), get()) }
     single { KAchatCouleurOperationRepository(get()) }

@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
@@ -45,8 +45,8 @@ import kotlin.coroutines.resume
 class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
     val dao: B1CouleurOuGoutProduitDataBaseDao,
 ) {
-    val repoTAG = "B1CouleurOuGoutProduitDataBase"
-    val repoRef = B1CouleurOuGoutProduitDataBase.ref
+    val repoTAG = "M3CouleurProduitInfos"
+    val repoRef = M3CouleurProduitInfos.ref
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     suspend fun init(
@@ -56,7 +56,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         if (!dao.isTableEmpty()) return
 
         updateRepoProgress(WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name, 0.4f)
-        val data: List<B1CouleurOuGoutProduitDataBase> = if (isInternetAvailable) {
+        val data: List<M3CouleurProduitInfos> = if (isInternetAvailable) {
             updateRepoProgress(
                 WDatabaseInitializationManager.Repository.D_ACHAT_OPERATION.name,
                 0.6f
@@ -71,10 +71,10 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
 
     fun initCreationDepuitOld(
         produit: ArticlesBasesStatsTable,
-    ): List<B1CouleurOuGoutProduitDataBase> {
+    ): List<M3CouleurProduitInfos> {
 
         val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
-        val results = mutableListOf<B1CouleurOuGoutProduitDataBase>()
+        val results = mutableListOf<M3CouleurProduitInfos>()
 
         val colorMappings = listOf(
             produit.couleur1 to 0,
@@ -96,8 +96,8 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
                     imageFile.exists() && imageFile.canRead() && imageFile.length() > 0
 
             if (imageExists || !couleur.isNullOrBlank()) {
-                val colorData = B1CouleurOuGoutProduitDataBase(
-                    aAffiche = if (imageExists) B1CouleurOuGoutProduitDataBase.Type.Image else B1CouleurOuGoutProduitDataBase.Type.Nom,
+                val colorData = M3CouleurProduitInfos(
+                    aAffiche = if (imageExists) M3CouleurProduitInfos.Type.Image else M3CouleurProduitInfos.Type.Nom,
                     nomImageFichieSansEtansion = if (imageExists) imageFile.nameWithoutExtension else "Non Dispo",
                     extensionDisponible = if (imageExists) imageFile.extension else "webp",
                     nomCouleurStrSiSonImageDispo = couleur ?: "",
@@ -114,13 +114,13 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         return results
     }
 
-    suspend fun onLoadFromFireBase(): MutableList<B1CouleurOuGoutProduitDataBase> {
+    suspend fun onLoadFromFireBase(): MutableList<M3CouleurProduitInfos> {
         return suspendCancellableCoroutine { continuation ->
-            B1CouleurOuGoutProduitDataBase.ref.get()
+            M3CouleurProduitInfos.ref.get()
                 .addOnSuccessListener { snapshot ->
-                    val dataList = mutableListOf<B1CouleurOuGoutProduitDataBase>()
+                    val dataList = mutableListOf<M3CouleurProduitInfos>()
                     snapshot.children.forEach { child ->
-                        child.getValue(B1CouleurOuGoutProduitDataBase::class.java)?.let { item ->
+                        child.getValue(M3CouleurProduitInfos::class.java)?.let { item ->
                             dataList.add(item)
                         }
                     }
@@ -145,7 +145,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(B1CouleurOuGoutProduitDataBase::class.java)
+                                child.getValue(M3CouleurProduitInfos::class.java)
                                     ?.let { entity ->
                                         val entityWithKey = entity.copy(key = child.key ?: "")
                                         val shouldUpdate = try {
@@ -184,7 +184,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
 
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
-        dataAvecTigerUpdate: B1CouleurOuGoutProduitDataBase
+        dataAvecTigerUpdate: M3CouleurProduitInfos
     ) {
         composScope.launch {
             try {
@@ -201,7 +201,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         }
     }
 
-    fun deleteDataAncienRepo(data: B1CouleurOuGoutProduitDataBase) {
+    fun deleteDataAncienRepo(data: M3CouleurProduitInfos) {
         composScope.launch {
             try {
                 dao.delete(data)
@@ -212,7 +212,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         }
     }
 
-    private suspend fun deleteFromFireBase(data: B1CouleurOuGoutProduitDataBase) {
+    private suspend fun deleteFromFireBase(data: M3CouleurProduitInfos) {
         try {
             repoRef.child(data.key).removeValue().await()
         } catch (e: Exception) {
@@ -220,13 +220,13 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         }
     }
 
-    private suspend fun batchFireBaseUpdateB1CouleurOuGoutProduitDataBase(datas: List<B1CouleurOuGoutProduitDataBase>) {
+    private suspend fun batchFireBaseUpdateB1CouleurOuGoutProduitDataBase(datas: List<M3CouleurProduitInfos>) {
         try {
             val updates = mutableMapOf<String, Any>()
             datas.forEach { data ->
                 updates[data.key] = data
             }
-            val firebaseRef = B1CouleurOuGoutProduitDataBase.ref
+            val firebaseRef = M3CouleurProduitInfos.ref
             firebaseRef.updateChildren(updates).await()
         } catch (e: Exception) {
             println("Error in batch Firebase update: ${e.message}")
@@ -252,9 +252,9 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
 @Composable
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
-    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
     keyCouleur: String,
-    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {},
+    onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {},
     size: Dp = 200.dp
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
@@ -274,7 +274,7 @@ fun CouleurDisplayer(
                 .padding(5.dp)
         ) {
             when (data.aAffiche) {
-                B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                M3CouleurProduitInfos.Type.Image -> {
                     // Fixed: Removed the comment and properly called the composable
                     ImageDisplayer(
                         modifier = Modifier.size(size),
@@ -286,7 +286,7 @@ fun CouleurDisplayer(
                     )
                 }
 
-                B1CouleurOuGoutProduitDataBase.Type.Nom -> {
+                M3CouleurProduitInfos.Type.Nom -> {
                     ColorNameDisplayer(
                         modifier = Modifier.size(size),
                         colorName = data.nomCouleurStrSiSonImageDispo,
@@ -309,7 +309,7 @@ fun CouleurDisplayer(
 }
 
 @Composable
-private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase) {
+private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
     val text = "${
         data.key.takeLast(4).uppercase()
     } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"

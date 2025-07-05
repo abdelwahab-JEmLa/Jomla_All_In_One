@@ -28,7 +28,7 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
         gBonVentRepository.upsert(
             GBonVent(
                 keyID = newTransactionKey,
-                parentKeyId7VentPeriod = zCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,

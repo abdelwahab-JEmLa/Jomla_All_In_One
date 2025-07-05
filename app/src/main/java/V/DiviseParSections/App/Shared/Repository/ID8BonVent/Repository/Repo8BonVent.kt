@@ -40,8 +40,8 @@ class Repo8BonVent(
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
 
-            parentKeyId7VentPeriod = ParametresAppComptNonSaved().keyIdId7VentPeriod ,
-            parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod ,
+            parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod ,
+            parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod ,
         )
     }
 
@@ -117,10 +117,11 @@ data class GBonVent(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
     var debugInfos: String = "",
 
-    //Section Forging Keys
-    //PeriodeVen
-    var parentKeyId7VentPeriod: String = "",
-    var parentDebugNameId7VentPeriod: String = "",
+    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+    var parentM7VentPeriodKeyId: String = "",
+    var parentM7VentPeriodDebugInfos: String = "",
 
     var parentPeriodeVentOldID: Long = 0L,
 
@@ -220,13 +221,13 @@ data class GBonVent(
     }
 
     fun isSameEntity(other: GBonVent) =
-        keyID == other.keyID && parentKeyId9AppComptInfos == other.parentKeyId9AppComptInfos && parentKeyId7VentPeriod == other.parentKeyId7VentPeriod
+        keyID == other.keyID && parentKeyId9AppComptInfos == other.parentKeyId9AppComptInfos && parentM7VentPeriodKeyId == other.parentM7VentPeriodKeyId
 
     override fun equals(other: Any?) =
         this === other || (other is GBonVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
-        keyID, parentZAppComptNom, parentKeyId7VentPeriod
+        keyID, parentZAppComptNom, parentM7VentPeriodKeyId
     )
 
     companion object {

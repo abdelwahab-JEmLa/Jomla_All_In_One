@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
@@ -115,7 +115,7 @@ class Repo10OperationVentCouleur(
 
     fun acheterUneCouleur(
         zCompt: Z_AppCompt,
-        relatedVentOperation: B1CouleurOuGoutProduitDataBase,
+        relatedVentOperation: M3CouleurProduitInfos,
         quantity: Int,
     ) {
         composScope.launch {
@@ -135,7 +135,7 @@ class Repo10OperationVentCouleur(
     }
 
     private fun createSafeCouleurVentOperation(
-        relatedCouleur: B1CouleurOuGoutProduitDataBase,
+        relatedCouleur: M3CouleurProduitInfos,
         zCompt: Z_AppCompt,
         quantity: Int
     ): FCouleurVentOperationInfos {

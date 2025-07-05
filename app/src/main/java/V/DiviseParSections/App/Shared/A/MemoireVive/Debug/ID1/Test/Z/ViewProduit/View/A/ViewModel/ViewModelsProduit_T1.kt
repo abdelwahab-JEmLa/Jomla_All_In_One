@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.ui.graphics.ColorMatrix
@@ -20,6 +20,8 @@ class ViewModelsProduit_T1(
 ) : ViewModel() {
     val getter = aCentral.getter
     val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
+    val getterFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.getter
+
     val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
     val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur
     val setter = aCentral.setter
@@ -71,12 +73,12 @@ class ViewModelsProduit_T1(
         )
     }
 
-    fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: B1CouleurOuGoutProduitDataBase) =
+    fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: M3CouleurProduitInfos) =
         fVentCouleurOperationRepository.datasValue.find {
             it.parentM1ProduitInfosKeyId == produit?.keyID && it.parentM3CouleurProduitInfosKeyID == color.key
         }
 
-    fun createDefaultVent(color: B1CouleurOuGoutProduitDataBase, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
+    fun createDefaultVent(color: M3CouleurProduitInfos, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
         FCouleurVentOperationInfos(
             keyID = "vent_${color.key}_${produit?.keyID}",
             parentZAppComptID = extractField(appCompt, "keyID") ?: "Non Definie",

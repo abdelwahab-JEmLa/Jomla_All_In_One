@@ -4,8 +4,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -47,7 +47,7 @@ import java.io.File
 fun VentDisplayer_Sec2FragId2(
     modifier: Modifier = Modifier,
     ventKey: String,
-    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
     size: Dp = 200.dp,
     purchasedQuantity: Int = 0,
     viewModel: ZViewModel_Sec1Frag3
@@ -93,7 +93,7 @@ fun VentDisplayer_Sec2FragId2(
         Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 when (data.aAffiche) {
-                    B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                    M3CouleurProduitInfos.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
                             modifier = Modifier.size(size),
                             imageFile = imageFile,
@@ -108,7 +108,7 @@ fun VentDisplayer_Sec2FragId2(
                             ventKey = ventKey
                         )
                     }
-                    B1CouleurOuGoutProduitDataBase.Type.Nom -> {
+                    M3CouleurProduitInfos.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
                             colorName = data.nomCouleurStrSiSonImageDispo,

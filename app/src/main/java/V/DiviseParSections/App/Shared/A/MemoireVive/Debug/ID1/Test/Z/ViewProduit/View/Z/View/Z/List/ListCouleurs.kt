@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.ViewVentCouleur_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ListCouleurs(
-    produitWithColors: Pair<ArticlesBasesStatsTable, List<B1CouleurOuGoutProduitDataBase>>,
+    produitWithColors: Pair<ArticlesBasesStatsTable, List<M3CouleurProduitInfos>>,
     viewModel: ViewModelsProduit_T1,
 ) {
     val produit = produitWithColors.first
@@ -37,7 +37,7 @@ fun ListCouleurs(
             ) {
                 ViewVentCouleur_T1(
                     modifier = Modifier.padding(4.dp),
-                    color=color,
+                    m3CouleurProduitInfos=color,
                     produit = produit,
                     viewModel = viewModel,
                     size = 120.dp

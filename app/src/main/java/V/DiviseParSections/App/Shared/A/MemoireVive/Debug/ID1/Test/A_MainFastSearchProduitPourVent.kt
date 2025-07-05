@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.ProcessPositioningInFactoryID1
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -128,11 +128,11 @@ fun MainFastSearchProduitPourVent(
                             processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
                         )
 
-                        val newCouleurP = B1CouleurOuGoutProduitDataBase(
+                        val newCouleurP = M3CouleurProduitInfos(
                             parentBProduitOldID = newProduit.id,
                             parentBProduitInfosKeyID = newProduit.keyID,
                             parentId1ProduitInfosDebugName = newProduit.nom,
-                            processPositioningInFactory = B1CouleurOuGoutProduitDataBase.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
                         )
 
                         IconButton(

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview
 
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.FilterQuery
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.MainList
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.Ui.EmptyDataMessage
@@ -61,7 +61,7 @@ fun B1CouleurOuGoutProduitDataBaseTestDatas(
 @Composable
 private fun MainScreen(
     viewModel: B1CouleurOuGoutProduitDataBaseTestDatasViewModel,
-    datas: List<B1CouleurOuGoutProduitDataBase>,
+    datas: List<M3CouleurProduitInfos>,
     uiState: B1CouleurOuGoutProduitDataBaseTestDatasViewModel.UiState,
     onRefresh: () -> Unit
 ) {
@@ -92,7 +92,7 @@ private fun MainScreen(
 }
 
 @Composable
-private fun SearchBar(repository: B1CouleurOuGoutProduitDataBaseRepository) {
+private fun SearchBar(repository: Repo3CouleurProduitInfos) {
     var searchText by remember { mutableStateOf("") }
     val isSearchActive = repository.filterQuery.value == FilterQuery.SearchText
 
@@ -124,7 +124,7 @@ private fun SearchBar(repository: B1CouleurOuGoutProduitDataBaseRepository) {
 
 @Composable
 private fun MainOptions(
-    repository: B1CouleurOuGoutProduitDataBaseRepository,
+    repository: Repo3CouleurProduitInfos,
     modifier: Modifier,
     onRefresh: () -> Unit
 ) {

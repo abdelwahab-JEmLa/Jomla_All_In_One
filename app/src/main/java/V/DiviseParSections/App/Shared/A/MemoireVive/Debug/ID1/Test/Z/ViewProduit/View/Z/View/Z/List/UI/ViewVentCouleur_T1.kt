@@ -4,9 +4,10 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,15 +45,17 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
-    color: B1CouleurOuGoutProduitDataBase,
+    m3CouleurProduitInfos: M3CouleurProduitInfos,
     produit: ArticlesBasesStatsTable?,
     viewModel: ViewModelsProduit_T1,
     size: Dp = 200.dp
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val getterFocusedVarsHandlerFacade =
+        viewModel.getterFocusedVarsHandlerFacade
 
-    val existingVent by remember(produit?.keyID, color.key) {
-        derivedStateOf { viewModel.calculateExistingVent(produit, color) }
+    val existingVent by remember(produit?.keyID, m3CouleurProduitInfos.key) {
+        derivedStateOf { viewModel.calculateExistingVent(produit, m3CouleurProduitInfos) }
     }
 
     val appCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
@@ -68,7 +71,7 @@ fun ViewVentCouleur_T1(
         derivedStateOf {
             onVentData.let {
                 viewModel.createDefaultVent(
-                    color, produit, appCompt,
+                    m3CouleurProduitInfos, produit, appCompt,
                     it
                 )
             }
@@ -80,7 +83,10 @@ fun ViewVentCouleur_T1(
     }.value
 
     val imageFile by derivedStateOf {
-        viewModel.getImageFile(color.nomImageFichieSansEtansion, color.extensionDisponible)
+        viewModel.getImageFile(
+            m3CouleurProduitInfos.nomImageFichieSansEtansion,
+            m3CouleurProduitInfos.extensionDisponible
+        )
     }
 
     Card(
@@ -89,40 +95,54 @@ fun ViewVentCouleur_T1(
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (existingVent?.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(5.dp)
+        ) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                when (color.aAffiche) {
+                val defaultM3CouleurProduitInfos =
+                    with(m3CouleurProduitInfos) {
+                        getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+                            //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                            parentM1ProduitInfosKeyId = parentBProduitInfosKeyID,
+                            parentM1ProduitDebugInfos = parentId1ProduitInfosDebugName,
+                            //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                            parentM3CouleurProduitInfosKeyID = key,
+                            parentM3CouleurProduitDebugInfos = parentId1ProduitInfosDebugName + indexCouleurDansAncienProto,
 
-                    B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                            )
+                    }
+
+                val vent =
+                    getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
+                        ?: defaultM3CouleurProduitInfos
+
+                when (m3CouleurProduitInfos.aAffiche) {
+
+                    M3CouleurProduitInfos.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
                             onClickToOpenWindow = {
-
-                                val vent = existingVent ?: defaultVent
-
-                                if (existingVent == null) {
-                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
-                                }
-                                viewModel.showQuantityDialog(vent.keyID)
-
                                 handelUiAction(haptic)
                             },
-                            modifier = Modifier.size(size),
+                            modifier = Modifier
+                                .size(size)
+                                .getSemanticsTag("defaultM3CouleurProduitInfos",defaultM3CouleurProduitInfos)
+                            ,
                             ventKey = ventUIState.ventKey,
                             imageFile = imageFile,
-                            colorName = color.nomCouleurStrSiSonImageDispo,
+                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
                             contentScale = ContentScale.Crop,
                             imageSize = DpSize(size, size),
                             colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
 
-                        )
+                            )
                     }
 
-                    B1CouleurOuGoutProduitDataBase.Type.Nom -> {
+                    M3CouleurProduitInfos.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
-                            colorName = color.nomCouleurStrSiSonImageDispo,
+                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
                                 handelUiAction(haptic)
                                 val vent = existingVent ?: defaultVent
@@ -176,7 +196,7 @@ fun ViewVentCouleur_T1(
 
     if (ventUIState.showDialog && existingVent != null) {
         ModernQuantityDialog_T1(
-            colorName = color.nomCouleurStrSiSonImageDispo,
+            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
             currentQuantity = ventUIState.quantity,
             onDissmiss_showQuantityDialog = { viewModel.hideQuantityDialog(ventUIState.ventKey) },
             onDismiss = { viewModel.hideQuantityDialog(ventUIState.ventKey) },

@@ -45,8 +45,8 @@ class GetterFocusedVars(
             nomClientConcerned = "Default Data",
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
-            parentKeyId7VentPeriod = ParametresAppComptNonSaved().keyIdId7VentPeriod,
-            parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
+            parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
+            parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod,
         )
     }
 
@@ -58,6 +58,21 @@ class GetterFocusedVars(
     val onVentM3CouleurProduitInfos by derivedStateOf {
         val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
         repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
+    }
+
+    val defaultM3CouleurProduitInfos by derivedStateOf {
+        onVentM8BonVent?.let {
+            with(it) {
+                FCouleurVentOperationInfos(
+                    //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+                    parentHVentPeriodKeyId = parentM7VentPeriodKeyId,
+                    parentEVentPeriodDebugName = parentM7VentPeriodDebugInfos,
+                    //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
+                    parentM8BonVentKeyId = keyID,
+                    parentM8BonVentDebugInfos = debugInfos,
+                )
+            }
+        }
     }
 
     fun getDatasM10OperationVentCouleurPourProduit(

@@ -129,22 +129,24 @@ fun ID4ClientSearchButton(
             if (showLabels) {
                 val nomClient = getter.onVentM2ClientInfos?.nom ?: ""
 
-                Text(
-                    text = if (isTextCollapsed) {
-                        nomClient
-                    } else {
-                        if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                            "$nomClient - ${onVentId8BonVent.getCreationTimeString()}"
+                if (onVentId8BonVent != null) {
+                    Text(
+                        text = if (isTextCollapsed) {
+                            nomClient
                         } else {
-                            "Rechercher Client"
-                        }
-                    }, modifier = Modifier
-                        .background(Color(0xFF4CAF50))
-                        .padding(4.dp)
-                        .clickable {
-                            isTextCollapsed = !isTextCollapsed
-                        }, color = Color.White
-                )
+                            if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                                "$nomClient - ${onVentId8BonVent.getCreationTimeString()}"
+                            } else {
+                                "Rechercher Client"
+                            }
+                        }, modifier = Modifier
+                            .background(Color(0xFF4CAF50))
+                            .padding(4.dp)
+                            .clickable {
+                                isTextCollapsed = !isTextCollapsed
+                            }, color = Color.White
+                    )
+                }
             }
         } else {
             Column {

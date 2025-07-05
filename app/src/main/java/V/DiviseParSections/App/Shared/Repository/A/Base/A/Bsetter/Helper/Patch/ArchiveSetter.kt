@@ -139,7 +139,7 @@ class BSetterP (
         gBonVentRepository.upsert(
             GBonVent(
                 keyID = newTransactionKey,
-                parentKeyId7VentPeriod = zCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
@@ -170,7 +170,7 @@ class BSetterP (
 
             val newBonVent = GBonVent(
                 keyID = key,
-                parentKeyId7VentPeriod = currentZCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = currentZCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,

@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
@@ -55,7 +55,7 @@ class AGetter(
     val databaseInitializationManager: WDatabaseInitializationManager,
 
     val bProduitInfosRepository: BProduitInfosRepository,
-    val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
+    val b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
@@ -86,7 +86,7 @@ class AGetter(
         comptKey: String
     ) = GBonVent(
         keyID = GBonVent.generePushKey(),
-        parentKeyId7VentPeriod = periodKey,
+        parentM7VentPeriodKeyId = periodKey,
         parentM2ClientInfosKey = clientKey,
         parentHClientOldID = clientId,
         nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",

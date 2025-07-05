@@ -47,12 +47,12 @@ enum class FilterQuery {
 }
 
 @Stable
-class B1CouleurOuGoutProduitDataBaseRepository(
+class Repo3CouleurProduitInfos(
     val mainInitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     val dao = mainInitDataBase.dao
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<B1CouleurOuGoutProduitDataBase>>(emptyList())
+    private val _datas = mutableStateOf<List<M3CouleurProduitInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     val datasValueFiltred by derivedStateOf {
@@ -93,9 +93,9 @@ class B1CouleurOuGoutProduitDataBaseRepository(
         _filterTextSearch.value = ""
     }
 
-    fun addOrUpdateData(data: B1CouleurOuGoutProduitDataBase) {
+    fun addOrUpdateData(data: M3CouleurProduitInfos) {
         val existingIndex =
-            datasValue.indexOfFirst { B1CouleurOuGoutProduitDataBase.compareEntre(it, data) }
+            datasValue.indexOfFirst { M3CouleurProduitInfos.compareEntre(it, data) }
         val updatedData = data.copy(
             key = if (existingIndex >= 0) datasValue[existingIndex].key else data.key,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
@@ -103,7 +103,7 @@ class B1CouleurOuGoutProduitDataBaseRepository(
         composScope.launch { mainInitDataBase.addOrUpdatedAncienRepo(existingIndex, updatedData) }
     }
 
-    fun deleteData(data: B1CouleurOuGoutProduitDataBase) {
+    fun deleteData(data: M3CouleurProduitInfos) {
         composScope.launch { mainInitDataBase.deleteDataAncienRepo(data) }
     }
 
@@ -122,25 +122,28 @@ class B1CouleurOuGoutProduitDataBaseRepository(
 }
 
 @Entity
-data class B1CouleurOuGoutProduitDataBase(
+data class M3CouleurProduitInfos(
     @PrimaryKey
     var key: String = getPushFireBase(ref),
-    var pushKey: String = getPushFireBase(ref),
+    var debugInfos: String = "",
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-
     val processPositioningInFactory: ProcessPositioningInFactory = ProcessPositioningInFactory.CreeAuGeneralHandler,
     val aAffiche: Type = Type.Image,
     val nomImageFichieSansEtansion: String = "Non Dispo",
+
     val nomCouleurStrSiSonImageDispo: String = "",
 
+    //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentBProduitInfosKeyID: String = "",
+
     var parentBProduitOldID: Long = 0,
     var parentId1ProduitInfosDebugName: String = "",
-
-
     var indexCouleurDansAncienProto: Int = 0,
+
+
     val extensionDisponible: String = "webp", // Default extension
+    var pushKey: String = getPushFireBase(ref),
 ) {
     enum class Type { Nom,Image }
     enum class ProcessPositioningInFactory { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
@@ -150,8 +153,8 @@ data class B1CouleurOuGoutProduitDataBase(
             Firebase.database.getReference("00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/B1CouleurOuGoutProduitDataBase")
 
         fun compareEntre(
-            ancien: B1CouleurOuGoutProduitDataBase,
-            newData: B1CouleurOuGoutProduitDataBase
+            ancien: M3CouleurProduitInfos,
+            newData: M3CouleurProduitInfos
         ) =
             ancien.parentBProduitOldID == newData.parentBProduitOldID &&
                     ancien.nomCouleurStrSiSonImageDispo == newData.nomCouleurStrSiSonImageDispo &&
@@ -164,9 +167,9 @@ data class B1CouleurOuGoutProduitDataBase(
 fun CouleurDisplayer(
     modifier: Modifier = Modifier,
     keyCouleur: String,
-    b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository = koinInject(),
+    b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos = koinInject(),
     size: Dp = 200.dp,
-    onClickToOpenWindow: (B1CouleurOuGoutProduitDataBase) -> Unit = {}
+    onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {}
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
     val data = datas.find { it.key == keyCouleur }!!
@@ -185,7 +188,7 @@ fun CouleurDisplayer(
                 .padding(5.dp)
         ) {
             when (data.aAffiche) {
-                B1CouleurOuGoutProduitDataBase.Type.Image -> {
+                M3CouleurProduitInfos.Type.Image -> {
                     ImageDisplayer(
                         modifier = Modifier.size(size),
                         imageFile = imageFile,
@@ -196,7 +199,7 @@ fun CouleurDisplayer(
                     )
                 }
 
-                B1CouleurOuGoutProduitDataBase.Type.Nom -> ColorNameDisplayer(
+                M3CouleurProduitInfos.Type.Nom -> ColorNameDisplayer(
                     modifier = Modifier.size(size),
                     colorName = data.nomCouleurStrSiSonImageDispo,
                     onClickToOpenWindow = { onClickToOpenWindow(data) }
@@ -217,7 +220,7 @@ fun CouleurDisplayer(
 }
 
 @Composable
-private fun AfficheKeyCouleurAvecVentDebug(data: B1CouleurOuGoutProduitDataBase) {
+private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
     val text = "${
         data.key.takeLast(4).uppercase()
     } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"

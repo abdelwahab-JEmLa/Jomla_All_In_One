@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBaseRepository
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -22,7 +22,7 @@ class ViewModelMainFastSearchProduitPourVent(
         val searchText: String = "",
         val isLoading: Boolean = false,
         val showAddDialog: Boolean = false,
-        val b1CouleurOuGoutProduitDataBaseRepository: B1CouleurOuGoutProduitDataBaseRepository,
+        val b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
         val iD2ClientRepository: Repo2Client,
         val id8BonVentRepository: Repo8BonVent
     )

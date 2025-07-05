@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules
 
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.B1CouleurOuGoutProduitDataBase
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AfficheKeyCouleurAvecVentDebugPanieT(data: B1CouleurOuGoutProduitDataBase) {
+fun AfficheKeyCouleurAvecVentDebugPanieT(data: M3CouleurProduitInfos) {
     val text = "${
         data.key.takeLast(4).uppercase()
     } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
