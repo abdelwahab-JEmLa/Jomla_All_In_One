@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -58,11 +57,6 @@ class GetterFocusedVars(
         repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
-    val onVentM3CouleurProduitInfos by derivedStateOf {
-        val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
-        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
-    }
-
     val defaultM3CouleurProduitInfos by derivedStateOf {
         onVentM8BonVent?.let {
             with(it) {
@@ -78,24 +72,9 @@ class GetterFocusedVars(
         }
     }
 
-    fun getDatasM10OperationVentCouleurPourProduit(
-        produit: ArticlesBasesStatsTable,
-    ): List<M10OperationVentCouleur> {
-        val currentBonVentKey = onVentM8BonVent?.keyID
-
-        val allOperations = run {
-            val repo = repo10OperationVentCouleur
-            repo.datasValue
-        }
-
-
-        val operationsForThisProduct = allOperations.filter { operation ->
-            val matchesProduct = operation.parentM1ProduitInfosKeyId == produit.keyID
-            val matchesBonVent = operation.parentM8BonVentKeyId == currentBonVentKey ||
-                    operation.parentM8BonVentKeyId.isEmpty()
-            matchesProduct && matchesBonVent
-        }
-        return operationsForThisProduct
+    val onVentM3CouleurProduitInfos by derivedStateOf {
+        val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
+        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
     }
 
     companion object {
@@ -160,6 +139,7 @@ object DebugsTests {
 
 @Stable
 class SetterFocusedVars(
+    val getterFocusedVars: GetterFocusedVars,
     val Repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
     val repo9AppCompt: Repo9AppCompt,
@@ -169,9 +149,32 @@ class SetterFocusedVars(
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
-    fun addNewM10OperationVentCouleur(it: M10OperationVentCouleur) { repo10OperationVentCouleur.addOrUpdateData(it) }
+    fun addNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
+        repo10OperationVentCouleur.addOrUpdateData(it)
+    }
+
+    fun focuceOnVentM3CouleurProduitInfosFacade(
+        m10OperationVentCouleur: M10OperationVentCouleur
+    ) = focuceOnVentM3CouleurProduitInfos(
+        repo9AppCompt = repo9AppCompt,
+        getterFocusedVars = getterFocusedVars,
+        m10OperationVentCouleur = m10OperationVentCouleur,
+    )
 
     fun updateFocuseM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+}
+
+fun focuceOnVentM3CouleurProduitInfos(
+    getterFocusedVars: GetterFocusedVars,
+    repo9AppCompt: Repo9AppCompt,
+    m10OperationVentCouleur: M10OperationVentCouleur
+) {
+    repo9AppCompt.upsert(
+        getterFocusedVars.currentM9AppCompt!!.copy(
+            onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur.debugInfos,
+            onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur.keyID
+        )
+    )
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(

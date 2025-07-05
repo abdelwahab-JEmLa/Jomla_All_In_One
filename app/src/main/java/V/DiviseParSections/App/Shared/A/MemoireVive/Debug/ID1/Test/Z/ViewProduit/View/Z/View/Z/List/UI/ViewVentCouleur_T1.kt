@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -100,6 +99,7 @@ fun ViewVentCouleur_T1(
         }
     }
 
+
     Card(
         modifier = Modifier
             .getSemanticsTag(
@@ -117,25 +117,14 @@ fun ViewVentCouleur_T1(
             fun vent(
                 defaultM3CouleurProduitInfos: M10OperationVentCouleur?,
                 setter: SetterFocusedVars,
-                getter: GetterFocusedVars,
                 onVentM3CouleurProduitInfos: M10OperationVentCouleur?
             ) {
                 defaultM3CouleurProduitInfos?.let { opVent ->
                     setter.addNewM10OperationVentCouleur(opVent)
-                    setter.updateFocuseM9AppCompt(
-                        getter.currentM9AppCompt!!.copy(
-                            onVentM3CouleurProduitDebugInfos = opVent.debugInfos,
-                            onVentM3CouleurProduitInfosKeyID = opVent.keyID
-                        )
-                    )
+                    setter.focuceOnVentM3CouleurProduitInfosFacade(opVent)
                 } ?: run {
                     if (onVentM3CouleurProduitInfos != null) {
-                        setter.updateFocuseM9AppCompt(
-                            getter.currentM9AppCompt!!.copy(
-                                onVentM3CouleurProduitDebugInfos = onVentM3CouleurProduitInfos.debugInfos,
-                                onVentM3CouleurProduitInfosKeyID = onVentM3CouleurProduitInfos.keyID
-                            )
-                        )
+                        setter.focuceOnVentM3CouleurProduitInfosFacade(onVentM3CouleurProduitInfos)
                     }
                 }
             }
@@ -154,7 +143,6 @@ fun ViewVentCouleur_T1(
                                 vent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
-                                    getter,
                                     onVentM3CouleurProduitInfos
                                 )
                                 handelUiAction(haptic)
@@ -170,7 +158,6 @@ fun ViewVentCouleur_T1(
                                 vent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
-                                    getter,
                                     onVentM3CouleurProduitInfos
                                 )
                                 handelUiAction(haptic)

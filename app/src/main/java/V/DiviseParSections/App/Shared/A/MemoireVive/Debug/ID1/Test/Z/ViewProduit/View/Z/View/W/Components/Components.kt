@@ -32,11 +32,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProductHeader_T1(
+    produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     productName: String,
     allNonTrouve: Boolean,
-    onQuantityClickToHaptic: () -> Unit,
-    produit: ArticlesBasesStatsTable
+    onQuantityClickToHaptic: () -> Unit
 ) {
     Box(
         modifier = Modifier
