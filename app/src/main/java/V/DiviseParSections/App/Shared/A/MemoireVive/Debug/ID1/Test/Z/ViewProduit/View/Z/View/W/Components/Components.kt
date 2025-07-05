@@ -127,6 +127,7 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                Text(produit.prixVent.toString())
                 Icon(
                     imageVector = Icons.Default.AttachMoney,
                     contentDescription = "Price",

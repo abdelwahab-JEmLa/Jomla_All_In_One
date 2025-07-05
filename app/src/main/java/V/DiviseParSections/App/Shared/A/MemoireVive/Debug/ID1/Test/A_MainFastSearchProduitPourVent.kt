@@ -63,15 +63,17 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(false) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
 
     DebugTestsPerformInitialSearch(
         enabled = shouldPerformInitialSearch,
-        focusRequester = focusRequester
-    ) { searchText ->
-        localSearchText = searchText
-        shouldPerformInitialSearch = false
-    }
+        focusRequester = focusRequester,
+        { searchText ->
+            localSearchText = searchText
+            shouldPerformInitialSearch = false
+        },
+        "hak"
+    )
 
     Surface(
         modifier = modifier

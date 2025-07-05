@@ -42,12 +42,13 @@ object DebugsTests {
     fun DebugTestsPerformInitialSearch(
         enabled: Boolean,
         focusRequester: FocusRequester,
-        onSearchQueryChange: (String) -> Unit
+        onSearchQueryChange: (String) -> Unit,
+        s: String
     ) {
         LaunchedEffect(enabled) {
             if (enabled) {
                 delay(2000)
-                onSearchQueryChange("liya")
+                onSearchQueryChange(s)
                 focusRequester.requestFocus()
             }
         }
