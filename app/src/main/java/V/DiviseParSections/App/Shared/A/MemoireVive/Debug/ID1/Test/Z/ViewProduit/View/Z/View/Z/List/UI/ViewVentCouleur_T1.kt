@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -61,10 +62,15 @@ fun ViewVentCouleur_T1(
 
     val haptic = LocalHapticFeedback.current
 
+    fun handelUiAction(haptic: HapticFeedback) {
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
     val defaultVent by remember {
         derivedStateOf {
             onVentData.let {
-                viewModel.createDefaultVent(color, produit, appCompt,
+                viewModel.createDefaultVent(
+                    color, produit, appCompt,
                     it
                 )
             }
@@ -90,7 +96,9 @@ fun ViewVentCouleur_T1(
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (existingVent?.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
-        Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(5.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 when (color.aAffiche) {
                     B1CouleurOuGoutProduitDataBase.Type.Image -> {
@@ -109,16 +117,17 @@ fun ViewVentCouleur_T1(
                                 }
                                 viewModel.showQuantityDialog(vent.keyID)
 
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                handelUiAction(haptic)
                             }
                         )
                     }
+
                     B1CouleurOuGoutProduitDataBase.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
                             colorName = color.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                handelUiAction(haptic)
                                 val vent = existingVent ?: defaultVent
                                 if (existingVent == null) {
                                     viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
@@ -179,3 +188,5 @@ fun ViewVentCouleur_T1(
         )
     }
 }
+
+

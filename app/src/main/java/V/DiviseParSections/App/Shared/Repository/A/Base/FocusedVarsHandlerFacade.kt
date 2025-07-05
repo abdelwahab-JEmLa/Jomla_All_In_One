@@ -67,7 +67,7 @@ class GetterFocusedVars(
 
 
         val operationsForThisProduct = allOperations.filter { operation ->
-            val matchesProduct = operation.parentBProduitInfosKeyId == produit.keyID
+            val matchesProduct = operation.parentM1ProduitInfosKeyId == produit.keyID
             val matchesBonVent = operation.parentM8BonVentKeyId == currentBonVentKey ||
                     operation.parentM8BonVentKeyId.isEmpty()
             matchesProduct && matchesBonVent

@@ -18,7 +18,7 @@ class VentOperations(
     ) {
         val ventCouleursDuProduitKey =
             fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
-                .filter { it.parentBProduitInfosKeyId == produitKey }
+                .filter { it.parentM1ProduitInfosKeyId == produitKey }
 
         ventCouleursDuProduitKey.forEach { vent ->
             fVentCouleurOperationRepository.addOrUpdateData(
@@ -34,7 +34,7 @@ class VentOperations(
             getter.bProduitInfosRepository.datasValue.find { it.id == parentProduitOldId }?.keyID
         val ventCouleursDuProduitKey =
             fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
-                .filter { it.parentBProduitInfosKeyId == produitKey }
+                .filter { it.parentM1ProduitInfosKeyId == produitKey }
 
         ventCouleursDuProduitKey.forEach { vent ->
             fVentCouleurOperationRepository.delete(
@@ -45,7 +45,7 @@ class VentOperations(
 
     fun ventCouleursDuProduitKey(produitKey: String) =
         fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
-            .filter { it.parentBProduitInfosKeyId == produitKey }
+            .filter { it.parentM1ProduitInfosKeyId == produitKey }
 
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
         ventCouleursDuProduitKey(produitKey).forEach { vent ->

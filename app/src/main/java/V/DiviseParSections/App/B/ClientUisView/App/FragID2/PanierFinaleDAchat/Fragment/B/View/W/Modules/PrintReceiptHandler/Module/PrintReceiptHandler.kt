@@ -49,17 +49,17 @@ class PrintReceiptHandler {
             activeVents.forEach { vent ->
                 // Get product details
                 val product = bProduitInfosRepository.datasValue.find {
-                    it.keyID == vent.parentBProduitInfosKeyId
+                    it.keyID == vent.parentM1ProduitInfosKeyId
                 }
 
                 // Get color details
                 val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
-                    it.key == vent.parentCouleurInfosKeyID
+                    it.key == vent.parentM3CouleurProduitInfosKeyID
                 }
 
                 val productName = product?.nom?.takeIf { it.isNotBlank() }
                     ?: product?.nomMutable?.takeIf { it.isNotBlank() }
-                    ?: "Produit #${vent.parentBProduitInfosKeyId}"
+                    ?: "Produit #${vent.parentM1ProduitInfosKeyId}"
 
                 val colorName = colorInfo?.nomCouleurStrSiSonImageDispo ?: "Couleur standard"
                 val articleName = if (colorName != "Couleur standard") {

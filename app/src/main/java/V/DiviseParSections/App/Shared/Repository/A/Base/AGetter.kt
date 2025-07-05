@@ -134,7 +134,7 @@ class AGetter(
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
         val matchingOperation = repo10OperationVentCouleur.datasValue.find { operation ->
-            operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
+            operation.parentM3CouleurProduitInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
         }
 
         return matchingOperation

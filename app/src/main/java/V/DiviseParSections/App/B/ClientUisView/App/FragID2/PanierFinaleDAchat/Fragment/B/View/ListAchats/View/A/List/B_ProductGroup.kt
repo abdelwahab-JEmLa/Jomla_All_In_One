@@ -128,7 +128,7 @@ fun ProductGroup(
             ) {
                 items(vents) { vent ->
                     viewModel.uiStateCentralRepositorys.b1CouleurOuGoutProduitDataBaseRepository.datasValue
-                        .find { it.key == vent.parentCouleurInfosKeyID }?.let {
+                        .find { it.key == vent.parentM3CouleurProduitInfosKeyID }?.let {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
                                 tonalElevation = if (allNonTrouve) 1.dp else 2.dp,

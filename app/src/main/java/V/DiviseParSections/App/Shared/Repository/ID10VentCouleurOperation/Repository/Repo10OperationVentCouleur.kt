@@ -140,10 +140,10 @@ class Repo10OperationVentCouleur(
         quantity: Int
     ): FCouleurVentOperationInfos {
         return FCouleurVentOperationInfos(
-            parentCouleurInfosKeyID = relatedCouleur.key,
+            parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
-            parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
+            parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
             parentZAppComptID = zCompt.bsonObjectId,
@@ -178,18 +178,25 @@ class Repo10OperationVentCouleur(
 data class FCouleurVentOperationInfos(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var parentCouleurInfosKeyID: String = "",
+    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
 
-    var parentHVentPeriodKeyId: String = "",
-    var parentEVentPeriodDebugName: String = "",
+    //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+    var parentHVentPeriodKeyId: String = "null",
+    var parentEVentPeriodDebugName: String = "null",
+    //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
+    var parentM8BonVentKeyId: String = "null",
+    val parentM8BonVentDebugInfos:String="null",
+    //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var parentM1ProduitInfosKeyId: String = "null",
+    val parentM1ProduitDebugInfos:String="null",
+    //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var parentM3CouleurProduitInfosKeyID: String = "null",
+    val parentM3CouleurProduitDebugInfos:String="null",
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    var parentBProduitInfosKeyId: String = "",
     var parentBProduitNomDebug: String = "",
     var parentProduitInfosOldId: Long = 0,
-
-
     var parentEPeriodVentStartDate: Long = 0,
-    var parentM8BonVentKeyId: String = "",
 
     //Mutable
     var quantityAchete: Int = 0,
@@ -203,18 +210,11 @@ data class FCouleurVentOperationInfos(
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
     var achatParentBsonIDOld: String = "",
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     val parentDebugInfosID9AppCompt:String ="",
     val parentDebugInfosID7VentPeriod:String="",
-    val parentDebugInfosID8BonVent:String="",
-    val parentDebugInfosID1Produit:String="",
-    val parentDebugInfosID3CouleurProduit:String="",
-) {
-    data class Parents(
-        val parentDebugInfosID9AppCompt:String ="",
-        val parentDebugInfosID7VentPeriod:String="",
-        val parentDebugInfosID1Produit:String="",
-        val parentDebugInfosID3CouleurProduit:String="",
-    )
+
+    ) {
 
     enum class EtateDelivery{
         Trouve,
@@ -237,7 +237,7 @@ data class FCouleurVentOperationInfos(
 
     companion object {
         val ref =
-            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/M10OperationVentCouleur")
+            Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas10OperationVentCouleur")
 
 
         fun isSame(

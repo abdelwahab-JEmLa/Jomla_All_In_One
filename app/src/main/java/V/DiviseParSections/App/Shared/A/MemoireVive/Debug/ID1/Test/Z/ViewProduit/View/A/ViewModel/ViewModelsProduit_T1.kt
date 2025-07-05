@@ -73,7 +73,7 @@ class ViewModelsProduit_T1(
 
     fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: B1CouleurOuGoutProduitDataBase) =
         fVentCouleurOperationRepository.datasValue.find {
-            it.parentBProduitInfosKeyId == produit?.keyID && it.parentCouleurInfosKeyID == color.key
+            it.parentM1ProduitInfosKeyId == produit?.keyID && it.parentM3CouleurProduitInfosKeyID == color.key
         }
 
     fun createDefaultVent(color: B1CouleurOuGoutProduitDataBase, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
@@ -84,10 +84,10 @@ class ViewModelsProduit_T1(
             parentHVentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
             parentM8BonVentKeyId = extractField(onVentData, "keyID") ?: "",
-            parentDebugInfosID8BonVent = extractField(onVentData, "nomClientConcerned") ?: "",
-            parentBProduitInfosKeyId = produit?.keyID ?: "",
-            parentDebugInfosID1Produit = produit?.nom ?: "Non Definie",
-            parentCouleurInfosKeyID = color.key,
+            parentM8BonVentDebugInfos = extractField(onVentData, "nomClientConcerned") ?: "",
+            parentM1ProduitInfosKeyId = produit?.keyID ?: "",
+            parentM1ProduitDebugInfos = produit?.nom ?: "Non Definie",
+            parentM3CouleurProduitInfosKeyID = color.key,
             parentBProduitNomDebug = produit?.nom ?: "",
             parentProduitInfosOldId = produit?.id ?: 0L,
             parentClientName = extractField(appCompt, "nom") ?: "Non Definie",

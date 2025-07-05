@@ -13,10 +13,10 @@ class KAchatCouleurOperationRepository(
 ) {
     private val sourceDatas by derivedStateOf { fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod }
     val datasValue by derivedStateOf { initImplimentaion() }
-    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy { it.listFCouleurVentOperation.first().parentBProduitInfosKeyId } }
+    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy { it.listFCouleurVentOperation.first().parentM1ProduitInfosKeyId } }
 
     private fun initImplimentaion(): List<KAchatCouleurOperation> {
-        val operations = sourceDatas.groupBy { it.parentCouleurInfosKeyID }
+        val operations = sourceDatas.groupBy { it.parentM3CouleurProduitInfosKeyID }
 
         return operations.map { (couleurKeyId, ventOperations) ->
             val totalQuantity = ventOperations.sumOf { it.quantityAchete }

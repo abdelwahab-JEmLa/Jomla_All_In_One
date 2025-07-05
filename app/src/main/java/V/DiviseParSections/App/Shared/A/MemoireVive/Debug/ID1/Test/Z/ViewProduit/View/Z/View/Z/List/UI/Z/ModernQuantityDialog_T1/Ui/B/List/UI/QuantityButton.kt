@@ -84,7 +84,7 @@ fun QuantityButton_T1(
                     }
                     ClickUpdate.TotalQua -> {
                         val allProductVents = fCouleurAchatOperationRepositoryComposable.datasValue.filter {
-                            it.parentBProduitInfosKeyId == vent.parentBProduitInfosKeyId &&
+                            it.parentM1ProduitInfosKeyId == vent.parentM1ProduitInfosKeyId &&
                                     it.etateActuellementEst != FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                         }
 
