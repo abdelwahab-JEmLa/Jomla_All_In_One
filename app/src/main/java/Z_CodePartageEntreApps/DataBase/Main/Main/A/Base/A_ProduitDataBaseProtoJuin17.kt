@@ -36,10 +36,12 @@ class A_ProduitDataBaseProtoJuin17(
         }
     }
 
-     suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+    // Méthode mise à jour pour utiliser toFirebaseMap()
+    suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.keyID] = data
+            // Utilise toFirebaseMap() pour éviter les caractères invalides
+            updates[data.keyID] = data.toFirebaseMap()
         }
         val firebaseRef = ArticlesBasesStatsTable.ref
         firebaseRef.updateChildren(updates).await()

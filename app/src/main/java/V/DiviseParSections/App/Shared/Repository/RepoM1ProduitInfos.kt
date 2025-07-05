@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
+import com.google.firebase.database.Exclude
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +97,6 @@ class RepoM1ProduitInfos(
         }
     }
 }
-
 @Entity
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
@@ -107,17 +107,18 @@ data class ArticlesBasesStatsTable(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 
+    // Garde les propriétés originales pour la compatibilité
     val processPositioningInFactory: ProcessPositioningInFactoryID1 = ProcessPositioningInFactoryID1.CreeAuGeneralHandler,
 
     //S P Ids
     var idParentCategorie: Long? = null,
-
     var positionDonSonCesFrereCategorieProduits: Int = 0,
 
     // Section InfosDeBase
     var nom: String = "",
     var nomMutable: String = "",
 
+    // Garde la propriété originale pour la compatibilité
     val etateActuelleOnFusionAvecBaseDonne: EtateActuelleOnFusionAvecBaseDonne = EtateActuelleOnFusionAvecBaseDonne.CategorieOriginaleDefinie,
 
     var nombreUniteInt: Int = 1,
@@ -134,7 +135,6 @@ data class ArticlesBasesStatsTable(
     var prixAchatDernierTimeTempUpdate: Long = 0L,
     var clientPrixVentUnite: Double = 0.0,
 
-
     //image
     var actualiseSonImage: Int = 0,
     var actualiseSonImageTest2: Int = 0,
@@ -142,12 +142,11 @@ data class ArticlesBasesStatsTable(
     //Ui States Personele Paramater
     var afficheCesDetailPourComptBsonId: String = "",
 
-    // Add availability states with proper initialization
+    // Garde la propriété originale pour la compatibilité
     var disponibilityEtates: DisponibilityEtates = DisponibilityEtates.DISPO,
 
     // Section keyFireBase
     var keyFireBase: String = "",
-
 
     var nomArab: String = "",
     var autreNomDarticle: String? = null,
@@ -167,7 +166,7 @@ data class ArticlesBasesStatsTable(
     var monBenfice: Double = 0.0,
     var neaon2: String = "",
     var catalogeParentID: Long = 0,
-    var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
+    var funChangeImagsDimention: Boolean = false,
     var nomCategorie: String = "",
     var neaon1: Double = 0.0,
     var lastUpdateState: String = "",
@@ -178,20 +177,96 @@ data class ArticlesBasesStatsTable(
     var benificeTotaleEn2: Double = 0.0,
     var monPrixAchatUniter: Double = 0.0,
     var monPrixVentUniter: Double = 0.0,
-
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 ) {
+    // Propriétés internes pour Firebase (exclues de la sérialisation)
+    @get:Exclude
+    val processPositioningInFactoryString: String
+        get() = processPositioningInFactory.name
+
+    @get:Exclude
+    val etateActuelleOnFusionAvecBaseDonneString: String
+        get() = etateActuelleOnFusionAvecBaseDonne.name
+
+    @get:Exclude
+    val disponibilityEtatesString: String
+        get() = disponibilityEtates.name
+
+    fun toFirebaseMap(): Map<String, Any?> {
+        return mapOf(
+            "id" to id,
+            "keyID" to keyID,
+            "bsonObjectId" to bsonObjectId,
+            "dernierTimeTampsSynchronisationAvecFireBase" to dernierTimeTampsSynchronisationAvecFireBase,
+            "dernierFireBaseUpdateTimestamps" to dernierFireBaseUpdateTimestamps,
+            "processPositioningInFactory" to processPositioningInFactory.name,
+            "idParentCategorie" to idParentCategorie,
+            "positionDonSonCesFrereCategorieProduits" to positionDonSonCesFrereCategorieProduits,
+            "nom" to nom,
+            "nomMutable" to nomMutable,
+            "etateActuelleOnFusionAvecBaseDonne" to etateActuelleOnFusionAvecBaseDonne.name,
+            "nombreUniteInt" to nombreUniteInt,
+            "nombreProduitDonSonCarton" to nombreProduitDonSonCarton,
+            "heldPrioriteDemandAuGrossist" to heldPrioriteDemandAuGrossist,
+            "prixVent" to prixVent,
+            "cachePrixVent" to cachePrixVent,
+            "prixAchat" to prixAchat,
+            "prixAchatDernierTimeTempUpdate" to prixAchatDernierTimeTempUpdate,
+            "clientPrixVentUnite" to clientPrixVentUnite,
+            "actualiseSonImage" to actualiseSonImage,
+            "actualiseSonImageTest2" to actualiseSonImageTest2,
+            "afficheCesDetailPourComptBsonId" to afficheCesDetailPourComptBsonId,
+            "disponibilityEtates" to disponibilityEtates.name,
+            "keyFireBase" to keyFireBase,
+            "nomArab" to nomArab,
+            "autreNomDarticle" to autreNomDarticle,
+            "couleur1" to couleur1,
+            "idcolor1" to idcolor1,
+            "couleur2" to couleur2,
+            "idcolor2" to idcolor2,
+            "couleur3" to couleur3,
+            "idcolor3" to idcolor3,
+            "couleur4" to couleur4,
+            "idcolor4" to idcolor4,
+            "nomCategorie2" to nomCategorie2,
+            "affichageUniteState" to affichageUniteState,
+            "commmentSeVent" to commmentSeVent,
+            "afficheBoitSiUniter" to afficheBoitSiUniter,
+            "minQuan" to minQuan,
+            "monBenfice" to monBenfice,
+            "neaon2" to neaon2,
+            "catalogeParentID" to catalogeParentID,
+            "funChangeImagsDimention" to funChangeImagsDimention,
+            "nomCategorie" to nomCategorie,
+            "neaon1" to neaon1,
+            "lastUpdateState" to lastUpdateState,
+            "cartonState" to cartonState,
+            "dateCreationCategorie" to dateCreationCategorie,
+            "prixDeVentTotaleChezClient" to prixDeVentTotaleChezClient,
+            "benficeTotaleEntreMoiEtClien" to benficeTotaleEntreMoiEtClien,
+            "benificeTotaleEn2" to benificeTotaleEn2,
+            "monPrixAchatUniter" to monPrixAchatUniter,
+            "monPrixVentUniter" to monPrixVentUniter,
+            "articleHaveUniteImages" to articleHaveUniteImages,
+            "itsNewArrivale" to itsNewArrivale,
+            "imageDimention" to imageDimention,
+            "idForSearchArticles" to idForSearchArticles
+        )
+    }
+
     fun getTempKeyByParent(): Map.Entry<SemanticsPropertyKey<String>, String> {
         val semanticKey = SemanticsPropertyKey<String>(KeyTagModel)
         val semanticValue = nom.withOutFireBaseInvalidCharacters()
-
         return AbstractMap.SimpleEntry(semanticKey, semanticValue)
     }
 
-    enum class ProcessPositioningInFactoryID1 { CreeDepuitRechercheRapid , CreeAuGeneralHandler }
+    enum class ProcessPositioningInFactoryID1 {
+        CreeDepuitRechercheRapid,
+        CreeAuGeneralHandler
+    }
 
     enum class EtateActuelleOnFusionAvecBaseDonne {
         CaprtureSonImage,
@@ -200,7 +275,6 @@ data class ArticlesBasesStatsTable(
         CategorieOriginaleDefinie,
         PositionAvecCesFrereDefinie,
     }
-
 
     fun withProperKeyFireBaseAndTimeTamp(): ArticlesBasesStatsTable {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
@@ -218,7 +292,6 @@ data class ArticlesBasesStatsTable(
         )
     }
 
-
     companion object {
         val KeyTagModel = "IdKeyModel1"
 
@@ -226,18 +299,14 @@ data class ArticlesBasesStatsTable(
             ref.removeValue()
         }
 
-        val ref =
-            Firebase.database.getReference(
-                "00_DataPrototype-04-02" +
-                        "/_1_developingRef" +
-                        "/C_InfosSqlDataBases" +
-                        "/A_ProduitInfos"
-            )
+        val ref = Firebase.database.getReference(
+            "00_DataPrototype-04-02" +
+                    "/_1_developingRef" +
+                    "/C_InfosSqlDataBases" +
+                    "/A_ProduitInfos"
+        )
 
-
-        fun removeRef(
-            preparedData: ArticlesBasesStatsTable
-        ) {
+        fun removeRef(preparedData: ArticlesBasesStatsTable) {
             ref.child(preparedData.keyFireBase).removeValue()
         }
 
@@ -245,12 +314,8 @@ data class ArticlesBasesStatsTable(
             ancien: ArticlesBasesStatsTable,
             newData: ArticlesBasesStatsTable
         ): Boolean {
-            val delimiterExistence =
-                ancien.id == newData.id
-            return delimiterExistence
+            return ancien.id == newData.id
         }
-
-
     }
 }
 
