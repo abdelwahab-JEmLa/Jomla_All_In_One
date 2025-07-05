@@ -116,6 +116,13 @@ fun ViewVentCouleur_T1(
                 when (m3CouleurProduitInfos.aAffiche) {
                     M3CouleurProduitInfos.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
+                            modifier = Modifier
+                                .size(size),
+                            imageFile = imageFile,
+                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
+                            contentScale = ContentScale.Crop,
+                            imageSize = DpSize(size, size),
+                            colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
                                 defaultM3CouleurProduitInfos?.let { opVent ->
                                     setter.addNewM10OperationVentCouleur(opVent)
@@ -137,14 +144,6 @@ fun ViewVentCouleur_T1(
                                 }
                                 handelUiAction(haptic)
                             },
-                            modifier = Modifier
-                                .size(size),
-                            ventKey = ventUIState.ventKey,
-                            imageFile = imageFile,
-                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
-                            contentScale = ContentScale.Crop,
-                            imageSize = DpSize(size, size),
-                            colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             )
                     }
 
