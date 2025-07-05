@@ -2,7 +2,7 @@ package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragmen
 
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.I_WorkingTimes.Repository.AvantJuin3.Proto.Extension.Repository.K_TempTravaille
@@ -24,7 +24,7 @@ data class UiState(
     val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f,
 
-    val bonAchatList: List<GBonVent> = emptyList(),
+    val bonAchatList: List<M8BonVent> = emptyList(),
 
     val activePeriodeVent: MVentPeriode? = MVentPeriode(vid = 7L),
     val isRecording: Boolean = false,
@@ -89,7 +89,7 @@ class RecordingViewModel(
         recordingHandler.setupRecordingStateListener()
     }
 
-    private fun log(list: List<GBonVent>) {
+    private fun log(list: List<M8BonVent>) {
         val map = list.map { bon ->
             val clientAcheteurID = bon.parentHClientOldID
             val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
@@ -103,7 +103,7 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentPeriodeVentOldID == uiState.activePeriodeVent?.vid && it.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                    it.parentPeriodeVentOldID == uiState.activePeriodeVent?.vid && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
 
@@ -154,7 +154,7 @@ class RecordingViewModel(
                 getter
                     .getClientLastBonVentParEtate(
                         client.id,
-                        GBonVent.EtateActuellementEst.Cible
+                        M8BonVent.EtateActuellementEst.Cible
                     ) != null
             }
         return count

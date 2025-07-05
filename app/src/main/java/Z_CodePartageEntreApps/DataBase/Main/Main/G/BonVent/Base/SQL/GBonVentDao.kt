@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.SQL
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,36 +13,36 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GBonVentDao {
     @Upsert
-    suspend fun upsert(data: GBonVent)
+    suspend fun upsert(data: M8BonVent)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertAll(datas: List<GBonVent>)
+    suspend fun insertAll(datas: List<M8BonVent>)
 
     @Delete
-    suspend fun delete(data: GBonVent)
+    suspend fun delete(data: M8BonVent)
 
     @Update
-    suspend fun update(data: GBonVent)
+    suspend fun update(data: M8BonVent)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(data: GBonVent): Long
+    suspend fun insert(data: M8BonVent): Long
 
-    @Query("SELECT COUNT(*) FROM GBonVent")
+    @Query("SELECT COUNT(*) FROM M8BonVent")
     suspend fun getCount(): Int
 
-    @Query("SELECT COUNT(*) FROM GBonVent")
+    @Query("SELECT COUNT(*) FROM M8BonVent")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 
-    @Query("SELECT * FROM GBonVent ")
-    suspend fun getAll(): MutableList<GBonVent>
+    @Query("SELECT * FROM M8BonVent ")
+    suspend fun getAll(): MutableList<M8BonVent>
 
-    @Query("SELECT * FROM GBonVent")
-    fun getAllFlow(): Flow<List<GBonVent>>
+    @Query("SELECT * FROM M8BonVent")
+    fun getAllFlow(): Flow<List<M8BonVent>>
 
-    @Query("DELETE FROM GBonVent")
+    @Query("DELETE FROM M8BonVent")
     suspend fun deleteAll()
 
     @Delete
-    suspend fun deleteData(data: GBonVent)
+    suspend fun deleteData(data: M8BonVent)
 
 }

@@ -189,7 +189,7 @@ fun ViewVentCouleur_T1(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(
-                                    text = ventUIState.quantity.toString(),
+                                    text = "nothing".toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold
                                 )

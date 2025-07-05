@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.A_FirebaseAudioStorageHelper
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,7 @@ class AudioRecorderAndPlayHandler(
     override fun startRecording(
         context: Context,
         parentMessageVID: Long,
-        currentTransaction: GBonVent?
+        currentTransaction: M8BonVent?
     ): Result<AudioHandlerInterface.RecordingSession> {
         return try {
             if (currentRecordingSession != null) {

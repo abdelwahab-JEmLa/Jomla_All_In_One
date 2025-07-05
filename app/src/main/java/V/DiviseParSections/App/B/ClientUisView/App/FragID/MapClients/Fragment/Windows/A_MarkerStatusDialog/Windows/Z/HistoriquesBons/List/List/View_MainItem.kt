@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    bonVent: GBonVent,
+    bonVent: M8BonVent,
 ) {
     val audioRecorderAndPlayHandler=viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
@@ -106,7 +106,7 @@ fun View_MainItem(
         }
     }
 
-    if (etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         && activeTransactionId != bonVent.vid
     ) {
         LaunchedEffect(key1 = Unit) {
@@ -168,7 +168,7 @@ fun View_MainItem(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                    if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
                                 viewModel.openTransaction(bonVent)

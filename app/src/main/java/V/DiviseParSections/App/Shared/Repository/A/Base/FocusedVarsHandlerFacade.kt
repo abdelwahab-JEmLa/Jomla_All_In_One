@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -43,7 +43,7 @@ class GetterFocusedVars(
     }
 
     val defaultM8BonVent by derivedStateOf {
-        GBonVent(
+        M8BonVent(
             nomClientConcerned = "Default Data",
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
@@ -151,7 +151,7 @@ class SetterFocusedVars(
     val repo9AppCompt: Repo9AppCompt,
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
-    fun addNewM8BonVent(id8BonVent: GBonVent) =
+    fun addNewM8BonVent(id8BonVent: M8BonVent) =
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
@@ -184,7 +184,7 @@ fun focuceOnVentM3CouleurProduitInfos(
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
-    id8BonVent: GBonVent,
+    id8BonVent: M8BonVent,
     id8BonVentRepository: Repo8BonVent,
 ) {
     val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())

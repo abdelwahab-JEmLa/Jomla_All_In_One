@@ -43,7 +43,7 @@ open class ClientsMapFilterViewModel(
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->
-            if (transaction.etateActuellementEst == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
+            if (transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
                 // Get transaction date
                 val transactionDate = Date(transaction.creationTimestamps)
                 val cal = Calendar.getInstance()
@@ -163,7 +163,7 @@ open class ClientsMapFilterViewModel(
                 var key by mutableStateOf("")
                 var cActive by mutableStateOf(false)
 
-                var cesCommercialTransactions by mutableStateOf<List<GBonVent>>(emptyList())
+                var cesCommercialTransactions by mutableStateOf<List<M8BonVent>>(emptyList())
             }
         }
     }
@@ -181,7 +181,7 @@ open class ClientsMapFilterViewModel(
     )
 
     // Helper function to get filtered transactions based on current filter
-    open fun getFilteredTransactions(): List<GBonVent> {
+    open fun getFilteredTransactions(): List<M8BonVent> {
         return when (currentFilter) {
             FilterType.ALL -> allListrepo_0_0_HeadSQLRepositorys ?: emptyList()
             FilterType.DatesHistoriqueTransactions -> {
@@ -196,10 +196,10 @@ open class ClientsMapFilterViewModel(
             }
             FilterType.CIBLE -> {
                 allListrepo_0_0_HeadSQLRepositorys?.filter { transaction ->
-                    transaction.etateActuellementEst == GBonVent.EtateActuellementEst.Cible ||
-                            transaction.etateActuellementEst == GBonVent.EtateActuellementEst.CIBLE_PRIORITE_2 ||
-                            transaction.etateActuellementEst == GBonVent.EtateActuellementEst.CIBLE_PRIORITE_3 ||
-                            transaction.etateActuellementEst == GBonVent.EtateActuellementEst.CIBLE_POUR_2
+                    transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible ||
+                            transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_2 ||
+                            transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_3 ||
+                            transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.CIBLE_POUR_2
                 } ?: emptyList()
             }
         }

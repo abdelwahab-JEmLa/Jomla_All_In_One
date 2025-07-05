@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -54,11 +54,11 @@ class BSetterP (
 
     fun getKeyID8BonVent(
         clientOldID: Long,
-        etate: GBonVent.EtateActuellementEst,
+        etate: M8BonVent.EtateActuellementEst,
     ): String {
         val clientKeyByParent = client(clientOldID)?.getTempKeyByParent()
         val keyModelToClientKeyByParent = HClientInfos.keyModel + "-" + clientKeyByParent
-        val keyModelToEtateKey = GBonVent.EtateActuellementEst.keyModel + "-" + etate
+        val keyModelToEtateKey = M8BonVent.EtateActuellementEst.keyModel + "-" + etate
 
         return ("$keyModelToOnVentHVentPeriodKeyByParent--$keyModelToClientKeyByParent--$keyModelToEtateKey")
             .withOutFireBaseInvalidCharacters()
@@ -77,9 +77,9 @@ class BSetterP (
                 val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
                 val client = hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =
-                    getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel]!!
+                    getKeyByParentDe[M8BonVent.EtateActuellementEst.keyModel]!!
 
-                GBonVent(
+                M8BonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
                     parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
                     parentHClientOldID = client.id,
@@ -92,30 +92,30 @@ class BSetterP (
         gBonVentRepository.upsert(data)
     }
 
-    private fun findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent: String): GBonVent.EtateActuellementEst {
+    private fun findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent: String): M8BonVent.EtateActuellementEst {
         return try {
             // Try to find the enum value by name
-            GBonVent.EtateActuellementEst.valueOf(parentID8C2TypeTransactionKeyByParent)
+            M8BonVent.EtateActuellementEst.valueOf(parentID8C2TypeTransactionKeyByParent)
         } catch (e: IllegalArgumentException) {
             // If direct valueOf fails, try to match by ordinal or other patterns
             when (parentID8C2TypeTransactionKeyByParent.uppercase()) {
-                "ON_MODE_COMMEND_ACTUELLEMENT" -> GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                "A_COMMANDE_CONFIRME" -> GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                "POURVOIRPANIE" -> GBonVent.EtateActuellementEst.PourVoirPanie
-                "COMMANDE_LIVRAI" -> GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                "AVEC_MARCHANDISE" -> GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
-                "ACHETEUR_NON_DISPO" -> GBonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
-                "FERME" -> GBonVent.EtateActuellementEst.FERME
-                "A_EVITE" -> GBonVent.EtateActuellementEst.A_EVITE
-                "RAPPORT_AU_ENREGESTREMENT_VOCALE" -> GBonVent.EtateActuellementEst.RAPPORT_AU_ENREGESTREMENT_VOCALE
-                "ON_MODE_VOIRE_PANIE_ARTICLES" -> GBonVent.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
-                "CIBLE" -> GBonVent.EtateActuellementEst.Cible
-                "CIBLE_PRIORITE_2" -> GBonVent.EtateActuellementEst.CIBLE_PRIORITE_2
-                "CIBLE_PRIORITE_3" -> GBonVent.EtateActuellementEst.CIBLE_PRIORITE_3
-                "CIBLE_POUR_2" -> GBonVent.EtateActuellementEst.CIBLE_POUR_2
+                "ON_MODE_COMMEND_ACTUELLEMENT" -> M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                "A_COMMANDE_CONFIRME" -> M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                "POURVOIRPANIE" -> M8BonVent.EtateActuellementEst.PourVoirPanie
+                "COMMANDE_LIVRAI" -> M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                "AVEC_MARCHANDISE" -> M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE
+                "ACHETEUR_NON_DISPO" -> M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
+                "FERME" -> M8BonVent.EtateActuellementEst.FERME
+                "A_EVITE" -> M8BonVent.EtateActuellementEst.A_EVITE
+                "RAPPORT_AU_ENREGESTREMENT_VOCALE" -> M8BonVent.EtateActuellementEst.RAPPORT_AU_ENREGESTREMENT_VOCALE
+                "ON_MODE_VOIRE_PANIE_ARTICLES" -> M8BonVent.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+                "CIBLE" -> M8BonVent.EtateActuellementEst.Cible
+                "CIBLE_PRIORITE_2" -> M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_2
+                "CIBLE_PRIORITE_3" -> M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_3
+                "CIBLE_POUR_2" -> M8BonVent.EtateActuellementEst.CIBLE_POUR_2
                 else -> {
                     // If no match found, return the default state
-                    GBonVent.EtateActuellementEst.CreeMaisNonDefinie
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
                 }
             }
         }
@@ -123,11 +123,11 @@ class BSetterP (
 
     fun ouvrireNewAppComptOnVentBonVentEtAddLe(
         clientOldId: Long,
-        newEtate: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        newEtate: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }!!
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt!!
-        val newTransactionKey = GBonVent.generePushKey()
+        val newTransactionKey = M8BonVent.generePushKey()
 
         val zCompt = currentZCompt.copy(
             onVentM8BonVentKey = newTransactionKey,
@@ -137,7 +137,7 @@ class BSetterP (
         zAppComptRepositoryComposable.upsert(zCompt)
 
         gBonVentRepository.upsert(
-            GBonVent(
+            M8BonVent(
                 keyID = newTransactionKey,
                 parentM7VentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
@@ -145,9 +145,9 @@ class BSetterP (
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+                parentID2ClientKeyByParent = getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
                 parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
     }
@@ -155,7 +155,7 @@ class BSetterP (
     fun ajouteNewBonVent(
         key: String,
         clientOldId: Long,
-        etate: GBonVent.EtateActuellementEst
+        etate: M8BonVent.EtateActuellementEst
     ) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
@@ -168,7 +168,7 @@ class BSetterP (
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
 
-            val newBonVent = GBonVent(
+            val newBonVent = M8BonVent(
                 keyID = key,
                 parentM7VentPeriodKeyId = currentZCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
@@ -176,9 +176,9 @@ class BSetterP (
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+                parentID2ClientKeyByParent = getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
                 parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+                parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
             )
 
             gBonVentRepository.upsert(newBonVent)
@@ -188,7 +188,7 @@ class BSetterP (
     fun updateComptAppErExistKey(
         key: String,
         clientOldId: Long,
-        etate: GBonVent.EtateActuellementEst
+        etate: M8BonVent.EtateActuellementEst
     ) {
         val client = bClientsStateCompoRepository.datasValue.find { it.id == clientOldId }
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt

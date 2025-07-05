@@ -11,7 +11,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Upd
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_AppCompt.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.GBonVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.M8BonVent
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import android.util.Log
@@ -124,7 +124,7 @@ class MapClientsViewModelss(
 
     fun getClientLastBonVentParEtate(
         client: HClientInfos
-    ): GBonVent? {
+    ): M8BonVent? {
         val historicalData = groupeRepositorysProtoAvJuin3
             .repositorys_Model
             .c3TransactionCommercialRepository

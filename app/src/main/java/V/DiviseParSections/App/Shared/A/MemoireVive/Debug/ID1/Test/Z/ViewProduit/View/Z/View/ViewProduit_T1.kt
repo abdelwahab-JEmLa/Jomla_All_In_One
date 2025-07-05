@@ -36,11 +36,18 @@ fun ViewProduit_T1(
 ) {
     val getter = viewModel.aCentral.getter
     val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
-    val b1CouleurOuGoutProduitDataBaseRepository = viewModel.b1CouleurOuGoutProduitDataBaseRepository
+    val b1CouleurOuGoutProduitDataBaseRepository =
+        viewModel.b1CouleurOuGoutProduitDataBaseRepository
     val productKeyId = product.keyID
-    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+    val produit =
+        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
 
-    val produitWithColors by remember(product.id, b1CouleurOuGoutProduitDataBaseRepository.datasValue) {
+    val onVentM8BonVent = viewModel.getterFocusedVarsHandlerFacade.onVentM8BonVent
+
+    val produitWithColors by remember(
+        product.id,
+        b1CouleurOuGoutProduitDataBaseRepository.datasValue
+    ) {
         derivedStateOf {
             val relatedColors = b1CouleurOuGoutProduitDataBaseRepository.datasValue
                 .filter { it.parentBProduitOldID == product.id }
@@ -81,8 +88,9 @@ fun ViewProduit_T1(
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader_T1(
-                produit=product,
-                viewModel=viewModel,
+                onVentM8BonVent=onVentM8BonVent,
+                produit = product,
+                viewModel = viewModel,
                 productName = productName,
                 allNonTrouve = allNonTrouve,
                 onQuantityClickToHaptic = {

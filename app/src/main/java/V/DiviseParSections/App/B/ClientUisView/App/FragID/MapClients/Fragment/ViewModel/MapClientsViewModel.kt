@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.C.Update.addOrUpdateData
@@ -38,7 +38,7 @@ import java.util.Date
 @Stable
 data class UiState(
     val b_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
-    val c3_TransactionCommercialList: List<GBonVent> = emptyList(),
+    val c3_TransactionCommercialList: List<M8BonVent> = emptyList(),
     val secteursList: List<E1SecteurDeClients> = emptyList(),
     val panelsGroupeList: List<Z_AutreStatesCompoRepository.PanelsGroupeButton> = emptyList(),
     val mainLoadingProgress: Float = 0f,
@@ -126,7 +126,7 @@ class MapClientsViewModel(
 
     }
 
-    fun getLastTransaction(client: HClientInfos): GBonVent? {
+    fun getLastTransaction(client: HClientInfos): M8BonVent? {
         return getter.getClientLastTransaction(
             client.id,
         )
@@ -262,7 +262,7 @@ class MapClientsViewModel(
         startRecordIfNot()
     }
 
-    fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+    fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
     }
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientOldId: Long) {
@@ -278,11 +278,11 @@ class MapClientsViewModel(
 
     // Add these methods to MapClientsViewModel class
 
-    fun ajoutUnBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+    fun ajoutUnBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
         setter.ajouteNewBonVent(buttonNewKeyGenerateur, clickedClient, newEtate)
     }
 
-    fun updateBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: GBonVent.EtateActuellementEst) {
+    fun updateBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
         setter.updateComptAppErExistKey(buttonNewKeyGenerateur, clickedClient, newEtate)
     }
 }

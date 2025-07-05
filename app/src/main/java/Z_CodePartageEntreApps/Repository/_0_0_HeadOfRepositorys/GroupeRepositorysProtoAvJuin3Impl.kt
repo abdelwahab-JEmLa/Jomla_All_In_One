@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
@@ -250,7 +250,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
     ) where DataBase : Any {
         // Create proper copy based on data type
         val dataToUpsert = when (data) {
-            is GBonVent -> data.copy() as DataBase
+            is M8BonVent -> data.copy() as DataBase
             is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
             else -> data // Fallback to original object if not add known data class
         }

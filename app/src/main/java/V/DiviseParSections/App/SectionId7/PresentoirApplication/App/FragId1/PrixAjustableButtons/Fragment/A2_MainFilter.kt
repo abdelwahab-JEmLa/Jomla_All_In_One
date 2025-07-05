@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
-    bonAchatList: List<GBonVent>,
+    bonAchatList: List<M8BonVent>,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
     produitInfosList: SnapshotStateList<A_ProduitInfos>,
     showLabels: Boolean,
@@ -30,10 +30,10 @@ fun MainFilter(
     viewModel: TariffsButtonsViewModelSec7ID2
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID } ?: GBonVent(
-            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+        bonAchatList.find { it.vid == filterBonID } ?: M8BonVent(
+            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
             parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         )
     }
 

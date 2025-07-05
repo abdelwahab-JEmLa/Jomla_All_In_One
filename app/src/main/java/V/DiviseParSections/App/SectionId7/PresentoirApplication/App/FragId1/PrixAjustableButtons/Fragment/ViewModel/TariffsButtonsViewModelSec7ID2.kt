@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 data class UiState(
     var produitInfosListDepuitAncienDataBase: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
     var produitInfosList: SnapshotStateList<A_ProduitInfos> = mutableStateListOf(),
-    var bonAchatList: List<GBonVent> = emptyList(),
+    var bonAchatList: List<M8BonVent> = emptyList(),
     var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
 

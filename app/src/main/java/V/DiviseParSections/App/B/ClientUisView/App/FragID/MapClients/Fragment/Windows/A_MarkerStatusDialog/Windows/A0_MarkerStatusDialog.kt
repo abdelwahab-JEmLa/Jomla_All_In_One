@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -172,7 +172,7 @@ fun MarkerStatusDialog(
                                 ) {
 
                                     item {
-                                        GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
+                                        M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE
                                             .ButtonAutreEtates(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
@@ -184,21 +184,21 @@ fun MarkerStatusDialog(
                                             parentTestTag_ClientKey = parentTestTag_ClientKey,
                                             modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
-                                            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )
                                     }
 
                                     item {
-                                        GBonVent.EtateActuellementEst.FERME
+                                        M8BonVent.EtateActuellementEst.FERME
                                             .ButtonAutreEtates(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
                                             )
                                     }
                                     item {
-                                        GBonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                        M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
                                             .ButtonAutreEtates(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
@@ -215,7 +215,7 @@ fun MarkerStatusDialog(
                                     }
 
                                     item {
-                                        GBonVent.EtateActuellementEst.Cible
+                                        M8BonVent.EtateActuellementEst.Cible
                                             .ButtonAutreEtates(
                                                 viewModel = viewModel,
                                                 clickedClient = clientId,
@@ -226,7 +226,7 @@ fun MarkerStatusDialog(
                                     activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
                                             item {
-                                                GBonVent.EtateActuellementEst.CIBLE_POUR_2
+                                                M8BonVent.EtateActuellementEst.CIBLE_POUR_2
                                                     .ButtonAutreEtates(
                                                         viewModel = viewModel,
                                                         clickedClient = clientId,

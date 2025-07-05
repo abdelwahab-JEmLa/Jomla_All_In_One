@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,10 +30,10 @@ fun Main(
 }
 
 @Composable
-fun MainFilter(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
+fun MainFilter(modifier: Modifier = Modifier, produitList: List<M8BonVent>) {
     val produitListFiltered by remember {
         derivedStateOf {
-            produitList.filter { it.etateActuellementEst == GBonVent.EtateActuellementEst.Cible }
+            produitList.filter { it.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible }
         }
     }
 
@@ -41,7 +41,7 @@ fun MainFilter(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
 }
 
 @Composable
-fun MainList(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
+fun MainList(modifier: Modifier = Modifier, produitList: List<M8BonVent>) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
@@ -52,7 +52,7 @@ fun MainList(modifier: Modifier = Modifier, produitList: List<GBonVent>) {
 }
 
 @Composable
-fun MainItem(modifier: Modifier = Modifier, bonAchate: GBonVent) {
+fun MainItem(modifier: Modifier = Modifier, bonAchate: M8BonVent) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -69,61 +69,61 @@ fun MainItem(modifier: Modifier = Modifier, bonAchate: GBonVent) {
     }
 }
 
-fun testData(): List<GBonVent> {
+fun testData(): List<M8BonVent> {
     return listOf(
-        GBonVent(
+        M8BonVent(
             creationTimestamps = 1749010953513L,
             parentHClientOldID = 15L,
             nomClientConcerned = "3omar_yousef",
             parentPeriodeVentOldID = 7L,
             heurDebutInString = "05:22",
-            etateActuellementEst = GBonVent.EtateActuellementEst.Cible,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.Cible,
             vid = 10L,
-            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
             parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
-        GBonVent(
+        M8BonVent(
             creationTimestamps = 1748029628555L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             parentPeriodeVentOldID = 7L,
             heurDebutInString = "20:47",
             heurFinInString = "Non Defini",
-            etateActuellementEst = GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME,
             vocaleKeyID = "",
            // tagCeBonEstOuvertPourComptsIds = "false",
             sonVocaleEstEcoute = false,
             sonEcoutementEstFaitAutimestamps = 0L,
             cActive = false,
             vid = 5L,
-            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
             parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
-        GBonVent(
+        M8BonVent(
             creationTimestamps = 1748027276129L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             parentPeriodeVentOldID = 7L,
             heurDebutInString = "20:07",
-            etateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
             vid = 4L,
-            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
             parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         ),
-        GBonVent(
+        M8BonVent(
             creationTimestamps = 1748029628742L,
             parentHClientOldID = 4L,
             nomClientConcerned = "abdelhamid",
             parentPeriodeVentOldID = 7L,
             heurDebutInString = "20:47",
-            etateActuellementEst = GBonVent.EtateActuellementEst.AVEC_MARCHANDISE,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE,
             vid = 6L,
-            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel] ?: "",
+            parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
             parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel] ?: ""
+            parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         )
     )
 }

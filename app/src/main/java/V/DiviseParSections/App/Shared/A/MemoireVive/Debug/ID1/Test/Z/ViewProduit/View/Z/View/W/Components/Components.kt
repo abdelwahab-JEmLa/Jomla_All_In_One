@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProductHeader_T1(
+    onVentM8BonVent: M8BonVent?,
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     productName: String,
@@ -89,6 +91,7 @@ fun ProductHeader_T1(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 QuantityDisplay(
+                    onVentM8BonVent=onVentM8BonVent,
                     produit = produit,
                     viewModel = viewModel,
                     allNonTrouve = allNonTrouve,
@@ -102,9 +105,10 @@ fun ProductHeader_T1(
 
 @Composable
 fun QuantityDisplay(
+    onVentM8BonVent: M8BonVent?,
+    produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     allNonTrouve: Boolean,
-    produit: ArticlesBasesStatsTable,
     onClick: () -> Unit
 ) {
     val getter = viewModel.getterFocusedVarsHandlerFacade

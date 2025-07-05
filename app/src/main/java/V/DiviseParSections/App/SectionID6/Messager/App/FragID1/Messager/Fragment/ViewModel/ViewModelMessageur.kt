@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 data class UiState(
     val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
-    val c3_BonAchate: List<GBonVent> = emptyList(),
+    val c3_BonAchate: List<M8BonVent> = emptyList(),
     val idActiveAppCompt:Long=0,
     val mainLoadingProgress: Float = 0f
 )

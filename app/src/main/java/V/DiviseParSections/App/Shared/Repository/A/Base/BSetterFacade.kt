@@ -9,7 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import com.google.firebase.database.DatabaseReference
 
@@ -29,13 +29,13 @@ class BSetterFacade(
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
         id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 
-    fun ajouteNewBonVent(key: String, clientOldId: Long, etate: GBonVent.EtateActuellementEst) =
+    fun ajouteNewBonVent(key: String, clientOldId: Long, etate: M8BonVent.EtateActuellementEst) =
         id8BonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
 
     fun updateComptAppErExistKey(
         key: String,
         clientOldId: Long,
-        etate: GBonVent.EtateActuellementEst
+        etate: M8BonVent.EtateActuellementEst
     ) = id8BonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() =
@@ -53,7 +53,7 @@ class BSetterFacade(
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
     fun deleteAddMultiDatas() = produitOperations.deleteAddMultiDatas()
 
-    fun getKeyID8BonVentSetter(clientId: Long, etate: GBonVent.EtateActuellementEst): String =
+    fun getKeyID8BonVentSetter(clientId: Long, etate: M8BonVent.EtateActuellementEst): String =
         getKeyID8BonVent(
             clientId, etate,
             parametresAppComptNonSaved = parametresAppComptNonSaved,
@@ -61,7 +61,7 @@ class BSetterFacade(
         )
 
 
-    fun lenceNeveauBonVentFacade(keyHandBonVent: String, m8BonVent: GBonVent? = null) {
+    fun lenceNeveauBonVentFacade(keyHandBonVent: String, m8BonVent: M8BonVent? = null) {
         val newData = m8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
 
         if (newData != null) {
@@ -77,7 +77,7 @@ class BSetterFacade(
     }
 
     fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
-        id8BonVent: GBonVent,
+        id8BonVent: M8BonVent,
         id9AppComptRepository: Repo9AppCompt
     ) {
         val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +25,7 @@ fun AfficheurRegleOuvert(
 ) {
     val clientId = relatedClients?.id ?: 0L
 
-    fun getLatestTransactionForClient(clientId: Long): GBonVent? {
+    fun getLatestTransactionForClient(clientId: Long): M8BonVent? {
         return uiState
             .c3_TransactionCommercialList
             .filter { it.parentHClientOldID == clientId }
@@ -70,13 +70,13 @@ fun AfficheurRegleOuvert(
                     text = "الحالة الحالية: ${latestTransaction?.etateActuellementEst?.nomArabe ?: ""}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,
                     )
 
-                GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                     .ButtonAutreEtates(
                         viewModel = viewModel,
                         clickedClient = clientId,

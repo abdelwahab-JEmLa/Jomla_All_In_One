@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 data class UiState_StartUpScreen(
     var _1_1_CouleurAcheteOperationList: SnapshotStateList<_1_1_CouleurAcheteOperation> = mutableStateListOf(),
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
-    var _C_3_BonAchateList: SnapshotStateList<GBonVent> = mutableStateListOf(),
+    var _C_3_BonAchateList: SnapshotStateList<M8BonVent> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<MVentPeriode> = mutableStateListOf(),
 
     var bonAchetOnCourseMntID: Long = 1,

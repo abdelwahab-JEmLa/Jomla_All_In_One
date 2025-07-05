@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
@@ -31,9 +31,9 @@ fun upsertBonVent(
                 val client =
                     hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =
-                    getKeyByParentDe[GBonVent.EtateActuellementEst.keyModel]!!
+                    getKeyByParentDe[M8BonVent.EtateActuellementEst.keyModel]!!
 
-                GBonVent(
+                M8BonVent(
                     keyByParent = keyByParentBonVentOnClickButton,
                     parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
                     parentHClientOldID = client.id,
@@ -48,28 +48,28 @@ fun upsertBonVent(
     gBonVentRepository.upsert(data)
 }
 
-private fun findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent: String): GBonVent.EtateActuellementEst {
+private fun findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent: String): M8BonVent.EtateActuellementEst {
     return try {
-        GBonVent.EtateActuellementEst.valueOf(parentID8C2TypeTransactionKeyByParent)
+        M8BonVent.EtateActuellementEst.valueOf(parentID8C2TypeTransactionKeyByParent)
     } catch (e: IllegalArgumentException) {
         when (parentID8C2TypeTransactionKeyByParent.uppercase()) {
-            "ON_MODE_COMMEND_ACTUELLEMENT" -> GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-            "A_COMMANDE_CONFIRME" -> GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-            "POURVOIRPANIE" -> GBonVent.EtateActuellementEst.PourVoirPanie
-            "COMMANDE_LIVRAI" -> GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-            "AVEC_MARCHANDISE" -> GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
-            "ACHETEUR_NON_DISPO" -> GBonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
-            "FERME" -> GBonVent.EtateActuellementEst.FERME
-            "A_EVITE" -> GBonVent.EtateActuellementEst.A_EVITE
-            "RAPPORT_AU_ENREGESTREMENT_VOCALE" -> GBonVent.EtateActuellementEst.RAPPORT_AU_ENREGESTREMENT_VOCALE
-            "ON_MODE_VOIRE_PANIE_ARTICLES" -> GBonVent.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
-            "CIBLE" -> GBonVent.EtateActuellementEst.Cible
-            "CIBLE_PRIORITE_2" -> GBonVent.EtateActuellementEst.CIBLE_PRIORITE_2
-            "CIBLE_PRIORITE_3" -> GBonVent.EtateActuellementEst.CIBLE_PRIORITE_3
-            "CIBLE_POUR_2" -> GBonVent.EtateActuellementEst.CIBLE_POUR_2
+            "ON_MODE_COMMEND_ACTUELLEMENT" -> M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            "A_COMMANDE_CONFIRME" -> M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            "POURVOIRPANIE" -> M8BonVent.EtateActuellementEst.PourVoirPanie
+            "COMMANDE_LIVRAI" -> M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+            "AVEC_MARCHANDISE" -> M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE
+            "ACHETEUR_NON_DISPO" -> M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
+            "FERME" -> M8BonVent.EtateActuellementEst.FERME
+            "A_EVITE" -> M8BonVent.EtateActuellementEst.A_EVITE
+            "RAPPORT_AU_ENREGESTREMENT_VOCALE" -> M8BonVent.EtateActuellementEst.RAPPORT_AU_ENREGESTREMENT_VOCALE
+            "ON_MODE_VOIRE_PANIE_ARTICLES" -> M8BonVent.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+            "CIBLE" -> M8BonVent.EtateActuellementEst.Cible
+            "CIBLE_PRIORITE_2" -> M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_2
+            "CIBLE_PRIORITE_3" -> M8BonVent.EtateActuellementEst.CIBLE_PRIORITE_3
+            "CIBLE_POUR_2" -> M8BonVent.EtateActuellementEst.CIBLE_POUR_2
             else -> {
                 // If no match found, return the default state
-                GBonVent.EtateActuellementEst.CreeMaisNonDefinie
+                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
             }
         }
     }

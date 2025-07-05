@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
-fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
+fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
 ) {
@@ -33,8 +33,8 @@ fun GBonVent.EtateActuellementEst.ButtonAutreEtates(
         onClick = {
             viewModel.setter.lenceNeveauBonVentFacade(keyHandBonVentOnClickButton)
 
-            if (newEtate == GBonVent.EtateActuellementEst.COMMANDE_LIVRAI
-                || newEtate == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+            if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
             }

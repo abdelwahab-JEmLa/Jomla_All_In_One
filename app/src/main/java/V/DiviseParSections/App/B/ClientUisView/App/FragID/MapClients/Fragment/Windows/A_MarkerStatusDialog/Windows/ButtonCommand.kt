@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,12 +25,12 @@ import androidx.core.content.ContextCompat
 fun CommandButton(
     modifier: Modifier = Modifier,
     viewModel: MapClientsViewModel,
-    etateActuellementEst: GBonVent.EtateActuellementEst,
+    etateActuellementEst: M8BonVent.EtateActuellementEst,
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
     parentTestTag_ClientKey: String,
 ) {
-    val etateKey = GBonVent.EtateActuellementEst.getKey(etateActuellementEst)
+    val etateKey = M8BonVent.EtateActuellementEst.getKey(etateActuellementEst)
 
     val tag = "$parentTestTag_ClientKey$etateKey"
 

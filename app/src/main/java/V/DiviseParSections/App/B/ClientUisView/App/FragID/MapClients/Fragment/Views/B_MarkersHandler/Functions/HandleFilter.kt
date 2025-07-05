@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
@@ -96,8 +96,8 @@ fun filterClientsBasedOnMode(
             val clientsWithConfirmedProducts =
                 datas
                     .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                || bonAchat.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        bonAchat.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                || bonAchat.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.parentHClientOldID }
                     .distinct()
@@ -109,21 +109,21 @@ fun filterClientsBasedOnMode(
 
         MapClientsViewModel.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
             }
         }
 
         MapClientsViewModel.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
             clientDataBaseSnapList.filter {
-                viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.Cible
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.A_EVITE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.AVEC_MARCHANDISE
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
-                        || viewModel.getLastTransaction(it)?.etateActuellementEst == GBonVent.EtateActuellementEst.FERME
+                viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_EVITE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.AVEC_MARCHANDISE
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.ACHETEUR_NON_DISPO
+                        || viewModel.getLastTransaction(it)?.etateActuellementEst == M8BonVent.EtateActuellementEst.FERME
             }
         }
 

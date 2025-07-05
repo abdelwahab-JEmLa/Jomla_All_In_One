@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -29,7 +29,7 @@ class BonVentOperations(
     fun ajouteNewBonVent(
         key: String,
         clientOldId: Long,
-        etate: GBonVent.EtateActuellementEst
+        etate: M8BonVent.EtateActuellementEst
     ) {
         val client = hClientRepository.datasValue.find { it.id == clientOldId }
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
@@ -42,7 +42,7 @@ class BonVentOperations(
 
             zAppComptRepositoryComposable.upsert(updatedZCompt)
 
-            val newBonVent = GBonVent(
+            val newBonVent = M8BonVent(
                 keyID = key,
                 parentM7VentPeriodKeyId = currentZCompt.onVentHVentPeriodKeyId,
                 parentM2ClientInfosKey = client.keyID,
@@ -50,11 +50,11 @@ class BonVentOperations(
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.keyModel]
+                parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
                     ?: "",
                 parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
 
@@ -65,7 +65,7 @@ class BonVentOperations(
     fun updateComptAppErExistKey(
         key: String,
         clientOldId: Long,
-        etate: GBonVent.EtateActuellementEst
+        etate: M8BonVent.EtateActuellementEst
     ) {
         val client = hClientRepository.datasValue.find { it.id == clientOldId }
         val currentZCompt = zAppComptRepositoryComposable.currentAppCompt

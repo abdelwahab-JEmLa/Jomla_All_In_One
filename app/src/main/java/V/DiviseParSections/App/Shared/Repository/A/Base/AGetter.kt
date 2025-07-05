@@ -9,7 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -82,11 +82,11 @@ class AGetter(
     private fun createTempBonVent(
         clientId: Long,
         clientKey: String,
-        etate: GBonVent.EtateActuellementEst,
+        etate: M8BonVent.EtateActuellementEst,
         periodKey: String,
         comptKey: String
-    ) = GBonVent(
-        keyID = GBonVent.generePushKey(),
+    ) = M8BonVent(
+        keyID = M8BonVent.generePushKey(),
         parentM7VentPeriodKeyId = periodKey,
         parentM2ClientInfosKey = clientKey,
         parentHClientOldID = clientId,
@@ -97,20 +97,20 @@ class AGetter(
             ?: "",
         parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
             ?: "",
-        parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[GBonVent.EtateActuellementEst.keyModel]
+        parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
             ?: ""
     )
 
     fun getClientLastBonVentParEtate(
         clientId: Long,
-        etateActuellementEst: GBonVent.EtateActuellementEst = GBonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): GBonVent? {
+        etateActuellementEst: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    ): M8BonVent? {
         return id8BonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
-    fun getClientLastTransaction(clientId: Long): GBonVent? {
+    fun getClientLastTransaction(clientId: Long): M8BonVent? {
         return id8BonVentRepository.datasValue.filter {
             it.parentHClientOldID == clientId
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
@@ -171,7 +171,7 @@ class AGetter(
         iD2ClientRepository.datasValue.count { client ->
             val lastTransaction = getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
-                GBonVent.EtateActuellementEst.Cible,
+                M8BonVent.EtateActuellementEst.Cible,
             )
         }
     }

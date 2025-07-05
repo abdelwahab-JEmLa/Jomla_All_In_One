@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base
 
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.onLoadCategoriesFromCsv
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init.onLoadFromFireBase
@@ -22,7 +22,7 @@ class DataBaseCreationFactoryGBonVent(
     val repoTAG = repoEntityName
     var isListenerRegistered = false
 
-    val repoRef = GBonVent.ref
+    val repoRef = M8BonVent.ref
 
 
     private val composScope = CoroutineScope(Dispatchers.IO)
@@ -35,7 +35,7 @@ class DataBaseCreationFactoryGBonVent(
 
         updateRepoProgress(Repository.GBonVentEntity.name, 0.4f)
 
-        val data: List<GBonVent> = if (isInternetAvailable) {
+        val data: List<M8BonVent> = if (isInternetAvailable) {
 
             updateRepoProgress(Repository.GBonVentEntity.name, 0.6f)
 
@@ -61,7 +61,7 @@ class DataBaseCreationFactoryGBonVent(
                         var updateCount = 0
                         for (child in snapshot.children) {
                             try {
-                                child.getValue(GBonVent::class.java)?.let { entity ->
+                                child.getValue(M8BonVent::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
                                         val localEntity =
@@ -95,7 +95,7 @@ class DataBaseCreationFactoryGBonVent(
     }
 
     fun set(
-        dataAvecTigerUpdate: GBonVent,
+        dataAvecTigerUpdate: M8BonVent,
     ) {
         composScope.launch {
             dao.upsert(dataAvecTigerUpdate)
@@ -103,7 +103,7 @@ class DataBaseCreationFactoryGBonVent(
         }
     }
 
-    private suspend fun batchFireBaseUpdateGBonVent(datas: List<GBonVent>) {
+    private suspend fun batchFireBaseUpdateGBonVent(datas: List<M8BonVent>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
             updates[data.keyID] = data
@@ -111,7 +111,7 @@ class DataBaseCreationFactoryGBonVent(
         repoRef.updateChildren(updates).await()
     }
 
-    fun delete(data: GBonVent) {
+    fun delete(data: M8BonVent) {
 
     }
 }

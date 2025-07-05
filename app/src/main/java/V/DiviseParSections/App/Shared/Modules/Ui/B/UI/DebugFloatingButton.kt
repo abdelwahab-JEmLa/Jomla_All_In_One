@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import androidx.compose.foundation.background
@@ -54,7 +54,7 @@ class DebugKey(
     }
     fun getKeyID8BonVent(
         clientOldID: Long? = null,
-        etate: GBonVent.EtateActuellementEst? = null,
+        etate: M8BonVent.EtateActuellementEst? = null,
     ): String {
         val activePeriodKeyByParent = getter.parametresAppComptNonSaved.keyIdId7VentPeriod
         val keyModelToOnVentHVentPeriodKeyByParent =
@@ -63,7 +63,7 @@ class DebugKey(
         val keyModelToClientKeyByParent =
             clientOldID?.let { HClientInfos.keyModel + "-" + hClientRepository.datasValue.find { it.id == clientOldID }?.getTempKeyByParent() }
         val keyModelToEtateKey =
-            etate?.let { "--" + GBonVent.EtateActuellementEst.keyModel + "-" + it.name }
+            etate?.let { "--" + M8BonVent.EtateActuellementEst.keyModel + "-" + it.name }
                 ?: ""
 
         return ("$keyModelToOnVentHVentPeriodKeyByParent--$keyModelToClientKeyByParent$keyModelToEtateKey")

@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -273,7 +273,7 @@ private suspend fun performClientSearch(
 private fun CreateNewClientIcon(
     searchQuery: String,
     locationTracker: LocationTracker?,
-    defaultId8BonVent: GBonVent,
+    defaultId8BonVent: M8BonVent,
     onClientSelectedToToast: (HClientInfos) -> Unit,
     onResetSearchMode: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1

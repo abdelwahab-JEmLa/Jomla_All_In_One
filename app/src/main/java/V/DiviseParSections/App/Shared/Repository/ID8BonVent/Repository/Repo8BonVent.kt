@@ -31,11 +31,11 @@ class Repo8BonVent(
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
-    private val _datas = mutableStateOf<List<GBonVent>>(emptyList())
+    private val _datas = mutableStateOf<List<M8BonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
     val defaultId8BonVent by derivedStateOf {
-        GBonVent(
+        M8BonVent(
             nomClientConcerned = "Default Data",
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
@@ -57,7 +57,7 @@ class Repo8BonVent(
         }
     }
 
-    fun upsert(data: GBonVent) {
+    fun upsert(data: M8BonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyByParent == dataUpdate.keyByParent }
@@ -76,7 +76,7 @@ class Repo8BonVent(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    fun add(data: GBonVent) {
+    fun add(data: M8BonVent) {
         val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
         composScope.launch {
@@ -90,11 +90,11 @@ class Repo8BonVent(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: GBonVent) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M8BonVent) {
         dataBaseCreationFactory.set(dataUpdate)
     }
 
-    fun delete(data: GBonVent) {
+    fun delete(data: M8BonVent) {
         composScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
@@ -106,7 +106,7 @@ class Repo8BonVent(
 }
 
 @Entity
-data class GBonVent(
+data class M8BonVent(
     @PrimaryKey var keyByParent: String = "null",
 
     var keyID: String = generePushKey(),
@@ -220,11 +220,11 @@ data class GBonVent(
         }
     }
 
-    fun isSameEntity(other: GBonVent) =
+    fun isSameEntity(other: M8BonVent) =
         keyID == other.keyID && parentKeyId9AppComptInfos == other.parentKeyId9AppComptInfos && parentM7VentPeriodKeyId == other.parentM7VentPeriodKeyId
 
     override fun equals(other: Any?) =
-        this === other || (other is GBonVent && isSameEntity(other))
+        this === other || (other is M8BonVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
         keyID, parentZAppComptNom, parentM7VentPeriodKeyId
