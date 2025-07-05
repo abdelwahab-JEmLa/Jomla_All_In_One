@@ -170,7 +170,25 @@ fun AppNavHost(
                     }
                 }
 
-                // Cart screen
+                composable(
+                    route = Screen.FragmentProduitFastSearchDialog.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    CleanupEffect {
+                    }
+
+                    LaunchedEffect(Unit) {
+                        scrollTiger++
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            MainFastSearchProduitPourVent()
+                        }
+                    }
+                }
+
                 composable(
                     route = Screen.SoldCart.route,
                 ) { backStackEntry ->
