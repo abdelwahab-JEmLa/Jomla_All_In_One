@@ -130,10 +130,18 @@ data class Z_AppCompt(
     var onVentM1ProduitInfosKeyID: String = "",
     var onVentM1ProduitInfosDebugName: String = "",
 
+
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var onVentM3CouleurProduitInfosKeyID: String = "null",
     val onVentM3CouleurProduitDebugInfos:String="null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------Dialog Opner Vars ----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var dialogChoisireQuantityM1ProduitInfosKeyID: String = "null",
+    var dialogChoisireQuantityM1ProduitInfosDebugName: String = "null",
+    //------------------------------------------------------------------------------------------------------------------------------------------------
+
     val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {
 

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun ModernQuantityDialog_T1(
+fun VentCouleurQuantityDialog_T1(
     vent: M10OperationVentCouleur,
     viewModel: ViewModelsProduit_T1,
     clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,

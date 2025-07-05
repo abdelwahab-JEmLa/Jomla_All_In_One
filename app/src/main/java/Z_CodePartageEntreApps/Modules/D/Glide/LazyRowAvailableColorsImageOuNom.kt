@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.core.animateFloatAsState
@@ -58,7 +58,7 @@ import com.bumptech.glide.signature.ObjectKey
 fun LazyRowAvailableColorsImageOuNom(
     productId: String?,
     achats: List<M10OperationVentCouleur>,
-    bProduitDataBaseComposeRepositoryPJ17: BProduitInfosRepository,
+    bProduitDataBaseComposeRepositoryPJ17: RepoM1ProduitInfos,
     sizeDeChaqueItem: Dp= 250.dp,
 ) {
     val relatedProduitDataBase = bProduitDataBaseComposeRepositoryPJ17

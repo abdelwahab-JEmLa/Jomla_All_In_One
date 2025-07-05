@@ -9,7 +9,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
-import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -19,6 +18,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
@@ -34,7 +34,7 @@ val composRepositorysModule = module {
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
-    single { BProduitInfosRepository(get()) }
+    single { RepoM1ProduitInfos(get()) }
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(get(), get()) }
     single { Repo8BonVent(get(), get()) }
@@ -48,7 +48,7 @@ val composRepositorysModule = module {
     single { VentOperations(get(), get()) }
 
 
-    single { GetterFocusedVars(get(), get(),get(),get(),get(),) }
+    single { GetterFocusedVars(get(), get(),get(),get(),get(),get(),) }
     single { SetterFocusedVars(get(), get(), get(), get(), get(), ) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -54,7 +54,7 @@ class AGetter(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
-    val bProduitInfosRepository: BProduitInfosRepository,
+    val bProduitInfosRepository: RepoM1ProduitInfos,
     val b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,

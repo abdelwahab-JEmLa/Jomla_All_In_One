@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -10,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: Setter
 @Stable
 class GetterFocusedVars(
     repo2Client: Repo2Client,
+    repoM1ProduitInfos: RepoM1ProduitInfos,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
@@ -72,6 +75,12 @@ class GetterFocusedVars(
         }
     }
 
+    val ouvertDialogChoixQuantityPourProduitM1ProduitInfos by derivedStateOf {
+        repoM1ProduitInfos.datasValue.find {
+            it.keyID == (currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
+        }
+    }
+
     val onVentM3CouleurProduitInfos by derivedStateOf {
         val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
         repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
@@ -93,7 +102,7 @@ class GetterFocusedVars(
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
-                modifier.getSemanticsTag(key, value, index)
+                modifier.getSemanticsTag(key, value, index+6)
             }
         }
     }
@@ -155,6 +164,7 @@ class SetterFocusedVars(
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
+    
     fun ajouteNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
         repo10OperationVentCouleur.addOrUpdateData(it)
     }
@@ -165,6 +175,7 @@ class SetterFocusedVars(
         repo9AppCompt = repo9AppCompt,
     )
 
+    
     fun ouvrireDialogChoisireQuantity(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
@@ -174,6 +185,26 @@ class SetterFocusedVars(
     )
 
     fun updateFocuseM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+    
+    fun ouvrireM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) = updateCurrentAppComptDialogProduit(
+        getterFocusedVars,
+        repo9AppCompt,
+        produit,)
+    
+    fun fermeM1ProduitDialogChoisireQuantityFacade() = updateCurrentAppComptDialogProduit( getterFocusedVars, repo9AppCompt,)
+}
+
+fun updateCurrentAppComptDialogProduit(
+    getterFocusedVars: GetterFocusedVars,
+    repo9AppCompt: Repo9AppCompt,
+    produit: ArticlesBasesStatsTable?=null
+) {
+    repo9AppCompt.upsert(
+        getterFocusedVars.currentM9AppCompt!!.copy(
+            dialogChoisireQuantityM1ProduitInfosKeyID = produit?.keyID ?: "null",
+            dialogChoisireQuantityM1ProduitInfosDebugName = produit?.nom ?: "null"
+        )
+    )
 }
 
 fun focuceOnVentM3CouleurProduitInfos(

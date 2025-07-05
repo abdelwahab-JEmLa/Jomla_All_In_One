@@ -88,7 +88,6 @@ fun ViewProduit_T1(
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader_T1(
-                onVentM8BonVent=onVentM8BonVent,
                 produit = product,
                 viewModel = viewModel,
                 productName = productName,

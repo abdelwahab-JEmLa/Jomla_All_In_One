@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -30,7 +30,7 @@ class PrintReceiptHandler {
     fun printVentReceipt(
         context: Context,
         fVentCouleurOperationRepository: Repo10OperationVentCouleur,
-        bProduitInfosRepository: BProduitInfosRepository,
+        bProduitInfosRepository: RepoM1ProduitInfos,
         b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
         client: HClientInfos?,
         scope: CoroutineScope? = null

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.util.AbstractMap
 
 @Stable
-class BProduitInfosRepository(
+class RepoM1ProduitInfos(
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {
     val dao = ancienRepo.dao
@@ -29,7 +29,6 @@ class BProduitInfosRepository(
     private val _datas = mutableStateOf<List<ArticlesBasesStatsTable>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val ouvertData by derivedStateOf {}
 
     init {
         composScope.launch {
