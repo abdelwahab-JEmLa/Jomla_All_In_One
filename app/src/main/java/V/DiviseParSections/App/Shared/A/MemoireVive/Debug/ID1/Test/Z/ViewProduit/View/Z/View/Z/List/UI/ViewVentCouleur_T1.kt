@@ -88,9 +88,26 @@ fun ViewVentCouleur_T1(
             m3CouleurProduitInfos.extensionDisponible
         )
     }
+    val defaultM3CouleurProduitInfos =
+        with(m3CouleurProduitInfos) {
+            getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+                //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                parentM1ProduitInfosKeyId = parentBProduitInfosKeyID,
+                parentM1ProduitDebugInfos = parentId1ProduitInfosDebugName,
+                //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+                parentM3CouleurProduitInfosKeyID = key,
+                parentM3CouleurProduitDebugInfos = parentId1ProduitInfosDebugName + indexCouleurDansAncienProto,
+
+                )
+        }
+
+    val vent =
+        getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
+            ?: defaultM3CouleurProduitInfos
 
     Card(
         modifier = Modifier
+            .getSemanticsTag("defaultM3CouleurProduitInfos",defaultM3CouleurProduitInfos)
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (existingVent?.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f)
@@ -101,22 +118,6 @@ fun ViewVentCouleur_T1(
                 .padding(5.dp)
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                val defaultM3CouleurProduitInfos =
-                    with(m3CouleurProduitInfos) {
-                        getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
-                            //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                            parentM1ProduitInfosKeyId = parentBProduitInfosKeyID,
-                            parentM1ProduitDebugInfos = parentId1ProduitInfosDebugName,
-                            //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                            parentM3CouleurProduitInfosKeyID = key,
-                            parentM3CouleurProduitDebugInfos = parentId1ProduitInfosDebugName + indexCouleurDansAncienProto,
-
-                            )
-                    }
-
-                val vent =
-                    getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
-                        ?: defaultM3CouleurProduitInfos
 
                 when (m3CouleurProduitInfos.aAffiche) {
 
@@ -127,7 +128,6 @@ fun ViewVentCouleur_T1(
                             },
                             modifier = Modifier
                                 .size(size)
-                                .getSemanticsTag("defaultM3CouleurProduitInfos",defaultM3CouleurProduitInfos)
                             ,
                             ventKey = ventUIState.ventKey,
                             imageFile = imageFile,

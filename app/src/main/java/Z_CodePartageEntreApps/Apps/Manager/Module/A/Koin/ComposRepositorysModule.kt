@@ -48,7 +48,7 @@ val composRepositorysModule = module {
     single { VentOperations(get(), get()) }
 
 
-    single { GetterFocusedVars(get(), get(),get(),get(),) }
+    single { GetterFocusedVars(get(), get(),get(),get(),get(),) }
     single { SetterFocusedVars(get(), get(), get(), ) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 

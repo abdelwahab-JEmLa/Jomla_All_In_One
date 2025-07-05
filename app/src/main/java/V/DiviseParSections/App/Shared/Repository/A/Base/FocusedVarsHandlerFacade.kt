@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemantics
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
@@ -26,7 +27,8 @@ class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: Setter
 
 @Stable
 class GetterFocusedVars(
-    Repo2Client: Repo2Client,
+    repo2Client: Repo2Client,
+    repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
@@ -52,7 +54,7 @@ class GetterFocusedVars(
 
     val onVentM2ClientInfos by derivedStateOf {
         val targetKey = onVentM8BonVent?.parentM2ClientInfosKey
-        Repo2Client.datasValue.find { it.keyID == targetKey }
+        repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
     val onVentM3CouleurProduitInfos by derivedStateOf {
@@ -110,13 +112,25 @@ class GetterFocusedVars(
         }
     }
 }
-
 object DebugsTests {
     const val TAG = "DebugsTests"
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0): Modifier {
-        return this.semantics {
+        val logTag = "Debug_${nomVal}_${index + 1}"
+        val dataString = when (data) {
+            null -> "null"
+            is String -> data
+            is Number -> data.toString()
+            is Boolean -> data.toString()
+            else -> data.toString().take(100) // Limit length for logging
+        }
+
+        // Log the data for debugging purposes
+        android.util.Log.d(TAG, "[$logTag] $nomVal = $dataString")
+
+        return this.semantics(mergeDescendants = true) {
+            // Fix: Use dataString instead of data to ensure "null" is displayed when data is null
             set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
         }
     }
@@ -125,7 +139,9 @@ object DebugsTests {
 
     @Composable
     fun DebugTestsPerformInitialSearch(
-        enabled: Boolean, onSearchQueryChange: (String) -> Unit, focusRequester: FocusRequester
+        enabled: Boolean,
+        onSearchQueryChange: (String) -> Unit,
+        focusRequester: FocusRequester
     ) {
         LaunchedEffect(enabled) {
             if (enabled) {
