@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
-    val repo = viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+    val repo = viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
     val summaryByDeliveryStatus by remember {
         derivedStateOf {

@@ -14,7 +14,7 @@ fun PanierFinaleDAchatSec1Frag3(
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
 ) {
     val fVentCouleurOperationRepository =
-        viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+        viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
 
     Column {

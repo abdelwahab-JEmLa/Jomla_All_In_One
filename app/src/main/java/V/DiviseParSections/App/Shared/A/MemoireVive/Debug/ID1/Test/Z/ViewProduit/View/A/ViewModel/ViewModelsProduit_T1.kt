@@ -21,7 +21,7 @@ class ViewModelsProduit_T1(
     val getter = aCentral.getter
     val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
     val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
-    val fVentCouleurOperationRepository = getter.fVentCouleurOperationRepository
+    val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur
     val setter = aCentral.setter
 
     data class UiState(

@@ -104,7 +104,7 @@ fun ProductGroup(
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
                         vents.forEach { vent ->
-                            viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+                            viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
                                 .addOrUpdateData(
                                     vent.copy(
                                         provisoireMonPrix = price,

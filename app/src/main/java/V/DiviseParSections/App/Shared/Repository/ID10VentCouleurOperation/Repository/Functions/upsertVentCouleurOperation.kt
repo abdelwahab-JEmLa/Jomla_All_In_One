@@ -18,9 +18,9 @@ fun upsertVentCouleurOperation(
 
     fCouleurVentOperation?.let { existingOperation ->
         val updatedOperation = existingOperation.copy(quantityAchete = quantity)
-        getter.fVentCouleurOperationRepository.addOrUpdateData(updatedOperation)
+        getter.repo10OperationVentCouleur.addOrUpdateData(updatedOperation)
     } ?: zCompt?.let {
-        getter.fVentCouleurOperationRepository.acheterUneCouleur(
+        getter.repo10OperationVentCouleur.acheterUneCouleur(
             it, relatedCouleur, quantity
         )
     }

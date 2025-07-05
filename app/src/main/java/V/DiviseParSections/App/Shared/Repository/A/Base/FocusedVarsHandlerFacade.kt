@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -27,14 +29,15 @@ class GetterFocusedVars(
     Repo2Client: Repo2Client,
     repo8BonVent: Repo8BonVent,
     repo9AppCompt: Repo9AppCompt,
-    Repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
-    val currentM9AppCompt by derivedStateOf { repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" } }
+    val currentM9AppCompt by derivedStateOf {
+        repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" }
+    }
 
     val onVentM8BonVent by derivedStateOf {
-        repo8BonVent.datasValue.find {
-            it.keyID == repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
-        } ?: defaultM8BonVent
+        val targetKey = repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
+        repo8BonVent.datasValue.find { it.keyID == targetKey } ?: defaultM8BonVent
     }
 
     val defaultM8BonVent by derivedStateOf {
@@ -42,23 +45,36 @@ class GetterFocusedVars(
             nomClientConcerned = "Default Data",
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
-
             parentKeyId7VentPeriod = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentDebugNameId7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
         )
     }
 
     val onVentM2ClientInfos by derivedStateOf {
-        Repo2Client.datasValue.find {
-            it.keyID == onVentM8BonVent.parentM2ClientInfosKey
-        }
+        val targetKey = onVentM8BonVent.parentM2ClientInfosKey
+        Repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
-    val onVentM10OperationVentCouleurListFiltered by derivedStateOf {
-        Repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == onVentM8BonVent.keyID
+    fun getDatasM10OperationVentCouleurPourProduit(
+        produit: ArticlesBasesStatsTable,
+    ): List<FCouleurVentOperationInfos> {
+        val currentBonVentKey = onVentM8BonVent.keyID
+
+        val allOperations = run {
+            val repo = repo10OperationVentCouleur
+            repo.datasValue
         }
+
+
+        val operationsForThisProduct = allOperations.filter { operation ->
+            val matchesProduct = operation.parentBProduitInfosKeyId == produit.keyID
+            val matchesBonVent = operation.parentM8BonVentKeyId == currentBonVentKey ||
+                    operation.parentM8BonVentKeyId.isEmpty()
+            matchesProduct && matchesBonVent
+        }
+        return operationsForThisProduct
     }
+
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {
@@ -66,7 +82,6 @@ class GetterFocusedVars(
                 put("currentM9AppCompt", getter.currentM9AppCompt ?: "null")
                 put("onVentM8BonVent", getter.onVentM8BonVent)
                 put("onVentM2ClientInfos", getter.onVentM2ClientInfos ?: "null")
-                put("onVentM10OperationVentCouleurListSize", getter.onVentM10OperationVentCouleurListFiltered.size)
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
@@ -77,12 +92,12 @@ class GetterFocusedVars(
 }
 
 object DebugsTests {
+    const val TAG = "DebugsTests"
+
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getSemanticsTag(nomVal: String, data: Any, index: Int = 0): Modifier {
         return this.semantics {
-            set(
-                SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data
-            )
+            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
         }
     }
 
@@ -102,7 +117,6 @@ object DebugsTests {
         }
     }
 }
-
 
 @Stable
 class SetterFocusedVars(

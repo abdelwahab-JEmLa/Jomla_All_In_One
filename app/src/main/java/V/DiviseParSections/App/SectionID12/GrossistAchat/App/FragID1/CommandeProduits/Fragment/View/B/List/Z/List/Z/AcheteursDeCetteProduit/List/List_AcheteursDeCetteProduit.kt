@@ -42,7 +42,7 @@ fun List_AcheteursDeCetteProduit(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            val achatQuantityDeCetteBonVent = viewModel.getter.fVentCouleurOperationRepository
+            val achatQuantityDeCetteBonVent = viewModel.getter.repo10OperationVentCouleur
                 .datasFilteredParCurrentHVentPeriod
                 .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantityAchete
 

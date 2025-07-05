@@ -28,23 +28,17 @@ class Repo10OperationVentCouleur(
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<FCouleurVentOperationInfos>>(emptyList())
-    val datasValue by derivedStateOf {
-        _datas.value
-    }
-    val datasFiltered by derivedStateOf {
-        _datas.value
-    }
+    val datasValue by derivedStateOf { _datas.value }
+    val datasFiltered by derivedStateOf { _datas.value }
 
     val onVentFilteredDatas by derivedStateOf {
-        datasValue.filter {
-            it.parentM8BonVentKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
-        }
+        val targetKey = zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
+        datasValue.filter { it.parentM8BonVentKeyId == targetKey }
     }
 
     val datasFilteredParCurrentHVentPeriod by derivedStateOf {
-        datasValue.filter {
-            it.parentHVentPeriodKeyId == zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
-        }
+        val targetKey = zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+        datasValue.filter { it.parentHVentPeriodKeyId == targetKey }
     }
 
     init {
@@ -61,14 +55,15 @@ class Repo10OperationVentCouleur(
                                 _datas.value = data
                             }
                         } catch (e: Exception) {
+                            // Error handling
                         }
                     }
                 }
             } catch (e: Exception) {
+                // Error handling
             }
         }
     }
-
 
     fun addOrUpdateData(data: FCouleurVentOperationInfos) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
@@ -104,8 +99,18 @@ class Repo10OperationVentCouleur(
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, dataForRepo)
     }
 
-    fun getTestDate(): List<FCouleurVentOperationInfos> {
-        return emptyList()
+    fun fixExistingOperationsWithEmptyBonVentKey() {
+        val currentBonVentKey = zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
+        if (currentBonVentKey.isNullOrEmpty()) return
+
+        val operationsToFix = datasValue.filter { it.parentM8BonVentKeyId.isEmpty() }
+        operationsToFix.forEach { operation ->
+            val fixedOperation = operation.copy(
+                parentM8BonVentKeyId = currentBonVentKey,
+                dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+            )
+            addOrUpdateData(fixedOperation)
+        }
     }
 
     fun acheterUneCouleur(
@@ -120,12 +125,11 @@ class Repo10OperationVentCouleur(
                     zCompt = zCompt,
                     quantity = quantity
                 )
-
                 addOrUpdateData(couleurVentOperation)
-
             } catch (e: OutOfMemoryError) {
                 System.gc()
             } catch (e: Exception) {
+                // Error handling
             }
         }
     }
@@ -137,17 +141,12 @@ class Repo10OperationVentCouleur(
     ): FCouleurVentOperationInfos {
         return FCouleurVentOperationInfos(
             parentCouleurInfosKeyID = relatedCouleur.key,
-
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
-
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
-
             parentBProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
-
             parentZAppComptID = zCompt.bsonObjectId,
-
             quantityAchete = quantity,
             etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.ChoisiQuantityConfirme,
             type = FCouleurVentOperationInfos.Type.CommandeDeLui,
@@ -159,15 +158,18 @@ class Repo10OperationVentCouleur(
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
                 ancienRepo.delete(data)
-
             } catch (e: Exception) {
+                // Error handling
             }
         }
     }
 
+    fun getTestDate(): List<FCouleurVentOperationInfos> {
+        return emptyList()
+    }
+
     companion object {
         private const val TAG = "ColorOperation"
-
         fun String?.findData(repo: Repo10OperationVentCouleur) = repo.datasValue.find { it.keyID == this }
     }
 }

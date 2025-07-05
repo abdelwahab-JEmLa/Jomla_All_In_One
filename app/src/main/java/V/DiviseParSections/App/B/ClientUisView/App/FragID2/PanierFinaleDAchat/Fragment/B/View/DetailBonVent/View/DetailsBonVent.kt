@@ -61,7 +61,7 @@ fun DetailsBonVent(
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
 
     val fVentCouleurOperationRepository =
-        viewModel.uiStateCentralRepositorys.fVentCouleurOperationRepository
+        viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
     val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
 

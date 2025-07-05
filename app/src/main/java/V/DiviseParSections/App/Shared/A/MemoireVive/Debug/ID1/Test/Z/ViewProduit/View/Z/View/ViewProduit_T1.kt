@@ -52,7 +52,7 @@ fun ViewProduit_T1(
 
     val relatedVents by remember {
         derivedStateOf {
-            getter.fVentCouleurOperationRepository.datasValue
+            getter.repo10OperationVentCouleur.datasValue
                 .filter { it.parentBProduitInfosKeyId == productKeyId }
         }
     }

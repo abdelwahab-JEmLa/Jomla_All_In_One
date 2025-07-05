@@ -63,7 +63,7 @@ class AGetter(
     val iD2ClientRepository: Repo2Client,
     val id8BonVentRepository: Repo8BonVent,
 
-    val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
+    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     val kAchatRepository: KAchatCouleurOperationRepository,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
@@ -133,7 +133,7 @@ class AGetter(
 
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
-        val matchingOperation = fVentCouleurOperationRepository.datasValue.find { operation ->
+        val matchingOperation = repo10OperationVentCouleur.datasValue.find { operation ->
             operation.parentCouleurInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
         }
 
