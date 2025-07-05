@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +41,16 @@ fun TariffsButtonsSec7ID2(
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
-    val bonAchatList =
-        viewModel.getter.id8BonVentRepository.datasValue
+    val bonAchatList = viewModel.getter.id8BonVentRepository.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
+
+    val m1produitInfos by remember {
+        derivedStateOf {
+            viewModel.aCentral.getter.repoM1ProduitInfos.datasValue.find { it.id.toInt().toLong() == filterProductId }
+        }
+    }
 
     LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
 
@@ -53,15 +59,15 @@ fun TariffsButtonsSec7ID2(
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
 
-            // Execute the main logic first
             afficheButtons = false
             fermeDialog(latestTariffLocalData)
+
             viewModel.updateListRelativeVentCouleurPrixVent(
-                parentProduitOldId=filterProductId,
+                listFocusedM10OpeVentCouleurParPrixDifineur= viewModel.aCentral.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
+                m1produitInfos =m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )
 
-            // Show toast after logic execution
             currentToast = ToastData(
                 message = message,
                 type = ToastType.SUCCESS,

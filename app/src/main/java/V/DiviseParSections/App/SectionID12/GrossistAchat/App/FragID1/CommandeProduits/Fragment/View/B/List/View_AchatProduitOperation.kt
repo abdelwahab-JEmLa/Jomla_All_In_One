@@ -18,7 +18,7 @@ fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<KAchatCouleurOperation>>,
 ) {
-    val produit = viewModel.getter.bProduitInfosRepository.datasValue.find { it.keyID == groupeAchatProduit.key }
+    val produit = viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 
     if (produit != null) {
         Card {

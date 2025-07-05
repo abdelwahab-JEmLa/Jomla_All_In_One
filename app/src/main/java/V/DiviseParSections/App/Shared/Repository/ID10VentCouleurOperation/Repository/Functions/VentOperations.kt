@@ -10,8 +10,6 @@ class VentOperations(
 ) {
     val zAppComptRepositoryComposable = getter.id9AppComptRepository
 
-
-
     fun updateListRelativeVentCouleurPrixVent(
         produitKey: String?,
         newPrix: Double
@@ -31,7 +29,7 @@ class VentOperations(
 
     fun deleteVents(parentProduitOldId: Long) {
         val produitKey =
-            getter.bProduitInfosRepository.datasValue.find { it.id == parentProduitOldId }?.keyID
+            getter.repoM1ProduitInfos.datasValue.find { it.id == parentProduitOldId }?.keyID
         val ventCouleursDuProduitKey =
             fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
                 .filter { it.parentM1ProduitInfosKeyId == produitKey }

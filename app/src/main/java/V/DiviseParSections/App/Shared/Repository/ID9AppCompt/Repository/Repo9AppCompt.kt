@@ -141,6 +141,10 @@ data class Z_AppCompt(
     var dialogChoisireQuantityM1ProduitInfosKeyID: String = "null",
     var dialogChoisireQuantityM1ProduitInfosDebugName: String = "null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var focusedAuPrixDifineurM1ProduitInfosKeyId: String = "null",
+    var focusedAuPrixDifineurM1ProduitInfosDebugInfos: String = "null",
+    //------------------------------------------------------------------------------------------------------------------------------------------------
 
     val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {

@@ -310,7 +310,7 @@ private fun CreateNewClientIcon(
             viewModel.setter.addNewM2ClientInfos(newClient)
             viewModel.setter.addNewM8BonVent(updatedDefaultOnVentID8BonVentEtAdd)
             if (updatedAppCompt != null) {
-                viewModel.setter.updateFocuseM9AppCompt(updatedAppCompt)
+                viewModel.setter.updateFocuceM9AppCompt(updatedAppCompt)
             }
 
             onClientSelectedToToast(newClient)
@@ -369,7 +369,7 @@ fun ClientSearchItem(
                 viewModel.setter.addNewM8BonVent(updatedDefaultId8BonVent)
 
                 if (newCurrentM9AppCompt != null) {
-                    viewModel.setter.updateFocuseM9AppCompt(newCurrentM9AppCompt)
+                    viewModel.setter.updateFocuceM9AppCompt(newCurrentM9AppCompt)
                 }
 
                 onClick()

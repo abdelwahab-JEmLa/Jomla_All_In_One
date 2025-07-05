@@ -47,7 +47,7 @@ class B1CouleurOuGoutProduitDataBaseTestDatasViewModel(
 
 
     private fun genereDatasDepuitParentWithCount(onProgress: (Int) -> Unit): Int {
-        val products = a_CentralDatasHandlerProtoJuin9.bProduitInfosRepository.datasValue
+        val products = a_CentralDatasHandlerProtoJuin9.repoM1ProduitInfos.datasValue
         var totalColorVariants = 0
 
         // Clear existing data first

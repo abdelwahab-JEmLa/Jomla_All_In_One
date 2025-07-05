@@ -165,7 +165,7 @@ fun DetailsBonVent(
                         printHandler.printVentReceipt(
                             context = context,
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
-                            bProduitInfosRepository = viewModel.uiStateCentralRepositorys.bProduitInfosRepository,
+                            bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
                             b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
                             client = fClientRepository.onVentId2ClientInfos,
                             scope = scope

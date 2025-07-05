@@ -33,7 +33,7 @@ fun ViewProduit_T1(
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
 ) {
     val getter = viewModel.aCentral.getter
-    val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.bProduitInfosRepository
+    val bProduitDataBase_SubClassFunctionality = viewModel.aCentral.getter.repoM1ProduitInfos
     val b1CouleurOuGoutProduitDataBaseRepository =
         viewModel.b1CouleurOuGoutProduitDataBaseRepository
     val productKeyId = product.keyID

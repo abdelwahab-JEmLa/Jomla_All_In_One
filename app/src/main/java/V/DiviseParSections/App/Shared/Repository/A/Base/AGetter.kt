@@ -54,7 +54,7 @@ class AGetter(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
-    val bProduitInfosRepository: RepoM1ProduitInfos,
+    val repoM1ProduitInfos: RepoM1ProduitInfos,
     val repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
@@ -147,7 +147,7 @@ class AGetter(
         }
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        bProduitInfosRepository.datasValue.filteredParCatalogueBsonId()
+        repoM1ProduitInfos.datasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {

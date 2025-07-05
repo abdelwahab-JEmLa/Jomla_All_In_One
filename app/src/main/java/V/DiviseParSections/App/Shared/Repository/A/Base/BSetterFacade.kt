@@ -3,22 +3,25 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import com.google.firebase.database.DatabaseReference
 
 class BSetterFacade(
     private val getter: AGetter,
+
     val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
     private val produitOperations: ProduitOperations,
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
+    private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+
     private val ventOperations: VentOperations,
 ) {
     val id8BonVentRepository = getter.id8BonVentRepository
@@ -76,25 +79,6 @@ class BSetterFacade(
         }
     }
 
-    fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
-        id8BonVent: M8BonVent,
-        id9AppComptRepository: Repo9AppCompt
-    ) {
-        val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())
-        val currentAppCompt = id9AppComptRepository.currentAppCompt
-
-        id8BonVentRepository.upsert(newData)
-
-        currentAppCompt?.copy(
-            onVentM8BonVentKey = newData.keyID,
-            onVentM8BonVentDebugInfos = newData.keyID,
-        )?.let {
-            id9AppComptRepository.upsert(
-                it
-            )
-        }
-    }
-
     fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: M10OperationVentCouleur? = null,
         produit: ArticlesBasesStatsTable,
@@ -111,8 +95,29 @@ class BSetterFacade(
         )
     }
 
-    fun updateListRelativeVentCouleurPrixVent(produitKey: String?, newPrix: Double) =
-        ventOperations.updateListRelativeVentCouleurPrixVent(produitKey, newPrix)
+    fun updateListRelativeVentCouleurPrixVent(
+        listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>,
+        m1produitInfos: ArticlesBasesStatsTable?,
+        newPrix: Double
+    ) {
+        if (m1produitInfos != null) {
+            ventOperations.updateListRelativeVentCouleurPrixVent(m1produitInfos.keyID, newPrix)
+        }
+        updateProvisoirePrixVentAvecFocusedVarsHandlerFacade(
+            listFocusedM10OpeVentCouleurParPrixDifineur,
+            newPrix
+        )
+    }
+
+    fun updateProvisoirePrixVentAvecFocusedVarsHandlerFacade(
+        listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>,
+        newPrix: Double
+    ) {
+        listFocusedM10OpeVentCouleurParPrixDifineur
+            .map {
+                repo10OperationVentCouleur.addOrUpdateData(it.copy(provisoireMonPrix = newPrix))
+            }
+    }
 
     fun deleteVents(parentProduitOldId: Long) = ventOperations.deleteVents(parentProduitOldId)
 

@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
@@ -37,7 +39,7 @@ data class UiState(
 )
 
 class TariffsButtonsViewModelSec7ID2(
-    aCentral: ACentralFacade,
+   val aCentral: ACentralFacade,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
@@ -74,10 +76,14 @@ class TariffsButtonsViewModelSec7ID2(
         loadTariffs()
     }
 
-    fun updateListRelativeVentCouleurPrixVent(parentProduitOldId: Long, newPrix: Double): Unit {
-         val produitKey =  getter.bProduitInfosRepository.datasValue.find { it.id==parentProduitOldId }?.keyID
-          setter.updateListRelativeVentCouleurPrixVent(produitKey,newPrix)
+    fun updateListRelativeVentCouleurPrixVent(
+        m1produitInfos: ArticlesBasesStatsTable?,
+        newPrix: Double,
+        listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>
+    ): Unit {
+          setter.updateListRelativeVentCouleurPrixVent(listFocusedM10OpeVentCouleurParPrixDifineur,m1produitInfos,newPrix)
     }
+
 
     private fun loadTariffs() {
         loadingJob?.cancel()

@@ -13,17 +13,10 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
-import kotlinx.coroutines.delay
 
 class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars)
 
@@ -75,6 +68,17 @@ class GetterFocusedVars(
         }
     }
 
+    val focusedM1ProduitInfosAuPrixDifineur by derivedStateOf {
+        repoM1ProduitInfos.datasValue.find {
+            it.keyID == (currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId ?: "")
+        }
+    }
+    val listFocusedM10OpeVentCouleurParPrixDifineur by derivedStateOf {
+        repo10OperationVentCouleur.datasValue.filter {
+            it.parentM8BonVentKeyId == (focusedM1ProduitInfosAuPrixDifineur?.keyID ?: "")
+        }
+    }
+
     val ouvertDialogChoixQuantityPourProduitM1ProduitInfos by derivedStateOf {
         repoM1ProduitInfos.datasValue.find {
             it.keyID == (currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
@@ -103,48 +107,6 @@ class GetterFocusedVars(
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
                 modifier.getSemanticsTag(key, value, index+6)
-            }
-        }
-    }
-}
-
-object DebugsTests {
-    const val TAG = "DebugsTests"
-
-    @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0): Modifier {
-        log(nomVal, index, data)
-
-        return this.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
-        }
-    }
-
-    private fun log(nomVal: String, index: Int, data: Any?) {
-        val logTag = "Debug_${nomVal}_${index + 1}"
-        val dataString = when (data) {
-            null -> "null"
-            is String -> data
-            is Number -> data.toString()
-            is Boolean -> data.toString()
-            else -> data.toString()
-        }
-
-        Log.d(TAG, "[$logTag] $nomVal = $dataString")
-    }
-
-
-    @Composable
-    fun DebugTestsPerformInitialSearch(
-        enabled: Boolean,
-        focusRequester: FocusRequester,
-        onSearchQueryChange: (String) -> Unit
-    ) {
-        LaunchedEffect(enabled) {
-            if (enabled) {
-                delay(2000)
-                onSearchQueryChange("liya")
-                focusRequester.requestFocus()
             }
         }
     }
@@ -182,7 +144,7 @@ class SetterFocusedVars(
         repo9AppCompt = repo9AppCompt,
     )
 
-    fun updateFocuseM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
+    fun updateFocuceM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
     
     fun ouvrireM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) = updateCurrentAppComptDialogProduit(
         getterFocusedVars,

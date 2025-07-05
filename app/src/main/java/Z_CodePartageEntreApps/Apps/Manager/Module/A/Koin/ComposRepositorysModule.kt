@@ -59,7 +59,7 @@ val composRepositorysModule = module {
         )
     }
 
-    single { BSetterFacade(get(), get(), get(), get(),get(),get(),) }
+    single { BSetterFacade(get(), get(), get(), get(),get(),get(),get(),) }
     single { ModulesCentral(get(), get(), get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }
