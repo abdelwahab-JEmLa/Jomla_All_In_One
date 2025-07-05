@@ -60,25 +60,10 @@ fun ViewVentCouleur_T1(
     val existingVent by remember(produit?.keyID, m3CouleurProduitInfos.key) {
         derivedStateOf { viewModel.calculateExistingVent(produit, m3CouleurProduitInfos) }
     }
-
-    val appCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
-    val onVentData = viewModel.aCentral.getter.id8BonVentRepository.onVentId8BonVent
-
     val haptic = LocalHapticFeedback.current
 
     fun handelUiAction(haptic: HapticFeedback) {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-    }
-
-    val defaultVent by remember {
-        derivedStateOf {
-            onVentData.let {
-                viewModel.createDefaultVent(
-                    m3CouleurProduitInfos, produit, appCompt,
-                    it
-                )
-            }
-        }
     }
 
     val ventUIState = remember(existingVent, uiState) {
@@ -146,7 +131,7 @@ fun ViewVentCouleur_T1(
                                         setter.updateFocuseM9AppCompt(
                                             getter.currentM9AppCompt!!.copy(
                                                 onVentM3CouleurProduitDebugInfos = onVentM3CouleurProduitInfos.debugInfos,
-                                                onVentM8BonVentKey = onVentM3CouleurProduitInfos.keyID
+                                                onVentM3CouleurProduitInfosKeyID = onVentM3CouleurProduitInfos.keyID
                                             )
                                         )
                                     }
@@ -161,7 +146,6 @@ fun ViewVentCouleur_T1(
                             contentScale = ContentScale.Crop,
                             imageSize = DpSize(size, size),
                             colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
-
                             )
                     }
 
@@ -171,16 +155,7 @@ fun ViewVentCouleur_T1(
                             colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
                                 handelUiAction(haptic)
-                                val vent = existingVent ?: defaultVent
-                                if (existingVent == null) {
-                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
-                                }
-                                // Update the focused state to show dialog for this specific color
-                                setter.updateFocuseM9AppCompt(
-                                    getter.currentM9AppCompt!!.copy(
-                                        onVentM3CouleurProduitInfosKeyID = m3CouleurProduitInfos.key
-                                    )
-                                )
+
                             }
                         )
                     }
