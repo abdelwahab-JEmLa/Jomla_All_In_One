@@ -36,7 +36,9 @@ fun TariffButtonItem(
     onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
     nombreUnite: Int= 10,
     context: Context,
-) {
+) {       //<--
+//TODO(1): regle pour que type prix de base a n edite prix comme celui de finie avec si le - button va prendre le  prix au -0 alore chage le buton au outlined pour modifie 
+//par clavie 
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 

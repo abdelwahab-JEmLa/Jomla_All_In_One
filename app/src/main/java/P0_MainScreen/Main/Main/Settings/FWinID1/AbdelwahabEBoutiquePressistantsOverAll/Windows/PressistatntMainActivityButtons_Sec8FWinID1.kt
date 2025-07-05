@@ -218,13 +218,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)    //<--
-                //TODO(2.C Relative Au Todo(1):
-                //... ici ca affiche      [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
-                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
-                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
-                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
-                //                  [Debug_cLenceDepuitFragmentsSepecialicteDeVents_1] cLenceDepuitFragmentsSepecialicteDeVents = true
+                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)
                 ,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

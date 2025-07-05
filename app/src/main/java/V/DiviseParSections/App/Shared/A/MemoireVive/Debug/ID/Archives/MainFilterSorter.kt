@@ -6,8 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import androidx.compose.runtime.Stable
 
 @Stable
-class MainFilterSorter(        //<--
-//TODO(1): Class "MainFilterSorter" is never used
+class MainFilterSorter(
     private val products: List<ArticlesBasesStatsTable>,
     private val categories: List<CategoriesTabelle>
 ) {

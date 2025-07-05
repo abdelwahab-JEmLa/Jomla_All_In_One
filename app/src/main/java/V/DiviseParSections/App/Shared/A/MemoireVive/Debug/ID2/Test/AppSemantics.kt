@@ -92,7 +92,6 @@ fun TransactionItem(transaction: Transaction, clientId: String) {
         }
     }
 
-    // TODO(1): Perform click quand tout s'affiche
     LaunchedEffect(Unit) {
         // Simuler un click automatique après affichage (par exemple pour la première transaction)
         if (transaction.id == "txn_001") {

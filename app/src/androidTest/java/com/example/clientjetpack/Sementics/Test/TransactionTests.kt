@@ -4,8 +4,6 @@ package com.example.clientjetpack.Sementics.Test
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.AppSemantics
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ClientTransactionsList
 import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.hasSemantics  //->
-//TODO(FIXME):Fix erreur Unresolved reference: hasSemantics
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodes
 import androidx.compose.ui.test.onNode
