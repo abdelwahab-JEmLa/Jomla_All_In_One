@@ -81,7 +81,6 @@ fun ImageDisplayerGlide_Sec2FragID2(
                     colorFilter = colorFilter, // Apply the colorFilter here
                     modifier = Modifier
                         .clickable {
-                            viewModel.showQuantityDialog(ventKey)
                             onClickToOpenWindow()
                         }
                         .fillMaxSize()

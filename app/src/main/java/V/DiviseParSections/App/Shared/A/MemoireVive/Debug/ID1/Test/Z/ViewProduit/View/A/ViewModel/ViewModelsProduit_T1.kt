@@ -1,12 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +25,6 @@ class ViewModelsProduit_T1(
 
     data class UiState(
         val filterNonTrouve: Boolean = true,
-        val quantityDialogStates: Map<String, Boolean> = emptyMap(),
         val productDialogStates: Map<String, Boolean> = emptyMap()
     )
 
@@ -44,13 +40,6 @@ class ViewModelsProduit_T1(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun showQuantityDialog(ventKey: String) = _uiState.update {
-        it.copy(quantityDialogStates = it.quantityDialogStates + (ventKey to true))
-    }
-
-    fun hideQuantityDialog(ventKey: String) = _uiState.update {
-        it.copy(quantityDialogStates = it.quantityDialogStates + (ventKey to false))
-    }
 
     fun showProductDialog(productKey: String) = _uiState.update {
         it.copy(productDialogStates = it.productDialogStates + (productKey to true))
@@ -66,7 +55,6 @@ class ViewModelsProduit_T1(
         return ViewVentUIState(
             ventKey = ventKey,
             quantity = existingVent?.quantityAchete ?: 0,
-            showDialog = ventKey.isNotEmpty() && (uiState.quantityDialogStates[ventKey] ?: false),
             isRemoved = isRemoved,
             itemAlpha = if (isRemoved) 0.4f else 1.0f,
             colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
@@ -78,24 +66,6 @@ class ViewModelsProduit_T1(
             it.parentM1ProduitInfosKeyId == produit?.keyID && it.parentM3CouleurProduitInfosKeyID == color.key
         }
 
-    fun createDefaultVent(color: M3CouleurProduitInfos, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
-        M10OperationVentCouleur(
-            keyID = "vent_${color.key}_${produit?.keyID}",
-            parentZAppComptID = extractField(appCompt, "keyID") ?: "Non Definie",
-            parentDebugInfosID9AppCompt = extractField(appCompt, "nom") ?: "Non Definie",
-            parentHVentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
-            parentDebugInfosID7VentPeriod = ParametresAppComptNonSaved().debugNameId7VentPeriod,
-            parentM8BonVentKeyId = extractField(onVentData, "keyID") ?: "",
-            parentM8BonVentDebugInfos = extractField(onVentData, "nomClientConcerned") ?: "",
-            parentM1ProduitInfosKeyId = produit?.keyID ?: "",
-            parentM1ProduitDebugInfos = produit?.nom ?: "Non Definie",
-            parentM3CouleurProduitInfosKeyID = color.key,
-            parentBProduitNomDebug = produit?.nom ?: "",
-            parentProduitInfosOldId = produit?.id ?: 0L,
-            parentClientName = extractField(appCompt, "nom") ?: "Non Definie",
-            quantityAchete = 0,
-            etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.CreeSlote
-        )
 
     private fun extractField(obj: Any?, fieldName: String): String? = try {
         obj?.javaClass?.getDeclaredField(fieldName)?.apply { isAccessible = true }?.get(obj) as? String

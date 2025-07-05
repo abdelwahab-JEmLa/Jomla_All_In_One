@@ -94,7 +94,6 @@ fun ViewVentCouleur_T1(
 
     val onVentM3CouleurProduitInfos = getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
 
-    // Fixed: Check if this component should show the dialog based on focused state
     val shouldShowDialog by remember(onVentM3CouleurProduitInfos, m3CouleurProduitInfos.key) {
         derivedStateOf {
             onVentM3CouleurProduitInfos?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
@@ -123,7 +122,7 @@ fun ViewVentCouleur_T1(
                                     setter.updateFocuseM9AppCompt(
                                         getter.currentM9AppCompt!!.copy(
                                             onVentM3CouleurProduitDebugInfos = opVent.debugInfos,
-                                            onVentM8BonVentKey = opVent.keyID
+                                            onVentM3CouleurProduitInfosKeyID = opVent.keyID
                                         )
                                     )
                                 } ?: run {
