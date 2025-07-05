@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -110,7 +110,9 @@ fun QuantityDisplay(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val onVentM10OperationVentCouleurListFiltered = viewModel.focusedVarsHandlerFacade.getter
+    val getter = viewModel.focusedVarsHandlerFacade.getter
+
+    val onVentM10OperationVentCouleurListFiltered = getter
         .onVentM10OperationVentCouleurListFiltered
 
     val totalQuantity =
@@ -127,8 +129,7 @@ fun QuantityDisplay(
                 viewModel.showProductDialog(produit.keyID)
                 onClick()
             }
-            .getSemanticsTag("productDialogStates",uiState.productDialogStates)
-            .getSemanticsTag("produit",produit,1)
+            .getSemanticsTagFocucedVars(getter)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),

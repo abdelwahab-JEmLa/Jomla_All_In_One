@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -30,13 +31,13 @@ class GetterFocusedVars(
 ) {
     val currentM9AppCompt by derivedStateOf { repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" } }
 
-    val onVentId8BonVent by derivedStateOf {
+    val onVentM8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find {
             it.keyID == repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
-        } ?: defaultId8BonVent
+        } ?: defaultM8BonVent
     }
 
-    val defaultId8BonVent by derivedStateOf {
+    val defaultM8BonVent by derivedStateOf {
         GBonVent(
             nomClientConcerned = "Default Data",
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
@@ -47,24 +48,30 @@ class GetterFocusedVars(
         )
     }
 
-    val onVentId2ClientInfos by derivedStateOf {
+    val onVentM2ClientInfos by derivedStateOf {
         Repo2Client.datasValue.find {
-            it.keyID == onVentId8BonVent.parentM2ClientInfosKey
+            it.keyID == onVentM8BonVent.parentM2ClientInfosKey
         }
     }
 
     val onVentM10OperationVentCouleurListFiltered by derivedStateOf {
         Repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == currentM9AppCompt?.onVentM8BonVentKey
+            it.parentM8BonVentKeyId == onVentM8BonVent.keyID
         }
     }
+    companion object {
+        @SuppressLint("ModifierFactoryUnreferencedReceiver")
+        fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {
+            val map = buildMap<String, Any> {
+                put("currentM9AppCompt", getter.currentM9AppCompt ?: "null")
+                put("onVentM8BonVent", getter.onVentM8BonVent)
+                put("onVentM2ClientInfos", getter.onVentM2ClientInfos ?: "null")
+                put("onVentM10OperationVentCouleurListSize", getter.onVentM10OperationVentCouleurListFiltered.size)
+            }
 
-    @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getModifierAcSemantics(): Modifier {
-        return Modifier.semantics {
-            set(
-                SemanticsPropertyKey("1D == [currentM9AppCompt]"), currentM9AppCompt
-            )
+            return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
+                modifier.getSemanticsTag(key, value, index)
+            }
         }
     }
 }

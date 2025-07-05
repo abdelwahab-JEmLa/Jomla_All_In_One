@@ -69,8 +69,8 @@ fun ID4ClientSearchButton(
 
     var isTextCollapsed by remember { mutableStateOf(false) }
 
-    val onVentId8BonVent = getter.onVentId8BonVent
-    val defaultId8BonVent = getter.defaultId8BonVent
+    val onVentId8BonVent = getter.onVentM8BonVent
+    val defaultId8BonVent = getter.defaultM8BonVent
 
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -127,7 +127,7 @@ fun ID4ClientSearchButton(
             }
 
             if (showLabels) {
-                val nomClient = getter.onVentId2ClientInfos?.nom ?: ""
+                val nomClient = getter.onVentM2ClientInfos?.nom ?: ""
 
                 Text(
                     text = if (isTextCollapsed) {
@@ -344,7 +344,7 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
 
-    val updatedDefaultId8BonVent = viewModel.getterFocusedVarsHandlerFacade.defaultId8BonVent.copy(
+    val updatedDefaultId8BonVent = viewModel.getterFocusedVarsHandlerFacade.defaultM8BonVent.copy(
         debugInfos = client.nom,
         parentM2ClientInfosKey = client.keyID,
         parentM2ClientInfosDebugName = client.nom
