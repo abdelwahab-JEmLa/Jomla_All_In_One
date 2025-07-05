@@ -7,6 +7,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App._0.Navigation.Screen
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -58,7 +61,7 @@ import kotlin.math.roundToInt
 fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
-    cLenceDepuitDialogeAchate: Boolean = false,
+    cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
     onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
@@ -83,6 +86,12 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val currentSelectedCatalogueId =
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
+
+    val fragmentNavigationHandler = viewModel.central.modulesCentral.fragmentNavigationHandler
+    val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
+
+    // Check if current fragment is FragmentProduitFastSearchDialog
+    val itsFragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -202,21 +211,34 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 modifier = Modifier.align(Alignment.BottomStart),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+
                 if (showButtons) {
-                    Button1(
-                        appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                        showLabels = showLabels,
-                    ) {
-                        showCatalogueDialog = true
+                    if (!itsFragmentProduitFastSearchDialog) {
+                        B1CataloguesAffiche(
+                            appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+                            showLabels = showLabels,
+                        ) {
+                            showCatalogueDialog = true
+                        }
+
+                        ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
+
+                        if (!cLenceDepuitFragmentsSepecialisteDeVents) {
+                            ID3RecordingButton(
+                                isRecording,
+                                showLabels,
+                                displayTime,
+                                remainingClients
+                            ) {
+                                showAlertDialog = true
+                            }
+                        }
+
                     }
 
-                    ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
-
                     ID4ClientSearchButton(
-                        viewModel=viewModel,
-                        uiState=uiState,
+                        uiState = uiState,
                         hClientRepository = uiState.hClientRepository,
-                        zAppComptRepositoryComposable = uiState.zAppComptRepositoryComposable,
                         showLabels = showLabels,
                         onClientSelectedToToast = { selectedClient ->
                             currentToast = ToastData(
@@ -224,22 +246,14 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 type = ToastType.SUCCESS,
                                 duration = 2000L
                             )
-                        }
+                        },
+                        viewModel = viewModel
                     )
 
-                    if (!cLenceDepuitDialogeAchate) {
-                        ID3RecordingButton(
-                            isRecording,
-                            showLabels,
-                            displayTime,
-                            remainingClients
-                        ) {
-                            showAlertDialog = true
-                        }
-                    }
                 }
 
                 TariffsButtonsSec7ID2(
+                    cLenceDepuitFragmentsSepecialicteDeVents = cLenceDepuitFragmentsSepecialisteDeVents||itsFragmentProduitFastSearchDialog,
                     showLabels = showLabels,
                     filterProductId = idProduitActuelle,
                     fermeDialog = {
@@ -252,9 +266,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             duration = 1500L
                         )
                     },
-
-                    cLenceDepuitDialogeAchate = cLenceDepuitDialogeAchate,
-                    onFermDialogeAvecAnllation = { onClickAnulationButton()
+                    onFermDialogeAvecAnllation = {
+                        onClickAnulationButton()
                         currentToast = ToastData(
                             message = "تم الإلغاء",
                             type = ToastType.INFO,
@@ -264,23 +277,45 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 )
             }
         }
-        // Show toast after logic execution
-        currentToast = ToastData(
-            message = "تم الإلغاء",
-            type = ToastType.INFO,
-            duration = 1500L
-        )
+
+        currentToast?.let { toast ->
+            LaunchedEffect(toast) {
+                delay(toast.duration)
+                currentToast = null
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+                    .background(
+                        color = when (toast.type) {
+                            ToastType.SUCCESS -> Color.Green
+                            ToastType.INFO -> Color.Blue
+                            else -> Color.Gray
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = toast.message,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun Button1(
+fun B1CataloguesAffiche(
     appComptComposeRepositoryProtoJuin17: Repo9AppCompt,
     showLabels: Boolean,
     onClickPourAfficheDialog: () -> Unit = {}
 ) {
     val catalogues = B4CatalogueCategoriesRepository()
-    val catalogueId = appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+    val catalogueId =
+        appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
     val buttonAFficheAuCata = catalogues.find { it.key == catalogueId }
 
     // Get the catalogue name and color, with fallbacks

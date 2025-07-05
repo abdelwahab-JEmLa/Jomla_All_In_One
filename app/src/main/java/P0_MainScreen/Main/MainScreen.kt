@@ -4,7 +4,6 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.MainFastSearchProduitPourVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -62,9 +61,6 @@ fun MainScreen(
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
     val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
-
-    val tag = "--${Z_AppCompt.keyModel}-${parametresAppComptNonSaved.keyIdId9AppComptInfos}" +
-            "--${Z_AppCompt.keyModelValID7VentParent}-${parametresAppComptNonSaved.keyIdId7VentPeriod}"
 
     val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
 
@@ -182,7 +178,6 @@ fun MainScreen(
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        // WiFi Connection Card
                         AnimatedVisibility(
                             visible = isDisplayedConnexionWifiVisible
                                     ||
@@ -240,7 +235,6 @@ fun MainScreen(
                     }
                 }
 
-                // Navigation Bar with FAB - only show if app screen is not hidden
                 AnimatedVisibility(
                     visible = (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
                     modifier = Modifier.align(Alignment.BottomCenter)
@@ -317,6 +311,7 @@ fun MainScreen(
                         panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
+
                 if(isHostPhone) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }

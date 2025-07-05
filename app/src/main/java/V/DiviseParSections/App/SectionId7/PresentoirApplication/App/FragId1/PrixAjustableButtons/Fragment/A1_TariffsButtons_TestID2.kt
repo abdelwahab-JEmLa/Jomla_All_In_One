@@ -31,12 +31,12 @@ fun TariffsButtonsSec7ID2(
     filterProductId: Long = 0,
     fermeDialog: (D_TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
-    cLenceDepuitDialogeAchate: Boolean = false,
+    cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
         viewModel.getter.id8BonVentRepository.onVentId8BonVent
 
-    var afficheButtons by remember { mutableStateOf(cLenceDepuitDialogeAchate) }
+    var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 

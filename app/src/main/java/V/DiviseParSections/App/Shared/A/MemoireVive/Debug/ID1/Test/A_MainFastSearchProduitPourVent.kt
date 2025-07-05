@@ -48,7 +48,6 @@ fun MainFastSearchProduitPourVent(
 
     val focusRequester = remember { FocusRequester() }
 
-    // Local state for immediate UI updates
     var localSearchText by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -56,14 +55,11 @@ fun MainFastSearchProduitPourVent(
         focusRequester.requestFocus()
     }
 
-    // Debounce effect - triggers search after user stops typing
     LaunchedEffect(localSearchText) {
         if (localSearchText.isNotEmpty()) {
-            delay(500) // 500ms debounce delay
-            // Only update the viewModel's search text after the delay
+            delay(500)
             viewModel.onSearchTextChange(localSearchText)
         } else {
-            // Clear search immediately when text is empty
             viewModel.onSearchTextChange("")
         }
     }

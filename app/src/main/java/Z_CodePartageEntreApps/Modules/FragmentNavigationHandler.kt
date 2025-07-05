@@ -3,17 +3,21 @@ package Z_CodePartageEntreApps.Modules
 import V.DiviseParSections.App._0.Navigation.Screen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class FragmentNavigationHandler {
-    // Use late initialization for the NavController
     private var _navController: NavController? = null
 
-    // Method to upsert the nav controller when it's available
+    // Track the current active fragment
+    private val _currentFragment = MutableStateFlow<Screen?>(null)
+    val currentFragment: StateFlow<Screen?> = _currentFragment.asStateFlow()
+
     fun setNavController(navController: NavController) {
         _navController = navController
     }
 
-    // Navigation configuration data class
     data class NavigationConfig(
         val popUpToStart: Boolean = true,
         val saveState: Boolean = true,
@@ -23,7 +27,6 @@ class FragmentNavigationHandler {
         val popUpToRoute: String? = null
     )
 
-    // Default navigation configurations
     companion object {
         val DEFAULT_CONFIG = NavigationConfig()
         val OVERLAY_CONFIG = NavigationConfig(popUpToStart = false, saveState = false, restoreState = false)
@@ -36,6 +39,14 @@ class FragmentNavigationHandler {
             is String -> screen
             else -> screen.toString()
         }
+
+        // Update current fragment state
+        val screenEnum = when (screen) {
+            is Screen -> screen
+            is String -> getAllScreens().find { it.route == screen }
+            else -> null
+        }
+        _currentFragment.value = screenEnum
 
         _navController?.navigate(route) {
             if (config.launchSingleTop) {
@@ -68,8 +79,23 @@ class FragmentNavigationHandler {
         navigateTo(Screen.NewFragTest, CART_CONFIG)
     }
 
-    // Added missing method for TestProduitFastSearchDialog
     fun navigateToTestProduitFastSearchDialog() {
-        navigateTo(Screen.TestProduitFastSearchDialog, OVERLAY_CONFIG)
+        navigateTo(Screen.FragmentProduitFastSearchDialog, OVERLAY_CONFIG)
+    }
+
+    // Helper function to get all screen instances
+    private fun getAllScreens(): List<Screen> {
+        return listOf(
+            Screen.A_ClientsLocationGps,
+            Screen.FacadePresentoireProduits,
+            Screen.EditDatabaseWithCreateNewArticles,
+            Screen.SoldCart,
+            Screen.CommandeProduits,
+            Screen.TravailleTempRecorder,
+            Screen.NewFragTest,
+            Screen.DialogTests,
+            Screen.ToggleFab,
+            Screen.FragmentProduitFastSearchDialog
+        )
     }
 }

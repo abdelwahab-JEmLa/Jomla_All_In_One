@@ -382,7 +382,7 @@ fun MainUi(
 
                 // Action buttons
                 PressistatntMainActivityButtons_Sec8FWinID1(
-                    cLenceDepuitDialogeAchate = true,
+                    cLenceDepuitFragmentsSepecialisteDeVents = true,
                     onPourFermeWindows = { buttonResult ->
                         updateState(
                             viewModelInitApp = viewModelInitApp,

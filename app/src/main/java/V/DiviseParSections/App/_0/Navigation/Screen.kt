@@ -84,10 +84,10 @@ sealed class Screen(
         color = Color(0xFF2196F3)
     )
 
-    data object TestProduitFastSearchDialog : Screen(
-        route = "TestProduitFastSearchDialog",
+    data object FragmentProduitFastSearchDialog : Screen(
+        route = "FragmentProduitFastSearchDialog",
         icon = Icons.Default.Search,
-        title = "TestProduitFastSearchDialog",
+        title = "FragmentProduitFastSearchDialog",
         color = Color(0xFF009688)
     )
 }

@@ -236,7 +236,7 @@ fun AppNavHost(
                 }
                 // Test fragment screen (empty implementation)
                 composable(
-                    route = Screen.TestProduitFastSearchDialog.route,
+                    route = Screen.FragmentProduitFastSearchDialog.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
                     Box(modifier = Modifier.fillMaxSize()) {

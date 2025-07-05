@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ViewModelPresistantButtonsSec8FWinID1(
-    central: ACentralFacade,
+    val  central: ACentralFacade,
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
     val getter=central.getter

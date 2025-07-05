@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.L
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,7 +57,6 @@ import kotlinx.coroutines.delay
 fun ID4ClientSearchButton(
     uiState: ViewModelPresistantButtonsSec8FWinID1.UiState,
     hClientRepository: Repo2Client,
-    zAppComptRepositoryComposable: Repo9AppCompt,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
     onClientSelectedToToast: (HClientInfos) -> Unit = {},
