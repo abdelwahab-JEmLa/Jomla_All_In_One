@@ -62,11 +62,13 @@ fun ViewVentCouleur_T1(
     val haptic = LocalHapticFeedback.current
 
     val defaultVent by remember {
-        derivedStateOf { onVentData?.let {
-            viewModel.createDefaultVent(color, produit, appCompt,
-                it
-            )
-        } }
+        derivedStateOf {
+            onVentData.let {
+                viewModel.createDefaultVent(color, produit, appCompt,
+                    it
+                )
+            }
+        }
     }
 
     val ventUIState = remember(existingVent, uiState) {
@@ -101,16 +103,13 @@ fun ViewVentCouleur_T1(
                             imageSize = DpSize(size, size),
                             colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val vent = existingVent ?: defaultVent
                                 if (existingVent == null) {
-                                    if (vent != null) {
-                                        viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
-                                    }
+                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
                                 }
-                                if (vent != null) {
-                                    viewModel.showQuantityDialog(vent.keyID)
-                                }
+                                viewModel.showQuantityDialog(vent.keyID)
+
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             }
                         )
                     }
@@ -122,13 +121,9 @@ fun ViewVentCouleur_T1(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val vent = existingVent ?: defaultVent
                                 if (existingVent == null) {
-                                    if (vent != null) {
-                                        viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
-                                    }
+                                    viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
                                 }
-                                if (vent != null) {
-                                    viewModel.showQuantityDialog(vent.keyID)
-                                }
+                                viewModel.showQuantityDialog(vent.keyID)
                             }
                         )
                     }
