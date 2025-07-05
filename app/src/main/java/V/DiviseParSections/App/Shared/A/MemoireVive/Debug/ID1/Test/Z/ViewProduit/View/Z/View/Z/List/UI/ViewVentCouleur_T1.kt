@@ -35,8 +35,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -87,11 +85,6 @@ fun ViewVentCouleur_T1(
 
     Card(
         modifier = Modifier
-            .semantics(mergeDescendants = true) {
-                set(SemanticsPropertyKey("1Debug== Couleur "), color)
-                set(SemanticsPropertyKey("1 relativeVent"), existingVent ?: defaultVent)
-                set(SemanticsPropertyKey("4 onVentData"), onVentData)
-            }
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (existingVent?.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f)
@@ -101,24 +94,28 @@ fun ViewVentCouleur_T1(
             .padding(5.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 when (color.aAffiche) {
+
                     B1CouleurOuGoutProduitDataBase.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
-                            ventKey = ventUIState.ventKey,
-                            modifier = Modifier.size(size),
-                            imageFile = imageFile,
-                            colorName = color.nomCouleurStrSiSonImageDispo,
-                            contentScale = ContentScale.Crop,
-                            imageSize = DpSize(size, size),
-                            colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
+
                                 val vent = existingVent ?: defaultVent
+
                                 if (existingVent == null) {
                                     viewModel.fVentCouleurOperationRepository.addOrUpdateData(vent)
                                 }
                                 viewModel.showQuantityDialog(vent.keyID)
 
                                 handelUiAction(haptic)
-                            }
+                            },
+                            modifier = Modifier.size(size),
+                            ventKey = ventUIState.ventKey,
+                            imageFile = imageFile,
+                            colorName = color.nomCouleurStrSiSonImageDispo,
+                            contentScale = ContentScale.Crop,
+                            imageSize = DpSize(size, size),
+                            colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
+
                         )
                     }
 

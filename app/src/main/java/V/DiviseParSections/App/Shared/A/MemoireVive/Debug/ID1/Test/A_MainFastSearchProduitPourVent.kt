@@ -146,8 +146,8 @@ fun MainFastSearchProduitPourVent(
                                 // Update current app account if available
                                 uiState.zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
                                     val updatedAppCompt = appCompt.copy(
-                                        onVentID1ProduitInfosKeyID = newProduit.keyID,
-                                        onVentID1ProduitInfosDebugName = newProduit.nom
+                                        onVentM1ProduitInfosKeyID = newProduit.keyID,
+                                        onVentM1ProduitInfosDebugName = newProduit.nom
                                     )
                                     uiState.zAppComptRepositoryComposable.upsert(updatedAppCompt)
                                 }

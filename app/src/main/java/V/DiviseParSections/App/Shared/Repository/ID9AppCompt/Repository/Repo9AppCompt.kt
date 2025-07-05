@@ -127,9 +127,12 @@ data class Z_AppCompt(
     var onVentM8BonVentKey: String = "",
     var onVentM8BonVentDebugInfos: String = "",
 
-    var onVentID1ProduitInfosKeyID: String = "",
-    var onVentID1ProduitInfosDebugName: String = "",
+    var onVentM1ProduitInfosKeyID: String = "",
+    var onVentM1ProduitInfosDebugName: String = "",
 
+    //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var onVentM3CouleurProduitInfosKeyID: String = "null",
+    val onVentM3CouleurProduitDebugInfos:String="null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
     val bOuvertDialogMapMarqueHClientKey: String = "",
 ) {

@@ -37,7 +37,7 @@ class GetterFocusedVars(
 
     val onVentM8BonVent by derivedStateOf {
         val targetKey = repo9AppCompt.currentAppCompt?.onVentM8BonVentKey
-        repo8BonVent.datasValue.find { it.keyID == targetKey } ?: defaultM8BonVent
+        repo8BonVent.datasValue.find { it.keyID == targetKey }
     }
 
     val defaultM8BonVent by derivedStateOf {
@@ -51,14 +51,19 @@ class GetterFocusedVars(
     }
 
     val onVentM2ClientInfos by derivedStateOf {
-        val targetKey = onVentM8BonVent.parentM2ClientInfosKey
+        val targetKey = onVentM8BonVent?.parentM2ClientInfosKey
         Repo2Client.datasValue.find { it.keyID == targetKey }
+    }
+
+    val onVentM3CouleurProduitInfos by derivedStateOf {
+        val targetKey = repo9AppCompt.currentAppCompt?.onVentM3CouleurProduitInfosKeyID
+        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
     }
 
     fun getDatasM10OperationVentCouleurPourProduit(
         produit: ArticlesBasesStatsTable,
     ): List<FCouleurVentOperationInfos> {
-        val currentBonVentKey = onVentM8BonVent.keyID
+        val currentBonVentKey = onVentM8BonVent?.keyID
 
         val allOperations = run {
             val repo = repo10OperationVentCouleur
@@ -78,7 +83,7 @@ class GetterFocusedVars(
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {
-            val map = buildMap<String, Any> {
+            val map = buildMap {
                 put("currentM9AppCompt", getter.currentM9AppCompt ?: "null")
                 put("onVentM8BonVent", getter.onVentM8BonVent)
                 put("onVentM2ClientInfos", getter.onVentM2ClientInfos ?: "null")
@@ -95,7 +100,7 @@ object DebugsTests {
     const val TAG = "DebugsTests"
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(nomVal: String, data: Any, index: Int = 0): Modifier {
+    fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0): Modifier {
         return this.semantics {
             set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
         }
