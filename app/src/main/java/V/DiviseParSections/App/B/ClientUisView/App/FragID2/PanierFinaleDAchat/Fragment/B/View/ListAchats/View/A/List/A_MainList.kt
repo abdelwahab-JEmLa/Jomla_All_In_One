@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +28,7 @@ fun MainList(
         derivedStateOf {
             val filteredData = if (uiState.filterNonTrouve) {
                 fVentCouleurOperationRepository.onVentFilteredDatas
-                    .filter { it.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+                    .filter { it.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve }
             } else {
                 fVentCouleurOperationRepository.onVentFilteredDatas
             }

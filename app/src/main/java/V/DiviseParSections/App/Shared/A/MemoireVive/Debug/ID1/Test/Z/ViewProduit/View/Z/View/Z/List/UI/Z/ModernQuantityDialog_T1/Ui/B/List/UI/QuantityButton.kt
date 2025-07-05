@@ -4,7 +4,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,7 +38,7 @@ fun QuantityButton_T1(
     newQuantity: Int,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {},
-    vent: FCouleurVentOperationInfos
+    vent: M10OperationVentCouleur
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.getter
         .repo10OperationVentCouleur
@@ -71,12 +71,12 @@ fun QuantityButton_T1(
                             val updatedVent = if (newQuantity == 0) {
                                 existingVent.copy(
                                     quantityAchete = newQuantity,
-                                    etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                                 )
                             } else {
                                 existingVent.copy(
                                     quantityAchete = newQuantity,
-                                    etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.ParentBonVentConfirme
+                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                 )
                             }
                             fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
@@ -85,7 +85,7 @@ fun QuantityButton_T1(
                     ClickUpdate.TotalQua -> {
                         val allProductVents = fCouleurAchatOperationRepositoryComposable.datasValue.filter {
                             it.parentM1ProduitInfosKeyId == vent.parentM1ProduitInfosKeyId &&
-                                    it.etateActuellementEst != FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                                    it.etateActuellementEst != M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                         }
 
                         if (allProductVents.isNotEmpty()) {
@@ -93,7 +93,7 @@ fun QuantityButton_T1(
                                 allProductVents.forEach { ventItem ->
                                     val updatedVent = ventItem.copy(
                                         quantityAchete = 0,
-                                        etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
+                                        etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
                                     fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
@@ -107,9 +107,9 @@ fun QuantityButton_T1(
                                     val updatedVent = ventItem.copy(
                                         quantityAchete = itemQuantity,
                                         etateActuellementEst = if (itemQuantity > 0) {
-                                            FCouleurVentOperationInfos.EtateActuellementEst.ParentBonVentConfirme
+                                            M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                         } else {
-                                            FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                                            M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                                         },
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )

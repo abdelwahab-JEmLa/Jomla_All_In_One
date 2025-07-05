@@ -27,7 +27,7 @@ class Repo10OperationVentCouleur(
     val dao = ancienRepo.dao
     private val composScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val depuitTestData = false
-    private val _datas = mutableStateOf<List<FCouleurVentOperationInfos>>(emptyList())
+    private val _datas = mutableStateOf<List<M10OperationVentCouleur>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
     val datasFiltered by derivedStateOf { _datas.value }
 
@@ -65,9 +65,9 @@ class Repo10OperationVentCouleur(
         }
     }
 
-    fun addOrUpdateData(data: FCouleurVentOperationInfos) {
+    fun addOrUpdateData(data: M10OperationVentCouleur) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            FCouleurVentOperationInfos.isSame(ancien = ancien, newData = data)
+            M10OperationVentCouleur.isSame(ancien = ancien, newData = data)
         }
 
         _datas.value = if (existingIndex >= 0) {
@@ -138,8 +138,8 @@ class Repo10OperationVentCouleur(
         relatedCouleur: M3CouleurProduitInfos,
         zCompt: Z_AppCompt,
         quantity: Int
-    ): FCouleurVentOperationInfos {
-        return FCouleurVentOperationInfos(
+    ): M10OperationVentCouleur {
+        return M10OperationVentCouleur(
             parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
             parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
@@ -148,12 +148,12 @@ class Repo10OperationVentCouleur(
             parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
             parentZAppComptID = zCompt.bsonObjectId,
             quantityAchete = quantity,
-            etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.ChoisiQuantityConfirme,
-            type = FCouleurVentOperationInfos.Type.CommandeDeLui,
+            etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
+            type = M10OperationVentCouleur.Type.CommandeDeLui,
         )
     }
 
-    fun delete(data: FCouleurVentOperationInfos) {
+    fun delete(data: M10OperationVentCouleur) {
         composScope.launch {
             try {
                 _datas.value = datasValue.filter { it.keyID != data.keyID }
@@ -164,7 +164,7 @@ class Repo10OperationVentCouleur(
         }
     }
 
-    fun getTestDate(): List<FCouleurVentOperationInfos> {
+    fun getTestDate(): List<M10OperationVentCouleur> {
         return emptyList()
     }
 
@@ -175,8 +175,10 @@ class Repo10OperationVentCouleur(
 }
 
 @Entity
-data class FCouleurVentOperationInfos(
+data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
+    var debugInfos: String="",
+
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
 
@@ -193,6 +195,7 @@ data class FCouleurVentOperationInfos(
     var parentM3CouleurProduitInfosKeyID: String = "null",
     val parentM3CouleurProduitDebugInfos:String="null",
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
 
     var parentBProduitNomDebug: String = "",
     var parentProduitInfosOldId: Long = 0,
@@ -207,7 +210,6 @@ data class FCouleurVentOperationInfos(
     var parentClientInfosKeyID: String = "",
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
-    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
     var achatParentBsonIDOld: String = "",
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -223,6 +225,7 @@ data class FCouleurVentOperationInfos(
 
     enum class EtateActuellementEst {
         CreeSlote,
+
         ParentBonVentOuvert,
         ParentProduitOuvert,
         ChoisiQuantityDialogOuvert,
@@ -241,8 +244,8 @@ data class FCouleurVentOperationInfos(
 
 
         fun isSame(
-            ancien: FCouleurVentOperationInfos,
-            newData: FCouleurVentOperationInfos
+            ancien: M10OperationVentCouleur,
+            newData: M10OperationVentCouleur
         ): Boolean {
             val delimiterExistence =
                 ancien.keyID == newData.keyID

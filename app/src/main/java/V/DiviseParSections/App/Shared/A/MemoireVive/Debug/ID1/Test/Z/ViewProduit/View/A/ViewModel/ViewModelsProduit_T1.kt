@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProdui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.GBonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -21,10 +21,10 @@ class ViewModelsProduit_T1(
     val getter = aCentral.getter
     val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
     val getterFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.getter
+    val setterFocusedVarsHandlerFacade = focusedVarsHandlerFacade.setter
 
     val b1CouleurOuGoutProduitDataBaseRepository = getter.b1CouleurOuGoutProduitDataBaseRepository
     val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur
-    val setter = aCentral.setter
 
     data class UiState(
         val filterNonTrouve: Boolean = true,
@@ -60,9 +60,9 @@ class ViewModelsProduit_T1(
         it.copy(productDialogStates = it.productDialogStates + (productKey to false))
     }
 
-    fun calculateUIState(existingVent: FCouleurVentOperationInfos?, uiState: UiState): ViewVentUIState {
+    fun calculateUIState(existingVent: M10OperationVentCouleur?, uiState: UiState): ViewVentUIState {
         val ventKey = existingVent?.keyID ?: ""
-        val isRemoved = existingVent?.etateActuellementEst == FCouleurVentOperationInfos.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+        val isRemoved = existingVent?.etateActuellementEst == M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
         return ViewVentUIState(
             ventKey = ventKey,
             quantity = existingVent?.quantityAchete ?: 0,
@@ -79,7 +79,7 @@ class ViewModelsProduit_T1(
         }
 
     fun createDefaultVent(color: M3CouleurProduitInfos, produit: ArticlesBasesStatsTable?, appCompt: Z_AppCompt?, onVentData: GBonVent) =
-        FCouleurVentOperationInfos(
+        M10OperationVentCouleur(
             keyID = "vent_${color.key}_${produit?.keyID}",
             parentZAppComptID = extractField(appCompt, "keyID") ?: "Non Definie",
             parentDebugInfosID9AppCompt = extractField(appCompt, "nom") ?: "Non Definie",
@@ -94,7 +94,7 @@ class ViewModelsProduit_T1(
             parentProduitInfosOldId = produit?.id ?: 0L,
             parentClientName = extractField(appCompt, "nom") ?: "Non Definie",
             quantityAchete = 0,
-            etateActuellementEst = FCouleurVentOperationInfos.EtateActuellementEst.CreeSlote
+            etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.CreeSlote
         )
 
     private fun extractField(obj: Any?, fieldName: String): String? = try {
@@ -106,7 +106,7 @@ class ViewModelsProduit_T1(
             File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", "$nomImageFichieSansEtansion.$extensionDisponible")
         else null
 
-    fun getTotalQuantity(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.sumOf { it.quantityAchete }
+    fun getTotalQuantity(relatedVents: List<M10OperationVentCouleur>) = relatedVents.sumOf { it.quantityAchete }
 
     fun getProductName(produit: Any?, productKeyId: String): String {
         val nom = produit?.let {
@@ -119,5 +119,5 @@ class ViewModelsProduit_T1(
         return nom?.takeIf { it.isNotBlank() } ?: "Product #$productKeyId"
     }
 
-    fun allNonTrouve(relatedVents: List<FCouleurVentOperationInfos>) = relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    fun allNonTrouve(relatedVents: List<M10OperationVentCouleur>) = relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 }

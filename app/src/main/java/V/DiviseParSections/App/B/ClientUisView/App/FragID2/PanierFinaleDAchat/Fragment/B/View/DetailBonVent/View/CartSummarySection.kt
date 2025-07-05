@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,10 +33,10 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
             val allVents = repo.onVentFilteredDatas
 
             val ventsTrouve = allVents.filter {
-                it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve
+                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
             }
             val ventsNonTrouve = allVents.filter {
-                it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve
+                it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
             }
 
             DeliveryStatusSummary(

@@ -1,19 +1,19 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.B.Init
 
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import org.mongodb.kbson.BsonObjectId
 import java.io.File
 
-fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<FCouleurVentOperationInfos> {
+fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<M10OperationVentCouleur> {
     val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
-    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "FCouleurVentOperationInfos.csv")
+    val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "M10OperationVentCouleur.csv")
 
     if (!csvFile.exists()) {
         return mutableListOf() // Return empty list instead of nothing
     }
 
-    val datas = mutableListOf<FCouleurVentOperationInfos>()
+    val datas = mutableListOf<M10OperationVentCouleur>()
     var lineNumber = 0
     var isFirstLine = true
 
@@ -44,11 +44,11 @@ fun onLoadCategoriesFromCsvD_AchatOperation(): MutableList<FCouleurVentOperation
         throw IllegalStateException("No data available from  or CSV")
     }
 }
-// For FCouleurVentOperationInfos CSV
-fun parseCsvLine(line: String): FCouleurVentOperationInfos {
+// For M10OperationVentCouleur CSV
+fun parseCsvLine(line: String): M10OperationVentCouleur {
     val values = parseCsvValues(line)
 
-    if (values.size < 12) { // Adjust based on FCouleurVentOperationInfos fields
+    if (values.size < 12) { // Adjust based on M10OperationVentCouleur fields
         throw IllegalArgumentException("Invalid CSV format: expected at least 12 columns, got ${values.size}")
     }
 
@@ -56,7 +56,7 @@ fun parseCsvLine(line: String): FCouleurVentOperationInfos {
 }
 
 
-private fun parsedData(values: List<String>) = FCouleurVentOperationInfos(
+private fun parsedData(values: List<String>) = M10OperationVentCouleur(
     keyID = values.getOrElse(0) { BsonObjectId().toHexString() },
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
     parentM8BonVentKeyId = values.getOrElse(3) { "" },
@@ -66,9 +66,9 @@ private fun parsedData(values: List<String>) = FCouleurVentOperationInfos(
     parentProduitInfosOldId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
     quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
-        FCouleurVentOperationInfos.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
+        M10OperationVentCouleur.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
     } catch (e: IllegalArgumentException) {
-        FCouleurVentOperationInfos.EtateActuellementEst.CreeSlote
+        M10OperationVentCouleur.EtateActuellementEst.CreeSlote
     },
     provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0
 )

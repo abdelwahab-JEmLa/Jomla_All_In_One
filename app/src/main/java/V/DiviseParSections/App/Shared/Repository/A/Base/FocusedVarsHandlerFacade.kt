@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
@@ -66,7 +66,7 @@ class GetterFocusedVars(
     val defaultM3CouleurProduitInfos by derivedStateOf {
         onVentM8BonVent?.let {
             with(it) {
-                FCouleurVentOperationInfos(
+                M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
                     parentHVentPeriodKeyId = parentM7VentPeriodKeyId,
                     parentEVentPeriodDebugName = parentM7VentPeriodDebugInfos,
@@ -80,7 +80,7 @@ class GetterFocusedVars(
 
     fun getDatasM10OperationVentCouleurPourProduit(
         produit: ArticlesBasesStatsTable,
-    ): List<FCouleurVentOperationInfos> {
+    ): List<M10OperationVentCouleur> {
         val currentBonVentKey = onVentM8BonVent?.keyID
 
         val allOperations = run {
@@ -163,12 +163,15 @@ class SetterFocusedVars(
     val Repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
     val repo9AppCompt: Repo9AppCompt,
+    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
     fun addNewM8BonVent(id8BonVent: GBonVent) =
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
-    fun updateM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
+    fun addNewM10OperationVentCouleur(it: M10OperationVentCouleur) { repo10OperationVentCouleur.addOrUpdateData(it) }
+
+    fun updateFocuseM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 }
 
 fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(

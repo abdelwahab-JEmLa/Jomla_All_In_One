@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
@@ -57,7 +57,7 @@ import com.bumptech.glide.signature.ObjectKey
 @Composable
 fun LazyRowAvailableColorsImageOuNom(
     productId: String?,
-    achats: List<FCouleurVentOperationInfos>,
+    achats: List<M10OperationVentCouleur>,
     bProduitDataBaseComposeRepositoryPJ17: BProduitInfosRepository,
     sizeDeChaqueItem: Dp= 250.dp,
 ) {
@@ -197,7 +197,7 @@ fun ImageDisplayer(
 }
 
 @Composable
-fun Infos(achat: FCouleurVentOperationInfos?, modifier: Modifier = Modifier) {
+fun Infos(achat: M10OperationVentCouleur?, modifier: Modifier = Modifier) {
     achat?.let { achatData ->
         Card(
             modifier = modifier,

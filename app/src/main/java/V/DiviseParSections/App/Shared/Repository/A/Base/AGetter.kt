@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
@@ -123,12 +123,12 @@ class AGetter(
 
     fun getVentForArticleAndColorInThisApp(
         article: ArticlesBasesStatsTable, colorIndex: Int
-    ): FCouleurVentOperationInfos? {
+    ): M10OperationVentCouleur? {
         val relatedCouleur = relatedCouleurKeyParAncienMethod(article, colorIndex) ?: return null
         return getVent(relatedCouleur.key, article.id)
     }
 
-    fun getVent(couleurKey: String, produitId: Long): FCouleurVentOperationInfos? {
+    fun getVent(couleurKey: String, produitId: Long): M10OperationVentCouleur? {
         val ouvertData = id9AppComptRepository.currentAppCompt ?: return null
 
         val bonVentKey = ouvertData.onVentM8BonVentKey

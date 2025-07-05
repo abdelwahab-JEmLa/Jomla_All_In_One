@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +53,7 @@ fun ProductGroup(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
     productKeyId: String,
-    vents: List<FCouleurVentOperationInfos>,
+    vents: List<M10OperationVentCouleur>,
 ) {
    val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getter.bProduitInfosRepository
 
@@ -66,8 +66,8 @@ fun ProductGroup(
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
     val currentPrice = vents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    val hasNonTrouve = vents.any { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
-    val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve }
+    val hasNonTrouve = vents.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+    val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -135,7 +135,7 @@ fun ProductGroup(
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .graphicsLayer(
-                                        alpha = if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.NonTrouve) 0.5f else 1.0f
+                                        alpha = if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f
                                     )
                             ) {
                                 VentDisplayer_Sec2FragId2(

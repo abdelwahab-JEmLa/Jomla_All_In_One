@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 
 class VentOperations(
@@ -50,9 +50,9 @@ class VentOperations(
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
         ventCouleursDuProduitKey(produitKey).forEach { vent ->
             val newState =
-                if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve)
-                    FCouleurVentOperationInfos.EtateDelivery.NonTrouve
-                else FCouleurVentOperationInfos.EtateDelivery.Trouve
+                if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve)
+                    M10OperationVentCouleur.EtateDelivery.NonTrouve
+                else M10OperationVentCouleur.EtateDelivery.Trouve
 
             fVentCouleurOperationRepository.addOrUpdateData(vent.copy(etateDelivery = newState))
         }

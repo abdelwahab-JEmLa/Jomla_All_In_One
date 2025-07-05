@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.D.Glide
 
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import android.util.Log
 import com.google.firebase.database.Exclude
@@ -10,7 +10,7 @@ import java.io.File
 
 data class CouleurInfosWithAchat(
     val couleurInfosList: List<FileCouleurInfos>,
-    val matchingAchat: FCouleurVentOperationInfos?
+    val matchingAchat: M10OperationVentCouleur?
 )
 enum class Affiche {
     Image, Nom
@@ -19,7 +19,7 @@ enum class Affiche {
 data class FileCouleurInfos(
     @get:Exclude
     @Transient
-    val d_CouleurVentOperation: FCouleurVentOperationInfos? = null, // FIXED: Made nullable
+    val d_CouleurVentOperation: M10OperationVentCouleur? = null, // FIXED: Made nullable
 
     val keyID: String = "",
     val bsonObjectId: BsonObjectId = BsonObjectId(),
@@ -92,11 +92,11 @@ data class FileCouleurInfos(
 
 fun createCouleurInfosFromProduct(
     produit: ArticlesBasesStatsTable?,
-    achats: List<FCouleurVentOperationInfos>
+    achats: List<M10OperationVentCouleur>
 ): CouleurInfosWithAchat {
     val basePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne"
     val couleurInfosList = mutableListOf<FileCouleurInfos>()
-    var firstMatchingAchat: FCouleurVentOperationInfos? = null
+    var firstMatchingAchat: M10OperationVentCouleur? = null
 
     val colorMappings = listOf(
         produit?.couleur1 to 0,

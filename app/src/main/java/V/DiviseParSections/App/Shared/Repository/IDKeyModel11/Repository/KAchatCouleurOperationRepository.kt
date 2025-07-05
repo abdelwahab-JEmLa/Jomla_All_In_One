@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.centralRef
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -35,7 +35,7 @@ data class KAchatCouleurOperation(
     val parentCouleurInfosKeyID: String,
     val parentGrossistKeyID: String = generePushKey(),
     val sumAchatQantity: Int,
-    val listFCouleurVentOperation: List<FCouleurVentOperationInfos>
+    val listFCouleurVentOperation: List<M10OperationVentCouleur>
 ) {
     companion object {
         val keyIDModel ="Model11"

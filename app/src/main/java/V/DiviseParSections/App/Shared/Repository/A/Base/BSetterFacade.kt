@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
@@ -96,7 +96,7 @@ class BSetterFacade(
     }
 
     fun upsertVentCouleurOperationFacade(
-        fCouleurVentOperation: FCouleurVentOperationInfos? = null,
+        fCouleurVentOperation: M10OperationVentCouleur? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         quantity: Int

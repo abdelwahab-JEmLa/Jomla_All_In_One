@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import android.content.Context
 import android.content.Intent
@@ -40,7 +40,7 @@ class PrintReceiptHandler {
 
             // Get all vents that are not removed from cart
             val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
-                vent.etateDelivery != FCouleurVentOperationInfos.EtateDelivery.NonTrouve &&
+                vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
                         vent.quantityAchete > 0
             }
 

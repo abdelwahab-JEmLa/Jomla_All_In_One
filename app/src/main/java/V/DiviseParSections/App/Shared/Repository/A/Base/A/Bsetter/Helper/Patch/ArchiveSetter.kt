@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOu
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.BProduitInfosRepository
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.FCouleurVentOperationInfos
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -277,7 +277,7 @@ class BSetterP (
 
 
     fun te(
-        fCouleurVentOperation: FCouleurVentOperationInfos? = null,
+        fCouleurVentOperation: M10OperationVentCouleur? = null,
         produit: ArticlesBasesStatsTable,
         colorIndex: Int,
         quantity: Int,
@@ -359,9 +359,9 @@ class BSetterP (
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
         ventCouleursDuProduitKey(produitKey).forEach { vent ->
             val newState =
-                if (vent.etateDelivery == FCouleurVentOperationInfos.EtateDelivery.Trouve)
-                    FCouleurVentOperationInfos.EtateDelivery.NonTrouve
-                else FCouleurVentOperationInfos.EtateDelivery.Trouve
+                if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve)
+                    M10OperationVentCouleur.EtateDelivery.NonTrouve
+                else M10OperationVentCouleur.EtateDelivery.Trouve
 
             fVentCouleurOperationRepository.addOrUpdateData(vent.copy(etateDelivery = newState))
         }
