@@ -5,6 +5,7 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App._0.Navigation.Screen
@@ -91,7 +92,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
 
     // Check if current fragment is FragmentProduitFastSearchDialog
-    val itsFragmentProduitFastSearchDialog = activeFragment == Screen.FragmentProduitFastSearchDialog
+    val itsFragmentProduitFastSearchDialog =
+        activeFragment == Screen.FragmentProduitFastSearchDialog
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -207,8 +209,17 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
                 .padding(16.dp)
         ) {
+
+            val cLenceDepuitFragmentsSepecialicteDeVents =
+                (cLenceDepuitFragmentsSepecialisteDeVents
+                        || itsFragmentProduitFastSearchDialog
+                        && viewModel.central.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur != null)
+
             Column(
-                modifier = Modifier.align(Alignment.BottomStart),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)
+                ,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
@@ -253,9 +264,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 }
 
                 TariffsButtonsSec7ID2(
-                    cLenceDepuitFragmentsSepecialicteDeVents = cLenceDepuitFragmentsSepecialisteDeVents||itsFragmentProduitFastSearchDialog,
                     showLabels = showLabels,
-                    filterProductId = idProduitActuelle,
                     fermeDialog = {
                         onPourFermeWindows(D_TarificationInfos())
                         val message = "تراضي"
@@ -273,7 +282,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             type = ToastType.INFO,
                             duration = 1500L
                         )
-                    }
+                    },
+                    cLenceDepuitFragmentsSepecialicteDeVents = cLenceDepuitFragmentsSepecialicteDeVents
                 )
             }
         }

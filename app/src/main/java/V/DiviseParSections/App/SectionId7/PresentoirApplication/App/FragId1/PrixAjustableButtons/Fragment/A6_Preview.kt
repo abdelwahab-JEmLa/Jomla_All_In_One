@@ -73,7 +73,6 @@ fun TariffsButtonsPrev() {
                                 val idTP2 = 859L
 
                                 TariffsButtonsSec7ID2(
-                                    filterProductId = idProduitChahrazed,
                                     fermeDialog = { showDialog = false },
                                     onFermDialogeAvecAnllation = { showDialog = false },
                                     cLenceDepuitFragmentsSepecialicteDeVents = true,

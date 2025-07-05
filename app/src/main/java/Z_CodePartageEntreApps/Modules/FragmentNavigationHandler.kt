@@ -18,6 +18,22 @@ class FragmentNavigationHandler {
         _navController = navController
     }
 
+    // Update current fragment from external sources (like AppNavHost)
+    fun updateCurrentFragment(screen: Screen?) {
+        _currentFragment.value = screen
+    }
+
+    // Update current fragment by route string
+    fun updateCurrentFragmentByRoute(route: String?) {
+        val screen = route?.let { getAllScreens().find { it.route == route } }
+        _currentFragment.value = screen
+    }
+
+    // Set startup screen as current
+    fun setStartupScreen(startupScreen: Screen) {
+        _currentFragment.value = startupScreen
+    }
+
     data class NavigationConfig(
         val popUpToStart: Boolean = true,
         val saveState: Boolean = true,

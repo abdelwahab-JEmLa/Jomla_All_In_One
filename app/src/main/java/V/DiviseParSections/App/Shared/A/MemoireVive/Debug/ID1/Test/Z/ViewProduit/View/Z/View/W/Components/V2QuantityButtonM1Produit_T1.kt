@@ -116,7 +116,7 @@ fun QuantityButtonM1Produit_T1(
                     }
                 }
 
-                viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
+                viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit)
             },
         shape = RoundedCornerShape(16.dp),
         color = animations.backgroundColor,

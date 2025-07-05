@@ -29,7 +29,6 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtonsSec7ID2(
     viewModel: TariffsButtonsViewModelSec7ID2 = koinViewModel(),
     showLabels: Boolean = true,
-    filterProductId: Long = 0,
     fermeDialog: (D_TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
@@ -46,9 +45,13 @@ fun TariffsButtonsSec7ID2(
     val produitAcheteOperationList = uiState.produitAcheteOperationList
     val produitInfosList = uiState.produitInfosList
 
+    val keyID =
+        viewModel.aCentral.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur?.keyID
+    val datasValuedeM1ProduitInfos = viewModel.aCentral.getter.repoM1ProduitInfos.datasValue
+    val filterProductId = datasValuedeM1ProduitInfos.find { it.keyID==keyID }?.id
     val m1produitInfos by remember {
         derivedStateOf {
-            viewModel.aCentral.getter.repoM1ProduitInfos.datasValue.find { it.id.toInt().toLong() == filterProductId }
+            datasValuedeM1ProduitInfos.find { it.id.toInt().toLong() == filterProductId }
         }
     }
 
@@ -80,9 +83,11 @@ fun TariffsButtonsSec7ID2(
         // Execute the main logic first
         afficheButtons = false
         onFermDialogeAvecAnllation()
-        viewModel.deleteVents(
-            parentProduitOldId=filterProductId,
-        )
+        if (filterProductId != null) {
+            viewModel.deleteVents(
+                parentProduitOldId= filterProductId,
+            )
+        }
 
         // Show toast after logic execution
         currentToast = ToastData(
@@ -95,18 +100,20 @@ fun TariffsButtonsSec7ID2(
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                MainFilter(
-                    viewModel=viewModel,
-                    tarificationList = tarificationList,
-                    bonAchatList = bonAchatList,
-                    produitAcheteOperationList = produitAcheteOperationList,
-                    produitInfosList = produitInfosList,
-                    showLabels = showLabels,
-                    filterProduitID = filterProductId.toInt(),
-                    filterBonID = bonVentComQuiFilterButtons.vid,
-                    onClickPrixButton = onClickPrixButton,
-                    onClickAnulationButton = onClickAnulationButton
-                )
+                if (filterProductId != null) {
+                    MainFilter(
+                        viewModel=viewModel,
+                        tarificationList = tarificationList,
+                        bonAchatList = bonAchatList,
+                        produitAcheteOperationList = produitAcheteOperationList,
+                        produitInfosList = produitInfosList,
+                        showLabels = showLabels,
+                        filterProduitID = filterProductId.toInt(),
+                        filterBonID = bonVentComQuiFilterButtons.vid,
+                        onClickPrixButton = onClickPrixButton,
+                        onClickAnulationButton = onClickAnulationButton
+                    )
+                }
             }
         }
     }

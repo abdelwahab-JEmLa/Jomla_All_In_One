@@ -125,7 +125,9 @@ fun ViewProduit_T1(
                 colorName = operation.parentM3CouleurProduitDebugInfos,
                 currentQuantity = operation.quantityAchete,
                 onDismiss = {
-                    viewModel.setterFocusedVarsHandlerFacade.fermeM1ProduitDialogChoisireQuantityFacade()
+                    viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
+                        produit
+                    )
                 }
             )
         }

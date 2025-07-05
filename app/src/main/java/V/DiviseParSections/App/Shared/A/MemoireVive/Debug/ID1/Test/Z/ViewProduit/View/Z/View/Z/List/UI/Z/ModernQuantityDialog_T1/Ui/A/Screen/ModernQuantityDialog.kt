@@ -36,7 +36,7 @@ fun VentCouleurQuantityDialog_T1(
     val context = LocalContext.current
 
     fun closeDialogChoisireQuantity(): Unit {
-        viewModel.setterFocusedVarsHandlerFacade.closeDialogChoisireQuantity()
+        viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(produitKey = vent.parentM1ProduitInfosKeyId)
     }
 
     AlertDialog(

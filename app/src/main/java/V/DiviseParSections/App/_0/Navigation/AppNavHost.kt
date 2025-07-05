@@ -5,10 +5,10 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
@@ -67,6 +67,18 @@ fun AppNavHost(
     val uiState by headViewModel.uiState.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Update FragmentNavigationHandler when navigation changes
+    LaunchedEffect(currentRoute) {
+        fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
+    }
+
+    // Set startup screen when component initializes
+    LaunchedEffect(startUpScreen) {
+        fragmentNavigationHandler.setStartupScreen(startUpScreen)
+    }
+
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
     val currentClient = viewModelInitApp.clientDataBaseSnapList.find { it.id == currentClientId }
@@ -98,7 +110,7 @@ fun AppNavHost(
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
                 navController = navController,
-                startDestination = startUpScreen.route, // Fixed: Using the startup screen from parameters
+                startDestination = startUpScreen.route,
                 modifier = Modifier.fillMaxSize()
             ) {
                 composable(
@@ -174,7 +186,6 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
                             PanierFinaleDAchatSec1Frag3()
-
                         }
                     }
                 }
@@ -265,7 +276,8 @@ fun AppNavHost(
                             database.getReference("O_SoldArticlesTabelle").removeValue()
                         }
                     },
-                    mapReloadTrigger = mapReloadTrigger.intValue
+                    mapReloadTrigger = mapReloadTrigger.intValue,
+                    fragmentNavigationHandler = fragmentNavigationHandler // Pass the handler
                 )
             }
 
@@ -315,7 +327,6 @@ fun AppNavHost(
     }
 }
 
-
 /**
  * Creates client map navigation routes
  */
@@ -325,6 +336,7 @@ fun NavGraphBuilder.app2(
     navController: NavHostController,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
+    fragmentNavigationHandler: FragmentNavigationHandler, // Add this parameter
 ) {
     composable(
         route = Screen.A_ClientsLocationGps.route,
@@ -342,7 +354,7 @@ fun NavGraphBuilder.app2(
         key(screenKey.value) {
             A_MapClients_A2FragID_1(
                 onUpdateLongAppSetting = {
-                    navigateToMainScreen(navController)
+                    navigateToMainScreen(navController, fragmentNavigationHandler)
                 },
                 onClear = onClear,
                 mapReloadTrigger = mapReloadTrigger
@@ -350,6 +362,28 @@ fun NavGraphBuilder.app2(
         }
     }
 }
+
+/**
+ * Navigate to main screen with proper back stack handling
+ */
+private fun navigateToMainScreen(
+    navController: NavHostController,
+    fragmentNavigationHandler: FragmentNavigationHandler
+) {
+    navController.navigate(Screen.FacadePresentoireProduits.route) {
+        // Pop the current fragment off the back stack
+        popUpTo(Screen.A_ClientsLocationGps.route) {
+            inclusive = true
+        }
+        launchSingleTop = true
+        // Force recreation of destination screen
+        restoreState = false
+    }
+
+    // Update the fragment handler
+    fragmentNavigationHandler.updateCurrentFragment(Screen.FacadePresentoireProduits)
+}
+
 
 /**
  * Helper function to create add consistent screen key for proper recomposition
@@ -370,25 +404,6 @@ private fun CleanupEffect(onCleanup: () -> Unit) {
         }
     }
 }
-
-/**
- * Navigate to main screen with proper back stack handling
- */
-private fun navigateToMainScreen(navController: NavHostController) {
-    navController.navigate(Screen.FacadePresentoireProduits.route) {
-        // Pop the current fragment off the back stack
-        popUpTo(Screen.A_ClientsLocationGps.route) {
-            inclusive = true
-        }
-        launchSingleTop = true
-        // Force recreation of destination screen
-        restoreState = false
-    }
-}
-
-/**
- * App2 screen definition
- */
 object ScreensApp2 {
     val A_ClientsLocationGps = Screen.A_ClientsLocationGps
 }

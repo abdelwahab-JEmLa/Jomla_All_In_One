@@ -39,7 +39,7 @@ data class UiState(
 )
 
 class TariffsButtonsViewModelSec7ID2(
-   val aCentral: ACentralFacade,
+    val aCentral: ACentralFacade,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
@@ -81,7 +81,12 @@ class TariffsButtonsViewModelSec7ID2(
         newPrix: Double,
         listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>
     ): Unit {
-          setter.updateListRelativeVentCouleurPrixVent(listFocusedM10OpeVentCouleurParPrixDifineur,m1produitInfos,newPrix)
+        setter.updateListRelativeVentCouleurPrixVent(
+            listFocusedM10OpeVentCouleurParPrixDifineur,
+            m1produitInfos,
+            newPrix
+        )
+        aCentral.focusedVarsHandlerFacade.setter.anulleFocucePourPrixDeM1ProduitFacade()
     }
 
 
@@ -115,7 +120,7 @@ class TariffsButtonsViewModelSec7ID2(
                         val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
 
                         val totalProgress =
-                            (validProduitProgress +   validProduitAcheteProgress + validSqlProgress) / 4f
+                            (validProduitProgress + validProduitAcheteProgress + validSqlProgress) / 4f
 
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -133,7 +138,7 @@ class TariffsButtonsViewModelSec7ID2(
                         val produitProg = firstPair
                         val (produitAcheteProg, sqlProg) = secondPair
 
-                        if (produitProg >= 1f   && produitAcheteProg >= 1f && sqlProg >= 1f) {
+                        if (produitProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) {
                             _uiState.update {
                                 it.copy(
                                     isDataSyncing = false,

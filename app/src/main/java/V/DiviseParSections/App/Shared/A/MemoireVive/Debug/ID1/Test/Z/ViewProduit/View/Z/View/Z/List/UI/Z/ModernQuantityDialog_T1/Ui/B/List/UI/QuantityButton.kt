@@ -79,7 +79,9 @@ fun QuantityButton_T1(
                             }
 
                             fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                            viewModel.setterFocusedVarsHandlerFacade.closeDialogChoisireQuantity()
+                            viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
+                                vent.parentM1ProduitInfosKeyId
+                            )
                         }
                     }
                     ClickUpdate.TotalQua -> {
@@ -97,7 +99,9 @@ fun QuantityButton_T1(
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
                                     fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                                    viewModel.setterFocusedVarsHandlerFacade.closeDialogChoisireQuantity()
+                                    viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
+                                        vent.parentM1ProduitInfosKeyId
+                                    )
                                 }
                             } else {
                                 val quantityPerItem = newQuantity / allProductVents.size

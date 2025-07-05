@@ -106,7 +106,7 @@ class GetterFocusedVars(
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
-                modifier.getSemanticsTag(key, value, index+6)
+                modifier.getSemanticsTag(key, value, index + 6)
             }
         }
     }
@@ -124,58 +124,99 @@ class SetterFocusedVars(
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
-    
+
     fun ajouteNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
         repo10OperationVentCouleur.addOrUpdateData(it)
     }
 
-    fun closeDialogChoisireQuantity(
-    ) = focuceOnVentM3CouleurProduitInfos(
-        getterFocusedVars = getterFocusedVars,
-        repo9AppCompt = repo9AppCompt,
-    )
+    fun updateFocuceM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 
-    
     fun ouvrireDialogChoisireQuantity(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
-        m10OperationVentCouleur =m10OperationVentCouleur,
+        m10OperationVentCouleur = m10OperationVentCouleur,
         getterFocusedVars = getterFocusedVars,
         repo9AppCompt = repo9AppCompt,
     )
 
-    fun updateFocuceM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
-    
-    fun ouvrireM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) = updateCurrentAppComptDialogProduit(
-        getterFocusedVars,
-        repo9AppCompt,
-        produit,)
-    
-    fun fermeM1ProduitDialogChoisireQuantityFacade() = updateCurrentAppComptDialogProduit( getterFocusedVars, repo9AppCompt,)
+    fun fermeDialogChoisireQuantityDeVentCouleur(produitKey: String) {
+        focuceOnVentM3CouleurProduitInfos(
+            getterFocusedVars = getterFocusedVars,
+            repo9AppCompt = repo9AppCompt,
+        )
+        focucePourPrixDeM1Produit(
+            produitKey,
+            getterFocusedVars,
+            repo9AppCompt
+        )
+    }
+
+    fun ouvrireM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) =
+        updateCurrentAppComptDialogProduit(
+            getterFocusedVars,
+            repo9AppCompt,
+            produit,
+        )
+
+    fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
+        updateCurrentAppComptDialogProduit(getterFocusedVars, repo9AppCompt)
+        focucePourPrixDeM1Produit(
+            produit.keyID,
+            getterFocusedVars,
+            repo9AppCompt
+        )
+    }
+
+    fun anulleFocucePourPrixDeM1ProduitFacade() {
+        anulleFocucePourPrixDeM1Produit(getterFocusedVars, repo9AppCompt)
+    }
+}
+
+fun focucePourPrixDeM1Produit(
+    produitKey: String,
+    getterFocusedVars: GetterFocusedVars,
+    repo9AppCompt: Repo9AppCompt
+) {
+    repo9AppCompt.upsert(
+        getterFocusedVars.currentM9AppCompt!!.copy(
+            focusedAuPrixDifineurM1ProduitInfosKeyId = produitKey,
+        )
+    )
+}
+
+fun anulleFocucePourPrixDeM1Produit(
+    getterFocusedVars: GetterFocusedVars,
+    repo9AppCompt: Repo9AppCompt
+) {
+    repo9AppCompt.upsert(
+        getterFocusedVars.currentM9AppCompt!!.copy(
+            focusedAuPrixDifineurM1ProduitInfosKeyId = "null",
+        )
+    )
 }
 
 fun updateCurrentAppComptDialogProduit(
     getterFocusedVars: GetterFocusedVars,
     repo9AppCompt: Repo9AppCompt,
-    produit: ArticlesBasesStatsTable?=null
+    produit: ArticlesBasesStatsTable? = null
 ) {
     repo9AppCompt.upsert(
         getterFocusedVars.currentM9AppCompt!!.copy(
             dialogChoisireQuantityM1ProduitInfosKeyID = produit?.keyID ?: "null",
-            dialogChoisireQuantityM1ProduitInfosDebugName = produit?.nom ?: "null"
+            dialogChoisireQuantityM1ProduitInfosDebugName = produit?.nom ?: "null",
         )
     )
 }
 
 fun focuceOnVentM3CouleurProduitInfos(
-    m10OperationVentCouleur: M10OperationVentCouleur?=null,
+    m10OperationVentCouleur: M10OperationVentCouleur? = null,
     getterFocusedVars: GetterFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
     repo9AppCompt.upsert(
         getterFocusedVars.currentM9AppCompt!!.copy(
             onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur?.debugInfos ?: "null",
-            onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur?.keyID ?: "null"
+            onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur?.keyID ?: "null",
         )
     )
 }
