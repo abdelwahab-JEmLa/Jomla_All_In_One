@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.ProcessPositioningInFactoryID1
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -41,7 +42,7 @@ fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val bProduitInfosRepository= uiState.bProduitInfosRepository
+    val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
     val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
 
@@ -67,33 +68,15 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    // Control for initial search
     var shouldPerformInitialSearch by remember { mutableStateOf(true) }
 
-    @Composable
-    fun debugTestsPerformInitialSearch(
-        enabled: Boolean,
-        onSearchQueryChange: (String) -> Unit,
-        focusRequester: FocusRequester
-    ) {
-        LaunchedEffect(enabled) {
-            if (enabled) {
-                delay(2000) // Wait 2 seconds after component loads
-                onSearchQueryChange("sor")
-                focusRequester.requestFocus()
-                shouldPerformInitialSearch = false // Disable after first execution
-            }
-        }
-    }
-
-    // Use the separated performInitialSearch
-    debugTestsPerformInitialSearch(
+    DebugTestsPerformInitialSearch(
         enabled = shouldPerformInitialSearch,
-        onSearchQueryChange = { searchText ->
-            localSearchText = searchText
-        },
         focusRequester = focusRequester
-    )
+    ) { searchText ->
+        localSearchText = searchText
+        shouldPerformInitialSearch = false
+    }
 
     Surface(
         modifier = modifier
@@ -106,7 +89,6 @@ fun MainFastSearchProduitPourVent(
                     .padding(16.dp)
             ) {
                 OutlinedTextField(
-                    // Use local state for immediate UI feedback
                     value = localSearchText,
                     onValueChange = { newText ->
                         localSearchText = newText
@@ -141,7 +123,9 @@ fun MainFastSearchProduitPourVent(
                                 uiState.bProduitInfosRepository.upsert(newProduit)
 
                                 // Add corresponding color data
-                                uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(newCouleurP)
+                                uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(
+                                    newCouleurP
+                                )
 
                                 // Update current app account if available
                                 uiState.zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->

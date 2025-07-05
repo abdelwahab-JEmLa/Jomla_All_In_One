@@ -133,20 +133,18 @@ object DebugsTests {
         Log.d(TAG, "[$logTag] $nomVal = $dataString")
     }
 
-    var shouldPerformInitialSearch = true
 
     @Composable
     fun DebugTestsPerformInitialSearch(
         enabled: Boolean,
-        onSearchQueryChange: (String) -> Unit,
-        focusRequester: FocusRequester
+        focusRequester: FocusRequester,
+        onSearchQueryChange: (String) -> Unit
     ) {
         LaunchedEffect(enabled) {
             if (enabled) {
                 delay(2000)
-                onSearchQueryChange("sor")
+                onSearchQueryChange("liya")
                 focusRequester.requestFocus()
-                shouldPerformInitialSearch = false
             }
         }
     }
