@@ -40,8 +40,6 @@ fun ViewProduit_T1(
     val produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
 
-    val onVentM8BonVent = viewModel.getterFocusedVarsHandlerFacade.onVentM8BonVent
-
     val produitWithColors by remember(
         product.id,
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
