@@ -42,6 +42,7 @@ fun QuantityButton_T1(
 ) {
     val fCouleurAchatOperationRepositoryComposable = viewModel.getter
         .repo10OperationVentCouleur
+
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -70,15 +71,15 @@ fun QuantityButton_T1(
                             val updatedVent = if (newQuantity == 0) {
                                 existingVent.copy(
                                     quantityAchete = newQuantity,
-                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                                 )
                             } else {
                                 existingVent.copy(
                                     quantityAchete = newQuantity,
-                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                 )
                             }
+
                             fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                            viewModel.setterFocusedVarsHandlerFacade.closeDialogChoisireQuantity()
                         }
                     }
                     ClickUpdate.TotalQua -> {
@@ -96,6 +97,7 @@ fun QuantityButton_T1(
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
                                     fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
+                                    viewModel.setterFocusedVarsHandlerFacade.closeDialogChoisireQuantity()
                                 }
                             } else {
                                 val quantityPerItem = newQuantity / allProductVents.size

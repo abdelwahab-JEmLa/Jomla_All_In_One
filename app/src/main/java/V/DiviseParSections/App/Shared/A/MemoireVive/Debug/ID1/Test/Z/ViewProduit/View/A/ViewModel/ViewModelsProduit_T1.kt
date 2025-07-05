@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import java.io.File
 
 class ViewModelsProduit_T1(
@@ -17,6 +16,7 @@ class ViewModelsProduit_T1(
 ) : ViewModel() {
     val getter = aCentral.getter
     val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
+
     val getterFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.getter
     val setterFocusedVarsHandlerFacade = focusedVarsHandlerFacade.setter
 
@@ -25,13 +25,11 @@ class ViewModelsProduit_T1(
 
     data class UiState(
         val filterNonTrouve: Boolean = true,
-        val productDialogStates: Map<String, Boolean> = emptyMap()
     )
 
     data class ViewVentUIState(
         val ventKey: String = "",
         val quantity: Int = 0,
-        val showDialog: Boolean = false,
         val isRemoved: Boolean = false,
         val itemAlpha: Float = 1.0f,
         val colorMatrix: ColorMatrix? = null
@@ -39,15 +37,6 @@ class ViewModelsProduit_T1(
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-
-    fun showProductDialog(productKey: String) = _uiState.update {
-        it.copy(productDialogStates = it.productDialogStates + (productKey to true))
-    }
-
-    fun hideProductDialog(productKey: String) = _uiState.update {
-        it.copy(productDialogStates = it.productDialogStates + (productKey to false))
-    }
 
     fun calculateUIState(existingVent: M10OperationVentCouleur?, uiState: UiState): ViewVentUIState {
         val ventKey = existingVent?.keyID ?: ""

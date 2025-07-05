@@ -128,7 +128,6 @@ fun QuantityDisplay(
         else MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .clickable(enabled = !allNonTrouve) {
-                viewModel.showProductDialog(produit.keyID)
                 onClick()
             }
             .getSemanticsTag("onVentM8BonVentM10OperationVentFilteredList",onVentM8BonVentM10OperationVentFilteredList)

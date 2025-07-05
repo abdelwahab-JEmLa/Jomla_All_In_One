@@ -118,7 +118,7 @@ object DebugsTests {
             is String -> data
             is Number -> data.toString()
             is Boolean -> data.toString()
-            else -> data.toString().take(100)
+            else -> data.toString()
         }
 
         Log.d(TAG, "[$logTag] $nomVal = $dataString")
@@ -155,30 +155,36 @@ class SetterFocusedVars(
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
-    fun addNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
+    fun ajouteNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
         repo10OperationVentCouleur.addOrUpdateData(it)
     }
 
-    fun focuceOnVentM3CouleurProduitInfosFacade(
+    fun closeDialogChoisireQuantity(
+    ) = focuceOnVentM3CouleurProduitInfos(
+        getterFocusedVars = getterFocusedVars,
+        repo9AppCompt = repo9AppCompt,
+    )
+
+    fun ouvrireDialogChoisireQuantity(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
-        repo9AppCompt = repo9AppCompt,
+        m10OperationVentCouleur =m10OperationVentCouleur,
         getterFocusedVars = getterFocusedVars,
-        m10OperationVentCouleur = m10OperationVentCouleur,
+        repo9AppCompt = repo9AppCompt,
     )
 
     fun updateFocuseM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 }
 
 fun focuceOnVentM3CouleurProduitInfos(
+    m10OperationVentCouleur: M10OperationVentCouleur?=null,
     getterFocusedVars: GetterFocusedVars,
-    repo9AppCompt: Repo9AppCompt,
-    m10OperationVentCouleur: M10OperationVentCouleur
+    repo9AppCompt: Repo9AppCompt
 ) {
     repo9AppCompt.upsert(
         getterFocusedVars.currentM9AppCompt!!.copy(
-            onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur.debugInfos,
-            onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur.keyID
+            onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur?.debugInfos ?: "null",
+            onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur?.keyID ?: "null"
         )
     )
 }

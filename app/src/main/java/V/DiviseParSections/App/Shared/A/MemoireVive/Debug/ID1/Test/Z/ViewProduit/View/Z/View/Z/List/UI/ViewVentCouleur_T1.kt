@@ -96,10 +96,10 @@ fun ViewVentCouleur_T1(
 
     val shouldShowDialog by remember(relatedVent, m3CouleurProduitInfos.key) {
         derivedStateOf {
-            relatedVent?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
+            val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
+            onVentM3?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
         }
     }
-
     Card(
         modifier = Modifier
             .getSemanticsTag(
@@ -114,17 +114,17 @@ fun ViewVentCouleur_T1(
                 .fillMaxSize()
                 .padding(5.dp)
         ) {
-            fun vent(
+            fun lenceVent(
                 defaultM3CouleurProduitInfos: M10OperationVentCouleur?,
                 setter: SetterFocusedVars,
                 onVentM3CouleurProduitInfos: M10OperationVentCouleur?
             ) {
                 defaultM3CouleurProduitInfos?.let { opVent ->
-                    setter.addNewM10OperationVentCouleur(opVent)
-                    setter.focuceOnVentM3CouleurProduitInfosFacade(opVent)
+                    setter.ajouteNewM10OperationVentCouleur(opVent)
+                    setter.ouvrireDialogChoisireQuantity(opVent)
                 } ?: run {
                     if (onVentM3CouleurProduitInfos != null) {
-                        setter.focuceOnVentM3CouleurProduitInfosFacade(onVentM3CouleurProduitInfos)
+                        setter.ouvrireDialogChoisireQuantity(onVentM3CouleurProduitInfos)
                     }
                 }
             }
@@ -140,7 +140,7 @@ fun ViewVentCouleur_T1(
                             imageSize = DpSize(size, size),
                             colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
-                                vent(
+                                lenceVent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
                                     relatedVent
@@ -155,7 +155,7 @@ fun ViewVentCouleur_T1(
                             modifier = Modifier.size(size),
                             colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
-                                vent(
+                                lenceVent(
                                     defaultM3CouleurProduitInfos,
                                     setter,
                                     relatedVent
@@ -205,26 +205,10 @@ fun ViewVentCouleur_T1(
 
     if (shouldShowDialog && relatedVent != null) {
         ModernQuantityDialog_T1(
+            vent = relatedVent!!,
+            viewModel = viewModel,
             colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
             currentQuantity = ventUIState.quantity,
-            onDissmiss_showQuantityDialog = {
-                // Clear the focused state to hide dialog
-                setter.updateFocuseM9AppCompt(
-                    getter.currentM9AppCompt!!.copy(
-                        onVentM3CouleurProduitInfosKeyID = ""
-                    )
-                )
-            },
-            onDismiss = {
-                // Clear the focused state to hide dialog
-                setter.updateFocuseM9AppCompt(
-                    getter.currentM9AppCompt!!.copy(
-                        onVentM3CouleurProduitInfosKeyID = ""
-                    )
-                )
-            },
-            viewModel = viewModel,
-            vent = relatedVent!!
         )
     }
 }

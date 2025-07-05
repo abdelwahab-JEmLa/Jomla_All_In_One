@@ -1,11 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ProductHeader_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.ListCouleurs
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.ModernQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,15 +62,18 @@ fun ViewProduit_T1(
     }
 
     val haptic = LocalHapticFeedback.current
-    val uiState by viewModel.uiState.collectAsState()
-    val showDialog = uiState.productDialogStates[productKeyId] ?: false
+
+    val showDialog = remember(viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos, productKeyId) {
+        val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
+        onVentM3?.parentM1ProduitInfosKeyId == (productKeyId ?: false)
+    }
 
     val totalQuantity = viewModel.getTotalQuantity(relatedVents)
     val productName = viewModel.getProductName(produit, productKeyId)
     val allNonTrouve = viewModel.allNonTrouve(relatedVents)
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),
@@ -100,25 +100,16 @@ fun ViewProduit_T1(
             Spacer(modifier = Modifier.height(12.dp))
 
             ListCouleurs(produitWithColors, viewModel)
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (produit != null) {
+                ViewDisponibilityEtates(product = produit)
+            }
         }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    if (produit != null) {
-        ViewDisponibilityEtates(product = produit)      //<--
-        //TODO(1): fait que ca soit a l iterieur du view produit 
-    }
 
-    if (showDialog && relatedVents.isNotEmpty() && !allNonTrouve) {
-        ModernQuantityDialog_T1(
-            clickUpdate = ClickUpdate.TotalQua,
-            colorName = "Total - $productName",
-            currentQuantity = totalQuantity,
-            onDissmiss_showQuantityDialog = { viewModel.hideProductDialog(productKeyId) },
-            onDismiss = { viewModel.hideProductDialog(productKeyId) },
-            viewModel = viewModel,
-            vent = relatedVents.first().copy(quantityAchete = totalQuantity)
-        )
-    }
 }
