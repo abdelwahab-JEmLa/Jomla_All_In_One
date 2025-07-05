@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.A.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.DebugTestsPerformInitialSearch
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable.ProcessPositioningInFactoryID1
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -30,8 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.semantics.SemanticsPropertyKey
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -115,31 +114,19 @@ fun MainFastSearchProduitPourVent(
 
                         IconButton(
                             onClick = {
-                                // Add new product to repository
                                 uiState.bProduitInfosRepository.upsert(newProduit)
 
-                                // Add corresponding color data
                                 uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(
                                     newCouleurP
                                 )
-
-                                // Update current app account if available
-                                uiState.zAppComptRepositoryComposable.currentAppCompt?.let { appCompt ->
-                                    val updatedAppCompt = appCompt.copy(
-                                        onVentM1ProduitInfosKeyID = newProduit.keyID,
-                                        onVentM1ProduitInfosDebugName = newProduit.nom
-                                    )
-                                    uiState.zAppComptRepositoryComposable.upsert(updatedAppCompt)
-                                }
-                            }
+                            },
+                            modifier = Modifier
+                                .getSemanticsTag("newProduit",newProduit)
+                                .getSemanticsTag("newCouleurP",newCouleurP)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Créer nouveau produit",
-                                modifier = Modifier.semantics(mergeDescendants = true) {
-                                    set(SemanticsPropertyKey("DebugID1"), newProduit)
-                                    set(SemanticsPropertyKey("DebugID1C2"), newCouleurP)
-                                }
                             )
                         }
                     },

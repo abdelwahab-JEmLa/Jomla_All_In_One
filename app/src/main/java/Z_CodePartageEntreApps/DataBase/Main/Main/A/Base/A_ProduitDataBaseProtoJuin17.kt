@@ -39,7 +39,7 @@ class A_ProduitDataBaseProtoJuin17(
      suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.bsonObjectId] = data
+            updates[data.keyID] = data
         }
         val firebaseRef = ArticlesBasesStatsTable.ref
         firebaseRef.updateChildren(updates).await()
