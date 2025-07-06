@@ -107,7 +107,7 @@ class GetterFocusedVars(
 
                 put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
                     getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.map {
-                        "${it.parentM1ProduitDebugInfos} / ${it.parentM1ProduitInfosKeyId} " }
+                        "${it.parentM1ProduitDebugInfos} / ${it.parentM1ProduitInfosKeyId}" }
                 )
                 put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit",
                     getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() }

@@ -220,7 +220,7 @@ data class M10OperationVentCouleur(
     val parentDebugInfosID7VentPeriod: String = "",
 ) {
     fun getDebugInfos(): String {
-       return "$keyID == $parentM1ProduitDebugInfos"
+       return "$keyID =$parentM1ProduitDebugInfos / $parentM1ProduitInfosKeyId"
     }
 
     enum class EtateDelivery {
