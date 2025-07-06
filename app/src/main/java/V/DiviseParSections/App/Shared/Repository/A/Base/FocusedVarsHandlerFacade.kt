@@ -32,7 +32,7 @@ class GetterFocusedVars(
 ) {
     // Use collectAsState or observe the repository state directly
     val currentM9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.bsonObjectId == "b1" }
+        repo9AppCompt.datasValue.firstOrNull { it.keyID ==  ParametresAppComptNonSaved().currentAppComptKeyID }
     }
 
     val onVentM8BonVent by derivedStateOf {
@@ -43,7 +43,7 @@ class GetterFocusedVars(
     val defaultM8BonVent by derivedStateOf {
         M8BonVent(
             nomClientConcerned = "Default Data",
-            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
+            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentAppComptKeyID,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
             parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod,

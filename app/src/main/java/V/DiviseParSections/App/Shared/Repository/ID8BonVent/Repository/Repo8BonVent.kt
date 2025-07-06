@@ -37,7 +37,7 @@ class Repo8BonVent(
     val defaultId8BonVent by derivedStateOf {
         M8BonVent(
             nomClientConcerned = "Default Data",
-            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().keyIdId9AppComptInfos,
+            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentAppComptKeyID,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
 
             parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod ,

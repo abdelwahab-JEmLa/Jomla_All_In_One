@@ -146,7 +146,6 @@ class Repo10OperationVentCouleur(
             parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
-            parentZAppComptID = zCompt.bsonObjectId,
             quantityAchete = quantity,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
             type = M10OperationVentCouleur.Type.CommandeDeLui,

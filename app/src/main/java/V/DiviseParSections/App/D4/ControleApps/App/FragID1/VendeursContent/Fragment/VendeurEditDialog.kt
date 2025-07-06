@@ -49,7 +49,6 @@ fun VendeurEditDialog(
 
     // State for form fields
     val nom by remember { mutableStateOf(vendeur.nom) }
-    val vid by remember { mutableStateOf(vendeur.vid.toString()) }
     var hideAppScreen by remember { mutableStateOf(vendeur.hideAppScreen) }
     var migreSonDataBaseAuStart by remember { mutableStateOf(vendeur.migreSonDataBaseAuStart) }
     var mainData by remember { mutableStateOf(vendeur) }
@@ -116,9 +115,7 @@ fun VendeurEditDialog(
             TextButton(
                 onClick = {
                     // Validate and create updated vendeur
-                    val updatedVid = vid.toLongOrNull() ?: vendeur.vid
                     val updatedVendeur = vendeur.copy(
-                        vid = updatedVid,
                         nom = nom.trim(),
                         hideAppScreen = hideAppScreen,
                         migreSonDataBaseAuStart = migreSonDataBaseAuStart,

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 data class VendeursUiState(
     val vendeurs: List<Z_AppCompt> = emptyList(),
     val periodes: List<MVentPeriode> = emptyList(),
-    val activeVendeurId: Long = 0L,
+    val activeVendeurKeyId: String = "",
     val activePeriodeId: Long = 0L,
 )
 
@@ -54,14 +54,14 @@ open class VendeursViewModel(
     private fun loadData() {
         val vendeurs = vendeurRepository.datasValue
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = getter.repo9AppCompt.currentAppCompt?.vid
+        val activeVendeurId = getter.repo9AppCompt.currentAppCompt?.keyID
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = activeVendeurId?.let {
             VendeursUiState(
                 vendeurs = vendeurs,
                 periodes = periodes,
-                activeVendeurId = it,
+                activeVendeurKeyId = it,
                 activePeriodeId = activePeriodeId
             )
         }!!
@@ -70,8 +70,7 @@ open class VendeursViewModel(
     fun addNewPeriode() {
         viewModelScope.launch {
             val newPeriode = MVentPeriode(
-                vendeur_ParentVID = uiState.value.activeVendeurId,
-
+                parentM9AppComptKeyID = uiState.value.activeVendeurKeyId,
             )
 
             periodeVentRepository.addDataAndReturneItVID(newPeriode) {
@@ -111,10 +110,10 @@ open class VendeursViewModel(
     }
 
     fun setActiveVendeur(id: Long) {
-        _uiState.value = _uiState.value.copy(activeVendeurId = id)
+        _uiState.value = _uiState.value.copy(activeVendeurKeyId = id.toString())
 
         // Call the method on the repository instance with the ID
-        repository.updateActiveIdDe_1_5_Vendeur(id)
+      //  repository.updateActiveIdDe_1_5_Vendeur(keyID)
     }
 
 

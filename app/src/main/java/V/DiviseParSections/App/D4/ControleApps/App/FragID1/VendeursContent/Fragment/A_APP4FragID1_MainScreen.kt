@@ -117,7 +117,7 @@ fun VendeursContent(
                     )
 
                     Text(
-                        text = "Active _012_ComptsVendeurs ID: ${uiState.activeVendeurId}",
+                        text = "Active _012_ComptsVendeurs ID: ${uiState.activeVendeurKeyId}",
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -127,7 +127,7 @@ fun VendeursContent(
                 items(uiState.vendeurs) { vendeur ->
                     VendeurItem(
                         vendeur = vendeur,
-                        isActive = vendeur.vid == uiState.activeVendeurId,
+                        isActive = vendeur.keyID == uiState.activeVendeurKeyId,
                         onVendeurSelected = onVendeurSelected,
                         onVendeurUpdate = onVendeurUpdate
                     )

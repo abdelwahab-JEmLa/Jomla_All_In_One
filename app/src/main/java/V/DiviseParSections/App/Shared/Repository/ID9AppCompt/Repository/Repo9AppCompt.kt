@@ -31,7 +31,7 @@ class Repo9AppCompt(
     val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
-        datasValue.firstOrNull { it.bsonObjectId == "b1" }
+        datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentAppComptKeyID }
     }
 
     init {
@@ -39,6 +39,7 @@ class Repo9AppCompt(
             dao.getAllFlow().collect { _datas.value = it }
         }
     }
+
     fun add(data: Z_AppCompt) {
         val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
@@ -56,7 +57,7 @@ class Repo9AppCompt(
 
     fun upsert(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
-            ancien.bsonObjectId == data.bsonObjectId
+            ancien.keyID == data.keyID
         }
 
 
@@ -159,7 +160,6 @@ data class Z_AppCompt(
 
     val bOuvertDialogMapMarqueHClientKey: String = "",
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
-    var bsonObjectId: String = getPushFireBase(ref),
     var KeyByParent: String = "",
     var vid: Long = 1,
     ) {

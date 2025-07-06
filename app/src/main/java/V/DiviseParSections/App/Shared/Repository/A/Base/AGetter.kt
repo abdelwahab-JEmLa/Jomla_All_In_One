@@ -36,8 +36,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
-    val keyIdId9AppComptInfos: String = "t1",
-    val debugNameId9AppComptInfos: String = "Abdelwahab",
+    val currentAppComptKeyID: String = "-OUVIQutuM5NQzSEqjV8",
+
+    val debugNameId9AppComptInfos: String = "",
 
     val keyIdId7VentPeriod: String = "-OU9Xi8t6tbGKf_IisuB",
     val debugNameId7VentPeriod: String = "Juin_30__8_00",

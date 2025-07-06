@@ -101,6 +101,7 @@ data class MVentPeriode(
 
     // Section InfosDeBase
     var vendeur_ParentVID: Long = 0L,
+    var parentM9AppComptKeyID: String = "",
     var startDateInString: String = "",
     var heurDebutInString: String = SimpleDateFormat(
         "HH:mm",

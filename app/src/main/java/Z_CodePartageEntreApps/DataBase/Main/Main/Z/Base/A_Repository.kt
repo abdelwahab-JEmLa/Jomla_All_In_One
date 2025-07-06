@@ -65,9 +65,9 @@ class Z_AppComptRepositoryProtoJuin17(
                         for (child in snapshot.children) {
                             try {
                                 child.getValue(Z_AppCompt::class.java)?.let { entity ->
-                                    val entityWithKey = entity.copy(bsonObjectId = child.key ?: "")
+                                    val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
-                                        val localEntity = dao.getAll().find { it.bsonObjectId == entityWithKey.bsonObjectId }
+                                        val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
                                         if (localEntity == null) {
                                             true
                                         } else {
@@ -110,11 +110,10 @@ class Z_AppComptRepositoryProtoJuin17(
         }
     }
 
-
     private suspend fun batchFireBaseUpdateZ_AppCompt(datas: List<Z_AppCompt>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.bsonObjectId] = data
+            updates[data.keyID] = data
         }
         repoRef.updateChildren(updates).await()
     }
