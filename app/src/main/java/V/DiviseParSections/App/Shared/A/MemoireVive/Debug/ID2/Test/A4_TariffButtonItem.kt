@@ -37,13 +37,11 @@ fun TariffButtonItem(
     nombreUnite: Int= 10,
     context: Context,
 ) {
-    // Both types are treated as editable tariffs with the same UI behavior
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
 
-    // Check if this is an editable tariff type (both DEFINI and DefiniParGerant2)
     val isEditableTariff = typeTarification == TypeTarificationEnumT2.DEFINI ||
             typeTarification == TypeTarificationEnumT2.DefiniParGerant2
 
