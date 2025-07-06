@@ -113,13 +113,48 @@ fun QuantityDisplay(
                 )
             }
         }
+        val datasValue = viewModel.aCentral.getter.repo13TarificationInfos.datasValue
+        val itsChezGroApp =
+            viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
 
+        val findTariff = datasValue
+            .lastOrNull { tarif ->
+                val match =
+                    tarif.typeChoisi == M13TarificationInfos.TypeChoisi.DefiniParGerant2 &&
+                            tarif.parentM1ProduitInfosKeyId == produit.keyID
+                match
+            }
+
+        val prixVent = if (itsChezGroApp == true) {
+            val prixAchatDepuitGrossistGerant = findTariff?.prixCurrency
+            when {
+                prixAchatDepuitGrossistGerant != null && prixAchatDepuitGrossistGerant > 0 -> {
+                    "Gérant: ${String.format("%.2f", prixAchatDepuitGrossistGerant)}"
+                }
+
+                produit.prixAchat > 0.0 -> {
+                    "Autres Grossissts: ${String.format("%.2f", produit.prixAchat)}"
+                }
+
+                else -> {
+                    "Non défini"
+                }
+            }
+        } else {
+            if (produit.prixVent > 0.0) {
+                "P.V: ${String.format("%.2f", produit.prixVent)}"
+            } else {
+                "Prix non défini"
+            }
+        }
         // Price Card - Separate card
         Surface(
             shape = RoundedCornerShape(20.dp),
             color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             else MaterialTheme.colorScheme.secondary,
             modifier = Modifier
+                .getSemanticsTag("repo13TarificationInfos", datasValue)
+                .getSemanticsTag("findTariff", findTariff, 2)
                 .clickable(enabled = !allNonTrouve) {
                     viewModel.setterFocusedVarsHandlerFacade.focucePourPrixDeM1ProduitFacade(produit)
                     onQuantityClickToHaptic()
@@ -130,36 +165,7 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val itsChezGroApp =
-                    viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
 
-                val prixVent = if (itsChezGroApp == true) {
-                    val prixAchatDepuitGrossistGerant = viewModel.aCentral.getter.repo13TarificationInfos.datasValue
-                        .find { tarif ->
-                            val match =
-                                tarif.typeChoisi == M13TarificationInfos.TypeChoisi.DefiniParGerant2 &&
-                                        tarif.parentM1ProduitInfosKeyId == produit.keyID
-                            match
-                        }?.prixCurrency
-
-                    when {
-                        prixAchatDepuitGrossistGerant != null && prixAchatDepuitGrossistGerant > 0 -> {
-                            "Gérant: ${String.format("%.2f", prixAchatDepuitGrossistGerant)}"
-                        }
-                        produit.prixAchat > 0.0 -> {
-                            "Autres Grossissts: ${String.format("%.2f", produit.prixAchat)}"
-                        }
-                        else -> {
-                            "Non défini"
-                        }
-                    }
-                } else {
-                    if (produit.prixVent > 0.0) {
-                        "P.V: ${String.format("%.2f", produit.prixVent)}"
-                    } else {
-                        "Prix non défini"
-                    }
-                }
 
                 Text(prixVent)
 

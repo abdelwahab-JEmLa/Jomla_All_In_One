@@ -126,8 +126,8 @@ class BSetterFacade(
         repo9AppCompt.add(defaultGeneratedCompt)
     }
 
-    fun addGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
-       repo13TarificationInfos.add(latestTariffLocalData)
+    fun addOrUpdateGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
+       repo13TarificationInfos.upsert(latestTariffLocalData)
     }
 
     companion object {
