@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
-import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
@@ -23,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Calendar
 
 @Stable
 class Repo13TarificationInfos(
@@ -137,23 +135,6 @@ data class M13TarificationInfos(
 
     fun withProperDefaults(): M13TarificationInfos {
         return this
-    }
-
-
-    @SuppressLint("DefaultLocale")
-    fun getStrDateTime(vidTimestamp: Long): String {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = vidTimestamp
-
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        val second = calendar.get(Calendar.SECOND)
-
-        // Format: yyyy-mm-dd -< HH:mm:ss
-        return String.format("%04d-%02d-%02d -< %02d:%02d:%02d", year, month, day, hour, minute, second)
     }
 
     companion object{

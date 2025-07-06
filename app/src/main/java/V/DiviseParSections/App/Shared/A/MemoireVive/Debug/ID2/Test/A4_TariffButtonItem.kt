@@ -45,7 +45,12 @@ fun TariffButtonItem(
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
-    var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
+    var latestTariffLocalData by remember { mutableStateOf(
+        latestTariff.copy(
+            parentM1ProduitInfosKeyId = produit.keyID ,
+            parentM1ProduitDebugInfos = produit.nom
+        )
+    ) }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
