@@ -276,8 +276,7 @@ fun FilterDropdownMenu(
             // It appears in the dropdown menu when enablePrixAchatTimeFilter is true
             if (filterState.enablePrixAchatTimeFilter) {
                 item {
-                    OutlinedTextField(          //<--
-                    //TODO(1): fait que si 1 ca veut dite hier mem si la defrence on heur n ai pas un jour comme dons getTimeDifferenceInArabic
+                    OutlinedTextField(
                         value = filterState.prixAchatTimeFilterDays,
                         onValueChange = {
                             // Only allow numeric input

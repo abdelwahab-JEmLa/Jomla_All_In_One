@@ -73,6 +73,7 @@ enum class TypeTarificationEnumT2(
     val nomArabe: String ="",
 ) {
     LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800),"فائدة محققة مع لاضا كثير من الزيناء"),
+    DefiniParGerant2(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B),""),
     DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
     Historique(Icons.Filled.History, Color(0xFF2196F3),"السعر الذي وصلنا له"),
     PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة ")

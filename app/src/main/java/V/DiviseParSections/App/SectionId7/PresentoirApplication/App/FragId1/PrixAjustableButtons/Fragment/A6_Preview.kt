@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.TariffsButtonsSec7ID2
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

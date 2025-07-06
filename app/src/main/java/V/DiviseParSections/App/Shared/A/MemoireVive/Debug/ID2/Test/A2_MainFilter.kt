@@ -1,18 +1,17 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
-import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -20,7 +19,7 @@ fun MainFilter(
     tarificationList: List<D_TarificationInfos>,
     bonAchatList: List<M8BonVent>,
     produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
-    produitInfosList: SnapshotStateList<A_ProduitInfos>,
+    produitInfosList: List<ArticlesBasesStatsTable>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
@@ -38,7 +37,7 @@ fun MainFilter(
     }
 
     val filteredProduit = remember(produitInfosList, filterProduitID) {
-        produitInfosList.find { it.id.toInt() == filterProduitID } ?: A_ProduitInfos()
+        produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
     }
 
     val idClientFiltruer = remember(bonAchatList, filterBonID) {
@@ -58,10 +57,6 @@ fun MainFilter(
         }
     }
 
-    /*  Card {
-          Text("produitAcheteOperationList$produitAcheteOperationList")
-      }       */
-
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
         operation.produitAcheterID == filteredProduit.id &&
                 operation.parentIdClient == idClientFiltruer
@@ -75,7 +70,7 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
-            viewModel=viewModel,
+            viewModel =viewModel,
             filteredProduit = filteredProduit,
             showLabels = showLabels,
             clientLastHistoricalPrice = clientLastHistoricalPrice,

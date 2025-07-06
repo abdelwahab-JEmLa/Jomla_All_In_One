@@ -1,10 +1,9 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -20,13 +19,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class UiState(
     var produitInfosListDepuitAncienDataBase: SnapshotStateList<_2_1_ProduitsDataBase> = mutableStateListOf(),
-    var produitInfosList: SnapshotStateList<A_ProduitInfos> = mutableStateListOf(),
     var bonAchatList: List<M8BonVent> = emptyList(),
     var produitAcheteOperationList: List<_1_2_ProduitAcheteOperation> = emptyList(),
     var tariffsList: List<D_TarificationInfos> = emptyList(),
@@ -48,8 +45,7 @@ class TariffsButtonsViewModelSec7ID2(
 
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
-    private val produitRepository = repo_0_0_HeadSQLRepositorys.repositorys_Model
-        ._2_1_ProduitsDataBase_Repository
+    private val produitRepository = getter.repoM1ProduitInfos
 
     private val repoC3_BonVent = getter.id8BonVentRepository
 
@@ -108,49 +104,8 @@ class TariffsButtonsViewModelSec7ID2(
             }
 
             try {
-                progressJob = launch {
-                    combine(
-                        produitRepository.progressRepo,
-                        repositoryC2_ProduitAcheteOperation.progressRepo,
-                        groupedDataBasesRepository.mainProgressRepo
-                    ) { produitProgress, produitAcheteProgress, sqlProgress ->
-
-                        val validProduitProgress = produitProgress.coerceIn(0f, 1f)
-                        val validProduitAcheteProgress = produitAcheteProgress.coerceIn(0f, 1f)
-                        val validSqlProgress = sqlProgress.coerceIn(0f, 1f)
-
-                        val totalProgress =
-                            (validProduitProgress + validProduitAcheteProgress + validSqlProgress) / 4f
-
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                loadingProgress = totalProgress.coerceIn(0f, 1f),
-                                isDataSyncing = totalProgress < 1f,
-                                hasStartedLoading = true
-                            )
-                        }
-
-                        Pair(
-                            validProduitProgress,
-                            Pair(validProduitAcheteProgress, validSqlProgress)
-                        )
-                    }.collect { (firstPair, secondPair) ->
-                        val produitProg = firstPair
-                        val (produitAcheteProg, sqlProg) = secondPair
-
-                        if (produitProg >= 1f && produitAcheteProg >= 1f && sqlProg >= 1f) {
-                            _uiState.update {
-                                it.copy(
-                                    isDataSyncing = false,
-                                    loadingProgress = 1f
-                                )
-                            }
-                        }
-                    }
-                }
 
                 var tariffsList = emptyList<D_TarificationInfos>()
-                var a_produitList = emptyList<A_ProduitInfos>()
 
                 launch {
                     groupedDataBases_modelListFlow.collect { dataBaseInfosList ->
@@ -171,16 +126,6 @@ class TariffsButtonsViewModelSec7ID2(
                             tariffsList = newTariffsList
                             _uiState.update { currentState ->
                                 currentState.copy(tariffsList = tariffsList)
-                            }
-                        }
-
-                        // Update produit infos list if changed
-                        if (newProduitInfosList != a_produitList) {
-                            a_produitList = newProduitInfosList
-                            _uiState.update { currentState ->
-                                currentState.produitInfosList.clear()
-                                currentState.produitInfosList.addAll(a_produitList)
-                                currentState
                             }
                         }
                     }
@@ -237,35 +182,6 @@ class TariffsButtonsViewModelSec7ID2(
 
                 launch {
                     try {
-                        val repoSize = produitRepository.modelDatasSnapList.size
-
-                        if (repoSize > 0) {
-                            val productsList = produitRepository.modelDatasSnapList.toList()
-
-                            _uiState.update { currentState ->
-                                currentState.produitInfosListDepuitAncienDataBase.clear()
-                                currentState.produitInfosListDepuitAncienDataBase.addAll(
-                                    productsList
-                                )
-                                currentState
-                            }
-                        }
-
-                        produitRepository.progressRepo.collect { progress ->
-                            if (progress >= 1f) {
-                                val updatedProductsList =
-                                    produitRepository.modelDatasSnapList.toList()
-                                if (updatedProductsList.isNotEmpty()) {
-                                    _uiState.update { currentState ->
-                                        currentState.produitInfosListDepuitAncienDataBase.clear()
-                                        currentState.produitInfosListDepuitAncienDataBase.addAll(
-                                            updatedProductsList
-                                        )
-                                        currentState
-                                    }
-                                }
-                            }
-                        }
 
                     } catch (e: Exception) {
                         // Handle error silently
@@ -299,7 +215,6 @@ class TariffsButtonsViewModelSec7ID2(
         }
 
         _uiState.value.produitInfosListDepuitAncienDataBase.clear()
-        _uiState.value.produitInfosList.clear() // Also clear the new produit infos list
 
         loadTariffs()
     }

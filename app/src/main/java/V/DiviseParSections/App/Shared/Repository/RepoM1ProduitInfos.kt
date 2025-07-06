@@ -129,6 +129,7 @@ data class ArticlesBasesStatsTable(
 
     // Section InfosCoutes
     var prixVent: Double = 0.0,
+    var gerant2PrixVent: Double = 0.0,
     var cachePrixVent: Boolean = false,
 
     var prixAchat: Double = 0.0,

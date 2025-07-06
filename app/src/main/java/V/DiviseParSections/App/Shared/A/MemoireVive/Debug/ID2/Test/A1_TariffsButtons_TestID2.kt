@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.Common.Components.ModernToastMessage
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
-import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -44,9 +43,8 @@ fun TariffsButtonsSec7ID2(
     val bonAchatList = viewModel.getter.id8BonVentRepository.datasValue
     val tarificationList = uiState.tariffsList
     val produitAcheteOperationList = uiState.produitAcheteOperationList
-    val produitInfosList = uiState.produitInfosList
+    val datasValueDeM1ProduitInfos = viewModel.aCentral.getter.repoM1ProduitInfos.datasValue
 
-    // Watch for changes in the focused product
     val focusedProduct by remember {
         derivedStateOf {
             viewModel.aCentral.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur
@@ -70,15 +68,14 @@ fun TariffsButtonsSec7ID2(
     }
 
     val keyID = focusedProduct?.keyID
-    val datasValuedeM1ProduitInfos = viewModel.aCentral.getter.repoM1ProduitInfos.datasValue
-    val filterProductId = datasValuedeM1ProduitInfos.find { it.keyID == keyID }?.id
+    val filterProductId = datasValueDeM1ProduitInfos.find { it.keyID == keyID }?.id
     val m1produitInfos by remember {
         derivedStateOf {
-            datasValuedeM1ProduitInfos.find { it.id.toInt().toLong() == filterProductId }
+            datasValueDeM1ProduitInfos.find { it.id.toInt().toLong() == filterProductId }
         }
     }
 
-    LaunchedEffect(produitInfosList.size, suspendFunction1(produitInfosList, viewModel))
+    LaunchedEffect(datasValueDeM1ProduitInfos.size, suspendFunction1(datasValueDeM1ProduitInfos, viewModel))
 
     val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
@@ -131,7 +128,7 @@ fun TariffsButtonsSec7ID2(
                         tarificationList = tarificationList,
                         bonAchatList = bonAchatList,
                         produitAcheteOperationList = produitAcheteOperationList,
-                        produitInfosList = produitInfosList,
+                        produitInfosList = datasValueDeM1ProduitInfos,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),
                         filterBonID = bonVentComQuiFilterButtons.vid,
@@ -156,7 +153,7 @@ fun TariffsButtonsSec7ID2(
 
 @Composable
 private fun suspendFunction1(
-    produitInfosList: SnapshotStateList<A_ProduitInfos>,
+    produitInfosList: List<ArticlesBasesStatsTable>,
     viewModel: TariffsButtonsViewModelSec7ID2
 ): suspend CoroutineScope.() -> Unit = {
     if (produitInfosList.isEmpty()) {

@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.ViewModel.TariffsButtonsViewModelSec7ID2
-import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainList(
     viewModel: TariffsButtonsViewModelSec7ID2,
-    filteredProduit: A_ProduitInfos,
+    filteredProduit: ArticlesBasesStatsTable,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     clientLastHistoricalPrice: Double,
@@ -89,7 +89,7 @@ fun MainList(
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
-                    nombreUnite = filteredProduit.nmbrUnite
+                    nombreUnite = filteredProduit.nombreUniteInt
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
