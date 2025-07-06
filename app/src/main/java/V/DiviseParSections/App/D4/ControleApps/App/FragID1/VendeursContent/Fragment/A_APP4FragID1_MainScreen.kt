@@ -54,8 +54,6 @@ fun A_APP4FragID1_MainScreen(
         nomsMutableTags = addStringAuNomsMutableTags("Abdelwahab").joinToString(",")
     }
 
-    val functionAdd = viewModel.aCentralFacade.setter.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
-
     val uiState by viewModel.uiState.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -69,10 +67,9 @@ fun A_APP4FragID1_MainScreen(
             onVendeurUpdate = viewModel::update_1_5
         )
 
-        // FloatingActionButton positioned at top end
         FloatingActionButton(
             onClick = {
-                functionAdd // Execute the add function
+                viewModel.aCentralFacade.setter.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
             },
             modifier = Modifier
                 .align(Alignment.TopEnd)

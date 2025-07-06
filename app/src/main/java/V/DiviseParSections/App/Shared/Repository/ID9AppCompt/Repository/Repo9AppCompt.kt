@@ -106,7 +106,6 @@ data class Z_AppCompt(
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
 
-    // Section StatuesMutable
     // Section Options Personnel
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
 
