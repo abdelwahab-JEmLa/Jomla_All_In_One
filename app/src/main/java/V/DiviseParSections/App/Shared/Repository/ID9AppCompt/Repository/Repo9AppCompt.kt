@@ -121,7 +121,7 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection add TOu modules
 
     // Section Paramaters App telephone
-    val travailleChezGrossisst3Ali: Boolean = true,
+    val travailleChezGrossisst3Ali: Boolean = false,
 
     var mainInitDataBaseProgressEtate: Float = 0f,
 

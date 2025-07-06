@@ -8,11 +8,11 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.TariffsButton
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -94,6 +94,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     // Check if current fragment is FragmentProduitFastSearchDialog
     val itsFragmentProduitFastSearchDialog =
         activeFragment == Screen.FragmentProduitFastSearchDialog
+    val currentM9AppCompt =
+        viewModel.central.focusedVarsHandlerFacade.getter.currentM9AppCompt
+    val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
         var job: Job? = null
@@ -224,7 +227,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             ) {
 
                 if (showButtons) {
-                    if (!itsFragmentProduitFastSearchDialog) {
+                    if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali==false) {
                         B1CataloguesAffiche(
                             appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
                             showLabels = showLabels,
