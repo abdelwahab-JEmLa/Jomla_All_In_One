@@ -37,10 +37,15 @@ fun TariffButtonItem(
     nombreUnite: Int= 10,
     context: Context,
 ) {
+    // Both types are treated as editable tariffs with the same UI behavior
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
+
+    // Check if this is an editable tariff type (both DEFINI and DefiniParGerant2)
+    val isEditableTariff = typeTarification == TypeTarificationEnumT2.DEFINI ||
+            typeTarification == TypeTarificationEnumT2.DefiniParGerant2
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -57,13 +62,14 @@ fun TariffButtonItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ElevatedCard {
-                    val labelBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                    // Use same styling for both DEFINI and DefiniParGerant2
+                    val labelBackgroundColor = if (isEditableTariff) {
                         Color.Yellow
                     } else {
                         couleurButton
                     }
 
-                    val labelTextColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                    val labelTextColor = if (isEditableTariff) {
                         Color.Black
                     } else {
                         Color.White
@@ -81,7 +87,8 @@ fun TariffButtonItem(
                     )
                 }
 
-                if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                // Show decrease button for both editable tariff types
+                if (isEditableTariff) {
                     IconButton(
                         onClick = {
                             val newPrice = (latestTariffLocalData.prixCurrency - 5.0).coerceAtLeast(0.0)
@@ -101,23 +108,24 @@ fun TariffButtonItem(
 
                 ElevatedCard(
                     onClick = {
-                        if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                        // Allow price increase for both editable tariff types
+                        if (isEditableTariff) {
                             latestTariffLocalData = latestTariffLocalData.copy(
                                 prixCurrency = latestTariffLocalData.prixCurrency + 5.0
                             )
                         }
                     }
                 ) {
-                    val pls = if (typeTarification == TypeTarificationEnumT2.DEFINI)
-                        " +" else ""
+                    // Show plus sign for both editable tariff types
+                    val pls = if (isEditableTariff) " +" else ""
 
-                    val priceBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                    val priceBackgroundColor = if (isEditableTariff) {
                         Color.Yellow
                     } else {
                         couleurButton
                     }
 
-                    val priceTextColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                    val priceTextColor = if (isEditableTariff) {
                         Color.Black
                     } else {
                         Color.White
@@ -132,22 +140,22 @@ fun TariffButtonItem(
                             color = priceTextColor
                         )
 
-                            val unitPrice = latestTariffLocalData.prixCurrency / nombreUnite
-                            Text(
-                                "س.و: ${String.format("%.2f", unitPrice)}",
-                                modifier = Modifier
-                                    .background(priceBackgroundColor.copy(alpha = 0.6f))
-                                    .padding(2.dp),
-                                color = priceTextColor,
-                                fontSize = 10.sp
-                            )
+                        val unitPrice = latestTariffLocalData.prixCurrency / nombreUnite
+                        Text(
+                            "س.و: ${String.format("%.2f", unitPrice)}",
+                            modifier = Modifier
+                                .background(priceBackgroundColor.copy(alpha = 0.6f))
+                                .padding(2.dp),
+                            color = priceTextColor,
+                            fontSize = 10.sp
+                        )
                     }
-
                 }
             }
         }
 
-        val buttonBackgroundColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+        // Use same button styling for both editable tariff types
+        val buttonBackgroundColor = if (isEditableTariff) {
             Color.Yellow
         } else {
             couleurButton
@@ -161,7 +169,7 @@ fun TariffButtonItem(
             containerColor = buttonBackgroundColor
         ) {
             typeTarification.iconVector?.let { iconVector ->
-                val iconColor = if (typeTarification == TypeTarificationEnumT2.DEFINI) {
+                val iconColor = if (isEditableTariff) {
                     Color.Black
                 } else {
                     Color.White

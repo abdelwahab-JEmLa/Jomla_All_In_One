@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainList(
     viewModel: TariffsButtonsViewModelSec7ID2,
-    filteredProduit: ArticlesBasesStatsTable,
+    produit: ArticlesBasesStatsTable,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     clientLastHistoricalPrice: Double,
@@ -29,10 +29,11 @@ fun MainList(
     onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
+    val tariffs = viewModel.aCentralFacade.getter.repo13TarificationInfos.datasValue
     val context = LocalContext.current
 
     val standardTariffs = remember(
-        filteredProduit,
+        produit,
         maxPrixArriveDuProduit,
         clientLastHistoricalPrice,
         clientDefiniTariffs
@@ -40,8 +41,9 @@ fun MainList(
         buildList {
             if (maxPrixArriveDuProduit != null &&
                 maxPrixArriveDuProduit != 0.0 &&
-                maxPrixArriveDuProduit != filteredProduit.prixVent &&
-                maxPrixArriveDuProduit > clientLastHistoricalPrice) {
+                maxPrixArriveDuProduit != produit.prixVent &&
+                maxPrixArriveDuProduit > clientLastHistoricalPrice
+            ) {
 
                 add(
                     M13TarificationInfos(
@@ -52,7 +54,8 @@ fun MainList(
             }
 
             if (clientLastHistoricalPrice != 0.0 &&
-                clientLastHistoricalPrice != filteredProduit.prixVent) {
+                clientLastHistoricalPrice != produit.prixVent
+            ) {
 
                 add(
                     M13TarificationInfos(
@@ -65,17 +68,25 @@ fun MainList(
             add(
                 M13TarificationInfos(
                     typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                    prixCurrency = filteredProduit.prixVent,
+                    prixCurrency = produit.prixVent,
                 )
             )
         }
     }
 
+    val generatedTariffDefiniParGerant2 = M13TarificationInfos(
+        id = if (tariffs.isNotEmpty()) tariffs.maxOf { it.id } + 1 else 1L,
+        parentM1ProduitDebugInfos = produit.nom,
+        parentM1ProduitInfosKeyId = produit.keyID,
+        prixCurrency = produit.prixAchat
+    )
+
     val allTariffsGroupedAndSorted = remember(clientDefiniTariffs, standardTariffs) {
-        (clientDefiniTariffs + standardTariffs)
+        (clientDefiniTariffs + standardTariffs + generatedTariffDefiniParGerant2)
             .groupBy { it.typeTarificationEnumT2Correspond }
             .toSortedMap(compareBy { it.ordinal })
     }
+
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -89,7 +100,7 @@ fun MainList(
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
-                    nombreUnite = filteredProduit.nombreUniteInt
+                    nombreUnite = produit.nombreUniteInt
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -97,7 +108,7 @@ fun MainList(
         val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
             maxPrixArriveDuProduit
         } else {
-            filteredProduit.prixVent
+            produit.prixVent
         }
 
         val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
@@ -112,8 +123,8 @@ fun MainList(
         )
 
         GerantButton(
-            viewModel=viewModel,
-            tarificationInfo=tarificationInfo,
+            viewModel = viewModel,
+            tarificationInfo = tarificationInfo,
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {

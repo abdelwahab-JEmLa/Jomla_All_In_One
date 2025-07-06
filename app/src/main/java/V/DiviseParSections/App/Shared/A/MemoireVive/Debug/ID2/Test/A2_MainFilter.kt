@@ -70,7 +70,7 @@ fun MainFilter(
     Column(modifier = modifier) {
         MainList(
             viewModel =viewModel,
-            filteredProduit = filteredProduit,
+            produit = filteredProduit,
             showLabels = showLabels,
             clientLastHistoricalPrice = clientLastHistoricalPrice,
             maxPrixArriveDuProduit = maxPrixArriveDuProduit,

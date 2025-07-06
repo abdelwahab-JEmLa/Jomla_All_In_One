@@ -4,7 +4,6 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.Model.getKeyFireBase
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -96,10 +95,16 @@ data class M13TarificationInfos(
     val id: Long = 0L,
     val keyID: String = getPushFireBase(ref),
     var creationTimestamps: Long = 0,
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var debugInfos: String = "",
 
     //Forging IDs
+
+    //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var parentM1ProduitInfosKeyId: String = "null",
+    val parentM1ProduitDebugInfos:String="null",
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     val idParentProduit: Long = 0L,
     val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 =
         TypeTarificationEnumT2.DefiniParGerant2,
