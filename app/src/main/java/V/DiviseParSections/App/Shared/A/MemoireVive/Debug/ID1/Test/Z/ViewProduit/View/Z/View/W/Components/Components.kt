@@ -127,7 +127,11 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(produit.prixVent.toString())
+                val itsChezGroApp = viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
+                val prixVent =if(itsChezGroApp == true)"P.A ${produit.prixAchat}"  else "P.V ${produit.prixVent}"
+
+                Text(prixVent)
+
                 Icon(
                     imageVector = Icons.Default.AttachMoney,
                     contentDescription = "Price",
