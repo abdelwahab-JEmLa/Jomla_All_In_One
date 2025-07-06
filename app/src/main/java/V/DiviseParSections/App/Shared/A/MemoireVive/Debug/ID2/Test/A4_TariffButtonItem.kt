@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -162,15 +163,18 @@ fun TariffButtonItem(
         } else {
             couleurButton
         }
-
+        val listFocusedM10OpeVentCouleurParPrixDifineur =
+            viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur.toMutableList()
         FloatingActionButton(
+            modifier = Modifier
+                .size(40.dp)
+                .getSemanticsTag("listFocusedM10OpeVentCouleurParPrixDifineur",listFocusedM10OpeVentCouleurParPrixDifineur)
+            ,
             onClick = {
-                val listFocusedM10OpeVentCouleurParPrixDifineur =
-                    viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur.toMutableList()
                 listFocusedM10OpeVentCouleurParPrixDifineur.map {
-                    it.provisoireMonPrix = latestTariffLocalData.prixCurrency
                     it.parentM13TarificationKeyID = latestTariff.keyID
                     it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
+                    it.provisoireMonPrix = latestTariffLocalData.prixCurrency
                 }
 
                 viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
@@ -179,7 +183,6 @@ fun TariffButtonItem(
 
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)
             },
-            modifier = Modifier.size(40.dp),
             containerColor = buttonBackgroundColor
         ) {
             typeTarification.iconVector?.let { iconVector ->
