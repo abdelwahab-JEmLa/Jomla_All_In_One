@@ -1,16 +1,21 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -18,6 +23,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -41,17 +48,45 @@ fun A_APP4FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: VendeursViewModel = koinInject(),
 ) {
+    val defaultGeneratedCompt = Z_AppCompt(
+        nom = "Abdelwahab"
+    ).apply {
+        nomsMutableTags = addStringAuNomsMutableTags("Abdelwahab").joinToString(",")
+    }
+
+    val functionAdd = viewModel.aCentralFacade.setter.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
+
     val uiState by viewModel.uiState.collectAsState()
-    VendeursContent(
-        viewModel=viewModel,
-        uiState = uiState,
-        onVendeurSelected = viewModel::setActiveVendeur,
-        onPeriodeSelected = viewModel::setActivePeriode,
-        modifier = modifier,
-        onUpdateceComptVendeurInsertBonsAchatAuPeriodID =
-            viewModel::onUpdateceComptVendeurInsertBonsAchatAuPeriodID,
-        onVendeurUpdate = viewModel::update_1_5
-    )
+
+    Box(modifier = modifier.fillMaxSize()) {
+        VendeursContent(
+            viewModel = viewModel,
+            uiState = uiState,
+            onVendeurSelected = viewModel::setActiveVendeur,
+            onPeriodeSelected = viewModel::setActivePeriode,
+            modifier = Modifier.fillMaxSize(),
+            onUpdateceComptVendeurInsertBonsAchatAuPeriodID = viewModel::onUpdateceComptVendeurInsertBonsAchatAuPeriodID,
+            onVendeurUpdate = viewModel::update_1_5
+        )
+
+        // FloatingActionButton positioned at top end
+        FloatingActionButton(
+            onClick = {
+                functionAdd // Execute the add function
+            },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp),
+            containerColor = MaterialTheme.colorScheme.primary,
+            shape = CircleShape
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Default Compte",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
 }
 
 @Composable
@@ -73,12 +108,11 @@ fun VendeursContent(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            LazyColumn(  // Changed from Column to LazyColumn to display all items
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-
                 item {
                     Text(
                         text = "Liste des Vendeurs",
@@ -93,7 +127,6 @@ fun VendeursContent(
                     SectionDivider()
                 }
 
-                // Add vendeurs as items
                 items(uiState.vendeurs) { vendeur ->
                     VendeurItem(
                         vendeur = vendeur,
@@ -119,7 +152,6 @@ fun VendeursContent(
                     SectionDivider()
                 }
 
-                // Add periodes as items
                 items(uiState.periodes) { periode ->
                     PeriodeItem(
                         periode = periode,
@@ -128,10 +160,10 @@ fun VendeursContent(
                         onUpdateceComptVendeurInsertBonsAchatAuPeriodID = onUpdateceComptVendeurInsertBonsAchatAuPeriodID
                     )
                 }
+
                 item {
                     AddPeriodeItem(
                         onAddPeriode = {
-                            // Call add function in the ViewModel to upsert add new period
                             viewModel.addNewPeriode()
                             viewModel.addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository()
                         }
@@ -157,7 +189,9 @@ fun AddPeriodeItem(
             .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Ajouter une période",
@@ -169,7 +203,8 @@ fun AddPeriodeItem(
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Ajouter une période",
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -193,10 +228,8 @@ fun VendeurItem(
     onVendeurSelected: (Long) -> Unit,
     onVendeurUpdate: (Z_AppCompt) -> Unit,
 ) {
-    // State for dialog visibility
     var showEditDialog by remember { mutableStateOf(false) }
 
-    // Determine background color based on whether this is the active vendeur
     val backgroundColor = when {
         isActive -> MaterialTheme.colorScheme.surfaceVariant
         else -> MaterialTheme.colorScheme.surface
@@ -229,7 +262,6 @@ fun VendeurItem(
                 modifier = Modifier.weight(1f)
             )
 
-            // Edit button
             IconButton(
                 onClick = {
                     showEditDialog = true
@@ -242,22 +274,18 @@ fun VendeurItem(
                 )
             }
 
-            // Visibility toggle button
             IconButton(
                 onClick = {
-                    // Toggle hideAppScreen property and update_showDetailsExpanded the vendeur
                     val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
                     onVendeurUpdate(updatedVendeur)
                 }
             ) {
-                // Change icon based on hideAppScreen status
                 val icon = if (vendeur.hideAppScreen) {
                     Icons.Default.VisibilityOff
                 } else {
                     Icons.Default.Visibility
                 }
 
-                // Change icon color
                 val tint = if (vendeur.hideAppScreen) {
                     Color.Gray
                 } else {
@@ -279,8 +307,6 @@ fun VendeurItem(
         )
     }
 
-    // Ed
-    // it Dialog
     if (showEditDialog) {
         VendeurEditDialog(
             vendeur = vendeur,
@@ -301,16 +327,11 @@ fun PeriodeItem(
     onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
 ) {
     val viewModel: VendeursViewModel = koinInject()
-
     val activeVendeur = viewModel.getActiveVendeur()
 
-    // Check if this period is the one upsert for ceComptVendeurInsertBonsAchatAuPeriodID
     val isInsertPeriod = activeVendeur?.ceComptVendeurInsertBonsAchatAuPeriodID == periode.vid
-
-    // Check if this period is the one upsert for ceComptVendeurStartAffichePeriod
     val isStartAffichePeriod = activeVendeur?.ceComptVendeurStartAffichePeriod == periode.vid
 
-    // Determine background color based on whether this is the start display period
     val backgroundColor = when {
         isStartAffichePeriod -> MaterialTheme.colorScheme.primaryContainer
         isActive -> MaterialTheme.colorScheme.surfaceVariant
@@ -344,18 +365,15 @@ fun PeriodeItem(
 
             IconButton(
                 onClick = {
-                    // Call function to update_showDetailsExpanded comptVendeurInsertBonsAchatAuPeriodID
                     onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
                 }
             ) {
-                // Change icon based on whether this is the insert period
                 val icon = if (isInsertPeriod) {
                     Icons.Default.Check
                 } else {
                     Icons.Default.Add
                 }
 
-                // Change icon color based on status
                 val tint = if (isInsertPeriod) {
                     Color.Green
                 } else {

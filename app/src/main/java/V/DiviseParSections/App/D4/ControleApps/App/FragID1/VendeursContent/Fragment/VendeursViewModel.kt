@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Repository._01_VentsHistoriquesDataBase_Repository
@@ -23,6 +24,7 @@ data class VendeursUiState(
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
+    val  aCentralFacade: ACentralFacade,
     val getter: AGetter,
     private val repository: GroupeRepositorysProtoAvJuin3,
     private val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
@@ -32,7 +34,7 @@ open class VendeursViewModel(
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
-    private val vendeurRepository = getter.id9AppComptRepository
+    private val vendeurRepository = getter.repo9AppCompt
     private val periodeVentRepository = repository.repositorys_Model.repositoryMVentPeriode
 
     init {
@@ -52,7 +54,7 @@ open class VendeursViewModel(
     private fun loadData() {
         val vendeurs = vendeurRepository.datasValue
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = getter.id9AppComptRepository.currentAppCompt?.vid
+        val activeVendeurId = getter.repo9AppCompt.currentAppCompt?.vid
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = activeVendeurId?.let {
@@ -102,7 +104,7 @@ open class VendeursViewModel(
 
     // Add this method to the VendeursViewModel class
     fun getActiveVendeur(): Z_AppCompt? =
-        getter.id9AppComptRepository.currentAppCompt
+        getter.repo9AppCompt.currentAppCompt
 
 
     fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {

@@ -70,7 +70,7 @@ class AGetter(
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
-    val id9AppComptRepository: Repo9AppCompt,
+    val repo9AppCompt: Repo9AppCompt,
     val repo13TarificationInfos: Repo13TarificationInfos,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
@@ -132,7 +132,7 @@ class AGetter(
     }
 
     fun getVent(couleurKey: String, produitId: Long): M10OperationVentCouleur? {
-        val ouvertData = id9AppComptRepository.currentAppCompt ?: return null
+        val ouvertData = repo9AppCompt.currentAppCompt ?: return null
 
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.onVentHVentPeriodKeyId
@@ -154,7 +154,7 @@ class AGetter(
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {
         val catalogueFilterId =
-            id9AppComptRepository.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
+            repo9AppCompt.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
 
         val catalogues = B4CatalogueCategoriesRepository().associateBy { it.key }
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this

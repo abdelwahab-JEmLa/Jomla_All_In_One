@@ -13,7 +13,7 @@ class ClientOperations(
 
     private val hClientRepository: Repo2Client
 ) {
-    val zAppComptRepositoryComposable = getter.id9AppComptRepository
+    val zAppComptRepositoryComposable = getter.repo9AppCompt
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
         val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID

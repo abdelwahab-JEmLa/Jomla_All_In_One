@@ -46,7 +46,7 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
     audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler = koinInject(),
     clientId: Long? = null,
 ) {
-   val activeCompt= viewModel.getter.id9AppComptRepository.currentAppCompt
+   val activeCompt= viewModel.getter.repo9AppCompt.currentAppCompt
 
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         activeCompt

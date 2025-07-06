@@ -46,7 +46,7 @@ fun AfficheurRegleOuvert(
                 .padding(12.dp)
                 .testTag("test")
         ) {
-            val activeCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
+            val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
 
             activeCompt?.let { activeCompt ->
                 val relatedClientactiveTransaction =

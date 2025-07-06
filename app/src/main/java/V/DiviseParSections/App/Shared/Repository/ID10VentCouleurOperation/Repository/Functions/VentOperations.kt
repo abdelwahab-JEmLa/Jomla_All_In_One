@@ -8,7 +8,7 @@ class VentOperations(
     private val getter: AGetter,
     private val fVentCouleurOperationRepository: Repo10OperationVentCouleur
 ) {
-    val zAppComptRepositoryComposable = getter.id9AppComptRepository
+    val zAppComptRepositoryComposable = getter.repo9AppCompt
 
     fun updateListRelativeVentCouleurPrixVent(
         produitKey: String?,

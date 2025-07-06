@@ -22,7 +22,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
     val  setterFocusedVarsHandlerFacade =central.focusedVarsHandlerFacade.setter
     val  getterFocusedVarsHandlerFacade =central.focusedVarsHandlerFacade.getter
     val  setter =central.focusedVarsHandlerFacade.setter
-    val appComptComposeRepositoryProtoJuin17 = getter.id9AppComptRepository
+    val appComptComposeRepositoryProtoJuin17 = getter.repo9AppCompt
 
     data class UiState(
         val setter: SetterFocusedVars,
@@ -42,7 +42,7 @@ class ViewModelPresistantButtonsSec8FWinID1(
         setter =central.focusedVarsHandlerFacade.setter,
         id8BonVentRepository =getter.id8BonVentRepository,
         hClientRepository =getter.iD2ClientRepository,
-        zAppComptRepositoryComposable =getter.id9AppComptRepository
+        zAppComptRepositoryComposable =getter.repo9AppCompt
     ))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 

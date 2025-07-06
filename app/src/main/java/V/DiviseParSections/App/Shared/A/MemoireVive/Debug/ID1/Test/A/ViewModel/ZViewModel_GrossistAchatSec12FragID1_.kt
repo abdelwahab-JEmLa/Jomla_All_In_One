@@ -33,7 +33,7 @@ class ViewModelMainFastSearchProduitPourVent(
             id8BonVentRepository = aCentral.getter.id8BonVentRepository,
             iD2ClientRepository = aCentral.getter.iD2ClientRepository,
             b1CouleurOuGoutProduitDataBaseRepository = aCentral.getter.repo3CouleurProduitInfos,
-            zAppComptRepositoryComposable = aCentral.getter.id9AppComptRepository,
+            zAppComptRepositoryComposable = aCentral.getter.repo9AppCompt,
         )
     )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

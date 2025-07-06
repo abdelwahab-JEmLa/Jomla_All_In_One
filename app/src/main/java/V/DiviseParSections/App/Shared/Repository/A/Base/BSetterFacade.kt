@@ -11,6 +11,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import com.google.firebase.database.DatabaseReference
 
@@ -22,12 +24,12 @@ class BSetterFacade(
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    private val repo9AppCompt: Repo9AppCompt,
     private val repo13TarificationInfos: Repo13TarificationInfos,
 
     private val ventOperations: VentOperations,
 ) {
     val id8BonVentRepository = getter.id8BonVentRepository
-    val id9AppComptRepository = getter.id9AppComptRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val hClientRepository = getter.iD2ClientRepository
 
@@ -92,7 +94,7 @@ class BSetterFacade(
             produit,
             colorIndex,
             quantity,
-            getter.id9AppComptRepository,
+            getter.repo9AppCompt,
             getter,
         )
     }
@@ -125,6 +127,10 @@ class BSetterFacade(
 
     fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) =
         ventOperations.toggleEtateDeliveryNonTrouveVentOu(produitKey)
+
+    fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
+        repo9AppCompt.add(defaultGeneratedCompt)
+    }
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =

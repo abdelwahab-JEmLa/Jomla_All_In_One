@@ -41,7 +41,7 @@ class WifiTransferDatas(
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     val appComptComposeRepositoryProtoJuin17 =
-        a_CentralCompoRepositoryProtoJuin9.id9AppComptRepository
+        a_CentralCompoRepositoryProtoJuin9.repo9AppCompt
 
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()

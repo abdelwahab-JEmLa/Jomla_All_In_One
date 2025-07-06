@@ -17,6 +17,7 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 @Stable
@@ -38,6 +39,20 @@ class Repo9AppCompt(
             dao.getAllFlow().collect { _datas.value = it }
         }
     }
+    fun add(data: Z_AppCompt) {
+        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        ancienRepo.addOrUpdatedDataBase(-1, dataUpdate)
+    }
+
 
     fun upsert(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
@@ -79,17 +94,14 @@ class Repo9AppCompt(
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
-    var bsonObjectId: String = getPushFireBase(ref),
     var keyID: String = getPushFireBase(ref),
-
-    var KeyByParent: String = "Abdelwahab",
-
-    var vid: Long = 1,
+    var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
+    var type: Type = Type.NON_DEFINIE,
 
     // Section InfosDeBase
     var nom: String = "",
-    var nomMutable: String = "",
+    var nomsMutableTags: String = "",
 
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
@@ -147,17 +159,44 @@ data class Z_AppCompt(
     //------------------------------------------------------------------------------------------------------------------------------------------------
 
     val bOuvertDialogMapMarqueHClientKey: String = "",
-) {
-
-    fun getKeyIdByParent(): String {
-        return nom.ifEmpty { "DefaultCompt" }
+    //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
+    var bsonObjectId: String = getPushFireBase(ref),
+    var KeyByParent: String = "",
+    var vid: Long = 1,
+    ) {
+    enum class Type  {
+        NON_DEFINIE,
+        TravailleChezGrossisst3Ali
     }
 
-    init {
-        if (nomMutable.isEmpty()) {
-            nomMutable = getInitCreationName()
+    // Updated addStringAuNomsMutableTags function in Z_AppCompt class
+    fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
+        val currentTags = if (nomsMutableTags.isNotEmpty()) {
+            nomsMutableTags.split(",").map { it.trim() }
+        } else {
+            emptyList()
+        }
+
+        return if (currentTags.contains(str)) {
+            currentTags
+        } else {
+            currentTags + str
         }
     }
+
+    // Updated getListNomsMutableTags function in Z_AppCompt class
+    fun Z_AppCompt.getListNomsMutableTags(): List<String> {
+        return if (nomsMutableTags.isNotEmpty()) {
+            nomsMutableTags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        } else {
+            emptyList()
+        }
+    }
+    
+    fun getDebugInfos(): String {
+        return "M9== $nom "
+    }
+
 
     fun getInitCreationName(): String {
         return nom.ifEmpty { "DefaultCompt" }

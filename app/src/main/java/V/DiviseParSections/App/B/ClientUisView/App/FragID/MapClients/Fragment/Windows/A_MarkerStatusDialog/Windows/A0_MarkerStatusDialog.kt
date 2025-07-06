@@ -134,7 +134,7 @@ fun MarkerStatusDialog(
                             onShowPhoneDialogChange = { showPhoneDialog = it },
                         )
                     }
-                    val activeCompt = viewModel.getter.id9AppComptRepository.currentAppCompt
+                    val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
                     val activeClient = viewModel.getter.iD2ClientRepository.onVentId2ClientInfos
                     activeCompt?.let { activeCompt ->
                         if (activeClient != null) {
@@ -222,7 +222,7 @@ fun MarkerStatusDialog(
                                             )
                                     }
 
-                                    val activeCompt= viewModel.getter.id9AppComptRepository.currentAppCompt
+                                    val activeCompt= viewModel.getter.repo9AppCompt.currentAppCompt
                                     activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
                                             item {
