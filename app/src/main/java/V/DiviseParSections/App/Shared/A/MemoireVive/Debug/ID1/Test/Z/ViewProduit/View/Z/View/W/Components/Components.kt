@@ -54,7 +54,7 @@ fun QuantityDisplay(
     val getter = viewModel.getterFocusedVarsHandlerFacade
 
     val onVentM8BonVentM10OperationVentFilteredList = viewModel.getterFocusedVarsHandlerFacade
-        .onVentM8BonVentM10OperationVentFilteredList
+        .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
     val operationsForThisProduct = onVentM8BonVentM10OperationVentFilteredList
         .filter {

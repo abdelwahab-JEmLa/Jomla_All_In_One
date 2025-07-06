@@ -70,23 +70,24 @@ class GetterFocusedVars(
         }
     }
 
-    // This is the key fix - make sure this derivedStateOf is reactive to currentM9AppCompt changes
-    val focusedM1ProduitInfosAuPrixDifineur by derivedStateOf {
-        val keyId = currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId
-        Log.d("FocusedVarsDebug", "focusedM1ProduitInfosAuPrixDifineur - keyId: $keyId")
-
-        val result = repoM1ProduitInfos.datasValue.find { it.keyID == keyId }
-        Log.d("FocusedVarsDebug", "focusedM1ProduitInfosAuPrixDifineur - result: ${result?.nom}")
-
-        result
+    val onVentM3CouleurProduitInfos by derivedStateOf {
+        val targetKey = currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID
+        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
     }
 
-    val listFocusedM10OpeVentCouleurParPrixDifineur by derivedStateOf {
-        val keyId = focusedM1ProduitInfosAuPrixDifineur?.keyID
-        Log.d("FocusedVarsDebug", "listFocusedM10OpeVentCouleurParPrixDifineur - using keyId: $keyId")
-
+    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == (keyId ?: "")
+            it.parentM8BonVentKeyId == (currentM9AppCompt?.onVentM8BonVentKey ?: "")
+        }
+    }
+
+    val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
+        repoM1ProduitInfos.datasValue.find { it.keyID == currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId }
+    }
+
+    val focused_ListM10OpeVentCouleur_Par_PD_M1Produit by derivedStateOf {
+        onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.filter {
+            it.parentM8BonVentKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
         }
     }
 
@@ -95,26 +96,20 @@ class GetterFocusedVars(
             it.keyID == (currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
         }
     }
-
-    val onVentM3CouleurProduitInfos by derivedStateOf {
-        val targetKey = currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID // Use currentM9AppCompt instead of repo9AppCompt.currentAppCompt
-        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
-    }
-
-    val onVentM8BonVentM10OperationVentFilteredList by derivedStateOf {
-        repo10OperationVentCouleur.datasValue.filter {
-            it.parentM8BonVentKeyId == (currentM9AppCompt?.onVentM8BonVentKey ?: "")
-        }
-    }
-
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {
             val map = buildMap {
-                put("currentM9AppCompt", getter.currentM9AppCompt ?: "null")
-                put("onVentM8BonVent", getter.onVentM8BonVent)
-                put("onVentM2ClientInfos", getter.onVentM2ClientInfos ?: "null")
-                put("focusedM1ProduitInfosAuPrixDifineur", getter.focusedM1ProduitInfosAuPrixDifineur?.nom ?: "null")
+                put("focused_M1ProduitInfos_Pour_PrixDifineur", getter
+                    .focused_M1ProduitInfos_Pour_PrixDifineur
+                    ?.nom ?: "null")
+
+                put("onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
+                    getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.map { it.getDebugInfos() }
+                )
+                put("focused_ListM10OpeVentCouleur_Par_PD_M1Produit",
+                    getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { it.getDebugInfos() }
+                )
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
@@ -276,7 +271,7 @@ fun focuceOnVentM3CouleurProduitInfos(
 
     repo9AppCompt.upsert(
         currentAppCompt.copy(
-            onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur?.debugInfos ?: "null",
+            onVentM3CouleurProduitDebugInfos = m10OperationVentCouleur?.getDebugInfos() ?: "null",
             onVentM3CouleurProduitInfosKeyID = m10OperationVentCouleur?.keyID ?: "null",
         )
     )

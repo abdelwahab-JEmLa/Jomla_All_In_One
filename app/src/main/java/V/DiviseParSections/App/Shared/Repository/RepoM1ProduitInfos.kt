@@ -128,7 +128,7 @@ data class ArticlesBasesStatsTable(
     val heldPrioriteDemandAuGrossist: Boolean = false,
 
     // Section InfosCoutes
-    var prixVent: Double = 0.0,
+        var prixVent: Double = 0.0,
     var cachePrixVent: Boolean = false,
 
     var prixAchat: Double = 0.0,

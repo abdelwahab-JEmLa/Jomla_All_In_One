@@ -61,7 +61,6 @@ fun ViewVentCouleur_T1(
         produit?.let {
             val parentM1ProduitDebugInfos = produit.nom
             getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
-                debugInfos = parentM1ProduitDebugInfos,
                 //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
                 parentM1ProduitInfosKeyId = it.keyID,
                 parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
@@ -73,7 +72,7 @@ fun ViewVentCouleur_T1(
 
     val relatedVent by remember{
         derivedStateOf {
-            getter.onVentM8BonVentM10OperationVentFilteredList.find { it.parentM3CouleurProduitInfosKeyID==m3CouleurProduitInfos.key }
+            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID==m3CouleurProduitInfos.key }
         }
     }
 

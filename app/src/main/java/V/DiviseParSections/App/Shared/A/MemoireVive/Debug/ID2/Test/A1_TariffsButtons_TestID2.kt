@@ -46,7 +46,7 @@ fun TariffsButtonsSec7ID2(
 
     val focusedProduct by remember {
         derivedStateOf {
-            viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur
+            viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.focused_M1ProduitInfos_Pour_PrixDifineur
         }
     }
 
@@ -85,7 +85,7 @@ fun TariffsButtonsSec7ID2(
             fermeDialog(latestTariffLocalData)
 
             viewModel.updateListRelativeVentCouleurPrixVent(
-                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
+                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
                 m1produitInfos = m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )

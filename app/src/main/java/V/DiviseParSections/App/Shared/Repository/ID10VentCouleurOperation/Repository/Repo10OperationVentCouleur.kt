@@ -178,11 +178,9 @@ class Repo10OperationVentCouleur(
 @Entity
 data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
-    var debugInfos: String = "",
-
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
 
+    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
     var parentHVentPeriodKeyId: String = "null",
     var parentEVentPeriodDebugName: String = "null",
@@ -221,6 +219,9 @@ data class M10OperationVentCouleur(
     val parentDebugInfosID9AppCompt: String = "",
     val parentDebugInfosID7VentPeriod: String = "",
 ) {
+    fun getDebugInfos(): String {
+       return "$keyID to $parentM1ProduitDebugInfos"
+    }
 
     enum class EtateDelivery {
         Trouve,

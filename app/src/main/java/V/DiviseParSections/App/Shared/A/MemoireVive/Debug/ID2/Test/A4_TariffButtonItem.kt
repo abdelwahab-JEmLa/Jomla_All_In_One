@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -157,18 +157,19 @@ fun TariffButtonItem(
             }
         }
 
-        // Use same button styling for both editable tariff types
         val buttonBackgroundColor = if (isEditableTariff) {
             Color.Yellow
         } else {
             couleurButton
         }
+        val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter
         val listFocusedM10OpeVentCouleurParPrixDifineur =
-            viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur.toMutableList()
+            getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
+
         FloatingActionButton(
             modifier = Modifier
                 .size(40.dp)
-                .getSemanticsTag("listFocusedM10OpeVentCouleurParPrixDifineur",listFocusedM10OpeVentCouleurParPrixDifineur)
+                .getSemanticsTagFocucedVars(getter)
             ,
             onClick = {
                 listFocusedM10OpeVentCouleurParPrixDifineur.map {
