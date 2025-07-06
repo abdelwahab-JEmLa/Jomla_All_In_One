@@ -184,23 +184,13 @@ data class Z_AppCompt(
     }
 
     // Updated getListNomsMutableTags function in Z_AppCompt class
-    fun Z_AppCompt.getListNomsMutableTags(): List<String> {
+    fun getListNomsMutableTags(): List<String> {
         return if (nomsMutableTags.isNotEmpty()) {
             nomsMutableTags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         } else {
             emptyList()
         }
     }
-    
-    fun getDebugInfos(): String {
-        return "M9== $nom "
-    }
-
-
-    fun getInitCreationName(): String {
-        return nom.ifEmpty { "DefaultCompt" }
-    }
-
 
     companion object {
         const val keyModel = "ID9"
