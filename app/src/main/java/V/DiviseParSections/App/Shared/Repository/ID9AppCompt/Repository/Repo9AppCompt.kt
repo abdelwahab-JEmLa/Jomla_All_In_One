@@ -41,7 +41,8 @@ class Repo9AppCompt(
     }
 
     fun add(data: Z_AppCompt) {
-        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
@@ -90,6 +91,7 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
 }
+
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
@@ -119,6 +121,8 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection add TOu modules
 
     // Section Paramaters App telephone
+    val travailleChezGrossisst3Ali: Boolean = true,
+
     var mainInitDataBaseProgressEtate: Float = 0f,
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
@@ -144,7 +148,7 @@ data class Z_AppCompt(
 
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var onVentM3CouleurProduitInfosKeyID: String = "null",
-    val onVentM3CouleurProduitDebugInfos:String="null",
+    val onVentM3CouleurProduitDebugInfos: String = "null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
 
     //---------------------------------Dialog Opner Vars ----------------------------------------------------------------------------------------------------------------------------------
@@ -161,7 +165,7 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
-    ) {
+) {
 
     // Updated addStringAuNomsMutableTags function in Z_AppCompt class
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
