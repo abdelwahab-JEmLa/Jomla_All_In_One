@@ -147,7 +147,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 val classesHandlersModule = module {
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get()) }
-    single { WDatabaseInitializationManager(get(), get(), get(), get()) }
+    single { WDatabaseInitializationManager(get(), get(), get(), get(), get()) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

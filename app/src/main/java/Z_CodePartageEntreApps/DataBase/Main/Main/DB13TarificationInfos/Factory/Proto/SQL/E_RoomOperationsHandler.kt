@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL
 
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
@@ -30,8 +30,8 @@ class G_RoomOperationsHandler(
                     database.a_ProduitInfosDao().insertAllReturnIDs(data as List<A_ProduitInfos>)
                 }
                 M13TarificationInfos::class -> {
-                    @Suppress("UNCHECKED_CAST")
-                    database.Dao13TarificationInfos().insertAllReturnIDs(data as List<M13TarificationInfos>)
+                    emptyList()
+                   // database.Dao13TarificationInfos().insertAllReturnIDs(data as List<M13TarificationInfos>)
                 }
                 else -> throw IllegalArgumentException("Unsupported data type: ${DataBase::class.simpleName}")
             }
@@ -115,8 +115,7 @@ class G_RoomOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            val ids = database.Dao13TarificationInfos()
-                .insertAllReturnIDs(data)
+            val ids = emptyList<Long>()
 
             onProgressUpdate(0.7f)
 

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -174,6 +175,7 @@ fun TariffButtonItem(
         FloatingActionButton(
             modifier = Modifier
                 .size(40.dp)
+                .getSemanticsTag("latestTariffLocalData",latestTariffLocalData)
                 .getSemanticsTagFocucedVars(getter)
             ,
             onClick = {

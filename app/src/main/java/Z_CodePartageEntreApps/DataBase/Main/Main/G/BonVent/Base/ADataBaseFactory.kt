@@ -17,15 +17,13 @@ class DataBaseCreationFactoryGBonVent(
     appDatabase: AppDatabase
 ) {
     val dao = appDatabase.GBonVentDao()
-
-    val repoEntityName = "DataBaseCreationFactoryGBonVent"
-    val repoTAG = repoEntityName
-    var isListenerRegistered = false
+    private val factoryScope = CoroutineScope(Dispatchers.IO)
 
     val repoRef = M8BonVent.ref
-
-
-    private val composScope = CoroutineScope(Dispatchers.IO)
+    val repoEntityName = "DataBaseCreationFactoryGBonVent"
+    val repoTAG = repoEntityName
+    val name = Repository.GBonVentEntity.name
+    var isListenerRegistered = false
 
     suspend fun init(
         isInternetAvailable: Boolean,
@@ -33,18 +31,18 @@ class DataBaseCreationFactoryGBonVent(
     ) {
         if (!dao.isTableEmpty()) return
 
-        updateRepoProgress(Repository.GBonVentEntity.name, 0.4f)
+        updateRepoProgress(name, 0.4f)
 
         val data: List<M8BonVent> = if (isInternetAvailable) {
 
-            updateRepoProgress(Repository.GBonVentEntity.name, 0.6f)
+            updateRepoProgress(name, 0.6f)
 
             onLoadFromFireBase()
         } else {
             onLoadCategoriesFromCsv()
         }
 
-        updateRepoProgress(Repository.GBonVentEntity.name, 0.8f)
+        updateRepoProgress(name, 0.8f)
 
 
         dao.insertAll(data)
@@ -97,7 +95,7 @@ class DataBaseCreationFactoryGBonVent(
     fun set(
         dataAvecTigerUpdate: M8BonVent,
     ) {
-        composScope.launch {
+        factoryScope.launch {
             dao.upsert(dataAvecTigerUpdate)
             batchFireBaseUpdateGBonVent(listOf(dataAvecTigerUpdate))
         }

@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.DataBase
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
@@ -15,6 +16,7 @@ class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
     val appComptComposeRepositoryPJ17: Repo9AppCompt,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
+    val dataBaseCreationFactory13TarificationInfos: DataBaseCreationFactory13TarificationInfos,
     val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
 ) {
     private val mutex = Mutex()
@@ -26,7 +28,9 @@ class WDatabaseInitializationManager(
         FCouleurVentOperation,
         Z_AppComptEntity,
         D_ACHAT_OPERATION,
-        A_PRODUIT_INFOS
+        M13TarificationInfosEntity,
+        A_PRODUIT_INFOS;
+
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -66,6 +70,16 @@ class WDatabaseInitializationManager(
                             updateRepoProgress(name, progress)
                         }
                         dataBaseFactory_B1CouleurOuGoutProduitDataBase.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
+            scope.launch {
+                initRepo(Repository.M13TarificationInfosEntity.name, context) {
+                    dataBaseCreationFactory13TarificationInfos.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        dataBaseCreationFactory13TarificationInfos.triggerUpdateFbParTimestampsListener()
                     }
                 }
             } ,
