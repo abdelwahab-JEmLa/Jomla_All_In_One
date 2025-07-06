@@ -23,7 +23,7 @@ fun MainFilter(
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
-    onClickPrixButton: (M13TarificationInfos.TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
+    onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
     viewModel: TariffsButtonsViewModelSec7ID2
 ) {

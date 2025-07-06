@@ -40,9 +40,9 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<M13TarificationIn
             // Map the enum field
             val typeTarificationEnumString = childSnap.child("typeTarificationEnumT2Correspond").getValue(String::class.java) ?: "PRIX_BASE"
             val typeTarificationEnum = try {
-                M13TarificationInfos.TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
+                M13TarificationInfos.TypeChoisi.valueOf(typeTarificationEnumString)
             } catch (e: Exception) {
-                M13TarificationInfos.TypeTarificationEnumT2.PRIX_BASE // Default fallback
+                M13TarificationInfos.TypeChoisi.PRIX_BASE // Default fallback
             }
 
             val instance = M13TarificationInfos(
@@ -54,7 +54,7 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<M13TarificationIn
                 idParentProduit = idParentProduit,
                 prixCurrency = prixCurrency,
                 timestamps = timestamps,
-                typeTarificationEnumT2Correspond = typeTarificationEnum
+                typeChoisi = typeTarificationEnum
             )
 
             results.add(instance)

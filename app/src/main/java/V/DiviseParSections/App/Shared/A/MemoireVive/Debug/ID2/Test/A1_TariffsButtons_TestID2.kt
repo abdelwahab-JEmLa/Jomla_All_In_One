@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +36,6 @@ fun TariffsButtonsSec7ID2(
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
-    val uiState by viewModel.uiState.collectAsState()
 
     val bonVentList = viewModel.getter.id8BonVentRepository.datasValue
     val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
@@ -78,7 +76,7 @@ fun TariffsButtonsSec7ID2(
 
     LaunchedEffect(datasValueDeM1ProduitInfos.size, suspendFunction1(datasValueDeM1ProduitInfos, viewModel))
 
-    val onClickPrixButton: (M13TarificationInfos.TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit =
+    val onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"

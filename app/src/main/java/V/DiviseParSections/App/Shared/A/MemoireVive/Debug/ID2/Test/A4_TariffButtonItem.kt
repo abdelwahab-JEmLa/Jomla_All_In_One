@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,20 +32,22 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TariffButtonItem(
-    typeTarification: TypeTarificationEnumT2,
+    produit: ArticlesBasesStatsTable,
+    viewModel: TariffsButtonsViewModelSec7ID2,
+    typeTarification: TypeChoisi,
     tariffs: List<M13TarificationInfos>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
-    nombreUnite: Int= 10,
+    nombreUnite: Int = 10,
     context: Context,
+    onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
 ) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
     var latestTariffLocalData by remember { mutableStateOf(latestTariff) }
 
-    val isEditableTariff = typeTarification == TypeTarificationEnumT2.DEFINI ||
-            typeTarification == TypeTarificationEnumT2.DefiniParGerant2
+    val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
+            typeTarification == TypeChoisi.DefiniParGerant2
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -161,6 +165,18 @@ fun TariffButtonItem(
 
         FloatingActionButton(
             onClick = {
+                val listFocusedM10OpeVentCouleurParPrixDifineur =
+                    viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur.toMutableList()
+                listFocusedM10OpeVentCouleurParPrixDifineur.map {
+                    it.provisoireMonPrix = latestTariffLocalData.prixCurrency
+                    it.parentM13TarificationKeyID = latestTariff.keyID
+                    it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
+                }
+
+                viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
+                    listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
+                )
+
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)
             },
             modifier = Modifier.size(40.dp),

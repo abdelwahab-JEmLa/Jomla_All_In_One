@@ -16,7 +16,7 @@ fun testD_TarificationInfosT2(): List<M13TarificationInfos> {
             ),
             idParentProduit = idProduit1,
             parentIdClient = parentIdClient,
-            typeTarificationEnumT2Correspond = M13TarificationInfos.TypeTarificationEnumT2.DEFINI,
+            typeChoisi = M13TarificationInfos.TypeChoisi.DEFINI,
             prixCurrency = 65.75
         ),
     )

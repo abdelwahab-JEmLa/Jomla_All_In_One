@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPus
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -169,14 +170,15 @@ class Repo10OperationVentCouleur(
 
     companion object {
         private const val TAG = "ColorOperation"
-        fun String?.findData(repo: Repo10OperationVentCouleur) = repo.datasValue.find { it.keyID == this }
+        fun String?.findData(repo: Repo10OperationVentCouleur) =
+            repo.datasValue.find { it.keyID == this }
     }
 }
 
 @Entity
 data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
-    var debugInfos: String="",
+    var debugInfos: String = "",
 
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
@@ -186,14 +188,18 @@ data class M10OperationVentCouleur(
     var parentEVentPeriodDebugName: String = "null",
     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
     var parentM8BonVentKeyId: String = "null",
-    val parentM8BonVentDebugInfos:String="null",
+    val parentM8BonVentDebugInfos: String = "null",
     //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM1ProduitInfosKeyId: String = "null",
-    val parentM1ProduitDebugInfos:String="null",
+    val parentM1ProduitDebugInfos: String = "null",
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM3CouleurProduitInfosKeyID: String = "null",
-    val parentM3CouleurProduitDebugInfos:String="null",
+    val parentM3CouleurProduitDebugInfos: String = "null",
+    //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var parentM13TarificationKeyID: String = "null",
+    var parentM13TarificationDebugInfos: String = "null",
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
 
     var parentBProduitNomDebug: String = "",
@@ -204,6 +210,7 @@ data class M10OperationVentCouleur(
     var quantityAchete: Int = 0,
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
+    var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant2,
 
     var parentZAppComptID: String = "",
     var parentClientInfosKeyID: String = "",
@@ -211,13 +218,11 @@ data class M10OperationVentCouleur(
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val parentDebugInfosID9AppCompt: String = "",
+    val parentDebugInfosID7VentPeriod: String = "",
+) {
 
-    val parentDebugInfosID9AppCompt:String ="",
-    val parentDebugInfosID7VentPeriod:String="",
-
-    ) {
-
-    enum class EtateDelivery{
+    enum class EtateDelivery {
         Trouve,
         NonTrouve
     }
@@ -236,6 +241,7 @@ data class M10OperationVentCouleur(
     }
 
     enum class Type { SiNonDispo, CommandeDeLui }
+
 
     companion object {
         val ref =

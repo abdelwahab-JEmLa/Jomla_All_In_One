@@ -96,7 +96,6 @@ data class M13TarificationInfos(
     val keyID: String = getPushFireBase(ref),
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var debugInfos: String = "",
 
     //Forging IDs
 
@@ -106,8 +105,8 @@ data class M13TarificationInfos(
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val idParentProduit: Long = 0L,
-    val typeTarificationEnumT2Correspond: TypeTarificationEnumT2 =
-        TypeTarificationEnumT2.DefiniParGerant2,
+    val typeChoisi: TypeChoisi =
+        TypeChoisi.DefiniParGerant2,
 
     val parentIdClient: Long = 0L,
 
@@ -122,7 +121,11 @@ data class M13TarificationInfos(
     //keyFireBase - computed property, not stored in constructor
     val keyFireBase: String = "",
 ) {
-    enum class TypeTarificationEnumT2(
+    fun getDebugInfos(): String {
+        return "$parentM1ProduitDebugInfos $typeChoisi"
+    }
+
+    enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
         val nomArabe: String ="",

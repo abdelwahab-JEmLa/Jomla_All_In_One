@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.Tar
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,7 @@ fun MainList(
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<M13TarificationInfos>,
-    onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
+    onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
     val currentM9AppCompt =
@@ -53,7 +53,7 @@ fun MainList(
 
                 add(
                     M13TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                        typeChoisi = TypeChoisi.LeMaxPrixArrive,
                         prixCurrency = maxPrixArriveDuProduit,
                     )
                 )
@@ -65,17 +65,16 @@ fun MainList(
 
                 add(
                     M13TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
+                        typeChoisi = TypeChoisi.Historique,
                         prixCurrency = clientLastHistoricalPrice,
                     )
                 )
             }
 
-            // Only add base price tariff if not working at wholesale (TravailleChezGrossisst3Ali)
             if (!travailleChezGrossisst3Ali!!) {
                 add(
                     M13TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+                        typeChoisi = TypeChoisi.PRIX_BASE,
                         prixCurrency = produit.prixVent,
                     )
                 )
@@ -92,7 +91,7 @@ fun MainList(
 
     val allTariffsGroupedAndSorted = remember(clientDefiniTariffs, standardTariffs) {
         (clientDefiniTariffs + standardTariffs + generatedTariffDefiniParGerant2)
-            .groupBy { it.typeTarificationEnumT2Correspond }
+            .groupBy { it.typeChoisi }
             .toSortedMap(compareBy { it.ordinal })
     }
 
@@ -107,6 +106,8 @@ fun MainList(
         ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
+                    produit=produit,
+                    viewModel=viewModel,
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,
@@ -124,13 +125,13 @@ fun MainList(
         }
 
         val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
-            TypeTarificationEnumT2.LeMaxPrixArrive
+            TypeChoisi.LeMaxPrixArrive
         } else {
-            TypeTarificationEnumT2.PRIX_BASE
+            TypeChoisi.PRIX_BASE
         }
 
         val tarificationInfo = M13TarificationInfos(
-            typeTarificationEnumT2Correspond = typeToUse,
+            typeChoisi = typeToUse,
             prixCurrency = priceToUse,
         )
 

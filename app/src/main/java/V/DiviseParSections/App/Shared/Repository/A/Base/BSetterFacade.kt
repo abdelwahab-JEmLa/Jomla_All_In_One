@@ -107,21 +107,14 @@ class BSetterFacade(
         if (m1produitInfos != null) {
             ventOperations.updateListRelativeVentCouleurPrixVent(m1produitInfos.keyID, newPrix)
         }
-        updateProvisoirePrixVentAvecFocusedVarsHandlerFacade(
-            listFocusedM10OpeVentCouleurParPrixDifineur,
-            newPrix
-        )
     }
 
-    fun updateProvisoirePrixVentAvecFocusedVarsHandlerFacade(
-        listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>,
-        newPrix: Double
-    ) {
-        listFocusedM10OpeVentCouleurParPrixDifineur
-            .map {
-                repo10OperationVentCouleur.addOrUpdateData(it.copy(provisoireMonPrix = newPrix))
-            }
+     fun updateListM10OperationVentCouleur(listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>) {
+        listFocusedM10OpeVentCouleurParPrixDifineur.forEach {
+            repo10OperationVentCouleur.addOrUpdateData(it)
+        }
     }
+
 
     fun deleteVents(parentProduitOldId: Long) = ventOperations.deleteVents(parentProduitOldId)
 

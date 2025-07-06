@@ -35,7 +35,7 @@ fun GerantButton(
     viewModel: TariffsButtonsViewModelSec7ID2,
     tarificationInfo: M13TarificationInfos,
     showLabels: Boolean,
-    tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeTarificationEnumT2, List<M13TarificationInfos>>,
+    tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeChoisi, List<M13TarificationInfos>>,
     onClickPrixButton: () -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
 ) {
