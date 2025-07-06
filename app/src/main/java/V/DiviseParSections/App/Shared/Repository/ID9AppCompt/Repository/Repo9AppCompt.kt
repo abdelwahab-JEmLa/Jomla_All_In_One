@@ -98,7 +98,7 @@ data class Z_AppCompt(
     var keyID: String = getPushFireBase(ref),
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var type: Type = Type.NON_DEFINIE,
+    var type: Type = Type.TravailleChezGrossisst3Ali,
 
     // Section InfosDeBase
     var nom: String = "",

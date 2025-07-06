@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
+import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeTarificationEnumT2
@@ -29,6 +30,10 @@ fun MainList(
     onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
+    val currentM9AppCompt =
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.currentM9AppCompt
+    val travailleChezGrossisst3Ali = currentM9AppCompt?.nom =="Chez Gro Abdelwahab"
+
     val tariffs = viewModel.aCentralFacade.getter.repo13TarificationInfos.datasValue
     val context = LocalContext.current
 
@@ -36,7 +41,8 @@ fun MainList(
         produit,
         maxPrixArriveDuProduit,
         clientLastHistoricalPrice,
-        clientDefiniTariffs
+        clientDefiniTariffs,
+        travailleChezGrossisst3Ali
     ) {
         buildList {
             if (maxPrixArriveDuProduit != null &&
@@ -47,7 +53,7 @@ fun MainList(
 
                 add(
                     M13TarificationInfos(
-                        typeTarificationEnumT2Correspond = M13TarificationInfos.TypeTarificationEnumT2.LeMaxPrixArrive,
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
                         prixCurrency = maxPrixArriveDuProduit,
                     )
                 )
@@ -65,12 +71,15 @@ fun MainList(
                 )
             }
 
-            add(
-                M13TarificationInfos(
-                    typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
-                    prixCurrency = produit.prixVent,
+            // Only add base price tariff if not working at wholesale (TravailleChezGrossisst3Ali)
+            if (!travailleChezGrossisst3Ali) {
+                add(
+                    M13TarificationInfos(
+                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
+                        prixCurrency = produit.prixVent,
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -92,7 +101,9 @@ fun MainList(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = modifier) {
+        Column(modifier = modifier
+            .getSemanticsTag("currentM9AppCompt",currentM9AppCompt?.nom)
+        ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
                     typeTarification = type,
