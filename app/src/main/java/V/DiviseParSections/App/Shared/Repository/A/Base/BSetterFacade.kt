@@ -11,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import com.google.firebase.database.DatabaseReference
 
 class BSetterFacade(
@@ -21,6 +22,7 @@ class BSetterFacade(
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    private val repo13TarificationInfos: Repo13TarificationInfos,
 
     private val ventOperations: VentOperations,
 ) {

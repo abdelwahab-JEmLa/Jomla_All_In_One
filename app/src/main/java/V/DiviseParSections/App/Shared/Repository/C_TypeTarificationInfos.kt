@@ -1,6 +1,7 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Models
+package V.DiviseParSections.App.Shared.Repository
 
 import Z_CodePartageEntreApps.Model.getKeyFireBase
+import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnum
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

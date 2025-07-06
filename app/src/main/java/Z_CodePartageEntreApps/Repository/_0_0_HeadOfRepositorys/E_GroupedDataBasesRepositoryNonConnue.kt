@@ -4,10 +4,10 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Data.testD_TarificationInfosT2
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.F0_FireBaseOperationsHandler
-import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.deleteRef
-import Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL.G_RoomOperationsHandler
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.F0_FireBaseOperationsHandler
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.deleteRef
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL.G_RoomOperationsHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,8 +39,8 @@ class E_GroupedDataBasesRepositoryNonConnue(
 
     private fun getDataType(data: Any): KClass<*> {
         return when (data::class) {
-            D_TarificationInfos::class -> {
-                D_TarificationInfos::class
+            M13TarificationInfos::class -> {
+                M13TarificationInfos::class
             }
 
             A_ProduitInfos::class -> {
@@ -65,7 +65,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
 
                 // Insert into Firebase using the new updateInFB function
                 when (updatedData) {
-                    is D_TarificationInfos -> {
+                    is M13TarificationInfos -> {
                         fireBase.updateInFB(updatedData)
                     }
 
@@ -82,8 +82,8 @@ class E_GroupedDataBasesRepositoryNonConnue(
     }
 
     private fun upsertAllRoomEtFireBase(
-        dataList: List<D_TarificationInfos>,
-        onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit = {}
+        dataList: List<M13TarificationInfos>,
+        onAddSuccess: (Map<Long, M13TarificationInfos>) -> Unit = {}
     ) {
         repoCoroutineScope.launch(Dispatchers.IO) {
             try {
@@ -95,7 +95,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
 
                         if (mapData.isNotEmpty()) {
                             val dataListForFirebase = mapData.values.toList()
-                            fireBase.setListDataInlineFun<D_TarificationInfos>(dataListForFirebase)
+                            fireBase.setListDataInlineFun<M13TarificationInfos>(dataListForFirebase)
 
                             repoCoroutineScope.launch {
                                 updateProgress(1f)
@@ -118,12 +118,12 @@ class E_GroupedDataBasesRepositoryNonConnue(
         repoCoroutineScope.launch {
             try {
                 val produitsFlow = database.a_ProduitInfosDao().getAllProduits()
-                val tarificationsFlow = database.dTarificationInfosDao().getAllTarifications()
+                val tarificationsFlow = database.Dao13TarificationInfos().getAllFlow()
 
                 combine(
                     produitsFlow,
                     tarificationsFlow
-                ) { produits: List<A_ProduitInfos>, tarifications: List<D_TarificationInfos> ->
+                ) { produits: List<A_ProduitInfos>, tarifications: List<M13TarificationInfos> ->
                     listOf(
                         A0_DataBasesGroup(
                             a_ProduitInfos = produits.toMutableList(),
@@ -194,7 +194,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
         repoCoroutineScope.launch(Dispatchers.IO) {
             try {
                 when (DataBase::class) {
-                    D_TarificationInfos::class -> {
+                    M13TarificationInfos::class -> {
                         initializeTarificationInfos()
                     }
 
@@ -213,7 +213,7 @@ class E_GroupedDataBasesRepositoryNonConnue(
     }
 
     init {
-        initializeDatabase<D_TarificationInfos>()
+        initializeDatabase<M13TarificationInfos>()
     }
 
     private suspend fun migreOldDatas(comptActuelle_migreSonDataBaseAuStart: Boolean) {

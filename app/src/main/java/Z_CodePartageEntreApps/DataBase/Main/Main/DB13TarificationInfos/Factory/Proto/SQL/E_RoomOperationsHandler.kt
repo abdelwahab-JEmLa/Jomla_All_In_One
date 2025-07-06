@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.SQL
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL
 
-import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model.A_ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
@@ -29,9 +29,9 @@ class G_RoomOperationsHandler(
                     @Suppress("UNCHECKED_CAST")
                     database.a_ProduitInfosDao().insertAllReturnIDs(data as List<A_ProduitInfos>)
                 }
-                D_TarificationInfos::class -> {
+                M13TarificationInfos::class -> {
                     @Suppress("UNCHECKED_CAST")
-                    database.dTarificationInfosDao().insertAllReturnIDs(data as List<D_TarificationInfos>)
+                    database.Dao13TarificationInfos().insertAllReturnIDs(data as List<M13TarificationInfos>)
                 }
                 else -> throw IllegalArgumentException("Unsupported data type: ${DataBase::class.simpleName}")
             }
@@ -43,13 +43,13 @@ class G_RoomOperationsHandler(
                 if (index < data.size) {
                     val itemWithGeneratedId = when (val originalItem = data[index]) {
                         is A_ProduitInfos -> originalItem.copy(id = generatedId) as DataBase
-                        is D_TarificationInfos -> originalItem.copy(id = generatedId) as DataBase
+                        is M13TarificationInfos -> originalItem.copy(id = generatedId) as DataBase
                         else -> throw IllegalArgumentException("Unsupported item type")
                     }
 
                     val itemWithDefaults = when (itemWithGeneratedId) {
                         is A_ProduitInfos -> itemWithGeneratedId.withProperKeyFireBase() as DataBase
-                        is D_TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase
+                        is M13TarificationInfos -> itemWithGeneratedId.withProperDefaults() as DataBase
                         else -> itemWithGeneratedId
                     }
 
@@ -72,8 +72,8 @@ class G_RoomOperationsHandler(
                 A_ProduitInfos::class -> {
                     database.a_ProduitInfosDao().getCount() > 0
                 }
-                D_TarificationInfos::class -> {
-                    database.dTarificationInfosDao().getCount() > 0
+                M13TarificationInfos::class -> {
+                    database.Dao13TarificationInfos().getCount() > 0
                 }
                 else -> false
             }
@@ -85,7 +85,7 @@ class G_RoomOperationsHandler(
         try {
             onProgressUpdate(0.2f)
 
-            val count = database.dTarificationInfosDao().getCount()
+            val count = database.Dao13TarificationInfos().getCount()
 
             onProgressUpdate(0.8f)
 
@@ -101,8 +101,8 @@ class G_RoomOperationsHandler(
     }
 
     suspend fun insertAllAndReturnListIdToData(
-        data: List<D_TarificationInfos>,
-        onAddSuccess: (Map<Long, D_TarificationInfos>) -> Unit
+        data: List<M13TarificationInfos>,
+        onAddSuccess: (Map<Long, M13TarificationInfos>) -> Unit
     ) = withContext(Dispatchers.IO) {
         try {
             onProgressUpdate(0.1f)
@@ -115,12 +115,12 @@ class G_RoomOperationsHandler(
 
             onProgressUpdate(0.3f)
 
-            val ids = database.dTarificationInfosDao()
+            val ids = database.Dao13TarificationInfos()
                 .insertAllReturnIDs(data)
 
             onProgressUpdate(0.7f)
 
-            val resultMap = mutableMapOf<Long, D_TarificationInfos>()
+            val resultMap = mutableMapOf<Long, M13TarificationInfos>()
             ids.forEachIndexed { index, generatedId ->
                 if (index < data.size) {
                     val originalItem = data[index]
@@ -164,19 +164,19 @@ class G_RoomOperationsHandler(
                     val finalData = dataWithDefaults.copy(id = finalId)
                     Pair(finalId, finalData)
                 }
-                D_TarificationInfos::class -> {
-                    val tarificationData = data as D_TarificationInfos
+                M13TarificationInfos::class -> {
+                    val tarificationData = data as M13TarificationInfos
                     val dataWithDefaults = tarificationData.withProperDefaults()
 
                     // FIXED: Check if item exists first, then update_showDetailsExpanded or insert accordingly
                     val existingId = dataWithDefaults.id
-                    val finalId = if (existingId > 0 && database.dTarificationInfosDao().exists(existingId)) {
+                    val finalId = if (existingId > 0 && database.Dao13TarificationInfos().exists(existingId)) {
                         // Update existing record
-                        database.dTarificationInfosDao().update(dataWithDefaults)
+                        database.Dao13TarificationInfos().update(dataWithDefaults)
                         existingId
                     } else {
                         // Insert new record
-                        database.dTarificationInfosDao().insert(dataWithDefaults)
+                        database.Dao13TarificationInfos().insert(dataWithDefaults)
                     }
 
                     val finalData = dataWithDefaults.copy(id = finalId)
@@ -209,12 +209,12 @@ class G_RoomOperationsHandler(
                     val finalData = dataWithDefaults.copy(id = id)
                     Pair(id, finalData)
                 }
-                D_TarificationInfos::class -> {
-                    val tarificationData = data as D_TarificationInfos
+                M13TarificationInfos::class -> {
+                    val tarificationData = data as M13TarificationInfos
                     val dataWithDefaults = tarificationData.withProperDefaults()
 
                     // Use upsert (insert or replace)
-                    val id = database.dTarificationInfosDao().upsert(dataWithDefaults)
+                    val id = database.Dao13TarificationInfos().upsert(dataWithDefaults)
                     val finalData = dataWithDefaults.copy(id = id)
                     Pair(id, finalData)
                 }

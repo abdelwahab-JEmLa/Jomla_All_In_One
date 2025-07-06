@@ -1,15 +1,13 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import Z_CodePartageEntreApps.Model.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
-
 
 
 inline fun <reified T : Any> getDatasFixed(
@@ -30,7 +28,7 @@ inline fun <reified T : Any> mapSnapshotToDynamicObject(childSnap: DataSnapshot)
     return try {
         when (T::class) {
             A_ProduitInfos::class -> mapToProduitInfosDynamic(childSnap) as? T
-            D_TarificationInfos::class -> mapToTarificationInfosDynamic(childSnap) as? T
+            M13TarificationInfos::class -> mapToTarificationInfosDynamic(childSnap) as? T
             else -> null
         }
     } catch (e: Exception) {
@@ -39,9 +37,9 @@ inline fun <reified T : Any> mapSnapshotToDynamicObject(childSnap: DataSnapshot)
     }
 }
 
-fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos? {
+fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): M13TarificationInfos? {
     return try {
-        val constructor = D_TarificationInfos::class.primaryConstructor ?: return null
+        val constructor = M13TarificationInfos::class.primaryConstructor ?: return null
         val args = mutableMapOf<String, Any?>()
 
         constructor.valueParameters.forEach { param ->
@@ -51,9 +49,9 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos?
                     val enumString = childSnap.child(paramName).getValue(String::class.java) ?: "PRIX_BASE"
                     // FIXED: Using paramName variable instead of param.name property
                     try {
-                        TypeTarificationEnumT2.valueOf(enumString)
+                        M13TarificationInfos.TypeTarificationEnumT2.valueOf(enumString)
                     } catch (e: IllegalArgumentException) {
-                        TypeTarificationEnumT2.PRIX_BASE
+                        M13TarificationInfos.TypeTarificationEnumT2.PRIX_BASE
                     }
                 }
                 else -> getValueWithDefault(childSnap, paramName, param.type)
@@ -70,7 +68,7 @@ fun mapToTarificationInfosDynamic(childSnap: DataSnapshot): D_TarificationInfos?
         args["timestamps"] = childSnap.child("timestamps").getValue(Long::class.java) ?: System.currentTimeMillis()
         args["needUpdate"] = childSnap.child("needUpdate").getValue(Boolean::class.java) ?: true
 
-        createInstanceFromMap<D_TarificationInfos>(constructor, args)
+        createInstanceFromMap<M13TarificationInfos>(constructor, args)
     } catch (e: Exception) {
         e.printStackTrace()
         null

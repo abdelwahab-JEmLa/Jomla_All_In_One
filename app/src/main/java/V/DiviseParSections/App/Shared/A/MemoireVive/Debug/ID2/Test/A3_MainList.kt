@@ -2,8 +2,8 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeTarificationEnumT2
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,8 +25,8 @@ fun MainList(
     modifier: Modifier = Modifier,
     clientLastHistoricalPrice: Double,
     maxPrixArriveDuProduit: Double?,
-    clientDefiniTariffs: List<D_TarificationInfos>,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
+    clientDefiniTariffs: List<M13TarificationInfos>,
+    onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -44,8 +44,8 @@ fun MainList(
                 maxPrixArriveDuProduit > clientLastHistoricalPrice) {
 
                 add(
-                    D_TarificationInfos(
-                        typeTarificationEnumT2Correspond = TypeTarificationEnumT2.LeMaxPrixArrive,
+                    M13TarificationInfos(
+                        typeTarificationEnumT2Correspond = M13TarificationInfos.TypeTarificationEnumT2.LeMaxPrixArrive,
                         prixCurrency = maxPrixArriveDuProduit,
                     )
                 )
@@ -55,7 +55,7 @@ fun MainList(
                 clientLastHistoricalPrice != filteredProduit.prixVent) {
 
                 add(
-                    D_TarificationInfos(
+                    M13TarificationInfos(
                         typeTarificationEnumT2Correspond = TypeTarificationEnumT2.Historique,
                         prixCurrency = clientLastHistoricalPrice,
                     )
@@ -63,7 +63,7 @@ fun MainList(
             }
 
             add(
-                D_TarificationInfos(
+                M13TarificationInfos(
                     typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
                     prixCurrency = filteredProduit.prixVent,
                 )
@@ -106,7 +106,7 @@ fun MainList(
             TypeTarificationEnumT2.PRIX_BASE
         }
 
-        val tarificationInfo = D_TarificationInfos(
+        val tarificationInfo = M13TarificationInfos(
             typeTarificationEnumT2Correspond = typeToUse,
             prixCurrency = priceToUse,
         )
@@ -120,7 +120,7 @@ fun MainList(
 
                 onClickPrixButton(typeToUse, tarificationInfo, context)
             },
-            onClickAnulationButton = onClickAnulationButton // Pass the cancellation callback
+            onClickAnulationButton = onClickAnulationButton
         )
     }
 }

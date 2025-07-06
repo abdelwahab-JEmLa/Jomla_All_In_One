@@ -2,11 +2,10 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Views.Common.Components.ModernToastMessage
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -29,7 +28,7 @@ import org.koin.androidx.compose.koinViewModel
 fun TariffsButtonsSec7ID2(
     viewModel: TariffsButtonsViewModelSec7ID2 = koinViewModel(),
     showLabels: Boolean = true,
-    fermeDialog: (D_TarificationInfos) -> Unit,
+    fermeDialog: (M13TarificationInfos) -> Unit,
     onFermDialogeAvecAnllation: () -> Unit = {},
     cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
 ) {
@@ -40,14 +39,16 @@ fun TariffsButtonsSec7ID2(
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
-    val bonAchatList = viewModel.getter.id8BonVentRepository.datasValue
-    val tarificationList = uiState.tariffsList
-    val produitAcheteOperationList = uiState.produitAcheteOperationList
-    val datasValueDeM1ProduitInfos = viewModel.aCentral.getter.repoM1ProduitInfos.datasValue
+    val bonVentList = viewModel.getter.id8BonVentRepository.datasValue
+    val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
+    val tarificationList = repo13TarificationInfos.datasValue
+    val repo10OperationVentCouleur = viewModel.aCentralFacade.getter.repo10OperationVentCouleur
+    val operationVentCouleurList = repo10OperationVentCouleur.datasValue
+    val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.getter.repoM1ProduitInfos.datasValue
 
     val focusedProduct by remember {
         derivedStateOf {
-            viewModel.aCentral.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur
+            viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.focusedM1ProduitInfosAuPrixDifineur
         }
     }
 
@@ -77,7 +78,7 @@ fun TariffsButtonsSec7ID2(
 
     LaunchedEffect(datasValueDeM1ProduitInfos.size, suspendFunction1(datasValueDeM1ProduitInfos, viewModel))
 
-    val onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit =
+    val onClickPrixButton: (M13TarificationInfos.TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit =
         { typeTarification, latestTariffLocalData, _ ->
             val typeName = typeTarification.name
             val message = "$typeName: ${latestTariffLocalData.prixCurrency}"
@@ -86,7 +87,7 @@ fun TariffsButtonsSec7ID2(
             fermeDialog(latestTariffLocalData)
 
             viewModel.updateListRelativeVentCouleurPrixVent(
-                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentral.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
+                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.listFocusedM10OpeVentCouleurParPrixDifineur,
                 m1produitInfos = m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )
@@ -126,8 +127,8 @@ fun TariffsButtonsSec7ID2(
                     MainFilter(
                         viewModel = viewModel,
                         tarificationList = tarificationList,
-                        bonAchatList = bonAchatList,
-                        produitAcheteOperationList = produitAcheteOperationList,
+                        bonAchatList = bonVentList,
+                        produitAcheteOperationList = operationVentCouleurList,
                         produitInfosList = datasValueDeM1ProduitInfos,
                         showLabels = showLabels,
                         filterProduitID = filterProductId.toInt(),

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable

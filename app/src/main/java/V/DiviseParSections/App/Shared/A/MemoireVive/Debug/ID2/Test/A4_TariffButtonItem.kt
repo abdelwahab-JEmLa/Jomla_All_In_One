@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeTarificationEnumT2
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,14 +31,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TariffButtonItem(
     typeTarification: TypeTarificationEnumT2,
-    tariffs: List<D_TarificationInfos>,
+    tariffs: List<M13TarificationInfos>,
     showLabels: Boolean,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
+    onClickPrixButton: (TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
     nombreUnite: Int= 10,
     context: Context,
-) {       //<--
-//TODO(1): regle pour que type prix de base a n edite prix comme celui de finie avec si le - button va prendre le  prix au -0 alore chage le buton au outlined pour modifie 
-//par clavie 
+) {
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 

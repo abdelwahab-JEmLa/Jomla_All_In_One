@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -70,6 +71,7 @@ class AGetter(
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
     val id9AppComptRepository: Repo9AppCompt,
+    val repo13TarificationInfos: Repo13TarificationInfos,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 ) {

@@ -1,10 +1,10 @@
 package Z_CodePartageEntreApps.Model
 
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 
 data class A0_DataBasesGroup(
-    val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf(),
-    val refFireBaseD_TarificationInfos: String = "D_TarificationInfos",
+    val d_TarificationInfos: MutableList<M13TarificationInfos> = mutableListOf(),
+    val refFireBaseD_TarificationInfos: String = "M13TarificationInfos",
 
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val refFireBaseA_ProduitInfos: String = "A_ProduitInfos",

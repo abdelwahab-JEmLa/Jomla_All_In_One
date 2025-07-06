@@ -3,11 +3,10 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -16,15 +15,15 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
-    tarificationList: List<D_TarificationInfos>,
+    tarificationList: List<M13TarificationInfos>,
     bonAchatList: List<M8BonVent>,
-    produitAcheteOperationList: List<_1_2_ProduitAcheteOperation>,
+    produitAcheteOperationList: List<M10OperationVentCouleur>,
     produitInfosList: List<ArticlesBasesStatsTable>,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     filterProduitID: Int,
     filterBonID: Long,
-    onClickPrixButton: (TypeTarificationEnumT2, D_TarificationInfos, Context) -> Unit,
+    onClickPrixButton: (M13TarificationInfos.TypeTarificationEnumT2, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
     viewModel: TariffsButtonsViewModelSec7ID2
 ) {
@@ -41,12 +40,12 @@ fun MainFilter(
     }
 
     val idClientFiltruer = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID }?.parentHClientOldID ?: 0L
+        bonAchatList.find { it.vid == filterBonID }?.parentM2ClientInfosKey ?: 0L
     }
 
     val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {
         produitAcheteOperationList
-            .filter { it.produitAcheterID == filteredProduit.id }
+            .filter { it.parentProduitInfosOldId == filteredProduit.id }
             .maxOfOrNull { it.provisoireMonPrix }
     }
 
@@ -58,8 +57,8 @@ fun MainFilter(
     }
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
-        operation.produitAcheterID == filteredProduit.id &&
-                operation.parentIdClient == idClientFiltruer
+        operation.parentProduitInfosOldId == filteredProduit.id &&
+                operation.parentClientInfosKeyID == idClientFiltruer
     }
 
     val clientLastHistoricalPrice =

@@ -12,7 +12,7 @@ import V.DiviseParSections.App._0.Navigation.Screen
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -63,7 +63,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
-    onPourFermeWindows: (D_TarificationInfos) -> Unit = {},
+    onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
     idProduitActuelle: Long = 0,
     onClickAnulationButton: () -> Unit = {},
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
@@ -266,7 +266,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 TariffsButtonsSec7ID2(
                     showLabels = showLabels,
                     fermeDialog = {
-                        onPourFermeWindows(D_TarificationInfos())
+                        onPourFermeWindows(M13TarificationInfos())
                         val message = "تراضي"
 
                         currentToast = ToastData(

@@ -1,15 +1,14 @@
 package Z_CodePartageEntreApps.Proto.Par.Type.Data
 
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Proto.Par.Type.Function.createTimestamp
 
-fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
+fun testD_TarificationInfosT2(): List<M13TarificationInfos> {
     val idProduit1: Long = 849
     val parentIdClient: Long = 4
 
     return listOf(
-        D_TarificationInfos(
+        M13TarificationInfos(
             timestamps = createTimestamp(
                 day = 5,
                 hour = 14,
@@ -17,7 +16,7 @@ fun testD_TarificationInfosT2(): List<D_TarificationInfos> {
             ),
             idParentProduit = idProduit1,
             parentIdClient = parentIdClient,
-            typeTarificationEnumT2Correspond = TypeTarificationEnumT2.DEFINI,
+            typeTarificationEnumT2Correspond = M13TarificationInfos.TypeTarificationEnumT2.DEFINI,
             prixCurrency = 65.75
         ),
     )

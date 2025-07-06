@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
 import com.google.firebase.database.DataSnapshot

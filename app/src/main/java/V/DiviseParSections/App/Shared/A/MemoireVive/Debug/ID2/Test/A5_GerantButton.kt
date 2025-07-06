@@ -1,8 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +33,9 @@ import java.util.SortedMap
 @Composable
 fun GerantButton(
     viewModel: TariffsButtonsViewModelSec7ID2,
-    tarificationInfo: D_TarificationInfos,
+    tarificationInfo: M13TarificationInfos,
     showLabels: Boolean,
-    tariffsGroupedByType: SortedMap<TypeTarificationEnumT2, List<D_TarificationInfos>>,
+    tariffsGroupedByType: SortedMap<M13TarificationInfos.TypeTarificationEnumT2, List<M13TarificationInfos>>,
     onClickPrixButton: () -> Unit,
     onClickAnulationButton: (() -> Unit)? = null,
 ) {

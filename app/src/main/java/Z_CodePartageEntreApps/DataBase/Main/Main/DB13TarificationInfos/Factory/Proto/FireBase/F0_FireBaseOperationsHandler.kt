@@ -1,12 +1,12 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.ReflectionUtils.isSyntheticProperty
+import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase.ReflectionUtils.sanitizeValue
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
 import Z_CodePartageEntreApps.Model.getKeyFireBase
 import Z_CodePartageEntreApps.Model.parseDepuitOldAuNew
-import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.isSyntheticProperty
-import Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase.ReflectionUtils.sanitizeValue
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,7 +28,7 @@ class F0_FireBaseOperationsHandler(
     val ref: DatabaseReference = GroupeRepositorysProtoAvJuin3Model
         .getHeadSqlDataBaseRef().child("C_InfosSqlDataBases")
 
-    val childD_TarificationInfos = ref.child("D_TarificationInfos")
+    val childD_TarificationInfos = M13TarificationInfos.ref
     val childA_ProduitInfos = ref.child("A_ProduitInfos")
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -42,13 +42,13 @@ class F0_FireBaseOperationsHandler(
             onProgressUpdate(0.1f)
 
             val childRef = when (data::class) {
-                D_TarificationInfos::class -> childD_TarificationInfos
+                M13TarificationInfos::class -> childD_TarificationInfos
                 A_ProduitInfos::class -> childA_ProduitInfos
                 else -> return@withContext null
             }
 
             val key = when (data) {
-                is D_TarificationInfos -> {
+                is M13TarificationInfos -> {
                     data.keyFireBase.ifEmpty { data.withProperDefaults().keyFireBase }
                 }
                 is A_ProduitInfos -> {
@@ -87,7 +87,7 @@ class F0_FireBaseOperationsHandler(
         val updateMap = mutableMapOf<String, Any>()
 
         when (data) {
-            is D_TarificationInfos -> {
+            is M13TarificationInfos -> {
                 val updated = data.withProperDefaults()
                 updated::class.memberProperties.forEach { prop ->
                     if (!isSyntheticProperty(prop.name)) {
@@ -137,7 +137,7 @@ class F0_FireBaseOperationsHandler(
 
             // Determine which child reference to use based on data type
             val childRef = when (DataBase::class) {
-                D_TarificationInfos::class -> childD_TarificationInfos
+                M13TarificationInfos::class -> childD_TarificationInfos
                 A_ProduitInfos::class -> childA_ProduitInfos
                 else -> {
                     onProgressUpdate(0f)
@@ -155,7 +155,7 @@ class F0_FireBaseOperationsHandler(
                 try {
                     // Generate proper key for Firebase
                     val keyFireBase = when (data) {
-                        is D_TarificationInfos -> {
+                        is M13TarificationInfos -> {
                             val updated = data.withProperDefaults()
                             updated.keyFireBase
                         }
@@ -265,7 +265,7 @@ class F0_FireBaseOperationsHandler(
 
     fun getDataFromFirebase(
         onAddSuccess: (
-            List<D_TarificationInfos>,
+            List<M13TarificationInfos>,
             List<A_ProduitInfos>,
         ) -> Unit
     ) {
@@ -277,9 +277,9 @@ class F0_FireBaseOperationsHandler(
                     if (snapshot.exists()) {
                         onProgressUpdate(0.3f)
 
-                        val tarificationsSnapshot = snapshot.child("D_TarificationInfos")
+                        val tarificationsSnapshot = snapshot.child("M13TarificationInfos")
                         val mappedTarifications = if (tarificationsSnapshot.exists()) {
-                            mapSnapshotToObjects(tarificationsSnapshot, D_TarificationInfos::class)
+                            mapSnapshotToObjects(tarificationsSnapshot, M13TarificationInfos::class)
                         } else {
                             emptyList()
                         }

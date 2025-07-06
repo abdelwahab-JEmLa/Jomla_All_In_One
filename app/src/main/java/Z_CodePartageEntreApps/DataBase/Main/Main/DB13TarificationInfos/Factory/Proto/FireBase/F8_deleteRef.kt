@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
 import Z_CodePartageEntreApps.Model.A_ProduitInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -13,7 +13,7 @@ suspend inline fun <reified DataBase : Any> F0_FireBaseOperationsHandler.deleteR
                 onProgressUpdate(0.1f)
 
                 val childRef = when (DataBase::class) {
-                    D_TarificationInfos::class -> childD_TarificationInfos
+                    M13TarificationInfos::class -> childD_TarificationInfos
                     A_ProduitInfos::class -> childA_ProduitInfos
                     else -> {
                         onProgressUpdate(0f)

@@ -1,15 +1,14 @@
-package Z_CodePartageEntreApps.Proto.Par.Type.Modules.FireBase
+package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.FireBase
 
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.Model.A0_DataBasesGroup
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.D_TarificationInfos
-import Z_CodePartageEntreApps.Proto.Par.Type.Models.TypeTarificationEnumT2
 import Z_CodePartageEntreApps.Model.getKeyFireBase
 import com.google.firebase.database.DataSnapshot
 
 private const val TAG = "FirebaseMapping"
 
 fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
-    val tarifications = mutableListOf<D_TarificationInfos>()
+    val tarifications = mutableListOf<M13TarificationInfos>()
 
     val defaultModel = A0_DataBasesGroup()
 
@@ -22,8 +21,8 @@ fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): A0_DataBasesGroup {
         d_TarificationInfos = tarifications
     )
 }
-private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInfos> {
-    val results = mutableListOf<D_TarificationInfos>()
+private fun mapTarificationInfos(snapshot: DataSnapshot): List<M13TarificationInfos> {
+    val results = mutableListOf<M13TarificationInfos>()
 
     for (childSnap in snapshot.children) {
         try {
@@ -41,12 +40,12 @@ private fun mapTarificationInfos(snapshot: DataSnapshot): List<D_TarificationInf
             // Map the enum field
             val typeTarificationEnumString = childSnap.child("typeTarificationEnumT2Correspond").getValue(String::class.java) ?: "PRIX_BASE"
             val typeTarificationEnum = try {
-                TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
+                M13TarificationInfos.TypeTarificationEnumT2.valueOf(typeTarificationEnumString)
             } catch (e: Exception) {
-                TypeTarificationEnumT2.PRIX_BASE // Default fallback
+                M13TarificationInfos.TypeTarificationEnumT2.PRIX_BASE // Default fallback
             }
 
-            val instance = D_TarificationInfos(
+            val instance = M13TarificationInfos(
                 id = id,
                 nom = nom,
                 needUpdate = needUpdate,
