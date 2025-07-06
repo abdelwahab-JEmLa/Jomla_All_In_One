@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory
 
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -40,4 +41,7 @@ interface Dao13TarificationInfos {
 
     @Query("SELECT COUNT(*) FROM M13TarificationInfos")
     suspend fun getCount(): Int
+
+    @Delete
+    fun delete(data: M13TarificationInfos)
 }

@@ -29,12 +29,22 @@ class DataBaseCreationFactory13TarificationInfos(
     private suspend fun batchFireBaseUpdateGBonVent(datas: List<M13TarificationInfos>) {
         val updates = mutableMapOf<String, Any>()
         datas.forEach { data ->
-            updates[data.keyID] = data
+            updates[data.keyID] = data.copy(
+                keyID = data.keyID
+            )
         }
         repoRef.updateChildren(updates).await()
     }
 
     fun delete(data: M13TarificationInfos) {
-
+        factoryScope.launch {
+            try {
+                dao.delete(data)
+                // Also remove from Firebase
+                repoRef.child(data.keyID).removeValue().await()
+            } catch (e: Exception) {
+                // Handle deletion error
+            }
+        }
     }
 }

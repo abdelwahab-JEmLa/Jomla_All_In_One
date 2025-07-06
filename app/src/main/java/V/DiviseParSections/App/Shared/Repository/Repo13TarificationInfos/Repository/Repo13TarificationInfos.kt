@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
-import Z_CodePartageEntreApps.Model.getKeyFireBase
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -91,9 +90,10 @@ class Repo13TarificationInfos(
 
 @Entity
 data class M13TarificationInfos(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    @PrimaryKey
     val keyID: String = getPushFireBase(ref),
+
+    val id: Long = 0L,
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
@@ -118,8 +118,6 @@ data class M13TarificationInfos(
     //Etates Mutable
     val needUpdate: Boolean = true,
 
-    //keyFireBase - computed property, not stored in constructor
-    val keyFireBase: String = "",
 ) {
     fun getDebugInfos(): String {
         return "$parentM1ProduitDebugInfos $typeChoisi"
@@ -138,15 +136,7 @@ data class M13TarificationInfos(
     }
 
     fun withProperDefaults(): M13TarificationInfos {
-        val properNom = nom.ifEmpty { getStrDateTime(timestamps) }
-        val safeKey = keyFireBase.ifEmpty {
-            getKeyFireBase(id, properNom)
-        }
-        return this.copy(
-            nom = properNom,
-            keyFireBase = safeKey,
-            needUpdate = true
-        )
+        return this
     }
 
 

@@ -49,7 +49,7 @@ class F0_FireBaseOperationsHandler(
 
             val key = when (data) {
                 is M13TarificationInfos -> {
-                    data.keyFireBase.ifEmpty { data.withProperDefaults().keyFireBase }
+                    data.keyID.ifEmpty { data.withProperDefaults().keyID }
                 }
                 is A_ProduitInfos -> {
                     data.keyFireBase.ifEmpty { data.withProperKeyFireBase().keyFireBase }
@@ -157,7 +157,7 @@ class F0_FireBaseOperationsHandler(
                     val keyFireBase = when (data) {
                         is M13TarificationInfos -> {
                             val updated = data.withProperDefaults()
-                            updated.keyFireBase
+                            updated.keyID
                         }
                         is A_ProduitInfos -> {
                             val updated = data.withProperKeyFireBase()
