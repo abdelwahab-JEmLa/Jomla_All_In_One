@@ -4,6 +4,8 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun QuantityDisplay(
     produit: ArticlesBasesStatsTable,
@@ -127,8 +130,36 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val itsChezGroApp = viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
-                val prixVent =if(itsChezGroApp == true)"P.A ${produit.prixAchat}"  else "P.V ${produit.prixVent}"
+                val itsChezGroApp =
+                    viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
+
+                val prixVent = if (itsChezGroApp == true) {
+                    val prixAchatDepuitGrossistGerant = viewModel.aCentral.getter.repo13TarificationInfos.datasValue
+                        .find { tarif ->
+                            val match =
+                                tarif.typeChoisi == M13TarificationInfos.TypeChoisi.DefiniParGerant2 &&
+                                        tarif.parentM1ProduitInfosKeyId == produit.keyID
+                            match
+                        }?.prixCurrency
+
+                    when {
+                        prixAchatDepuitGrossistGerant != null && prixAchatDepuitGrossistGerant > 0 -> {
+                            "Gérant: ${String.format("%.2f", prixAchatDepuitGrossistGerant)}"
+                        }
+                        produit.prixAchat > 0.0 -> {
+                            "Autres Grossissts: ${String.format("%.2f", produit.prixAchat)}"
+                        }
+                        else -> {
+                            "Non défini"
+                        }
+                    }
+                } else {
+                    if (produit.prixVent > 0.0) {
+                        "P.V: ${String.format("%.2f", produit.prixVent)}"
+                    } else {
+                        "Prix non défini"
+                    }
+                }
 
                 Text(prixVent)
 
