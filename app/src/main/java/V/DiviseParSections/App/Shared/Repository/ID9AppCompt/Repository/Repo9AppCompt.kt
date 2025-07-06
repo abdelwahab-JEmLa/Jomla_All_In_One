@@ -90,15 +90,13 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(existingIndex, dataForRepo)
     }
 }
-
-
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
     var keyID: String = getPushFireBase(ref),
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
-    var type: Type = Type.TravailleChezGrossisst3Ali,
+    var appDesignedPourWorkingGrossisst3Ali: Boolean = true,
 
     // Section InfosDeBase
     var nom: String = "",
@@ -106,6 +104,7 @@ data class Z_AppCompt(
 
     var deviceModelNom: String = Build.MODEL,
     var deviceModelId: String = Build.ID,
+
 
     // Section Options Personnel
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
@@ -163,10 +162,6 @@ data class Z_AppCompt(
     var KeyByParent: String = "",
     var vid: Long = 1,
     ) {
-    enum class Type  {
-        NON_DEFINIE,
-        TravailleChezGrossisst3Ali
-    }
 
     // Updated addStringAuNomsMutableTags function in Z_AppCompt class
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {

@@ -32,7 +32,7 @@ fun MainList(
 ) {
     val currentM9AppCompt =
         viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.currentM9AppCompt
-    val travailleChezGrossisst3Ali = currentM9AppCompt?.nom =="Chez Gro Abdelwahab"
+    val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     val tariffs = viewModel.aCentralFacade.getter.repo13TarificationInfos.datasValue
     val context = LocalContext.current
@@ -72,7 +72,7 @@ fun MainList(
             }
 
             // Only add base price tariff if not working at wholesale (TravailleChezGrossisst3Ali)
-            if (!travailleChezGrossisst3Ali) {
+            if (!travailleChezGrossisst3Ali!!) {
                 add(
                     M13TarificationInfos(
                         typeTarificationEnumT2Correspond = TypeTarificationEnumT2.PRIX_BASE,
@@ -101,8 +101,9 @@ fun MainList(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = modifier
-            .getSemanticsTag("currentM9AppCompt",currentM9AppCompt?.nom)
+        Column(
+            modifier = modifier
+                .getSemanticsTag("currentM9AppCompt", currentM9AppCompt?.nom)
         ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
