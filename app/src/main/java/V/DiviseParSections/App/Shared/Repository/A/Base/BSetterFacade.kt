@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import com.google.firebase.database.DatabaseReference
 
@@ -123,6 +124,10 @@ class BSetterFacade(
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
         repo9AppCompt.add(defaultGeneratedCompt)
+    }
+
+    fun addGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
+       repo13TarificationInfos.add(latestTariffLocalData)
     }
 
     companion object {

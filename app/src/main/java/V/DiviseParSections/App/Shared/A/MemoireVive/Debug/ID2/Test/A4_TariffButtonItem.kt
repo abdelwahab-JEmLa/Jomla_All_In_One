@@ -172,6 +172,8 @@ fun TariffButtonItem(
                 .getSemanticsTagFocucedVars(getter)
             ,
             onClick = {
+                viewModel.aCentralFacade.setter.addGroAliTariff(latestTariffLocalData)
+
                 listFocusedM10OpeVentCouleurParPrixDifineur.map {
                     it.parentM13TarificationKeyID = latestTariff.keyID
                     it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
@@ -181,6 +183,7 @@ fun TariffButtonItem(
                 viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
                     listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
                 )
+
 
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)
             },

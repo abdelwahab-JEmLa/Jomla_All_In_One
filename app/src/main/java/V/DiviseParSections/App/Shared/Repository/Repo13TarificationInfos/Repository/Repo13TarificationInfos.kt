@@ -165,6 +165,7 @@ data class M13TarificationInfos(
         // Format: yyyy-mm-dd -< HH:mm:ss
         return String.format("%04d-%02d-%02d -< %02d:%02d:%02d", year, month, day, hour, minute, second)
     }
+
     companion object{
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
