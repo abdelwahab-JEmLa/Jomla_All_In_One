@@ -46,7 +46,8 @@ data class ParametresAppComptNonSaved(
 
     val activeWindowsSearchProduit: Boolean = false,
     val devStartUpScree: Screen = Screen.A_ClientsLocationGps,
-    val itsDevMode: Boolean =true,
+    val itsDevMode: Boolean = true,
+    var enablePerformAutoClickImageDisplayer: Boolean= false,
 )
 
 data class IDsModels(

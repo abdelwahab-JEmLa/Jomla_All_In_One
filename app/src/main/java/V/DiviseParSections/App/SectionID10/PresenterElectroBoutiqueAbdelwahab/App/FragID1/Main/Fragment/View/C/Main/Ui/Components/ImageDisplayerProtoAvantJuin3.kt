@@ -72,8 +72,9 @@ fun ImageDisplayerProtoAvantJuin3(
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
-    enableAutoClick: Boolean = false
 ) {
+    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.mainRepositorysGetterFacade.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
 
@@ -138,8 +139,8 @@ fun ImageDisplayerProtoAvantJuin3(
         }
     }
 
-    LaunchedEffect(imageLoaded, isLoading, enableAutoClick) {
-        if (enableAutoClick && imageLoaded && !isLoading && !hasPerformedAutoClick) {
+    LaunchedEffect(imageLoaded, isLoading, enablePerformAutoClickImageDisplayer) {
+        if (enablePerformAutoClickImageDisplayer && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
             focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
@@ -157,12 +158,18 @@ fun ImageDisplayerProtoAvantJuin3(
 
             GlideImage(
                 modifier = Modifier
-                    .getSemanticsTag(get.activeDialogSearchM1Produit,"activeDialogSearchM1Produit",0)
-                    .getSemanticsTag(produit.getDebugInfos(),"produit",1)
-                    .getSemanticsTag(activeProduit?.getDebugInfos()?:"null","activeProduit",1)
+                    .getSemanticsTag(
+                        get.activeDialogSearchM1Produit,
+                        "activeDialogSearchM1Produit",
+                        0
+                    )
+                    .getSemanticsTag(produit.getDebugInfos(), "produit", 1)
+                    .getSemanticsTag(activeProduit?.getDebugInfos() ?: "null", "activeProduit", 1)
                     .clickable {
                         // Manual click handler - always available
-                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(
+                            true
+                        )
                         focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
                         onClickToOpenWindow()
                     }
