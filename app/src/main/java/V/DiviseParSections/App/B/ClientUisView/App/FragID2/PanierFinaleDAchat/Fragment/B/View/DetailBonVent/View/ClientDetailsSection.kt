@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ifFalse
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,19 +23,18 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ClientDetailsSection(
+    modifier: Modifier,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isMinimized = uiState.isMinimized
-
-    val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
-    val onVentClient = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+    val get = viewModel.aCentral.focusedVarsHandlerFacade.get
+    val onVentClient = get.activeOnVentM2ClientInfos
 
     isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        // FIXED: Compact spacing when minimized
         horizontalArrangement = Arrangement.spacedBy(if (isMinimized) 8.dp else 12.dp)
     ) {
         Icon(
@@ -45,7 +45,8 @@ fun ClientDetailsSection(
             modifier = Modifier.size(if (isMinimized) 20.dp else 24.dp)
         )
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .getSemanticsTagFocucedVars(get),
             // FIXED: Compact vertical spacing when minimized
             verticalArrangement = Arrangement.spacedBy(if (isMinimized) 2.dp else 4.dp)
         ) {

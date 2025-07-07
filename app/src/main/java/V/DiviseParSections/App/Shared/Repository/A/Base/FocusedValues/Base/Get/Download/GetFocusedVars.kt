@@ -112,6 +112,14 @@ class GetFocusedVars(
             val map = buildMap {
                 with(getter) {
                     put(
+                        "onVentM2ClientInfos",
+                        onVentM2ClientInfos?.let {
+                            with(it) {
+                                nom
+                            }
+                        } ?: "null"
+                    )
+                    put(
                         "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {

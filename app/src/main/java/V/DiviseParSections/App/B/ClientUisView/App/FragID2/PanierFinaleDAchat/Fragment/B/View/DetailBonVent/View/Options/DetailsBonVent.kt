@@ -102,7 +102,8 @@ fun DetailsBonVent(
                 PrintButton(
                     showLabel = !isMinimized,
                     onPrint = {
-                        val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
+                        val fClientRepository =
+                            viewModel.uiStateCentralRepositorys.iD2ClientRepository
                         printHandler.printVentReceipt(
                             context = context,
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
@@ -116,7 +117,7 @@ fun DetailsBonVent(
             },
             ActionButtonData("confirmation") {
                 ConfirmationButton(
-                    viewModel=viewModel,
+                    viewModel = viewModel,
                     showLabel = !isMinimized,
                 )
             },
@@ -159,6 +160,7 @@ fun DetailsBonVent(
                     }
 
                     ClientDetailsSection(
+                        modifier = Modifier,
                         viewModel = viewModel,
                     )
 

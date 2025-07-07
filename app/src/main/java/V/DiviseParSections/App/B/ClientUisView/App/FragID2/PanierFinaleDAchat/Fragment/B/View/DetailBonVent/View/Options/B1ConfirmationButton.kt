@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +53,8 @@ fun ConfirmationButton(
         return when (state) {
             M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Icons.Default.CheckCircle
             M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Icons.Default.Cancel
-            else -> Icons.Default.HelpOutline
+            M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> Icons.Default.PlayArrow
+            else -> Icons.AutoMirrored.Filled.HelpOutline
         }
     }
 
@@ -98,6 +100,7 @@ fun ConfirmationButton(
                 contentDescription = when (currentBonVent?.etateActuellementEst) {
                     M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
                     M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
+                    M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> "Commande en cours"
                     else -> "Gérer la commande"
                 },
                 modifier = Modifier.size(20.dp),
@@ -108,9 +111,10 @@ fun ConfirmationButton(
         if (showLabel) {
             Text(
                 text = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Confirmé"
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Non défini"
-                    else -> "Autre état"
+                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> currentBonVent.etateActuellementEst.nomArabe
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> currentBonVent.etateActuellementEst.nomArabe
+                    M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> currentBonVent.etateActuellementEst.nomArabe
+                    else -> currentBonVent?.etateActuellementEst?.nomArabe ?: "حالة أخرى"
                 },
                 modifier = Modifier
                     .background(
