@@ -81,13 +81,6 @@ fun DetailsBonVent(
     // Get current BonVent from repository
     val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
 
-    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
-            data.copy(
-                etateActuellementEst = newEtate
-            )
-        )
-
     // Create list of action buttons for LazyColumn
     val actionButtons = remember(uiState, isMinimized, currentBonVent) {
         listOf(
@@ -123,22 +116,9 @@ fun DetailsBonVent(
             },
             ActionButtonData("confirmation") {
                 ConfirmationButton(
+                    viewModel=viewModel,
                     currentBonVent = currentBonVent,
                     showLabel = !isMinimized,
-                    onUpdateBonVent = { bonVent ->
-                        when (bonVent.etateActuellementEst) {
-                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
-                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                            }
-                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
-                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
-                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
-                            }
-                            else -> {
-                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                            }
-                        }
-                    }
                 )
             },
             ActionButtonData("minimize") {
@@ -354,8 +334,14 @@ fun PrintButton(
 fun ConfirmationButton(
     currentBonVent: M8BonVent?,
     showLabel: Boolean,
-    onUpdateBonVent: (M8BonVent) -> Unit
+    viewModel: ZViewModel_Sec1Frag3,
 ) {
+    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
+        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
+            data.copy(
+                etateActuellementEst = newEtate
+            )
+        )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -363,7 +349,18 @@ fun ConfirmationButton(
         FloatingActionButton(
             onClick = {
                 currentBonVent?.let { bonVent ->
-                    onUpdateBonVent(bonVent)
+                    when (bonVent.etateActuellementEst) {
+                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
+                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                        }
+                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
+                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
+                            viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                        }
+                        else -> {
+                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                        }
+                    }
                 }
             },
             containerColor = when (currentBonVent?.etateActuellementEst) {
