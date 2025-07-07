@@ -180,7 +180,7 @@ data class ArticlesBasesStatsTable(
     var idForSearchArticles: Long = 0,
 ) {
     fun getDebugInfos(): String {
-        return nom + "" + keyID.takeLast(4).uppercase()
+        return nom + "[" + keyID.takeLast(4).uppercase() + "]"
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
