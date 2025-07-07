@@ -110,12 +110,12 @@ class GetFocusedVars(
             val map = buildMap {
                 with(getter) {
                     put(
-                        "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
+                        "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {
-                                parentM2ClientInfosKey
+                                parentM2ClientInfosDebugName
                             }
-                        }
+                        }?:"null"
                     )
                     put(
                         "focused_M1ProduitInfos_Pour_PrixDifineur", getter
