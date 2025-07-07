@@ -180,9 +180,9 @@ fun MainScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         AnimatedVisibility(
                             visible = isDisplayedConnexionWifiVisible
-                                    ||
-                                    !productDisplayController.isConnected
+                                    || !productDisplayController.isConnected
                                     && !lockHost
+                                    && !viewModel.getter.travailleChezGrossisst3Ali
                         ) {
                             ConnexionCard(
                                 headViewModel = headViewModel,
@@ -195,12 +195,10 @@ fun MainScreen(
                             )
                         }
 
-                        // Set the NavController in the navigation handler
                         LaunchedEffect(Unit) {
                             navigationHandler.setNavController(navController)
                         }
 
-                        // Main Content Area
                         Box(modifier = Modifier.weight(1f)) {
 
                             AppNavHost(
@@ -276,7 +274,8 @@ fun MainScreen(
                             articleStatsDataBase = displayProductDataBase,
                             colorsArticlesList = uiState.colorsArticlesTabelleModel,
                             reloadTrigger = 0, // Use state if needed
-                            modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModelViewModelInitApp
+                            modifier = Modifier.fillMaxSize(),
+                            viewModelInitApp = viewModelViewModelInitApp
                         )
                     }
                 }
@@ -312,10 +311,10 @@ fun MainScreen(
                     }
                 }
 
-                if(isHostPhone) {
+                if (isHostPhone) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
-                if(activeWindowsSearchProduit) {
+                if (activeWindowsSearchProduit) {
                     MainFastSearchProduitPourVent()
                 }
             }

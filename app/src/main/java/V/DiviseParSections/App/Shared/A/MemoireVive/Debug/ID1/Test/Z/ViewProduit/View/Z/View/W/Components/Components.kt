@@ -117,13 +117,7 @@ fun QuantityDisplay(
         val itsChezGroApp =
             viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
 
-        val findTariff = datasValue
-            .lastOrNull { tarif ->
-                val match =
-                    tarif.typeChoisi == M13TarificationInfos.TypeChoisi.DefiniParGerant2 &&
-                            tarif.parentM1ProduitInfosKeyId == produit.keyID
-                match
-            }
+        val findTariff = M13TarificationInfos.findTariff(datasValue, produit)
 
         val prixVent = if (itsChezGroApp == true) {
             val prixAchatDepuitGrossistGerant = findTariff?.prixCurrency
@@ -180,6 +174,8 @@ fun QuantityDisplay(
         }
     }
 }
+
+
 
 @Composable
 fun VentProduitQuantityDialog_T1(

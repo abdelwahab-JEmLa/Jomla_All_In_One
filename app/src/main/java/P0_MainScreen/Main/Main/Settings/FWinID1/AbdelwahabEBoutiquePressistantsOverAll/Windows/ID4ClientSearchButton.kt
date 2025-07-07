@@ -134,6 +134,10 @@ fun ID4ClientSearchButton(
                         } else {
                             if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
                                 "$nomClient - ${onVentId8BonVent.getCreationTimeString()}"
+                                //<--
+                                //TODO(1):change et fait que ici lence un qui afficeh le temp passe depuit la creation a maintent  //<--
+                                //TODO(1): aussi afficeh le totales des produits 
+
                             } else {
                                 "Rechercher Client"
                             }
@@ -152,11 +156,14 @@ fun ID4ClientSearchButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    OutlinedTextField(
+                    OutlinedTextField(         //<--
+                    //TODO(1): fait que ca start par afficeh les bonvents de current period vent sort par des temp dernier update  //<--
+                    //TODO(1): qend recherche commence par empty dropdown items
                         modifier = Modifier
                             .semantics {
 
                             }
+
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
                             .focusRequester(focusRequester),
@@ -202,6 +209,8 @@ fun ID4ClientSearchButton(
                 }
 
                 if (showDropdown) {
+                    //<--
+                    //TODO(1): utilise .debounce(600) pour le que le drop dow s afficeh
                     Card(
                         modifier = Modifier
                             .width(200.dp)
@@ -391,7 +400,8 @@ fun ClientSearchItem(
                 text = client.nom,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
-            )
+            )             //<--
+            //TODO(1): affiche diffrence temps a maintent 
             if (client.numTelephone.isNotEmpty()) {
                 Text(
                     text = client.numTelephone,
@@ -407,7 +417,8 @@ fun ClientSearchItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50)
                 )
-            }
+            }    //<--
+            //TODO(1): affiche l etate du bon
         }
         Row {
             Icon(

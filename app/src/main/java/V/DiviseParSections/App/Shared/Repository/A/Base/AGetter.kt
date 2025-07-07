@@ -75,34 +75,17 @@ class AGetter(
     val repo13TarificationInfos: Repo13TarificationInfos,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-) {
-    val parametresAppComptNonSaved = ParametresAppComptNonSaved()
+    getterFocusedVars: GetterFocusedVars,
 
+    ) {
+    val parametresAppComptNonSaved = ParametresAppComptNonSaved()
     val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    private fun createTempBonVent(
-        clientId: Long,
-        clientKey: String,
-        etate: M8BonVent.EtateActuellementEst,
-        periodKey: String,
-        comptKey: String
-    ) = M8BonVent(
-        keyID = M8BonVent.generePushKey(),
-        parentM7VentPeriodKeyId = periodKey,
-        parentM2ClientInfosKey = clientKey,
-        parentHClientOldID = clientId,
-        nomClientConcerned = iD2ClientRepository.findHClientInfos(clientId)?.nom ?: "Unknown",
-        parentKeyId9AppComptInfos = comptKey,
-        etateActuellementEst = etate,
-        parentID2ClientKeyByParent = BSetterFacade.getListDesParentKeys("null")[HClientInfos.keyModel]
-            ?: "",
-        parentID7VentPeriodeKeyByParent = BSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
-            ?: "",
-        parentID8C2TypeTransactionKeyByParent = BSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
-            ?: ""
-    )
+    val travailleChezGrossisst3Ali =
+        getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
+
 
     fun getClientLastBonVentParEtate(
         clientId: Long,
@@ -200,7 +183,7 @@ class AGetter(
 
     companion object {
         // Fixed: This should be a function that returns a Modifier
-        fun modifierAcDebugSemantics(hClientRepository: Repo2Client? =null): Modifier {
+        fun modifierAcDebugSemantics(hClientRepository: Repo2Client? = null): Modifier {
             return Modifier.semantics(mergeDescendants = true) {
                 set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
             }

@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
@@ -141,6 +142,17 @@ data class M13TarificationInfos(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
         )
-    }
+        fun findTariff(
+            datasValue: List<M13TarificationInfos>,
+            produit: ArticlesBasesStatsTable,
+            typeChoisi: TypeChoisi =TypeChoisi.DefiniParGerant2
+        ) = datasValue
+            .lastOrNull { tarif ->
+                val match =
+                    tarif.typeChoisi == typeChoisi &&
+                            tarif.parentM1ProduitInfosKeyId == produit.keyID
+                match
+            }
 
+    }
 }

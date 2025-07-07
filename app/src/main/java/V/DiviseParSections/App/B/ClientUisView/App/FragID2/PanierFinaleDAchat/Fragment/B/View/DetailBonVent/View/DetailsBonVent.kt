@@ -194,6 +194,8 @@ fun DetailsBonVent(
                         modifier = Modifier.size(20.dp)
                     )
                 }
+                //<--
+                //TODO(1): ajout un button au click update current bonvent par command confirme 
             }
         }
     } else {

@@ -1,5 +1,6 @@
 package P0_MainScreen.Ui.Objects
 
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -26,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -43,7 +43,6 @@ fun ConnexionCard(
 
     // Get the error color outside of the Canvas
     val errorColor = MaterialTheme.colorScheme.error
-
     Card(
         modifier = Modifier
             .clickable { isCollapsed = !isCollapsed }

@@ -17,17 +17,17 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
 
 @Composable
-fun ID2MesasgerieTelegramme(showMessageurDialog: Boolean, showLabels: Boolean) {
-    var showMessageurDialog1 = showMessageurDialog         //<--
-    //TODO(1): regle pk Variable 'showMessageurDialog1' is assigned but never accessed
+fun ID2MesasgerieTelegramme(
+    showMessageurDialog: Boolean,
+    showLabels: Boolean,
+    onTelegramClick: () -> Unit = {}
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         FloatingActionButton(
-            onClick = {
-                showMessageurDialog1 = true
-            },
+            onClick = onTelegramClick,
             modifier = Modifier.size(40.dp),
             containerColor = Color(0xFF0088CC),
         ) {

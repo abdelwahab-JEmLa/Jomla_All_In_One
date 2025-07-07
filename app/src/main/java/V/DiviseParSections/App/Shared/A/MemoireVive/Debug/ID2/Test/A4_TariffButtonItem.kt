@@ -4,31 +4,41 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.Tar
 import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -53,8 +63,52 @@ fun TariffButtonItem(
         )
     ) }
 
+    var isEditingPrice by remember { mutableStateOf(false) }
+    var editablePriceText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
+
+    fun handelClick(
+        viewModel: TariffsButtonsViewModelSec7ID2,
+        latestTariffLocalData: M13TarificationInfos,
+        listFocusedM10OpeVentCouleurParPrixDifineur: MutableList<M10OperationVentCouleur>,
+        latestTariff: M13TarificationInfos
+    ) {
+        viewModel.aCentralFacade.setter.addOrUpdateGroAliTariff(latestTariffLocalData)
+
+        listFocusedM10OpeVentCouleurParPrixDifineur.map {
+            it.parentM13TarificationKeyID = latestTariff.keyID
+            it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
+            it.provisoireMonPrix = latestTariffLocalData.prixCurrency
+        }
+
+        viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
+            listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
+        )
+    }
+
+    fun handlePriceEditDone() {
+        val newPrice = editablePriceText.toDoubleOrNull()
+        if (newPrice != null && newPrice >= 0) {
+            latestTariffLocalData = latestTariffLocalData.copy(
+                prixCurrency = newPrice
+            )
+
+            val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter
+            val listFocusedM10OpeVentCouleurParPrixDifineur =
+                getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
+
+            handelClick(
+                viewModel,
+                latestTariffLocalData,
+                listFocusedM10OpeVentCouleurParPrixDifineur,
+                latestTariff
+            )
+        }
+        isEditingPrice = false
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -71,7 +125,6 @@ fun TariffButtonItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ElevatedCard {
-                    // Use same styling for both DEFINI and DefiniParGerant2
                     val labelBackgroundColor = if (isEditableTariff) {
                         Color.Yellow
                     } else {
@@ -84,16 +137,50 @@ fun TariffButtonItem(
                         Color.White
                     }
 
-                    Text(
-                        typeName,
-                        modifier = Modifier
-                            .width(100.dp)
-                            .background(labelBackgroundColor)
-                            .padding(4.dp),
-                        color = labelTextColor,
-                        fontSize = 14.sp,
-                        maxLines = 2
-                    )
+                    if (isEditingPrice && isEditableTariff) {
+                        OutlinedTextField(
+                            value = editablePriceText,
+                            onValueChange = { editablePriceText = it },
+                            label = { Text("${latestTariffLocalData.prixCurrency}") },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { handlePriceEditDone() }
+                            ),
+                            modifier = Modifier
+                                .width(100.dp)
+                                .focusRequester(focusRequester)
+                        )
+
+                        LaunchedEffect(isEditingPrice) {
+                            if (isEditingPrice) {
+                                focusRequester.requestFocus()
+                            }
+                        }
+                    } else {
+                        Text(
+                            typeName,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .background(labelBackgroundColor)
+                                .padding(4.dp)
+                                .then(
+                                    if (isEditableTariff) {
+                                        Modifier.clickable {
+                                            editablePriceText = ""
+                                            isEditingPrice = true
+                                        }
+                                    } else {
+                                        Modifier
+                                    }
+                                ),
+                            color = labelTextColor,
+                            fontSize = 14.sp,
+                            maxLines = 2
+                        )
+                    }
                 }
 
                 // Show decrease button for both editable tariff types
@@ -179,16 +266,12 @@ fun TariffButtonItem(
                 .getSemanticsTagFocucedVars(getter)
             ,
             onClick = {
-                viewModel.aCentralFacade.setter.addOrUpdateGroAliTariff(latestTariffLocalData)
 
-                listFocusedM10OpeVentCouleurParPrixDifineur.map {
-                    it.parentM13TarificationKeyID = latestTariff.keyID
-                    it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
-                    it.provisoireMonPrix = latestTariffLocalData.prixCurrency
-                }
-
-                viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
-                    listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
+                handelClick(
+                    viewModel,
+                    latestTariffLocalData,
+                    listFocusedM10OpeVentCouleurParPrixDifineur,
+                    latestTariff
                 )
 
 

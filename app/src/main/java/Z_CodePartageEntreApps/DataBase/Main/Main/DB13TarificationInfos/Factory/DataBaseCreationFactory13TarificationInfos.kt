@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
@@ -24,7 +25,10 @@ class DataBaseCreationFactory13TarificationInfos(
     val repoTAG = repoEntityName
     val name = Repository.M13TarificationInfosEntity.name
     var isListenerRegistered = false
-
+    private var isPendingSync = false
+    private var retryCount = 0
+    private val maxRetries = 3
+    private val retryDelayMs = 5000L // 5 seconds
 
     suspend fun init(
         isInternetAvailable: Boolean,
@@ -35,31 +39,93 @@ class DataBaseCreationFactory13TarificationInfos(
         updateRepoProgress(name, 0.4f)
 
         val data: List<M13TarificationInfos> = if (isInternetAvailable) {
-
             updateRepoProgress(name, 0.6f)
-            suspendCancellableCoroutine { continuation ->
-                repoRef.get()
-                    .addOnSuccessListener { snapshot ->
-                        val dataList = mutableListOf<M13TarificationInfos>()
-                        snapshot.children.forEach { child ->
-                            child.getValue(M13TarificationInfos::class.java)?.let { item ->
-                                dataList.add(item)
-                            }
-                        }
-                        continuation.resume(dataList)
-                    }
-                    .addOnFailureListener {
-                        throw IllegalStateException("No data available from Firebase or CSV")
-                    }
-            }
+            fetchDataFromFirebase()
         } else {
-            TODO("")
+            isPendingSync = true
+            updateRepoProgress(name, 0.6f)
+            loadDefaultOrCachedData()
         }
 
         updateRepoProgress(name, 0.8f)
 
+        if (data.isNotEmpty()) {
+            dao.insertAll(data)
+        }
 
-        dao.insertAll(data)
+        updateRepoProgress(name, 1.0f)
+    }
+
+    private suspend fun fetchDataFromFirebase(): List<M13TarificationInfos> {
+        return suspendCancellableCoroutine { continuation ->
+            repoRef.get()
+                .addOnSuccessListener { snapshot ->
+                    val dataList = mutableListOf<M13TarificationInfos>()
+                    snapshot.children.forEach { child ->
+                        child.getValue(M13TarificationInfos::class.java)?.let { item ->
+                            dataList.add(item)
+                        }
+                    }
+                    continuation.resume(dataList)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resume(emptyList()) // Return empty list on failure
+                }
+        }
+    }
+
+    private suspend fun loadDefaultOrCachedData(): List<M13TarificationInfos> {
+        return emptyList()
+
+    }
+
+    suspend fun retryInitWhenConnectionReturns(
+        updateRepoProgress: (String, Float) -> Unit
+    ) {
+        if (!isPendingSync) return
+
+        retryCount++
+
+        try {
+            updateRepoProgress(name, 0.2f)
+
+            val data = fetchDataFromFirebase()
+
+            if (data.isNotEmpty()) {
+                updateRepoProgress(name, 0.8f)
+
+                dao.deleteAll()
+                dao.insertAll(data)
+
+                isPendingSync = false
+                retryCount = 0
+
+                updateRepoProgress(name, 1.0f)
+            } else {
+                // If still no data and we haven't exceeded max retries, schedule another retry
+                if (retryCount < maxRetries) {
+                    factoryScope.launch {
+                        delay(retryDelayMs)
+                        retryInitWhenConnectionReturns(updateRepoProgress)
+                    }
+                } else {
+                    // Max retries reached, stop trying
+                    isPendingSync = false
+                    retryCount = 0
+                }
+            }
+        } catch (e: Exception) {
+            // Handle retry failure
+            if (retryCount < maxRetries) {
+                factoryScope.launch {
+                    delay(retryDelayMs)
+                    retryInitWhenConnectionReturns(updateRepoProgress)
+                }
+            } else {
+                isPendingSync = false
+                retryCount = 0
+            }
+        }
     }
 
     fun triggerUpdateFbParTimestampsListener() {
@@ -93,9 +159,17 @@ class DataBaseCreationFactory13TarificationInfos(
                                     }
                                 }
                             } catch (e: Exception) {
+                                // Log error if needed
                             }
                         }
+
+                        // If we had pending sync and listener is working, mark sync as complete
+                        if (isPendingSync && updateCount > 0) {
+                            isPendingSync = false
+                            retryCount = 0
+                        }
                     } catch (e: Exception) {
+                        // Log error if needed
                     }
                 }
             }
@@ -136,4 +210,16 @@ class DataBaseCreationFactory13TarificationInfos(
             }
         }
     }
+
+    // Call this method when internet connection is restored
+    fun onInternetConnectionRestored(updateRepoProgress: (String, Float) -> Unit) {
+        if (isPendingSync) {
+            factoryScope.launch {
+                retryInitWhenConnectionReturns(updateRepoProgress)
+            }
+        }
+    }
+
+    // Helper method to check if sync is pending
+    fun hasPendingSync(): Boolean = isPendingSync
 }

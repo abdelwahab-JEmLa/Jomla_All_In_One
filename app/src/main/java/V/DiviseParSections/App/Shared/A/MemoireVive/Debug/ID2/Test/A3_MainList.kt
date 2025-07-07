@@ -82,19 +82,43 @@ fun MainList(
         }
     }
 
-    val generatedTariffDefiniParGerant2 = M13TarificationInfos(
-        id = if (tariffs.isNotEmpty()) tariffs.maxOf { it.id } + 1 else 1L,
-        parentM1ProduitDebugInfos = produit.nom,
-        parentM1ProduitInfosKeyId = produit.keyID,
-        prixCurrency = produit.prixAchat
+    val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
+        tariffs,
+        produit,
+        TypeChoisi.DefiniParGerant2
     )
 
-    val allTariffsGroupedAndSorted = remember(clientDefiniTariffs, standardTariffs) {
-        (clientDefiniTariffs + standardTariffs + generatedTariffDefiniParGerant2)
+    val generatedTariffDefiniParGerant2 = remember(existingDefiniParGerant2Tariff, produit, tariffs) {
+        existingDefiniParGerant2Tariff ?: M13TarificationInfos(
+            id = if (tariffs.isNotEmpty()) tariffs.maxOf { it.id } + 1 else 1L,
+            parentM1ProduitDebugInfos = produit.nom,
+            parentM1ProduitInfosKeyId = produit.keyID,
+            prixCurrency = produit.prixAchat,
+            typeChoisi = TypeChoisi.DefiniParGerant2
+        )
+    }
+
+    val allTariffsGroupedAndSorted = remember(
+        clientDefiniTariffs,
+        standardTariffs,
+        generatedTariffDefiniParGerant2
+    ) {
+        // Only add the generated tariff if it's not already in clientDefiniTariffs
+        val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
+            it.typeChoisi == TypeChoisi.DefiniParGerant2 &&
+                    it.parentM1ProduitInfosKeyId == produit.keyID
+        }
+
+        val allTariffs = if (shouldAddGeneratedTariff) {
+            clientDefiniTariffs + standardTariffs + generatedTariffDefiniParGerant2
+        } else {
+            clientDefiniTariffs + standardTariffs
+        }
+
+        allTariffs
             .groupBy { it.typeChoisi }
             .toSortedMap(compareBy { it.ordinal })
     }
-
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -118,6 +142,7 @@ fun MainList(
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
+
         val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
             maxPrixArriveDuProduit
         } else {
@@ -141,7 +166,6 @@ fun MainList(
             showLabels = showLabels,
             tariffsGroupedByType = allTariffsGroupedAndSorted,
             onClickPrixButton = {
-
                 onClickPrixButton(typeToUse, tarificationInfo, context)
             },
             onClickAnulationButton = onClickAnulationButton

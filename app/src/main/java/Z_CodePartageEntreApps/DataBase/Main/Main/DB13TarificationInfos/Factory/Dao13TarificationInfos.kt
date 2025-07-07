@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface Dao13TarificationInfos {
-    @Query("SELECT COUNT(*) FROM M8BonVent")
+    @Query("DELETE FROM M13TarificationInfos")
+    suspend fun deleteAll()
+
+    @Query("SELECT COUNT(*) FROM M13TarificationInfos")
     suspend fun isTableEmpty(): Boolean = getCount() == 0
 
     @Query("SELECT * FROM M13TarificationInfos ")

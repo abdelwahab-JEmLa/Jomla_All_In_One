@@ -235,7 +235,11 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                             showCatalogueDialog = true
                         }
 
-                        ID2MesasgerieTelegramme(showMessageurDialog, showLabels)
+                        ID2MesasgerieTelegramme(
+                            showMessageurDialog = showMessageurDialog,
+                            showLabels = showLabels,
+                            onTelegramClick = { showMessageurDialog = true }
+                        )
 
                         if (!cLenceDepuitFragmentsSepecialisteDeVents) {
                             ID3RecordingButton(

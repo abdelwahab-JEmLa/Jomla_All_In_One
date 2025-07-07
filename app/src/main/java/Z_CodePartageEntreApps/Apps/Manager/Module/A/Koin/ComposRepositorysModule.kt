@@ -54,7 +54,7 @@ val composRepositorysModule = module {
     single { SetterFocusedVars(get(), get(), get(), get(), get(), ) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 
-    single { AGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),) }
+    single { AGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
 
     single { BSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
