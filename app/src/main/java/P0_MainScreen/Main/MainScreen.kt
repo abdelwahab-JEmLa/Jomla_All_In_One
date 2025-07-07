@@ -178,21 +178,20 @@ fun MainScreen(
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        AnimatedVisibility(
-                            visible = isDisplayedConnexionWifiVisible
-                                    || !productDisplayController.isConnected
-                                    && !lockHost
-                                    && !viewModel.getter.travailleChezGrossisst3Ali
-                        ) {
-                            ConnexionCard(
-                                headViewModel = headViewModel,
-                                productDisplayController = productDisplayController,
-                                onClickToStartAsClient = {
-                                    isNavBarVisible = false
-                                    isFabVisible = false
-                                },
-                                lockHost = lockHost
-                            )
+                        if (!viewModel.getter.travailleChezGrossisst3Ali) {
+                            AnimatedVisibility(
+                                visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost)
+                            ) {
+                                ConnexionCard(
+                                    headViewModel = headViewModel,
+                                    productDisplayController = productDisplayController,
+                                    onClickToStartAsClient = {
+                                        isNavBarVisible = false
+                                        isFabVisible = false
+                                    },
+                                    lockHost = lockHost
+                                )
+                            }
                         }
 
                         LaunchedEffect(Unit) {

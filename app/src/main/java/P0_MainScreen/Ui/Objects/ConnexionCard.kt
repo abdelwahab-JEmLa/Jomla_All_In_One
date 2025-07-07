@@ -41,7 +41,6 @@ fun ConnexionCard(
     var messageText by remember { mutableStateOf("") }
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
 
-    // Get the error color outside of the Canvas
     val errorColor = MaterialTheme.colorScheme.error
     Card(
         modifier = Modifier

@@ -84,8 +84,7 @@ class MainRepositorysGetterFacade(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val travailleChezGrossisst3Ali =
-        getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
+    val travailleChezGrossisst3Ali = getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
 
 
     fun getClientLastBonVentParEtate(
