@@ -35,7 +35,7 @@ fun focucePourPrixDeM1Produit(
     )
 }
 
-fun anulleFocucePourPrixDeM1Produit(
+fun set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId(
     getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
@@ -48,6 +48,7 @@ fun anulleFocucePourPrixDeM1Produit(
     repo9AppCompt.upsert(
         currentAppCompt.copy(
             focusedAuPrixDifineurM1ProduitInfosKeyId = "null",
+            focusedAuPrixDifineurM1ProduitInfosDebugInfos = "null",
         )
     )
 }

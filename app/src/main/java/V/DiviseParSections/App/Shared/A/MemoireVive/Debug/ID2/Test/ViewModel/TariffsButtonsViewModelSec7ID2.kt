@@ -71,7 +71,7 @@ class TariffsButtonsViewModelSec7ID2(
             m1produitInfos,
             newPrix
         )
-        aCentralFacade.focusedVarsHandlerFacade.set.anulleFocucePourPrixDeM1ProduitFacade()
+        aCentralFacade.focusedVarsHandlerFacade.set.anulle_Focuce_Pour_PrixDeM1ProduitFacade()
     }
 
 

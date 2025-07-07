@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -270,6 +271,35 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         },
                         viewModel = viewModel
                     )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+                        },
+                        modifier = Modifier.size(40.dp),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Rechercher Produit",
+                            tint = Color.White
+                        )
+                    }
+
+                    if (showLabels) {
+                        Text(
+                            text = "Rechercher Produit",
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
                 }
 
                 TariffsButtonsSec7ID2(

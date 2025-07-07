@@ -39,15 +39,17 @@ import org.koin.androidx.compose.koinViewModel
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
-) {
+) {       //<--
+//TODO(1): fait que si au init startTextSearchM1Produit est empnty le focuse de clavie start ne se fait pas
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
     val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
-
+    val startTextSearchM1Produit = viewModel.aCentral.focusedVarsHandlerFacade.get.currentM9AppCompt?.startTextSearchM1Produit ?: ""
     val focusRequester = remember { FocusRequester() }
 
-    var localSearchText by remember { mutableStateOf("") }
+    // Initialize localSearchText with startTextSearchM1Produit
+    var localSearchText by remember { mutableStateOf(startTextSearchM1Produit) }
 
     LaunchedEffect(Unit) {
         delay(100)

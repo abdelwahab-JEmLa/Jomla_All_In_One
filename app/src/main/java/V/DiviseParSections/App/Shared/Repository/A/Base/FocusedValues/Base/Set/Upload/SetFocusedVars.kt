@@ -2,9 +2,9 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.anulleFocucePourPrixDeM1Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focucePourPrixDeM1Produit
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.updateCurrentAppComptDialogProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -80,8 +80,8 @@ class SetFocusedVars(
         )
     }
 
-    fun anulleFocucePourPrixDeM1ProduitFacade() {
-        anulleFocucePourPrixDeM1Produit(get, repo9AppCompt)
+    fun anulle_Focuce_Pour_PrixDeM1ProduitFacade() {
+        set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId(get, repo9AppCompt)
     }
 
     fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
@@ -106,12 +106,36 @@ class SetFocusedVars(
         }
     }
 
-    fun toggle_CurrentApp_activeDialogSearchM1Produit(activeDialogSearchM1Produit: Boolean?=true) {
+    fun active_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
+        set_CurrentApp_activeDialogSearchM1Produit(value)
+    }
+
+    fun dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit() {
+        set_CurrentApp_activeDialogSearchM1Produit(false)
+        set_Current_startTextSearchM1Produit("")
+        anulle_Focuce_Pour_PrixDeM1ProduitFacade()
+    }
+
+    private fun set_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
         repo9AppCompt.currentAppCompt.let {
             if (it != null) {
-                repo9AppCompt.upsert(it.copy(
-                    activeDialogSearchM1Produit=!activeDialogSearchM1Produit!!
-                ))
+                repo9AppCompt.upsert(
+                    it.copy(
+                        activeDialogSearchM1Produit = value
+                    )
+                )
+            }
+        }
+    }
+
+    fun set_Current_startTextSearchM1Produit(nom: String) {
+        repo9AppCompt.currentAppCompt.let {
+            if (it != null) {
+                repo9AppCompt.upsert(
+                    it.copy(
+                        startTextSearchM1Produit = nom
+                    )
+                )
             }
         }
     }

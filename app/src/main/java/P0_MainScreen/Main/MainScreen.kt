@@ -1,6 +1,7 @@
 package P0_MainScreen.Main
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
+import P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs.Dialog_MainFastSearchProduitPourVent
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.MainFastSearchProduitPourVent
@@ -315,6 +316,11 @@ fun MainScreen(
                 }
                 if (activeWindowsSearchProduit) {
                     MainFastSearchProduitPourVent()
+                }
+                if (viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
+                    Dialog_MainFastSearchProduitPourVent(
+                        focusedVarsHandlerFacade =viewModel.aCentralFacade.focusedVarsHandlerFacade,
+                    )
                 }
             }
         }

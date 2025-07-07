@@ -149,7 +149,8 @@ fun ImageDisplayerProtoAvantJuin3(
                     .getSemanticsTag(produit.getDebugInfos(),"produit",1)
                     .getSemanticsTag(activeProduit?.getDebugInfos()?:"null","activeProduit",1)
                     .clickable {
-                        focusedVarsHandlerFacade.set.toggle_CurrentApp_activeDialogSearchM1Produit(get.activeDialogSearchM1Produit)
+                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+                        focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
                         onClickToOpenWindow()
                     }
                     .fillMaxSize()
