@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Patch
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BSetterP (
-    val getter: AGetter,
+    val getter: MainRepositorysGetterFacade,
     val bProduitDataBase_SubClassFunctionality: RepoM1ProduitInfos,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
     val hClientRepository: Repo2Client,

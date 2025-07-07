@@ -5,7 +5,7 @@ import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.TariffsButtonsSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -95,7 +95,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     val itsFragmentProduitFastSearchDialog =
         activeFragment == Screen.FragmentProduitFastSearchDialog
     val currentM9AppCompt =
-        viewModel.central.focusedVarsHandlerFacade.getter.currentM9AppCompt
+        viewModel.central.focusedVarsHandlerFacade.get.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
@@ -203,7 +203,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.central.focusedVarsHandlerFacade.getter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.central.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }

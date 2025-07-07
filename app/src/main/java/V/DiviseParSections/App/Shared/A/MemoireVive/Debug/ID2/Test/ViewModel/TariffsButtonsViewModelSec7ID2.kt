@@ -29,8 +29,8 @@ class TariffsButtonsViewModelSec7ID2(
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
-    val getter = aCentralFacade.getter
-    val setter = aCentralFacade.setter
+    val getter = aCentralFacade.mainRepositorysGetterFacade
+    val setter = aCentralFacade.mainRepositorysSetterFacade
 
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
@@ -71,7 +71,7 @@ class TariffsButtonsViewModelSec7ID2(
             m1produitInfos,
             newPrix
         )
-        aCentralFacade.focusedVarsHandlerFacade.setter.anulleFocucePourPrixDeM1ProduitFacade()
+        aCentralFacade.focusedVarsHandlerFacade.set.anulleFocucePourPrixDeM1ProduitFacade()
     }
 
 

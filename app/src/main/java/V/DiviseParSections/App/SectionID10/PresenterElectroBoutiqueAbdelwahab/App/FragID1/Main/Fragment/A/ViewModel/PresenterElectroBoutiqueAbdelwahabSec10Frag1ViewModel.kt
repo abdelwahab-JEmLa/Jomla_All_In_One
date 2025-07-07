@@ -10,8 +10,8 @@ import org.mongodb.kbson.BsonObjectId
 class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
     aCentral: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.getter
-    val setter = aCentral.setter
+    val getter = aCentral.mainRepositorysGetterFacade
+    val setter = aCentral.mainRepositorysSetterFacade
 
     data class UiState(val catalogueFilterId: BsonObjectId? = null)
 

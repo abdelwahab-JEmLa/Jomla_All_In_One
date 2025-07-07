@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Z.Archive.ViewModel
      /*
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.AGetter
+import V.DiviseParSections.App.Shared.Repository.MainRepositorysGetterFacade
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
@@ -18,7 +18,7 @@ data class UiState(
     val mainLoadingProgress: Float = 0f
 )
 class PanierFinaleDAchatViewModel(
-    val a_CentralDatasHandlerProtoJuin9 : AGetter,
+    val a_CentralDatasHandlerProtoJuin9 : MainRepositorysGetterFacade,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {

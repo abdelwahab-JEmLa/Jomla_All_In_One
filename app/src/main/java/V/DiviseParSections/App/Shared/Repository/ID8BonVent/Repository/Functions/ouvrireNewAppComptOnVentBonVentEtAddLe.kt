@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -34,11 +34,11 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = MainSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
+                parentID2ClientKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = MainSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
+                parentID7VentPeriodeKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = MainSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
         )

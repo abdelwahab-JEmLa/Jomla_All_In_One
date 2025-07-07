@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 
 class VentOperations(
-    private val getter: AGetter,
+    private val getter: MainRepositorysGetterFacade,
     private val fVentCouleurOperationRepository: Repo10OperationVentCouleur
 ) {
     val zAppComptRepositoryComposable = getter.repo9AppCompt

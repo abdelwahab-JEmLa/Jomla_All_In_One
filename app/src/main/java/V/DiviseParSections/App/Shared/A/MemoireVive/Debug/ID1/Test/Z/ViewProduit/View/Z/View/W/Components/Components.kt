@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.Z.View.W.Components
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Z.ViewProduit.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
@@ -113,9 +113,10 @@ fun QuantityDisplay(
                 )
             }
         }
-        val datasValue = viewModel.aCentral.getter.repo13TarificationInfos.datasValue
+        val datasValue =
+            viewModel.aCentral.mainRepositorysGetterFacade.repo13TarificationInfos.datasValue
         val itsChezGroApp =
-            viewModel.aCentral.focusedVarsHandlerFacade.getter.currentM9AppCompt?.travailleChezGrossisst3Ali
+            viewModel.aCentral.focusedVarsHandlerFacade.get.currentM9AppCompt?.travailleChezGrossisst3Ali
 
         val findTariff = M13TarificationInfos.findTariff(datasValue, produit)
 
@@ -147,9 +148,18 @@ fun QuantityDisplay(
                 .getSemanticsTag("repo13TarificationInfos", datasValue)
                 .getSemanticsTag("findTariff", findTariff, 2)
                 .clickable(enabled = !allNonTrouve) {
-                    val setterFocusedVarsHandlerFacade = viewModel.setterFocusedVarsHandlerFacade
-                    setterFocusedVarsHandlerFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
-                    setterFocusedVarsHandlerFacade.focucePourPrixDeM1ProduitFacade(produit)
+                    val aCentral = viewModel.aCentral
+                    val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
+                    val getFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.get
+                    val set = aCentral.mainRepositorysSetterFacade
+
+                    set.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                        focused_M13TarificationInfos_Pour_Produit = getFocusedVarsHandlerFacade.focused_M13TarificationInfos_Pour_Produit,
+                        m10OperationVentCouleurs = getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                    )
+
+                    focusedVarsHandlerFacade.set.focucePourPrixDeM1ProduitFacade(produit)
+
                     onQuantityClickToHaptic()
                 },
             shape = RoundedCornerShape(20.dp),
@@ -176,7 +186,6 @@ fun QuantityDisplay(
         }
     }
 }
-
 
 
 @Composable

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt

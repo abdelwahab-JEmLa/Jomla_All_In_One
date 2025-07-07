@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -31,10 +31,10 @@ fun MainList(
     onClickAnulationButton: (() -> Unit)? = null
 ) {
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedVarsHandlerFacade.getter.currentM9AppCompt
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
-    val tariffs = viewModel.aCentralFacade.getter.repo13TarificationInfos.datasValue
+    val tariffs = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo13TarificationInfos.datasValue
     val context = LocalContext.current
 
     val standardTariffs = remember(

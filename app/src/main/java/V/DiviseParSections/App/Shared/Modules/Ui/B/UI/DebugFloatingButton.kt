@@ -2,8 +2,8 @@ package V.DiviseParSections.App.Shared.Modules.Ui.B.UI
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Views.Common.Components.ToastData
@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
 
 @Stable
 class DebugKey(
-    val getter: AGetter,
+    val getter: MainRepositorysGetterFacade,
 ) {
     val hClientRepository = getter.iD2ClientRepository
 

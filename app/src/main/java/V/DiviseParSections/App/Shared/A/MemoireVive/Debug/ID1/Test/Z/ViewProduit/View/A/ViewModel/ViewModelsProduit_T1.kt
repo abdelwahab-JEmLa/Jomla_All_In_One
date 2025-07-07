@@ -14,11 +14,11 @@ import java.io.File
 class ViewModelsProduit_T1(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.getter
+    val getter = aCentral.mainRepositorysGetterFacade
     val focusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade
 
-    val getterFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.getter
-    val setterFocusedVarsHandlerFacade = focusedVarsHandlerFacade.setter
+    val getterFocusedVarsHandlerFacade = aCentral.focusedVarsHandlerFacade.get
+    val setterFocusedVarsHandlerFacade = focusedVarsHandlerFacade.set
 
     val b1CouleurOuGoutProduitDataBaseRepository = getter.repo3CouleurProduitInfos
     val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur

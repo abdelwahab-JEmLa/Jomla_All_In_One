@@ -3,12 +3,12 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -43,20 +43,20 @@ val composRepositorysModule = module {
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
-    // Helper classes for MainSetterFacade
+    // Helper classes for MainRepositorysSetterFacade
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
     single { VentOperations(get(), get()) }
 
 
-    single { GetterFocusedVars(get(), get(),get(),get(),get(),get(),) }
-    single { SetterFocusedVars(get(), get(), get(), get(), get(), ) }
+    single { GetFocusedVars(get(), get(),get(),get(),get(),get(),get(),) }
+    single { SetFocusedVars(get(), get(), get(), get(), get(), ) }
     single { FocusedVarsHandlerFacade(get(), get()) }
 
-    single { AGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
+    single { MainRepositorysGetterFacade(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
 
-    single { MainSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
+    single { MainRepositorysSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

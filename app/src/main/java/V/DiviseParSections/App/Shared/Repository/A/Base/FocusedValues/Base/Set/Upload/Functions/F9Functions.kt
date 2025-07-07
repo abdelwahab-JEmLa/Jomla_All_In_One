@@ -1,5 +1,5 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
+package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -9,7 +9,7 @@ import android.util.Log
 
 fun focucePourPrixDeM1Produit(
     produitKey: String,
-    getterFocusedVars: GetterFocusedVars,
+    getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt
@@ -36,7 +36,7 @@ fun focucePourPrixDeM1Produit(
 }
 
 fun anulleFocucePourPrixDeM1Produit(
-    getterFocusedVars: GetterFocusedVars,
+    getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt
@@ -53,7 +53,7 @@ fun anulleFocucePourPrixDeM1Produit(
 }
 
 fun updateCurrentAppComptDialogProduit(
-    getterFocusedVars: GetterFocusedVars,
+    getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt,
     produit: ArticlesBasesStatsTable? = null
 ) {
@@ -73,7 +73,7 @@ fun updateCurrentAppComptDialogProduit(
 
 fun focuceOnVentM3CouleurProduitInfos(
     m10OperationVentCouleur: M10OperationVentCouleur? = null,
-    getterFocusedVars: GetterFocusedVars,
+    getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt

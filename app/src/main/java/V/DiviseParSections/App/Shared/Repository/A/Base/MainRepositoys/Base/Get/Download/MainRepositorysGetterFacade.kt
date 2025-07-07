@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base
+package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
@@ -52,7 +53,7 @@ data class IDsModels(
 )
 
 @Stable
-class AGetter(
+class MainRepositorysGetterFacade(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
@@ -75,7 +76,7 @@ class AGetter(
     val repo13TarificationInfos: Repo13TarificationInfos,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    getterFocusedVars: GetterFocusedVars,
+    getterFocusedVars: GetFocusedVars,
 
     ) {
     val parametresAppComptNonSaved = ParametresAppComptNonSaved()

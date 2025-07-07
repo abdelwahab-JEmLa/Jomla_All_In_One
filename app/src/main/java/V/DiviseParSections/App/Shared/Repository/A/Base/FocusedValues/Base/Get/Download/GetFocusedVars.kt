@@ -1,8 +1,7 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base
+package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.SetterFocusedVars
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -14,16 +13,13 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 
-class FocusedVarsHandlerFacade(val getter: GetterFocusedVars, val setter: SetterFocusedVars)
-
 @Stable
-class GetterFocusedVars(
+class GetFocusedVars(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1ProduitInfos,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
@@ -94,7 +90,7 @@ class GetterFocusedVars(
         }
     }
 
-    val ouvertDialogChoixQuantityPourProduitM1ProduitInfos by derivedStateOf {
+    val active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find {
             it.keyID == (currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID ?: "")
         }
@@ -110,7 +106,7 @@ class GetterFocusedVars(
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
-        fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedVars): Modifier {
+        fun Modifier.getSemanticsTagFocucedVars(getter: GetFocusedVars): Modifier {
             val map = buildMap {
                 put(
                     "focused_M1ProduitInfos_Pour_PrixDifineur", getter

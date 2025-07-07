@@ -1,7 +1,7 @@
-// File: MainSetterFacade/Helper/ClientOperations.kt
+// File: MainRepositorysSetterFacade/Helper/ClientOperations.kt
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import kotlinx.coroutines.CoroutineScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ClientOperations(
-    private val getter: AGetter,
+    private val getter: MainRepositorysGetterFacade,
 
     private val hClientRepository: Repo2Client
 ) {

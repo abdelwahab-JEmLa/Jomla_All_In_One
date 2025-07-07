@@ -69,7 +69,7 @@ fun A_APP4FragID1_MainScreen(
 
         FloatingActionButton(
             onClick = {
-                viewModel.aCentralFacade.setter.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
+                viewModel.aCentralFacade.mainRepositorysSetterFacade.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
             },
             modifier = Modifier
                 .align(Alignment.TopEnd)

@@ -1,7 +1,9 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base
+package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
@@ -17,10 +19,11 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import com.google.firebase.database.DatabaseReference
 
-class MainSetterFacade(
-    private val getter: AGetter,
+class MainRepositorysSetterFacade(
+    private val getter: MainRepositorysGetterFacade,
 
     val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
+
     private val produitOperations: ProduitOperations,
     val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
@@ -33,6 +36,28 @@ class MainSetterFacade(
     val id8BonVentRepository = getter.id8BonVentRepository
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val hClientRepository = getter.iD2ClientRepository
+
+    fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
+        focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos?,
+        m10OperationVentCouleurs: List<M10OperationVentCouleur>
+    ) {
+        focused_M13TarificationInfos_Pour_Produit?.let {
+            addOrUpdateGroAliTariff(it)
+
+            val listFocusedM10OpeVentCouleurParPrixDifineur =
+                m10OperationVentCouleurs.map { listVent ->
+                    listVent.copy(
+                        parentM13TarificationDebugInfos = focused_M13TarificationInfos_Pour_Produit.getDebugInfos(),
+                        parentM13TarificationKeyID = focused_M13TarificationInfos_Pour_Produit.keyID,
+                        provisoireMonPrix = focused_M13TarificationInfos_Pour_Produit.prixCurrency
+                    )
+                }
+
+            updateListM10OperationVentCouleur(
+                listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
+            )
+        }
+    }
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
         id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
@@ -73,7 +98,7 @@ class MainSetterFacade(
         val newData = m8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
 
         if (newData != null) {
-            focusedVarsHandlerFacade.setter.addNewM8BonVent(m8BonVent)
+            focusedVarsHandlerFacade.set.addNewM8BonVent(m8BonVent)
         } else {
             upsertBonVent(
                 keyHandBonVent,
@@ -110,7 +135,7 @@ class MainSetterFacade(
         }
     }
 
-     fun updateListM10OperationVentCouleur(listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>) {
+    fun updateListM10OperationVentCouleur(listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>) {
         listFocusedM10OpeVentCouleurParPrixDifineur.forEach {
             repo10OperationVentCouleur.addOrUpdateData(it)
         }
@@ -127,7 +152,7 @@ class MainSetterFacade(
     }
 
     fun addOrUpdateGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
-       repo13TarificationInfos.upsert(latestTariffLocalData)
+        repo13TarificationInfos.upsert(latestTariffLocalData)
     }
 
     companion object {

@@ -1,10 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.content.Context
@@ -56,12 +55,14 @@ fun TariffButtonItem(
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
-    var latestTariffLocalData by remember { mutableStateOf(
-        latestTariff.copy(
-            parentM1ProduitInfosKeyId = produit.keyID ,
-            parentM1ProduitDebugInfos = produit.nom
+    var latestTariffLocalData by remember {
+        mutableStateOf(
+            latestTariff.copy(
+                parentM1ProduitInfosKeyId = produit.keyID,
+                parentM1ProduitDebugInfos = produit.nom
+            )
         )
-    ) }
+    }
 
     var isEditingPrice by remember { mutableStateOf(false) }
     var editablePriceText by remember { mutableStateOf("") }
@@ -70,16 +71,13 @@ fun TariffButtonItem(
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
 
-
-
-    fun handelClick(
-        viewModel: TariffsButtonsViewModelSec7ID2,
-        latestTariffLocalData: M13TarificationInfos,
-        listFocusedM10OpeVentCouleurParPrixDifineur: MutableList<M10OperationVentCouleur>,
-        latestTariff: M13TarificationInfos
-    ) {
-        saveTariff_Et_RelateIt_Au_Vents_Correspond(latestTariffLocalData, listFocusedM10OpeVentCouleurParPrixDifineur, latestTariff)
-    }
+    fun handelClick() =
+        viewModel.aCentralFacade.mainRepositorysSetterFacade
+            .saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                focused_M13TarificationInfos_Pour_Produit = latestTariff,
+                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedVarsHandlerFacade.get
+                    .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+            )
 
     fun handlePriceEditDone() {
         val newPrice = editablePriceText.toDoubleOrNull()
@@ -87,17 +85,7 @@ fun TariffButtonItem(
             latestTariffLocalData = latestTariffLocalData.copy(
                 prixCurrency = newPrice
             )
-
-            val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter
-            val listFocusedM10OpeVentCouleurParPrixDifineur =
-                getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
-
-            handelClick(
-                viewModel,
-                latestTariffLocalData,
-                listFocusedM10OpeVentCouleurParPrixDifineur,
-                latestTariff
-            )
+            handelClick()
         }
         isEditingPrice = false
     }
@@ -179,7 +167,8 @@ fun TariffButtonItem(
                 if (isEditableTariff) {
                     IconButton(
                         onClick = {
-                            val newPrice = (latestTariffLocalData.prixCurrency - 5.0).coerceAtLeast(0.0)
+                            val newPrice =
+                                (latestTariffLocalData.prixCurrency - 5.0).coerceAtLeast(0.0)
                             latestTariffLocalData = latestTariffLocalData.copy(
                                 prixCurrency = newPrice
                             )
@@ -247,24 +236,18 @@ fun TariffButtonItem(
         } else {
             couleurButton
         }
-        val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.getter
+        val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.get
         val listFocusedM10OpeVentCouleurParPrixDifineur =
             getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
 
         FloatingActionButton(
             modifier = Modifier
                 .size(40.dp)
-                .getSemanticsTag("latestTariffLocalData",latestTariffLocalData)
-                .getSemanticsTagFocucedVars(getter)
-            ,
+                .getSemanticsTag("latestTariffLocalData", latestTariffLocalData)
+                .getSemanticsTagFocucedVars(getter),
             onClick = {
 
-                handelClick(
-                    viewModel,
-                    latestTariffLocalData,
-                    listFocusedM10OpeVentCouleurParPrixDifineur,
-                    latestTariff
-                )
+                handelClick()
 
 
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)

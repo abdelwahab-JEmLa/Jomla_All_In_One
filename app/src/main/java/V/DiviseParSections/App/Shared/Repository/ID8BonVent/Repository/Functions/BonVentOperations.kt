@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 class BonVentOperations(
-    private val getter: AGetter,
+    private val getter: MainRepositorysGetterFacade,
     private val gBonVentRepository: Repo8BonVent,
     private val zAppComptRepositoryComposable: Repo9AppCompt
 ) {
@@ -50,11 +50,11 @@ class BonVentOperations(
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = MainSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
+                parentID2ClientKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = MainSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
+                parentID7VentPeriodeKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = MainSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
 

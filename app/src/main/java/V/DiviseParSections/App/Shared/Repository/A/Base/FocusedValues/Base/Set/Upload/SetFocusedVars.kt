@@ -1,12 +1,11 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base
+package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions.anulleFocucePourPrixDeM1Produit
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions.focuceOnVentM3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions.focucePourPrixDeM1Produit
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.Functions.updateCurrentAppComptDialogProduit
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.anulleFocucePourPrixDeM1Produit
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focucePourPrixDeM1Produit
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.updateCurrentAppComptDialogProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -19,37 +18,13 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import androidx.compose.runtime.Stable
 
 @Stable
-class SetterFocusedVars(
-    val mainSetterFacade: MainSetterFacade,
-
-    val getterFocusedVars: GetterFocusedVars,
+class SetFocusedVars(
+    val getterFocusedVars: GetFocusedVars,
     val Repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
     val repo9AppCompt: Repo9AppCompt,
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
-    fun saveTariff_Et_RelateIt_Au_Vents_Correspond() {
-        val focused_M13TarificationInfos_Pour_Produit =
-            getterFocusedVars.focused_M13TarificationInfos_Pour_Produit
-
-        focused_M13TarificationInfos_Pour_Produit?.let {
-            mainSetterFacade.addOrUpdateGroAliTariff(it)
-
-            val listFocusedM10OpeVentCouleurParPrixDifineur =
-                getterFocusedVars.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.map { listVent ->
-                    listVent.copy(
-                        parentM13TarificationDebugInfos = focused_M13TarificationInfos_Pour_Produit.getDebugInfos(),
-                        parentM13TarificationKeyID = focused_M13TarificationInfos_Pour_Produit.keyID,
-                        provisoireMonPrix = focused_M13TarificationInfos_Pour_Produit.prixCurrency
-                    )
-                }
-
-            mainSetterFacade.updateListM10OperationVentCouleur(
-                listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
-            )
-        }
-    }
-
     fun addNewM8BonVent(id8BonVent: M8BonVent) =
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 

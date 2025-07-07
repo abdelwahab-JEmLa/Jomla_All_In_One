@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class GrossistAchatSec12FragID1_ViewModel(
     aCentral: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.getter
+    val getter = aCentral.mainRepositorysGetterFacade
    val fVentCouleurOperationRepository =getter.repo10OperationVentCouleur
     data class UiState(
         val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -334,7 +334,7 @@ private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
 fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
-    getter: AGetter = koinInject(),
+    getter: MainRepositorysGetterFacade = koinInject(),
 ) {
     val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)

@@ -1,6 +1,6 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.View.ImageDisplayerGlid_ProtoAvrile11
@@ -224,7 +224,7 @@ fun B_CouleurAfficheur_F7(
 fun AfficheKeyCouleurAvecVentDebugParAncienMethode(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
-    getter: AGetter = koinInject(),
+    getter: MainRepositorysGetterFacade = koinInject(),
 ) {
     val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)

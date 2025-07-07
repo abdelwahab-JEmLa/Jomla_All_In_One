@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base
+package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -14,7 +14,7 @@ object DebugsTests {
     const val TAG = "DebugsTests"
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0,log:Boolean= true): Modifier {
+    fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0, log:Boolean= true): Modifier {
          if (log) {
              log(nomVal, index, data)
          }

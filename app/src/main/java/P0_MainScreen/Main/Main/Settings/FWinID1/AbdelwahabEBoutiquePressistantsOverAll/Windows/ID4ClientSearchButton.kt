@@ -63,7 +63,7 @@ fun ID4ClientSearchButton(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
-    val getter = focusedVarsHandlerFacade.getter
+    val getter = focusedVarsHandlerFacade.get
 
     var isTextCollapsed by remember { mutableStateOf(false) }
 
