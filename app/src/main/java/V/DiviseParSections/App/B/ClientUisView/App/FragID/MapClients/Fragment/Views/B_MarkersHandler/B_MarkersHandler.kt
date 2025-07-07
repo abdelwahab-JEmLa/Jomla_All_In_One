@@ -99,6 +99,7 @@ fun createAndAddMarker(
 
         setOnMarkerClickListener { clickedMarker, _ ->
             viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
+
             if (showMarkerDetails) clickedMarker.showInfoWindow()
             true
         }

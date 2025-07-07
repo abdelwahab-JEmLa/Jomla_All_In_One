@@ -15,22 +15,6 @@ class ClientOperations(
 ) {
     val zAppComptRepositoryComposable = getter.repo9AppCompt
 
-    fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
-        val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
-
-        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
-
-        val zCompt =
-            clientKey?.let {
-                currentZCompt?.copy(
-                    ouvertDialogMapMarqueM2ClientKeyId = it
-                )
-            }
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(

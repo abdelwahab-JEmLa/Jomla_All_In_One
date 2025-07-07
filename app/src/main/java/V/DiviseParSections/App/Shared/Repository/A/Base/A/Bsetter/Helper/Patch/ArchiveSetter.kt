@@ -3,7 +3,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
@@ -12,6 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -29,23 +29,6 @@ class BSetterP (
 ) {
     private val setterScope = CoroutineScope(Dispatchers.IO)
     val bClientsStateCompoRepository = getter.repo2Client
-
-    fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
-        val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID
-
-        val currentZCompt = zAppComptRepositoryComposable.currentAppCompt
-
-        val zCompt =
-            clientKey?.let {
-                currentZCompt?.copy(
-                    ouvertDialogMapMarqueM2ClientKeyId = it
-                )
-            }
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
 
     val activePeriodKeyByParent = getter.parametresAppComptNonSaved.keyIdId7VentPeriod
     val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
@@ -233,47 +216,6 @@ class BSetterP (
         }
     }
 
-    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentM8BonVentKey = "",
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
-
-    fun clear_bOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
-
-    fun cleanFermeAppComptOnVentBonVent() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentM8BonVentKey = "",
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
-
-    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
 
 
     fun te(

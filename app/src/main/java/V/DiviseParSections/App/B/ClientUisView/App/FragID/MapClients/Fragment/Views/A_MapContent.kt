@@ -161,6 +161,7 @@ fun MapContent(
             )
         }
         val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+
         if (activeOnVentM2ClientInfos != null ||  uiState.markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
