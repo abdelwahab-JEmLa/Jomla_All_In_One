@@ -88,7 +88,7 @@ class FragmentNavigationHandler {
     }
 
     fun navigateToCartScreen() {
-        navigateTo(Screen.SoldCart, CART_CONFIG)
+        navigateTo(Screen.Screen1PanieVentsFinale, CART_CONFIG)
     }
 
     fun navigateToTestDataScreen() {
@@ -105,7 +105,7 @@ class FragmentNavigationHandler {
             Screen.A_ClientsLocationGps,
             Screen.FacadePresentoireProduits,
             Screen.EditDatabaseWithCreateNewArticles,
-            Screen.SoldCart,
+            Screen.Screen1PanieVentsFinale,
             Screen.CommandeProduits,
             Screen.TravailleTempRecorder,
             Screen.NewFragTest,

@@ -42,10 +42,10 @@ sealed class Screen(
     )
 
 
-    data object SoldCart : Screen(
-        route = "sold_cart",
+    data object Screen1PanieVentsFinale : Screen(
+        route = "Screen1PanieVentsFinale",
         icon = Icons.Default.ShoppingCart,
-        title = "Panier Sold",
+        title = "Screen1PanieVentsFinale",
         color = Color(0xFFF44336)
     )
 

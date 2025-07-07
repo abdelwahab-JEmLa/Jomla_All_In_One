@@ -15,9 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PrintReceiptHandler {
+class PrintReceiptHandlerP2 {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
-    private val TAG = "PrintReceiptHandler"
+    private val TAG = "PrintReceiptHandlerP2"
 
     data class ArticleImpression(
         val nomArticle: String,

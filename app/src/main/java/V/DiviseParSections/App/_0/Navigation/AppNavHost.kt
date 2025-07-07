@@ -190,7 +190,7 @@ fun AppNavHost(
                 }
 
                 composable(
-                    route = Screen.SoldCart.route,
+                    route = Screen.Screen1PanieVentsFinale.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
 

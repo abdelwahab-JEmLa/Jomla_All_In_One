@@ -199,7 +199,7 @@ object NavigationItems {
         ScreensApp2.A_ClientsLocationGps,
         Screen.FacadePresentoireProduits,
         Screen.FragmentProduitFastSearchDialog,
-        Screen.SoldCart,
+        Screen.Screen1PanieVentsFinale,
         Screen.TravailleTempRecorder,
         Screen.CommandeProduits,
         Screen.ToggleFab,
