@@ -102,7 +102,7 @@ fun ViewVentCouleur_T1(
     Card(
         modifier = Modifier
             .getSemanticsTag(
-                "defaultM3CouleurProduitInfos", defaultM3CouleurProduitInfos
+                defaultM3CouleurProduitInfos, "defaultM3CouleurProduitInfos"
             )
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)

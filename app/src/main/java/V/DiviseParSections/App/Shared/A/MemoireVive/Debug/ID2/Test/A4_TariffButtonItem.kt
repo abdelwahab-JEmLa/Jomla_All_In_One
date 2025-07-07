@@ -91,8 +91,11 @@ fun TariffButtonItem(
     }
 
     Row(
+        modifier = Modifier
+            .getSemanticsTag(produit.nom, "produit"),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+
     ) {
         val couleurButton = typeTarification.couleur
 
@@ -243,7 +246,7 @@ fun TariffButtonItem(
         FloatingActionButton(
             modifier = Modifier
                 .size(40.dp)
-                .getSemanticsTag("latestTariffLocalData", latestTariffLocalData)
+                .getSemanticsTag(latestTariffLocalData, "latestTariffLocalData")
                 .getSemanticsTagFocucedVars(getter),
             onClick = {
 

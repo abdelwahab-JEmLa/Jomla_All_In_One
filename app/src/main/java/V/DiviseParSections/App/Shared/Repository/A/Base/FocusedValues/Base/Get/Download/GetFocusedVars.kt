@@ -127,7 +127,7 @@ class GetFocusedVars(
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
-                modifier.getSemanticsTag(key, value, index + 6)
+                modifier.getSemanticsTag(value, key, index + 6)
             }
         }
     }

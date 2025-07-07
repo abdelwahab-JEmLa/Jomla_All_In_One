@@ -14,10 +14,15 @@ object DebugsTests {
     const val TAG = "DebugsTests"
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(nomVal: String, data: Any?, index: Int = 0, log:Boolean= true): Modifier {
-         if (log) {
-             log(nomVal, index, data)
-         }
+    fun Modifier.getSemanticsTag(
+        data: Any?,
+        nomVal: String,
+        index: Int = 0,
+        log: Boolean = true
+    ): Modifier {
+        if (log) {
+            log(nomVal, index, data)
+        }
 
         return this.semantics(mergeDescendants = true) {
             set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)

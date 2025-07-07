@@ -221,7 +221,10 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .getSemanticsTag("cLenceDepuitFragmentsSepecialicteDeVents",cLenceDepuitFragmentsSepecialicteDeVents)
+                    .getSemanticsTag(
+                        cLenceDepuitFragmentsSepecialicteDeVents,
+                        "cLenceDepuitFragmentsSepecialicteDeVents"
+                    )
                 ,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

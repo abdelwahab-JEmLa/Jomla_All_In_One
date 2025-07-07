@@ -123,8 +123,8 @@ fun MainFastSearchProduitPourVent(
                                 )
                             },
                             modifier = Modifier
-                                .getSemanticsTag("newProduit",newProduit)
-                                .getSemanticsTag("newCouleurP",newCouleurP)
+                                .getSemanticsTag(newProduit, "newProduit")
+                                .getSemanticsTag(newCouleurP, "newCouleurP")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
