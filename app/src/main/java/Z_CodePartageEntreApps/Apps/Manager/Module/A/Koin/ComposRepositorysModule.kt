@@ -4,11 +4,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientO
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter
-import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -43,7 +43,7 @@ val composRepositorysModule = module {
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
-    // Helper classes for BSetterFacade
+    // Helper classes for MainSetterFacade
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
@@ -56,7 +56,7 @@ val composRepositorysModule = module {
 
     single { AGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
 
-    single { BSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
+    single { MainSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

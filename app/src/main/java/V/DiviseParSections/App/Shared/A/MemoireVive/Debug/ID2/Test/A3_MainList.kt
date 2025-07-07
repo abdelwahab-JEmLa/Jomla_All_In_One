@@ -103,7 +103,6 @@ fun MainList(
         standardTariffs,
         generatedTariffDefiniParGerant2
     ) {
-        // Only add the generated tariff if it's not already in clientDefiniTariffs
         val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
             it.typeChoisi == TypeChoisi.DefiniParGerant2 &&
                     it.parentM1ProduitInfosKeyId == produit.keyID

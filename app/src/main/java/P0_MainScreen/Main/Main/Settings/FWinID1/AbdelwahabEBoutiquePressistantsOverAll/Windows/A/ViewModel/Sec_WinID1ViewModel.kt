@@ -3,7 +3,7 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.GetterFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.SetterFocusedValues.Base.SetterFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt

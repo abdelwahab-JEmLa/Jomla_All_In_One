@@ -70,23 +70,15 @@ fun TariffButtonItem(
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
 
+
+
     fun handelClick(
         viewModel: TariffsButtonsViewModelSec7ID2,
         latestTariffLocalData: M13TarificationInfos,
         listFocusedM10OpeVentCouleurParPrixDifineur: MutableList<M10OperationVentCouleur>,
         latestTariff: M13TarificationInfos
     ) {
-        viewModel.aCentralFacade.setter.addOrUpdateGroAliTariff(latestTariffLocalData)
-
-        listFocusedM10OpeVentCouleurParPrixDifineur.map {
-            it.parentM13TarificationKeyID = latestTariff.keyID
-            it.parentM13TarificationDebugInfos = latestTariff.getDebugInfos()
-            it.provisoireMonPrix = latestTariffLocalData.prixCurrency
-        }
-
-        viewModel.aCentralFacade.setter.updateListM10OperationVentCouleur(
-            listFocusedM10OpeVentCouleurParPrixDifineur = listFocusedM10OpeVentCouleurParPrixDifineur
-        )
+        saveTariff_Et_RelateIt_Au_Vents_Correspond(latestTariffLocalData, listFocusedM10OpeVentCouleurParPrixDifineur, latestTariff)
     }
 
     fun handlePriceEditDone() {

@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 class ACentralFacade(
     val getter: AGetter,
     val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
-    val setter: BSetterFacade,
+    val setter: MainSetterFacade,
     val modulesCentral: ModulesCentral
 )
 

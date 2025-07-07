@@ -17,7 +17,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import com.google.firebase.database.DatabaseReference
 
-class BSetterFacade(
+class MainSetterFacade(
     private val getter: AGetter,
 
     val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,

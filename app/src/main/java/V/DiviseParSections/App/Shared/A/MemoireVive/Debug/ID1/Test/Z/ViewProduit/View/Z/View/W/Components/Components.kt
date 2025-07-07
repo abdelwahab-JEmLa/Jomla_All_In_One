@@ -141,18 +141,20 @@ fun QuantityDisplay(
                 "Prix non défini"
             }
         }
-        // Price Card - Separate card
+
         Surface(
-            shape = RoundedCornerShape(20.dp),
-            color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-            else MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .getSemanticsTag("repo13TarificationInfos", datasValue)
                 .getSemanticsTag("findTariff", findTariff, 2)
                 .clickable(enabled = !allNonTrouve) {
-                    viewModel.setterFocusedVarsHandlerFacade.focucePourPrixDeM1ProduitFacade(produit)
+                    val setterFocusedVarsHandlerFacade = viewModel.setterFocusedVarsHandlerFacade
+                    setterFocusedVarsHandlerFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                    setterFocusedVarsHandlerFacade.focucePourPrixDeM1ProduitFacade(produit)
                     onQuantityClickToHaptic()
-                }
+                },
+            shape = RoundedCornerShape(20.dp),
+            color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.secondary
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),

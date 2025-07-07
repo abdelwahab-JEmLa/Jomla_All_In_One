@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.AGetter.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.A.Base.BSetterFacade.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainSetterFacade.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3

@@ -147,10 +147,10 @@ data class M13TarificationInfos(
             produit: ArticlesBasesStatsTable,
             typeChoisi: TypeChoisi =TypeChoisi.DefiniParGerant2
         ) = datasValue
-            .lastOrNull { tarif ->
+            .lastOrNull { tariff ->
                 val match =
-                    tarif.typeChoisi == typeChoisi &&
-                            tarif.parentM1ProduitInfosKeyId == produit.keyID
+                    tariff.typeChoisi == typeChoisi &&
+                            tariff.parentM1ProduitInfosKeyId == produit.keyID
                 match
             }
 

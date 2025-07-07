@@ -63,7 +63,7 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(false) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
 
     DebugTestsPerformInitialSearch(
         enabled = shouldPerformInitialSearch,
@@ -72,7 +72,7 @@ fun MainFastSearchProduitPourVent(
             localSearchText = searchText
             shouldPerformInitialSearch = false
         },
-        "hak"
+        "liy"
     )
 
     Surface(
