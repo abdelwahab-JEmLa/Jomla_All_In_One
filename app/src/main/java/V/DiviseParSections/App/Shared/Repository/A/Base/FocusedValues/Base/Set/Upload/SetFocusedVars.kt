@@ -105,4 +105,14 @@ class SetFocusedVars(
             )
         }
     }
+
+    fun toggle_CurrentApp_activeDialogSearchM1Produit(activeDialogSearchM1Produit: Boolean) {
+        repo9AppCompt.currentAppCompt.let {
+            if (it != null) {
+                repo9AppCompt.upsert(it.copy(
+                    activeDialogSearchM1Produit=!activeDialogSearchM1Produit
+                ))
+            }
+        }
+    }
 }

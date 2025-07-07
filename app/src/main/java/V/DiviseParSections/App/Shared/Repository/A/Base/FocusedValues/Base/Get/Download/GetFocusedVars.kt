@@ -109,6 +109,10 @@ class GetFocusedVars(
         }
     }
 
+    val activeDialogSearchM1Produit by derivedStateOf {
+        currentM9AppCompt?.activeDialogSearchM1Produit ?: false
+    }
+
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetFocusedVars): Modifier {
@@ -126,7 +130,7 @@ class GetFocusedVars(
                         "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {
-                                parentM2ClientInfosDebugName +"/" + etateActuellementEst
+                                parentM2ClientInfosDebugName + "/" + etateActuellementEst
                             }
                         } ?: "null"
                     )

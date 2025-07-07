@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.mongodb.kbson.BsonObjectId
 
 class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
-    aCentral: ACentralFacade,
+    val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.mainRepositorysGetterFacade
     val setter = aCentral.mainRepositorysSetterFacade

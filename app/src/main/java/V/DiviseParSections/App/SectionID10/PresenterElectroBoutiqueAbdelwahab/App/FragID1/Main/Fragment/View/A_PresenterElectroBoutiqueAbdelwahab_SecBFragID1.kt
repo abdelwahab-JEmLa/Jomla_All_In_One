@@ -1,12 +1,10 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.Scrollbar
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
-import V.DiviseParSections.App._0.Navigation.LoadingOverlay
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -17,7 +15,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -31,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -56,15 +52,14 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisibleInit: Boolean,
-    onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    scrollTiger: Int,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: HClientInfos?,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
+
     val produits = viewModel.getter.filteredA_ProduitsParCatalogueBsonId
     val uiState by viewModel.uiState.collectAsState()
 
@@ -89,7 +84,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         }
     }
     MainUi(
-        produits=produits,
+        produits = produits,
         uiState = uiStateHeadViewModel,
         filterText = filterText,
         gridState = gridState,
@@ -107,172 +102,14 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
         onToggleLockExpandedPricex = onToggleLockExpandedPricex,
         currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
-        targetCategoryId = targetCategoryId,
         lockHost = lockHost,
         onClickImageToShowControles = onClickImageToShowControles,
-        viewModel=viewModel
+        viewModel = viewModel
     )
 }
 
 @Composable
-fun MainUi(
-    produits: List<ArticlesBasesStatsTable>,
-    uiState: UiState,
-    filterText: String,
-    gridState: LazyStaggeredGridState,
-    onFilterTextChange: (String) -> Unit,
-    onToggleFilter: () -> Unit,
-    onChangeGridColumns: (Int) -> Unit,
-    onToggleNavBar: () -> Unit,
-    viewModelHeadViewModel: HeadViewModel,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean,
-    onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit,
-    currentClient: HClientInfos?,
-    viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean,
-    onClickImageToShowControles: () -> Unit,
-    viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
-) {
-
-    val scope = rememberCoroutineScope()
-    val tag =
-        if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
-    var savedScrollPosition by rememberSaveable() { mutableStateOf(0) }
-    var hostSavePosition by rememberSaveable() { mutableStateOf(0) }
-
-    val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
-
-    LaunchedEffect(currentScrollPosition) {
-
-        if (currentScrollPosition > 0) {
-            scope.launch {
-                try {
-                    delay(100)
-                    gridState.animateScrollToItem(
-                        index = currentScrollPosition,
-                        scrollOffset = 0
-                    )
-                } catch (e: Exception) {
-                    gridState.scrollToItem(currentScrollPosition)
-                }
-            }
-        }
-    }
-    LaunchedEffect(currentScrollPosition) {//-->
-        if (uiState.productDisplayController.isHostPhone) {
-            scope.launch {
-                try {
-                    delay(1500)
-                    gridState.animateScrollToItem(
-                        index = hostSavePosition,
-                        scrollOffset = 0
-                    )
-                } catch (e: Exception) {
-                    gridState.scrollToItem(hostSavePosition)
-                }
-            }
-        }
-
-    }
-    // Handle FAB visibility changes
-    LaunchedEffect(isFabVisible) {
-        if (isFabVisible) {
-            savedScrollPosition = gridState.firstVisibleItemIndex
-        } else {
-            scope.launch {
-                try {
-                    gridState.animateScrollToItem(savedScrollPosition)
-                } catch (e: Exception) {
-                    gridState.scrollToItem(savedScrollPosition)
-                }
-            }
-        }
-    }
-
-    HandleScrollBroadcast(
-        isHostPhone = uiState.productDisplayController.isHostPhone,
-        isConnected = uiState.productDisplayController.isConnected,
-        gridState = gridState,
-        viewModel = viewModelHeadViewModel,
-        onScrollHostChange = { hostSavePosition = it }
-    )
-
-    HandleClientScroll(
-        isHostPhone = uiState.productDisplayController.isHostPhone,
-        scrollPosition = currentScrollPosition,
-        gridState = gridState,
-        tag = tag
-    )
-
-    Box(modifier = Modifier.fillMaxSize()) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
-        ) {
-            SearchFilterPB(
-                showFilter = isFabVisible,
-                filterText = filterText,
-                onFilterTextChange = onFilterTextChange,
-                onAddNotInBaseArticle = onClickToOpenWindos,
-                viewModel = viewModelHeadViewModel,
-                uiState = uiState,
-            )
-            if (uiState.productDisplayController.isHostPhone || uiState.productDisplayController.isConnected) {
-
-                Box(modifier = Modifier.weight(1f)) {
-                    ArticleGridWithScrollbar(
-                        viewModel =viewModel,
-                        produits =produits,
-                        uiState = uiState,
-                        filterText = filterText,
-                        showFilter = isFabVisible,
-                        gridState = gridState,
-                        viewModelHeadViewModel = viewModelHeadViewModel,
-                        reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = onClickToOpenWindos,
-                        currentClient = currentClient,
-                        viewModelInitApp = viewModelInitApp, lockHost = lockHost,
-                        onClickImageToShowControles = onClickImageToShowControles
-                    )
-                }
-            }
-        }
-
-        AnimatedFabGroup(
-            isFabVisible = isFabVisible,
-            isConnected = uiState.productDisplayController.isConnected,
-            isHostPhone = uiState.productDisplayController.isHostPhone,
-            viewModel = viewModelHeadViewModel,
-            onToggleNavBar = onToggleNavBar,
-            onToggleOutlineFilter = onToggleFilter,
-            onChangeGridColumns = onChangeGridColumns,
-            onClickToOpenClientsListW = onClickToOpenClientsW,
-            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-            onToggleLockHost = onToggleLockHost,
-            onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            viewModelInitApp = viewModelInitApp
-        )
-
-
-        if (uiState.isLoading) {
-            LoadingOverlay(
-                progress = uiState.loadingProgress,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
-@Composable
-private fun AnimatedFabGroup(
+fun AnimatedFabGroup(
     isFabVisible: Boolean,
     isConnected: Boolean,
     isHostPhone: Boolean,
@@ -313,7 +150,7 @@ private fun AnimatedFabGroup(
 private const val TAG = "ArticleGridDebug"
 
 @Composable
-private fun HandleScrollBroadcast(
+fun HandleScrollBroadcast(
     isHostPhone: Boolean,
     isConnected: Boolean,
     gridState: LazyStaggeredGridState,
@@ -378,7 +215,7 @@ private fun HandleScrollBroadcast(
 }
 
 @Composable
-private fun HandleClientScroll(
+fun HandleClientScroll(
     isHostPhone: Boolean,
     scrollPosition: Int,
     gridState: LazyStaggeredGridState,
@@ -443,8 +280,8 @@ fun ArticleGridWithScrollbar(
         )
 
         MainList(
-            viewModel=viewModel,
-            produits=produits,
+            viewModel = viewModel,
+            produits = produits,
             uiState = uiState,
             filterText = filterText,
             showFilter = showFilter,

@@ -138,15 +138,18 @@ fun ImageDisplayerProtoAvantJuin3(
 
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
+            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+            val get = focusedVarsHandlerFacade.get
             val activeProduit =
-                viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur
+                get.focused_M1ProduitInfos_Pour_PrixDifineur
 
             GlideImage(
                 modifier = Modifier
-                    .getSemanticsTag(produit.getDebugInfos(),"produit")
+                    .getSemanticsTag(get.activeDialogSearchM1Produit,"activeDialogSearchM1Produit",0)
+                    .getSemanticsTag(produit.getDebugInfos(),"produit",1)
                     .getSemanticsTag(activeProduit?.getDebugInfos()?:"null","activeProduit",1)
                     .clickable {
-
+                        focusedVarsHandlerFacade.set.toggle_CurrentApp_activeDialogSearchM1Produit(get.activeDialogSearchM1Produit)
                         onClickToOpenWindow()
                     }
                     .fillMaxSize()
@@ -221,7 +224,6 @@ fun ColorOverlayWithBlur(
     color: CalculeCouleurHandler.ProductImageInfo,
     cornerRadius: Dp,
 ) {
-
     Box {
         Box(
             modifier = Modifier

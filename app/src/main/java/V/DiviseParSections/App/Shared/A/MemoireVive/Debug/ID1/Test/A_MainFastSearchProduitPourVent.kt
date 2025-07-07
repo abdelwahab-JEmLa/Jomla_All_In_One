@@ -37,8 +37,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainFastSearchProduitPourVent(
-    viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     modifier: Modifier = Modifier,
+    viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository

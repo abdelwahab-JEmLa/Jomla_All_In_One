@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -121,6 +121,8 @@ data class Z_AppCompt(
     // Section Centralization Valeurs Pour Injection add TOu modules
 
     // Section Paramaters App telephone
+    val activeDialogSearchM1Produit: Boolean = false,
+
     val travailleChezGrossisst3Ali: Boolean = false,
 
     var mainInitDataBaseProgressEtate: Float = 0f,
@@ -165,7 +167,9 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
+
 ) {
+
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
         val currentTags = if (nomsMutableTags.isNotEmpty()) {
             nomsMutableTags.split(",").map { it.trim() }

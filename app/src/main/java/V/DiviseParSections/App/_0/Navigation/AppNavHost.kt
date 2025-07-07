@@ -128,6 +128,7 @@ fun AppNavHost(
                         key(screenKey) {
                             PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
                                 viewModelHeadViewModel = viewModel,
+                                viewModelInitApp = viewModelInitApp,
                                 onToggleNavBar = onToggleNavBar,
                                 reloadTrigger = reloadTrigger,
                                 onClickToOpenWindos = { articleDataBaseOn, indexColor ->
@@ -153,15 +154,12 @@ fun AppNavHost(
                                     showClientSelectionWithoutCondition = true
                                 },
                                 isFabVisibleInit = isFabVisible,
-                                onClickDonne = onClickDonne,
                                 onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                                scrollTiger = scrollTiger,
                                 onToggleLockHost = onToggleLockHost,
                                 onToggleLockExpandedPricex = {
                                     lockExpandedPrices = !lockExpandedPrices
                                 },
                                 currentClient = currentClient,
-                                viewModelInitApp = viewModelInitApp,
                                 targetCategoryId = targetCategoryId,
                                 lockHost = lockHost,
                                 onClickImageToShowControles = onClickImageToShowControles
@@ -325,7 +323,6 @@ fun AppNavHost(
                 }
             }
 
-            // Product detail dialog
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
                     uiState = uiState,

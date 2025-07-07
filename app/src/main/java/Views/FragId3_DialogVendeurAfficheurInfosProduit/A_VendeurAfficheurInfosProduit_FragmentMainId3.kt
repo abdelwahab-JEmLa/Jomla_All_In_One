@@ -182,6 +182,7 @@ fun MainUi(
 ) {
     // Toast state management inside MainUi
     var showToast by remember { mutableStateOf(false) }
+
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
     val onVentBonVent =  viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
