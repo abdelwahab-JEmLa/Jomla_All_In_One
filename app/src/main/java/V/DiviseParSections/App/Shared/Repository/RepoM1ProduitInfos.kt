@@ -93,6 +93,7 @@ class RepoM1ProduitInfos(
         }
     }
 }
+
 @Entity
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
@@ -179,8 +180,9 @@ data class ArticlesBasesStatsTable(
     var idForSearchArticles: Long = 0,
 ) {
     fun getDebugInfos(): String {
-         return nom + "" +keyID
+        return nom + "" + keyID.takeLast(4).uppercase()
     }
+
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
             "id" to id,
