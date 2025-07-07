@@ -28,7 +28,7 @@ fun ClientDetailsSection(
     val isMinimized = uiState.isMinimized
 
     val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
-    val onVentClient = fClientRepository.onVentId2ClientInfos
+    val onVentClient = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
 
     isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
 
@@ -86,7 +86,7 @@ fun ClientDetailsSection(
                 }
             } else {
                 Text(
-                    text = "Non Définie Pour Le Moment",
+                    text = "ليس هناك اي زبون محدد",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )

@@ -7,7 +7,6 @@ import Views.Common.Components.ModernToastMessage
 import Views.Common.Components.ToastData
 import Views.Common.Components.ToastType
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +31,7 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
-        viewModel.getter.id8BonVentRepository.onVentId8BonVent
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.onVentM8BonVent
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
@@ -56,9 +55,7 @@ fun TariffsButtonsSec7ID2(
         }
     }
 
-    // Also react to cLenceDepuitFragmentsSepecialicteDeVents changes
     LaunchedEffect(cLenceDepuitFragmentsSepecialicteDeVents) {
-        Log.d("TariffsButtons", "cLenceDepuitFragmentsSepecialicteDeVents changed: $cLenceDepuitFragmentsSepecialicteDeVents")
         if (cLenceDepuitFragmentsSepecialicteDeVents) {
             afficheButtons = true
         }
@@ -95,9 +92,7 @@ fun TariffsButtonsSec7ID2(
             )
         }
 
-    // Cancellation callback
     val onClickAnulationButton: () -> Unit = {
-        // Execute the main logic first
         afficheButtons = false
         onFermDialogeAvecAnllation()
         if (filterProductId != null) {
@@ -106,7 +101,6 @@ fun TariffsButtonsSec7ID2(
             )
         }
 
-        // Show toast after logic execution
         currentToast = ToastData(
             message = "تم الإلغاء",
             type = ToastType.INFO,
@@ -114,32 +108,31 @@ fun TariffsButtonsSec7ID2(
         )
     }
 
-    Log.d("TariffsButtons", "Rendering - afficheButtons: $afficheButtons, filterProductId: $filterProductId")
 
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 if (filterProductId != null) {
-                    MainFilter(
-                        viewModel = viewModel,
-                        tarificationList = tarificationList,
-                        bonAchatList = bonVentList,
-                        produitAcheteOperationList = operationVentCouleurList,
-                        produitInfosList = datasValueDeM1ProduitInfos,
-                        showLabels = showLabels,
-                        filterProduitID = filterProductId.toInt(),
-                        filterBonID = bonVentComQuiFilterButtons.vid,
-                        onClickPrixButton = onClickPrixButton,
-                        onClickAnulationButton = onClickAnulationButton
-                    )
+                    if (bonVentComQuiFilterButtons != null) {
+                        MainFilter(
+                            viewModel = viewModel,
+                            tarificationList = tarificationList,
+                            bonAchatList = bonVentList,
+                            produitAcheteOperationList = operationVentCouleurList,
+                            produitInfosList = datasValueDeM1ProduitInfos,
+                            showLabels = showLabels,
+                            filterProduitID = filterProductId.toInt(),
+                            filterBonID = bonVentComQuiFilterButtons.vid,
+                            onClickPrixButton = onClickPrixButton,
+                            onClickAnulationButton = onClickAnulationButton
+                        )
+                    }
                 } else {
-                    Log.d("TariffsButtons", "filterProductId is null, not showing MainFilter")
                 }
             }
         }
     }
 
-    // Toast shown independently of buttons visibility
     if (currentToast != null) {
         ModernToastMessage(
             toastData = currentToast,

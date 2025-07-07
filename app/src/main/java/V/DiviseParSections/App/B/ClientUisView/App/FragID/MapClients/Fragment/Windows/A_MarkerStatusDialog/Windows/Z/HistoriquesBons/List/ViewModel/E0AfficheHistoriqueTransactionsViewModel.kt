@@ -22,7 +22,7 @@ data class SecID5FragID2UiState(
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
-    aCentral: ACentralFacade,
+    val aCentral: ACentralFacade,
 
     val a_CentralDatasHandlerProtoJuin9: MainRepositorysGetterFacade,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,

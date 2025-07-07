@@ -34,11 +34,13 @@ class GetFocusedVars(
     }
 
     val onVentM8BonVent by derivedStateOf {
-        val targetKey =
-            currentM9AppCompt?.onVentM8BonVentKey // Use currentM9AppCompt instead of repo9AppCompt.currentAppCompt
-        repo8BonVent.datasValue.find { it.keyID == targetKey }
+        repo8BonVent.datasValue.find { it.keyID == currentM9AppCompt?.onVentM8BonVentKey }
     }
-
+    val activeOnVentM2ClientInfos by derivedStateOf {
+        repo2Client.datasValue.find {
+            it.keyID == (onVentM8BonVent?.keyID ?: "")
+        }
+    }
     val defaultM8BonVent by derivedStateOf {
         M8BonVent(
             nomClientConcerned = "Default Data",
@@ -115,7 +117,7 @@ class GetFocusedVars(
                             with(it) {
                                 parentM2ClientInfosDebugName
                             }
-                        }?:"null"
+                        } ?: "null"
                     )
                     put(
                         "focused_M1ProduitInfos_Pour_PrixDifineur", getter

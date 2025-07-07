@@ -87,11 +87,7 @@ fun MarkerStatusDialog(
     }
 
     fun handleDismiss() {
-        if (viewModel.gBonVentRepo.onVentId8BonVent != null) {
-            showExitConfirmationDialog = true
-        } else {
-            dismissDialog()
-        }
+        showExitConfirmationDialog = true
     }
 
     val parentTestTag_ClientKey =
@@ -135,7 +131,7 @@ fun MarkerStatusDialog(
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
-                    val activeClient = viewModel.getter.iD2ClientRepository.onVentId2ClientInfos
+                    val activeClient = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
                     activeCompt?.let { activeCompt ->
                         if (activeClient != null) {
                             item {

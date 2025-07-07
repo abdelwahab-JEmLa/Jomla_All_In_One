@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,8 +34,8 @@ fun GBonVentInfosHeader(
     viewModel: ZViewModel_Sec1Frag3,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repo = viewModel.uiStateCentralRepositorys.id8BonVentRepository
-    val onVentData = repo.onVentId8BonVent
+    val get = viewModel.aCentral.focusedVarsHandlerFacade.get
+    val onVentData =  get.onVentM8BonVent
     val fVentCouleurOperationRepository = viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
     // Determine colors based on delivery state and filter mode
@@ -60,7 +61,10 @@ fun GBonVentInfosHeader(
         onVentData?.let { data ->
             with(data) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .getSemanticsTagFocucedVars(get)
+                        .fillMaxWidth()
+                    ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

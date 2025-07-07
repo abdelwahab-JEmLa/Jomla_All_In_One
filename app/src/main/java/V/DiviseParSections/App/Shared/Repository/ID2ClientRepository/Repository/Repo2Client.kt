@@ -45,13 +45,6 @@ class Repo2Client(
     val datasState: State<List<HClientInfos>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
-    val onVentId2ClientInfos by derivedStateOf {
-        datasValue.find {
-            it.keyID ==
-                    id8BonVentRepository.onVentId8BonVent?.parentM2ClientInfosKey
-        }
-    }
-
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: State<Float> = _loadingProgress
     val isLoading: Boolean by derivedStateOf { this._datas.value.isEmpty() && !_isInitialized.value }

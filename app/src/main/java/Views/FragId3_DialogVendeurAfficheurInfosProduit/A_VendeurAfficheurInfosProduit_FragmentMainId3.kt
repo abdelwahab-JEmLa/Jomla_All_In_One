@@ -184,7 +184,7 @@ fun MainUi(
     var showToast by remember { mutableStateOf(false) }
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent = getter.id8BonVentRepository.onVentId8BonVent
+    val onVentBonVent =  viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
 
     if (onVentBonVent == null) {
         Box(
@@ -205,7 +205,7 @@ fun MainUi(
     val isLoading = (progressValue ?: 0f) < 1.0f
 
     // Safe handling for client ID
-    val clientOuSonMarqueMapEstOuvert = getter.iD2ClientRepository.onVentId2ClientInfos
+    val clientOuSonMarqueMapEstOuvert = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
     if (clientOuSonMarqueMapEstOuvert == null) {
         // Handle case where there's no client
         Box(

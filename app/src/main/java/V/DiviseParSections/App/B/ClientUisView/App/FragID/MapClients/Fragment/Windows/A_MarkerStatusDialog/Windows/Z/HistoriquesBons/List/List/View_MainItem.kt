@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.ID2.Test.View.Z.List
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -53,10 +53,10 @@ fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     bonVent: M8BonVent,
 ) {
-    val audioRecorderAndPlayHandler=viewModel.audioRecorderAndPlayHandler
+    val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
     val etateActuellementEst = bonVent.etateActuellementEst
-    val activeTransactionId = viewModel.getter.id8BonVentRepository.onVentId8BonVent?.vid
+    val activeM8BonVentId = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent?.vid
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -107,7 +107,7 @@ fun View_MainItem(
     }
 
     if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        && activeTransactionId != bonVent.vid
+        && activeM8BonVentId != bonVent.vid
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
@@ -178,7 +178,7 @@ fun View_MainItem(
                             Icon(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Select Transaction",
-                                tint = if (activeTransactionId == bonVent.vid) {
+                                tint = if (activeM8BonVentId == bonVent.vid) {
                                     Color.White
                                 } else {
                                     if (blinkState.value) Color.Red else Color.Gray
@@ -202,7 +202,7 @@ fun View_MainItem(
                     )
 
                     Text(
-                        text =bonVent.keyID.takeLast(4) ,
+                        text = bonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End

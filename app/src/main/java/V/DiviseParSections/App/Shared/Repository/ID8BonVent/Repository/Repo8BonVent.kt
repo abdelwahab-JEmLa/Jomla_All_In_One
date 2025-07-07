@@ -2,7 +2,6 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.genereUnPushKeyFireBase
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -33,23 +32,6 @@ class Repo8BonVent(
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M8BonVent>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-
-    val defaultId8BonVent by derivedStateOf {
-        M8BonVent(
-            nomClientConcerned = "Default Data",
-            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentAppComptKeyID,
-            parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
-
-            parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod ,
-            parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod ,
-        )
-    }
-
-    val onVentId8BonVent by derivedStateOf {
-        datasValue.find {
-            it.keyID == zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
-        }?: defaultId8BonVent
-    }
 
     init {
         composScope.launch {
