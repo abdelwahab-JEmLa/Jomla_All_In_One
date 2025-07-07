@@ -55,7 +55,6 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     isFabVisible: Boolean,
-    onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
@@ -67,7 +66,8 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val itsDevMode = false
+    val itsDevMode = viewModel.getter.parametresAppComptNonSaved.itsDevMode
+
     val startUpScreen = when {
         itsDevMode -> viewModel.getter.parametresAppComptNonSaved.devStartUpScree
 

@@ -171,7 +171,7 @@ data class Z_AppCompt(
     var KeyByParent: String = "",
     var vid: Long = 1,
 
-) {
+    ) {
 
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
         val currentTags = if (nomsMutableTags.isNotEmpty()) {

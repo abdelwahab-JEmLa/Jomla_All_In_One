@@ -202,18 +202,17 @@ fun MainScreen(
                         Box(modifier = Modifier.weight(1f)) {
 
                             AppNavHost(
+                                modifier = Modifier.fillMaxSize(),
+                                viewModel = headViewModel,
+                                viewModelInitApp = viewModelViewModelInitApp,
                                 navController = navController,
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                                modifier = Modifier.fillMaxSize(),
                                 isFabVisible = isFabVisible,
-                                onClickDonne = { isFabVisible = false },
                                 onClickToDisplayeConexionWifi = {
                                     isDisplayedConnexionWifiVisible =
                                         !isDisplayedConnexionWifiVisible
                                 },
                                 onToggleLockHost = { lockHost = !lockHost },
-                                viewModelInitApp = viewModelViewModelInitApp,
-                                viewModel = headViewModel,
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
                                 onClickImageToShowControles = {
