@@ -33,8 +33,8 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
         MainFilter(
             markerStatusDialogM2Client,
-            Modifier,
             viewModel,
+            Modifier,
         )
     }
 }

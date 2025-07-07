@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Column
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun View_MainList(
@@ -21,7 +21,7 @@ fun View_MainList(
         modifier = Modifier
             .getSemanticsTag(listGBonVentFilteredByClientKeySorted,"listGBonVentFilteredByClientKeySorted")
             .fillMaxWidth()
-            .padding(petitePaddine)
+            .padding(6.dp)
     ) {
         // In C_MainList.kt
         listGBonVentFilteredByClientKeySorted.forEach { transaction ->
