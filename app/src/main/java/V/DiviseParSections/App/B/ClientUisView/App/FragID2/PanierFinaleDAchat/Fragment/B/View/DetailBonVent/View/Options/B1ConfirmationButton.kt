@@ -90,7 +90,7 @@ fun ConfirmationButton(
                                     bonVent,
                                     aCommandeConfirme
                                 )
-                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                             }
 
                             else -> {

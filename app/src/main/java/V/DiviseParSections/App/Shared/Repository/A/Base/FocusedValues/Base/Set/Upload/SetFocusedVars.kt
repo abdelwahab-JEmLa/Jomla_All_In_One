@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.add_New_M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focucePourPrixDeM1Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId
@@ -29,15 +29,14 @@ class SetFocusedVars(
         updatedDefaultId8BonVent: M8BonVent,
         newCurrentM9AppCompt: Z_AppCompt?
     ) {
-       addNewM8BonVent(updatedDefaultId8BonVent)
+        add_New_M8BonVentFacade(updatedDefaultId8BonVent)
 
         if (newCurrentM9AppCompt != null) {
             updateFocuceM9AppCompt(newCurrentM9AppCompt)
         }
     }
 
-    fun addNewM8BonVent(id8BonVent: M8BonVent) =
-        ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
+    fun add_New_M8BonVentFacade(id8BonVent: M8BonVent) = add_New_M8BonVent(id8BonVent, repo8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
 
@@ -106,17 +105,8 @@ class SetFocusedVars(
         }
     }
 
-    fun desactive_currentApp_ouvertDialogMapMarqueM2ClientKeyId(): Unit {
-        get.currentM9AppCompt?.let {
-            repo9AppCompt.upsert(
-                it.copy(
-                    ouvertDialogMapMarqueM2ClientKeyId = "null",
-                )
-            )
-        }
-    }
 
-    fun desactive_currentApp_M8BonVent(): Unit {
+    fun desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent(): Unit {
         get.currentM9AppCompt?.let {
             repo9AppCompt.upsert(
                 it.copy(

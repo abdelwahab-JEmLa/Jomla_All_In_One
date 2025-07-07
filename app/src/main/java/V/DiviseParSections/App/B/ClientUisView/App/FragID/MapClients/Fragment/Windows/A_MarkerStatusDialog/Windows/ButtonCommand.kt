@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
@@ -24,18 +25,35 @@ import androidx.core.content.ContextCompat
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
-    m2Client: HClientInfos?,
-    etateActuellementEst: M8BonVent.EtateActuellementEst,
+    m2Client: HClientInfos,
+    newEtate: M8BonVent.EtateActuellementEst,
     viewModel: MapClientsViewModel,
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
 ) {
     val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
     val get = focusedVarsHandlerFacade.get
-    val (editedM8BonVent, editedM9CurrCompt) = get
-            .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
-                m2Client!!
-            )
+
+    val findActiveOnCourDeVentM8BonVent =
+        viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent.datasValue
+            .find {
+                it.parentM7VentPeriodKeyId == ParametresAppComptNonSaved().keyIdId7VentPeriod
+                        && it.etateActuellementEst == newEtate
+            }
+
+    val findSecureDefaultM8 = findActiveOnCourDeVentM8BonVent ?: get.defaultM8BonVent
+
+    val editedM8BonVent = findSecureDefaultM8.copy(
+        debugInfos = m2Client.nom,
+        parentM2ClientInfosKey = m2Client.keyID,
+        parentM2ClientInfosDebugName = m2Client.nom,
+        etateActuellementEst = newEtate
+    )
+
+    val editedM9CurrCompt = get.currentM9AppCompt?.copy(
+        onVentM8BonVentKey = editedM8BonVent.keyID,
+        onVentM8BonVentDebugInfos = editedM8BonVent.debugInfos
+    )
 
     FilledTonalButton(
         modifier = modifier
@@ -45,19 +63,21 @@ fun CommandButton(
                 editedM8BonVent,
                 editedM9CurrCompt
             )
+            viewModel.startRecordIfNot()
+            viewModel.updateLongAppSetting(m2Client.id)
             onUpdateLongAppSetting()
         },
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
                     context,
-                    etateActuellementEst.color
+                    newEtate.color
                 )
             ).copy(alpha = 0.2f),
             contentColor = Color(
                 ContextCompat.getColor(
                     context,
-                    etateActuellementEst.color
+                    newEtate.color
                 )
             )
         )
@@ -72,7 +92,7 @@ fun CommandButton(
                 contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text(etateActuellementEst.name)
+            Text(newEtate.name)
         }
     }
 }

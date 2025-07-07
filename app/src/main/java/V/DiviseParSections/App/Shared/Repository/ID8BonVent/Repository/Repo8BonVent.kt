@@ -115,7 +115,7 @@ data class M8BonVent(
 
     var parentHClientKeyByParent: String = "",
     var parentHClientOldID: Long = 0L,
-    var nomClientConcerned: String = "Non Defini",
+    var nomClientConcerned: String = "null",
 
     var parentKeyId9AppComptInfos: String = "b1",
     var parentDebugNameId9AppComptInfos: String = "",

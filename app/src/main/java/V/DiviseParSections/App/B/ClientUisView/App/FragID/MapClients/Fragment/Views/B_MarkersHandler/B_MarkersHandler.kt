@@ -79,7 +79,7 @@ fun createAndAddMarker(
    val repo= viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
-        val hClient= repo.datasValue.find { it.id.toString()==id }
+        val m2Client= repo.datasValue.find { it.id.toString()==id }
         id = client.id.toString()
         position = GeoPoint(
             client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
@@ -98,9 +98,7 @@ fun createAndAddMarker(
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
-
-            viewModel.update_bOuvertDialogMapMarqueHClientKey(clickedMarker.id.toLong())
-
+            viewModel.set_M2Client_UiState_In_MarkerStatusDialog(m2Client)
             if (showMarkerDetails) clickedMarker.showInfoWindow()
             true
         }

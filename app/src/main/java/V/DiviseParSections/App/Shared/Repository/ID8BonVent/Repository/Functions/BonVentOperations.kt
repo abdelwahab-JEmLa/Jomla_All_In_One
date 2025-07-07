@@ -91,35 +91,4 @@ class BonVentOperations(
             gBonVentRepository.upsert(updatedBonVent)
         }
     }
-
-    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
-
-    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            onVentM8BonVentKey = "",
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
-
-    fun clear_bOuvertDialogMapMarqueHClientKey() {
-        val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            ouvertDialogMapMarqueM2ClientKeyId = ""
-        )
-
-        if (zCompt != null) {
-            zAppComptRepositoryComposable.upsert(zCompt)
-        }
-    }
 }

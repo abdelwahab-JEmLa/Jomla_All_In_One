@@ -24,7 +24,6 @@ import androidx.core.content.ContextCompat
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
-
 ) {
     val aCentralFacade = viewModel.aCentralFacade
     val focusedVarsHandlerFacade = aCentralFacade.focusedVarsHandlerFacade
@@ -32,30 +31,28 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val context = LocalContext.current
     val newEtate = this
 
-    val m2Client = aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id==clickedClient }
+    val m2Client =
+        aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id == clickedClient }!!
 
-    val (editedM8BonVent, editedM9CurrCompt) = get
-        .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
-            m2Client!!,
-            newEtate
-        )
-
+    val defaultM8BonVent = get.defaultM8BonVent.copy(
+        debugInfos = m2Client.nom,
+        parentM2ClientInfosKey = m2Client.keyID,
+        parentM2ClientInfosDebugName = m2Client.nom,
+        etateActuellementEst = newEtate
+    )
     FilledTonalButton(
         onClick = {
-            focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
-                editedM8BonVent,
-                editedM9CurrCompt
-            )
+            focusedVarsHandlerFacade.set.add_New_M8BonVentFacade(defaultM8BonVent)
 
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
-                viewModel.setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+                viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
             }
         },
         modifier = Modifier
-            .fillMaxWidth()
-        ,
+            .fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(

@@ -10,8 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -33,9 +31,6 @@ class MainRepositorysSetterFacade(
 
     val bonVentOperations: BonVentOperations,
 ) {
-    private val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
-    private val hClientRepository = getter.repo2Client
-
     private val get = focusedVarsHandlerFacade.get
 
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -62,26 +57,6 @@ class MainRepositorysSetterFacade(
         }
     }
 
-    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
-        bonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-
-    fun ajouteNewBonVent(key: String, clientOldId: Long, etate: M8BonVent.EtateActuellementEst) =
-        bonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
-
-    fun updateComptAppErExistKey(
-        key: String,
-        clientOldId: Long,
-        etate: M8BonVent.EtateActuellementEst
-    ) = bonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
-
-    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() =
-        bonVentOperations.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
-
-    fun cleanFermeAppComptOnVentBonVent() =
-        bonVentOperations.clear_bOuvertDialogMapMarqueHClientKey()
-
-    fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) =
-        clientOperations.update_bOuvertDialogMapMarqueHClientKey(clientID)
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) =
         clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
@@ -89,28 +64,6 @@ class MainRepositorysSetterFacade(
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
     fun deleteAddMultiDatas() = produitOperations.deleteAddMultiDatas()
 
-    fun getKeyID8BonVentSetter(clientId: Long, etate: M8BonVent.EtateActuellementEst): String =
-        getKeyID8BonVent(
-            clientId, etate,
-            parametresAppComptNonSaved = parametresAppComptNonSaved,
-            hClientRepository = hClientRepository,
-        )
-
-
-    fun lenceNeveauBonVentFacade(keyHandBonVent: String, m8BonVent: M8BonVent? = null) {
-        val newData = m8BonVent?.copy(creationTimestamps = System.currentTimeMillis())
-
-        if (newData != null) {
-            focusedVarsHandlerFacade.set.addNewM8BonVent(m8BonVent)
-        } else {
-            upsertBonVent(
-                keyHandBonVent,
-                gBonVentRepository = getter.repo8BonVent,
-                hClientRepository = hClientRepository,
-                parametresAppComptNonSaved
-            )
-        }
-    }
 
     fun upsertVentCouleurOperationFacade(
         fCouleurVentOperation: M10OperationVentCouleur? = null,

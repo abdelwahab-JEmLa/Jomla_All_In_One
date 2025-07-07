@@ -160,19 +160,11 @@ fun MapContent(
                 }
             )
         }
-        val getter = viewModel.getter
-
         val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
-        val ouvertDialogMapMarqueM2ClientKeyId = viewModel.getter.repo9AppCompt.currentAppCompt?.ouvertDialogMapMarqueM2ClientKeyId
-
-        val ouvertDialogMapMarqueM2Client = if (activeOnVentM2ClientInfos == null && !ouvertDialogMapMarqueM2ClientKeyId.isNullOrBlank()) {
-            getter.repo2Client.datasValue.find { it.keyID == ouvertDialogMapMarqueM2ClientKeyId }
-        } else null
-
-        if (activeOnVentM2ClientInfos != null || ouvertDialogMapMarqueM2Client != null) {
+        if (activeOnVentM2ClientInfos != null ||  uiState.markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
-                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?: ouvertDialogMapMarqueM2Client,
+                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?:  uiState.markerStatusDialogActiveM2Client,
                 mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

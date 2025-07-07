@@ -41,6 +41,7 @@ data class UiState(
     val c3_TransactionCommercialList: List<M8BonVent> = emptyList(),
     val secteursList: List<E1SecteurDeClients> = emptyList(),
     val panelsGroupeList: List<Z_AutreStatesCompoRepository.PanelsGroupeButton> = emptyList(),
+    val markerStatusDialogActiveM2Client: HClientInfos? = null,
     val mainLoadingProgress: Float = 0f,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -56,13 +57,14 @@ class MapClientsViewModel(
     val setter = aCentralFacade.mainRepositorysSetterFacade
 
     val gBonVentRepo = getter.repo8BonVent
+
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
     val b_ClientDataBaseRepository =
         a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model.e1SecteurDeClientsRepository
-    val c3_BonAchate_List =getter.repo8BonVent.datasValue
+    val c3_BonAchate_List = getter.repo8BonVent.datasValue
 
     // Compose States
     val transactionsState = getter.repo8BonVent
@@ -95,6 +97,18 @@ class MapClientsViewModel(
 
     init {
         initializeDataObservers()
+    }
+
+    fun set_M2Client_UiState_In_MarkerStatusDialog(data: HClientInfos?) {
+        _uiState.value = _uiState.value.copy(
+            markerStatusDialogActiveM2Client = data
+        )
+    }
+
+    fun clear_UiState_MarkerStatusDialog_Active_M2Client() {
+        _uiState.value = _uiState.value.copy(
+            markerStatusDialogActiveM2Client = null
+        )
     }
 
     private fun initializeDataObservers() {
@@ -250,39 +264,5 @@ class MapClientsViewModel(
 
     fun startRecordIfNot() {
         recordingHandler.startRecordIfNot()
-    }
-
-    fun ouvreBonVent(idClientOuSonMarqueMapEstOuvert: Long): Unit {
-        if (idClientOuSonMarqueMapEstOuvert == 0L) {
-            setter.cleanFermeAppComptOnVentBonVent()
-        } else {
-        }
-
-        updateLongAppSetting(idClientOuSonMarqueMapEstOuvert)
-        startRecordIfNot()
-    }
-
-    fun ajoutUnBonVentHistorique(clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
-    }
-
-    fun update_bOuvertDialogMapMarqueHClientKey(clientOldId: Long) {
-        setter.update_bOuvertDialogMapMarqueHClientKey(clientOldId)
-    }
-    fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey(): Unit {
-        setter.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
-    }
-
-    fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
-        setter.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
-    }
-
-    // Add these methods to MapClientsViewModel class
-
-    fun ajoutUnBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
-        setter.ajouteNewBonVent(buttonNewKeyGenerateur, clickedClient, newEtate)
-    }
-
-    fun updateBonVentHistorique(buttonNewKeyGenerateur: String, clickedClient: Long, newEtate: M8BonVent.EtateActuellementEst) {
-        setter.updateComptAppErExistKey(buttonNewKeyGenerateur, clickedClient, newEtate)
     }
 }

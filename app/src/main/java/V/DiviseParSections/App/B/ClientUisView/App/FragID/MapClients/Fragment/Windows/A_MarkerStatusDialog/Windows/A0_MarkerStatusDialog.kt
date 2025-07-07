@@ -172,10 +172,10 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            m2Client=clientOuCaMarqueGpsEstOuvert,
+                                            m2Client=clientOuCaMarqueGpsEstOuvert!!,
                                             modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
-                                            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            newEtate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )
@@ -274,8 +274,8 @@ fun MarkerStatusDialog(
                     TextButton(
                         onClick = {
                             showExitConfirmationDialog = false
-                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_ouvertDialogMapMarqueM2ClientKeyId()
-                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                            viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                         }
                     ) {
                         Text("نعم")
@@ -384,11 +384,10 @@ fun MarkerStatusDialog(
                                     viewModel.deleteUnSeulData(it)
                                 }
 
+                                viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                                viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+
                                 onRemoveMark(marqueClick)
-
-                                viewModel
-                                    .ouvreBonVent(0L)
-
                             }
                             showDeleteConfirmationDialog = false
                         }

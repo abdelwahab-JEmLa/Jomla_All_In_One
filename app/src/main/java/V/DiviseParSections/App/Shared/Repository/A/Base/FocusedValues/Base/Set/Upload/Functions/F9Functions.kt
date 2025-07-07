@@ -91,10 +91,10 @@ fun focuceOnVentM3CouleurProduitInfos(
     )
 }
 
-fun ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(
-    id8BonVent: M8BonVent,
-    id8BonVentRepository: Repo8BonVent,
+fun add_New_M8BonVent(
+    m8BonVent: M8BonVent,
+    repo8BonVent: Repo8BonVent,
 ) {
-    val newData = id8BonVent.copy(creationTimestamps = System.currentTimeMillis())
-    id8BonVentRepository.add(newData)
+    val newData = m8BonVent.copy(creationTimestamps = System.currentTimeMillis())
+    repo8BonVent.add(newData)
 }
