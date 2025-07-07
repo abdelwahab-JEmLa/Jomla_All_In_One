@@ -30,13 +30,13 @@ class SetFocusedVars(
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
 
-    fun ajouteNewM10OperationVentCouleur(it: M10OperationVentCouleur) {
+    fun ajoute_New_M10OperationVentCouleur(it: M10OperationVentCouleur) {
         repo10OperationVentCouleur.addOrUpdateData(it)
     }
 
     fun updateFocuceM9AppCompt(data: Z_AppCompt) = repo9AppCompt.upsert(data)
 
-    fun ouvrireDialogChoisireQuantity(
+    fun active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
         m10OperationVentCouleur = m10OperationVentCouleur,
@@ -56,7 +56,7 @@ class SetFocusedVars(
         )
     }
 
-    fun ouvrireM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) =
+    fun active_M1Produit_Pour_Choisire_TotalQuantity(produit: ArticlesBasesStatsTable) =
         updateCurrentAppComptDialogProduit(
             getterFocusedVars,
             repo9AppCompt,

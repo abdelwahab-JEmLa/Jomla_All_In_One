@@ -77,10 +77,16 @@ fun QuantityDisplay(
             else MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .clickable(enabled = !allNonTrouve) {
-                    // Fixed: Open dialog for this specific product
-                    viewModel.setterFocusedVarsHandlerFacade.ouvrireM1ProduitDialogChoisireQuantityFacade(
+                    val get = viewModel.focusedVarsHandlerFacade.get
+
+                    viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                        focused_M13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
+                        m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                    )
+                    viewModel.setterFocusedVarsHandlerFacade.active_M1Produit_Pour_Choisire_TotalQuantity(
                         produit
                     )
+
                     onQuantityClickToHaptic()
                 }
                 .getSemanticsTag(

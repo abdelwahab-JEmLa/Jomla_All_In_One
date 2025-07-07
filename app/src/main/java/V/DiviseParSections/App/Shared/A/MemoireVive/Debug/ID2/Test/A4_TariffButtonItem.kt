@@ -55,7 +55,8 @@ fun TariffButtonItem(
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
-    var latestTariffLocalData by remember {
+    // Fix: Add produit as a key to remember so it recomposes when product changes
+    var latestTariffLocalData by remember(produit, latestTariff) {
         mutableStateOf(
             latestTariff.copy(
                 parentM1ProduitInfosKeyId = produit.keyID,
@@ -64,8 +65,9 @@ fun TariffButtonItem(
         )
     }
 
-    var isEditingPrice by remember { mutableStateOf(false) }
-    var editablePriceText by remember { mutableStateOf("") }
+    // Also reset editing state when product changes
+    var isEditingPrice by remember(produit) { mutableStateOf(false) }
+    var editablePriceText by remember(produit) { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
@@ -96,7 +98,7 @@ fun TariffButtonItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
 
-    ) {
+        ) {
         val couleurButton = typeTarification.couleur
 
         if (showLabels) {

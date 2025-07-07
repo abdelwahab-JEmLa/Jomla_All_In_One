@@ -37,9 +37,13 @@ class MainRepositorysSetterFacade(
     val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
     val hClientRepository = getter.iD2ClientRepository
 
+    val get = focusedVarsHandlerFacade.get
+
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
-        focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos?,
-        m10OperationVentCouleurs: List<M10OperationVentCouleur>
+        focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos? =
+            get.focused_M13TarificationInfos_Pour_Produit,
+        m10OperationVentCouleurs: List<M10OperationVentCouleur> =
+            get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
     ) {
         focused_M13TarificationInfos_Pour_Produit?.let {
             addOrUpdateGroAliTariff(it)

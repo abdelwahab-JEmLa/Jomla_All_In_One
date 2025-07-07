@@ -119,11 +119,14 @@ fun ViewVentCouleur_T1(
                 onVentM3CouleurProduitInfos: M10OperationVentCouleur?
             ) {
                 defaultM3CouleurProduitInfos?.let { opVent ->
-                    setter.ajouteNewM10OperationVentCouleur(opVent)
-                    setter.ouvrireDialogChoisireQuantity(opVent)
+                    setter.ajoute_New_M10OperationVentCouleur(opVent)
+
+                    viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+
+                    setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(opVent)
                 } ?: run {
                     if (onVentM3CouleurProduitInfos != null) {
-                        setter.ouvrireDialogChoisireQuantity(onVentM3CouleurProduitInfos)
+                        setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(onVentM3CouleurProduitInfos)
                     }
                 }
             }
