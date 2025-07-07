@@ -63,7 +63,7 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(false) }
 
     DebugTestsPerformInitialSearch(
         enabled = shouldPerformInitialSearch,

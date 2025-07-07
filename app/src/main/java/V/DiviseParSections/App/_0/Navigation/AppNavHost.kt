@@ -50,7 +50,7 @@ import org.koin.compose.koinInject
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    headViewModel: HeadViewModel = koinViewModel(),
+    viewModel: HeadViewModel = koinViewModel(),
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
@@ -63,11 +63,19 @@ fun AppNavHost(
     onClickImageToShowControles: () -> Unit,
     fragmentNavigationHandler: FragmentNavigationHandler = koinInject(),
 ) {
-    val startUpScreen = headViewModel.getter.parametresAppComptNonSaved.startUpScree
-    val uiState by headViewModel.uiState.collectAsState()
-
+    val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val itsDevMode = true
     val currentRoute = navBackStackEntry?.destination?.route
+
+    // Fixed startup screen logic
+    val startUpScreen = when {
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt
+            ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
+
+        itsDevMode -> viewModel.getter.parametresAppComptNonSaved.startUpScree
+        else -> Screen.FacadePresentoireProduits
+    }
 
     // Update FragmentNavigationHandler when navigation changes
     LaunchedEffect(currentRoute) {
@@ -93,7 +101,7 @@ fun AppNavHost(
 
     val clientEnCourDeVent by rememberSaveable {
         mutableLongStateOf(
-            headViewModel._uiState.value
+            viewModel._uiState.value
                 .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
                 ?.valueLong ?: 0
         )
@@ -120,7 +128,7 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
                             PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
-                                viewModelHeadViewModel = headViewModel,
+                                viewModelHeadViewModel = viewModel,
                                 onToggleNavBar = onToggleNavBar,
                                 reloadTrigger = reloadTrigger,
                                 onClickToOpenWindos = { articleDataBaseOn, indexColor ->
@@ -130,13 +138,13 @@ fun AppNavHost(
                                     if (currentClientId == 0L) {
                                         showClientSelection = true
                                     } else {
-                                        headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                                        viewModel.openWindowsNewSaleWithUpdateCurrent(
                                             relatedArticleBaseStats!!.id.toLong(),
                                             currentClientId,
                                             pendingIndexColor
                                         )
                                         opnerSaleWindows = true
-                                        headViewModel.sendOrderToClientDisplayer(
+                                        viewModel.sendOrderToClientDisplayer(
                                             WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                             relatedArticleBaseStats!!.id.toLong()
                                         )
@@ -280,13 +288,13 @@ fun AppNavHost(
                     clientEnCourDeVent = clientEnCourDeVent,
                     navController = navController,
                     onClear = {
-                        headViewModel.viewModelScope.launch {
-                            headViewModel._uiState.update { currentState ->
+                        viewModel.viewModelScope.launch {
+                            viewModel._uiState.update { currentState ->
                                 currentState.copy(soldArticlesModel = emptyList())
                             }
 
                             // Clear the database in add coroutine
-                            headViewModel.database.soldArticlesModelDao().deleteAll()
+                            viewModel.database.soldArticlesModelDao().deleteAll()
 
                             // Clear Firebase references
                             val database = Firebase.database
@@ -322,11 +330,11 @@ fun AppNavHost(
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
                     uiState = uiState,
-                    viewModelHeadViewModel = headViewModel,
+                    viewModelHeadViewModel = viewModel,
                     onDismiss = {
-                        headViewModel.clearCurrentSale()
+                        viewModel.clearCurrentSale()
                         opnerSaleWindows = false
-                        headViewModel.sendOrderToClientDisplayer(
+                        viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                         )
                     },
@@ -422,6 +430,7 @@ private fun CleanupEffect(onCleanup: () -> Unit) {
         }
     }
 }
+
 object ScreensApp2 {
     val A_ClientsLocationGps = Screen.A_ClientsLocationGps
 }

@@ -212,7 +212,7 @@ fun MainScreen(
                                 },
                                 onToggleLockHost = { lockHost = !lockHost },
                                 viewModelInitApp = viewModelViewModelInitApp,
-                                headViewModel = headViewModel,
+                                viewModel = headViewModel,
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
                                 onClickImageToShowControles = {
