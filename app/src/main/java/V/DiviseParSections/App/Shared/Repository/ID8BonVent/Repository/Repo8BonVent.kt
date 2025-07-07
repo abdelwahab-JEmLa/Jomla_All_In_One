@@ -130,7 +130,7 @@ data class M8BonVent(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
-    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeMaisNonDefinie,
+    var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,

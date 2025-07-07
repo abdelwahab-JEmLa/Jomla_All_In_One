@@ -29,7 +29,8 @@ fun ClientDetailsSection(
     val uiState by viewModel.uiState.collectAsState()
     val isMinimized = uiState.isMinimized
     val get = viewModel.aCentral.focusedVarsHandlerFacade.get
-    val onVentClient = get.activeOnVentM2ClientInfos
+    // FIXED: Use the correct property name
+    val onVentClient = get.onVentM2ClientInfos
 
     isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
 
@@ -41,18 +42,16 @@ fun ClientDetailsSection(
             imageVector = Icons.Default.Person,
             contentDescription = "Client",
             tint = MaterialTheme.colorScheme.primary,
-            // FIXED: Smaller icon when minimized
             modifier = Modifier.size(if (isMinimized) 20.dp else 24.dp)
         )
         Column(
             modifier = Modifier.weight(1f)
                 .getSemanticsTagFocucedVars(get),
-            // FIXED: Compact vertical spacing when minimized
+            // FIXED: Now that we're using the correct property, the semantic tag should work properly
             verticalArrangement = Arrangement.spacedBy(if (isMinimized) 2.dp else 4.dp)
         ) {
             Text(
                 text = "Client On Vent",
-                // FIXED: Smaller text when minimized
                 style = if (isMinimized) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

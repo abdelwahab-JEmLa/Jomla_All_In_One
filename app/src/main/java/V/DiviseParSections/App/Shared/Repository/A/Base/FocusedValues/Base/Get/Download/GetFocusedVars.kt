@@ -36,11 +36,14 @@ class GetFocusedVars(
     val onVentM8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentM9AppCompt?.onVentM8BonVentKey }
     }
+
+    // FIXED: Use the correct property to find the client
     val activeOnVentM2ClientInfos by derivedStateOf {
         repo2Client.datasValue.find {
-            it.keyID == (onVentM8BonVent?.keyID ?: "")
+            it.keyID == (onVentM8BonVent?.parentM2ClientInfosKey ?: "")
         }
     }
+
     val defaultM8BonVent by derivedStateOf {
         M8BonVent(
             nomClientConcerned = "Default Data",
@@ -123,7 +126,7 @@ class GetFocusedVars(
                         "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {
-                                parentM2ClientInfosDebugName
+                                parentM2ClientInfosDebugName +"/" + etateActuellementEst
                             }
                         } ?: "null"
                     )
