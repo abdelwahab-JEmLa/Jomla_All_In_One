@@ -318,21 +318,6 @@ private fun calculateTotalProducts(bonVent: M8BonVent): Int {
     // based on your product/item structure
     return 0 // Replace with actual calculation
 }
-
-// Extracted function for initial search setup
-private suspend fun performInitialSearch(
-    onSearchModeChange: (Boolean) -> Unit,
-    onSearchQueryChange: (String) -> Unit,
-    focusRequester: FocusRequester
-) {
-    if (false) {
-        delay(2000)
-        onSearchModeChange(true)
-        delay(500)
-        onSearchQueryChange("mah")
-        focusRequester.requestFocus()
-    }
-}
 private fun getClientsWithCommandModeBonVents(
     hClientRepository: Repo2Client,
     bonVentRepository: Repo8BonVent

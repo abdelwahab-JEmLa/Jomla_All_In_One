@@ -84,6 +84,17 @@ class SetFocusedVars(
         anulleFocucePourPrixDeM1Produit(get, repo9AppCompt)
     }
 
+    fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
+        get.currentM9AppCompt?.let {
+            repo9AppCompt.upsert(
+                it.copy(
+                    onVentM8BonVentKey = bonVent.keyID,
+                    onVentM8BonVentDebugInfos = bonVent.debugInfos,
+                )
+            )
+        }
+    }
+
     fun desactive_currentApp_M8BonVent(): Unit {
         get.currentM9AppCompt?.let {
             repo9AppCompt.upsert(

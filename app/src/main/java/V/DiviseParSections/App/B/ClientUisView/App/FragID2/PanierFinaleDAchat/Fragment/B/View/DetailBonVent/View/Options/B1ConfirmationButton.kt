@@ -69,17 +69,18 @@ fun ConfirmationButton(
             onClick = {
                 currentBonVent?.let { bonVent ->
                     when (bonVent.etateActuellementEst) {
-                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                            )
-                        }
-
                         M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
                             updateBonVent(
                                 bonVent,
-                                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
+                                M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                            )
+                            viewModel.aCentral.focusedVarsHandlerFacade.set.active_currentApp_M8BonVent(bonVent)
+                        }
+
+                        M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> {
+                            updateBonVent(
+                                bonVent,
+                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
                             )
                             viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
                         }
