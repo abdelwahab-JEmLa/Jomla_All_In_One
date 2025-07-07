@@ -2,14 +2,11 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandlerP2
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
@@ -29,13 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Print
-import androidx.compose.material.icons.filled.Storefront
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -49,13 +39,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -270,11 +258,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                     }
 
-
-                    if(activeFragment == Screen.Screen1PanieVentsFinale) {
-                        GroupePanierButtons()
-                    }
-
                     ID4ClientSearchButton(
                         uiState = uiState,
                         hClientRepository = uiState.hClientRepository,
@@ -288,7 +271,6 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         },
                         viewModel = viewModel
                     )
-
                 }
 
                 TariffsButtonsSec7ID2(
@@ -344,157 +326,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         }
     }
 }
-@Composable
-fun GroupePanierButtons(
-    viewModel: ZViewModel_Sec1Frag3 = koinViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val isMinimized = uiState.isMinimized
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val printHandler = remember { PrintReceiptHandlerP2() }
-    val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
-    val fVentCouleurOperationRepository = viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
-    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
-            data.copy(etateActuellementEst = newEtate)
-        )
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Mode Toggle Button (Delivery/Vent)
-        FloatingActionButton(
-            onClick = {
-                viewModel.togglePanieMode()
-            },
-            containerColor = when (uiState.panieMode) {
-                ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50) // Green for Delivery
-                ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3) // Blue for Vent
-            },
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                imageVector = when (uiState.panieMode) {
-                    ZViewModel_Sec1Frag3.PanieMode.Delivery -> Icons.Default.LocalShipping
-                    ZViewModel_Sec1Frag3.PanieMode.Vent -> Icons.Default.Storefront
-                },
-                contentDescription = "Mode: ${uiState.panieMode.name}",
-                modifier = Modifier.size(18.dp),
-                tint = Color.White
-            )
-        }
-
-        // Filter Button
-        FloatingActionButton(
-            onClick = {
-                viewModel.toggelePanierFilterNonTrouve()
-            },
-            containerColor = if (uiState.filterNonTrouve) {
-                Color(0xFFFF5722) // Orange when filter is active
-            } else {
-                MaterialTheme.colorScheme.tertiary
-            },
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = if (uiState.filterNonTrouve)
-                    "Désactiver filtre"
-                else
-                    "Activer filtre",
-                modifier = Modifier.size(18.dp),
-                tint = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary
-            )
-        }
-
-        // Print Button
-        FloatingActionButton(
-            onClick = {
-                val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
-                printHandler.printVentReceipt(
-                    context = context,
-                    fVentCouleurOperationRepository = fVentCouleurOperationRepository,
-                    bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
-                    b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
-                    client = fClientRepository.onVentId2ClientInfos,
-                    scope = scope
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Print,
-                contentDescription = "Imprimer",
-                modifier = Modifier.size(18.dp)
-            )
-        }
-
-        // Order Status Button
-        FloatingActionButton(
-            onClick = {
-                currentBonVent?.let { bonVent ->
-                    when (bonVent.etateActuellementEst) {
-                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                            )
-                        }
-                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
-                            )
-                            viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
-                        }
-                        else -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                            )
-                        }
-                    }
-                }
-            },
-            containerColor = when (currentBonVent?.etateActuellementEst) {
-                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
-                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
-                else -> Color(0xFFFF9800) // Orange for unknown/other states
-            },
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler"
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer"
-                    else -> "Gérer"
-                },
-                modifier = Modifier.size(18.dp),
-                tint = Color.White
-            )
-        }
-
-        // Minimize/Maximize Button
-        FloatingActionButton(
-            onClick = {
-                viewModel.toggleMinimizedState()
-            },
-            containerColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(40.dp)
-        ) {
-            Icon(
-                imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                contentDescription = if (isMinimized) "Afficher" else "Masquer",
-                modifier = Modifier.size(18.dp)
-            )
-        }
-    }
-}
 
 @Composable
 fun B1CataloguesAffiche(
