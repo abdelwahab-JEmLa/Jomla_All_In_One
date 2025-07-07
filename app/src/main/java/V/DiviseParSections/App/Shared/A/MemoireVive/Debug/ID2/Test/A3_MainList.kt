@@ -88,7 +88,11 @@ fun MainList(
         TypeChoisi.DefiniParGerant2
     )
 
-    val generatedTariffDefiniParGerant2 = remember(existingDefiniParGerant2Tariff, produit, tariffs) {
+    val generatedTariffDefiniParGerant2 = remember(
+        existingDefiniParGerant2Tariff,
+        produit,
+        tariffs
+    ) {
         existingDefiniParGerant2Tariff ?: M13TarificationInfos(
             id = if (tariffs.isNotEmpty()) tariffs.maxOf { it.id } + 1 else 1L,
             parentM1ProduitDebugInfos = produit.nom,

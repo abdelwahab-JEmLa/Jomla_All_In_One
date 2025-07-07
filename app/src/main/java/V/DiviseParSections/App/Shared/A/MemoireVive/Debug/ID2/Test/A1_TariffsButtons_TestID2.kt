@@ -50,9 +50,7 @@ fun TariffsButtonsSec7ID2(
         }
     }
 
-    // React to focused product changes
     LaunchedEffect(focusedProduct) {
-        Log.d("TariffsButtons", "focusedProduct changed: ${focusedProduct?.nom}")
         if (focusedProduct != null) {
             afficheButtons = true
         }
