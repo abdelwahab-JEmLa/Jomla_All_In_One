@@ -162,11 +162,11 @@ data class Z_AppCompt(
     var focusedAuPrixDifineurM1ProduitInfosKeyId: String = "null",
     var focusedAuPrixDifineurM1ProduitInfosDebugInfos: String = "null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
+    val ouvertDialogMapMarqueM2ClientKeyId: String = "",
     //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var startTextSearchM1Produit: String = "",
     //------------------------------------------------------------------------------------------------------------------------------------------------
 
-    val bOuvertDialogMapMarqueHClientKey: String = "",
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
@@ -199,15 +199,6 @@ data class Z_AppCompt(
     companion object {
         const val keyModel = "ID9"
         const val keyModelValID7VentParent = "ID7"
-
-        fun extractSonKeyByParent(stringAExtractDepuit: String) =
-            stringAExtractDepuit.split("--").find { it.startsWith("$keyModelValID7VentParent-") }
-                ?.removePrefix("$keyModelValID7VentParent-") ?: if (stringAExtractDepuit.startsWith(
-                    "$keyModelValID7VentParent-"
-                )
-            ) stringAExtractDepuit.removePrefix("$keyModelValID7VentParent-").split("--")
-                .first() else null
-
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
-import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
@@ -102,6 +101,16 @@ class SetFocusedVars(
                 it.copy(
                     onVentM8BonVentKey = bonVent.keyID,
                     onVentM8BonVentDebugInfos = bonVent.debugInfos,
+                )
+            )
+        }
+    }
+
+    fun desactive_currentApp_ouvertDialogMapMarqueM2ClientKeyId(): Unit {
+        get.currentM9AppCompt?.let {
+            repo9AppCompt.upsert(
+                it.copy(
+                    ouvertDialogMapMarqueM2ClientKeyId = "null",
                 )
             )
         }

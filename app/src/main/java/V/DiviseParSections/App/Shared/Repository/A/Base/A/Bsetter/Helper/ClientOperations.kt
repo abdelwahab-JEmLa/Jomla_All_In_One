@@ -23,7 +23,7 @@ class ClientOperations(
         val zCompt =
             clientKey?.let {
                 currentZCompt?.copy(
-                    bOuvertDialogMapMarqueHClientKey = it
+                    ouvertDialogMapMarqueM2ClientKeyId = it
                 )
             }
 

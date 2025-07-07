@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
+
 ) {
     val aCentralFacade = viewModel.aCentralFacade
     val focusedVarsHandlerFacade = aCentralFacade.focusedVarsHandlerFacade
@@ -45,6 +46,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 editedM8BonVent,
                 editedM9CurrCompt
             )
+
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {

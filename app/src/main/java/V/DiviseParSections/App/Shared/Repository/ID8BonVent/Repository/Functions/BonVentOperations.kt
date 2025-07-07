@@ -94,7 +94,7 @@ class BonVentOperations(
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
@@ -105,7 +105,7 @@ class BonVentOperations(
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             onVentM8BonVentKey = "",
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
@@ -115,7 +115,7 @@ class BonVentOperations(
 
     fun clear_bOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {

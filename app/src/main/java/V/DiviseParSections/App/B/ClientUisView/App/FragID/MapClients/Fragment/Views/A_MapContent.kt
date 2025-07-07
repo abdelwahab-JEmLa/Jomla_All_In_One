@@ -11,7 +11,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -163,27 +162,17 @@ fun MapContent(
         }
         val getter = viewModel.getter
 
-        val onVentFClient = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+        val ouvertDialogMapMarqueM2ClientKeyId = viewModel.getter.repo9AppCompt.currentAppCompt?.ouvertDialogMapMarqueM2ClientKeyId
 
-        val bOuvertDialogMapMarqueHClientKey =
-            viewModel.getter.repo9AppCompt.currentAppCompt?.bOuvertDialogMapMarqueHClientKey
-
-        // Find client by bOuvertDialogMapMarqueHClientKey when onVentFClient is null
-        val clientFromMarkerKey = if (onVentFClient == null && !bOuvertDialogMapMarqueHClientKey.isNullOrBlank()) {
-            getter.repo2Client.datasValue.find { it.keyID == bOuvertDialogMapMarqueHClientKey }
+        val ouvertDialogMapMarqueM2Client = if (activeOnVentM2ClientInfos == null && !ouvertDialogMapMarqueM2ClientKeyId.isNullOrBlank()) {
+            getter.repo2Client.datasValue.find { it.keyID == ouvertDialogMapMarqueM2ClientKeyId }
         } else null
 
-        if (bOuvertDialogMapMarqueHClientKey != null) {
-            Log.d("TEts", "bOuvertDialogMapMarqueHClientKey: $bOuvertDialogMapMarqueHClientKey")
-            Log.d("TEts", "onVentFClient: $onVentFClient")
-            Log.d("TEts", "clientFromMarkerKey: $clientFromMarkerKey")
-        }
-
-        // Show dialog if either onVentFClient exists OR we have a valid bOuvertDialogMapMarqueHClientKey
-        if (onVentFClient != null || clientFromMarkerKey != null) {
+        if (activeOnVentM2ClientInfos != null || ouvertDialogMapMarqueM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
-                clientOuCaMarqueGpsEstOuvert = onVentFClient ?: clientFromMarkerKey,
+                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?: ouvertDialogMapMarqueM2Client,
                 mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

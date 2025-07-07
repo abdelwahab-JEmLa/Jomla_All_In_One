@@ -59,7 +59,6 @@ fun MarkerStatusDialog(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
 ) {
-
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
         .find { marker ->
@@ -80,10 +79,6 @@ fun MarkerStatusDialog(
     if (editedName.isEmpty() && clientOuCaMarqueGpsEstOuvert != null) {
         editedName = clientOuCaMarqueGpsEstOuvert.nom ?: ""
         editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
-    }
-
-    fun dismissDialog() {
-        viewModel.ouvreBonVent(0L)
     }
 
     fun handleDismiss() {
@@ -279,8 +274,8 @@ fun MarkerStatusDialog(
                     TextButton(
                         onClick = {
                             showExitConfirmationDialog = false
-                            dismissDialog()
-                            viewModel.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
+                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_ouvertDialogMapMarqueM2ClientKeyId()
+                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
                         }
                     ) {
                         Text("نعم")

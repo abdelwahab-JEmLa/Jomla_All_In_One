@@ -84,7 +84,8 @@ fun AfficheurRegleOuvert(
 
                 TextButton(
                     onClick = {
-                        viewModel.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
+                        viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_ouvertDialogMapMarqueM2ClientKeyId()
+                        viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

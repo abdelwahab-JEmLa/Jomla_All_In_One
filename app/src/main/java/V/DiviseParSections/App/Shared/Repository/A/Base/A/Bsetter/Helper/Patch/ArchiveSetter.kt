@@ -38,7 +38,7 @@ class BSetterP (
         val zCompt =
             clientKey?.let {
                 currentZCompt?.copy(
-                    bOuvertDialogMapMarqueHClientKey = it
+                    ouvertDialogMapMarqueM2ClientKeyId = it
                 )
             }
 
@@ -236,7 +236,7 @@ class BSetterP (
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             onVentM8BonVentKey = "",
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
@@ -246,7 +246,7 @@ class BSetterP (
 
     fun clear_bOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
@@ -257,7 +257,7 @@ class BSetterP (
     fun cleanFermeAppComptOnVentBonVent() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
             onVentM8BonVentKey = "",
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
@@ -267,7 +267,7 @@ class BSetterP (
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() {
         val zCompt = zAppComptRepositoryComposable.currentAppCompt?.copy(
-            bOuvertDialogMapMarqueHClientKey = ""
+            ouvertDialogMapMarqueM2ClientKeyId = ""
         )
 
         if (zCompt != null) {
