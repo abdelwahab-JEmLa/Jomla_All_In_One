@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import android.util.Log
@@ -9,16 +8,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
-import com.google.firebase.database.Exclude
 import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.AbstractMap
 
 @Stable
 class RepoM1ProduitInfos(
@@ -182,19 +178,9 @@ data class ArticlesBasesStatsTable(
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
 ) {
-    // Propriétés internes pour Firebase (exclues de la sérialisation)
-    @get:Exclude
-    val processPositioningInFactoryString: String
-        get() = processPositioningInFactory.name
-
-    @get:Exclude
-    val etateActuelleOnFusionAvecBaseDonneString: String
-        get() = etateActuelleOnFusionAvecBaseDonne.name
-
-    @get:Exclude
-    val disponibilityEtatesString: String
-        get() = disponibilityEtates.name
-
+    fun getDebugInfos(): String {
+         return nom + "" +keyID
+    }
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
             "id" to id,
@@ -255,12 +241,6 @@ data class ArticlesBasesStatsTable(
             "imageDimention" to imageDimention,
             "idForSearchArticles" to idForSearchArticles
         )
-    }
-
-    fun getTempKeyByParent(): Map.Entry<SemanticsPropertyKey<String>, String> {
-        val semanticKey = SemanticsPropertyKey<String>(KeyTagModel)
-        val semanticValue = nom.withOutFireBaseInvalidCharacters()
-        return AbstractMap.SimpleEntry(semanticKey, semanticValue)
     }
 
     enum class ProcessPositioningInFactoryID1 {

@@ -57,8 +57,8 @@ fun ArticleImageWithOverlay(
                 .fillMaxSize()
         ) {
             ImageDisplayerProtoAvantJuin3(
+                produit = article,
                 viewModel = viewModelHeadViewModel,
-                article = article,
                 indexColor = colorIndex,
                 reloadKey = reloadTrigger,
                 showOverlay = !imageExists,

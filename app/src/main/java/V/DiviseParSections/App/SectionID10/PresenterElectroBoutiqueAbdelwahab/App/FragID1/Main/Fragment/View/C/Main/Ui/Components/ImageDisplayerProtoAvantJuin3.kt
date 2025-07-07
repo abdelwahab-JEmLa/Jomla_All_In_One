@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -58,10 +59,10 @@ import java.io.File
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayerProtoAvantJuin3(
+    produit: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
-    article: ArticlesBasesStatsTable,
     indexColor: Int,
     reloadKey: Any,
     showOverlay: Boolean,
@@ -73,12 +74,12 @@ fun ImageDisplayerProtoAvantJuin3(
     onClickToOpenWindow: () -> Unit ={}
 ) {
     val baseFileName =
-        "${article.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+        "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
 
     val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
 
     val produitDepuitNewDATABASE = a_ProduitModelRepository
-        .modelDatas.find { it.id == article.id }
+        .modelDatas.find { it.id == produit.id }
 
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
@@ -115,7 +116,7 @@ fun ImageDisplayerProtoAvantJuin3(
         isLoading = false
     }
 
-    val imagePath by remember(viewModel.viewModelImagesPath, article.id, indexColor) {
+    val imagePath by remember(viewModel.viewModelImagesPath, produit.id, indexColor) {
         derivedStateOf {
 
             File(viewModel.viewModelImagesPath, baseFileName)
@@ -137,12 +138,15 @@ fun ImageDisplayerProtoAvantJuin3(
 
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
+            val activeProduit =
+                viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur
+
             GlideImage(
-                model = file,
-                contentDescription = file.toString(),
-                contentScale = imageScale,
                 modifier = Modifier
+                    .getSemanticsTag(produit.getDebugInfos(),"produit")
+                    .getSemanticsTag(activeProduit?.getDebugInfos()?:"null","activeProduit",1)
                     .clickable {
+
                         onClickToOpenWindow()
                     }
                     .fillMaxSize()
@@ -155,10 +159,13 @@ fun ImageDisplayerProtoAvantJuin3(
                                 edgeTreatment = TileMode.Decal
                             )
                         }
-                    }
+                    },
+                model = file,
+                contentDescription = file.toString(),
+                contentScale = imageScale
             ) {
                 it.apply {
-                    applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
+                    applyImageOptions(produit, indexColor, currentQuality) { isFirstResource ->
                         if (isFirstResource && currentQuality < targetQuality) {
                             currentQuality = targetQuality
                         }
@@ -168,7 +175,7 @@ fun ImageDisplayerProtoAvantJuin3(
         }
 
         if (showOverlay) {
-            val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(article)
+            val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(produit)
             val currentColorInfo = productImageInfos.getOrNull(indexColor)
 
             currentColorInfo?.let { colorInfo ->
