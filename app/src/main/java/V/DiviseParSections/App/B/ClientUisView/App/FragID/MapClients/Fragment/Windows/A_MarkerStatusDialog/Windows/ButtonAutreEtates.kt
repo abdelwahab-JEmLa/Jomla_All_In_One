@@ -25,14 +25,26 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
 ) {
+    val aCentralFacade = viewModel.aCentralFacade
+    val focusedVarsHandlerFacade = aCentralFacade.focusedVarsHandlerFacade
+    val get = focusedVarsHandlerFacade.get
     val context = LocalContext.current
     val newEtate = this
-    val keyHandBonVentOnClickButton = viewModel.setter.getKeyID8BonVentSetter(clickedClient, newEtate)
+
+    val m2Client = aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id==clickedClient }
+
+    val (editedM8BonVent, editedM9CurrCompt) = get
+        .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
+            m2Client!!,
+            newEtate
+        )
 
     FilledTonalButton(
         onClick = {
-            viewModel.setter.lenceNeveauBonVentFacade(keyHandBonVentOnClickButton)
-
+            focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+                editedM8BonVent,
+                editedM9CurrCompt
+            )
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {

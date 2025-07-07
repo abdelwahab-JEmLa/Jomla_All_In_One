@@ -89,9 +89,10 @@ fun ID4ClientSearchButton(
 
     // Get clients with command mode BonVents
     val repo8BonVent = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent
-    val clientsWithCommandBonVents = remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
-        getClientsWithCommandModeBonVents(hClientRepository, repo8BonVent)
-    }
+    val clientsWithCommandBonVents =
+        remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
+            getClientsWithCommandModeBonVents(hClientRepository, repo8BonVent)
+        }
 
     // Initialize dropdown when search mode becomes active
     LaunchedEffect(isSearchMode) {
@@ -318,6 +319,7 @@ private fun calculateTotalProducts(bonVent: M8BonVent): Int {
     // based on your product/item structure
     return 0 // Replace with actual calculation
 }
+
 private fun getClientsWithCommandModeBonVents(
     hClientRepository: Repo2Client,
     bonVentRepository: Repo8BonVent
@@ -369,7 +371,7 @@ private fun CreateNewClientIcon(
         }
     )
 
-    val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
+    val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
         debugInfos = newClient.nom,
         creationTimestamps = System.currentTimeMillis(),
         parentM2ClientInfosKey = newClient.keyID,
@@ -377,23 +379,23 @@ private fun CreateNewClientIcon(
     )
 
     val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
-        onVentM8BonVentKey = updatedDefaultOnVentID8BonVentEtAdd.keyID,
-        onVentM8BonVentDebugInfos = updatedDefaultOnVentID8BonVentEtAdd.debugInfos
+        onVentM8BonVentKey = addedDefaultOnVentID8BonVentEtAdd.keyID,
+        onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.debugInfos
     )
 
     IconButton(
         onClick = {
             viewModel.setter.addNewM2ClientInfos(newClient)
-            viewModel.setter.addNewM8BonVent(updatedDefaultOnVentID8BonVentEtAdd)
-            if (updatedAppCompt != null) {
-                viewModel.setter.updateFocuceM9AppCompt(updatedAppCompt)
-            }
+            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+                addedDefaultOnVentID8BonVentEtAdd,
+                updatedAppCompt
+            )
 
             onClientSelectedToToast(newClient)
             onResetSearchMode()
         },
         modifier = Modifier.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("Debug  new M8BonVent"), updatedDefaultOnVentID8BonVentEtAdd)
+            set(SemanticsPropertyKey("Debug  new M8BonVent"), addedDefaultOnVentID8BonVentEtAdd)
             set(
                 SemanticsPropertyKey("Debug currentM9AppCompt avec  new M8BonVent"),
                 updatedAppCompt
@@ -418,37 +420,25 @@ fun ClientSearchItem(
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val updatedDefaultId8BonVent = viewModel.getterFocusedVarsHandlerFacade.defaultM8BonVent.copy(
-        debugInfos = client.nom,
-        parentM2ClientInfosKey = client.keyID,
-        parentM2ClientInfosDebugName = client.nom
-    )
+    val (editedM8BonVent, editedM9CurrCompt) =
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.get
+            .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
+                client
+        )
 
-    val newCurrentM9AppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
-        onVentM8BonVentKey = updatedDefaultId8BonVent.keyID,
-        onVentM8BonVentDebugInfos = updatedDefaultId8BonVent.debugInfos
-    )
-
-    // Calculate time elapsed since last update
     val timeElapsed = getTimeElapsedString(client.dernierTimeTampsSynchronisationAvecFireBase)
-
     Row(
         modifier = Modifier
             .semantics {
                 set(
                     SemanticsPropertyKey("1D == [updatedDefaultId8BonVent]"),
-                    updatedDefaultId8BonVent
+                    editedM8BonVent
                 )
-                set(SemanticsPropertyKey("2D == [newCurrentM9AppCompt]"), newCurrentM9AppCompt)
+                set(SemanticsPropertyKey("2D == [newCurrentM9AppCompt]"), editedM9CurrCompt)
             }
             .fillMaxWidth()
             .clickable {
-                viewModel.setter.addNewM8BonVent(updatedDefaultId8BonVent)
-
-                if (newCurrentM9AppCompt != null) {
-                    viewModel.setter.updateFocuceM9AppCompt(newCurrentM9AppCompt)
-                }
-
+                viewModel.aCentralFacade.focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(editedM8BonVent, editedM9CurrCompt)
                 onClick()
             }
             .padding(12.dp),

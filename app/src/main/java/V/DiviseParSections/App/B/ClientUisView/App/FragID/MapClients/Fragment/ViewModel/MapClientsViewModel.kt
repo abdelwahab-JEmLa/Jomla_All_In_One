@@ -47,13 +47,13 @@ data class UiState(
 )
 
 class MapClientsViewModel(
-    val aCentral: ACentralFacade,
+    val aCentralFacade: ACentralFacade,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
 ) : ViewModel() {
-    val getter = aCentral.mainRepositorysGetterFacade
-    val setter = aCentral.mainRepositorysSetterFacade
+    val getter = aCentralFacade.mainRepositorysGetterFacade
+    val setter = aCentralFacade.mainRepositorysSetterFacade
 
     val gBonVentRepo = getter.repo8BonVent
     // Repository references

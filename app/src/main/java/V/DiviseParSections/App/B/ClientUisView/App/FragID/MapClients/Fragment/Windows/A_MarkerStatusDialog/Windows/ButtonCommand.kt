@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -17,30 +18,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
-    viewModel: MapClientsViewModel,
+    m2Client: HClientInfos?,
     etateActuellementEst: M8BonVent.EtateActuellementEst,
+    viewModel: MapClientsViewModel,
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
-    parentTestTag_ClientKey: String,
 ) {
-    val etateKey = M8BonVent.EtateActuellementEst.getKey(etateActuellementEst)
-
-    val tag = "$parentTestTag_ClientKey$etateKey"
+    val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+    val get = focusedVarsHandlerFacade.get
+    val (editedM8BonVent, editedM9CurrCompt) = get
+            .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
+                m2Client!!
+            )
 
     FilledTonalButton(
         modifier = modifier
-            .fillMaxWidth()
-            .testTag(tag)
-        ,
+            .fillMaxWidth(),
         onClick = {
-            viewModel.setter.lenceNeveauBonVentFacade(tag)
+            focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+                editedM8BonVent,
+                editedM9CurrCompt
+            )
             onUpdateLongAppSetting()
         },
         colors = ButtonDefaults.filledTonalButtonColors(

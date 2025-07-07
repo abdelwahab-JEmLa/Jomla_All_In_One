@@ -163,7 +163,7 @@ fun MapContent(
         }
         val getter = viewModel.getter
 
-        val onVentFClient = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+        val onVentFClient = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
 
         val bOuvertDialogMapMarqueHClientKey =
             viewModel.getter.repo9AppCompt.currentAppCompt?.bOuvertDialogMapMarqueHClientKey

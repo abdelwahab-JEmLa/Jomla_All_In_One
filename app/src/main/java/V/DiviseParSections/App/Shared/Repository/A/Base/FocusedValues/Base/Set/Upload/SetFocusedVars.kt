@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
@@ -25,6 +26,17 @@ class SetFocusedVars(
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
+    fun upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+        updatedDefaultId8BonVent: M8BonVent,
+        newCurrentM9AppCompt: Z_AppCompt?
+    ) {
+       addNewM8BonVent(updatedDefaultId8BonVent)
+
+        if (newCurrentM9AppCompt != null) {
+            updateFocuceM9AppCompt(newCurrentM9AppCompt)
+        }
+    }
+
     fun addNewM8BonVent(id8BonVent: M8BonVent) =
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
 

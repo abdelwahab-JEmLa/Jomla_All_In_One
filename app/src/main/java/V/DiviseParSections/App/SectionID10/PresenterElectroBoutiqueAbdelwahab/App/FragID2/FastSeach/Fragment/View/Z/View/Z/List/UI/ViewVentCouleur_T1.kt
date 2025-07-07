@@ -5,7 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.VentCouleurQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -46,7 +45,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
-    m3CouleurProduitInfos: M3CouleurProduitInfos,
+    m3Couleur: M3CouleurProduitInfos,
     produit: ArticlesBasesStatsTable?,
     viewModel: ViewModelsProduit_T1,
     size: Dp = 200.dp
@@ -56,25 +55,8 @@ fun ViewVentCouleur_T1(
 
     val uiState by viewModel.uiState.collectAsState()
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
+    val parentM1ProduitDebugInfos = produit?.getDebugInfos() ?: "null"
 
-    val defaultM3CouleurProduitInfos =
-        produit?.let {
-            val parentM1ProduitDebugInfos = produit.nom
-            getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
-                //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                parentM1ProduitInfosKeyId = it.keyID,
-                parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
-                //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-                parentM3CouleurProduitInfosKeyID = m3CouleurProduitInfos.key,
-                parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3CouleurProduitInfos.indexCouleurDansAncienProto,
-            )
-        }
-
-    val relatedVent by remember{
-        derivedStateOf {
-            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID==m3CouleurProduitInfos.key }
-        }
-    }
 
     val haptic = LocalHapticFeedback.current
 
@@ -82,71 +64,84 @@ fun ViewVentCouleur_T1(
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
-    val ventUIState = remember(relatedVent, uiState) {
-        derivedStateOf { viewModel.calculateUIState(relatedVent, uiState) }
-    }.value
-
     val imageFile by derivedStateOf {
         viewModel.getImageFile(
-            m3CouleurProduitInfos.nomImageFichieSansEtansion,
-            m3CouleurProduitInfos.extensionDisponible
+            m3Couleur.nomImageFichieSansEtansion,
+            m3Couleur.extensionDisponible
         )
     }
 
-    val shouldShowDialog by remember(relatedVent, m3CouleurProduitInfos.key) {
+
+    val findVent by remember {
         derivedStateOf {
-            val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos
-            onVentM3?.parentM3CouleurProduitInfosKeyID == m3CouleurProduitInfos.key
+            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+                .find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.key }
         }
     }
+    val defaultM10Vent = getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+        //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+        parentM1ProduitInfosKeyId = produit?.keyID ?: null.toString(),
+        parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
+        //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+        parentM3CouleurProduitInfosKeyID = m3Couleur.key,
+        parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
+        quantityAchete = 1
+    )
+
+    val ventUIState = remember(findVent, uiState) {
+        derivedStateOf {
+            viewModel.calculateUIState(
+                findVent,
+                uiState
+            )
+        }
+    }.value
+
+    val shouldShowDialog by remember(findVent, m3Couleur.key) {
+        derivedStateOf {
+            val onVentM3 =
+                viewModel.getterFocusedVarsHandlerFacade.onVentM3CouleurProduitInfos;onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.key
+        }
+    }
+
     Card(
         modifier = Modifier
             .getSemanticsTag(
-                defaultM3CouleurProduitInfos, "defaultM3CouleurProduitInfos"
+                defaultM10Vent, "defaultM3CouleurProduitInfos"
             )
             .fillMaxWidth()
             .alpha(ventUIState.itemAlpha)
-            .graphicsLayer(alpha = if (relatedVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
+            .graphicsLayer(alpha = if (findVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(5.dp)
         ) {
-            fun lenceVent(
-                defaultM3CouleurProduitInfos: M10OperationVentCouleur?,
-                setter: SetFocusedVars,
-                onVentM3CouleurProduitInfos: M10OperationVentCouleur?
-            ) {
-                defaultM3CouleurProduitInfos?.let { opVent ->
-                    setter.ajoute_New_M10OperationVentCouleur(opVent)
-
+            fun lenceVent() {
+                findVent?.let { findVent ->
                     viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
-
-                    setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(opVent)
+                    setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                 } ?: run {
-                    if (onVentM3CouleurProduitInfos != null) {
-                        setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(onVentM3CouleurProduitInfos)
+                    defaultM10Vent?.let { defaultVent ->
+                        setter.ajoute_New_M10OperationVentCouleur(defaultVent)
+                        viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
                     }
                 }
             }
 
             Box(modifier = Modifier.fillMaxWidth()) {
-                when (m3CouleurProduitInfos.aAffiche) {
+                when (m3Couleur.aAffiche) {
                     M3CouleurProduitInfos.Type.Image -> {
                         ImageDisplayerGlide_Sec2FragID2(
                             modifier = Modifier.size(size),
                             imageFile = imageFile,
-                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
+                            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
                             contentScale = ContentScale.Crop,
                             imageSize = DpSize(size, size),
                             colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
                             onClickToOpenWindow = {
-                                lenceVent(
-                                    defaultM3CouleurProduitInfos,
-                                    setter,
-                                    relatedVent
-                                )
+                                lenceVent()
                                 handelUiAction(haptic)
                             },
                         )
@@ -155,13 +150,10 @@ fun ViewVentCouleur_T1(
                     M3CouleurProduitInfos.Type.Nom -> {
                         ColorNameDisplayer_Sec2FragID2(
                             modifier = Modifier.size(size),
-                            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
+                            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
                             onClickToOpenWindow = {
-                                lenceVent(
-                                    defaultM3CouleurProduitInfos,
-                                    setter,
-                                    relatedVent
-                                )
+                                lenceVent()
+
                                 handelUiAction(haptic)
                             })
                     }
@@ -191,7 +183,7 @@ fun ViewVentCouleur_T1(
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(
-                                    text = relatedVent?.quantityAchete.toString(),
+                                    text = findVent?.quantityAchete.toString(),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -205,11 +197,11 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (shouldShowDialog && relatedVent != null) {
+    if (shouldShowDialog && findVent != null) {
         VentCouleurQuantityDialog_T1(
-            vent = relatedVent!!,
+            vent = findVent!!,
             viewModel = viewModel,
-            colorName = m3CouleurProduitInfos.nomCouleurStrSiSonImageDispo,
+            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
             currentQuantity = ventUIState.quantity,
         )
     }

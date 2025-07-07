@@ -5,10 +5,12 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
@@ -112,6 +114,12 @@ class GetFocusedVars(
     val activeDialogSearchM1Produit by derivedStateOf {
         currentM9AppCompt?.activeDialogSearchM1Produit ?: false
     }
+    fun get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
+        m2Client: HClientInfos,
+        newEtate: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    ) =  get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
+        m2Client, defaultM8BonVent, onVentM8BonVent, currentM9AppCompt,newEtate
+    )
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
@@ -130,7 +138,7 @@ class GetFocusedVars(
                         "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {
-                                parentM2ClientInfosDebugName + "/" + etateActuellementEst
+                                "$parentM2ClientInfosDebugName/$etateActuellementEst"
                             }
                         } ?: "null"
                     )
@@ -158,4 +166,27 @@ class GetFocusedVars(
             }
         }
     }
+}
+
+fun get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
+    m2Client: HClientInfos,
+    defaultM8BonVent: M8BonVent,
+    onVentM8BonVent: M8BonVent?,
+    currentM9AppCompt: Z_AppCompt?,
+    newEtate: M8BonVent.EtateActuellementEst,
+): Pair<M8BonVent, Z_AppCompt?> {
+    val onVentM8BonVentWithDefault = onVentM8BonVent ?: defaultM8BonVent
+
+    val editedM8BonVent = onVentM8BonVentWithDefault.copy(
+        debugInfos = m2Client.nom,
+        parentM2ClientInfosKey = m2Client.keyID,
+        parentM2ClientInfosDebugName = m2Client.nom,
+        etateActuellementEst = newEtate
+    )
+
+    val editedM9CurrCompt = currentM9AppCompt?.copy(
+        onVentM8BonVentKey = editedM8BonVent.keyID,
+        onVentM8BonVentDebugInfos = editedM8BonVent.debugInfos
+    )
+    return Pair(editedM8BonVent, editedM9CurrCompt)
 }

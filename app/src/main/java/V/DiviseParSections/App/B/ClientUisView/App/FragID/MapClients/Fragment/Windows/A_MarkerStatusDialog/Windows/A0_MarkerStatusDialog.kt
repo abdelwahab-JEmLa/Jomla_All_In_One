@@ -131,7 +131,7 @@ fun MarkerStatusDialog(
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
-                    val activeClient = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+                    val activeClient = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
                     activeCompt?.let { activeCompt ->
                         if (activeClient != null) {
                             item {
@@ -177,7 +177,7 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            parentTestTag_ClientKey = parentTestTag_ClientKey,
+                                            m2Client=clientOuCaMarqueGpsEstOuvert,
                                             modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
                                             etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
