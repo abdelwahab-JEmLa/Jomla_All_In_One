@@ -62,70 +62,80 @@ fun ConfirmationButton(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FloatingActionButton(
-            modifier = Modifier
-                .getSemanticsTagFocucedVars(viewModel.aCentral.focusedVarsHandlerFacade.get)
-                .size(48.dp),
-            onClick = {
-                currentBonVent?.let { bonVent ->
-                    when (bonVent.etateActuellementEst) {
-                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                            )
-                            viewModel.aCentral.focusedVarsHandlerFacade.set.active_currentApp_M8BonVent(bonVent)
-                        }
+        val aCommandeConfirme = M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+        val onModeCommendActuellement = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        val etateActuellementEst = currentBonVent?.etateActuellementEst
+            ?: M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
 
-                        M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                            )
-                            viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
-                        }
+        if (etateActuellementEst == aCommandeConfirme || etateActuellementEst == onModeCommendActuellement) {
+            FloatingActionButton(
+                modifier = Modifier
+                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedVarsHandlerFacade.get)
+                    .size(48.dp),
+                onClick = {
+                    currentBonVent?.let { bonVent ->
+                        when (bonVent.etateActuellementEst) {
+                            aCommandeConfirme -> {
+                                updateBonVent(
+                                    bonVent,
+                                    onModeCommendActuellement
+                                )
+                                viewModel.aCentral.focusedVarsHandlerFacade.set.active_currentApp_M8BonVent(
+                                    bonVent
+                                )
+                            }
 
-                        else -> {
-                            updateBonVent(
-                                bonVent,
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
-                            )
+                            onModeCommendActuellement -> {
+                                updateBonVent(
+                                    bonVent,
+                                    aCommandeConfirme
+                                )
+                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                            }
+
+                            else -> {
+                                updateBonVent(
+                                    bonVent,
+                                    aCommandeConfirme
+                                )
+                            }
                         }
                     }
-                }
-            },
-            containerColor = getStateColor(currentBonVent?.etateActuellementEst)
-        ) {
-            Icon(
-                imageVector = getStateIcon(currentBonVent?.etateActuellementEst),
-                contentDescription = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
-                    M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> "Commande en cours"
-                    else -> "Gérer la commande"
                 },
-                modifier = Modifier.size(20.dp),
-                tint = Color.White
-            )
-        }
+                containerColor = getStateColor(currentBonVent?.etateActuellementEst)
+            ) {
+                Icon(
+                    imageVector = getStateIcon(currentBonVent?.etateActuellementEst),
+                    contentDescription = when (currentBonVent?.etateActuellementEst) {
+                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
+                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
+                        M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> "Commande en cours"
+                        else -> "Gérer la commande"
+                    },
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.White
+                )
+            }
 
-        if (showLabel) {
-            Text(
-                text = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> currentBonVent.etateActuellementEst.nomArabe
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> currentBonVent.etateActuellementEst.nomArabe
-                    M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> currentBonVent.etateActuellementEst.nomArabe
-                    else -> currentBonVent?.etateActuellementEst?.nomArabe ?: "حالة أخرى"
-                },
-                modifier = Modifier
-                    .background(
-                        color = getStateColor(currentBonVent?.etateActuellementEst),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
+
+            if (showLabel) {
+                Text(
+                    text = when (currentBonVent?.etateActuellementEst) {
+                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> etateActuellementEst.nomArabe
+                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> etateActuellementEst.nomArabe
+                        M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT -> etateActuellementEst.nomArabe
+                        else -> currentBonVent?.etateActuellementEst?.nomArabe ?: "حالة أخرى"
+                    },
+                    modifier = Modifier
+                        .background(
+                            color = getStateColor(currentBonVent?.etateActuellementEst),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
