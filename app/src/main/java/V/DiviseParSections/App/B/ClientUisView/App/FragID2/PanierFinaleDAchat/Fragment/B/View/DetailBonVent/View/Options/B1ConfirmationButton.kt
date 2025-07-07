@@ -1,0 +1,112 @@
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
+
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun ConfirmationButton(
+    showLabel: Boolean,
+    viewModel: ZViewModel_Sec1Frag3,
+) {
+    val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
+
+    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
+        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
+            data.copy(
+                etateActuellementEst = newEtate
+            )
+        )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            modifier = Modifier
+                .getSemanticsTagFocucedVars(viewModel.aCentral.focusedVarsHandlerFacade.get)
+                .size(48.dp),
+            onClick = {
+                currentBonVent?.let { bonVent ->
+                    when (bonVent.etateActuellementEst) {
+                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
+                            updateBonVent(
+                                bonVent,
+                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                            )
+                        }
+
+                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
+                            updateBonVent(
+                                bonVent,
+                                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie
+                            )
+                            viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                        }
+
+                        else -> {
+                            updateBonVent(
+                                bonVent,
+                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = when (currentBonVent?.etateActuellementEst) {
+                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
+                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
+                else -> Color(0xFFFF9800) // Orange for unknown/other states
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = when (currentBonVent?.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
+                    else -> "Gérer la commande"
+                },
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = when (currentBonVent?.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Confirmé"
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Non défini"
+                    else -> "Autre état"
+                },
+                modifier = Modifier
+                    .background(
+                        color = when (currentBonVent?.etateActuellementEst) {
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50)
+                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E)
+                            else -> Color(0xFFFF9800)
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}

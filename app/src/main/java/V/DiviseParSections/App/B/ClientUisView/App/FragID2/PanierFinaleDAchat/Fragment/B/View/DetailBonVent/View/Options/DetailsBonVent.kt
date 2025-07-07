@@ -1,9 +1,12 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.CartSummarySection
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ClientDetailsSection
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ErrorCard
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.PeriodDetailsSection
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Print
@@ -78,11 +80,9 @@ fun DetailsBonVent(
 
     val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
 
-    // Get current BonVent from repository
-    val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
 
     // Create list of action buttons for LazyColumn
-    val actionButtons = remember(uiState, isMinimized, currentBonVent) {
+    val actionButtons = remember(uiState, isMinimized) {
         listOf(
             ActionButtonData("panie_mode") {
                 PanieModeButton(
@@ -117,7 +117,6 @@ fun DetailsBonVent(
             ActionButtonData("confirmation") {
                 ConfirmationButton(
                     viewModel=viewModel,
-                    currentBonVent = currentBonVent,
                     showLabel = !isMinimized,
                 )
             },
@@ -320,82 +319,6 @@ fun PrintButton(
                 modifier = Modifier
                     .background(
                         color = MaterialTheme.colorScheme.secondary,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-}
-
-@Composable
-fun ConfirmationButton(
-    currentBonVent: M8BonVent?,
-    showLabel: Boolean,
-    viewModel: ZViewModel_Sec1Frag3,
-) {
-    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
-            data.copy(
-                etateActuellementEst = newEtate
-            )
-        )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        FloatingActionButton(
-            onClick = {
-                currentBonVent?.let { bonVent ->
-                    when (bonVent.etateActuellementEst) {
-                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
-                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                        }
-                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
-                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
-                            viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
-                        }
-                        else -> {
-                            updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                        }
-                    }
-                }
-            },
-            containerColor = when (currentBonVent?.etateActuellementEst) {
-                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
-                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
-                else -> Color(0xFFFF9800) // Orange for unknown/other states
-            },
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
-                    else -> "Gérer la commande"
-                },
-                modifier = Modifier.size(20.dp),
-                tint = Color.White
-            )
-        }
-
-        if (showLabel) {
-            Text(
-                text = when (currentBonVent?.etateActuellementEst) {
-                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Confirmé"
-                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Non défini"
-                    else -> "Autre état"
-                },
-                modifier = Modifier
-                    .background(
-                        color = when (currentBonVent?.etateActuellementEst) {
-                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50)
-                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E)
-                            else -> Color(0xFFFF9800)
-                        },
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
