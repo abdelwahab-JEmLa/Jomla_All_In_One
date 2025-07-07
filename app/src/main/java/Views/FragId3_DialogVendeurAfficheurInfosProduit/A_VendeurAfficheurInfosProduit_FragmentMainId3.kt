@@ -384,6 +384,14 @@ fun MainUi(
                 // Action buttons
                 PressistatntMainActivityButtons_Sec8FWinID1(
                     cLenceDepuitFragmentsSepecialisteDeVents = true,
+                    onClickAnulationButton = {
+                        updateState(
+                            viewModelInitApp = viewModelInitApp,
+                            parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
+                            neveauEtateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK,
+                        )
+                        onPourFermeWindows()
+                    },
                     onPourFermeWindows = { buttonResult ->
                         updateState(
                             viewModelInitApp = viewModelInitApp,
@@ -394,15 +402,6 @@ fun MainUi(
 
                         viewModelHeadViewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
-                        onPourFermeWindows()
-                    },
-                    idProduitActuelle = idProduitActuelle,
-                    onClickAnulationButton = {
-                        updateState(
-                            viewModelInitApp = viewModelInitApp,
-                            parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                            neveauEtateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK,
-                        )
                         onPourFermeWindows()
                     }
                 )

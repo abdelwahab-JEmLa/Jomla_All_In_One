@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.MainFastSearchProduitPourVent
@@ -19,6 +20,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -185,7 +190,6 @@ fun MainUi(
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             viewModelInitApp = viewModelInitApp
         )
-        var showToast by remember { mutableStateOf(false) }
 
         if (uiState.isLoading) {
             LoadingOverlay(
@@ -193,48 +197,77 @@ fun MainUi(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        if (viewModel.aCentral.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
-            Dialog(
-                onDismissRequest = {
-                    // Show toast when user tries to dismiss improperly
-                    showToast = true
-                },
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    decorFitsSystemWindows = true
-                )
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp),
-                    shape = MaterialTheme.shapes.large,
-                    tonalElevation = 2.dp
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // Toast Animation Component - Must be first to appear on top
-                        AnimatedVisibility(
-                            visible = showToast,
-                            enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
-                                    scaleIn(
-                                        initialScale = 0.8f,
-                                        animationSpec = tween(durationMillis = 300)
-                                    ),
-                            exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
-                                    scaleOut(
-                                        targetScale = 0.8f,
-                                        animationSpec = tween(durationMillis = 300)
-                                    ),
-                            modifier = Modifier.zIndex(999f)
-                        ) {
-                            ModernToastMessage(
-                                message = "يرجى استخدام الأزرار لتحديد السعر",
-                                onDismiss = { showToast = false }
-                            )
-                        }
 
-                        MainFastSearchProduitPourVent()
-                    }
+        if (viewModel.aCentral.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
+            Dialog_MainFastSearchProduitPourVent(
+                viewModel=viewModel,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Dialog_MainFastSearchProduitPourVent(viewModel: PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel) {
+    var showToast by remember { mutableStateOf(false) }
+
+    Dialog(
+        onDismissRequest = {
+            showToast = true
+        },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 2.dp
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Toast Animation Component - Must be first to appear on top
+                AnimatedVisibility(
+                    visible = showToast,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                            scaleIn(
+                                initialScale = 0.8f,
+                                animationSpec = tween(durationMillis = 300)
+                            ),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
+                            scaleOut(
+                                targetScale = 0.8f,
+                                animationSpec = tween(durationMillis = 300)
+                            ),
+                    modifier = Modifier.zIndex(999f)
+                ) {
+                    ModernToastMessage(
+                        message = "يرجى استخدام الأزرار لتحديد السعر",
+                        onDismiss = { showToast = false }
+                    )
+                }
+
+                MainFastSearchProduitPourVent()
+                PressistatntMainActivityButtons_Sec8FWinID1()
+
+                fun dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit(): Unit {
+                    viewModel.aCentral.focusedVarsHandlerFacade.set.toggle_CurrentApp_activeDialogSearchM1Produit()
+                }
+
+                FloatingActionButton(
+                    onClick = { dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit() },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                        .zIndex(100f),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "إغلاق"
+                    )
                 }
             }
         }

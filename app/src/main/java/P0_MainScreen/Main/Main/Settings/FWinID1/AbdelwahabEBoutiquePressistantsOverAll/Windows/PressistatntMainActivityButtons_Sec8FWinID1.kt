@@ -60,13 +60,12 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PressistatntMainActivityButtons_Sec8FWinID1(
-    viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
-    recordingViewModel: RecordingViewModel = koinViewModel(),
     cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
-    onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
-    idProduitActuelle: Long = 0,
-    onClickAnulationButton: () -> Unit = {},
+    viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
+    recordingViewModel: RecordingViewModel = koinViewModel(),
+    onClickAnulationButton: () -> Unit = {},
+    onPourFermeWindows: (M13TarificationInfos) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val appComptComposeRepositoryProtoJuin17 = viewModel.appComptComposeRepositoryProtoJuin17

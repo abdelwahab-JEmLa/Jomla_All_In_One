@@ -66,16 +66,7 @@ fun ArticleImageWithOverlay(
                 imageSize = imageSize,
                 finalequalityImagePourcentage = qualityImagePourcentage,
                 viewModelInitApp = viewModelInitApp,
-            ) {
-                onClickToOpenWindow(article, colorIndex)
-
-                viewModel.setter.upsertVentCouleurOperationFacade(
-                    fCouleurVentOperation = vent,
-                    produit = article,
-                    colorIndex = colorIndex,
-                    quantity = 1
-                )
-            }
+            )
 
             AfficheKeyCouleurAvecVent(viewModel, article, colorIndex)
         }
