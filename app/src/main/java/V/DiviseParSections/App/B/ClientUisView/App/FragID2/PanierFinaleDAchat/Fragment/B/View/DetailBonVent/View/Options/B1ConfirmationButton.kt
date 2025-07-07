@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -34,6 +38,24 @@ fun ConfirmationButton(
                 etateActuellementEst = newEtate
             )
         )
+
+    // Helper function to get color from enum
+    @Composable
+    fun getStateColor(state: M8BonVent.EtateActuellementEst?): Color {
+        return state?.let {
+            colorResource(it.color)
+        } ?: Color(0xFF9E9E9E) // Default gray if state is null
+    }
+
+    // Helper function to get appropriate icon based on state
+    fun getStateIcon(state: M8BonVent.EtateActuellementEst?): ImageVector {
+        return when (state) {
+            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Icons.Default.CheckCircle
+            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Icons.Default.Cancel
+            else -> Icons.Default.HelpOutline
+        }
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -69,14 +91,10 @@ fun ConfirmationButton(
                     }
                 }
             },
-            containerColor = when (currentBonVent?.etateActuellementEst) {
-                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
-                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
-                else -> Color(0xFFFF9800) // Orange for unknown/other states
-            }
+            containerColor = getStateColor(currentBonVent?.etateActuellementEst)
         ) {
             Icon(
-                imageVector = Icons.Default.CheckCircle,
+                imageVector = getStateIcon(currentBonVent?.etateActuellementEst),
                 contentDescription = when (currentBonVent?.etateActuellementEst) {
                     M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
                     M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
@@ -96,11 +114,7 @@ fun ConfirmationButton(
                 },
                 modifier = Modifier
                     .background(
-                        color = when (currentBonVent?.etateActuellementEst) {
-                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50)
-                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E)
-                            else -> Color(0xFFFF9800)
-                        },
+                        color = getStateColor(currentBonVent?.etateActuellementEst),
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
