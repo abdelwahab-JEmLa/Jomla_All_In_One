@@ -45,7 +45,7 @@ import kotlin.math.roundToInt
 class DebugKey(
     val getter: MainRepositorysGetterFacade,
 ) {
-    val hClientRepository = getter.iD2ClientRepository
+    val hClientRepository = getter.repo2Client
 
      var keyByParent = mutableStateOf("")
 

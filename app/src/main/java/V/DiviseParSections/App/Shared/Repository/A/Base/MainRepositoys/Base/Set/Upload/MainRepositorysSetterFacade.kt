@@ -34,7 +34,7 @@ class MainRepositorysSetterFacade(
     val bonVentOperations: BonVentOperations,
 ) {
     private val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
-    private val hClientRepository = getter.iD2ClientRepository
+    private val hClientRepository = getter.repo2Client
 
     private val get = focusedVarsHandlerFacade.get
 
@@ -105,7 +105,7 @@ class MainRepositorysSetterFacade(
         } else {
             upsertBonVent(
                 keyHandBonVent,
-                gBonVentRepository = getter.id8BonVentRepository,
+                gBonVentRepository = getter.repo8BonVent,
                 hClientRepository = hClientRepository,
                 parametresAppComptNonSaved
             )

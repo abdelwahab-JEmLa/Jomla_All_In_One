@@ -103,7 +103,7 @@ fun DetailsBonVent(
                     showLabel = !isMinimized,
                     onPrint = {
                         val fClientRepository =
-                            viewModel.uiStateCentralRepositorys.iD2ClientRepository
+                            viewModel.uiStateCentralRepositorys.repo2Client
                         printHandler.printVentReceipt(
                             context = context,
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,

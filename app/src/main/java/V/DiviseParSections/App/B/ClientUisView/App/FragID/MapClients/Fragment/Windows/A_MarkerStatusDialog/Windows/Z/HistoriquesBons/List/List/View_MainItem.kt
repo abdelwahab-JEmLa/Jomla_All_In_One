@@ -134,7 +134,7 @@ fun View_MainItem(
                     if (bonVent.vocaleKeyID.isNotEmpty()) {
                         viewModel.deleteVoiceRecordingFromStorage(bonVent.vocaleKeyID) { success ->
                             if (success) {
-                                viewModel.getter.id8BonVentRepository.delete(
+                                viewModel.getter.repo8BonVent.delete(
                                     bonVent
                                 )
                             } else {

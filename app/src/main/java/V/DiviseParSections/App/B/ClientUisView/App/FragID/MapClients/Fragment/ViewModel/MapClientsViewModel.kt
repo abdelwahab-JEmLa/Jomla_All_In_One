@@ -55,18 +55,18 @@ class MapClientsViewModel(
     val getter = aCentral.mainRepositorysGetterFacade
     val setter = aCentral.mainRepositorysSetterFacade
 
-    val gBonVentRepo = getter.id8BonVentRepository
+    val gBonVentRepo = getter.repo8BonVent
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
     val b_ClientDataBaseRepository =
         a_MasterRepositorysGrpProtoJuin3.b_ClientInfosProtoJuin3Repository
     val secteurRepo = groupeRepositorysProtoAvJuin3.repositorys_Model.e1SecteurDeClientsRepository
-    val c3_BonAchate_List =getter.id8BonVentRepository.datasValue
+    val c3_BonAchate_List =getter.repo8BonVent.datasValue
 
     // Compose States
-    val transactionsState = getter.id8BonVentRepository
-    val clientsState = getter.iD2ClientRepository
+    val transactionsState = getter.repo8BonVent
+    val clientsState = getter.repo2Client
     val appState = getter.repo9AppCompt
 
     private val _uiState = MutableStateFlow(UiState())

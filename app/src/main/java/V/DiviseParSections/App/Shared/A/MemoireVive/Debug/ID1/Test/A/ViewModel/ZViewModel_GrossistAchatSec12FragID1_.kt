@@ -30,8 +30,8 @@ class ViewModelMainFastSearchProduitPourVent(
     private val _uiState = MutableStateFlow(
         UiState(
             bProduitInfosRepository = aCentral.mainRepositorysGetterFacade.repoM1ProduitInfos,
-            id8BonVentRepository = aCentral.mainRepositorysGetterFacade.id8BonVentRepository,
-            iD2ClientRepository = aCentral.mainRepositorysGetterFacade.iD2ClientRepository,
+            id8BonVentRepository = aCentral.mainRepositorysGetterFacade.repo8BonVent,
+            iD2ClientRepository = aCentral.mainRepositorysGetterFacade.repo2Client,
             b1CouleurOuGoutProduitDataBaseRepository = aCentral.mainRepositorysGetterFacade.repo3CouleurProduitInfos,
             zAppComptRepositoryComposable = aCentral.mainRepositorysGetterFacade.repo9AppCompt,
         )

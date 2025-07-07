@@ -44,7 +44,7 @@ class RecordingViewModel(
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     private val repos = groupeRepositorysProtoAvJuin3.repositorys_Model
-    val reposBonAchatList =getter.id8BonVentRepository
+    val reposBonAchatList =getter.repo8BonVent
 
     val TAG = "RecordingViewModel"
     private val _uiState = MutableStateFlow(UiState())
@@ -149,7 +149,7 @@ class RecordingViewModel(
     }
 
     fun calculateNombreClientAvecCible(): Int {
-        val count = getter.iD2ClientRepository.datasValue
+        val count = getter.repo2Client.datasValue
             .count { client ->
                 getter
                     .getClientLastBonVentParEtate(

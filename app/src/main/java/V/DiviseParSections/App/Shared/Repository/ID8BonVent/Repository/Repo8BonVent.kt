@@ -165,7 +165,7 @@ data class M8BonVent(
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
 
         ON_MODE_COMMEND_ACTUELLEMENT(
-            android.R.color.holo_green_light, "تم تنفيذ المطلوب في "
+            android.R.color.holo_green_light, "في طور تنفيذ المطلوب"
         ),
         A_COMMANDE_CONFIRME(
             android.R.color.holo_purple, "تم تاكيد الطلبية"

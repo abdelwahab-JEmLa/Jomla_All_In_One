@@ -36,7 +36,7 @@ class TariffsButtonsViewModelSec7ID2(
 
     private val produitRepository = getter.repoM1ProduitInfos
 
-    private val repoC3_BonVent = getter.id8BonVentRepository
+    private val repoC3_BonVent = getter.repo8BonVent
 
     private val repositoryC2_ProduitAcheteOperation = repo_0_0_HeadSQLRepositorys
         .repositorys_Model

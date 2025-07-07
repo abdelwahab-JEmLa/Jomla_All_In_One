@@ -36,7 +36,7 @@ fun TariffsButtonsSec7ID2(
     var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val bonVentList = viewModel.getter.id8BonVentRepository.datasValue
+    val bonVentList = viewModel.getter.repo8BonVent.datasValue
     val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
     val tarificationList = repo13TarificationInfos.datasValue
     val repo10OperationVentCouleur = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo10OperationVentCouleur

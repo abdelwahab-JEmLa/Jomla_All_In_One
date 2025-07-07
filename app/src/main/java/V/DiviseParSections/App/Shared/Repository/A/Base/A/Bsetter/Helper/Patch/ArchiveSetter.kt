@@ -28,7 +28,7 @@ class BSetterP (
     val navigationHandler: FragmentNavigationHandler
 ) {
     private val setterScope = CoroutineScope(Dispatchers.IO)
-    val bClientsStateCompoRepository = getter.iD2ClientRepository
+    val bClientsStateCompoRepository = getter.repo2Client
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) {
         val clientKey = hClientRepository.datasValue.find { it.id == clientID }?.keyID

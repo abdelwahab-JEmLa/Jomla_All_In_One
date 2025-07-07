@@ -2,9 +2,11 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -85,33 +87,49 @@ fun ID4ClientSearchButton(
     // Create a flow for search query debouncing
     val searchQueryFlow = remember { MutableStateFlow("") }
 
-    // Extracted function for performing click and search
-    LaunchedEffect(Unit) {
-        performInitialSearch(
-            onSearchModeChange = { isSearchMode = it },
-            onSearchQueryChange = { searchQuery = it },
-            focusRequester = focusRequester
-        )
+    // Get clients with command mode BonVents
+    val repo8BonVent = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent
+    val clientsWithCommandBonVents = remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
+        getClientsWithCommandModeBonVents(hClientRepository, repo8BonVent)
+    }
+
+    // Initialize dropdown when search mode becomes active
+    LaunchedEffect(isSearchMode) {
+        if (isSearchMode) {
+            // Show clients with command mode BonVents immediately when search mode is activated
+            filteredClients = clientsWithCommandBonVents
+            showDropdown = clientsWithCommandBonVents.isNotEmpty()
+
+            // Focus the search field
+            delay(100) // Small delay to ensure the field is rendered
+            focusRequester.requestFocus()
+        }
     }
 
     // Debounced search with flow
     LaunchedEffect(searchQuery) {
-        searchQueryFlow.value = searchQuery
+        if (isSearchMode) {
+            searchQueryFlow.value = searchQuery
+        }
     }
 
-    LaunchedEffect(Unit) {
-        searchQueryFlow
-            .debounce(600)
-            .distinctUntilChanged()
-            .collect { debouncedQuery ->
-                performClientSearch(
-                    searchQuery = debouncedQuery,
-                    hClientRepository = hClientRepository,
-                    onFilteredClientsChange = { filteredClients = it },
-                    onShowDropdownChange = { showDropdown = it },
-                    isSearchMode = isSearchMode
-                )
-            }
+    LaunchedEffect(isSearchMode) {
+        if (isSearchMode) {
+            searchQueryFlow
+                .debounce(300) // Reduced debounce time for better responsiveness
+                .distinctUntilChanged()
+                .collect { debouncedQuery ->
+                    performClientSearch(
+                        viewModel = viewModel,
+                        clientsWithCommandBonVents = clientsWithCommandBonVents,
+                        searchQuery = debouncedQuery,
+                        hClientRepository = hClientRepository,
+                        onFilteredClientsChange = { filteredClients = it },
+                        onShowDropdownChange = { showDropdown = it },
+                        isSearchMode = isSearchMode
+                    )
+                }
+        }
     }
 
     Row(
@@ -122,16 +140,8 @@ fun ID4ClientSearchButton(
         if (!isSearchMode) {
             FloatingActionButton(
                 modifier = Modifier
-                    .size(40.dp)
-                    .semantics(mergeDescendants = true) {
-                        set(
-                            SemanticsPropertyKey("D1Debug== onVentId8BonVent"), onVentId8BonVent
-                        )
-                        set(
-                            SemanticsPropertyKey("D1Debug== currentM9AppCompt"),
-                            viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt
-                        )
-                    },
+                    .getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents")
+                    .size(40.dp),
                 onClick = {
                     isSearchMode = true
                 },
@@ -256,6 +266,36 @@ fun ID4ClientSearchButton(
     }
 }
 
+private fun performClientSearch(
+    searchQuery: String,
+    hClientRepository: Repo2Client,
+    onFilteredClientsChange: (List<HClientInfos>) -> Unit,
+    onShowDropdownChange: (Boolean) -> Unit,
+    isSearchMode: Boolean,
+    viewModel: ViewModelPresistantButtonsSec8FWinID1,
+    clientsWithCommandBonVents: List<HClientInfos>,
+) {
+    if (!isSearchMode) {
+        onFilteredClientsChange(emptyList())
+        onShowDropdownChange(false)
+        return
+    }
+
+    if (searchQuery.isEmpty()) {
+        // When search is empty, show clients with command mode BonVents
+        onFilteredClientsChange(clientsWithCommandBonVents)
+        onShowDropdownChange(clientsWithCommandBonVents.isNotEmpty())
+    } else {
+        // Filter all clients based on search query
+        val filtered = hClientRepository.datasValue.filter { client ->
+            client.nom.contains(searchQuery, ignoreCase = true) ||
+                    client.numTelephone.contains(searchQuery, ignoreCase = true)
+        }
+        onFilteredClientsChange(filtered)
+        onShowDropdownChange(filtered.isNotEmpty())
+    }
+}
+
 // Helper function to calculate time elapsed since creation
 private fun getTimeElapsedString(creationTimestamp: Long): String {
     val now = System.currentTimeMillis()
@@ -273,7 +313,6 @@ private fun getTimeElapsedString(creationTimestamp: Long): String {
     }
 }
 
-// Helper function to calculate total products (placeholder implementation)
 private fun calculateTotalProducts(bonVent: M8BonVent): Int {
     // This is a placeholder - you would need to implement the actual logic
     // based on your product/item structure
@@ -294,41 +333,29 @@ private suspend fun performInitialSearch(
         focusRequester.requestFocus()
     }
 }
-
-// Enhanced client search logic with initial BonVent display
-private suspend fun performClientSearch(
-    searchQuery: String,
+private fun getClientsWithCommandModeBonVents(
     hClientRepository: Repo2Client,
-    onFilteredClientsChange: (List<HClientInfos>) -> Unit,
-    onShowDropdownChange: (Boolean) -> Unit,
-    isSearchMode: Boolean
-) {
-    if (searchQuery.isEmpty() && isSearchMode) {
-        // Show recent BonVents from current period when search is empty
-        val recentBonVents = getCurrentPeriodBonVents(hClientRepository)
-        onFilteredClientsChange(recentBonVents)
-        onShowDropdownChange(recentBonVents.isNotEmpty())
-    } else if (searchQuery.isNotEmpty()) {
-        val filtered = hClientRepository.datasValue.filter { client ->
-            client.nom.contains(searchQuery, ignoreCase = true) ||
-                    client.numTelephone.contains(searchQuery, ignoreCase = true)
-        }
-        onFilteredClientsChange(filtered)
-        onShowDropdownChange(filtered.isNotEmpty())
-    } else {
-        onFilteredClientsChange(emptyList())
-        onShowDropdownChange(false)
+    bonVentRepository: Repo8BonVent
+): List<HClientInfos> {
+    // Get all BonVents with ON_MODE_COMMEND_ACTUELLEMENT state
+    val commandModeBonVents = bonVentRepository.datasValue.filter { bonVent ->
+        bonVent.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     }
-}
 
-// Helper function to get current period BonVents sorted by last update
-private fun getCurrentPeriodBonVents(hClientRepository: Repo2Client): List<HClientInfos> {
-    // This is a placeholder implementation
-    // You would need to implement the actual logic to get BonVents from current period
-    // sorted by dernierTimeTampsSynchronisationAvecFireBase
-    return hClientRepository.datasValue
-        .sortedByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
-        .take(10) // Limit to 10 most recent
+    // Get client IDs from these BonVents
+    val clientKeysInCommandMode = commandModeBonVents.map { it.parentM2ClientInfosKey }.toSet()
+
+    // Filter clients that have BonVents in command mode
+    val clientsWithCommandBonVents = hClientRepository.datasValue.filter { client ->
+        client.keyID in clientKeysInCommandMode
+    }
+
+    // Sort by most recent BonVent update time
+    return clientsWithCommandBonVents.sortedByDescending { client ->
+        commandModeBonVents
+            .filter { it.parentM2ClientInfosKey == client.keyID }
+            .maxOfOrNull { it.dernierTimeTampsSynchronisationAvecFireBase } ?: 0L
+    }
 }
 
 @SuppressLint("DefaultLocale")

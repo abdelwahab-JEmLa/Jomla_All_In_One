@@ -12,7 +12,7 @@ fun MainFilter(
     vm: E0AfficheHistoriqueTransactionsViewModel,
     tagParentKey_Client: String
 ) {
-    val filtered = vm.getter.id8BonVentRepository.datasValue.filter {
+    val filtered = vm.getter.repo8BonVent.datasValue.filter {
         HClientInfos.extractSonKeyByParent(it.keyByParent) == HClientInfos.extractSonKeyByParent(tagParentKey_Client)
     }.sortedByDescending { it.creationTimestamps }
 

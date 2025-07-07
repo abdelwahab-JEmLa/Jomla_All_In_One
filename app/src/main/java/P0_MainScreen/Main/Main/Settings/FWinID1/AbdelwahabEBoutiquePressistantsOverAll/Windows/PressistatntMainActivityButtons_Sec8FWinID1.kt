@@ -88,7 +88,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler = viewModel.central.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
 
     // Check if current fragment is FragmentProduitFastSearchDialog
@@ -96,7 +96,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         activeFragment == Screen.FragmentProduitFastSearchDialog
 
     val currentM9AppCompt =
-        viewModel.central.focusedVarsHandlerFacade.get.currentM9AppCompt
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
@@ -204,7 +204,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.central.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }

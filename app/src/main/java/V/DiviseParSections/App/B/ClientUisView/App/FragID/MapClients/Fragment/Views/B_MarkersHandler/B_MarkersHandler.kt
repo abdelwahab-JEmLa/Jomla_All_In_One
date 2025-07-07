@@ -76,7 +76,7 @@ fun createAndAddMarker(
     context: Context,
     showMarkerDetails: Boolean,
 ) {
-   val repo= viewModel.getter.iD2ClientRepository
+   val repo= viewModel.getter.repo2Client
 
     val marker = Marker(mapView).apply {
         val hClient= repo.datasValue.find { it.id.toString()==id }

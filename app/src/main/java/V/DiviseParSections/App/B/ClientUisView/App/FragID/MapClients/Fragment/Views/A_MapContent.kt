@@ -81,8 +81,8 @@ fun MapContent(
 
     LaunchedEffect(
         viewModel.getter.repo9AppCompt.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.getter.id8BonVentRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        viewModel.getter.iD2ClientRepository.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
+        viewModel.getter.repo2Client.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
@@ -170,7 +170,7 @@ fun MapContent(
 
         // Find client by bOuvertDialogMapMarqueHClientKey when onVentFClient is null
         val clientFromMarkerKey = if (onVentFClient == null && !bOuvertDialogMapMarqueHClientKey.isNullOrBlank()) {
-            getter.iD2ClientRepository.datasValue.find { it.keyID == bOuvertDialogMapMarqueHClientKey }
+            getter.repo2Client.datasValue.find { it.keyID == bOuvertDialogMapMarqueHClientKey }
         } else null
 
         if (bOuvertDialogMapMarqueHClientKey != null) {

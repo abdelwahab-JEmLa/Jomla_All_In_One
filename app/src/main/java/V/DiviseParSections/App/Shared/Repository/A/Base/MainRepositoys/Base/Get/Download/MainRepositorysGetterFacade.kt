@@ -63,8 +63,8 @@ class MainRepositorysGetterFacade(
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
     val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
-    val iD2ClientRepository: Repo2Client,
-    val id8BonVentRepository: Repo8BonVent,
+    val repo2Client: Repo2Client,
+    val repo8BonVent: Repo8BonVent,
 
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 
@@ -92,13 +92,13 @@ class MainRepositorysGetterFacade(
         clientId: Long,
         etateActuellementEst: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): M8BonVent? {
-        return id8BonVentRepository.datasValue.filter {
+        return repo8BonVent.datasValue.filter {
             it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
     fun getClientLastTransaction(clientId: Long): M8BonVent? {
-        return id8BonVentRepository.datasValue.filter {
+        return repo8BonVent.datasValue.filter {
             it.parentHClientOldID == clientId
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
@@ -155,7 +155,7 @@ class MainRepositorysGetterFacade(
     }
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
-        iD2ClientRepository.datasValue.count { client ->
+        repo2Client.datasValue.count { client ->
             val lastTransaction = getClientLastTransaction(client.id)
             lastTransaction?.etateActuellementEst in listOf(
                 M8BonVent.EtateActuellementEst.Cible,
