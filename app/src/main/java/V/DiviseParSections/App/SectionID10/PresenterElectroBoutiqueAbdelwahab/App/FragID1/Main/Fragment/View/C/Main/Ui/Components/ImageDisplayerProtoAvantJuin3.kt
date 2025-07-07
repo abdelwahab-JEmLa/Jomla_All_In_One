@@ -71,7 +71,8 @@ fun ImageDisplayerProtoAvantJuin3(
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
     viewModelInitApp: ViewModelInitApp,
-    onClickToOpenWindow: () -> Unit ={}
+    onClickToOpenWindow: () -> Unit = {},
+    enableAutoClick: Boolean = false
 ) {
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -84,6 +85,7 @@ fun ImageDisplayerProtoAvantJuin3(
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
     var imageLoaded by remember { mutableStateOf(false) }
+    var hasPerformedAutoClick by remember { mutableStateOf(false) }
 
     // Calculate the initial and target quality based on device capabilities and image size
     val initialQuality = remember(imageSize) {
@@ -106,6 +108,7 @@ fun ImageDisplayerProtoAvantJuin3(
         isLoading = true
         imageLoaded = false
         currentQuality = initialQuality
+        hasPerformedAutoClick = false
 
         // Progressive loading strategy
         delay(300) // Initial loading delay
@@ -118,7 +121,6 @@ fun ImageDisplayerProtoAvantJuin3(
 
     val imagePath by remember(viewModel.viewModelImagesPath, produit.id, indexColor) {
         derivedStateOf {
-
             File(viewModel.viewModelImagesPath, baseFileName)
         }
     }
@@ -136,6 +138,16 @@ fun ImageDisplayerProtoAvantJuin3(
         }
     }
 
+    LaunchedEffect(imageLoaded, isLoading, enableAutoClick) {
+        if (enableAutoClick && imageLoaded && !isLoading && !hasPerformedAutoClick) {
+            hasPerformedAutoClick = true
+            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+            focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+            focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
+            onClickToOpenWindow()
+        }
+    }
+
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
@@ -149,6 +161,7 @@ fun ImageDisplayerProtoAvantJuin3(
                     .getSemanticsTag(produit.getDebugInfos(),"produit",1)
                     .getSemanticsTag(activeProduit?.getDebugInfos()?:"null","activeProduit",1)
                     .clickable {
+                        // Manual click handler - always available
                         focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
                         focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
                         onClickToOpenWindow()
@@ -325,5 +338,3 @@ fun RequestBuilder<Drawable>.applyImageOptions(
             return false
         }
     })
-
-
