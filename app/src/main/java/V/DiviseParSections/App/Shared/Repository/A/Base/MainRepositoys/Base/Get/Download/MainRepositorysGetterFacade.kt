@@ -45,7 +45,7 @@ data class ParametresAppComptNonSaved(
     val debugNameId7VentPeriod: String = "Juin_30__8_00",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val startUpScree: Screen = Screen.Screen1PanieVentsFinale
+    val startUpScree: Screen = Screen.EditDatabaseWithCreateNewArticles
 )
 
 data class IDsModels(
