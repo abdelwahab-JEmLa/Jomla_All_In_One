@@ -4,14 +4,18 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -27,6 +31,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,6 +52,12 @@ fun DetailsBonVentPrev() {
 }
 
 val petitePaddine = 4.dp //rename
+
+data class ActionButtonData(
+    val key: String,
+    val content: @Composable () -> Unit
+)
+
 @Composable
 fun DetailsBonVent(
     modifier: Modifier = Modifier,
@@ -77,11 +88,74 @@ fun DetailsBonVent(
             )
         )
 
+    // Create list of action buttons for LazyColumn
+    val actionButtons = remember(uiState, isMinimized, currentBonVent) {
+        listOf(
+            ActionButtonData("panie_mode") {
+                PanieModeButton(
+                    uiState = uiState,
+                    showLabel = !isMinimized,
+                    onTogglePanieMode = { viewModel.togglePanieMode() }
+                )
+            },
+            ActionButtonData("filter") {
+                FilterButton(
+                    uiState = uiState,
+                    showLabel = !isMinimized,
+                    onToggleFilter = { viewModel.toggelePanierFilterNonTrouve() }
+                )
+            },
+            ActionButtonData("print") {
+                PrintButton(
+                    showLabel = !isMinimized,
+                    onPrint = {
+                        val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
+                        printHandler.printVentReceipt(
+                            context = context,
+                            fVentCouleurOperationRepository = fVentCouleurOperationRepository,
+                            bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
+                            b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
+                            client = fClientRepository.onVentId2ClientInfos,
+                            scope = scope
+                        )
+                    }
+                )
+            },
+            ActionButtonData("confirmation") {
+                ConfirmationButton(
+                    currentBonVent = currentBonVent,
+                    showLabel = !isMinimized,
+                    onUpdateBonVent = { bonVent ->
+                        when (bonVent.etateActuellementEst) {
+                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
+                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                            }
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
+                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
+                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                            }
+                            else -> {
+                                updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                            }
+                        }
+                    }
+                )
+            },
+            ActionButtonData("minimize") {
+                MinimizeButton(
+                    isMinimized = isMinimized,
+                    showLabel = !isMinimized,
+                    onToggleMinimized = { viewModel.toggleMinimizedState() }
+                )
+            }
+        )
+    }
+
     if (comptAppActuelle != null) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .heightIn(min = 120.dp, max = if (isMinimized) 180.dp else 400.dp)
         ) {
             Card(
                 modifier = Modifier
@@ -120,135 +194,255 @@ fun DetailsBonVent(
                 }
             }
 
-            // Action buttons row at top end
-            Row(
+            // FIXED: Using LazyColumn for better scrolling behavior
+            LazyColumn(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(petitePaddine),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(petitePaddine)
+                    .wrapContentHeight(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FloatingActionButton(
-                    onClick = {
-                        viewModel.togglePanieMode()
-                    },
-                    containerColor = when (uiState.panieMode) {
-                        ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50) // Green for Delivery
-                        ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3) // Blue for Vent
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = when (uiState.panieMode) {
-                            ZViewModel_Sec1Frag3.PanieMode.Delivery -> Icons.Default.LocalShipping
-                            ZViewModel_Sec1Frag3.PanieMode.Vent -> Icons.Default.Storefront
-                        },
-                        contentDescription = "Basculer mode: ${uiState.panieMode.name}",
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.White
-                    )
-                }
-
-                FloatingActionButton(
-                    onClick = {
-                        viewModel.toggelePanierFilterNonTrouve()
-                    },
-                    containerColor = if (uiState.filterNonTrouve) {
-                        Color(0xFFFF5722) // Orange when filter is active
-                    } else {
-                        MaterialTheme.colorScheme.tertiary
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.FilterList,
-                        contentDescription = if (uiState.filterNonTrouve)
-                            "Désactiver filtre Non trouvé"
-                        else
-                            "Activer filtre Non trouvé",
-                        modifier = Modifier.size(20.dp),
-                        tint = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary
-                    )
-                }
-
-                FloatingActionButton(
-                    onClick = {
-                        val fClientRepository = viewModel.uiStateCentralRepositorys.iD2ClientRepository
-
-                        printHandler.printVentReceipt(
-                            context = context,
-                            fVentCouleurOperationRepository = fVentCouleurOperationRepository,
-                            bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
-                            b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
-                            client = fClientRepository.onVentId2ClientInfos,
-                            scope = scope
-                        )
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Print,
-                        contentDescription = "Imprimer le reçu",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-
-                FloatingActionButton(
-                    onClick = {
-                        currentBonVent?.let { bonVent ->
-                            when (bonVent.etateActuellementEst) {
-                                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
-                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                                }
-                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
-                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
-                                    viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
-                                }
-                                else -> {
-                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
-                                }
-                            }
-                        }
-                    },
-                    containerColor = when (currentBonVent?.etateActuellementEst) {
-                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
-                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
-                        else -> Color(0xFFFF9800) // Orange for unknown/other states
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = when (currentBonVent?.etateActuellementEst) {
-                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Icons.Default.CheckCircle
-                            else -> Icons.Default.CheckCircle
-                        },
-                        contentDescription = when (currentBonVent?.etateActuellementEst) {
-                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
-                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
-                            else -> "Gérer la commande"
-                        },
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.White
-                    )
-                }
-
-                FloatingActionButton(
-                    onClick = {
-                        viewModel.toggleMinimizedState()
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails",
-                        modifier = Modifier.size(20.dp)
-                    )
+                items(
+                    items = actionButtons,
+                    key = { it.key }
+                ) { buttonData ->
+                    buttonData.content()
                 }
             }
         }
     } else {
         ErrorCard(modifier = modifier)
+    }
+}
+
+@Composable
+fun PanieModeButton(
+    uiState: ZViewModel_Sec1Frag3.UiState_Sec1Frag3,
+    showLabel: Boolean,
+    onTogglePanieMode: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onTogglePanieMode,
+            containerColor = when (uiState.panieMode) {
+                ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50) // Green for Delivery
+                ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3) // Blue for Vent
+            },
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = when (uiState.panieMode) {
+                    ZViewModel_Sec1Frag3.PanieMode.Delivery -> Icons.Default.LocalShipping
+                    ZViewModel_Sec1Frag3.PanieMode.Vent -> Icons.Default.Storefront
+                },
+                contentDescription = "Basculer mode: ${uiState.panieMode.name}",
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = uiState.panieMode.name,
+                modifier = Modifier
+                    .background(
+                        color = when (uiState.panieMode) {
+                            ZViewModel_Sec1Frag3.PanieMode.Delivery -> Color(0xFF4CAF50)
+                            ZViewModel_Sec1Frag3.PanieMode.Vent -> Color(0xFF2196F3)
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun FilterButton(
+    uiState: ZViewModel_Sec1Frag3.UiState_Sec1Frag3,
+    showLabel: Boolean,
+    onToggleFilter: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onToggleFilter,
+            containerColor = if (uiState.filterNonTrouve) {
+                Color(0xFFFF5722) // Orange when filter is active
+            } else {
+                MaterialTheme.colorScheme.tertiary
+            },
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = if (uiState.filterNonTrouve)
+                    "Désactiver filtre Non trouvé"
+                else
+                    "Activer filtre Non trouvé",
+                modifier = Modifier.size(20.dp),
+                tint = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = if (uiState.filterNonTrouve) "Filtre actif" else "Filtre inactif",
+                modifier = Modifier
+                    .background(
+                        color = if (uiState.filterNonTrouve) {
+                            Color(0xFFFF5722)
+                        } else {
+                            MaterialTheme.colorScheme.tertiary
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = if (uiState.filterNonTrouve) Color.White else MaterialTheme.colorScheme.onTertiary,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun PrintButton(
+    showLabel: Boolean,
+    onPrint: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onPrint,
+            containerColor = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Print,
+                contentDescription = "Imprimer le reçu",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = "Imprimer",
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun ConfirmationButton(
+    currentBonVent: M8BonVent?,
+    showLabel: Boolean,
+    onUpdateBonVent: (M8BonVent) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = {
+                currentBonVent?.let { bonVent ->
+                    onUpdateBonVent(bonVent)
+                }
+            },
+            containerColor = when (currentBonVent?.etateActuellementEst) {
+                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
+                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
+                else -> Color(0xFFFF9800) // Orange for unknown/other states
+            },
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = when (currentBonVent?.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
+                    else -> "Gérer la commande"
+                },
+                modifier = Modifier.size(20.dp),
+                tint = Color.White
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = when (currentBonVent?.etateActuellementEst) {
+                    M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Confirmé"
+                    M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Non défini"
+                    else -> "Autre état"
+                },
+                modifier = Modifier
+                    .background(
+                        color = when (currentBonVent?.etateActuellementEst) {
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50)
+                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E)
+                            else -> Color(0xFFFF9800)
+                        },
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+fun MinimizeButton(
+    isMinimized: Boolean,
+    showLabel: Boolean,
+    onToggleMinimized: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onToggleMinimized,
+            containerColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = if (isMinimized) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                contentDescription = if (isMinimized) "Afficher détails" else "Masquer détails",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        if (showLabel) {
+            Text(
+                text = if (isMinimized) "Afficher" else "Masquer",
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
