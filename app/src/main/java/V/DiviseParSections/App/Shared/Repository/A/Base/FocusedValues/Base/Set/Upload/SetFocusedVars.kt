@@ -19,11 +19,11 @@ import androidx.compose.runtime.Stable
 
 @Stable
 class SetFocusedVars(
-    val getterFocusedVars: GetFocusedVars,
-    val Repo2Client: Repo2Client,
-    val repo8BonVent: Repo8BonVent,
-    val repo9AppCompt: Repo9AppCompt,
-    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    private val get: GetFocusedVars,
+    private val Repo2Client: Repo2Client,
+    private val repo8BonVent: Repo8BonVent,
+    private val repo9AppCompt: Repo9AppCompt,
+    private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
     fun addNewM8BonVent(id8BonVent: M8BonVent) =
         ajoutCopyDefaultBonVentEtFocuceLeAuAppCompt(id8BonVent, repo8BonVent)
@@ -40,25 +40,25 @@ class SetFocusedVars(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
         m10OperationVentCouleur = m10OperationVentCouleur,
-        getterFocusedVars = getterFocusedVars,
+        getterFocusedVars = get,
         repo9AppCompt = repo9AppCompt,
     )
 
     fun fermeDialogChoisireQuantityDeVentCouleur(produitKey: String) {
         focuceOnVentM3CouleurProduitInfos(
-            getterFocusedVars = getterFocusedVars,
+            getterFocusedVars = get,
             repo9AppCompt = repo9AppCompt,
         )
         focucePourPrixDeM1Produit(
             produitKey,
-            getterFocusedVars,
+            get,
             repo9AppCompt
         )
     }
 
     fun active_M1Produit_Pour_Choisire_TotalQuantity(produit: ArticlesBasesStatsTable) =
         updateCurrentAppComptDialogProduit(
-            getterFocusedVars,
+            get,
             repo9AppCompt,
             produit,
         )
@@ -66,22 +66,32 @@ class SetFocusedVars(
     fun focucePourPrixDeM1ProduitFacade(produit: ArticlesBasesStatsTable) {
         focucePourPrixDeM1Produit(
             produit.keyID,
-            getterFocusedVars,
+            get,
             repo9AppCompt
         )
     }
 
     fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
-        updateCurrentAppComptDialogProduit(getterFocusedVars, repo9AppCompt)
+        updateCurrentAppComptDialogProduit(get, repo9AppCompt)
         focucePourPrixDeM1Produit(
             produit.keyID,
-            getterFocusedVars,
+            get,
             repo9AppCompt
         )
     }
 
     fun anulleFocucePourPrixDeM1ProduitFacade() {
-        anulleFocucePourPrixDeM1Produit(getterFocusedVars, repo9AppCompt)
+        anulleFocucePourPrixDeM1Produit(get, repo9AppCompt)
     }
 
+    fun desactive_currentApp_M8BonVent(): Unit {
+        get.currentM9AppCompt?.let {
+            repo9AppCompt.upsert(
+                it.copy(
+                    onVentM8BonVentKey = "null",
+                    onVentM8BonVentDebugInfos = "null",
+                )
+            )
+        }
+    }
 }

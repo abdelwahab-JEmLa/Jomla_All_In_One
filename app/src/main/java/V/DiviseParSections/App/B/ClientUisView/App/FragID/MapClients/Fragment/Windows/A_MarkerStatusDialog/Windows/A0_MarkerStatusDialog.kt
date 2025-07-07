@@ -95,7 +95,7 @@ fun MarkerStatusDialog(
     }
 
     val parentTestTag_ClientKey =
-        viewModel.setter.id8BonVentOperations.getViewClientKeyByParent(clientId)
+        viewModel.setter.bonVentOperations.getViewClientKeyByParent(clientId)
 
     Dialog(
         onDismissRequest = { handleDismiss() },

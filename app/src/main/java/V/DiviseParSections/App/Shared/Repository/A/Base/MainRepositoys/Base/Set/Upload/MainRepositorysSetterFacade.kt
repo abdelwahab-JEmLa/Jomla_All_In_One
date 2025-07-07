@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.getKeyID8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.upsertBonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -21,23 +22,21 @@ import com.google.firebase.database.DatabaseReference
 
 class MainRepositorysSetterFacade(
     private val getter: MainRepositorysGetterFacade,
-
-    val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
-
+    private val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
     private val produitOperations: ProduitOperations,
-    val id8BonVentOperations: BonVentOperations,
     private val clientOperations: ClientOperations,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo13TarificationInfos: Repo13TarificationInfos,
-
     private val ventOperations: VentOperations,
-) {
-    val id8BonVentRepository = getter.id8BonVentRepository
-    val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
-    val hClientRepository = getter.iD2ClientRepository
 
-    val get = focusedVarsHandlerFacade.get
+    val bonVentOperations: BonVentOperations,
+) {
+    private val parametresAppComptNonSaved = getter.parametresAppComptNonSaved
+    private val hClientRepository = getter.iD2ClientRepository
+
+    private val get = focusedVarsHandlerFacade.get
 
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
         focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos? =
@@ -64,22 +63,22 @@ class MainRepositorysSetterFacade(
     }
 
     fun dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey() =
-        id8BonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
+        bonVentOperations.dismissSansRegleCommandBOuvertDialogMapMarqueHClientKey()
 
     fun ajouteNewBonVent(key: String, clientOldId: Long, etate: M8BonVent.EtateActuellementEst) =
-        id8BonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
+        bonVentOperations.ajouteNewBonVent(key, clientOldId, etate)
 
     fun updateComptAppErExistKey(
         key: String,
         clientOldId: Long,
         etate: M8BonVent.EtateActuellementEst
-    ) = id8BonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
+    ) = bonVentOperations.updateComptAppErExistKey(key, clientOldId, etate)
 
     fun clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey() =
-        id8BonVentOperations.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
+        bonVentOperations.clear_onVentGBonVentKeyId_EtbOuvertDialogMapMarqueHClientKey()
 
     fun cleanFermeAppComptOnVentBonVent() =
-        id8BonVentOperations.clear_bOuvertDialogMapMarqueHClientKey()
+        bonVentOperations.clear_bOuvertDialogMapMarqueHClientKey()
 
     fun update_bOuvertDialogMapMarqueHClientKey(clientID: Long) =
         clientOperations.update_bOuvertDialogMapMarqueHClientKey(clientID)
@@ -157,6 +156,10 @@ class MainRepositorysSetterFacade(
 
     fun addOrUpdateGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
         repo13TarificationInfos.upsert(latestTariffLocalData)
+    }
+
+    fun updateM8BonVent(data: M8BonVent) {
+        repo8BonVent.upsert(data)
     }
 
     companion object {

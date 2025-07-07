@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Print
@@ -64,6 +66,16 @@ fun DetailsBonVent(
         viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
     val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
+
+    // Get current BonVent from repository
+    val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
+
+    fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
+        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
+            data.copy(
+                etateActuellementEst = newEtate
+            )
+        )
 
     if (comptAppActuelle != null) {
         Box(
@@ -183,6 +195,45 @@ fun DetailsBonVent(
 
                 FloatingActionButton(
                     onClick = {
+                        currentBonVent?.let { bonVent ->
+                            when (bonVent.etateActuellementEst) {
+                                M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> {
+                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                                }
+                                M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> {
+                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.CreeMaisNonDefinie)
+                                    viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_currentApp_M8BonVent()
+                                }
+                                else -> {
+                                    updateBonVent(bonVent, M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME)
+                                }
+                            }
+                        }
+                    },
+                    containerColor = when (currentBonVent?.etateActuellementEst) {
+                        M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Color(0xFF4CAF50) // Green when confirmed
+                        M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> Color(0xFF9E9E9E) // Gray when not defined
+                        else -> Color(0xFFFF9800) // Orange for unknown/other states
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = when (currentBonVent?.etateActuellementEst) {
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> Icons.Default.CheckCircle
+                            else -> Icons.Default.CheckCircle
+                        },
+                        contentDescription = when (currentBonVent?.etateActuellementEst) {
+                            M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME -> "Annuler la confirmation"
+                            M8BonVent.EtateActuellementEst.CreeMaisNonDefinie -> "Confirmer la commande"
+                            else -> "Gérer la commande"
+                        },
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.White
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = {
                         viewModel.toggleMinimizedState()
                     },
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -194,8 +245,6 @@ fun DetailsBonVent(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                //<--
-                //TODO(1): ajout un button au click update current bonvent par command confirme 
             }
         }
     } else {

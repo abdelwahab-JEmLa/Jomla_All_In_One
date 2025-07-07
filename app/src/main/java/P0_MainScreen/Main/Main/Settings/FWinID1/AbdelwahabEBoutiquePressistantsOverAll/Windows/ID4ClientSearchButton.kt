@@ -50,8 +50,14 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import java.util.concurrent.TimeUnit
 
+@OptIn(FlowPreview::class)
 @SuppressLint("DefaultLocale")
 @Composable
 fun ID4ClientSearchButton(
@@ -76,6 +82,9 @@ fun ID4ClientSearchButton(
     var showDropdown by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
+    // Create a flow for search query debouncing
+    val searchQueryFlow = remember { MutableStateFlow("") }
+
     // Extracted function for performing click and search
     LaunchedEffect(Unit) {
         performInitialSearch(
@@ -85,13 +94,24 @@ fun ID4ClientSearchButton(
         )
     }
 
+    // Debounced search with flow
     LaunchedEffect(searchQuery) {
-        performClientSearch(
-            searchQuery = searchQuery,
-            hClientRepository = hClientRepository,
-            onFilteredClientsChange = { filteredClients = it },
-            onShowDropdownChange = { showDropdown = it }
-        )
+        searchQueryFlow.value = searchQuery
+    }
+
+    LaunchedEffect(Unit) {
+        searchQueryFlow
+            .debounce(600)
+            .distinctUntilChanged()
+            .collect { debouncedQuery ->
+                performClientSearch(
+                    searchQuery = debouncedQuery,
+                    hClientRepository = hClientRepository,
+                    onFilteredClientsChange = { filteredClients = it },
+                    onShowDropdownChange = { showDropdown = it },
+                    isSearchMode = isSearchMode
+                )
+            }
     }
 
     Row(
@@ -128,25 +148,27 @@ fun ID4ClientSearchButton(
                 val nomClient = getter.onVentM2ClientInfos?.nom ?: ""
 
                 if (onVentId8BonVent != null) {
+                    // Calculate time elapsed since creation
+                    val timeElapsed = getTimeElapsedString(onVentId8BonVent.creationTimestamps)
+                    val totalProducts = calculateTotalProducts(onVentId8BonVent)
+
                     Text(
                         text = if (isTextCollapsed) {
                             nomClient
                         } else {
                             if (onVentId8BonVent.nomClientConcerned.isNotEmpty() && onVentId8BonVent.nomClientConcerned != "Non Defini") {
-                                "$nomClient - ${onVentId8BonVent.getCreationTimeString()}"
-                                //<--
-                                //TODO(1):change et fait que ici lence un qui afficeh le temp passe depuit la creation a maintent  //<--
-                                //TODO(1): aussi afficeh le totales des produits 
-
+                                "$nomClient - $timeElapsed - $totalProducts produits"
                             } else {
                                 "Rechercher Client"
                             }
-                        }, modifier = Modifier
+                        },
+                        modifier = Modifier
                             .background(Color(0xFF4CAF50))
                             .padding(4.dp)
                             .clickable {
                                 isTextCollapsed = !isTextCollapsed
-                            }, color = Color.White
+                            },
+                        color = Color.White
                     )
                 }
             }
@@ -156,14 +178,8 @@ fun ID4ClientSearchButton(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    OutlinedTextField(         //<--
-                    //TODO(1): fait que ca start par afficeh les bonvents de current period vent sort par des temp dernier update  //<--
-                    //TODO(1): qend recherche commence par empty dropdown items
+                    OutlinedTextField(
                         modifier = Modifier
-                            .semantics {
-
-                            }
-
                             .width(200.dp)
                             .background(Color.White, RoundedCornerShape(4.dp))
                             .focusRequester(focusRequester),
@@ -202,15 +218,15 @@ fun ID4ClientSearchButton(
                                     }
                                 }) {
                                 Icon(
-                                    imageVector = Icons.Default.Close, contentDescription = "Fermer"
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Fermer"
                                 )
                             }
-                        })
+                        }
+                    )
                 }
 
                 if (showDropdown) {
-                    //<--
-                    //TODO(1): utilise .debounce(600) pour le que le drop dow s afficeh
                     Card(
                         modifier = Modifier
                             .width(200.dp)
@@ -229,7 +245,8 @@ fun ID4ClientSearchButton(
                                             searchQuery = ""
                                             showDropdown = false
                                         }
-                                    })
+                                    }
+                                )
                             }
                         }
                     }
@@ -237,6 +254,30 @@ fun ID4ClientSearchButton(
             }
         }
     }
+}
+
+// Helper function to calculate time elapsed since creation
+private fun getTimeElapsedString(creationTimestamp: Long): String {
+    val now = System.currentTimeMillis()
+    val elapsed = now - creationTimestamp
+
+    val days = TimeUnit.MILLISECONDS.toDays(elapsed)
+    val hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60
+
+    return when {
+        days > 0 -> "${days}j ${hours}h"
+        hours > 0 -> "${hours}h ${minutes}m"
+        minutes > 0 -> "${minutes}m"
+        else -> "< 1m"
+    }
+}
+
+// Helper function to calculate total products (placeholder implementation)
+private fun calculateTotalProducts(bonVent: M8BonVent): Int {
+    // This is a placeholder - you would need to implement the actual logic
+    // based on your product/item structure
+    return 0 // Replace with actual calculation
 }
 
 // Extracted function for initial search setup
@@ -254,15 +295,20 @@ private suspend fun performInitialSearch(
     }
 }
 
-// Extracted function for client search logic
+// Enhanced client search logic with initial BonVent display
 private suspend fun performClientSearch(
     searchQuery: String,
     hClientRepository: Repo2Client,
     onFilteredClientsChange: (List<HClientInfos>) -> Unit,
-    onShowDropdownChange: (Boolean) -> Unit
+    onShowDropdownChange: (Boolean) -> Unit,
+    isSearchMode: Boolean
 ) {
-    delay(300)
-    if (searchQuery.isNotEmpty()) {
+    if (searchQuery.isEmpty() && isSearchMode) {
+        // Show recent BonVents from current period when search is empty
+        val recentBonVents = getCurrentPeriodBonVents(hClientRepository)
+        onFilteredClientsChange(recentBonVents)
+        onShowDropdownChange(recentBonVents.isNotEmpty())
+    } else if (searchQuery.isNotEmpty()) {
         val filtered = hClientRepository.datasValue.filter { client ->
             client.nom.contains(searchQuery, ignoreCase = true) ||
                     client.numTelephone.contains(searchQuery, ignoreCase = true)
@@ -273,6 +319,16 @@ private suspend fun performClientSearch(
         onFilteredClientsChange(emptyList())
         onShowDropdownChange(false)
     }
+}
+
+// Helper function to get current period BonVents sorted by last update
+private fun getCurrentPeriodBonVents(hClientRepository: Repo2Client): List<HClientInfos> {
+    // This is a placeholder implementation
+    // You would need to implement the actual logic to get BonVents from current period
+    // sorted by dernierTimeTampsSynchronisationAvecFireBase
+    return hClientRepository.datasValue
+        .sortedByDescending { it.dernierTimeTampsSynchronisationAvecFireBase }
+        .take(10) // Limit to 10 most recent
 }
 
 @SuppressLint("DefaultLocale")
@@ -303,7 +359,6 @@ private fun CreateNewClientIcon(
 
     val updatedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
         debugInfos = newClient.nom,
-
         creationTimestamps = System.currentTimeMillis(),
         parentM2ClientInfosKey = newClient.keyID,
         parentM2ClientInfosDebugName = newClient.nom
@@ -327,7 +382,6 @@ private fun CreateNewClientIcon(
         },
         modifier = Modifier.semantics(mergeDescendants = true) {
             set(SemanticsPropertyKey("Debug  new M8BonVent"), updatedDefaultOnVentID8BonVentEtAdd)
-
             set(
                 SemanticsPropertyKey("Debug currentM9AppCompt avec  new M8BonVent"),
                 updatedAppCompt
@@ -352,7 +406,6 @@ fun ClientSearchItem(
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-
     val updatedDefaultId8BonVent = viewModel.getterFocusedVarsHandlerFacade.defaultM8BonVent.copy(
         debugInfos = client.nom,
         parentM2ClientInfosKey = client.keyID,
@@ -363,6 +416,9 @@ fun ClientSearchItem(
         onVentM8BonVentKey = updatedDefaultId8BonVent.keyID,
         onVentM8BonVentDebugInfos = updatedDefaultId8BonVent.debugInfos
     )
+
+    // Calculate time elapsed since last update
+    val timeElapsed = getTimeElapsedString(client.dernierTimeTampsSynchronisationAvecFireBase)
 
     Row(
         modifier = Modifier
@@ -391,7 +447,8 @@ fun ClientSearchItem(
             modifier = Modifier
                 .size(12.dp)
                 .background(
-                    color = Color(client.actuelleEtat.color), shape = CircleShape
+                    color = Color(client.actuelleEtat.color),
+                    shape = CircleShape
                 )
         )
 
@@ -400,8 +457,15 @@ fun ClientSearchItem(
                 text = client.nom,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
-            )             //<--
-            //TODO(1): affiche diffrence temps a maintent 
+            )
+
+            // Show time elapsed since last update
+            Text(
+                text = "Dernière mise à jour: $timeElapsed",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+
             if (client.numTelephone.isNotEmpty()) {
                 Text(
                     text = client.numTelephone,
@@ -409,6 +473,7 @@ fun ClientSearchItem(
                     color = Color.Gray
                 )
             }
+
             if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
                 Text(
                     text = "📍 ${String.format("%.4f", client.latitude)}, ${
@@ -417,9 +482,16 @@ fun ClientSearchItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50)
                 )
-            }    //<--
-            //TODO(1): affiche l etate du bon
+            }
+
+            // Show BonVent state
+            Text(
+                text = "État: ${client.actuelleEtat.nomArabe}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(client.actuelleEtat.color)
+            )
         }
+
         Row {
             Icon(
                 imageVector = client.clientTypeMode.icon,

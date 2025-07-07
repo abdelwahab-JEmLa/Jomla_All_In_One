@@ -56,7 +56,7 @@ val composRepositorysModule = module {
 
     single { MainRepositorysGetterFacade(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
 
-    single { MainRepositorysSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(), ) }
+    single { MainRepositorysSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }
