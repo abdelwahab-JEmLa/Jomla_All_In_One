@@ -65,19 +65,18 @@ fun AppNavHost(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val itsDevMode = true
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Fixed startup screen logic
+    val itsDevMode = false
     val startUpScreen = when {
+        itsDevMode -> viewModel.getter.parametresAppComptNonSaved.devStartUpScree
+
         viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
-        itsDevMode -> viewModel.getter.parametresAppComptNonSaved.startUpScree
         else -> Screen.FacadePresentoireProduits
     }
 
-    // Update FragmentNavigationHandler when navigation changes
     LaunchedEffect(currentRoute) {
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
