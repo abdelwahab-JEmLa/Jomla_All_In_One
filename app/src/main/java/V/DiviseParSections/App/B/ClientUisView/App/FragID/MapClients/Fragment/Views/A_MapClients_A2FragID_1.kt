@@ -17,7 +17,6 @@ fun A_MapClients_A2FragID_1(
     viewModel: MapClientsViewModel = koinViewModel(),
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
-    mapReloadTrigger: Int = 0,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val progress = uiState.mainLoadingProgress
@@ -37,7 +36,6 @@ fun A_MapClients_A2FragID_1(
                 viewModel = viewModel,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,
-                mapReloadTrigger = mapReloadTrigger
             )
         }
     }

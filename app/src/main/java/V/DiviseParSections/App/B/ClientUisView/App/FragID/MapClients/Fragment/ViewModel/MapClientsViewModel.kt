@@ -55,9 +55,6 @@ class MapClientsViewModel(
 ) : ViewModel() {
     val getter = aCentralFacade.mainRepositorysGetterFacade
     val setter = aCentralFacade.mainRepositorysSetterFacade
-
-    val gBonVentRepo = getter.repo8BonVent
-
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin
@@ -86,7 +83,7 @@ class MapClientsViewModel(
     )
 
     private fun updateUiState() {
-        _uiState.value = UiState(
+        _uiState.value = _uiState.value.copy(
             b_ClientInfosProtoJuin3List = clientsState.datasState.value,
             c3_TransactionCommercialList = transactionsState.datasValue,
             mainLoadingProgress = getter.loadingProgress!!,

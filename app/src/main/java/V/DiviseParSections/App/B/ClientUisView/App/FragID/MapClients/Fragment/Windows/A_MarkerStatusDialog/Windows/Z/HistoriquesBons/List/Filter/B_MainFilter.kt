@@ -8,12 +8,12 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
-    modifier: Modifier.Companion,
+    markerStatusDialogM2Client: HClientInfos?,
+    modifier: Modifier,
     vm: E0AfficheHistoriqueTransactionsViewModel,
-    tagParentKey_Client: String
 ) {
     val filtered = vm.getter.repo8BonVent.datasValue.filter {
-        HClientInfos.extractSonKeyByParent(it.keyByParent) == HClientInfos.extractSonKeyByParent(tagParentKey_Client)
+        it.parentM2ClientInfosKey == (markerStatusDialogM2Client?.keyID ?: "")
     }.sortedByDescending { it.creationTimestamps }
 
     View_MainList(vm, filtered, modifier)

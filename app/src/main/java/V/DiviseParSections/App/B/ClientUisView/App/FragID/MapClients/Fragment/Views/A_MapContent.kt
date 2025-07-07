@@ -43,7 +43,6 @@ fun MapContent(
     viewModel: MapClientsViewModel,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-    mapReloadTrigger: Int = 0,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -68,7 +67,7 @@ fun MapContent(
         initializeMapPosition(context, mapView, currentZoom)
     }
 
-    DisposableEffect(context, mapReloadTrigger) {
+    DisposableEffect(context) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
         mapView.setTileSource(TileSourceFactory.MAPNIK)
@@ -84,9 +83,7 @@ fun MapContent(
         viewModel.getter.repo8BonVent.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         viewModel.getter.repo2Client.datasValue.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         uiState.b_ClientInfosProtoJuin3List.map { it.dernierTimeTampsSynchronisationAvecFireBase },
-        uiState.c3_TransactionCommercialList.map { it.dernierTimeTampsSynchronisationAvecFireBase },
         currentFilterMode,
-        mapReloadTrigger,
     ) {
         addOuUpdateMapMarkers(
             viewModel = viewModel,
@@ -99,11 +96,12 @@ fun MapContent(
 
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Map view
+        val markerStatusDialogActiveM2Client = uiState.markerStatusDialogActiveM2Client
+
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
-                .getSemanticsTag(uiState.markerStatusDialogActiveM2Client,"markerStatusDialogActiveM2Client")
+                .getSemanticsTag(markerStatusDialogActiveM2Client,"markerStatusDialogActiveM2Client")
             ,
             factory = { mapView }
         )
@@ -164,12 +162,13 @@ fun MapContent(
                 }
             )
         }
+
         val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
 
-        if (activeOnVentM2ClientInfos != null ||  uiState.markerStatusDialogActiveM2Client != null) {
+        if (activeOnVentM2ClientInfos != null ||  markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
-                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?:  uiState.markerStatusDialogActiveM2Client,
+                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
                 mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

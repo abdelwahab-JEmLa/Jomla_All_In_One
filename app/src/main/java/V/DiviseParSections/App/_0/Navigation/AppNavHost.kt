@@ -378,8 +378,7 @@ fun NavGraphBuilder.app2(
                 onUpdateLongAppSetting = {
                     navigateToMainScreen(navController, fragmentNavigationHandler)
                 },
-                onClear = onClear,
-                mapReloadTrigger = mapReloadTrigger
+                onClear = onClear
             )
         }
     }

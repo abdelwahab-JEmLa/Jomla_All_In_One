@@ -31,8 +31,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val context = LocalContext.current
     val newEtate = this
 
-    val m2Client =
-        aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id == clickedClient }!!
+    val m2Client = aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id == clickedClient }!!
 
     val defaultM8BonVent = get.defaultM8BonVent.copy(
         debugInfos = m2Client.nom,
@@ -40,6 +39,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
         parentM2ClientInfosDebugName = m2Client.nom,
         etateActuellementEst = newEtate
     )
+
     FilledTonalButton(
         onClick = {
             focusedVarsHandlerFacade.set.add_New_M8BonVentFacade(defaultM8BonVent)
