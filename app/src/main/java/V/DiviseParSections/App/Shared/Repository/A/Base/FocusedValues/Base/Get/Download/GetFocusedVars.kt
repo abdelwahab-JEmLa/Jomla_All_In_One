@@ -46,8 +46,8 @@ class GetFocusedVars(
         }
     }
 
-    val defaultM8BonVent by derivedStateOf {
-        M8BonVent(
+    fun getDefaultM8BonVent(): M8BonVent {
+        return M8BonVent(
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentAppComptKeyID,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
             parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
@@ -60,8 +60,8 @@ class GetFocusedVars(
         repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
-    val defaultM3CouleurProduitInfos by derivedStateOf {
-        onVentM8BonVent?.let {
+    fun getDefaultM10VentOperation(): M10OperationVentCouleur? {
+        return onVentM8BonVent?.let {
             with(it) {
                 M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
@@ -73,11 +73,11 @@ class GetFocusedVars(
                 )
             }
         }
+
     }
 
-    val onVentM3CouleurProduitInfos by derivedStateOf {
-        val targetKey = currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID
-        repo10OperationVentCouleur.datasValue.find { it.keyID == targetKey }
+    val onVentM10VentOperation by derivedStateOf {
+        repo10OperationVentCouleur.datasValue.find { it.keyID == currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID }
     }
 
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent by derivedStateOf {
@@ -113,11 +113,12 @@ class GetFocusedVars(
     val activeDialogSearchM1Produit by derivedStateOf {
         currentM9AppCompt?.activeDialogSearchM1Produit ?: false
     }
+
     fun get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
         m2Client: HClientInfos,
         newEtate: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ) =  get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
-        m2Client, defaultM8BonVent, onVentM8BonVent, currentM9AppCompt,newEtate
+    ) = get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
+        m2Client, getDefaultM8BonVent(), onVentM8BonVent, currentM9AppCompt, newEtate
     )
 
     companion object {

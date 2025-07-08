@@ -41,7 +41,7 @@ fun CommandButton(
                         && it.etateActuellementEst == newEtate
             }
 
-    val findSecureDefaultM8 = findActiveOnCourDeVentM8BonVent ?: get.defaultM8BonVent
+    val findSecureDefaultM8 = findActiveOnCourDeVentM8BonVent ?: get.getDefaultM8BonVent()
 
     val editedM8BonVent = findSecureDefaultM8.copy(
         debugInfos = m2Client.nom,

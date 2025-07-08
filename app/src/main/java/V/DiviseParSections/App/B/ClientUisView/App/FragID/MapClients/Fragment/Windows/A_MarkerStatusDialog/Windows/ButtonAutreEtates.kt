@@ -33,7 +33,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
     val m2Client = aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id == clickedClient }!!
 
-    val defaultM8BonVent = get.defaultM8BonVent.copy(
+    val defaultM8BonVent = get.getDefaultM8BonVent().copy(
         debugInfos = m2Client.nom,
         parentM2ClientInfosKey = m2Client.keyID,
         parentM2ClientInfosDebugName = m2Client.nom,

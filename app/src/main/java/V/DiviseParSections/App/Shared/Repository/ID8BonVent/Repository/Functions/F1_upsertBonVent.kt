@@ -19,7 +19,7 @@ fun upsertBonVent(
         Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     val existingData = gBonVentRepository.datasValue.find {
-        it.keyByParent == keyByParentBonVentOnClickButton
+        it.keyID == keyByParentBonVentOnClickButton
     }
 
     val data =
@@ -34,7 +34,7 @@ fun upsertBonVent(
                     getKeyByParentDe[M8BonVent.EtateActuellementEst.keyModel]!!
 
                 M8BonVent(
-                    keyByParent = keyByParentBonVentOnClickButton,
+                    keyID = keyByParentBonVentOnClickButton,
                     parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
                     parentHClientOldID = client.id,
                     parentID2ClientKeyByParent = parentID2ClientKeyByParent,

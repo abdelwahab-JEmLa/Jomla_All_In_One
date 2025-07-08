@@ -76,7 +76,7 @@ fun ID4ClientSearchButton(
     var isTextCollapsed by remember { mutableStateOf(false) }
 
     val onVentId8BonVent = getter.onVentM8BonVent
-    val defaultId8BonVent = getter.defaultM8BonVent
+    val defaultId8BonVent = getter.getDefaultM8BonVent()
 
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }

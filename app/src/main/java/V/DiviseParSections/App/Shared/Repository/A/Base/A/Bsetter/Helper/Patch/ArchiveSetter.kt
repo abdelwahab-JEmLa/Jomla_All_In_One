@@ -51,7 +51,7 @@ class BSetterP (
         keyByParentBonVentOnClickButton: String = ""
     ) {
         val existingData = gBonVentRepository.datasValue.find {
-            it.keyByParent == keyByParentBonVentOnClickButton
+            it.keyID == keyByParentBonVentOnClickButton
         }
 
         val data = existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
@@ -63,7 +63,7 @@ class BSetterP (
                     getKeyByParentDe[M8BonVent.EtateActuellementEst.keyModel]!!
 
                 M8BonVent(
-                    keyByParent = keyByParentBonVentOnClickButton,
+                    keyID = keyByParentBonVentOnClickButton,
                     parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
                     parentHClientOldID = client.id,
                     parentID2ClientKeyByParent = parentID2ClientKeyByParent,

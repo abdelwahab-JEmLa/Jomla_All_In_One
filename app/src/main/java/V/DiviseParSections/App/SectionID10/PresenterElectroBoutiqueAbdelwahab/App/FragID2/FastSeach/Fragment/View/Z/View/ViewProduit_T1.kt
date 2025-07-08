@@ -111,7 +111,7 @@ fun ViewProduit_T1(
     if (produit != null && ouvertDialogProduit?.keyID == produit.keyID) {
         // Get the first available operation for this product, or create a default one
         val operationForDialog = relatedVents.firstOrNull()
-            ?: getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos?.copy(
+            ?: getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
                 parentM1ProduitInfosKeyId = produit.keyID,
                 parentM1ProduitDebugInfos = produit.nom,
                 parentM3CouleurProduitDebugInfos = "Default Color",

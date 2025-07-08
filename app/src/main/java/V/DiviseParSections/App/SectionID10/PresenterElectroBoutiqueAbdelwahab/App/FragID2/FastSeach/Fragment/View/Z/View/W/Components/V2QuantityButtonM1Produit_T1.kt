@@ -85,7 +85,7 @@ fun QuantityButtonM1Produit_T1(
                     }
 
                     if (productColors.isNotEmpty() && newQuantity > 0) {
-                        val defaultVent = viewModel.getterFocusedVarsHandlerFacade.defaultM3CouleurProduitInfos
+                        val defaultVent = viewModel.getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()
 
                         if (defaultVent != null) {
                             val quantityPerColor = newQuantity / productColors.size

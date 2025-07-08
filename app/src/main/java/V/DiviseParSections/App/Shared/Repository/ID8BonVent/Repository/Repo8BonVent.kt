@@ -42,7 +42,7 @@ class Repo8BonVent(
     fun upsert(data: M8BonVent) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
-        val existingIndex = datasValue.indexOfFirst { it.keyByParent == dataUpdate.keyByParent }
+        val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
@@ -89,11 +89,8 @@ class Repo8BonVent(
 
 @Entity
 data class M8BonVent(
-    @PrimaryKey var keyByParent: String = "null",
-
+    @PrimaryKey
     var keyID: String = generePushKey(),
-
-    var fireBasePushKey: String = generePushKey(),
 
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
@@ -144,6 +141,7 @@ data class M8BonVent(
     //A Supp
     var vid: Long = 0L,
     var parentZAppComptNom: String = "",
+
     // Section keyFireBase et Update Version Id
     var keyFireBase: String = "",
     val parentID2ClientKeyByParent: String = "",
