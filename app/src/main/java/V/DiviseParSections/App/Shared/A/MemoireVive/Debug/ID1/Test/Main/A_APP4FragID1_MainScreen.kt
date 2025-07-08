@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
@@ -88,14 +88,17 @@ fun A_APP4FragID1_MainScreen(
 
 @Composable
 fun VendeursContent(
+    viewModel: VendeursViewModel,
     uiState: VendeursUiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
     onVendeurUpdate: (Z_AppCompt) -> Unit,
     modifier: Modifier = Modifier,
     onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
-    viewModel: VendeursViewModel,
 ) {
+    val repo9AppCompt = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo9AppCompt
+    val compts = repo9AppCompt.datasValue
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.background
@@ -112,22 +115,23 @@ fun VendeursContent(
             ) {
                 item {
                     Text(
-                        text = "Liste des Vendeurs",
+                        text = "Liste des AppCompt",
                         style = MaterialTheme.typography.titleLarge
                     )
 
                     Text(
-                        text = "Active _012_ComptsVendeurs ID: ${uiState.activeVendeurKeyId}",
+                        text = "Active Compt ID: ${viewModel.aCentralFacade
+                            .focusedVarsHandlerFacade.get.currentM9AppCompt?.nom}",
                         style = MaterialTheme.typography.titleMedium
                     )
 
                     SectionDivider()
                 }
 
-                items(uiState.vendeurs) { vendeur ->
+                items(compts) { vendeur ->
                     VendeurItem(
+                        viewModel=viewModel,
                         vendeur = vendeur,
-                        isActive = vendeur.keyID == uiState.activeVendeurKeyId,
                         onVendeurSelected = onVendeurSelected,
                         onVendeurUpdate = onVendeurUpdate
                     )
@@ -221,11 +225,14 @@ fun SectionDivider(
 @Composable
 fun VendeurItem(
     vendeur: Z_AppCompt,
-    isActive: Boolean,
     onVendeurSelected: (Long) -> Unit,
     onVendeurUpdate: (Z_AppCompt) -> Unit,
+    viewModel: VendeursViewModel,
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
+
+    val isActive = (viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt?.keyID
+        ?: "") == vendeur.keyID
 
     val backgroundColor = when {
         isActive -> MaterialTheme.colorScheme.surfaceVariant

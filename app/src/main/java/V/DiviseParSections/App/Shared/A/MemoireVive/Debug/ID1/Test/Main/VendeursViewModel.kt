@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 
 // Data class to represent UI state
 data class VendeursUiState(
-    val vendeurs: List<Z_AppCompt> = emptyList(),
     val periodes: List<MVentPeriode> = emptyList(),
     val activeVendeurKeyId: String = "",
     val activePeriodeId: Long = 0L,
@@ -59,7 +58,6 @@ open class VendeursViewModel(
 
         _uiState.value = activeVendeurId?.let {
             VendeursUiState(
-                vendeurs = vendeurs,
                 periodes = periodes,
                 activeVendeurKeyId = it,
                 activePeriodeId = activePeriodeId

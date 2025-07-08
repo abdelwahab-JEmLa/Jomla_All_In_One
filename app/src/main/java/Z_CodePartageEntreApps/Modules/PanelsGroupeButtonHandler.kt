@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.A_APP4FragID1_MainScreen
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 
 class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
-    private var _showVendeursDialog = mutableStateOf(false)
+    private var _showVendeursDialog = mutableStateOf(true)
 
     var _paneleGroupeButtonList = mutableStateOf(
         listOf(
