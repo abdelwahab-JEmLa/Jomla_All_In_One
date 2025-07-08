@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val B_ClientInfosProtoJuin3List: ViewList<HClientInfos> = emptyList(),
+    val B_ClientInfosProtoJuin3List: A_MainListView<HClientInfos> = emptyList(),
     val mainLoadingProgress: Float = 0f
 )
 class PanierFinaleDAchatViewModel(

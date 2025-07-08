@@ -73,7 +73,7 @@ fun B_MainList_APP2_ID_2(
 private fun produitsBonAchatIDs(
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
     composeKeyVID: Long?,
-    validColorOperations: ViewList<_1_1_CouleurAcheteOperation>,
+    validColorOperations: A_MainListView<_1_1_CouleurAcheteOperation>,
 ) = _0_HeadOfRepositorys_Repository_Model
     .repositoryC2_ProduitAcheteOperation
     .modelDatasSnapList

@@ -12,7 +12,7 @@ open class ClientsMapFilterViewModel(
         ?.modelDatasSnapList
 
     private var allStrNomJourEtSonSemainToStartJourTimeTemp by
-    mutableStateOf<ViewList<StrNomJourEtSonSemainToStartJourTimeTemp>>(
+    mutableStateOf<A_MainListView<StrNomJourEtSonSemainToStartJourTimeTemp>>(
         emptyList()
     )
     data class StrNomJourEtSonSemainToStartJourTimeTemp
@@ -149,21 +149,21 @@ open class ClientsMapFilterViewModel(
     }
 
     class DatesHistoriqueTransactions {
-        var cesSemains by mutableStateOf<ViewList<Semain>>(emptyList())
+        var cesSemains by mutableStateOf<A_MainListView<Semain>>(emptyList())
 
         class Semain {
             var vid by mutableStateOf(0L)
             var key by mutableStateOf("")
             var cActive by mutableStateOf(false)
 
-            var cesJours by mutableStateOf<ViewList<Jour>>(emptyList())
+            var cesJours by mutableStateOf<A_MainListView<Jour>>(emptyList())
 
             class Jour {
                 var vid by mutableStateOf(0L)
                 var key by mutableStateOf("")
                 var cActive by mutableStateOf(false)
 
-                var cesCommercialTransactions by mutableStateOf<ViewList<M8BonVent>>(emptyList())
+                var cesCommercialTransactions by mutableStateOf<A_MainListView<M8BonVent>>(emptyList())
             }
         }
     }
@@ -176,12 +176,12 @@ open class ClientsMapFilterViewModel(
     }
 
     private var visibleJourToListTransactionsLivre by
-    mutableStateOf<ViewList<StrNomJourEtSonSemainToStartJourTimeTemp>>(
+    mutableStateOf<A_MainListView<StrNomJourEtSonSemainToStartJourTimeTemp>>(
         emptyList()
     )
 
     // Helper function to get filtered transactions based on current filter
-    open fun getFilteredTransactions(): ViewList<M8BonVent> {
+    open fun getFilteredTransactions(): A_MainListView<M8BonVent> {
         return when (currentFilter) {
             FilterType.ALL -> allListrepo_0_0_HeadSQLRepositorys ?: emptyList()
             FilterType.DatesHistoriqueTransactions -> {

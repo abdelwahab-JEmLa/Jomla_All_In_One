@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.SectionDivider
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Ui.SectionDivider
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.ViewModel_AdminAppPanelControleur
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.View_M9
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.V9.Add.View.AddItemM14
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.View10.M14.View.View_M14VentPeriod
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.Item2.View_M9AppCompt.View.View_M9AppCompt
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.Item3.View_DefaultAddItem_M14VentPeriode.View.View_DefaultAddItem_M14VentPeriode
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.item1.View_M14VentPeriod.View.View_M14VentPeriod
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ViewList(
+fun A_MainListView(
     viewModel: ViewModel_AdminAppPanelControleur,
 ) {
     val listM9AppCompt = viewModel.aCentralFacade.get.repo9AppCompt.datasValue
@@ -46,7 +46,7 @@ fun ViewList(
         }
 
         items(listM9AppCompt) { compt ->
-            View_M9(
+            View_M9AppCompt(
                 viewModel = viewModel,
                 compt = compt,
             )
@@ -79,7 +79,6 @@ fun ViewList(
                 )
             }
         } else {
-            // Show a message when no periods exist
             item {
                 Text(
                     text = "Aucune période de vente trouvée",
@@ -90,9 +89,12 @@ fun ViewList(
             }
         }
 
-        // Always show the add item component
+        // FIXED: Move View_DefaultAddItem_M14VentPeriode outside the if/else block and ensure it's always displayed
         item {
-            AddItemM14(
+            // Add some spacing before the add button
+            SectionDivider()
+
+            View_DefaultAddItem_M14VentPeriode(
                 viewModel = viewModel
             )
         }
