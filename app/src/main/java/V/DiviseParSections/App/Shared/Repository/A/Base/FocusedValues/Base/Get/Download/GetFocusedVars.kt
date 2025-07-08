@@ -56,8 +56,8 @@ class GetFocusedVars(
         return M8BonVent(
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
-            parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
-            parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod,
+            parentM7VentPeriodKeyId =  (currentActiveFocuced_M14VentPeriode?.keyID?: "null"),
+            parentM7VentPeriodDebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()?: "null"),
         )
     }
 

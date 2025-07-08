@@ -30,7 +30,7 @@ class BSetterP (
     private val setterScope = CoroutineScope(Dispatchers.IO)
     val bClientsStateCompoRepository = getter.repo2Client
 
-    val activePeriodKeyByParent = getter.parametresAppComptNonSaved.keyIdId7VentPeriod
+    val activePeriodKeyByParent = "getter.parametresAppComptNonSaved.keyIdId7VentPeriod"
     val keyModelToOnVentHVentPeriodKeyByParent = Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 
     fun client(clientOldID:Long) = hClientRepository.datasValue.find { it.id ==clientOldID }

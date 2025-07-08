@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
@@ -37,8 +36,9 @@ fun CommandButton(
     val findActiveOnCourDeVentM8BonVent =
         viewModel.aCentralFacade.get.repo8BonVent.datasValue
             .find {
-                it.parentM7VentPeriodKeyId == ParametresAppComptNonSaved().keyIdId7VentPeriod
-                        && it.etateActuellementEst == newEtate
+                (it.parentM7VentPeriodKeyId == (viewModel.aCentralFacade.focusedActiveValuesFacade.get
+                    .currentActiveFocuced_M14VentPeriode?.keyID?: "null")
+                        && it.etateActuellementEst == newEtate)
             }
 
     val findSecureDefaultM8 = findActiveOnCourDeVentM8BonVent ?: get.getDefaultM8BonVent()

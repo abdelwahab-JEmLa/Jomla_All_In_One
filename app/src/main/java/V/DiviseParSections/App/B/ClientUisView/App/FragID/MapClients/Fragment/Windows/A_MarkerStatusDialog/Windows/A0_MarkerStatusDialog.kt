@@ -43,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -86,8 +85,6 @@ fun MarkerStatusDialog(
         showExitConfirmationDialog = true
     }
 
-    val parentTestTag_ClientKey =
-        viewModel.setter.bonVentOperations.getViewClientKeyByParent(clientId)
 
     Dialog(
         onDismissRequest = { handleDismiss() },
@@ -147,8 +144,7 @@ fun MarkerStatusDialog(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .testTag("commandCard:viewClientKeyByParent:$parentTestTag_ClientKey"),
+                                .padding(vertical = 4.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(

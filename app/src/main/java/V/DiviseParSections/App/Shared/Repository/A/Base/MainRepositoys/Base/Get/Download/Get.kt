@@ -40,11 +40,7 @@ import kotlinx.coroutines.launch
 data class ParametresAppComptNonSaved(
     val itsDevMode: Boolean = true,
     val currentActiveFocucedM9AppComptKeyID: String = "-OTmoNn0cljrRuhVR2s4",
-
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
-
-    val keyIdId7VentPeriod: String = "-OU9Xi8t6tbGKf_IisuB",
-    val debugNameId7VentPeriod: String = "Juin_30__8_00",
 
     val activeWindowsSearchProduit: Boolean = false,
     val devStartUpScree: Screen = Screen.FacadePresentoireProduits,

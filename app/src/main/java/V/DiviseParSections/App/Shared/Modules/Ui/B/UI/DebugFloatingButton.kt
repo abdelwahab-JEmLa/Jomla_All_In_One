@@ -56,7 +56,7 @@ class DebugKey(
         clientOldID: Long? = null,
         etate: M8BonVent.EtateActuellementEst? = null,
     ): String {
-        val activePeriodKeyByParent = getter.parametresAppComptNonSaved.keyIdId7VentPeriod
+        val activePeriodKeyByParent = "getter.parametresAppComptNonSaved.keyIdId7VentPeriod"
         val keyModelToOnVentHVentPeriodKeyByParent =
             Z_AppCompt.keyModelValID7VentParent + "-" + activePeriodKeyByParent
 

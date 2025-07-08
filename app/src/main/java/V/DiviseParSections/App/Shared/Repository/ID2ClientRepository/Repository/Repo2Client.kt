@@ -3,6 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -170,10 +171,27 @@ data class HClientInfos(
     var keyFireBase: String = "",
     var dernierTimeTampsSynchronisationAvecFireBase: Long = 0,
 ) {
+    fun get_DebugInfos(): String {
+        return buildString {
+            append("(M2=")
+            append(nom)
+            append("[")
+            append(keyID.takeLast(3).uppercase())
+            append("])")
+        }
+    }
+
+    fun it_Last_M8Bon_Is_OnCommand(
+        m8BonVentList: List<M8BonVent>
+    ): M8BonVent? {
+        return m8BonVentList
+            .sortedBy { it.creationTimestamps }
+            .lastOrNull { it.parentM2ClientInfosKey == keyID }
+    }
+
     fun getTempKeyByParent(): String {
         return this.nom.withOutFireBaseInvalidCharacters()
     }
-
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),

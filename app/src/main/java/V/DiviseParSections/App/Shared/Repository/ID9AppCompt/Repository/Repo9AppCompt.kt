@@ -131,26 +131,16 @@ data class Z_AppCompt(
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
     var ouvertProduitOnVentNom: String = "",
 
-    //---------------------------------------------------Vent Createur--------------------------------------------------------------
-
-    var onVentHPeriodVentDebugNameKey: String = "",
-    var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
-    var ouvertHPeriodVentTimestamp: Long = creatTimeTampDepuitStr("Juin-24 08:00 AM"),
-
-    //Section Parent Transaction
-    var onVentM8BonVentKey: String = "",
-    var onVentM8BonVentDebugInfos: String = "",
-
-    var onVentM1ProduitInfosKeyID: String = "",
-    var onVentM1ProduitInfosDebugName: String = "",
-
-
     //---------------------------------Parent.M14VentPeriode----------------------------------------------------------------------------------------------------------------------------------
     var current_OnVent_M14VentPeriode_KeyID: String = "",
     var current_OnVent_M14VentPeriode_DebugInfos: String = "",
-    //------------------------------------------------------------------------------------------------------------------------------------------------
-
-    //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------Vent Createur--------------------------------------------------------------
+    var onVentM8BonVentKey: String = "",
+    var onVentM8BonVentDebugInfos: String = "",
+    //---------------------------------Parent.M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var onVentM1ProduitInfosKeyID: String = "",
+    var onVentM1ProduitInfosDebugName: String = "",
+    //---------------------------------Parent.M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var onVentM3CouleurProduitInfosKeyID: String = "null",
     val onVentM3CouleurProduitDebugInfos: String = "null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
