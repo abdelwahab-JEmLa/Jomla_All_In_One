@@ -13,6 +13,8 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.Base.Factory.Dao14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
@@ -93,9 +95,7 @@ import java.util.Date
         M10OperationVentCouleur::class,
         Z_AppCompt::class,
         M8BonVent::class,
-
-
-
+        M14VentPeriode::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -143,6 +143,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun GBonVentDao(): GBonVentDao
     abstract fun MVentPeriodeDao(): MVentPeriodeDao
+    abstract fun Dao14VentPeriode(): Dao14VentPeriode
+
     object DatabaseModule {
 
         @Volatile

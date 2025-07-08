@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.DataBase
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.Base.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
@@ -16,8 +17,9 @@ class WDatabaseInitializationManager(
     private val achatOperationRepository: DataBaseFactoryDCouleurAchatOperation,
     val appComptComposeRepositoryPJ17: Repo9AppCompt,
     val z_AppComptRepositoryProtoJuin17: Z_AppComptRepositoryProtoJuin17,
-    val dataBaseCreationFactory13TarificationInfos: DataBaseCreationFactory13TarificationInfos,
     val dataBaseFactory_B1CouleurOuGoutProduitDataBase: DataBaseInitFactory_B1CouleurOuGoutProduitDataBase,
+    val dataBaseCreationFactory13TarificationInfos: DataBaseCreationFactory13TarificationInfos,
+    val dataBaseInitFactory_14VentPeriode: DataBaseInitFactory_14VentPeriode,
 ) {
     private val mutex = Mutex()
     private val repositories = mutableMapOf<String, Float>()
@@ -29,8 +31,8 @@ class WDatabaseInitializationManager(
         Z_AppComptEntity,
         D_ACHAT_OPERATION,
         M13TarificationInfosEntity,
-        A_PRODUIT_INFOS;
-
+        A_PRODUIT_INFOS,
+        M14VentPeriode,
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -80,6 +82,17 @@ class WDatabaseInitializationManager(
                             updateRepoProgress(name, progress)
                         }
                         dataBaseCreationFactory13TarificationInfos.triggerUpdateFbParTimestampsListener()
+                    }
+                }
+            } ,
+            scope.launch {
+               val factory =dataBaseInitFactory_14VentPeriode
+                initRepo(Repository.M14VentPeriode.name, context) {
+                    factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
+                        scope.launch {
+                            updateRepoProgress(name, progress)
+                        }
+                        factory.triggerUpdateFbParTimestampsListener()
                     }
                 }
             } ,

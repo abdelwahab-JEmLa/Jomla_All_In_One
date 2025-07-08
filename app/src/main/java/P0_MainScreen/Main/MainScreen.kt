@@ -106,7 +106,7 @@ fun MainScreen(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
-    var isControleFabVisible by remember { mutableStateOf(false) }
+    var isControleFabVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
