@@ -2,6 +2,7 @@ package P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessage
 import androidx.compose.animation.AnimatedVisibility
@@ -31,9 +32,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 
+
 @Composable
 fun Dialog_MainFastSearchProduitPourVent(
-    focusedVarsHandlerFacade: FocusedVarsHandlerFacade
+    focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
+    sourceLenceurDeCetteFragment: ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
 ) {
     var showToast by remember { mutableStateOf(false) }
 
@@ -75,7 +78,7 @@ fun Dialog_MainFastSearchProduitPourVent(
                     )
                 }
 
-                MainFastSearchProduitPourVent()
+                MainFastSearchProduitPourVent(sourceLenceurDeCetteFragment =sourceLenceurDeCetteFragment)
 
                 PressistatntMainActivityButtons_Sec8FWinID1()
 

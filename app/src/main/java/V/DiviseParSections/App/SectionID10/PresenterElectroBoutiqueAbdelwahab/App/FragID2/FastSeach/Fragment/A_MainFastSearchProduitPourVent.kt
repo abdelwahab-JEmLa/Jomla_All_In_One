@@ -39,20 +39,32 @@ import org.koin.androidx.compose.koinViewModel
 fun MainFastSearchProduitPourVent(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
+    sourceLenceurDeCetteFragment: ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment? = null,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
     val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
-    val startTextSearchM1Produit = viewModel.aCentral.focusedVarsHandlerFacade.get.currentM9AppCompt?.startTextSearchM1Produit ?: ""
-    val focusRequester = remember { FocusRequester() }
 
-    // Initialize localSearchText with startTextSearchM1Produit
+    // Fixed: Properly handle the sealed class to extract the product name
+    val startTextSearchM1Produit = when (sourceLenceurDeCetteFragment) {
+        is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit -> {
+            sourceLenceurDeCetteFragment.produit.nom
+        }
+        is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
+            ""
+        }
+        null -> ""
+    }
+
+    val focusRequester = remember { FocusRequester() }
     var localSearchText by remember { mutableStateOf(startTextSearchM1Produit) }
 
+    // Only request focus if the OutlinedTextField will be shown
+    val shouldShowTextField = sourceLenceurDeCetteFragment !is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit
+
     LaunchedEffect(Unit) {
-        // Only request focus if startTextSearchM1Produit is empty
-        if (startTextSearchM1Produit.isEmpty()) {
+        if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
             delay(100)
             focusRequester.requestFocus()
         }
@@ -89,74 +101,76 @@ fun MainFastSearchProduitPourVent(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                OutlinedTextField(
-                    value = localSearchText,
-                    onValueChange = { newText ->
-                        localSearchText = newText
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    placeholder = { Text("Rechercher un produit...") },
-                    singleLine = true,
-                    leadingIcon = {
-                        val searchQuery = localSearchText
-                        val newProduit = ArticlesBasesStatsTable(
-                            id = if (uiState.bProduitInfosRepository.datasValue.isNotEmpty()) {
-                                uiState.bProduitInfosRepository.datasValue.maxOf { it.id } + 1
-                            } else {
-                                1L
-                            },
-                            nom = searchQuery.ifEmpty { "Err definition" },
-                            processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
-                        )
-
-                        val newCouleurP = M3CouleurProduitInfos(
-                            parentBProduitOldID = newProduit.id,
-                            parentBProduitInfosKeyID = newProduit.keyID,
-                            parentId1ProduitInfosDebugName = newProduit.nom,
-                            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
-                        )
-
-                        IconButton(
-                            onClick = {
-                                uiState.bProduitInfosRepository.upsert(newProduit)
-
-                                uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(
-                                    newCouleurP
-                                )
-                            },
-                            modifier = Modifier
-                                .getSemanticsTag(newProduit, "newProduit")
-                                .getSemanticsTag(newCouleurP, "newCouleurP")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Créer nouveau produit",
+                if (shouldShowTextField) {
+                    OutlinedTextField(
+                        value = localSearchText,
+                        onValueChange = { newText ->
+                            localSearchText = newText
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        placeholder = { Text("Rechercher un produit...") },
+                        singleLine = true,
+                        leadingIcon = {
+                            val searchQuery = localSearchText
+                            val newProduit = ArticlesBasesStatsTable(
+                                id = if (uiState.bProduitInfosRepository.datasValue.isNotEmpty()) {
+                                    uiState.bProduitInfosRepository.datasValue.maxOf { it.id } + 1
+                                } else {
+                                    1L
+                                },
+                                nom = searchQuery.ifEmpty { "Err definition" },
+                                processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
                             )
-                        }
-                    },
-                    trailingIcon = {
-                        if (localSearchText.isNotEmpty()) {
+
+                            val newCouleurP = M3CouleurProduitInfos(
+                                parentBProduitOldID = newProduit.id,
+                                parentBProduitInfosKeyID = newProduit.keyID,
+                                parentId1ProduitInfosDebugName = newProduit.nom,
+                                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                            )
+
                             IconButton(
                                 onClick = {
-                                    localSearchText = ""
-                                }
+                                    uiState.bProduitInfosRepository.upsert(newProduit)
+
+                                    uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(
+                                        newCouleurP
+                                    )
+                                },
+                                modifier = Modifier
+                                    .getSemanticsTag(newProduit, "newProduit")
+                                    .getSemanticsTag(newCouleurP, "newCouleurP")
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "Effacer le texte"
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Créer nouveau produit",
                                 )
                             }
+                        },
+                        trailingIcon = {
+                            if (localSearchText.isNotEmpty()) {
+                                IconButton(
+                                    onClick = {
+                                        localSearchText = ""
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Effacer le texte"
+                                    )
+                                }
+                            }
                         }
-                    }
-                )
+                    )
 
-                Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(16.dp))
+                }
 
                 MainFilterT1(
                     viewModel,
-                    products, categories, uiState.searchText, Modifier.fillMaxSize(),
+                    products, categories, uiState.searchText, Modifier.fillMaxSize(),sourceLenceurDeCetteFragment
                 )
             }
         }

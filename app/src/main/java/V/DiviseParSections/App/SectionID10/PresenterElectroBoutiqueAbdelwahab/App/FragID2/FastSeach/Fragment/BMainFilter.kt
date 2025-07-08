@@ -15,19 +15,40 @@ fun MainFilterT1(
     categories: List<CategoriesTabelle>,
     searchFilter: String,
     modifier: Modifier = Modifier,
+    sourceLenceurDeCetteFragment: ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment?,
 ) {
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
     val catalogues = remember { B4CatalogueCategoriesRepository().associateBy { it.id } }
 
-    // Start with empty list when no search text is entered
-    val filteredProducts = remember(products, searchFilter) {
-        if (searchFilter.isBlank()) {
-            emptyList() // Return empty list when no search text
-        } else {
-            products.filter {
-                it.nom.contains(searchFilter, true) ||
-                        it.nomMutable.contains(searchFilter, true) ||
-                        it.nomArab.contains(searchFilter, true)
+    val filteredProducts = remember(products, searchFilter, sourceLenceurDeCetteFragment) {
+        when (sourceLenceurDeCetteFragment) {
+            is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit -> {
+                // Filter by specific product instead of search text
+                products.filter { it.id == sourceLenceurDeCetteFragment.produit.id }
+            }
+            is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits -> {
+                // Use search text filtering for general search
+                if (searchFilter.isBlank()) {
+                    emptyList() // Return empty list when no search text
+                } else {
+                    products.filter {
+                        it.nom.contains(searchFilter, true) ||
+                                it.nomMutable.contains(searchFilter, true) ||
+                                it.nomArab.contains(searchFilter, true)
+                    }
+                }
+            }
+            null -> {
+                // Default behavior - use search text filtering
+                if (searchFilter.isBlank()) {
+                    emptyList() // Return empty list when no search text
+                } else {
+                    products.filter {
+                        it.nom.contains(searchFilter, true) ||
+                                it.nomMutable.contains(searchFilter, true) ||
+                                it.nomArab.contains(searchFilter, true)
+                    }
+                }
             }
         }
     }

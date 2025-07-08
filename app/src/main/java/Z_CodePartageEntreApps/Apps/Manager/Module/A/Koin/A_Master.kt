@@ -200,7 +200,7 @@ val viewModelModule = module {
     viewModel { ViewModelPresistantButtonsSec8FWinID1(get(), get()) }
 
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { HeadViewModel(androidContext(), get(), get(), get()) }
+    viewModel { HeadViewModel(get(), androidContext(), get(), get()) }
 
 }
 

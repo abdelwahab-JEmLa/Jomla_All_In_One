@@ -14,7 +14,7 @@ class ZViewModel_Sec1Frag3(
     val setter = aCentral.mainRepositorysSetterFacade
 
     data class UiState_Sec1Frag3(
-        val isMinimized: Boolean = false,
+        val isMinimized: Boolean = true,
         val panieMode: PanieMode = PanieMode.Delivery,
         val filterNonTrouve: Boolean = true,
     )

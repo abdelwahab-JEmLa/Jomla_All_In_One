@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View
 
-import P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs.Dialog_MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -181,9 +180,10 @@ fun MainUi(
         }
 
         if (viewModel.aCentral.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null) {
-            Dialog_MainFastSearchProduitPourVent(
+          /*  Dialog_MainFastSearchProduitPourVent(
                 focusedVarsHandlerFacade = viewModel.aCentral.focusedVarsHandlerFacade,
-            )
+                sourceLenceurDeCetteFragment = ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits,
+            )      */
         }
     }
 }

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
@@ -132,7 +131,6 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
-
     // Section Centralization Valeurs Pour Injection add TOu modules
 
     var cLeDataOuvertDuParentList: Boolean? = null,
@@ -148,16 +146,6 @@ data class M8BonVent(
     val parentID7VentPeriodeKeyByParent: String = "",
     val parentID8C2TypeTransactionKeyByParent: String = "",
 ) {
-
-    fun getCreationTimeString(): String {
-        return try {
-            val date = Date(creationTimestamps)
-            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(date)
-        } catch (e: Exception) {
-            "00:00:00"
-        }
-    }
-
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),
@@ -195,8 +183,6 @@ data class M8BonVent(
 
         companion object {
             const val keyModel = "ID8C2"
-            fun getKey(etate: EtateActuellementEst) =
-                "--$keyModel-${etate.name}"
         }
     }
 
@@ -212,13 +198,6 @@ data class M8BonVent(
 
     companion object {
         const val keyModel = "ID8"
-
-        fun getKeyByParent(
-            ventPeriodKeyByParent: String = null.toString(),
-            clientKeyByParent: String = null.toString(),
-            etateKeyByParent: String = null.toString(),
-        ) = ("ID8---ID7-$ventPeriodKeyByParent--ID2-$clientKeyByParent--ID8C2-$etateKeyByParent")
-            .withOutFireBaseInvalidCharacters()
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"

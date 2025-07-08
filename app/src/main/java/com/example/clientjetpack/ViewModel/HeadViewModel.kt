@@ -67,10 +67,10 @@ data class UiState(
 
 @SuppressLint("StaticFieldLeak")
 open class HeadViewModel(
+    val aCentralFacade: ACentralFacade,
     val context: Context,
     val database: AppDatabase,
-    val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3,
-    val aCentralFacade: ACentralFacade
+    val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
     val getter = aCentralFacade.mainRepositorysGetterFacade
 

@@ -171,7 +171,7 @@ package com.example.clientjetpack
 
 import AuthManager
 import AuthResult
-import P0_MainScreen.Main.MainScreen
+import P0_MainScreen.Main.AfficheSearchAllProduits
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
@@ -257,7 +257,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 else -> {
                                     // Show main screen when both permissions and auth are ready
-                                    MainScreen()
+                                    AfficheSearchAllProduits()
                                 }
                             }
                         }

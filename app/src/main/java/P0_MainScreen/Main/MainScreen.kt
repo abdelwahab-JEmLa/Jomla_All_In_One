@@ -5,6 +5,7 @@ import P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs.Dialog_MainFastSearchPr
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -57,8 +58,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
     viewModel: HeadViewModel = koinViewModel(),
+    viewModelViewModelInitApp: ViewModelInitApp = koinViewModel(),
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
     val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
@@ -313,12 +314,22 @@ fun MainScreen(
                 if (isHostPhone) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
+
                 if (activeWindowsSearchProduit) {
                     MainFastSearchProduitPourVent()
                 }
+                val produitName = (viewModel.aCentralFacade
+                    .focusedVarsHandlerFacade.get.currentM9AppCompt?.startTextSearchM1Produit
+                    ?: "")
                 if (viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
                     Dialog_MainFastSearchProduitPourVent(
-                        focusedVarsHandlerFacade =viewModel.aCentralFacade.focusedVarsHandlerFacade,
+                        sourceLenceurDeCetteFragment =
+                            ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
+                                .SearchProduit(
+                                    viewModel.aCentralFacade.mainRepositorysGetterFacade.repoM1ProduitInfos.datasValue
+                                        .find { it.nom==produitName } !!
+                                ),
+                        focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade,
                     )
                 }
             }

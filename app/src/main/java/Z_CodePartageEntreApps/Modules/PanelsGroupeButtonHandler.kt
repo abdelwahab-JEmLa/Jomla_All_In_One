@@ -25,9 +25,10 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlin.math.roundToInt
 
 class PanelsGroupeButtonHandler {
@@ -252,26 +254,31 @@ class PanelsGroupeButtonHandler {
     @Composable
     private fun AfficheComptsVendeursManager() {
         if (_showVendeursDialog.value) {
-            AlertDialog(
+            Dialog(
                 onDismissRequest = {
                     _showVendeursDialog.value = false
                 },
-                title = { Text("Manage Vendeurs") },
-                text = {
-                    A_APP4FragID1_MainScreen(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(500.dp)
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        _showVendeursDialog.value = false
-                    }) {
-                        Text("Close")
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = true
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = 2.dp
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        A_APP4FragID1_MainScreen(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(500.dp)
+                        )
                     }
                 }
-            )
+            }
         }
     }
 

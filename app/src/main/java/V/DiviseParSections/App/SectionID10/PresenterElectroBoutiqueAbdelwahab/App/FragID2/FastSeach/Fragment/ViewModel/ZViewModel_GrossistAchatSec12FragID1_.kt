@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -15,6 +16,11 @@ class ViewModelMainFastSearchProduitPourVent(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.mainRepositorysGetterFacade
+
+    sealed class RoleDefinieParSourceACetteFragment() {
+        data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
+        data class SearchProduit(val produit: ArticlesBasesStatsTable) : RoleDefinieParSourceACetteFragment()
+    }
 
     data class UiState(
         val zAppComptRepositoryComposable: Repo9AppCompt,
