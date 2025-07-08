@@ -54,6 +54,7 @@ class GetFocusedVars(
 
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
+            keyID = M8BonVent.generePushKey(),
             parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
             parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
             parentM7VentPeriodKeyId =  (currentActiveFocuced_M14VentPeriode?.keyID?: "null"),

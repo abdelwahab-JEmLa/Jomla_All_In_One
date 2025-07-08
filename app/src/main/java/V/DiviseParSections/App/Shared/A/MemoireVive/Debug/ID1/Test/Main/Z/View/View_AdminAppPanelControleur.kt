@@ -35,7 +35,7 @@ fun View_AdminAppPanelControleur(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_AdminAppPanelControleur = koinInject(),
 ) {
-    var showM14VentPeriod by remember { mutableStateOf(true) }
+    var showM14VentPeriod by remember { mutableStateOf(false) }
 
     val defaultGeneratedCompt = Z_AppCompt(
         nom = "Abdelwahab"

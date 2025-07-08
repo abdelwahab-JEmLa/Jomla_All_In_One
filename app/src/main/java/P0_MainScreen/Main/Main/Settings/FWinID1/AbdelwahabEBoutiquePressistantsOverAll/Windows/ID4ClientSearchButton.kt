@@ -7,7 +7,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,7 +61,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-// Complete implementation for paste-2.txt ID4ClientSearchButton with all fixes
 @OptIn(FlowPreview::class)
 @SuppressLint("DefaultLocale")
 @Composable
@@ -74,90 +72,67 @@ fun ID4ClientSearchButton(
     onClientSelectedToToast: (HClientInfos) -> Unit = {},
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val focusedVarsHandlerFacade = uiState.focusedVarsHandlerFacade
-    val getter = focusedVarsHandlerFacade.get
-
+    val getter = uiState.focusedVarsHandlerFacade.get
     var isTextCollapsed by remember { mutableStateOf(false) }
-
-    val onVentId8BonVent = getter.onVentM8BonVent
-    val defaultId8BonVent = getter.getDefaultM8BonVent()
-
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-
-    // Add coroutine scope for handling focus requests
     val coroutineScope = rememberCoroutineScope()
-
     val searchQueryFlow = remember { MutableStateFlow("") }
 
     val repo8BonVent = viewModel.aCentralFacade.get.repo8BonVent
-    val datasValue = repo8BonVent.datasValue
-    val clientsWithCommandBonVents =
-        remember(hClientRepository.datasValue, datasValue) {
-            val allClients = hClientRepository.datasValue
-
-            val clientsWithLatestCommandBonVents = allClients.filter { client ->
-                val latestBonVent = datasValue
-                    .filter { bonVent -> bonVent.parentM2ClientInfosKey == client.keyID }
-                    .maxByOrNull { it.creationTimestamps }
-
-                latestBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    val clientsWithCommandBonVents = remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
+        hClientRepository.datasValue
+            .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
+            .sortedByDescending {
+                repo8BonVent.datasValue
+                    .filter { bonVent -> bonVent.parentM2ClientInfosKey == it.keyID }
+                    .maxByOrNull { bonVent -> bonVent.creationTimestamps }
+                    ?.creationTimestamps ?: 0L
             }
+    }
 
-            clientsWithLatestCommandBonVents.sortedByDescending { client ->
-                getLatestBonVentForClient(client, repo8BonVent)?.creationTimestamps ?: 0L
-            }
-        }
-
-    // FIX 1: Use coroutineScope to ensure focus request runs on main thread
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
             filteredClients = clientsWithCommandBonVents
             showDropdown = clientsWithCommandBonVents.isNotEmpty()
-
-            // Use coroutine scope to ensure main thread execution
             coroutineScope.launch {
-                delay(100) // Small delay to ensure the field is rendered
-                // This will run on the main thread by default in rememberCoroutineScope
+                delay(100)
                 focusRequester.requestFocus()
             }
         }
     }
 
-    // Debounced search with flow
     LaunchedEffect(searchQuery) {
-        if (isSearchMode) {
-            searchQueryFlow.value = searchQuery
-        }
+        if (isSearchMode) searchQueryFlow.value = searchQuery
     }
 
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
             searchQueryFlow
-                .debounce(300) // Reduced debounce time for better responsiveness
+                .debounce(300)
                 .distinctUntilChanged()
-                .collect { debouncedQuery ->
-                    performClientSearch(
-                        viewModel = viewModel,
-                        clientsWithCommandBonVents = clientsWithCommandBonVents,
-                        searchQuery = debouncedQuery,
-                        hClientRepository = hClientRepository,
-                        onFilteredClientsChange = { filteredClients = it },
-                        onShowDropdownChange = { showDropdown = it },
-                        isSearchMode = isSearchMode
-                    )
+                .collect { query ->
+                    if (query.isEmpty()) {
+                        filteredClients = clientsWithCommandBonVents
+                        showDropdown = clientsWithCommandBonVents.isNotEmpty()
+                    } else {
+                        val filtered = hClientRepository.datasValue.filter { client ->
+                            client.nom.contains(query, ignoreCase = true) ||
+                                    client.numTelephone.contains(query, ignoreCase = true)
+                        }
+                        filteredClients = filtered
+                        showDropdown = filtered.isNotEmpty()
+                    }
                 }
         }
     }
 
-    Row(        //<--
-    //TODO(1): regle pour que si no bon active afficeh nombre ouvert clients
+    Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (!isSearchMode) {
             FloatingActionButton(
@@ -176,29 +151,33 @@ fun ID4ClientSearchButton(
 
             if (showLabels) {
                 val nomClient = getter.onVentM2ClientInfos?.nom ?: ""
+                val onVentId8BonVent = getter.onVentM8BonVent
 
-                if (onVentId8BonVent != null) {
-                    val timeElapsed = getTimeElapsedString(onVentId8BonVent.creationTimestamps)
-                    val totalProducts = calculateTotalProducts(viewModel)
+                Text(
+                    text = if (isTextCollapsed) {
+                        nomClient
+                    } else {
+                        onVentId8BonVent?.let { bon ->
+                            val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
+                            val totalProducts = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+                                .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+                                .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
+                                .groupBy { it.parentM1ProduitInfosKeyId }.size
 
-                    Text(
-                        text = if (isTextCollapsed) {
-                            nomClient
-                        } else {
-                            if (onVentId8BonVent.nomClientConcerned.isNotEmpty() &&
-                                onVentId8BonVent.nomClientConcerned != "Non Defini") {
+                            if (bon.nomClientConcerned.isNotEmpty() && bon.nomClientConcerned != "Non Defini") {
                                 "$nomClient - $timeElapsed - $totalProducts produits"
-                            } else {
-                                "Rechercher Client"
-                            }
-                        },
-                        modifier = Modifier
-                            .background(Color(0xFF4CAF50))
-                            .padding(4.dp)
-                            .clickable { isTextCollapsed = !isTextCollapsed },
-                        color = Color.White
-                    )
-                }
+                            } else "Rechercher Client"
+                        } ?: run {
+                            val count = clientsWithCommandBonVents.size
+                            if (count > 0) "$count clients ouverts" else "Aucun client ouvert"
+                        }
+                    },
+                    modifier = Modifier
+                        .background(Color(0xFF4CAF50))
+                        .padding(4.dp)
+                        .clickable { isTextCollapsed = !isTextCollapsed },
+                    color = Color.White
+                )
             }
         } else {
             Column {
@@ -224,14 +203,12 @@ fun ID4ClientSearchButton(
                             CreateNewClientIcon(
                                 searchQuery = searchQuery,
                                 locationTracker = locationTracker,
-                                defaultId8BonVent = defaultId8BonVent,
+                                defaultId8BonVent = getter.getDefaultM8BonVent(),
                                 onClientSelectedToToast = onClientSelectedToToast,
                                 onResetSearchMode = {
-                                    resetSearchMode {
-                                        isSearchMode = false
-                                        searchQuery = ""
-                                        showDropdown = false
-                                    }
+                                    isSearchMode = false
+                                    searchQuery = ""
+                                    showDropdown = false
                                 },
                                 viewModel = viewModel
                             )
@@ -239,11 +216,9 @@ fun ID4ClientSearchButton(
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    resetSearchMode {
-                                        isSearchMode = false
-                                        searchQuery = ""
-                                        showDropdown = false
-                                    }
+                                    isSearchMode = false
+                                    searchQuery = ""
+                                    showDropdown = false
                                 }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
@@ -262,21 +237,18 @@ fun ID4ClientSearchButton(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         LazyColumn(
-                            Modifier
-                                .getSemanticsTag(clientsWithCommandBonVents,"clientsWithCommandBonVents")
+                            Modifier.getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents")
                         ) {
                             items(filteredClients) { client ->
                                 ClientSearchItem(
-                                    viewModel = viewModel,
                                     client = client,
                                     onClick = {
                                         onClientSelectedToToast(client)
-                                        resetSearchMode {
-                                            isSearchMode = false
-                                            searchQuery = ""
-                                            showDropdown = false
-                                        }
-                                    }
+                                        isSearchMode = false
+                                        searchQuery = ""
+                                        showDropdown = false
+                                    },
+                                    viewModel = viewModel
                                 )
                             }
                         }
@@ -287,39 +259,8 @@ fun ID4ClientSearchButton(
     }
 }
 
-private fun performClientSearch(
-    searchQuery: String,
-    hClientRepository: Repo2Client,
-    onFilteredClientsChange: (List<HClientInfos>) -> Unit,
-    onShowDropdownChange: (Boolean) -> Unit,
-    isSearchMode: Boolean,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1,
-    clientsWithCommandBonVents: List<HClientInfos>,
-) {
-    if (!isSearchMode) {
-        onFilteredClientsChange(emptyList())
-        onShowDropdownChange(false)
-        return
-    }
-
-    if (searchQuery.isEmpty()) {
-        onFilteredClientsChange(clientsWithCommandBonVents)
-        onShowDropdownChange(clientsWithCommandBonVents.isNotEmpty())
-    } else {
-        val filtered = hClientRepository.datasValue.filter { client ->
-            client.nom.contains(searchQuery, ignoreCase = true) ||
-                    client.numTelephone.contains(searchQuery, ignoreCase = true)
-        }
-        onFilteredClientsChange(filtered)
-        onShowDropdownChange(filtered.isNotEmpty())
-    }
-}
-
-// Helper function to calculate time elapsed since creation
 private fun getTimeElapsedString(creationTimestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val elapsed = now - creationTimestamp
-
+    val elapsed = System.currentTimeMillis() - creationTimestamp
     val days = TimeUnit.MILLISECONDS.toDays(elapsed)
     val hours = TimeUnit.MILLISECONDS.toHours(elapsed) % 24
     val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed) % 60
@@ -350,12 +291,9 @@ private fun CreateNewClientIcon(
         latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
         longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
         caMarqueGpsEstOuvert = currentLocation != null,
-        snippet = if (currentLocation != null) {
-            "Lat: ${String.format("%.6f", currentLocation.latitude)}, " +
-                    "Lng: ${String.format("%.6f", currentLocation.longitude)}"
-        } else {
-            "Position non disponible"
-        }
+        snippet = currentLocation?.let {
+            "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${String.format("%.6f", it.longitude)}"
+        } ?: "Position non disponible"
     )
 
     val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
@@ -377,16 +315,12 @@ private fun CreateNewClientIcon(
                 addedDefaultOnVentID8BonVentEtAdd,
                 updatedAppCompt
             )
-
             onClientSelectedToToast(newClient)
             onResetSearchMode()
         },
         modifier = Modifier.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("Debug  new M8BonVent"), addedDefaultOnVentID8BonVentEtAdd)
-            set(
-                SemanticsPropertyKey("Debug currentM9AppCompt avec  new M8BonVent"),
-                updatedAppCompt
-            )
+            set(SemanticsPropertyKey("Debug new M8BonVent"), addedDefaultOnVentID8BonVentEtAdd)
+            set(SemanticsPropertyKey("Debug currentM9AppCompt avec new M8BonVent"), updatedAppCompt)
         }
     ) {
         Icon(
@@ -396,24 +330,6 @@ private fun CreateNewClientIcon(
     }
 }
 
-private inline fun resetSearchMode(action: () -> Unit) {
-    action()
-}
-
-private fun calculateTotalProducts(
-    viewModel: ViewModelPresistantButtonsSec8FWinID1
-): Int {
-    val allVents = viewModel.aCentralFacade.focusedActiveValuesFacade.get.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-
-    val ventsTrouve = allVents.filter {
-        it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
-    }
-    val totalProducts = ventsTrouve.groupBy { it.parentM1ProduitInfosKeyId }.size
-
-    return totalProducts
-}
-
-// Updated ClientSearchItem composable with state indicator
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
@@ -426,19 +342,18 @@ fun ClientSearchItem(
             .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(client)
 
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
-    val latestStateInfo = remember(client.keyID, bonVentRepository.datasValue) {
-        getLatestBonVentStateInfo(client, bonVentRepository)
+    val latestBonVent = remember(client.keyID, bonVentRepository.datasValue) {
+        bonVentRepository.datasValue
+            .filter { it.parentM2ClientInfosKey == client.keyID }
+            .maxByOrNull { it.creationTimestamps }
     }
-
-    val timeElapsed = getTimeElapsedString(client.dernierTimeTampsSynchronisationAvecFireBase)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
-                    editedM8BonVent,
-                    editedM9CurrCompt
+                    editedM8BonVent, editedM9CurrCompt
                 )
                 onClick()
             }
@@ -450,7 +365,7 @@ fun ClientSearchItem(
             modifier = Modifier
                 .size(12.dp)
                 .background(
-                    color = Color(latestStateInfo?.first?.color ?: client.actuelleEtat.color),
+                    color = Color(latestBonVent?.etateActuellementEst?.color ?: client.actuelleEtat.color),
                     shape = CircleShape
                 )
         )
@@ -462,10 +377,9 @@ fun ClientSearchItem(
                 fontWeight = FontWeight.Bold
             )
 
-            latestStateInfo?.let { (state, creationTime) ->
-                val stateTimeElapsed = getTimeElapsedString(creationTime)
+            latestBonVent?.let {
                 Text(
-                    text = "Dernière commande: $stateTimeElapsed",
+                    text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -473,9 +387,7 @@ fun ClientSearchItem(
 
             if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
                 Text(
-                    text = "📍 ${String.format("%.4f", client.latitude)}, ${
-                        String.format("%.4f", client.longitude)
-                    }",
+                    text = "📍 ${String.format("%.4f", client.latitude)}, ${String.format("%.4f", client.longitude)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50)
                 )
@@ -496,27 +408,5 @@ fun ClientSearchItem(
                 modifier = Modifier.size(16.dp)
             )
         }
-    }
-}
-
-// Helper function to get the latest BonVent for a specific client
-private fun getLatestBonVentForClient(
-    client: HClientInfos,
-    bonVentRepository: Repo8BonVent
-): M8BonVent? {
-    return bonVentRepository.datasValue
-        .filter { bonVent -> bonVent.parentM2ClientInfosKey == client.keyID }
-        .maxByOrNull { it.creationTimestamps }
-}
-
-// Update the existing getLatestBonVentStateInfo function to use the helper
-private fun getLatestBonVentStateInfo(
-    client: HClientInfos,
-    bonVentRepository: Repo8BonVent
-): Pair<M8BonVent.EtateActuellementEst, Long>? {
-    val latestBonVent = getLatestBonVentForClient(client, bonVentRepository)
-
-    return latestBonVent?.let {
-        Pair(it.etateActuellementEst, it.creationTimestamps)
     }
 }

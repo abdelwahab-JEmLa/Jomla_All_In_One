@@ -91,9 +91,15 @@ fun ScrolleAdBanner(
     ) {
         // Map images to their corresponding category IDs
         val bannerData = listOf(
-            BannerItem(R.drawable.confiseries, "Confiseries"), // This will navigate to categoryHeaderConfiseries
+            BannerItem(
+                R.drawable.confiseries,
+                "Confiseries"
+            ), // This will navigate to categoryHeaderConfiseries
             BannerItem(R.drawable.cosmitiques, "cosmitiques"),          // No specific navigation
-            BannerItem(R.drawable.atay_moukassarat, "atay_moukassarat")           // No specific navigation
+            BannerItem(
+                R.drawable.atay_moukassarat,
+                "atay_moukassarat"
+            )           // No specific navigation
         )
 
         bannerData.forEachIndexed { index, (imageRes, categoryName) ->
@@ -110,10 +116,11 @@ fun ScrolleAdBanner(
                 Image(
                     painter = painterResource(id = imageRes),
                     contentDescription = "Banner image ${index + 1}",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .clickable {
-                           onClickImageToShowControles()
-                    },
+                            onClickImageToShowControles()
+                        },
                     contentScale = ContentScale.Crop
                 )
             }
@@ -126,6 +133,7 @@ private data class BannerItem(
     val imageResId: Int,
     val targetCategoryName: String?
 )
+
 @Composable
 fun scrollToCategory(
     categoryId: Long,
