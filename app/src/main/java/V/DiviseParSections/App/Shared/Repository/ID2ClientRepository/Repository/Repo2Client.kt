@@ -181,17 +181,20 @@ data class HClientInfos(
         }
     }
 
-    fun it_Last_M8Bon_Is_OnCommand(
+    fun its_Last_M8Bon_Is_OnCommand(
         m8BonVentList: List<M8BonVent>
-    ): M8BonVent? {
+    ): Boolean {
         return m8BonVentList
             .sortedBy { it.creationTimestamps }
             .lastOrNull { it.parentM2ClientInfosKey == keyID }
+            ?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     }
+
 
     fun getTempKeyByParent(): String {
         return this.nom.withOutFireBaseInvalidCharacters()
     }
+
 
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
