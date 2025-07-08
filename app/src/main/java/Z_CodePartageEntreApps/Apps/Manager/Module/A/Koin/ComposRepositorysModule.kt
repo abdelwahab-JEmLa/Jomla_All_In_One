@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
@@ -60,5 +60,5 @@ val composRepositorysModule = module {
 
     single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
-    single { CentralFacade(get(), get(), get(), get()) }
+    single { ACentralFacade(get(), get(), get(), get()) }
 }

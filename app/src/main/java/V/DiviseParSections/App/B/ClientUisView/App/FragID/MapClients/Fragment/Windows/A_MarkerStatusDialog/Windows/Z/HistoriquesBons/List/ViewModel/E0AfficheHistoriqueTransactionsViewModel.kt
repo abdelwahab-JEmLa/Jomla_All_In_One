@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -22,7 +22,7 @@ data class SecID5FragID2UiState(
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
-    val aCentral: CentralFacade,
+    val aCentral: ACentralFacade,
 
     val a_CentralDatasHandlerProtoJuin9: Get,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,

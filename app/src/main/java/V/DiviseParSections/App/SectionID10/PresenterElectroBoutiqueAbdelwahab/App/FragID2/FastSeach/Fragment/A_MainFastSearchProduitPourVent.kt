@@ -123,25 +123,25 @@ fun MainFastSearchProduitPourVent(
                                 nom = searchQuery.ifEmpty { "Err definition" },
                                 processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
                             )
-
-                            val newCouleurP = M3CouleurProduitInfos(
-                                parentBProduitOldID = newProduit.id,
-                                parentBProduitInfosKeyID = newProduit.keyID,
-                                parentId1ProduitInfosDebugName = newProduit.nom,
-                                processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
-                            )
+                            val handleBonVentSelection =  {
+                                val newCouleurP = M3CouleurProduitInfos(
+                                    parentBProduitOldID = newProduit.id,
+                                    parentBProduitInfosKeyID = newProduit.keyID,
+                                    parentId1ProduitInfosDebugName = newProduit.nom,
+                                    processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+                                )
+                                viewModel.aCentral.get.repo3CouleurProduitInfos.addOrUpdateData(
+                                    newCouleurP
+                                )
+                            }
 
                             IconButton(
                                 onClick = {
                                     uiState.bProduitInfosRepository.upsert(newProduit)
-
-                                    uiState.b1CouleurOuGoutProduitDataBaseRepository.addOrUpdateData(
-                                        newCouleurP
-                                    )
+                                    handleBonVentSelection()
                                 },
                                 modifier = Modifier
                                     .getSemanticsTag(newProduit, "newProduit")
-                                    .getSemanticsTag(newCouleurP, "newCouleurP")
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,

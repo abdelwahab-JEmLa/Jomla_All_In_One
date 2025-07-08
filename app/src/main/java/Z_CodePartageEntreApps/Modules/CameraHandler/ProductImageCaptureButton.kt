@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.Modules.CameraHandler
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -143,19 +144,31 @@ fun ProductImageCaptureButton(
             webPQuality = webPQuality
         )
     }
+    val handle_Add_New_M3Couleur =  {
+        val newCouleurP = M3CouleurProduitInfos(
+            parentBProduitOldID = product.id,
+            parentBProduitInfosKeyID = product.keyID,
+            parentId1ProduitInfosDebugName = product.nom,
+            processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
+        )
+        viewModel.aCentralFacade.get.repo3CouleurProduitInfos.addOrUpdateData(
+            newCouleurP
+        )
+    }
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
+            .clickable {
+                handle_Add_New_M3Couleur()
+                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+            }
             .padding(2.dp)
             .size(20.dp)
             .background(
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                 shape = RoundedCornerShape(10.dp)
             )
-            .clickable {
-                permissionLauncher.launch(android.Manifest.permission.CAMERA)
-            }
     ) {
         Icon(
             imageVector = Icons.Default.Add,

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.io.File
 
 class ViewModelsProduit_T1(
-    val aCentral: CentralFacade,
+    val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.get
     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade

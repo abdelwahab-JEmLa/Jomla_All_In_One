@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.ViewListM14
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import org.koin.compose.koinInject
 
-open class ViewModel_M14VentPeriod(val aCentralFacade: CentralFacade) : ViewModel()
+open class ViewModel_M14VentPeriod(val aCentralFacade: ACentralFacade) : ViewModel()
 
 @Composable
 fun ScreenM14VentPeriod(

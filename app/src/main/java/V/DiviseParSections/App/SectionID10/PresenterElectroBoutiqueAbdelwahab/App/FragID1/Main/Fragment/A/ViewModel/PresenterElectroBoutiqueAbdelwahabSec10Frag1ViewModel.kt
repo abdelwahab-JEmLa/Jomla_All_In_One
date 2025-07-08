@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.mongodb.kbson.BsonObjectId
 
 class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
-    val aCentral: CentralFacade,
+    val aCentral: ACentralFacade,
 ) : ViewModel() {
     val getter = aCentral.get
     val setter = aCentral.set

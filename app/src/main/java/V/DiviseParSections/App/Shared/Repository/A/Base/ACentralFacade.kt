@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 
-class CentralFacade(
+class ACentralFacade(
     val get: Get,
     val set: Set,
     val focusedActiveValuesFacade: FocusedActiveValuesFacade,

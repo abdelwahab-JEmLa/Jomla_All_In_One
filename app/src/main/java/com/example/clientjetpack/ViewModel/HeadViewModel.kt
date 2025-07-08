@@ -2,7 +2,7 @@ package com.example.clientjetpack.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
@@ -67,7 +67,7 @@ data class UiState(
 
 @SuppressLint("StaticFieldLeak")
 open class HeadViewModel(
-    val aCentralFacade: CentralFacade,
+    val aCentralFacade: ACentralFacade,
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3

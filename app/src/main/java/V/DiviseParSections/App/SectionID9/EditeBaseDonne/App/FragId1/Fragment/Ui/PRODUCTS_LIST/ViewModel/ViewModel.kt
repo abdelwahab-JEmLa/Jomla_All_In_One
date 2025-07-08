@@ -5,29 +5,32 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.mongodb.kbson.BsonObjectId
 
 class Sec9FragId1ViewId2ViewModel(
     a_CentralCompoRepositoryProtoJuin9: Get,
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,
-        var bSonIdDesProduitsOuLeurDetailsEstFerme: Set<BsonObjectId> = emptySet()
+        var hexIdDesProduitsOuLeurDetailsEstFerme: Set<String> = emptySet()
     )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun toggleProductDetailsVisibility(productBsonId: String) {
-        val bsonObjectId = BsonObjectId(productBsonId)
-        val currentSet = _uiState.value.bSonIdDesProduitsOuLeurDetailsEstFerme
+    fun toggleProductDetailsVisibility(productHexId: String) {
+        val currentSet = _uiState.value.hexIdDesProduitsOuLeurDetailsEstFerme
         _uiState.value = _uiState.value.copy(
-            bSonIdDesProduitsOuLeurDetailsEstFerme = if (currentSet.contains(bsonObjectId)) currentSet - bsonObjectId else currentSet + bsonObjectId
+            hexIdDesProduitsOuLeurDetailsEstFerme = if (currentSet.contains(productHexId)) {
+                currentSet - productHexId
+            } else {
+                currentSet + productHexId
+            }
         )
     }
 
-    fun isProductDetailsExpanded(productBsonId: String) =
-        !_uiState.value.bSonIdDesProduitsOuLeurDetailsEstFerme.contains(BsonObjectId(productBsonId))
+    fun isProductDetailsExpanded(productHexId: String): Boolean {
+        return !_uiState.value.hexIdDesProduitsOuLeurDetailsEstFerme.contains(productHexId)
+    }
 
     fun update_showDetailsExpanded() {
         _uiState.value =

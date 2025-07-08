@@ -6,6 +6,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -88,7 +89,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler =
+        viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
 
     // Check if current fragment is FragmentProduitFastSearchDialog
@@ -225,18 +227,19 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     .getSemanticsTag(
                         cLenceDepuitFragmentsSepecialicteDeVents,
                         "cLenceDepuitFragmentsSepecialicteDeVents"
-                    )
-                ,
+                    ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
                 if (showButtons) {
-                    if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali==false) {
-                        B1CataloguesAffiche(
-                            appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
-                            showLabels = showLabels,
-                        ) {
-                            showCatalogueDialog = true
+                    if (!itsFragmentProduitFastSearchDialog && travailleChezGrossisst3Ali == false) {
+                        (activeFragment != Screen.EditDatabaseWithCreateNewArticles).ifTrue {
+                            B1CataloguesAffiche(
+                                appComptComposeRepositoryProtoJuin17 = appComptComposeRepositoryProtoJuin17,
+                                showLabels = showLabels,
+                            ) {
+                                showCatalogueDialog = true
+                            }
                         }
 
                         ID2MesasgerieTelegramme(
@@ -279,7 +282,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.active_CurrentApp_activeDialogSearchM1Produit(
+                                true
+                            )
                         },
                         modifier = Modifier.size(40.dp),
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -363,6 +368,7 @@ fun B1CataloguesAffiche(
     showLabels: Boolean,
     onClickPourAfficheDialog: () -> Unit = {}
 ) {
+
     val catalogues = B4CatalogueCategoriesRepository()
     val catalogueId =
         appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId

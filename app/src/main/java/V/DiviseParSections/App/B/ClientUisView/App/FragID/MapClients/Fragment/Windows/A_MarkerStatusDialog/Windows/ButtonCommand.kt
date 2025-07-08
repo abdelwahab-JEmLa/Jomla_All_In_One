@@ -31,8 +31,6 @@ fun CommandButton(
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
 ) {
-    val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-
     val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
     val handleBonVentSelection = remember(m2Client.keyID) {
