@@ -1,9 +1,8 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.VendeursUiState
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.ViewModel_AdminAppPanelControleur
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Ui.VendeurEditDialog
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.ViewList
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,30 +37,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import org.koin.compose.koinInject
+
+open class ViewModel_AdminAppPanelControleur(val  aCentralFacade: CentralFacade, ) : ViewModel()
 
 @Composable
 fun View_AdminAppPanelControleur(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_AdminAppPanelControleur = koinInject(),
-) {
+) {          //<--
+//TODO(1): pk le content ne s afficeh pas tout come don le flech 
     val defaultGeneratedCompt = Z_AppCompt(
         nom = "Abdelwahab"
     ).apply {
         nomsMutableTags = addStringAuNomsMutableTags("Abdelwahab").joinToString(",")
     }
 
-    val uiState by viewModel.uiState.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        VendeursContent(
-            viewModel = viewModel,
-            uiState = uiState,
-            onVendeurSelected = viewModel::setActiveVendeur,
-            onVendeurUpdate = viewModel::update_1_5,
-            modifier = Modifier.fillMaxSize(),
-            onUpdateceComptVendeurInsertBonsAchatAuPeriodID = viewModel::onUpdateceComptVendeurInsertBonsAchatAuPeriodID
-        )
+        Surface(
+            modifier = modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                ViewList(
+                    viewModel,
+                )
+            }
+        }
 
         FloatingActionButton(
             onClick = {
@@ -83,38 +90,6 @@ fun View_AdminAppPanelControleur(
     }
 }
 
-@Composable
-fun VendeursContent(
-    viewModel: ViewModel_AdminAppPanelControleur,
-    uiState: VendeursUiState,
-    onVendeurSelected: (Long) -> Unit,
-    onVendeurUpdate: (Z_AppCompt) -> Unit,
-    modifier: Modifier = Modifier,
-    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
-) {
-    val repo9AppCompt = viewModel.aCentralFacade.get.repo9AppCompt
-    val compts = repo9AppCompt.datasValue
-
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            ViewList(
-                viewModel,
-                compts,
-                onVendeurSelected,
-                onVendeurUpdate,
-                uiState,
-                onUpdateceComptVendeurInsertBonsAchatAuPeriodID
-            )
-        }
-    }
-}
 
 @Composable
 fun SectionDivider(
@@ -128,16 +103,14 @@ fun SectionDivider(
 }
 
 @Composable
-fun VendeurItem(
-    vendeur: Z_AppCompt,
-    onVendeurSelected: (Long) -> Unit,
-    onVendeurUpdate: (Z_AppCompt) -> Unit,
+fun View_M9(
+    compt: Z_AppCompt,
     viewModel: ViewModel_AdminAppPanelControleur,
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
 
     val isActive = (viewModel.aCentralFacade.focusedActiveValuesFacade.get.currentM9AppCompt?.keyID
-        ?: "") == vendeur.keyID
+        ?: "") == compt.keyID
 
     val backgroundColor = when {
         isActive -> MaterialTheme.colorScheme.surfaceVariant
@@ -148,7 +121,7 @@ fun VendeurItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onVendeurSelected(vendeur.vid)
+
             }
             .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
             .padding(8.dp)
@@ -165,7 +138,7 @@ fun VendeurItem(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "ID: ${vendeur.vid}",
+                text = "ID: ${compt.vid}",
                 fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
@@ -185,17 +158,16 @@ fun VendeurItem(
 
             IconButton(
                 onClick = {
-                    val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
-                    onVendeurUpdate(updatedVendeur)
+                    val updatedVendeur = compt.copy(hideAppScreen = !compt.hideAppScreen)
                 }
             ) {
-                val icon = if (vendeur.hideAppScreen) {
+                val icon = if (compt.hideAppScreen) {
                     Icons.Default.VisibilityOff
                 } else {
                     Icons.Default.Visibility
                 }
 
-                val tint = if (vendeur.hideAppScreen) {
+                val tint = if (compt.hideAppScreen) {
                     Color.Gray
                 } else {
                     MaterialTheme.colorScheme.primary
@@ -203,14 +175,14 @@ fun VendeurItem(
 
                 Icon(
                     imageVector = icon,
-                    contentDescription = if (vendeur.hideAppScreen) "Show App Screen" else "Hide App Screen",
+                    contentDescription = if (compt.hideAppScreen) "Show App Screen" else "Hide App Screen",
                     tint = tint
                 )
             }
         }
 
         Text(
-            text = "Nom: ${vendeur.nom}",
+            text = "Nom: ${compt.nom}",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -218,10 +190,9 @@ fun VendeurItem(
 
     if (showEditDialog) {
         VendeurEditDialog(
-            vendeur = vendeur,
+            vendeur = compt,
             onDismiss = { showEditDialog = false },
             onConfirm = { updatedVendeur ->
-                onVendeurUpdate(updatedVendeur)
                 showEditDialog = false
             }
         )

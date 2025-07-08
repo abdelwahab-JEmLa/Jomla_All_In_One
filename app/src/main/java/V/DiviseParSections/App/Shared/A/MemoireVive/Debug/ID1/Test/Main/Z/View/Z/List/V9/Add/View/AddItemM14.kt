@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.V9.Add.View
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.ViewModel_AdminAppPanelControleur
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.ViewModel_AdminAppPanelControleur
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

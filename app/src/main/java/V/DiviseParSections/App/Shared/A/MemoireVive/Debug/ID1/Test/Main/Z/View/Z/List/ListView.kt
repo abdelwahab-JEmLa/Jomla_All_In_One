@@ -1,12 +1,10 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.VendeursUiState
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.ViewModel_AdminAppPanelControleur
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.SectionDivider
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.VendeurItem
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.ViewModel_AdminAppPanelControleur
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.View_M9
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.V9.Add.View.AddItemM14
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.View10.M14.View.View_M14VentPeriod
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +19,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ViewList(
     viewModel: ViewModel_AdminAppPanelControleur,
-    compts: List<Z_AppCompt>,
-    onVendeurSelected: (Long) -> Unit,
-    onVendeurUpdate: (Z_AppCompt) -> Unit,
-    uiState: VendeursUiState,
-    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit
 ) {
+    val listM9AppCompt = viewModel.aCentralFacade.get.repo9AppCompt.datasValue
+    val M14VentPeriodList = viewModel.aCentralFacade.get.repo14VentPeriode.datasValue
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,12 +45,10 @@ fun ViewList(
             SectionDivider()
         }
 
-        items(compts) { vendeur ->
-            VendeurItem(
+        items(listM9AppCompt) { compt ->
+            View_M9(
                 viewModel = viewModel,
-                vendeur = vendeur,
-                onVendeurSelected = onVendeurSelected,
-                onVendeurUpdate = onVendeurUpdate
+                compt = compt,
             )
         }
 
@@ -66,25 +60,40 @@ fun ViewList(
                 style = MaterialTheme.typography.titleLarge
             )
 
+            // Add debug info to see what's happening
             Text(
-                text = "Active Periode ID: ${uiState.activePeriodeId}",
-                style = MaterialTheme.typography.bodyLarge
+                text = "Count: ${M14VentPeriodList.size}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
             )
 
             SectionDivider()
         }
 
-        val M14VentPeriodList = viewModel.aCentralFacade.get.repo14VentPeriode.datasValue
-        items(M14VentPeriodList) { periode ->
-            View_M14VentPeriod(
-                m14VentPeriode = periode,
-                viewModel = viewModel,
-            )
+        // Show periods if they exist
+        if (M14VentPeriodList.isNotEmpty()) {
+            items(M14VentPeriodList) { periode ->
+                View_M14VentPeriod(
+                    viewModel = viewModel,
+                    m14VentPeriode = periode,
+                )
+            }
+        } else {
+            // Show a message when no periods exist
+            item {
+                Text(
+                    text = "Aucune période de vente trouvée",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
         }
 
+        // Always show the add item component
         item {
             AddItemM14(
-                viewModel =viewModel
+                viewModel = viewModel
             )
         }
     }

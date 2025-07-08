@@ -30,15 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview
-@Composable
-private fun VP() {
-    VendeurEditDialog(
-        Z_AppCompt(
-        ),
-    )
-}
-
 @Composable
 fun VendeurEditDialog(
     vendeur: Z_AppCompt,

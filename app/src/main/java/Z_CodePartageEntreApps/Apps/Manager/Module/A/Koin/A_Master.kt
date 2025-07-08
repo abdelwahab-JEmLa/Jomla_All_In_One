@@ -18,7 +18,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel.Sec9FragId1ViewId2ViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel.ViewModel_AdminAppPanelControleur
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.ViewModel_AdminAppPanelControleur
 import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.DebugKey
 import V.DiviseParSections.App.Shared.Modules.Ui.B.UI.ViewModelDebugFloatingButton
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
@@ -171,6 +171,8 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
+    viewModel { ViewModel_AdminAppPanelControleur(get(),  ) }
+
     viewModel { ViewModelsProduit_T1(get()) }
     viewModel { ViewModelDebugFloatingButton(get()) }
     viewModel { ViewModelMainFastSearchProduitPourVent(get()) }
@@ -196,7 +198,6 @@ val viewModelModule = module {
     viewModel { RecordingViewModel(get(), get(), get(), get()) }
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get()) }
-    viewModel { ViewModel_AdminAppPanelControleur(get(), get(), get(), get(), ) }
     viewModel { MapClientsViewModel(get(), get(), get(), get()) }
     viewModel { E0AfficheHistoriqueTransactionsViewModel(get(), get(), get(), get()) }
     viewModel { ClientsMapFilterViewModel(get()) }
