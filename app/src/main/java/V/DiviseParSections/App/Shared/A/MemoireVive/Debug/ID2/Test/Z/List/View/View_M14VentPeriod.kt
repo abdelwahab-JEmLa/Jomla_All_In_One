@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Z.List.item1.View_M14VentPeriod.View
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.View
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.ViewModel_AdminAppPanelControleur
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun View_M14VentPeriod(
     m14VentPeriode: M14VentPeriode,
-    viewModel: ViewModel_AdminAppPanelControleur,
+    viewModel: ViewModel_M14VentPeriod,
 ) {
     val focusedActiveValuesFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
     val currentActiveFocuced_M14VentPeriode = focusedActiveValuesFacade.get.currentActiveFocuced_M14VentPeriode
