@@ -42,7 +42,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
     FilledTonalButton(
         onClick = {
-            focusedVarsHandlerFacade.set.add_New_M8BonVentFacade(defaultM8BonVent)
+            focusedVarsHandlerFacade.set.upsert_M8BonVent(defaultM8BonVent)
 
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME

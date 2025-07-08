@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.add_New_M8BonVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
@@ -32,14 +31,14 @@ class SetFocusedVars(
         updatedDefaultId8BonVent: M8BonVent,
         newCurrentM9AppCompt: Z_AppCompt?
     ) {
-        add_New_M8BonVentFacade(updatedDefaultId8BonVent)
+        this.upsert_M8BonVent(updatedDefaultId8BonVent)
 
         if (newCurrentM9AppCompt != null) {
             updateFocuceM9AppCompt(newCurrentM9AppCompt)
         }
     }
 
-    fun add_New_M8BonVentFacade(id8BonVent: M8BonVent) = add_New_M8BonVent(id8BonVent, repo8BonVent)
+    fun upsert_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
 

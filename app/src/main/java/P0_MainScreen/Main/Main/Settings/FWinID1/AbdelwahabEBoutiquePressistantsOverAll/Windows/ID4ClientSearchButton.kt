@@ -1,6 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -84,10 +86,11 @@ fun ID4ClientSearchButton(
     val searchQueryFlow = remember { MutableStateFlow("") }
 
     val repo8BonVent = viewModel.aCentralFacade.get.repo8BonVent
-    val clientsWithCommandBonVents = remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
-        hClientRepository.datasValue
-            .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
-    }
+    val clientsWithCommandBonVents =
+        remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
+            hClientRepository.datasValue
+                .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
+        }
 
     // Fixed: Don't automatically show all clients when entering search mode
     LaunchedEffect(isSearchMode) {
@@ -131,7 +134,8 @@ fun ID4ClientSearchButton(
 
     Row(
         modifier = Modifier
-            .getSemanticsTag(hClientRepository.datasValue.filter { it.nom.contains("rach") }.map { it.keyID }.takeLast(4), "hClientRepository")
+            .getSemanticsTag(hClientRepository.datasValue.filter { it.nom.contains("rach") }
+                .map { it.keyID }.takeLast(4), "hClientRepository")
             .getSemanticsTag(repo8BonVent.datasValue.map {
                 with(it) {
                     buildString {
@@ -171,10 +175,11 @@ fun ID4ClientSearchButton(
                     } else {
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
-                            val totalProducts = viewModel.aCentralFacade.focusedActiveValuesFacade.get
-                                .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-                                .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
-                                .groupBy { it.parentM1ProduitInfosKeyId }.size
+                            val totalProducts =
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.get
+                                    .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+                                    .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
+                                    .groupBy { it.parentM1ProduitInfosKeyId }.size
 
                             if (bon.nomClientConcerned.isNotEmpty() && bon.nomClientConcerned != "Non Defini") {
                                 "$nomClient - $timeElapsed - $totalProducts produits"
@@ -249,7 +254,10 @@ fun ID4ClientSearchButton(
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
                         LazyColumn(
-                            Modifier.getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents")
+                            Modifier.getSemanticsTag(
+                                clientsWithCommandBonVents,
+                                "clientsWithCommandBonVents"
+                            )
                         ) {
                             items(filteredClients) { client ->
                                 ClientSearchItem(
@@ -304,7 +312,12 @@ private fun CreateNewClientIcon(
         longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
         caMarqueGpsEstOuvert = currentLocation != null,
         snippet = currentLocation?.let {
-            "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${String.format("%.6f", it.longitude)}"
+            "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${
+                String.format(
+                    "%.6f",
+                    it.longitude
+                )
+            }"
         } ?: "Position non disponible"
     )
 
@@ -350,14 +363,6 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
-
-    val editedM8BonVent = get.getDefaultM8BonVent().copy(
-        debugInfos = m2Client.nom,
-        parentM2ClientInfosKey = m2Client.keyID,
-        parentM2ClientInfosDebugName = m2Client.nom,
-        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    )
-
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
     val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
         bonVentRepository.datasValue
@@ -365,66 +370,112 @@ fun ClientSearchItem(
             .maxByOrNull { it.creationTimestamps }
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_New_M8BonVentFacade(editedM8BonVent)
-                viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(editedM8BonVent)
-                onClick()
-            }
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(12.dp)
-                .background(
-                    color = Color(
-                        latestBonVent?.etateActuellementEst?.color ?: m2Client.actuelleEtat.color
-                    ),
-                    shape = CircleShape
-                )
+    val find_Edited_M8BonVent = viewModel.aCentralFacade.get.repo8BonVent.datasValue.find {
+        (it.parentM2ClientInfosKey == m2Client.keyID
+                && it.parentM7VentPeriodKeyId == (get.currentActiveFocuced_M14VentPeriode?.keyID
+            ?: ""))
+    }?.copy(
+        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    )
+
+    val defaultM8BonVent = get.getDefaultM8BonVent()
+        .copy(
+            debugInfos = m2Client.nom,
+            parentM2ClientInfosKey = m2Client.keyID,
+            parentM2ClientInfosDebugName = m2Client.nom,
+            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         )
 
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = m2Client.nom,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold
+    ElevatedCard(
+        modifier = Modifier
+            .getSemanticsTag(find_Edited_M8BonVent,"find_Edited_M8BonVent")
+            .getSemanticsTag(defaultM8BonVent,"defaultM8BonVent")
+            .padding(petitePaddine)
+    ) {
+        Row(
+            modifier = Modifier
+                .getSemanticsTag(find_Edited_M8BonVent,"find_Edited_M8BonVent")
+                .getSemanticsTag(defaultM8BonVent,"defaultM8BonVent")
+                .fillMaxWidth()
+                .clickable {
+                    find_Edited_M8BonVent?.let {
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent(
+                            it
+                        )
+
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+                            it
+                        )
+                    } ?: run {
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent(
+                            defaultM8BonVent
+                        )
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+                            defaultM8BonVent
+                        )
+                    }
+
+                    onClick()
+                }
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(
+                        color = Color(
+                            latestBonVent?.etateActuellementEst?.color
+                                ?: m2Client.actuelleEtat.color
+                        ),
+                        shape = CircleShape
+                    )
             )
 
-            latestBonVent?.let {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    text = m2Client.nom,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
                 )
+
+                latestBonVent?.let {
+                    Text(
+                        text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+
+                if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
+                    Text(
+                        text = "📍 ${
+                            String.format(
+                                "%.4f",
+                                m2Client.latitude
+                            )
+                        }, ${String.format("%.4f", m2Client.longitude)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF4CAF50)
+                    )
+                }
             }
 
-            if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
-                Text(
-                    text = "📍 ${String.format("%.4f", m2Client.latitude)}, ${String.format("%.4f", m2Client.longitude)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF4CAF50)
+            Row {
+                Icon(
+                    imageVector = m2Client.clientTypeMode.icon,
+                    contentDescription = null,
+                    tint = m2Client.clientTypeMode.color,
+                    modifier = Modifier.size(16.dp)
+                )
+                Icon(
+                    imageVector = Icons.Default.Receipt,
+                    contentDescription = null,
+                    tint = m2Client.clientTypeMode.color,
+                    modifier = Modifier.size(16.dp)
                 )
             }
-        }
-
-        Row {
-            Icon(
-                imageVector = m2Client.clientTypeMode.icon,
-                contentDescription = null,
-                tint = m2Client.clientTypeMode.color,
-                modifier = Modifier.size(16.dp)
-            )
-            Icon(
-                imageVector = Icons.Default.Receipt,
-                contentDescription = null,
-                tint = m2Client.clientTypeMode.color,
-                modifier = Modifier.size(16.dp)
-            )
         }
     }
 }
