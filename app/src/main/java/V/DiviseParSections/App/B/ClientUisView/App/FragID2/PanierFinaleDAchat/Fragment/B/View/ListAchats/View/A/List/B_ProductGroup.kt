@@ -55,7 +55,7 @@ fun ProductGroup(
     productKeyId: String,
     vents: List<M10OperationVentCouleur>,
 ) {
-   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.mainRepositorysGetterFacade.repoM1ProduitInfos
+   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.get.repoM1ProduitInfos
 
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val haptic = LocalHapticFeedback.current

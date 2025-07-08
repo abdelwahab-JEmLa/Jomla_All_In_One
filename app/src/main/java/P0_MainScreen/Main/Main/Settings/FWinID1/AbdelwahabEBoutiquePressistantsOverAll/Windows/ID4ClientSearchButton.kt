@@ -93,7 +93,7 @@ fun ID4ClientSearchButton(
 
     val searchQueryFlow = remember { MutableStateFlow("") }
 
-    val repo8BonVent = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent
+    val repo8BonVent = viewModel.aCentralFacade.get.repo8BonVent
     val datasValue = repo8BonVent.datasValue
     val clientsWithCommandBonVents =
         remember(hClientRepository.datasValue, datasValue) {
@@ -372,7 +372,7 @@ private fun CreateNewClientIcon(
     IconButton(
         onClick = {
             viewModel.setter.addNewM2ClientInfos(newClient)
-            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+            viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
                 addedDefaultOnVentID8BonVentEtAdd,
                 updatedAppCompt
             )
@@ -402,7 +402,7 @@ private inline fun resetSearchMode(action: () -> Unit) {
 private fun calculateTotalProducts(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ): Int {
-    val allVents = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+    val allVents = viewModel.aCentralFacade.focusedActiveValuesFacade.get.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
     val ventsTrouve = allVents.filter {
         it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
@@ -421,10 +421,10 @@ fun ClientSearchItem(
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val (editedM8BonVent, editedM9CurrCompt) =
-        viewModel.aCentralFacade.focusedVarsHandlerFacade.get
+        viewModel.aCentralFacade.focusedActiveValuesFacade.get
             .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(client)
 
-    val bonVentRepository = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent
+    val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
     val latestStateInfo = remember(client.keyID, bonVentRepository.datasValue) {
         getLatestBonVentStateInfo(client, bonVentRepository)
     }
@@ -435,7 +435,7 @@ fun ClientSearchItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                viewModel.aCentralFacade.focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
                     editedM8BonVent,
                     editedM9CurrCompt
                 )

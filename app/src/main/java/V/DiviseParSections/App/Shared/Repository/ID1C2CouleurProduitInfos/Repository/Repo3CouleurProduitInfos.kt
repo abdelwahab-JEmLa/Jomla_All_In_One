@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -109,7 +109,7 @@ class Repo3CouleurProduitInfos(
 
     companion object {
         fun getRelatedCouleur(
-            aCentralCompoRepositoryProtoJuin9: MainRepositorysGetterFacade,
+            aCentralCompoRepositoryProtoJuin9: Get,
             produit: ArticlesBasesStatsTable,
             colorIndex: Int
         ) =
@@ -244,7 +244,7 @@ private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
 fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
-    getter: MainRepositorysGetterFacade = koinInject(),
+    getter: Get = koinInject(),
 ) {
     val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)

@@ -320,18 +320,18 @@ fun MainScreen(
                 }
 
                 val produitName = (viewModel.aCentralFacade
-                    .focusedVarsHandlerFacade.get.currentM9AppCompt?.startTextSearchM1Produit
+                    .focusedActiveValuesFacade.get.currentM9AppCompt?.startTextSearchM1Produit
                     ?: "")
 
-                if (viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
+                if (viewModel.aCentralFacade.focusedActiveValuesFacade.get.activeDialogSearchM1Produit) {
                     Dialog_MainFastSearchProduitPourVent(
                         sourceLenceurDeCetteFragment =
                             ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
                                 .SearchProduit(
-                                    viewModel.aCentralFacade.mainRepositorysGetterFacade.repoM1ProduitInfos.datasValue
+                                    viewModel.aCentralFacade.get.repoM1ProduitInfos.datasValue
                                         .find { it.nom==produitName } !!
                                 ),
-                        focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade,
+                        focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade,
                     )
                 }
             }

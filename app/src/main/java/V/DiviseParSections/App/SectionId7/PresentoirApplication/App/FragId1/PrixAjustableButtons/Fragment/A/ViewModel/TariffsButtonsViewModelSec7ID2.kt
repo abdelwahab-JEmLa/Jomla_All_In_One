@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.E_GroupedDataBasesRepositoryNonConnue
@@ -25,12 +25,12 @@ data class UiState(
 )
 
 class TariffsButtonsViewModelSec7ID2(
-    val aCentralFacade: ACentralFacade,
+    val aCentralFacade: CentralFacade,
     val repo_0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3,
     private val groupedDataBasesRepository: E_GroupedDataBasesRepositoryNonConnue,
 ) : ViewModel() {
-    val getter = aCentralFacade.mainRepositorysGetterFacade
-    val setter = aCentralFacade.mainRepositorysSetterFacade
+    val getter = aCentralFacade.get
+    val setter = aCentralFacade.set
 
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
@@ -71,7 +71,7 @@ class TariffsButtonsViewModelSec7ID2(
             m1produitInfos,
             newPrix
         )
-        aCentralFacade.focusedVarsHandlerFacade.set.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+        aCentralFacade.focusedActiveValuesFacade.set.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
     }
 
 

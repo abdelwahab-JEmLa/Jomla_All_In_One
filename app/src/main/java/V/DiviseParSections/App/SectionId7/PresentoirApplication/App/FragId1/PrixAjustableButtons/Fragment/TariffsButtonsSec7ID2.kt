@@ -32,7 +32,7 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
-        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.onVentM8BonVent
+        viewModel.aCentralFacade.focusedActiveValuesFacade.get.onVentM8BonVent
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
@@ -40,13 +40,13 @@ fun TariffsButtonsSec7ID2(
     val bonVentList = viewModel.getter.repo8BonVent.datasValue
     val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
     val tarificationList = repo13TarificationInfos.datasValue
-    val repo10OperationVentCouleur = viewModel.aCentralFacade.mainRepositorysGetterFacade.repo10OperationVentCouleur
+    val repo10OperationVentCouleur = viewModel.aCentralFacade.get.repo10OperationVentCouleur
     val operationVentCouleurList = repo10OperationVentCouleur.datasValue
-    val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.mainRepositorysGetterFacade.repoM1ProduitInfos.datasValue
+    val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.get.repoM1ProduitInfos.datasValue
 
     val focusedProduct by remember {
         derivedStateOf {
-            viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur
+            viewModel.aCentralFacade.focusedActiveValuesFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur
         }
     }
 
@@ -81,7 +81,7 @@ fun TariffsButtonsSec7ID2(
             fermeDialog(latestTariffLocalData)
 
             viewModel.updateListRelativeVentCouleurPrixVent(
-                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
+                listFocusedM10OpeVentCouleurParPrixDifineur = viewModel.aCentralFacade.focusedActiveValuesFacade.get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit,
                 m1produitInfos = m1produitInfos,
                 newPrix = latestTariffLocalData.prixCurrency
             )

@@ -31,7 +31,7 @@ class G_RoomOperationsHandler(
                 }
                 M13TarificationInfos::class -> {
                     emptyList()
-                   // database.Dao13TarificationInfos().insertAllReturnIDs(data as List<M13TarificationInfos>)
+                   // database.Dao13TarificationInfos().insertAllReturnIDs(data as ViewList<M13TarificationInfos>)
                 }
                 else -> throw IllegalArgumentException("Unsupported data type: ${DataBase::class.simpleName}")
             }

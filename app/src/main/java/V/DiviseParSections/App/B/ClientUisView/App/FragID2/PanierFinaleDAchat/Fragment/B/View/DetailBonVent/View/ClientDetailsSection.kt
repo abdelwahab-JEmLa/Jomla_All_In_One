@@ -28,7 +28,7 @@ fun ClientDetailsSection(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isMinimized = uiState.isMinimized
-    val get = viewModel.aCentral.focusedVarsHandlerFacade.get
+    val get = viewModel.aCentral.focusedActiveValuesFacade.get
     // FIXED: Use the correct property name
     val onVentClient = get.onVentM2ClientInfos
 

@@ -52,7 +52,7 @@ fun MapContent(
     var currentFilterMode by remember {
         mutableStateOf(
             if ((viewModel.getter.repo9AppCompt.currentAppCompt?.keyID
-                    ?: "") == viewModel.getter.parametresAppComptNonSaved.currentAppComptKeyID
+                    ?: "") == viewModel.getter.parametresAppComptNonSaved.currentActiveFocucedM9AppComptKeyID
             ) {
                 MapClientsViewModel.VisibleClientsNow.showAll
             } else {
@@ -163,7 +163,7 @@ fun MapContent(
             )
         }
 
-        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.get.activeOnVentM2ClientInfos
 
         if (activeOnVentM2ClientInfos != null ||  markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(

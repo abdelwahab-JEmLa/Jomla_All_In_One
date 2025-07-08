@@ -73,7 +73,7 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.mainRepositorysGetterFacade.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.get.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -142,7 +142,7 @@ fun ImageDisplayerProtoAvantJuin3(
     LaunchedEffect(imageLoaded, isLoading, enablePerformAutoClickImageDisplayer) {
         if (enablePerformAutoClickImageDisplayer && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
-            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
             focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
             onClickToOpenWindow()
@@ -151,7 +151,7 @@ fun ImageDisplayerProtoAvantJuin3(
 
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
-            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+            val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
             val get = focusedVarsHandlerFacade.get
             val activeProduit =
                 get.focused_M1ProduitInfos_Pour_PrixDifineur

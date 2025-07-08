@@ -26,12 +26,12 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     clickedClient: Long,
 ) {
     val aCentralFacade = viewModel.aCentralFacade
-    val focusedVarsHandlerFacade = aCentralFacade.focusedVarsHandlerFacade
+    val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
     val get = focusedVarsHandlerFacade.get
     val context = LocalContext.current
     val newEtate = this
 
-    val m2Client = aCentralFacade.mainRepositorysGetterFacade.repo2Client.datasValue.find { it.id == clickedClient }!!
+    val m2Client = aCentralFacade.get.repo2Client.datasValue.find { it.id == clickedClient }!!
 
     val defaultM8BonVent = get.getDefaultM8BonVent().copy(
         debugInfos = m2Client.nom,
@@ -48,7 +48,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
                 viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
             }
         },
         modifier = Modifier

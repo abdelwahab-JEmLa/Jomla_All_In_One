@@ -2,8 +2,8 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
@@ -16,20 +16,22 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import com.google.firebase.database.DatabaseReference
 
-class MainRepositorysSetterFacade(
-    private val getter: MainRepositorysGetterFacade,
-    private val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
+class Set(
+    private val getter: Get,
+    private val ventOperations: VentOperations,
+    val bonVentOperations: BonVentOperations,
+    private val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     private val produitOperations: ProduitOperations,
     private val clientOperations: ClientOperations,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo13TarificationInfos: Repo13TarificationInfos,
-    private val ventOperations: VentOperations,
-
-    val bonVentOperations: BonVentOperations,
+    private val repo14VentPeriode: Repo14VentPeriode,
 ) {
     private val get = focusedVarsHandlerFacade.get
 
@@ -113,6 +115,10 @@ class MainRepositorysSetterFacade(
 
     fun updateM8BonVent(data: M8BonVent) {
         repo8BonVent.upsert(data)
+    }
+
+    fun addNewM14VentPeriode(generatedDefaultM14: M14VentPeriode) {
+        repo14VentPeriode.upsert(generatedDefaultM14)
     }
 
     companion object {

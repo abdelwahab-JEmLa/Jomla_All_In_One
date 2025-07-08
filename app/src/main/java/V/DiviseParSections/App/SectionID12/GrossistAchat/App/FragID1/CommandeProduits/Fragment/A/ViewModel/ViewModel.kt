@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class GrossistAchatSec12FragID1_ViewModel(
-    aCentral: ACentralFacade,
+    aCentral: CentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.mainRepositorysGetterFacade
+    val getter = aCentral.get
    val fVentCouleurOperationRepository =getter.repo10OperationVentCouleur
     data class UiState(
         val B_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),

@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.Repository.Repo14.Repository.Base.Factory
+package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory
 
-import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

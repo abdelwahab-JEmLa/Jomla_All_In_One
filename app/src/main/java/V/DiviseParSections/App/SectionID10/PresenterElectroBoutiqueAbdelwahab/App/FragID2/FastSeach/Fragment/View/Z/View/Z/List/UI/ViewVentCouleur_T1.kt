@@ -51,7 +51,7 @@ fun ViewVentCouleur_T1(
     size: Dp = 200.dp
 ) {
     val setter = viewModel.setterFocusedVarsHandlerFacade
-    val getter = viewModel.aCentral.focusedVarsHandlerFacade.get
+    val getter = viewModel.aCentral.focusedActiveValuesFacade.get
 
     val uiState by viewModel.uiState.collectAsState()
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
@@ -120,12 +120,12 @@ fun ViewVentCouleur_T1(
         ) {
             fun lenceVent() {
                 findVent?.let { findVent ->
-                    viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                    viewModel.aCentral.set.saveTariff_Et_RelateIt_Au_Vents_Correspond()
                     setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                 } ?: run {
                     defaultM10Vent?.let { defaultVent ->
                         setter.ajoute_New_M10OperationVentCouleur(defaultVent)
-                        viewModel.aCentral.mainRepositorysSetterFacade.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                        viewModel.aCentral.set.saveTariff_Et_RelateIt_Au_Vents_Correspond()
                     }
                 }
             }

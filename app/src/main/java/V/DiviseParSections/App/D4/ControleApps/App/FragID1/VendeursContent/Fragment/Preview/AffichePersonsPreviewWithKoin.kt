@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.A_APP4FragID1_MainScreen
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.View_AdminAppPanelControleur
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -8,5 +8,5 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 private fun AffichePersonsPreviewWithKoin() {
-    A_APP4FragID1_MainScreen()
+    View_AdminAppPanelControleur()
 }

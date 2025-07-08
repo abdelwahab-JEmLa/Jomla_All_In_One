@@ -74,13 +74,13 @@ fun TariffButtonItem(
             typeTarification == TypeChoisi.DefiniParGerant2
 
     fun handelClick()  {
-        viewModel.aCentralFacade.mainRepositorysSetterFacade
+        viewModel.aCentralFacade.set
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 focused_M13TarificationInfos_Pour_Produit = latestTariff,
-                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedVarsHandlerFacade.get
+                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedActiveValuesFacade.get
                     .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
             )
-        viewModel.aCentralFacade.focusedVarsHandlerFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+        viewModel.aCentralFacade.focusedActiveValuesFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
 
     }
 
@@ -244,7 +244,7 @@ fun TariffButtonItem(
         } else {
             couleurButton
         }
-        val getter = viewModel.aCentralFacade.focusedVarsHandlerFacade.get
+        val getter = viewModel.aCentralFacade.focusedActiveValuesFacade.get
         val listFocusedM10OpeVentCouleurParPrixDifineur =
             getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
 

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ViewModelMainFastSearchProduitPourVent(
-    val aCentral: ACentralFacade,
+    val aCentral: CentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.mainRepositorysGetterFacade
+    val getter = aCentral.get
 
     sealed class RoleDefinieParSourceACetteFragment() {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
@@ -35,11 +35,11 @@ class ViewModelMainFastSearchProduitPourVent(
 
     private val _uiState = MutableStateFlow(
         UiState(
-            bProduitInfosRepository = aCentral.mainRepositorysGetterFacade.repoM1ProduitInfos,
-            id8BonVentRepository = aCentral.mainRepositorysGetterFacade.repo8BonVent,
-            iD2ClientRepository = aCentral.mainRepositorysGetterFacade.repo2Client,
-            b1CouleurOuGoutProduitDataBaseRepository = aCentral.mainRepositorysGetterFacade.repo3CouleurProduitInfos,
-            zAppComptRepositoryComposable = aCentral.mainRepositorysGetterFacade.repo9AppCompt,
+            bProduitInfosRepository = aCentral.get.repoM1ProduitInfos,
+            id8BonVentRepository = aCentral.get.repo8BonVent,
+            iD2ClientRepository = aCentral.get.repo2Client,
+            b1CouleurOuGoutProduitDataBaseRepository = aCentral.get.repo3CouleurProduitInfos,
+            zAppComptRepositoryComposable = aCentral.get.repo9AppCompt,
         )
     )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

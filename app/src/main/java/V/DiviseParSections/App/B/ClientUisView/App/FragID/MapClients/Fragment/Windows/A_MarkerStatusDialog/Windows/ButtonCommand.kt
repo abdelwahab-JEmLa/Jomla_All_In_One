@@ -31,11 +31,11 @@ fun CommandButton(
     context: Context,
     onUpdateLongAppSetting: () -> Unit,
 ) {
-    val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedVarsHandlerFacade
+    val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
     val get = focusedVarsHandlerFacade.get
 
     val findActiveOnCourDeVentM8BonVent =
-        viewModel.aCentralFacade.mainRepositorysGetterFacade.repo8BonVent.datasValue
+        viewModel.aCentralFacade.get.repo8BonVent.datasValue
             .find {
                 it.parentM7VentPeriodKeyId == ParametresAppComptNonSaved().keyIdId7VentPeriod
                         && it.etateActuellementEst == newEtate

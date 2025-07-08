@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Patch
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BSetterP (
-    val getter: MainRepositorysGetterFacade,
+    val getter: Get,
     val bProduitDataBase_SubClassFunctionality: RepoM1ProduitInfos,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
     val hClientRepository: Repo2Client,
@@ -122,7 +122,7 @@ class BSetterP (
         gBonVentRepository.upsert(
             M8BonVent(
                 keyID = newTransactionKey,
-                parentM7VentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
@@ -153,7 +153,7 @@ class BSetterP (
 
             val newBonVent = M8BonVent(
                 keyID = key,
-                parentM7VentPeriodKeyId = currentZCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = currentZCompt.current_OnVent_M14VentPeriode_KeyID,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,

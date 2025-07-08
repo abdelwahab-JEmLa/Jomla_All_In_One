@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.Base.Factory.DataBaseInitFactory_14VentPeriode
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.DataBaseCreationFactory13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
@@ -32,7 +32,7 @@ class WDatabaseInitializationManager(
         D_ACHAT_OPERATION,
         M13TarificationInfosEntity,
         A_PRODUIT_INFOS,
-        M14VentPeriode,
+        M14VentPeriode_Entity,
     }
 
     suspend fun initializeAllRepositories(context: Context) {
@@ -87,7 +87,7 @@ class WDatabaseInitializationManager(
             } ,
             scope.launch {
                val factory =dataBaseInitFactory_14VentPeriode
-                initRepo(Repository.M14VentPeriode.name, context) {
+                initRepo(Repository.M14VentPeriode_Entity.name, context) {
                     factory.init(isInternetAvailable = isInternetAvailable(context)) { name, progress ->
                         scope.launch {
                             updateRepoProgress(name, progress)

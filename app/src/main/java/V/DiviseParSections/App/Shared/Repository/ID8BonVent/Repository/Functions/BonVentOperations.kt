@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 class BonVentOperations(
-    private val getter: MainRepositorysGetterFacade,
+    private val getter: Get,
     private val gBonVentRepository: Repo8BonVent,
     private val zAppComptRepositoryComposable: Repo9AppCompt
 ) {
@@ -44,17 +44,17 @@ class BonVentOperations(
 
             val newBonVent = M8BonVent(
                 keyID = key,
-                parentM7VentPeriodKeyId = currentZCompt.onVentHVentPeriodKeyId,
+                parentM7VentPeriodKeyId = currentZCompt.current_OnVent_M14VentPeriode_KeyID,
                 parentM2ClientInfosKey = client.keyID,
                 parentHClientOldID = clientOldId,
                 nomClientConcerned = client.nom,
                 parentKeyId9AppComptInfos = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.keyModel]
+                parentID2ClientKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.keyModel]
                     ?: "",
-                parentID7VentPeriodeKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
+                parentID7VentPeriodeKeyByParent = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
                     ?: "",
-                parentID8C2TypeTransactionKeyByParent = MainRepositorysSetterFacade.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
 

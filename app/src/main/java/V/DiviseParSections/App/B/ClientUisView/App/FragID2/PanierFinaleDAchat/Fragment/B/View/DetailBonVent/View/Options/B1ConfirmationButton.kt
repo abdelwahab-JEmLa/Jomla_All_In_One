@@ -31,10 +31,10 @@ fun ConfirmationButton(
     showLabel: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val currentBonVent = viewModel.aCentral.focusedVarsHandlerFacade.get.onVentM8BonVent
+    val currentBonVent = viewModel.aCentral.focusedActiveValuesFacade.get.onVentM8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.mainRepositorysSetterFacade.updateM8BonVent(
+        viewModel.aCentral.set.updateM8BonVent(
             data.copy(
                 etateActuellementEst = newEtate
             )
@@ -70,7 +70,7 @@ fun ConfirmationButton(
         if (etateActuellementEst == aCommandeConfirme || etateActuellementEst == onModeCommendActuellement) {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedVarsHandlerFacade.get)
+                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedActiveValuesFacade.get)
                     .size(48.dp),
                 onClick = {
                     currentBonVent?.let { bonVent ->
@@ -80,7 +80,7 @@ fun ConfirmationButton(
                                     bonVent,
                                     onModeCommendActuellement
                                 )
-                                viewModel.aCentral.focusedVarsHandlerFacade.set.active_currentApp_M8BonVent(
+                                viewModel.aCentral.focusedActiveValuesFacade.set.active_currentApp_M8BonVent(
                                     bonVent
                                 )
                             }
@@ -90,7 +90,7 @@ fun ConfirmationButton(
                                     bonVent,
                                     aCommandeConfirme
                                 )
-                                viewModel.aCentral.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                                viewModel.aCentral.focusedActiveValuesFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                             }
 
                             else -> {

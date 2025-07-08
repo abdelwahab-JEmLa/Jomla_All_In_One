@@ -15,6 +15,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import androidx.compose.runtime.Stable
 
 @Stable
@@ -24,6 +26,7 @@ class SetFocusedVars(
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    private val repo14VentPeriode: Repo14VentPeriode,
 ) {
     fun upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
         updatedDefaultId8BonVent: M8BonVent,
@@ -163,6 +166,28 @@ class SetFocusedVars(
                         startTextSearchM1Produit = nom
                     )
                 )
+            }
+        }
+    }
+
+    fun setIN_CurrentApp_current_OnVent_M14VentPeriode_KeyID(m14VentPeriode: M14VentPeriode) {
+        setIN_CurrentApp_M9_ActiveKeyId(current_OnVent_M14VentPeriode_KeyID = m14VentPeriode.keyID)
+    }
+
+    private fun setIN_CurrentApp_M9_ActiveKeyId(
+        current_OnVent_M14VentPeriode_KeyID: String?
+    ) {
+        repo9AppCompt.currentAppCompt.let {
+            if (it != null) {
+                current_OnVent_M14VentPeriode_KeyID?.let { current_OnVent_M14VentPeriode_KeyID ->
+                    it.copy(
+                        current_OnVent_M14VentPeriode_KeyID = current_OnVent_M14VentPeriode_KeyID
+                    )
+                }?.let { it2 ->
+                    repo9AppCompt.upsert(
+                        it2
+                    )
+                }
             }
         }
     }

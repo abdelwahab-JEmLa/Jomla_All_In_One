@@ -2,12 +2,12 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
@@ -19,6 +19,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -27,6 +28,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val composRepositorysModule = module {
+    single { Repo14VentPeriode(get(),) }
     single { Repo13TarificationInfos(get(),get(),) }
     single { Repo9AppCompt(get()) }
 
@@ -43,20 +45,20 @@ val composRepositorysModule = module {
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
-    // Helper classes for MainRepositorysSetterFacade
+    // Helper classes for Set
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
     single { VentOperations(get(), get()) }
 
 
-    single { GetFocusedVars(get(), get(),get(),get(),get(),get(),get(),) }
-    single { SetFocusedVars(get(), get(), get(), get(), get(), ) }
-    single { FocusedVarsHandlerFacade(get(), get()) }
+    single { GetFocusedVars(get(), get(),get(),get(),get(),get(),get(),get(),) }
+    single { SetFocusedVars(get(), get(), get(), get(), get(),get(), ) }
+    single { FocusedActiveValuesFacade(get(), get()) }
 
-    single { MainRepositorysGetterFacade(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(),) }
+    single { Get(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(), ) }
 
-    single { MainRepositorysSetterFacade(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), ) }
+    single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),) }
-    single { ACentralFacade(get(), get(), get(), get()) }
+    single { CentralFacade(get(), get(), get(), get()) }
 }

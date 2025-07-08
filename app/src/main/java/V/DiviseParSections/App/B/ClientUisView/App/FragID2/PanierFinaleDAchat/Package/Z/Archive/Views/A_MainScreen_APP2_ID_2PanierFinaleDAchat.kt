@@ -122,9 +122,9 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
 }
 
 private fun calcule_totalPrice(
-    produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
+    produitsBonAchatIDs: ViewList<_1_2_ProduitAcheteOperation>,
     _0_HeadOfRepositorys_Repository_Model: GroupeRepositorysProtoAvJuin3Model,
-    colorOperations: List<_1_1_CouleurAcheteOperation>? = null
+    colorOperations: ViewList<_1_1_CouleurAcheteOperation>? = null
 ) = produitsBonAchatIDs.sumOf { produitOpe ->
     // Check if there's add provisional price, use it instead of the default if available
     val productPrice = if (produitOpe.provisoireMonPrix > 0) {

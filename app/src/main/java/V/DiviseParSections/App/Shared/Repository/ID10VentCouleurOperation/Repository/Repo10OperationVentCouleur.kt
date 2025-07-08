@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -38,7 +38,7 @@ class Repo10OperationVentCouleur(
     }
 
     val datasFilteredParCurrentHVentPeriod by derivedStateOf {
-        val targetKey = zAppComptRepositoryComposable.currentAppCompt?.onVentHVentPeriodKeyId
+        val targetKey = zAppComptRepositoryComposable.currentAppCompt?.current_OnVent_M14VentPeriode_KeyID
         datasValue.filter { it.parentHVentPeriodKeyId == targetKey }
     }
 
@@ -142,7 +142,7 @@ class Repo10OperationVentCouleur(
     ): M10OperationVentCouleur {
         return M10OperationVentCouleur(
             parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
-            parentHVentPeriodKeyId = zCompt.onVentHVentPeriodKeyId,
+            parentHVentPeriodKeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
             parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,

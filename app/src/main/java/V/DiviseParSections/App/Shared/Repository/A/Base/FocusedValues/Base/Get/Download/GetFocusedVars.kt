@@ -13,6 +13,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
@@ -29,10 +30,15 @@ class GetFocusedVars(
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo13TarificationInfos: Repo13TarificationInfos,
+    private val repo14VentPeriode: Repo14VentPeriode,
 ) {
     // Use collectAsState or observe the repository state directly
     val currentM9AppCompt by derivedStateOf {
-        repo9AppCompt.datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentAppComptKeyID }
+        repo9AppCompt.datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
+    }
+
+    val currentActiveFocuced_M14VentPeriode by derivedStateOf {
+        repo14VentPeriode.datasValue.find { it.keyID == currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
     }
 
     val onVentM8BonVent by derivedStateOf {
@@ -48,8 +54,8 @@ class GetFocusedVars(
 
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
-            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentAppComptKeyID,
-            parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().debugNameId9AppComptInfos,
+            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
+            parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
             parentM7VentPeriodKeyId = ParametresAppComptNonSaved().keyIdId7VentPeriod,
             parentM7VentPeriodDebugInfos = ParametresAppComptNonSaved().debugNameId7VentPeriod,
         )

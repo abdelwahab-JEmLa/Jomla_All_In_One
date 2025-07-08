@@ -129,7 +129,7 @@ fun MarkerStatusDialog(
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
-                    val activeClient = viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos
+                    val activeClient = viewModel.aCentralFacade.focusedActiveValuesFacade.get.activeOnVentM2ClientInfos
 
                     activeCompt?.let {
                         if (activeClient != null) {
@@ -276,7 +276,7 @@ fun MarkerStatusDialog(
                         onClick = {
                             showExitConfirmationDialog = false
                             viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                         }
                     ) {
                         Text("نعم")

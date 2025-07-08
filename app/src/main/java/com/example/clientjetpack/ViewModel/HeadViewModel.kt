@@ -2,7 +2,7 @@ package com.example.clientjetpack.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.Model.A_ProduitModel
@@ -67,12 +67,12 @@ data class UiState(
 
 @SuppressLint("StaticFieldLeak")
 open class HeadViewModel(
-    val aCentralFacade: ACentralFacade,
+    val aCentralFacade: CentralFacade,
     val context: Context,
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
-    val getter = aCentralFacade.mainRepositorysGetterFacade
+    val getter = aCentralFacade.get
 
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore

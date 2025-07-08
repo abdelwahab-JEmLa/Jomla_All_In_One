@@ -85,7 +85,7 @@ fun AfficheurRegleOuvert(
                 TextButton(
                     onClick = {
                         viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
-                        viewModel.aCentralFacade.focusedVarsHandlerFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

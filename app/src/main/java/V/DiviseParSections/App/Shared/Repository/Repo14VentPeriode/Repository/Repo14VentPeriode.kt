@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.Shared.Repository.Repo14.Repository
+package V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade
-import V.DiviseParSections.App.Shared.Repository.Repo14.Repository.Base.Factory.DataBaseInitFactory_14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class Repo8BonVent(
+class Repo14VentPeriode(
     val dataBaseCreationFactory: DataBaseInitFactory_14VentPeriode,
 ) {
     private val repoScope = CoroutineScope(Dispatchers.IO)
@@ -97,6 +97,6 @@ data class M14VentPeriode(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DatasM14VentPeriode"
         )
 
-        fun generePushKey() = MainRepositorysSetterFacade.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = Set.genereUnPushKeyFireBase(ref)
     }
 }

@@ -96,7 +96,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         activeFragment == Screen.FragmentProduitFastSearchDialog
 
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedVarsHandlerFacade.get.currentM9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.get.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
@@ -204,7 +204,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.aCentralFacade.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.aCentralFacade.focusedActiveValuesFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -279,7 +279,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            viewModel.aCentralFacade.focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
                         },
                         modifier = Modifier.size(40.dp),
                         containerColor = MaterialTheme.colorScheme.primary,

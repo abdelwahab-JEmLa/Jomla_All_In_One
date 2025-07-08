@@ -78,7 +78,7 @@ fun DetailsBonVent(
     val fVentCouleurOperationRepository =
         viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
-    val ouvertPeriodKeyId = comptAppActuelle?.onVentHVentPeriodKeyId ?: ""
+    val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
 
 
     // Create list of action buttons for LazyColumn
@@ -109,7 +109,7 @@ fun DetailsBonVent(
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
                             bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
                             b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
-                            client = viewModel.aCentral.focusedVarsHandlerFacade.get.activeOnVentM2ClientInfos,
+                            client = viewModel.aCentral.focusedActiveValuesFacade.get.activeOnVentM2ClientInfos,
                             scope = scope
                         )
                     }

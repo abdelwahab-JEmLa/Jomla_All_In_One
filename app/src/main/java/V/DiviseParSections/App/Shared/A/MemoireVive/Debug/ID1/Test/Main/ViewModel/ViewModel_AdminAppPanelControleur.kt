@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.MainRepositorysGetterFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_Achat.Base.Models._01_PeriodVentHistorique
@@ -22,9 +22,9 @@ data class VendeursUiState(
 )
 
 // ViewModel to handle business logic
-open class VendeursViewModel(
-    val  aCentralFacade: ACentralFacade,
-    val getter: MainRepositorysGetterFacade,
+open class ViewModel_AdminAppPanelControleur(
+    val  aCentralFacade: CentralFacade,
+    val getter: Get,
     private val repository: GroupeRepositorysProtoAvJuin3,
     private val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
@@ -99,7 +99,7 @@ open class VendeursViewModel(
     }
 
 
-    // Add this method to the VendeursViewModel class
+    // Add this method to the ViewModel_AdminAppPanelControleur class
     fun getActiveVendeur(): Z_AppCompt? =
         getter.repo9AppCompt.currentAppCompt
 

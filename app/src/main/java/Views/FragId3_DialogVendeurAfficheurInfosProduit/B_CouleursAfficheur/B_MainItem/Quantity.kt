@@ -28,7 +28,7 @@ fun QuantityButton(
     onClick: () -> Unit,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
-    val vent = viewModel.aCentral.mainRepositorysGetterFacade.getVentForArticleAndColorInThisApp(
+    val vent = viewModel.aCentral.get.getVentForArticleAndColorInThisApp(
         article,
         colorIndex
     )
@@ -63,7 +63,7 @@ fun QuantityButton(
 
             onClick()
 
-            viewModel.aCentral.mainRepositorysSetterFacade.upsertVentCouleurOperationFacade(
+            viewModel.aCentral.set.upsertVentCouleurOperationFacade(
                 vent,
                 produit = article,
                 colorIndex = colorIndex,

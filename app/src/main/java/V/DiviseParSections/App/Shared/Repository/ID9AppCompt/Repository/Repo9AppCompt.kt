@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.MainRepositorysSetterFacade.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.os.Build
 import android.util.Log
@@ -31,7 +31,7 @@ class Repo9AppCompt(
     val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
-        datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentAppComptKeyID }
+        datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
     }
 
     init {
@@ -132,9 +132,6 @@ data class Z_AppCompt(
     var ouvertProduitOnVentNom: String = "",
 
     //---------------------------------------------------Vent Createur--------------------------------------------------------------
-    //Section Parent Period Vent
-    var onVentHVentPeriodKeyId: String = getPushFireBase(ref),
-    var onVentHVentPeriodKeyByParent: String = ParametresAppComptNonSaved().keyIdId7VentPeriod,
 
     var onVentHPeriodVentDebugNameKey: String = "",
     var ouvertHPeriodVentCreationTimestamp: Long = System.currentTimeMillis(),
@@ -147,6 +144,11 @@ data class Z_AppCompt(
     var onVentM1ProduitInfosKeyID: String = "",
     var onVentM1ProduitInfosDebugName: String = "",
 
+
+    //---------------------------------Parent.M14VentPeriode----------------------------------------------------------------------------------------------------------------------------------
+    var current_OnVent_M14VentPeriode_KeyID: String = "",
+    var current_OnVent_M14VentPeriode_DebugInfos: String = "",
+    //------------------------------------------------------------------------------------------------------------------------------------------------
 
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var onVentM3CouleurProduitInfosKeyID: String = "null",

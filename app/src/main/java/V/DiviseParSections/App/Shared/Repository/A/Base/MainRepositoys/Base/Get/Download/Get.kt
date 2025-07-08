@@ -15,6 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9App
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -38,9 +39,9 @@ import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
     val itsDevMode: Boolean = true,
-    val currentAppComptKeyID: String = "-OTmoNn0cljrRuhVR2s4",
+    val currentActiveFocucedM9AppComptKeyID: String = "-OTmoNn0cljrRuhVR2s4",
 
-    val debugNameId9AppComptInfos: String = "",
+    val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val keyIdId7VentPeriod: String = "-OU9Xi8t6tbGKf_IisuB",
     val debugNameId7VentPeriod: String = "Juin_30__8_00",
@@ -51,7 +52,7 @@ data class ParametresAppComptNonSaved(
 )
 
 @Stable
-class MainRepositorysGetterFacade(
+class Get(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
@@ -72,6 +73,7 @@ class MainRepositorysGetterFacade(
 
     val repo9AppCompt: Repo9AppCompt,
     val repo13TarificationInfos: Repo13TarificationInfos,
+    val repo14VentPeriode: Repo14VentPeriode,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: GetFocusedVars,
@@ -117,7 +119,7 @@ class MainRepositorysGetterFacade(
         val ouvertData = repo9AppCompt.currentAppCompt ?: return null
 
         val bonVentKey = ouvertData.onVentM8BonVentKey
-        val periodKey = ouvertData.onVentHVentPeriodKeyId
+        val periodKey = ouvertData.current_OnVent_M14VentPeriode_KeyID
         val matchingOperation = repo10OperationVentCouleur.datasValue.find { operation ->
             operation.parentM3CouleurProduitInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
         }
@@ -236,7 +238,7 @@ class MainRepositorysGetterFacade(
             bProduitDataBase: ArticlesBasesStatsTable,
             indexCouleur: Int,
         ): String {
-            return compt.onVentHVentPeriodKeyId + "--${compt.onVentM8BonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
+            return compt.current_OnVent_M14VentPeriode_KeyID + "--${compt.onVentM8BonVentKey}" + "--${bProduitDataBase.id}" + "--${bProduitDataBase.id}_${indexCouleur + 1}"
         }
     }
 }

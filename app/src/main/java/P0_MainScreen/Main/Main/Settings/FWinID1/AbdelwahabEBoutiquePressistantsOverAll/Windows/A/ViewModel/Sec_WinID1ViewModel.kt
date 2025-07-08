@@ -1,7 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedVarsHandlerFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.CentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -15,18 +15,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ViewModelPresistantButtonsSec8FWinID1(
-    val  aCentralFacade: ACentralFacade,
+    val  aCentralFacade: CentralFacade,
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
-    val getter=aCentralFacade.mainRepositorysGetterFacade
-    val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedVarsHandlerFacade.set
-    val  getterFocusedVarsHandlerFacade =aCentralFacade.focusedVarsHandlerFacade.get
-    val  setter =aCentralFacade.focusedVarsHandlerFacade.set
+    val getter=aCentralFacade.get
+    val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.set
+    val  getterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.get
+    val  setter =aCentralFacade.focusedActiveValuesFacade.set
     val appComptComposeRepositoryProtoJuin17 = getter.repo9AppCompt
 
     data class UiState(
         val setter: SetFocusedVars,
-        val focusedVarsHandlerFacade: FocusedVarsHandlerFacade,
+        val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
         val getter: GetFocusedVars,
         val hClientRepository: Repo2Client,
         val id8BonVentRepository: Repo8BonVent,
@@ -37,9 +37,9 @@ class ViewModelPresistantButtonsSec8FWinID1(
         enum class Button(val nom: String) { ID4("ClientSearchButton") }
     }
     private val _uiState = MutableStateFlow(UiState(
-        focusedVarsHandlerFacade =aCentralFacade.focusedVarsHandlerFacade,
-        getter =aCentralFacade.focusedVarsHandlerFacade.get,
-        setter =aCentralFacade.focusedVarsHandlerFacade.set,
+        focusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade,
+        getter =aCentralFacade.focusedActiveValuesFacade.get,
+        setter =aCentralFacade.focusedActiveValuesFacade.set,
         id8BonVentRepository =getter.repo8BonVent,
         hClientRepository =getter.repo2Client,
         zAppComptRepositoryComposable =getter.repo9AppCompt
