@@ -28,34 +28,19 @@ import androidx.compose.ui.unit.sp
 fun View_DefaultAddItem_M14VentPeriode(
     viewModel: ViewModel_M14VentPeriod,
 ) {
-    // Add some debug info to see if the component is being called
-    println("DEBUG: View_DefaultAddItem_M14VentPeriode is being rendered")
-
-    // Get the required data with null safety
-    val currentKeyID = viewModel.aCentralFacade.get.parametresAppComptNonSaved
-        .currentActiveFocucedM9AppComptKeyID ?: "default_key"
-
-    val currentDebugInfos = viewModel.aCentralFacade.get.parametresAppComptNonSaved
-        .currentActiveFocucedM9AppComptDebugInfos ?: "default_debug"
-
+    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.get.currentM9AppCompt
     val generatedDefaultM14 = M14VentPeriode(
-        parent_M9AppCompt_KeyID = currentKeyID,
-        parent_M9AppCompt_DebugInfos = currentDebugInfos
+        parent_M9AppCompt_KeyID = currentM9AppCompt?.keyID ?: "null",
+        parent_M9AppCompt_DebugInfos = currentM9AppCompt?.get_DebugInfos() ?: "null"
     )
 
-    // Add some spacing before the component
     Spacer(modifier = Modifier.height(8.dp))
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                println("DEBUG: Add button clicked")
-                try {
                     viewModel.aCentralFacade.set.addNewM14VentPeriode(generatedDefaultM14)
-                } catch (e: Exception) {
-                    println("DEBUG: Error adding M14VentPeriode: ${e.message}")
-                }
             }
             .background(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
@@ -100,6 +85,5 @@ fun View_DefaultAddItem_M14VentPeriode(
         }
     }
 
-    // Add some spacing after the component
     Spacer(modifier = Modifier.height(8.dp))
 }

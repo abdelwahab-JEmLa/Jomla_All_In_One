@@ -170,8 +170,16 @@ data class Z_AppCompt(
     //------------------------------------A SUPP ------------------------------------------------------------------------------------------------------------
     var KeyByParent: String = "",
     var vid: Long = 1,
-
-    ) {
+) {
+    fun get_DebugInfos(): String {
+        return buildString {
+            append("(M9=")
+            append(nom)
+            append("[")
+            append(keyID.takeLast(3).uppercase())
+            append("])")
+        }
+    }
 
     fun Z_AppCompt.addStringAuNomsMutableTags(str: String): List<String> {
         val currentTags = if (nomsMutableTags.isNotEmpty()) {

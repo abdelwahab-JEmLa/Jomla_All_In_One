@@ -81,9 +81,11 @@ data class M14VentPeriode(
 ) {
     fun get_DebugInfos(): String {
         return buildString {
+            append("(M14=")
             append(parent_M9AppCompt_DebugInfos)
-            append(" ")
-            append(keyID.takeLast(4).uppercase())
+            append("[")
+            append(keyID.takeLast(3).uppercase())
+            append("])")
         }
     }
 
