@@ -58,12 +58,13 @@ class Repo8BonVent(
     }
 
     fun add(data: M8BonVent) {
-        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
                 _datas.value = _datas.value.toMutableList().apply {
-                        add(dataUpdate)
+                    add(dataUpdate)
                 }
             }
         }
@@ -146,6 +147,17 @@ data class M8BonVent(
     val parentID7VentPeriodeKeyByParent: String = "",
     val parentID8C2TypeTransactionKeyByParent: String = "",
 ) {
+    fun get_DebugInfos(): String {
+        return buildString {
+            append("Nom:(parentM2")
+            append(parentM2ClientInfosKey)
+            append(") ")
+            append("[")
+            append(keyID.takeLast(3).uppercase())
+            append("])")
+        }
+    }
+
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         CreeMaisNonDefinie(android.R.color.white, "غير محدد"),

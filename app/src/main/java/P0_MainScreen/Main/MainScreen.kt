@@ -6,6 +6,7 @@ import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -106,19 +107,17 @@ fun MainScreen(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
-    var isControleFabVisible by remember { mutableStateOf(true) }
+
+    var isControleFabVisible by remember { mutableStateOf(ParametresAppComptNonSaved().isControleFabVisible) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
 
-        // Only navigate if needed, and don't force back to start every time
         if (productDisplayController.clientWindowsDisplayedProductId == null
             && productDisplayController.isHostPhone
             && currentRoute != Screen.FacadePresentoireProduits.route
             && navController.currentDestination != null
         ) {
-
-            // Navigate to PresenterElectroBoutiqueAbdelwahab_Sec10Frag1 instead of A_ClientsLocationGps
             navController.navigate(Screen.FacadePresentoireProduits.route) {
 
             }

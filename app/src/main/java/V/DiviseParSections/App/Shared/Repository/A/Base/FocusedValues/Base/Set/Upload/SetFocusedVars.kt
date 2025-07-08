@@ -170,9 +170,23 @@ class SetFocusedVars(
         }
     }
 
+    fun setIN_M9CurrentApp_onVentM8BonVentKey(m8BonVent: M8BonVent) {
+        repo9AppCompt.currentAppCompt.let {
+            if (it != null) {
+                repo9AppCompt.upsert(
+                    it.copy(
+                        onVentM8BonVentKey = m8BonVent.keyID,
+                        onVentM8BonVentDebugInfos = m8BonVent.get_DebugInfos()
+                    )
+                )
+            }
+        }
+    }
+
     fun setIN_CurrentApp_current_OnVent_M14VentPeriode_KeyID(m14VentPeriode: M14VentPeriode) {
         setIN_CurrentApp_M9_ActiveKeyId(current_OnVent_M14VentPeriode_KeyID = m14VentPeriode.keyID)
     }
+
 
     private fun setIN_CurrentApp_M9_ActiveKeyId(
         current_OnVent_M14VentPeriode_KeyID: String?
@@ -181,7 +195,7 @@ class SetFocusedVars(
             if (it != null) {
                 current_OnVent_M14VentPeriode_KeyID?.let { current_OnVent_M14VentPeriode_KeyID ->
                     it.copy(
-                        current_OnVent_M14VentPeriode_KeyID = current_OnVent_M14VentPeriode_KeyID
+                        current_OnVent_M14VentPeriode_KeyID = current_OnVent_M14VentPeriode_KeyID,
                     )
                 }?.let { it2 ->
                     repo9AppCompt.upsert(

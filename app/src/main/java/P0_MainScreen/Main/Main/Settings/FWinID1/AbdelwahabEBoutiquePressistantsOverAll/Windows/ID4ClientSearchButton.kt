@@ -86,12 +86,6 @@ fun ID4ClientSearchButton(
     val clientsWithCommandBonVents = remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
         hClientRepository.datasValue
             .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
-            .sortedByDescending {
-                repo8BonVent.datasValue
-                    .filter { bonVent -> bonVent.parentM2ClientInfosKey == it.keyID }
-                    .maxByOrNull { bonVent -> bonVent.creationTimestamps }
-                    ?.creationTimestamps ?: 0L
-            }
     }
 
     LaunchedEffect(isSearchMode) {
@@ -131,13 +125,26 @@ fun ID4ClientSearchButton(
     }
 
     Row(
+        modifier = Modifier
+            .getSemanticsTag(hClientRepository.datasValue.filter { it.nom.contains("rach") }.map { it.keyID }.takeLast(4), "hClientRepository")
+            .getSemanticsTag(repo8BonVent.datasValue.map {
+                with(it) {
+                    buildString {
+                        append(it.parentM2ClientInfosDebugName)
+                        append(" ")
+                        append(it.parentM2ClientInfosKey.takeLast(4))
+                        append(" ")
+                        append(etateActuellementEst.name)
+                    }
+                }
+            }, "repo8BonVent")
+            .getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents", 1),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (!isSearchMode) {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents")
                     .size(40.dp),
                 onClick = { isSearchMode = true },
                 containerColor = Color(0xFF4CAF50)
@@ -241,7 +248,7 @@ fun ID4ClientSearchButton(
                         ) {
                             items(filteredClients) { client ->
                                 ClientSearchItem(
-                                    client = client,
+                                    m2Client = client,
                                     onClick = {
                                         onClientSelectedToToast(client)
                                         isSearchMode = false
@@ -333,18 +340,23 @@ private fun CreateNewClientIcon(
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
-    client: HClientInfos,
+    m2Client: HClientInfos,
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val (editedM8BonVent, editedM9CurrCompt) =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.get
-            .get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(client)
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+
+    val editedM8BonVent = get.getDefaultM8BonVent().copy(
+        debugInfos = m2Client.nom,
+        parentM2ClientInfosKey = m2Client.keyID,
+        parentM2ClientInfosDebugName = m2Client.nom,
+        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    )
 
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
-    val latestBonVent = remember(client.keyID, bonVentRepository.datasValue) {
+    val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
         bonVentRepository.datasValue
-            .filter { it.parentM2ClientInfosKey == client.keyID }
+            .filter { it.parentM2ClientInfosKey == m2Client.keyID }
             .maxByOrNull { it.creationTimestamps }
     }
 
@@ -352,9 +364,8 @@ fun ClientSearchItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
-                    editedM8BonVent, editedM9CurrCompt
-                )
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_New_M8BonVentFacade(editedM8BonVent)
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(editedM8BonVent)
                 onClick()
             }
             .padding(12.dp),
@@ -365,14 +376,16 @@ fun ClientSearchItem(
             modifier = Modifier
                 .size(12.dp)
                 .background(
-                    color = Color(latestBonVent?.etateActuellementEst?.color ?: client.actuelleEtat.color),
+                    color = Color(
+                        latestBonVent?.etateActuellementEst?.color ?: m2Client.actuelleEtat.color
+                    ),
                     shape = CircleShape
                 )
         )
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = client.nom,
+                text = m2Client.nom,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -385,9 +398,9 @@ fun ClientSearchItem(
                 )
             }
 
-            if (client.caMarqueGpsEstOuvert && client.latitude != 0.0 && client.longitude != 0.0) {
+            if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
                 Text(
-                    text = "📍 ${String.format("%.4f", client.latitude)}, ${String.format("%.4f", client.longitude)}",
+                    text = "📍 ${String.format("%.4f", m2Client.latitude)}, ${String.format("%.4f", m2Client.longitude)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50)
                 )
@@ -396,15 +409,15 @@ fun ClientSearchItem(
 
         Row {
             Icon(
-                imageVector = client.clientTypeMode.icon,
+                imageVector = m2Client.clientTypeMode.icon,
                 contentDescription = null,
-                tint = client.clientTypeMode.color,
+                tint = m2Client.clientTypeMode.color,
                 modifier = Modifier.size(16.dp)
             )
             Icon(
                 imageVector = Icons.Default.Receipt,
                 contentDescription = null,
-                tint = client.clientTypeMode.color,
+                tint = m2Client.clientTypeMode.color,
                 modifier = Modifier.size(16.dp)
             )
         }

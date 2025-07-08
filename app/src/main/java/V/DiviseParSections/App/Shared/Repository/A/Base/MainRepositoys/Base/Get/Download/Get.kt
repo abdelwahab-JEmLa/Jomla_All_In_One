@@ -44,7 +44,8 @@ data class ParametresAppComptNonSaved(
 
     val activeWindowsSearchProduit: Boolean = false,
     val devStartUpScree: Screen = Screen.FacadePresentoireProduits,
-    var enablePerformAutoClickImageDisplayer: Boolean= false,
+    var enablePerformAutoClickImageDisplayer: Boolean = false,
+    val isControleFabVisible: Boolean = false,
 )
 
 @Stable
