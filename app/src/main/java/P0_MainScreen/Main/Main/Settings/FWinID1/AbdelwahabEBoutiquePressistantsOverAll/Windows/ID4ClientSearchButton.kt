@@ -53,12 +53,13 @@ import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 @OptIn(FlowPreview::class)
@@ -88,17 +89,19 @@ fun ID4ClientSearchButton(
             .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
     }
 
+    // Fixed: Don't automatically show all clients when entering search mode
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
-            filteredClients = clientsWithCommandBonVents
-            showDropdown = clientsWithCommandBonVents.isNotEmpty()
-            coroutineScope.launch {
+            filteredClients = emptyList()
+            showDropdown = false
+
+            // Use Main dispatcher explicitly to ensure we're on the UI thread
+            withContext(Dispatchers.Main) {
                 delay(100)
                 focusRequester.requestFocus()
             }
         }
     }
-
     LaunchedEffect(searchQuery) {
         if (isSearchMode) searchQueryFlow.value = searchQuery
     }
@@ -110,9 +113,11 @@ fun ID4ClientSearchButton(
                 .distinctUntilChanged()
                 .collect { query ->
                     if (query.isEmpty()) {
-                        filteredClients = clientsWithCommandBonVents
-                        showDropdown = clientsWithCommandBonVents.isNotEmpty()
+                        // Fixed: Don't show any clients when search is empty
+                        filteredClients = emptyList()
+                        showDropdown = false
                     } else {
+                        // Filter clients based on search query
                         val filtered = hClientRepository.datasValue.filter { client ->
                             client.nom.contains(query, ignoreCase = true) ||
                                     client.numTelephone.contains(query, ignoreCase = true)
