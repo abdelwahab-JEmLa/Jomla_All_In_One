@@ -221,8 +221,8 @@ data class M8BonVent(
             .withOutFireBaseInvalidCharacters()
 
         val ref = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas08BonVent"
-        )
+            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
+        ).child("Datas08BonVent")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
     }

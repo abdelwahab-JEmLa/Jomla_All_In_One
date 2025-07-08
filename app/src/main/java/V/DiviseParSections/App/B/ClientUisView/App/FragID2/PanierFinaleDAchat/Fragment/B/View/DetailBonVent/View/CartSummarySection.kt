@@ -67,9 +67,7 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 title = "Articles Trouvés",
                 summary = summaryByDeliveryStatus.trouveSummary,
                 icon = Icons.Default.CheckCircle,
-                iconTint = Color(0xFF4CAF50), // Green
-                showTotal = true,
-                viewModel = viewModel
+                iconTint = Color(0xFF4CAF50) // Green
             )
         }
 
@@ -79,9 +77,7 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 title = "Articles Non Trouvés",
                 summary = summaryByDeliveryStatus.nonTrouveSummary,
                 icon = Icons.Default.Error,
-                iconTint = Color(0xFFFF5722), // Orange/Red
-                showTotal = false,
-                viewModel = viewModel
+                iconTint = Color(0xFFFF5722) // Orange/Red
             )
         }
 
@@ -114,8 +110,6 @@ private fun SummarySection(
     summary: CartSummary,
     icon: ImageVector,
     iconTint: Color,
-    showTotal: Boolean,
-    viewModel: ZViewModel_Sec1Frag3
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp)
