@@ -354,7 +354,6 @@ private fun CreateNewClientIcon(
         )
     }
 }
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
@@ -370,51 +369,69 @@ fun ClientSearchItem(
             .maxByOrNull { it.creationTimestamps }
     }
 
-    val find_Edited_M8BonVent = viewModel.aCentralFacade.get.repo8BonVent.datasValue.find {
-        (it.parentM2ClientInfosKey == m2Client.keyID
-                && it.parentM7VentPeriodKeyId == (get.currentActiveFocuced_M14VentPeriode?.keyID
-            ?: ""))
-    }?.copy(
-        etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    )
+    // Improved: Single function to handle M8BonVent creation/update logic
+    val handleBonVentSelection = remember(m2Client.keyID) {
+        {
+            val currentactivefocucedM14ventperiode = get.currentActiveFocuced_M14VentPeriode
+            val currentPeriodKey = currentactivefocucedM14ventperiode?.keyID ?: ""
 
-    val defaultM8BonVent = get.getDefaultM8BonVent()
-        .copy(
+            val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
+                bonVent.parentM2ClientInfosKey == m2Client.keyID &&
+                        bonVent.parentM7VentPeriodKeyId == currentPeriodKey
+            }
+
+            val targetBonVent = existingBonVent?.copy(
+                etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            ) ?: M8BonVent().copy(
+                parentZAppComptNom = currentactivefocucedM14ventperiode?.parent_M9AppCompt_KeyID?:"null",
+                parentID7VentPeriodeKeyByParent = currentPeriodKey,
+                debugInfos = m2Client.nom,
+                parentM2ClientInfosKey = m2Client.keyID,
+                parentM2ClientInfosDebugName = m2Client.nom,
+                etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            )
+
+            // Use appropriate method based on whether BonVent exists
+            if (existingBonVent != null) {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.update_M8BonVent(targetBonVent)
+            } else {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
+            }
+
+            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(targetBonVent)
+
+            targetBonVent
+        }
+    }
+
+    val previewBonVent = remember(m2Client.keyID, get.currentActiveFocuced_M14VentPeriode?.keyID) {
+        val currentPeriodKey = get.currentActiveFocuced_M14VentPeriode?.keyID ?: ""
+        val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
+            bonVent.parentM2ClientInfosKey == m2Client.keyID &&
+                    bonVent.parentM7VentPeriodKeyId == currentPeriodKey
+        }
+
+        existingBonVent?.copy(
+            etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        ) ?: get.getDefaultM8BonVent().copy(
             debugInfos = m2Client.nom,
             parentM2ClientInfosKey = m2Client.keyID,
             parentM2ClientInfosDebugName = m2Client.nom,
             etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         )
+    }
 
     ElevatedCard(
         modifier = Modifier
-            .getSemanticsTag(find_Edited_M8BonVent,"find_Edited_M8BonVent")
-            .getSemanticsTag(defaultM8BonVent,"defaultM8BonVent")
+            .getSemanticsTag(previewBonVent, "previewBonVent")
             .padding(petitePaddine)
     ) {
         Row(
             modifier = Modifier
-                .getSemanticsTag(find_Edited_M8BonVent,"find_Edited_M8BonVent")
-                .getSemanticsTag(defaultM8BonVent,"defaultM8BonVent")
+                .getSemanticsTag(previewBonVent, "previewBonVent")
                 .fillMaxWidth()
                 .clickable {
-                    find_Edited_M8BonVent?.let {
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent(
-                            it
-                        )
-
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
-                            it
-                        )
-                    } ?: run {
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent(
-                            defaultM8BonVent
-                        )
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
-                            defaultM8BonVent
-                        )
-                    }
-
+                    handleBonVentSelection()
                     onClick()
                 }
                 .padding(12.dp),

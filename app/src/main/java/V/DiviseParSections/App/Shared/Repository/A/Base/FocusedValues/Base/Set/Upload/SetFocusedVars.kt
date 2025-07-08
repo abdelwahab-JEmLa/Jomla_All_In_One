@@ -31,14 +31,15 @@ class SetFocusedVars(
         updatedDefaultId8BonVent: M8BonVent,
         newCurrentM9AppCompt: Z_AppCompt?
     ) {
-        this.upsert_M8BonVent(updatedDefaultId8BonVent)
+        this.update_M8BonVent(updatedDefaultId8BonVent)
 
         if (newCurrentM9AppCompt != null) {
             updateFocuceM9AppCompt(newCurrentM9AppCompt)
         }
     }
 
-    fun upsert_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
+    fun update_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
+    fun add_M8BonVent(defaultM8BonVent: M8BonVent) = repo8BonVent.add(defaultM8BonVent)
 
     fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
 
@@ -204,4 +205,6 @@ class SetFocusedVars(
             }
         }
     }
+
+
 }

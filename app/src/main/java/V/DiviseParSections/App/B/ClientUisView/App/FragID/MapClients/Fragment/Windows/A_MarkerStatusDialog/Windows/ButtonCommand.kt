@@ -15,6 +15,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,38 +32,48 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
 ) {
     val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-    val get = focusedVarsHandlerFacade.get
 
-    val findActiveOnCourDeVentM8BonVent =
-        viewModel.aCentralFacade.get.repo8BonVent.datasValue
-            .find {
-                (it.parentM7VentPeriodKeyId == (viewModel.aCentralFacade.focusedActiveValuesFacade.get
-                    .currentActiveFocuced_M14VentPeriode?.keyID?: "null")
-                        && it.etateActuellementEst == newEtate)
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+    val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
+    val handleBonVentSelection = remember(m2Client.keyID) {
+        {
+            val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
+            val currentPeriodKey = currentActiveFocuced_M14VentPeriode?.keyID ?: ""
+
+            val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
+                bonVent.parentM2ClientInfosKey == m2Client.keyID &&
+                        bonVent.parentM7VentPeriodKeyId == currentPeriodKey
             }
 
-    val findSecureDefaultM8 = findActiveOnCourDeVentM8BonVent ?: get.getDefaultM8BonVent()
+            val targetBonVent = existingBonVent?.copy(
+                etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            ) ?: M8BonVent().copy(
+                parentZAppComptNom = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID?:"null",
+                parentID7VentPeriodeKeyByParent = currentPeriodKey,
+                debugInfos = m2Client.nom,
+                parentM2ClientInfosKey = m2Client.keyID,
+                parentM2ClientInfosDebugName = m2Client.nom,
+                etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+            )
 
-    val editedM8BonVent = findSecureDefaultM8.copy(
-        debugInfos = m2Client.nom,
-        parentM2ClientInfosKey = m2Client.keyID,
-        parentM2ClientInfosDebugName = m2Client.nom,
-        etateActuellementEst = newEtate
-    )
+            if (existingBonVent != null) {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.update_M8BonVent(targetBonVent)
+            } else {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
+            }
 
-    val editedM9CurrCompt = get.currentM9AppCompt?.copy(
-        onVentM8BonVentKey = editedM8BonVent.keyID,
-        onVentM8BonVentDebugInfos = editedM8BonVent.debugInfos
-    )
+            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(targetBonVent)
+
+            targetBonVent
+        }
+    }
 
     FilledTonalButton(
         modifier = modifier
             .fillMaxWidth(),
         onClick = {
-            focusedVarsHandlerFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
-                editedM8BonVent,
-                editedM9CurrCompt
-            )
+            handleBonVentSelection()
+
             viewModel.startRecordIfNot()
             viewModel.updateLongAppSetting(m2Client.id)
             onUpdateLongAppSetting()
