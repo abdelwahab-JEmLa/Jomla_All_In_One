@@ -318,9 +318,11 @@ fun MainScreen(
                 if (activeWindowsSearchProduit) {
                     MainFastSearchProduitPourVent()
                 }
+
                 val produitName = (viewModel.aCentralFacade
                     .focusedVarsHandlerFacade.get.currentM9AppCompt?.startTextSearchM1Produit
                     ?: "")
+
                 if (viewModel.aCentralFacade.focusedVarsHandlerFacade.get.activeDialogSearchM1Produit) {
                     Dialog_MainFastSearchProduitPourVent(
                         sourceLenceurDeCetteFragment =

@@ -83,7 +83,10 @@ fun Dialog_MainFastSearchProduitPourVent(
                 PressistatntMainActivityButtons_Sec8FWinID1()
 
                 FloatingActionButton(
-                    onClick = { focusedVarsHandlerFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit() },
+                    onClick = {
+                        focusedVarsHandlerFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+
+                              },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)

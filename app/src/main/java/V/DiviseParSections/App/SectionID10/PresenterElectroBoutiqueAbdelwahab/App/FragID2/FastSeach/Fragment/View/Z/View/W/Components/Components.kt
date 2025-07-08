@@ -164,7 +164,7 @@ fun QuantityDisplay(
                         m10OperationVentCouleurs = getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
                     )
 
-                    focusedVarsHandlerFacade.set.focucePourPrixDeM1ProduitFacade(produit)
+                    focusedVarsHandlerFacade.set.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
 
                     onQuantityClickToHaptic()
                 },

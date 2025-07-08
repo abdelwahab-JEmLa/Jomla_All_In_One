@@ -87,7 +87,7 @@ class GetFocusedVars(
     }
 
     val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
-        repoM1ProduitInfos.datasValue.find { it.keyID == currentM9AppCompt?.focusedAuPrixDifineurM1ProduitInfosKeyId }
+        repoM1ProduitInfos.datasValue.find { it.keyID == currentM9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }
     }
 
     val focused_ListM10OpeVentCouleur_Par_PD_M1Produit by derivedStateOf {

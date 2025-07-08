@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 data class ParametresAppComptNonSaved(
+    val itsDevMode: Boolean = true,
     val currentAppComptKeyID: String = "-OTmoNn0cljrRuhVR2s4",
 
     val debugNameId9AppComptInfos: String = "",
@@ -45,13 +46,8 @@ data class ParametresAppComptNonSaved(
     val debugNameId7VentPeriod: String = "Juin_30__8_00",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.A_ClientsLocationGps,
-    val itsDevMode: Boolean = true,
+    val devStartUpScree: Screen = Screen.FacadePresentoireProduits,
     var enablePerformAutoClickImageDisplayer: Boolean= false,
-)
-
-data class IDsModels(
-    val ID2HClientInfos: String = "ID2",
 )
 
 @Stable

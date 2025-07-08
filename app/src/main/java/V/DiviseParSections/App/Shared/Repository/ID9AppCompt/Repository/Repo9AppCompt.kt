@@ -159,8 +159,8 @@ data class Z_AppCompt(
     var dialogChoisireQuantityM1ProduitInfosDebugName: String = "null",
     //------------------------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-    var focusedAuPrixDifineurM1ProduitInfosKeyId: String = "null",
-    var focusedAuPrixDifineurM1ProduitInfosDebugInfos: String = "null",
+    var activeFocuce_TariffPrixDifineur_M1ProduitKeyID: String = "null",
+    var activeFocuseTariffPrixDifineurM1ProduitDebugInfos: String = "null",
     //---------------------------------M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var startTextSearchM1Produit: String = "",
     //------------------------------------------------------------------------------------------------------------------------------------------------

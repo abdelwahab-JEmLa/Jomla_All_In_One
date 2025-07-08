@@ -7,48 +7,32 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import android.util.Log
 
-fun focucePourPrixDeM1Produit(
+fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     produitKey: String,
     getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt
-    if (currentAppCompt == null) {
-        Log.e("FocusedVarsDebug", "Cannot focus product - currentM9AppCompt is null")
-        return
+
+    val updatedAppCompt = currentAppCompt?.copy(
+        activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produitKey,
+    )
+
+    if (updatedAppCompt != null) {
+        repo9AppCompt.upsert(updatedAppCompt)
     }
-
-    Log.d(
-        "FocusedVarsDebug",
-        "focucePourPrixDeM1Produit - setting focusedAuPrixDifineurM1ProduitInfosKeyId to: $produitKey"
-    )
-
-    val updatedAppCompt = currentAppCompt.copy(
-        focusedAuPrixDifineurM1ProduitInfosKeyId = produitKey,
-    )
-
-    repo9AppCompt.upsert(updatedAppCompt)
-
-    Log.d(
-        "FocusedVarsDebug",
-        "focucePourPrixDeM1Produit - upserted app compt with keyId: $produitKey"
-    )
 }
 
-fun set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId(
+fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     getterFocusedVars: GetFocusedVars,
     repo9AppCompt: Repo9AppCompt
 ) {
-    val currentAppCompt = getterFocusedVars.currentM9AppCompt
-    if (currentAppCompt == null) {
-        Log.e("FocusedVarsDebug", "Cannot nullify focus - currentM9AppCompt is null")
-        return
-    }
+    val currentAppCompt = getterFocusedVars.currentM9AppCompt ?: return
 
     repo9AppCompt.upsert(
         currentAppCompt.copy(
-            focusedAuPrixDifineurM1ProduitInfosKeyId = "null",
-            focusedAuPrixDifineurM1ProduitInfosDebugInfos = "null",
+            activeFocuce_TariffPrixDifineur_M1ProduitKeyID = "null",
+            activeFocuseTariffPrixDifineurM1ProduitDebugInfos = "null",
         )
     )
 }

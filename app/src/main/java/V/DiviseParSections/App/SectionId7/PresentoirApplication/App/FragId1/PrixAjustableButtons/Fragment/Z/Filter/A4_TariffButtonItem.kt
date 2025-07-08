@@ -73,13 +73,16 @@ fun TariffButtonItem(
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
 
-    fun handelClick() =
+    fun handelClick()  {
         viewModel.aCentralFacade.mainRepositorysSetterFacade
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 focused_M13TarificationInfos_Pour_Produit = latestTariff,
                 m10OperationVentCouleurs = viewModel.aCentralFacade.focusedVarsHandlerFacade.get
                     .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
             )
+        viewModel.aCentralFacade.focusedVarsHandlerFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
+
+    }
 
     fun handlePriceEditDone() {
         val newPrice = editablePriceText.toDoubleOrNull()

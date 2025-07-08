@@ -167,10 +167,10 @@ fun ImageDisplayerProtoAvantJuin3(
                     .getSemanticsTag(activeProduit?.getDebugInfos() ?: "null", "activeProduit", 1)
                     .clickable {
                         // Manual click handler - always available
-                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(
-                            true
-                        )
+                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
                         focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
+                        focusedVarsHandlerFacade.set.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
+
                         onClickToOpenWindow()
                     }
                     .fillMaxSize()

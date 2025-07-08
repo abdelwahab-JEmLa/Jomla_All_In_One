@@ -2,9 +2,9 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.add_New_M8BonVent
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focucePourPrixDeM1Produit
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.updateCurrentAppComptDialogProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -59,7 +59,7 @@ class SetFocusedVars(
             getterFocusedVars = get,
             repo9AppCompt = repo9AppCompt,
         )
-        focucePourPrixDeM1Produit(
+        setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produitKey,
             get,
             repo9AppCompt
@@ -73,26 +73,30 @@ class SetFocusedVars(
             produit,
         )
 
-    fun focucePourPrixDeM1ProduitFacade(produit: ArticlesBasesStatsTable) {
-        focucePourPrixDeM1Produit(
-            produit.keyID,
-            get,
-            repo9AppCompt
-        )
-    }
 
     fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
         updateCurrentAppComptDialogProduit(get, repo9AppCompt)
-        focucePourPrixDeM1Produit(
+        setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit.keyID,
             get,
             repo9AppCompt
         )
     }
 
-    fun anulle_Focuce_Pour_PrixDeM1ProduitFacade() {
-        set_null_CurrentApp_focusedAuPrixDifineurM1ProduitInfosKeyId(get, repo9AppCompt)
+    //--------------------activeFocuce_TariffPrixDifineur_M1ProduitKeyID--------------------------------------------------------
+    fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit: ArticlesBasesStatsTable) {
+        setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+            produit.keyID,
+            get,
+            repo9AppCompt
+        )
     }
+
+    fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID() {
+        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(get, repo9AppCompt)
+    }
+    //--------------------activeFocuce_TariffPrixDifineur_M1ProduitKeyID--------------------------------------------------------
+
 
     fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
         get.currentM9AppCompt?.let {
@@ -118,21 +122,33 @@ class SetFocusedVars(
     }
 
     fun active_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
-        set_CurrentApp_activeDialogSearchM1Produit(value)
+        setIn_CurrentApp_activeDialogSearchM1Produit(value)
     }
 
     fun dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit() {
-        set_CurrentApp_activeDialogSearchM1Produit(false)
+        clear_CurrentApp_activeDialogSearchM1Produit()
         set_Current_startTextSearchM1Produit("")
-        anulle_Focuce_Pour_PrixDeM1ProduitFacade()
+        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
     }
 
-    private fun set_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
+    private fun setIn_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
         repo9AppCompt.currentAppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
                         activeDialogSearchM1Produit = value
+                    )
+                )
+            }
+        }
+    }
+
+    fun clear_CurrentApp_activeDialogSearchM1Produit() {
+        repo9AppCompt.currentAppCompt.let {
+            if (it != null) {
+                repo9AppCompt.upsert(
+                    it.copy(
+                        activeDialogSearchM1Produit = false
                     )
                 )
             }

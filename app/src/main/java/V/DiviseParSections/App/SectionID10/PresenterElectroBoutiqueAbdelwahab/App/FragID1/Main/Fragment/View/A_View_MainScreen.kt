@@ -179,12 +179,12 @@ fun MainUi(
             )
         }
 
-        if (viewModel.aCentral.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null) {
-          /*  Dialog_MainFastSearchProduitPourVent(
-                focusedVarsHandlerFacade = viewModel.aCentral.focusedVarsHandlerFacade,
-                sourceLenceurDeCetteFragment = ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits,
-            )      */
-        }
+        /* if (viewModel.aCentral.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null) {
+             Dialog_MainFastSearchProduitPourVent(
+                 focusedVarsHandlerFacade = viewModel.aCentral.focusedVarsHandlerFacade,
+                 sourceLenceurDeCetteFragment = ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.AfficheSearchAllProduits,
+             )
+        }   */
     }
 }
 
