@@ -63,6 +63,8 @@ fun ID3RecordingButton(
             Text(
                 "$displayTime | بقي ${filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size} زبون",
                 modifier = Modifier
+                    .getSemanticsTag(get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID,
+                        "parent_M9AppCompt_KeyID")
                     .getSemanticsTag(filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
                         "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible")
                     .background(if (enable) buttonBackgroundColor else Color.Gray)
