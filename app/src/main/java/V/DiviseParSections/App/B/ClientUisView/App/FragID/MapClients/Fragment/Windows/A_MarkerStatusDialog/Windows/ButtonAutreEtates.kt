@@ -77,10 +77,8 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     FilledTonalButton(
         modifier = handleBonVentSelection_With_Semantics_Debug.first.fillMaxWidth(),
         onClick = {
-            // Execute the handler function
             handleBonVentSelection_With_Semantics_Debug.second
 
-            // Execute the additional logic for specific states
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {
