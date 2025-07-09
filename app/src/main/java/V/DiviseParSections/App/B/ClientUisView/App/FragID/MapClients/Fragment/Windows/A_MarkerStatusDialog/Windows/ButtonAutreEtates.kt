@@ -32,10 +32,10 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val aCentralFacade = viewModel.aCentralFacade
     val m2Client = aCentralFacade.get.repo2Client.datasValue.find { it.id == clickedClient }!!
 
-    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
-    val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
-
     val handleBonVentSelection_With_Semantics_Debug = remember(m2Client.keyID) {
+        val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+        val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
+
         val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
         val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: "null"
         val parent_M9AppCompt_KeyID = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID ?: "null"
@@ -71,14 +71,14 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
         val semMod = Modifier.getSemanticsTag(new, "new")
 
-        Triple(semMod, targetBonVent, handleClick)
+        Pair(semMod, handleClick)
     }
 
     FilledTonalButton(
         modifier = handleBonVentSelection_With_Semantics_Debug.first.fillMaxWidth(),
         onClick = {
             // Execute the handler function
-            handleBonVentSelection_With_Semantics_Debug.third()
+            handleBonVentSelection_With_Semantics_Debug.second
 
             // Execute the additional logic for specific states
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
