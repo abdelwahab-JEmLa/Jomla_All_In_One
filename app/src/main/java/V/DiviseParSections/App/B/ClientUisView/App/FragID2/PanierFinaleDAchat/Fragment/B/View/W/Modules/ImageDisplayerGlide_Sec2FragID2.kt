@@ -65,12 +65,13 @@ fun ImageDisplayerGlide_Sec2FragID2(
         tonalElevation = 2.dp,
         shadowElevation = 4.dp
     ) {
-        Box(
+        Box(                                                       //<--
+        //TODO(1): regle si currenapp . afficheBttonArrete le windows recorde s affiche 
             modifier = Modifier
                 .size(imageSize.width, imageSize.height)
         ) {
             if (imageExists && imageFile != null) {   //<--
-            //TODO(1): ajout au top start n icon button au click toggke var  collecteur_Declare_Que_Il_Va_le_Cherche
+            //TODO(1): ajout au top start n icon button au click toggke var  collecteur_Declare_Que_Il_est_on_de_le_Cherche
                 GlideImage(
                     model = imageFile,
                     contentDescription = "Color image for $colorName",

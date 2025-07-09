@@ -51,6 +51,7 @@ import kotlin.math.roundToInt
 class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
     private var _showVendeursDialog = mutableStateOf(false)
+    private var _show_Dialog_M9ComptApp_List = mutableStateOf(true)
 
     var _paneleGroupeButtonList = mutableStateOf(
         listOf(
@@ -113,30 +114,8 @@ class PanelsGroupeButtonHandler {
                             }
                         }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            val couleur = Color(0xFF9C27B0)
-                            FloatingActionButton(
-                                onClick = {
-                                    _showVendeursDialog.value = true
-                                }, modifier = Modifier.size(40.dp), containerColor = couleur
-                            ) {
-                                Icon(
-                                    Icons.Filled.PhoneAndroid, contentDescription = "View Vendeurs"
-                                )
-                            }
-                            if (showLabels) {
-                                Text(
-                                    "View Vendeurs", modifier = Modifier
-                                        .background(
-                                            couleur
-                                        )
-                                        .padding(4.dp), color = Color.White
-                                )
-                            }
-                        }
+                        Button_Affiche_Dialog_List_AppsCompts(showLabels)
+                        Button_Affiche_Dialog_ListVentPeriodes(showLabels)
 
                         ControlButton(
                             onClick = { showLabels = !showLabels },
@@ -158,14 +137,70 @@ class PanelsGroupeButtonHandler {
                         containerColor = Color(0xFFF44336)
                     )
                 }
-                AfficheComptsVendeursManager()
+                Affiche_VentPeriod_Manager()
             }
 
             LaunchedEffect(_showDialogeControleFabs.value) {
             }
 
-            // Add the dialog display here to ensure it's in the composition hierarchy
             AfficheDialogesHeadApps()
+        }
+    }
+
+    @Composable
+    private fun Button_Affiche_Dialog_List_AppsCompts(
+        showLabels: Boolean
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            val couleur = Color(0xFFF44336)
+            FloatingActionButton(
+                onClick = {
+                    _show_Dialog_M9ComptApp_List.value = true
+                }, modifier = Modifier.size(40.dp), containerColor = couleur
+            ) {
+                Icon(
+                    Icons.Filled.PhoneAndroid, contentDescription = null
+                )
+            }
+            if (showLabels) {
+                Text(
+                    "Button_Affiche_Dialog_List_AppsCompts", modifier = Modifier
+                        .background(
+                            couleur
+                        )
+                        .padding(4.dp), color = Color.White
+                )
+            }
+        }
+    }
+    @Composable
+    private fun Button_Affiche_Dialog_ListVentPeriodes(showLabels: Boolean) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            val couleur = Color(0xFF9C27B0)
+            FloatingActionButton(
+                onClick = {
+                    _showVendeursDialog.value = true
+                }, modifier = Modifier.size(40.dp), containerColor = couleur
+            ) {
+                Icon(
+                    Icons.Filled.PhoneAndroid, contentDescription = "View Vendeurs"
+                )
+            }
+            if (showLabels) {
+                Text(
+                    "View M14PeriodesVent", modifier = Modifier
+                        .background(
+                            couleur
+                        )
+                        .padding(4.dp), color = Color.White
+                )
+            }
         }
     }
 
@@ -251,7 +286,33 @@ class PanelsGroupeButtonHandler {
     }
 
     @Composable
-    private fun AfficheComptsVendeursManager() {
+    private fun Dialog_M9_Manager() {
+        if (_show_Dialog_M9ComptApp_List.value) {
+            Dialog(
+                onDismissRequest = {
+                    _show_Dialog_M9ComptApp_List.value = false
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = true
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp),
+                    shape = MaterialTheme.shapes.large,
+                    tonalElevation = 2.dp
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ScreenM14VentPeriod()
+                    }
+                }
+            }
+        }
+    }
+    @Composable
+    private fun Affiche_VentPeriod_Manager() {
         if (_showVendeursDialog.value) {
             Dialog(
                 onDismissRequest = {
