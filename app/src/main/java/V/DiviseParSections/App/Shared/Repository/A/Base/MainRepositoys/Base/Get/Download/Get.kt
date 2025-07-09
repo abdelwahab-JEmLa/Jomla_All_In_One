@@ -81,23 +81,20 @@ class Get(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
-    val travailleChezGrossisst3Ali = getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
+    val travailleChezGrossisst3Ali =
+        getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
 
-
-    fun getClientLastBonVentParEtate(
-        clientId: Long,
-        etateActuellementEst: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ): M8BonVent? {
-        return repo8BonVent.datasValue.filter {
-            it.parent_M2Client_OldLongID == clientId && it.etateActuellementEst == etateActuellementEst
-        }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
+    //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun get_Last_M8BonVent_Par_M2Client(m2Client: HClientInfos): M8BonVent? {
+        return repo8BonVent.datasValue
+            .filter {
+                (it.parent_M2Client_KeyID == m2Client.keyID)
+            }
+            .maxByOrNull { it.creationTimestamps }
     }
 
-    fun getClientLastTransaction(clientId: Long): M8BonVent? {
-        return repo8BonVent.datasValue.filter {
-            it.parent_M2Client_OldLongID == clientId
-        }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
-    }
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     fun getRelatedCouleur(
         produit: ArticlesBasesStatsTable, colorIndex: Int
@@ -152,7 +149,7 @@ class Get(
 
     val nombreClientsOuLeurDernierEtateCible: Int by derivedStateOf {
         repo2Client.datasValue.count { client ->
-            val lastTransaction = getClientLastTransaction(client.id)
+            val lastTransaction = get_Last_M8BonVent_Par_M2Client(client)
             lastTransaction?.etateActuellementEst in listOf(
                 M8BonVent.EtateActuellementEst.Cible,
             )

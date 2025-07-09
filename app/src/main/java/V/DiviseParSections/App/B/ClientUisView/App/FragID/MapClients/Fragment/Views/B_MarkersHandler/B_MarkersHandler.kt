@@ -32,8 +32,7 @@ fun addOuUpdateMapMarkers(
     mapView.overlays.removeAll(markersToRemove)
 
     // Filter clientAchteurs based on the current mode
-    val clientsToShow =
-        filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
+    val clientsToShow = filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
 
     // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(

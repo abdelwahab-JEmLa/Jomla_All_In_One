@@ -137,9 +137,9 @@ class MapClientsViewModel(
 
     }
 
-    fun getLastTransaction(client: HClientInfos): M8BonVent? {
-        return getter.getClientLastTransaction(
-            client.id,
+    fun getLastTransaction(m2Client: HClientInfos): M8BonVent? {
+        return getter.get_Last_M8BonVent_Par_M2Client(
+            m2Client
         )
     }
 

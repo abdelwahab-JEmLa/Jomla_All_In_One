@@ -121,8 +121,6 @@ class RecordingViewModel(
             updateUiState {
                 it.copy(bonAchatList = list)
             }
-            // Calculate after updating the state to ensure fresh data
-            updateClientCountCache()
         }
     }
 
@@ -133,7 +131,6 @@ class RecordingViewModel(
             updateUiState { currentState ->
                 currentState.copy(activePeriodeVent = activePeriodeVent)
             }
-            updateClientCountCache()
         }
     }
 
@@ -149,28 +146,6 @@ class RecordingViewModel(
         }
     }
 
-    fun calculateNombreClientAvecCible(): Int {
-        val count = getter.repo2Client.datasValue
-            .count { client ->
-                getter
-                    .getClientLastBonVentParEtate(
-                        client.id,
-                        M8BonVent.EtateActuellementEst.Cible
-                    ) != null
-            }
-        return count
-    }
-
-    // Helper method to update_showDetailsExpanded the client count cache
-    private fun updateClientCountCache() {
-        val count = calculateNombreClientAvecCible()
-        updateUiState { it.copy(nombreClientsAvecCible = count) }
-    }
-
-    // Public method that returns the cached value
-    fun nombreClientAvecCibleCommeLastBonAchat(): Int {
-        return uiState.value.nombreClientsAvecCible
-    }
 
     private fun updateUiState(update: (UiState) -> UiState) {
         _uiState.value = update(_uiState.value)
