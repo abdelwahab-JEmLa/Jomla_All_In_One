@@ -41,7 +41,7 @@ val composRepositorysModule = module {
     single { RepoM1ProduitInfos(get()) }
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(get(), get()) }
-    single { Repo8BonVent(get(), get()) }
+    single { Repo8BonVent( androidContext(),get(), get()) }
     single { KAchatCouleurOperationRepository(get()) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 

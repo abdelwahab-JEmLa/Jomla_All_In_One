@@ -34,7 +34,7 @@ fun ConfirmationButton(
     val currentBonVent = viewModel.aCentral.focusedActiveValuesFacade.get.onVentM8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.set.updateM8BonVent(
+        viewModel.aCentral.set.upsertM8BonVent(
             data.copy(
                 etateActuellementEst = newEtate
             )

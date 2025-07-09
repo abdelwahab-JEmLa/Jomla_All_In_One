@@ -35,33 +35,31 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
 
-    val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
-    val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: ""
-    val parent_M9AppCompt_KeyID = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID ?: "null"
+    val handleBonVentSelection_With_Semantics_Debug = remember(m2Client.keyID) {
+        val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
+        val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: "null"
+        val parent_M9AppCompt_KeyID = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID ?: "null"
 
-    val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
-        bonVent.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode_KeyID
-                && bonVent.parent_M2Client_KeyID == m2Client.keyID
-                && bonVent.etateActuellementEst == newEtate
-    }
-    val new = M8BonVent().copy(
-        parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
-        parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode_KeyID,
-        parent_M2Client_KeyID = m2Client.keyID,
-        parent_M2Client_DebugInfos = m2Client.nom,
-        etateActuellementEst = newEtate
-    )
+        val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
+            bonVent.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode_KeyID
+                    && bonVent.parent_M2Client_KeyID == m2Client.keyID
+                    && bonVent.etateActuellementEst == newEtate
+        }
+        val new = M8BonVent().copy(
+            parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
+            parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode_KeyID,
+            parent_M2Client_KeyID = m2Client.keyID,
+            parent_M2Client_DebugInfos = m2Client.nom,
+            etateActuellementEst = newEtate
+        )
 
-    val targetBonVent = existingBonVent?.copy(
-        etateActuellementEst = newEtate
-    ) ?: new
+        val targetBonVent = existingBonVent?.copy(
+            etateActuellementEst = newEtate
+        ) ?: new
 
-    val handleBonVentSelection = remember(m2Client.keyID) {
-        {
+        val handleClick = {
             if (existingBonVent != null) {
-                viewModel.aCentralFacade.focusedActiveValuesFacade.set.update_M8BonVent(
-                    targetBonVent
-                )
+                viewModel.aCentralFacade.set.update_IfExist_Setter(targetBonVent)
             } else {
                 viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
             }
@@ -69,29 +67,20 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
                 targetBonVent
             )
-
-            targetBonVent
         }
+
+        val semMod = Modifier.getSemanticsTag(new, "new")
+
+        Triple(semMod, targetBonVent, handleClick)
     }
 
-
-    /*   val defaultM8BonVent = get.getDefaultM8BonVent().copy(
-           debugInfos = m2Client.nom,
-           parentM2ClientInfosKey = m2Client.keyID,
-           parentM2ClientInfosDebugName = m2Client.nom,
-           etateActuellementEst = newEtate
-       )      */
-
-
     FilledTonalButton(
-        modifier = Modifier
-            .getSemanticsTag(currentActiveFocuced_M14VentPeriode,"currentActiveFocuced_M14VentPeriode")
-            .getSemanticsTag(new,"new")
-            .fillMaxWidth(),
+        modifier = handleBonVentSelection_With_Semantics_Debug.first.fillMaxWidth(),
         onClick = {
-            handleBonVentSelection()
-            // focusedVarsHandlerFacade.set.update_M8BonVent(defaultM8BonVent)
+            // Execute the handler function
+            handleBonVentSelection_With_Semantics_Debug.third()
 
+            // Execute the additional logic for specific states
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
             ) {

@@ -25,7 +25,6 @@ fun ID3RecordingButton(
     isRecording: Boolean,
     showLabels: Boolean,
     displayTime: String,
-    remainingClients: Int,
     onClickPourAfficheDialoge: () -> Unit = {}
 ) {
     val buttonBackgroundColor =
@@ -60,14 +59,10 @@ fun ID3RecordingButton(
             val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
                 get.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
 
-            val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
-                get.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
 
             Text(
-                "$displayTime | بقي $remainingClients زبون",
+                "$displayTime | بقي ${filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size} زبون",
                 modifier = Modifier
-                    .getSemanticsTag(filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod,
-                        "filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod",0)
                     .getSemanticsTag(filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
                         "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible")
                     .background(if (enable) buttonBackgroundColor else Color.Gray)

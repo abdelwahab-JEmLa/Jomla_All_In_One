@@ -253,8 +253,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                                 viewModel,
                                 isRecording,
                                 showLabels,
-                                displayTime,
-                                remainingClients
+                                displayTime
                             ) {
                                 showAlertDialog = true
                             }

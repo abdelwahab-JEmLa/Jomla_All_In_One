@@ -113,12 +113,17 @@ class Set(
         repo13TarificationInfos.upsert(latestTariffLocalData)
     }
 
-    fun updateM8BonVent(data: M8BonVent) {
-        repo8BonVent.upsert(data)
-    }
 
     fun addNewM14VentPeriode(generatedDefaultM14: M14VentPeriode) {
         repo14VentPeriode.upsert(generatedDefaultM14)
+    }
+
+    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
+    fun add_New_Setter(data: M8BonVent) = repo8BonVent.addNew(data)
+    fun update_IfExist_Setter(data: M8BonVent) = repo8BonVent.updateIfExist(data)
+
+    fun upsertM8BonVent(data: M8BonVent) {
+        repo8BonVent.upsert(data)
     }
 
     companion object {

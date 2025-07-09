@@ -3,7 +3,8 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.genereUnPushKeyFireBase
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
-import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -25,6 +26,7 @@ import java.util.Objects
 
 @Stable
 class Repo8BonVent(
+    private val context: Context,
     val dataBaseCreationFactory: DataBaseCreationFactoryGBonVent,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
@@ -85,6 +87,52 @@ class Repo8BonVent(
             }
         }
     }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------
+    fun addNew(data: M8BonVent) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        dataBaseCreationFactory.set(dataUpdate)
+    }
+
+    fun updateIfExist(data: M8BonVent) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        dataBaseCreationFactory.set(updatedItem)
+    }
 }
 
 @Entity
@@ -92,8 +140,8 @@ data class M8BonVent(
     @PrimaryKey
     var keyID: String = generePushKey(),
 
-    var creationTimestamps: Long = 0,
-    var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
+    var creationTimestamps: Long = System.currentTimeMillis(),
+    var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     //---------------------------------Parent.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     var parent_M9AppCompt_KeyID: String = "null",
