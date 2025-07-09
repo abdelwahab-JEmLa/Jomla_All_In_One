@@ -1,9 +1,9 @@
-package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List
 
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.SectionDivider
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ViewModel_M14VentPeriod
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View.View_DefaultAddItem_M14VentPeriode
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View.View_M14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.SectionDivider
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_DefaultAddItem_M14VentPeriode
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn

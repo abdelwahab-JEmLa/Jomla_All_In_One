@@ -1,4 +1,4 @@
-package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider

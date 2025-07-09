@@ -1,6 +1,6 @@
-package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview
 
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.ViewListM14
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.ViewListM14
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

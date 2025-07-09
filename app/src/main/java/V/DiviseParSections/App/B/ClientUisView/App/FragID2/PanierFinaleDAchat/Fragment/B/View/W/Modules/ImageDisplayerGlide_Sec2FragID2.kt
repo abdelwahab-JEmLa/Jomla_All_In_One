@@ -69,7 +69,8 @@ fun ImageDisplayerGlide_Sec2FragID2(
             modifier = Modifier
                 .size(imageSize.width, imageSize.height)
         ) {
-            if (imageExists && imageFile != null) {
+            if (imageExists && imageFile != null) {   //<--
+            //TODO(1): ajout au top start n icon button au click toggke var  collecteur_Declare_Que_Il_Va_le_Cherche
                 GlideImage(
                     model = imageFile,
                     contentDescription = "Color image for $colorName",

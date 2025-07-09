@@ -78,15 +78,17 @@ fun Dialog_MainFastSearchProduitPourVent(
                     )
                 }
 
-                MainFastSearchProduitPourVent(sourceLenceurDeCetteFragment =sourceLenceurDeCetteFragment)
+                MainFastSearchProduitPourVent(sourceLenceurDeCetteFragment = sourceLenceurDeCetteFragment)
 
                 PressistatntMainActivityButtons_Sec8FWinID1()
 
                 FloatingActionButton(
                     onClick = {
-                        focusedVarsHandlerFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
-
-                              },
+                        focusedVarsHandlerFacade.set.clear_CurrentApp_activeDialogSearchM1Produit()
+                        focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit("")
+                        focusedVarsHandlerFacade.set.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+                        focusedVarsHandlerFacade.set.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)

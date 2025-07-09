@@ -217,4 +217,15 @@ class SetFocusedVars(
             }
         }
     }
+    fun desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits() {
+        getterFocusedValues.currentM9AppCompt.let {
+            if (it != null) {
+                repo9AppCompt.updateIfExist(
+                    it.copy(
+                        dialogAboveAll_OutlinedSearchListProduits = false,
+                    )
+                )
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
-package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View
 
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

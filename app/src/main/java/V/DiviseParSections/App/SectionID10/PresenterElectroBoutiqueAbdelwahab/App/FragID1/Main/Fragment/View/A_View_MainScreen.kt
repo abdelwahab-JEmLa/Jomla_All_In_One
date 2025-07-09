@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.A.ViewModel.PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components.SearchFilterPB
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.DialogsSearchProduit
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App._0.Navigation.LoadingOverlay
@@ -179,6 +180,9 @@ fun MainUi(
             )
         }
 
+        DialogsSearchProduit(
+            aCentralFacade = viewModel.aCentralFacade
+        )
         /* if (viewModel.aCentral.focusedVarsHandlerFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null) {
              Dialog_MainFastSearchProduitPourVent(
                  focusedVarsHandlerFacade = viewModel.aCentral.focusedVarsHandlerFacade,

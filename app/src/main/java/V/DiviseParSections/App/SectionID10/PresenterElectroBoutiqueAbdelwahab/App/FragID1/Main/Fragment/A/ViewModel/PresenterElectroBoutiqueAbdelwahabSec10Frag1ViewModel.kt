@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.mongodb.kbson.BsonObjectId
 
 class PresenterElectroBoutiqueAbdelwahabSec10Frag1ViewModel(
-    val aCentral: ACentralFacade,
+    val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.getRepositorys
-    val setter = aCentral.setRepositorys
+    val getter = aCentralFacade.getRepositorys
+    val setter = aCentralFacade.setRepositorys
 
     data class UiState(val catalogueFilterId: BsonObjectId? = null)
 

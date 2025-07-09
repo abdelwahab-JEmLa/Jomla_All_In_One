@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ScreenM14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background

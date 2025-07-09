@@ -1,11 +1,9 @@
 package P0_MainScreen.Main
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
-import P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs.Dialog_MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.DialogsSearchProduit
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
@@ -310,40 +308,12 @@ fun MainScreen(
                     }
                 }
 
+
                 if (isHostPhone) {
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
-
-                DialogsAboveAll(viewModel)
             }
         }
     }
 }
 
-@Composable
-private fun DialogsAboveAll(
-    viewModel: HeadViewModel
-) {
-    val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
-        ?.dialogAboveAll_OutlinedSearchListProduits
-
-    if (dialogAboveAll_OutlinedSearchListProduits == true) {
-        MainFastSearchProduitPourVent()
-    }
-
-    val produitName = (viewModel.aCentralFacade
-        .focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.startTextSearchM1Produit
-        ?: "")
-
-    if (viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.activeDialogSearchM1Produit) {
-        Dialog_MainFastSearchProduitPourVent(
-            sourceLenceurDeCetteFragment =
-                ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
-                    .SearchProduit(
-                        viewModel.aCentralFacade.getRepositorys.repoM1ProduitInfos.datasValue
-                            .find { it.nom == produitName }!!
-                    ),
-            focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade,
-        )
-    }
-}
