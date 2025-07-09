@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +21,11 @@ fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     achatCouleur: KAchatCouleurOperation
 ) {
-    val listGBonVentKeyID = achatCouleur.listFCouleurVentOperation.map { it.parentM8BonVentKeyId }
+    val listFCouleurVentOperation = achatCouleur.listFCouleurVentOperation
+    val listGBonVentKeyID = listFCouleurVentOperation.map { it.parentM8BonVentKeyId }
     Column(
         modifier = Modifier
+            .getSemanticsTag(listFCouleurVentOperation,"listFCouleurVentOperation")
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
@@ -30,7 +33,7 @@ fun List_AcheteursDeCetteProduit(
             val gBonVent =
                 viewModel.getter.repo8BonVent.datasValue.find { it.keyID == gBonVentKeyID }
             val lClient =
-                viewModel.getter.repo2Client.datasValue.find { it.id == gBonVent?.parent_M2Client_OldLongID }
+                viewModel.getter.repo2Client.datasValue.find { it.keyID == gBonVent?.parent_M2Client_KeyID }
 
             if (lClient != null) {
                 Text(
