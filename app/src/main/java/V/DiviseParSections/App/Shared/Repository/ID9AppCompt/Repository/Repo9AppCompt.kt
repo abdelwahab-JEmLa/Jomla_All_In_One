@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -20,7 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Calendar
 
 @Stable
 class Repo9AppCompt(
@@ -31,8 +29,7 @@ class Repo9AppCompt(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
-    val
-            datasValue by derivedStateOf { _datas.value }
+    val datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
         datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
@@ -67,7 +64,8 @@ class Repo9AppCompt(
         if (existingIndex < 0) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             return
@@ -127,7 +125,7 @@ class Repo9AppCompt(
 @Entity
 data class Z_AppCompt(
     @PrimaryKey
-    var keyID: String = getPushFireBase(ref),
+    var keyID: String = generePushKey(),
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var appDesignedPourWorkingGrossisst3Ali: Boolean = true,
@@ -232,77 +230,10 @@ data class Z_AppCompt(
 
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
-        fun creatTimeTampDepuitStr(dateString: String): Long {
-            return try {
-                // Parse the French month and format
-                val parts = dateString.split(" ")
-                if (parts.size < 3) return System.currentTimeMillis()
-
-                val monthYear = parts[0] // "Juin-24"
-                val time = parts[1] // "08:00"
-                val amPm = parts[2] // "AM"
-
-                val monthYearParts = monthYear.split("-")
-                if (monthYearParts.size != 2) return System.currentTimeMillis()
-
-                val monthStr = monthYearParts[0]
-                val yearStr = "20${monthYearParts[1]}" // Convert "24" to "2024"
-
-                // French month mapping
-                val monthMap = mapOf(
-                    "Janvier" to 0, "Février" to 1, "Mars" to 2, "Avril" to 3,
-                    "Mai" to 4, "Juin" to 5, "Juillet" to 6, "Août" to 7,
-                    "Septembre" to 8, "Octobre" to 9, "Novembre" to 10, "Décembre" to 11
-                )
-
-                val month = monthMap[monthStr] ?: return System.currentTimeMillis()
-                val year = yearStr.toIntOrNull() ?: return System.currentTimeMillis()
-
-                // Parse time
-                val timeParts = time.split(":")
-                if (timeParts.size != 2) return System.currentTimeMillis()
-
-                var hour = timeParts[0].toIntOrNull() ?: return System.currentTimeMillis()
-                val minute = timeParts[1].toIntOrNull() ?: return System.currentTimeMillis()
-
-                // Convert to 24-hour format
-                if (amPm.uppercase() == "PM" && hour != 12) {
-                    hour += 12
-                } else if (amPm.uppercase() == "AM" && hour == 12) {
-                    hour = 0
-                }
-
-                // Create Calendar and upsert values
-                val calendar = Calendar.getInstance()
-                calendar.set(year, month, 1, hour, minute, 0)
-                calendar.set(Calendar.MILLISECOND, 0)
-
-                calendar.timeInMillis
-            } catch (e: Exception) {
-                // Return current time as fallback
-                System.currentTimeMillis()
-            }
-        }
 
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Z_AppCompt"
         )
-
         fun generePushKey() = genereUnPushKeyFireBase(ref)
-
-        fun Z_AppCompt?.logDebugIt(nomVale: String = "") {
-            Log.d(
-                "Z_AppCompt",
-                infos(nomVale)
-            )
-        }
-
-        private fun Z_AppCompt?.infos(
-            nomVale: String
-        ) = nomVale + if (this != null) {
-            "${keyID}\n ${nom}\n "
-        } else {
-            "Z_AppCompt is null"
-        }
     }
 }
