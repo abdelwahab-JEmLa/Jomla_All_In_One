@@ -276,6 +276,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         viewModel = viewModel
                     )
                 }
+                val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
+                    ?.dialogAboveAll_OutlinedSearchListProduits
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -284,7 +286,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     FloatingActionButton(
                         onClick = {
                             viewModel.aCentralFacade.focusedActiveValuesFacade.set
-                                .active_CurrentApp_activeDialogSearchM1Produit(true)
+                                .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(true)
                         },
                         modifier = Modifier.size(40.dp),
                         containerColor = MaterialTheme.colorScheme.primary,

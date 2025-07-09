@@ -32,7 +32,7 @@ fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     repo9AppCompt.upsert(
         currentAppCompt.copy(
             activeFocuce_TariffPrixDifineur_M1ProduitKeyID = "null",
-            activeFocuseTariffPrixDifineurM1ProduitDebugInfos = "null",
+            activeFocuceTariffPrixDifineurM1ProduitDebugInfos = "null",
         )
     )
 }

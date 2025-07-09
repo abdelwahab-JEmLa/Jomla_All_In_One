@@ -20,7 +20,7 @@ import androidx.compose.runtime.Stable
 
 @Stable
 class SetFocusedVars(
-    private val get: GetterFocusedValues,
+    private val getterFocusedValues: GetterFocusedValues,
     private val Repo2Client: Repo2Client,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
@@ -53,35 +53,35 @@ class SetFocusedVars(
         m10OperationVentCouleur: M10OperationVentCouleur
     ) = focuceOnVentM3CouleurProduitInfos(
         m10OperationVentCouleur = m10OperationVentCouleur,
-        getterFocusedVars = get,
+        getterFocusedVars = getterFocusedValues,
         repo9AppCompt = repo9AppCompt,
     )
 
     fun fermeDialogChoisireQuantityDeVentCouleur(produitKey: String) {
         focuceOnVentM3CouleurProduitInfos(
-            getterFocusedVars = get,
+            getterFocusedVars = getterFocusedValues,
             repo9AppCompt = repo9AppCompt,
         )
         setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produitKey,
-            get,
+            getterFocusedValues,
             repo9AppCompt
         )
     }
 
     fun active_M1Produit_Pour_Choisire_TotalQuantity(produit: ArticlesBasesStatsTable) =
         updateCurrentAppComptDialogProduit(
-            get,
+            getterFocusedValues,
             repo9AppCompt,
             produit,
         )
 
 
     fun fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(produit: ArticlesBasesStatsTable) {
-        updateCurrentAppComptDialogProduit(get, repo9AppCompt)
+        updateCurrentAppComptDialogProduit(getterFocusedValues, repo9AppCompt)
         setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit.keyID,
-            get,
+            getterFocusedValues,
             repo9AppCompt
         )
     }
@@ -90,19 +90,19 @@ class SetFocusedVars(
     fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit: ArticlesBasesStatsTable) {
         setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
             produit.keyID,
-            get,
+            getterFocusedValues,
             repo9AppCompt
         )
     }
 
     fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID() {
-        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(get, repo9AppCompt)
+        clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(getterFocusedValues, repo9AppCompt)
     }
     //--------------------activeFocuce_TariffPrixDifineur_M1ProduitKeyID--------------------------------------------------------
 
 
     fun active_currentApp_M8BonVent(bonVent: M8BonVent): Unit {
-        get.currentM9AppCompt?.let {
+        getterFocusedValues.currentM9AppCompt?.let {
             repo9AppCompt.upsert(
                 it.copy(
                     onVentM8BonVentKey = bonVent.keyID,
@@ -114,7 +114,7 @@ class SetFocusedVars(
 
 
     fun desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent(): Unit {
-        get.currentM9AppCompt?.let {
+        getterFocusedValues.currentM9AppCompt?.let {
             repo9AppCompt.upsert(
                 it.copy(
                     onVentM8BonVentKey = "null",
@@ -135,7 +135,7 @@ class SetFocusedVars(
     }
 
     private fun setIn_CurrentApp_activeDialogSearchM1Produit(value: Boolean) {
-        repo9AppCompt.currentAppCompt.let {
+        getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -147,7 +147,7 @@ class SetFocusedVars(
     }
 
     fun clear_CurrentApp_activeDialogSearchM1Produit() {
-        repo9AppCompt.currentAppCompt.let {
+        getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -159,7 +159,7 @@ class SetFocusedVars(
     }
 
     fun set_Current_startTextSearchM1Produit(nom: String) {
-        repo9AppCompt.currentAppCompt.let {
+        getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -171,7 +171,7 @@ class SetFocusedVars(
     }
 
     fun setIN_M9CurrentApp_onVentM8BonVentKey(m8BonVent: M8BonVent) {
-        repo9AppCompt.currentAppCompt.let {
+        getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
                 repo9AppCompt.upsert(
                     it.copy(
@@ -191,7 +191,7 @@ class SetFocusedVars(
     private fun setIN_CurrentApp_M9_ActiveKeyId(
         current_OnVent_M14VentPeriode_KeyID: String?
     ) {
-        repo9AppCompt.currentAppCompt.let {
+        getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
                 current_OnVent_M14VentPeriode_KeyID?.let { current_OnVent_M14VentPeriode_KeyID ->
                     it.copy(
@@ -206,5 +206,15 @@ class SetFocusedVars(
         }
     }
 
-
+    fun active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(value: Boolean) {
+        getterFocusedValues.currentM9AppCompt.let {
+            if (it != null) {
+                repo9AppCompt.updateIfExist(
+                    it.copy(
+                        dialogAboveAll_OutlinedSearchListProduits = value,
+                    )
+                )
+            }
+        }
+    }
 }

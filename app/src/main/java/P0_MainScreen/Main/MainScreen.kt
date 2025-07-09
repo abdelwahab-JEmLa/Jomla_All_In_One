@@ -324,10 +324,10 @@ fun MainScreen(
 private fun DialogsAboveAll(
     viewModel: HeadViewModel
 ) {
-    val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
-    val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
+    val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
+        ?.dialogAboveAll_OutlinedSearchListProduits
 
-    if (activeWindowsSearchProduit) {
+    if (dialogAboveAll_OutlinedSearchListProduits == true) {
         MainFastSearchProduitPourVent()
     }
 

@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Modules
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.View_AdminAppPanelControleur
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ScreenM14VentPeriod
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
@@ -271,11 +272,7 @@ class PanelsGroupeButtonHandler {
                     tonalElevation = 2.dp
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        View_AdminAppPanelControleur(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(500.dp)
-                        )
+                        ScreenM14VentPeriod()
                     }
                 }
             }

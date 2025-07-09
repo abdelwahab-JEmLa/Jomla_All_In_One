@@ -42,7 +42,6 @@ fun VendeurEditDialog(
     val nom by remember { mutableStateOf(vendeur.nom) }
     var hideAppScreen by remember { mutableStateOf(vendeur.hideAppScreen) }
     var migreSonDataBaseAuStart by remember { mutableStateOf(vendeur.migreSonDataBaseAuStart) }
-    var mainData by remember { mutableStateOf(vendeur) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
