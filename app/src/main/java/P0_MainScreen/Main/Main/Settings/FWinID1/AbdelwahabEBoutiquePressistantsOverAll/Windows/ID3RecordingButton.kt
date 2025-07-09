@@ -58,17 +58,25 @@ fun ID3RecordingButton(
             val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
             val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
                 get.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
+
             val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT =
                 get.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
-             val remainM2 = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size+filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT.size
+
+
+            val remainM2 = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible.size +
+                    filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT.size
 
             Text(
                 "$displayTime | بقي $remainM2 زبون",
                 modifier = Modifier
-                    .getSemanticsTag(get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID,
-                        "parent_M9AppCompt_KeyID")
-                    .getSemanticsTag(filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
-                        "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible")
+                    .getSemanticsTag(
+                        get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID,
+                        "parent_M9AppCompt_KeyID"
+                    )
+                    .getSemanticsTag(
+                        filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
+                        "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible"
+                    )
                     .background(if (enable) buttonBackgroundColor else Color.Gray)
                     .padding(4.dp),
                 color = Color.White

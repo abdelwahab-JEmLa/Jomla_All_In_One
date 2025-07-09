@@ -63,7 +63,10 @@ class GetterFocusedValues(
     val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {
         repo2Client.datasValue.filter { client ->
             val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
-                .filter { it.parent_M2Client_KeyID == client.keyID }
+                .filter {
+                    (it.parent_M2Client_KeyID == client.keyID
+                            && it.parent_M9AppCompt_KeyID == (currentM9AppCompt?.keyID ?: ""))
+                }
                 .maxByOrNull { it.creationTimestamps }
 
             lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
