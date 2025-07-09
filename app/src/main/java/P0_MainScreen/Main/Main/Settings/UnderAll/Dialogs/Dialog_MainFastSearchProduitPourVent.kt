@@ -4,7 +4,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessage
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -72,7 +72,7 @@ fun Dialog_MainFastSearchProduitPourVent(
                             ),
                     modifier = Modifier.zIndex(999f)
                 ) {
-                    ModernToastMessage(
+                    ModernToastMessageLo(
                         message = "يرجى استخدام الأزرار لتحديد السعر",
                         onDismiss = { showToast = false }
                     )

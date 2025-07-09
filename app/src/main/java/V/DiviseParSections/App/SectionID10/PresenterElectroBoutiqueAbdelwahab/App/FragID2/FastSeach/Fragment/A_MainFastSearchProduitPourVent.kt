@@ -130,7 +130,7 @@ fun MainFastSearchProduitPourVent(
                                     parentId1ProduitInfosDebugName = newProduit.nom,
                                     processPositioningInFactory = M3CouleurProduitInfos.ProcessPositioningInFactory.CreeDepuitRechercheRapid
                                 )
-                                viewModel.aCentral.get.repo3CouleurProduitInfos.addOrUpdateData(
+                                viewModel.aCentral.getRepositorys.repo3CouleurProduitInfos.addOrUpdateData(
                                     newCouleurP
                                 )
                             }

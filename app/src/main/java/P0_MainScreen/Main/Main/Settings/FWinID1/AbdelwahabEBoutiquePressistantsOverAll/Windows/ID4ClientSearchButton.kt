@@ -3,8 +3,11 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -46,7 +49,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,36 +79,29 @@ fun ID4ClientSearchButton(
     onClientSelectedToToast: (HClientInfos) -> Unit = {},
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val getter = uiState.focusedVarsHandlerFacade.get
+    val getter = uiState.focusedVarsHandlerFacade.getterFocusedValues
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val coroutineScope = rememberCoroutineScope()
     val searchQueryFlow = remember { MutableStateFlow("") }
 
-    val repo8BonVent = viewModel.aCentralFacade.get.repo8BonVent
-    val clientsWithCommandBonVents =
-        remember(hClientRepository.datasValue, repo8BonVent.datasValue) {
-            hClientRepository.datasValue
-                .filter { it.its_Last_M8Bon_Is_OnCommand(repo8BonVent.datasValue) }
-        }
+    val clientsWithCommandBonVents = getter.filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT
 
-    // Fixed: Don't automatically show all clients when entering search mode
     LaunchedEffect(isSearchMode) {
         if (isSearchMode) {
             filteredClients = emptyList()
             showDropdown = false
 
-            // Use Main dispatcher explicitly to ensure we're on the UI thread
             withContext(Dispatchers.Main) {
                 delay(100)
                 focusRequester.requestFocus()
             }
         }
     }
+
     LaunchedEffect(searchQuery) {
         if (isSearchMode) searchQueryFlow.value = searchQuery
     }
@@ -118,11 +113,9 @@ fun ID4ClientSearchButton(
                 .distinctUntilChanged()
                 .collect { query ->
                     if (query.isEmpty()) {
-                        // Fixed: Don't show any clients when search is empty
-                        filteredClients = emptyList()
-                        showDropdown = false
+                        filteredClients = clientsWithCommandBonVents
+                        showDropdown = clientsWithCommandBonVents.isNotEmpty()
                     } else {
-                        // Filter clients based on search query
                         val filtered = hClientRepository.datasValue.filter { client ->
                             client.nom.contains(query, ignoreCase = true) ||
                                     client.numTelephone.contains(query, ignoreCase = true)
@@ -138,17 +131,6 @@ fun ID4ClientSearchButton(
         modifier = Modifier
             .getSemanticsTag(hClientRepository.datasValue.filter { it.nom.contains("rach") }
                 .map { it.keyID }.takeLast(4), "hClientRepository")
-            .getSemanticsTag(repo8BonVent.datasValue.map {
-                with(it) {
-                    buildString {
-                        append(it.parent_M2Client_DebugInfos)
-                        append(" ")
-                        append(it.parent_M2Client_KeyID.takeLast(4))
-                        append(" ")
-                        append(etateActuellementEst.name)
-                    }
-                }
-            }, "repo8BonVent")
             .getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents", 1),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -178,7 +160,7 @@ fun ID4ClientSearchButton(
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
                             val totalProducts =
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.get
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
                                     .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
                                     .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
                                     .groupBy { it.parentM1ProduitInfosKeyId }.size
@@ -248,34 +230,55 @@ fun ID4ClientSearchButton(
                     )
                 }
 
+
                 if (showDropdown) {
-                    Card(
-                        modifier = Modifier
-                            .width(200.dp)
-                            .heightIn(max = 200.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                    ) {
-                        LazyColumn(
-                            Modifier.getSemanticsTag(
-                                clientsWithCommandBonVents,
-                                "clientsWithCommandBonVents"
-                            )
-                        ) {
-                            items(filteredClients) { client ->
-                                ClientSearchItem(
-                                    m2Client = client,
-                                    onClick = {
-                                        onClientSelectedToToast(client)
-                                        isSearchMode = false
-                                        searchQuery = ""
-                                        showDropdown = false
-                                    },
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
-                    }
+                    View_List_DropDownButtons(
+                        clientsWithCommandBonVents = clientsWithCommandBonVents,
+                        filteredClients = filteredClients,
+                        onClientSelectedToToast = onClientSelectedToToast,
+                        onSearchModeChanged = { isSearchMode = it },
+                        onSearchQueryChanged = { searchQuery = it },
+                        onShowDropdownChanged = { showDropdown = it },
+                        viewModel = viewModel
+                    )
                 }
+            }
+        }
+    }
+}
+@Composable
+private fun View_List_DropDownButtons(
+    clientsWithCommandBonVents: List<HClientInfos>,
+    filteredClients: List<HClientInfos>,
+    onClientSelectedToToast: (HClientInfos) -> Unit,
+    onSearchModeChanged: (Boolean) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    onShowDropdownChanged: (Boolean) -> Unit,
+    viewModel: ViewModelPresistantButtonsSec8FWinID1
+) {
+    Card(
+        modifier = Modifier
+            .width(200.dp)
+            .heightIn(max = 200.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        LazyColumn(
+            Modifier.getSemanticsTag(
+                clientsWithCommandBonVents,
+                "clientsWithCommandBonVents"
+            )
+        ) {
+            items(filteredClients) { client ->
+                ClientSearchItem(
+                    m2Client = client,
+                    onClick = {
+                        onClientSelectedToToast(client)
+                        onSearchModeChanged(false)
+                        onSearchQueryChanged("")
+                        onShowDropdownChanged(false)
+                    },
+                    viewModel = viewModel
+                )
             }
         }
     }
@@ -355,135 +358,204 @@ private fun CreateNewClientIcon(
         )
     }
 }
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
     m2Client: HClientInfos,
     onClick: () -> Unit,
-    viewModel: ViewModelPresistantButtonsSec8FWinID1
+    viewModel: ViewModelPresistantButtonsSec8FWinID1,
 ) {
-    val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
+    val bonVentRepository = viewModel.aCentralFacade.getRepositorys.repo8BonVent
+
+    // Add toast state management
+    var toastData by remember { mutableStateOf<ToastData?>(null) }
 
     val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
         bonVentRepository.datasValue
             .filter { it.parent_M2Client_KeyID == m2Client.keyID }
             .maxByOrNull { it.creationTimestamps }
     }
-    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
 
-    fun targeted_M8(
-        getFocusedVars: GetFocusedVars,
+    fun getTargetedM8BonVent(
+        getFocusedVars: GetterFocusedValues,
         repo8BonVent: Repo8BonVent,
-        m2Client: HClientInfos
-    ): Triple<M8BonVent?, M8BonVent, Modifier> {
-        val currentActiveFocuced_M14VentPeriode = getFocusedVars.currentActiveFocuced_M14VentPeriode
-        val currentActiveFocuced_M14VentPeriode_KeyID =
-            currentActiveFocuced_M14VentPeriode?.keyID ?: "null"
-        val parent_M9AppCompt_KeyID =
-            currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID ?: "null"
+        m2Client: HClientInfos,
+        onShowToast: (ToastData) -> Unit
+    ): Triple<M8BonVent?, M8BonVent, Modifier>? {
+        val currentPeriod = getFocusedVars.currentActiveFocuced_M14VentPeriode
 
-        val existingBonVent = repo8BonVent.datasValue.find { bonVent ->
-            bonVent.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode_KeyID
-                    && bonVent.parent_M2Client_KeyID == m2Client.keyID
+        // Handle null currentPeriod with toast
+        if (currentPeriod == null) {
+            onShowToast(
+                ToastData(
+                    message = "Aucune période de vente active trouvée",
+                    type = ToastType.ERROR,
+                    duration = 4000L
+                )
+            )
+            return null // Return null to indicate failure
         }
 
-        val new = M8BonVent().copy(
-            parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
-            parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode_KeyID,
+        val currentPeriodKeyID = currentPeriod.keyID
+        val parentAppComptKeyID = currentPeriod.parent_M9AppCompt_KeyID ?: "null"
+
+        val existingBonVent = repo8BonVent.datasValue.find { bonVent ->
+            bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
+                    bonVent.parent_M2Client_KeyID == m2Client.keyID
+        }
+
+        val newBonVent = M8BonVent().copy(
+            parent_M9AppCompt_KeyID = parentAppComptKeyID,
+            parent_M14VentPeriod_KeyId = currentPeriodKeyID,
             parent_M2Client_KeyID = m2Client.keyID,
             parent_M2Client_DebugInfos = m2Client.nom,
         )
 
-        val semMod = Modifier.getSemanticsTag(new, "new")
+        val semanticsModifier = Modifier.getSemanticsTag(newBonVent, "newBonVent")
 
-        return Triple(existingBonVent, new, semMod)
+        return Triple(existingBonVent, newBonVent, semanticsModifier)
     }
 
-    val (existingBonVent, new, semMod) = targeted_M8(get, bonVentRepository, m2Client)
+    val bonVentResult = getTargetedM8BonVent(
+        get,
+        bonVentRepository,
+        m2Client
+    ) { toastDataToShow ->
+        toastData = toastDataToShow
+    }
 
+    // Render the toast using the composable properly
+    ModernToastMessage(
+        toastData = toastData,
+        onDismiss = { toastData = null }
+    )
 
-    ElevatedCard(
-        modifier = Modifier
-            .padding(petitePaddine)
-    ) {
-        Row(
+    // Only render the card if we have a valid result
+    bonVentResult?.let { (existingBonVent, newBonVent, semanticsModifier) ->
+        ElevatedCard(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    val handleClick = {
-                        if (existingBonVent != null) {
-                            viewModel.aCentralFacade.set.update_IfExist_Setter(existingBonVent)
-                        } else {
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(new)
-                        }
-
-                        viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
-                            existingBonVent ?: new
-                        )
-
-                    }
-                    handleClick()
-                    onClick()
-                }
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(petitePaddine)
+                .then(semanticsModifier)
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .size(12.dp)
-                    .background(
-                        color = Color(
-                            latestBonVent?.etateActuellementEst?.color
-                                ?: m2Client.actuelleEtat.color
-                        ),
-                        shape = CircleShape
-                    )
-            )
+                    .fillMaxWidth()
+                    .clickable {
+                        val handleClick = {
+                            if (existingBonVent != null) {
+                                viewModel.aCentralFacade.setRepositorys.update_IfExist_Setter(
+                                    existingBonVent
+                                )
+                            } else {
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(
+                                    newBonVent
+                                )
+                            }
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = m2Client.nom,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+                                existingBonVent ?: newBonVent
+                            )
+                        }
+                        handleClick()
+                        onClick()
+                    }
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(
+                            color = Color(
+                                latestBonVent?.etateActuellementEst?.color
+                                    ?: m2Client.actuelleEtat.color
+                            ),
+                            shape = CircleShape
+                        )
                 )
 
-                latestBonVent?.let {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
+                        text = m2Client.nom,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    latestBonVent?.let {
+                        Text(
+                            text = "Dernière commande: ${getTimeElapsedString(it.creationTimestamps)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray
+                        )
+                    }
+
+                    if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
+                        Text(
+                            text = "📍 ${
+                                String.format(
+                                    "%.4f",
+                                    m2Client.latitude
+                                )
+                            }, ${String.format("%.4f", m2Client.longitude)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF4CAF50)
+                        )
+                    }
+                }
+
+                Row {
+                    Icon(
+                        imageVector = m2Client.clientTypeMode.icon,
+                        contentDescription = null,
+                        tint = m2Client.clientTypeMode.color,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Receipt,
+                        contentDescription = null,
+                        tint = m2Client.clientTypeMode.color,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+    } ?: run {
+        // Optional: Show a placeholder or error state when bonVentResult is null
+        ElevatedCard(
+            modifier = Modifier
+                .padding(petitePaddine)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(
+                            color = Color.Gray,
+                            shape = CircleShape
+                        )
+                )
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = m2Client.nom,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = "Période de vente inactive",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
                 }
-
-                if (m2Client.caMarqueGpsEstOuvert && m2Client.latitude != 0.0 && m2Client.longitude != 0.0) {
-                    Text(
-                        text = "📍 ${
-                            String.format(
-                                "%.4f",
-                                m2Client.latitude
-                            )
-                        }, ${String.format("%.4f", m2Client.longitude)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF4CAF50)
-                    )
-                }
-            }
-
-            Row {
-                Icon(
-                    imageVector = m2Client.clientTypeMode.icon,
-                    contentDescription = null,
-                    tint = m2Client.clientTypeMode.color,
-                    modifier = Modifier.size(16.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Receipt,
-                    contentDescription = null,
-                    tint = m2Client.clientTypeMode.color,
-                    modifier = Modifier.size(16.dp)
-                )
             }
         }
     }

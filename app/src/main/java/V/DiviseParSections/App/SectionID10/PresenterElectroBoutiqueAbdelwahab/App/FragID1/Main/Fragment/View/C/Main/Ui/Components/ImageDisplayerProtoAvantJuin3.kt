@@ -73,7 +73,7 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.get.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.getRepositorys.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -152,7 +152,7 @@ fun ImageDisplayerProtoAvantJuin3(
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            val get = focusedVarsHandlerFacade.get
+            val get = focusedVarsHandlerFacade.getterFocusedValues
             val activeProduit =
                 get.focused_M1ProduitInfos_Pour_PrixDifineur
 

@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
@@ -73,7 +73,7 @@ class Get(
     val repo14VentPeriode: Repo14VentPeriode,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
-    getterFocusedVars: GetFocusedVars,
+    getterFocusedVars: GetterFocusedValues,
 
     ) {
     val parametresAppComptNonSaved = ParametresAppComptNonSaved()

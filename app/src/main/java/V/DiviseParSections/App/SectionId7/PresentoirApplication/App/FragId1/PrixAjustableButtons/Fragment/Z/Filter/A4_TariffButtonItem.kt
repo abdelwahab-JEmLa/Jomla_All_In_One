@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -74,10 +74,10 @@ fun TariffButtonItem(
             typeTarification == TypeChoisi.DefiniParGerant2
 
     fun handelClick()  {
-        viewModel.aCentralFacade.set
+        viewModel.aCentralFacade.setRepositorys
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 focused_M13TarificationInfos_Pour_Produit = latestTariff,
-                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
                     .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
             )
         viewModel.aCentralFacade.focusedActiveValuesFacade.set.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
@@ -244,7 +244,7 @@ fun TariffButtonItem(
         } else {
             couleurButton
         }
-        val getter = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+        val getter = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
         val listFocusedM10OpeVentCouleurParPrixDifineur =
             getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
 

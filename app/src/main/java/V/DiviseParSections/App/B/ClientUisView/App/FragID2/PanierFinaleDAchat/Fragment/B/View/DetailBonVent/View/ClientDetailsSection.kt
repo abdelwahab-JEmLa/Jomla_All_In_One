@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ifFalse
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues.Companion.getSemanticsTagFocucedVars
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +28,7 @@ fun ClientDetailsSection(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isMinimized = uiState.isMinimized
-    val get = viewModel.aCentral.focusedActiveValuesFacade.get
+    val get = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues
     // FIXED: Use the correct property name
     val onVentClient = get.onVentM2ClientInfos
 

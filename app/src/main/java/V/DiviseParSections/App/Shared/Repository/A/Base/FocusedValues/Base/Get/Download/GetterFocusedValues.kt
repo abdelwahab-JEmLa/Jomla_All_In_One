@@ -22,7 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 
 @Stable
-class GetFocusedVars(
+class GetterFocusedValues(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1ProduitInfos,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
@@ -51,7 +51,6 @@ class GetFocusedVars(
     }
 
     //----------------------------------Section.M2Client------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
     val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible by derivedStateOf {
         repo2Client.datasValue.filter { client ->
             filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
@@ -60,6 +59,20 @@ class GetFocusedVars(
                 ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
         }
     }
+
+    val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {
+        repo2Client.datasValue.filter { client ->
+            val lastBonVent = filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+                .filter { it.parent_M2Client_KeyID == client.keyID }
+                .maxByOrNull { it.creationTimestamps }
+
+            lastBonVent?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        }
+    }
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     val activeOnVentM2ClientInfos by derivedStateOf {
         repo2Client.datasValue.find {
@@ -139,7 +152,7 @@ class GetFocusedVars(
 
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
-        fun Modifier.getSemanticsTagFocucedVars(getter: GetFocusedVars): Modifier {
+        fun Modifier.getSemanticsTagFocucedVars(getter: GetterFocusedValues): Modifier {
             val map = buildMap {
                 with(getter) {
                     put(

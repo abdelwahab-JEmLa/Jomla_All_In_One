@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class ViewModelMainFastSearchProduitPourVent(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-    val getter = aCentral.get
+    val getter = aCentral.getRepositorys
 
     sealed class RoleDefinieParSourceACetteFragment() {
         data object AfficheSearchAllProduits : RoleDefinieParSourceACetteFragment()
@@ -35,11 +35,11 @@ class ViewModelMainFastSearchProduitPourVent(
 
     private val _uiState = MutableStateFlow(
         UiState(
-            bProduitInfosRepository = aCentral.get.repoM1ProduitInfos,
-            id8BonVentRepository = aCentral.get.repo8BonVent,
-            iD2ClientRepository = aCentral.get.repo2Client,
-            b1CouleurOuGoutProduitDataBaseRepository = aCentral.get.repo3CouleurProduitInfos,
-            zAppComptRepositoryComposable = aCentral.get.repo9AppCompt,
+            bProduitInfosRepository = aCentral.getRepositorys.repoM1ProduitInfos,
+            id8BonVentRepository = aCentral.getRepositorys.repo8BonVent,
+            iD2ClientRepository = aCentral.getRepositorys.repo2Client,
+            b1CouleurOuGoutProduitDataBaseRepository = aCentral.getRepositorys.repo3CouleurProduitInfos,
+            zAppComptRepositoryComposable = aCentral.getRepositorys.repo9AppCompt,
         )
     )
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()

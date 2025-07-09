@@ -34,7 +34,7 @@ fun View_M9AppCompt(
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
 
-    val isActive = (viewModel.aCentralFacade.focusedActiveValuesFacade.get.currentM9AppCompt?.keyID
+    val isActive = (viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.keyID
         ?: "") == compt.keyID
 
     val backgroundColor = when {

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,10 +31,10 @@ fun ConfirmationButton(
     showLabel: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val currentBonVent = viewModel.aCentral.focusedActiveValuesFacade.get.onVentM8BonVent
+    val currentBonVent = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.onVentM8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.set.upsertM8BonVent(
+        viewModel.aCentral.setRepositorys.upsertM8BonVent(
             data.copy(
                 etateActuellementEst = newEtate
             )
@@ -70,7 +70,7 @@ fun ConfirmationButton(
         if (etateActuellementEst == aCommandeConfirme || etateActuellementEst == onModeCommendActuellement) {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedActiveValuesFacade.get)
+                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues)
                     .size(48.dp),
                 onClick = {
                     currentBonVent?.let { bonVent ->

@@ -1,4 +1,4 @@
-package Views.Common.Components
+package V.DiviseParSections.App.Shared.Modules.Ui.A.UI
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

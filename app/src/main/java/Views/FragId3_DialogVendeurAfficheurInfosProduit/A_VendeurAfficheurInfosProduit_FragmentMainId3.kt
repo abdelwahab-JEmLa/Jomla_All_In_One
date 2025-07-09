@@ -106,7 +106,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 }
 
 @Composable
-fun ModernToastMessage(
+fun ModernToastMessageLo(
     message: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -185,7 +185,7 @@ fun MainUi(
 
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.get.onVentM8BonVent
+    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.onVentM8BonVent
 
     if (onVentBonVent == null) {
         Box(
@@ -206,7 +206,7 @@ fun MainUi(
     val isLoading = (progressValue ?: 0f) < 1.0f
 
     // Safe handling for client ID
-    val clientOuSonMarqueMapEstOuvert = viewModel.aCentral.focusedActiveValuesFacade.get.activeOnVentM2ClientInfos
+    val clientOuSonMarqueMapEstOuvert = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.activeOnVentM2ClientInfos
     if (clientOuSonMarqueMapEstOuvert == null) {
         // Handle case where there's no client
         Box(
@@ -298,7 +298,7 @@ fun MainUi(
                             ),
                     modifier = Modifier.zIndex(999f)
                 ) {
-                    ModernToastMessage(
+                    ModernToastMessageLo(
                         message = "يرجى استخدام الأزرار لتحديد السعر",
                         onDismiss = { showToast = false }
                     )

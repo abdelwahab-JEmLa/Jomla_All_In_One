@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.focuceOnVentM3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID
@@ -20,7 +20,7 @@ import androidx.compose.runtime.Stable
 
 @Stable
 class SetFocusedVars(
-    private val get: GetFocusedVars,
+    private val get: GetterFocusedValues,
     private val Repo2Client: Repo2Client,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,

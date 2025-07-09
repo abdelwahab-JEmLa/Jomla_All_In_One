@@ -33,7 +33,7 @@ class Set(
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
-    private val get = focusedVarsHandlerFacade.get
+    private val get = focusedVarsHandlerFacade.getterFocusedValues
 
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
         focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos? =

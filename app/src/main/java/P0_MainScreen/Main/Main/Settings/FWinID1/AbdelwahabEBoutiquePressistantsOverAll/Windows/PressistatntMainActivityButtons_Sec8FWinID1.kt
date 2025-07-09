@@ -11,8 +11,8 @@ import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App._0.Navigation.Screen
-import Views.Common.Components.ToastData
-import Views.Common.Components.ToastType
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -97,7 +97,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         activeFragment == Screen.FragmentProduitFastSearchDialog
 
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.get.currentM9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
@@ -205,7 +205,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.aCentralFacade.focusedActiveValuesFacade.get.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }

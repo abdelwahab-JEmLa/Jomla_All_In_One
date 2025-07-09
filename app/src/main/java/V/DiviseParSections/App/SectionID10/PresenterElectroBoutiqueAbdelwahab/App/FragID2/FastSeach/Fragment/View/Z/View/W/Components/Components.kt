@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetFocusedVars.Companion.getSemanticsTagFocucedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.annotation.SuppressLint
@@ -77,9 +77,9 @@ fun QuantityDisplay(
             else MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .clickable(enabled = !allNonTrouve) {
-                    val get = viewModel.focusedVarsHandlerFacade.get
+                    val get = viewModel.focusedVarsHandlerFacade.getterFocusedValues
 
-                    viewModel.aCentral.set.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                    viewModel.aCentral.setRepositorys.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         focused_M13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
                         m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
                     )
@@ -120,9 +120,9 @@ fun QuantityDisplay(
             }
         }
         val datasValue =
-            viewModel.aCentral.get.repo13TarificationInfos.datasValue
+            viewModel.aCentral.getRepositorys.repo13TarificationInfos.datasValue
         val itsChezGroApp =
-            viewModel.aCentral.focusedActiveValuesFacade.get.currentM9AppCompt?.travailleChezGrossisst3Ali
+            viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.travailleChezGrossisst3Ali
 
         val findTariff = M13TarificationInfos.findTariff(datasValue, produit)
 
@@ -156,8 +156,8 @@ fun QuantityDisplay(
                 .clickable(enabled = !allNonTrouve) {
                     val aCentral = viewModel.aCentral
                     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade
-                    val getFocusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade.get
-                    val set = aCentral.set
+                    val getFocusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade.getterFocusedValues
+                    val set = aCentral.setRepositorys
 
                     set.saveTariff_Et_RelateIt_Au_Vents_Correspond(
                         focused_M13TarificationInfos_Pour_Produit = getFocusedVarsHandlerFacade.focused_M13TarificationInfos_Pour_Produit,

@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 fun A_MainListView(
     viewModel: ViewModel_AdminAppPanelControleur,
 ) {
-    val listM9AppCompt = viewModel.aCentralFacade.get.repo9AppCompt.datasValue
+    val listM9AppCompt = viewModel.aCentralFacade.getRepositorys.repo9AppCompt.datasValue
 
     LazyColumn(
         modifier = Modifier
@@ -33,7 +33,7 @@ fun A_MainListView(
             Text(
                 text = "Active Compt ID: ${
                     viewModel.aCentralFacade
-                        .focusedActiveValuesFacade.get.currentM9AppCompt?.nom
+                        .focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.nom
                 }",
                 style = MaterialTheme.typography.titleMedium
             )

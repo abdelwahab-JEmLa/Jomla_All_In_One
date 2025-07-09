@@ -6,8 +6,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import Views.Common.Components.ToastData
-import Views.Common.Components.ToastType
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
+import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement

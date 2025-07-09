@@ -181,25 +181,6 @@ data class HClientInfos(
         }
     }
 
-    fun its_Last_M8Bon_Is_OnCommand(
-        m8BonVentList: List<M8BonVent>
-    ): Boolean {
-        return m8BonVentList
-            .sortedBy { it.creationTimestamps }
-            .lastOrNull { it.parent_M2Client_KeyID == keyID }
-            ?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    }
-
-    fun its_Last_M8BonVent_Is_Cible(
-        m8BonVentList: List<M8BonVent>
-    ): Boolean {
-        return m8BonVentList
-            .sortedBy { it.creationTimestamps }
-            .lastOrNull { it.parent_M2Client_KeyID == keyID }
-            ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
-    }
-
-
     fun getTempKeyByParent(): String {
         return this.nom.withOutFireBaseInvalidCharacters()
     }

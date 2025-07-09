@@ -126,7 +126,7 @@ fun MarkerStatusDialog(
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
-                    val activeClient = viewModel.aCentralFacade.focusedActiveValuesFacade.get.activeOnVentM2ClientInfos
+                    val activeClient = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.activeOnVentM2ClientInfos
 
                     activeCompt?.let {
                         if (activeClient != null) {

@@ -30,11 +30,11 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     val context = LocalContext.current
     val newEtate = this
     val aCentralFacade = viewModel.aCentralFacade
-    val m2Client = aCentralFacade.get.repo2Client.datasValue.find { it.id == clickedClient }!!
+    val m2Client = aCentralFacade.getRepositorys.repo2Client.datasValue.find { it.id == clickedClient }!!
 
     val handleBonVentSelection_With_Semantics_Debug = remember(m2Client.keyID) {
-        val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
-        val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
+        val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
+        val bonVentRepository = viewModel.aCentralFacade.getRepositorys.repo8BonVent
 
         val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
         val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: "null"
@@ -59,7 +59,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
 
         val handleClick = {
             if (existingBonVent != null) {
-                viewModel.aCentralFacade.set.update_IfExist_Setter(targetBonVent)
+                viewModel.aCentralFacade.setRepositorys.update_IfExist_Setter(targetBonVent)
             } else {
                 viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
             }
