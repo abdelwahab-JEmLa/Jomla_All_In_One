@@ -5,7 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Produit
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.toggleEtateDeliveryNonTrouveVentOu
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.updateListRelativeVentCouleurPrixVent
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -22,7 +23,6 @@ import com.google.firebase.database.DatabaseReference
 
 class Set(
     private val getter: Get,
-    private val ventOperations: VentOperations,
     val bonVentOperations: BonVentOperations,
     private val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     private val produitOperations: ProduitOperations,
@@ -83,13 +83,16 @@ class Set(
         )
     }
 
-    fun updateListRelativeVentCouleurPrixVent(
-        listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>,
+    fun updateListRelativeVentCouleurPrixVentFacade(
         m1produitInfos: ArticlesBasesStatsTable?,
         newPrix: Double
     ) {
         if (m1produitInfos != null) {
-            ventOperations.updateListRelativeVentCouleurPrixVent(m1produitInfos.keyID, newPrix)
+            updateListRelativeVentCouleurPrixVent(
+                repo10OperationVentCouleur,
+                filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.getterFocusedValues.filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali ,
+                m1produitInfos.keyID,
+                newPrix)
         }
     }
 
@@ -100,10 +103,12 @@ class Set(
     }
 
 
-    fun deleteVents(parentProduitOldId: Long) = ventOperations.deleteVents(parentProduitOldId)
 
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) =
-        ventOperations.toggleEtateDeliveryNonTrouveVentOu(produitKey)
+    fun toggleEtateDeliveryNonTrouveVentOuFacade(produitKey: String) =
+        toggleEtateDeliveryNonTrouveVentOu(
+            repo10OperationVentCouleur=repo10OperationVentCouleur,
+            filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.getterFocusedValues.filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali ,
+            produitKey=produitKey)
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
         repo9AppCompt.addNew(defaultGeneratedCompt)

@@ -10,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.VentOperations
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -42,14 +41,13 @@ val composRepositorysModule = module {
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
-    single { KAchatCouleurOperationRepository(get()) }
+    single { KAchatCouleurOperationRepository(get(),get(),) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
     // Helper classes for Set
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
-    single { VentOperations(get(), get()) }
 
 
     single { GetterFocusedValues(get(), get(),get(),get(),get(),get(),get(),get(),) }
@@ -58,7 +56,7 @@ val composRepositorysModule = module {
 
     single { Get(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(), ) }
 
-    single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), get(), ) }
+    single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

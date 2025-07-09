@@ -314,26 +314,36 @@ fun MainScreen(
                     PressistatntMainActivityButtons_Sec8FWinID1()
                 }
 
-                if (activeWindowsSearchProduit) {
-                    MainFastSearchProduitPourVent()
-                }
-
-                val produitName = (viewModel.aCentralFacade
-                    .focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.startTextSearchM1Produit
-                    ?: "")
-
-                if (viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.activeDialogSearchM1Produit) {
-                    Dialog_MainFastSearchProduitPourVent(
-                        sourceLenceurDeCetteFragment =
-                            ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
-                                .SearchProduit(
-                                    viewModel.aCentralFacade.getRepositorys.repoM1ProduitInfos.datasValue
-                                        .find { it.nom==produitName } !!
-                                ),
-                        focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade,
-                    )
-                }
+                DialogsAboveAll(viewModel)
             }
         }
+    }
+}
+
+@Composable
+private fun DialogsAboveAll(
+    viewModel: HeadViewModel
+) {
+    val parametresAppComptNonSaved = viewModel.getter.parametresAppComptNonSaved
+    val activeWindowsSearchProduit = parametresAppComptNonSaved.activeWindowsSearchProduit
+
+    if (activeWindowsSearchProduit) {
+        MainFastSearchProduitPourVent()
+    }
+
+    val produitName = (viewModel.aCentralFacade
+        .focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt?.startTextSearchM1Produit
+        ?: "")
+
+    if (viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.activeDialogSearchM1Produit) {
+        Dialog_MainFastSearchProduitPourVent(
+            sourceLenceurDeCetteFragment =
+                ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment
+                    .SearchProduit(
+                        viewModel.aCentralFacade.getRepositorys.repoM1ProduitInfos.datasValue
+                            .find { it.nom == produitName }!!
+                    ),
+            focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade,
+        )
     }
 }

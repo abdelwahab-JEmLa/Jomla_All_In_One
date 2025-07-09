@@ -336,7 +336,7 @@ fun B_CouleurAfficheur(
                 "${
                     key.takeLast(4).uppercase()
                 } $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentBProduitNomDebug ?: "NO"} ${vent?.quantityAchete}"
+                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantityAchete}"
             }
 
             Box(

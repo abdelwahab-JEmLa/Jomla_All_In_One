@@ -115,7 +115,7 @@ class Get(
         val bonVentKey = ouvertData.onVentM8BonVentKey
         val periodKey = ouvertData.current_OnVent_M14VentPeriode_KeyID
         val matchingOperation = repo10OperationVentCouleur.datasValue.find { operation ->
-            operation.parentM3CouleurProduitInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parentHVentPeriodKeyId == periodKey
+            operation.parentM3CouleurProduitInfosKeyID == couleurKey && operation.parentProduitInfosOldId == produitId && operation.parentM8BonVentKeyId == bonVentKey && operation.parent_M14VentPeriod_KeyId == periodKey
         }
 
         return matchingOperation

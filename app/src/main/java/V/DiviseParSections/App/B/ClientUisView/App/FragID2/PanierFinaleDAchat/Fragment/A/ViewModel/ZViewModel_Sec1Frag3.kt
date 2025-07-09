@@ -41,7 +41,7 @@ class ZViewModel_Sec1Frag3(
     }
 
     fun togglePanieMode() { _uiState.update { currentState -> currentState.copy(panieMode = currentState.panieMode.toggle()) } }
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) { setter.toggleEtateDeliveryNonTrouveVentOu(produitKey) }
+    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) { setter.toggleEtateDeliveryNonTrouveVentOuFacade(produitKey) }
     fun toggelePanierFilterNonTrouve() { _uiState.update { currentState -> currentState.copy(filterNonTrouve = !currentState.filterNonTrouve) } }
 }
 

@@ -45,8 +45,9 @@ fun List_AcheteursDeCetteProduit(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            val achatQuantityDeCetteBonVent = viewModel.getter.repo10OperationVentCouleur
-                .datasFilteredParCurrentHVentPeriod
+            val achatQuantityDeCetteBonVent = viewModel.aCentral.focusedActiveValuesFacade
+                .getterFocusedValues
+                .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
                 .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantityAchete
 
             Text(

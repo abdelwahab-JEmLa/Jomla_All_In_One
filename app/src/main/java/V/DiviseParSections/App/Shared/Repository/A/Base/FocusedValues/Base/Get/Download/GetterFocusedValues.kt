@@ -59,6 +59,22 @@ class GetterFocusedValues(
                 ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
         }
     }
+    //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    val filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali by derivedStateOf {
+        repo10OperationVentCouleur.datasValue.filter {
+            val is_This_M10Vent_From_travailleChezGrossisst3Ali =
+                repo9AppCompt.datasValue.find { compt ->
+                    compt.keyID == it.parent_M9AppCompt_KeyID
+                }?.travailleChezGrossisst3Ali ?: false
+
+            it.parent_M14VentPeriod_KeyId ==
+                    currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID
+                    && !is_This_M10Vent_From_travailleChezGrossisst3Ali
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     val filteredList_M2Client_LastM8BonVentEtate_IS_ON_MODE_COMMEND_ACTUELLEMENT by derivedStateOf {
         repo2Client.datasValue.filter { client ->
@@ -104,8 +120,8 @@ class GetterFocusedValues(
             with(it) {
                 M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
-                    parentHVentPeriodKeyId = parent_M14VentPeriod_KeyId,
-                    parentEVentPeriodDebugName = parent_M14VentPeriod_DebugInfos,
+                    parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
+                    parent_M14VentPeriod_DebugInfos = parent_M14VentPeriod_DebugInfos,
                     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
                     parentM8BonVentKeyId = keyID,
                     parentM8BonVentDebugInfos = get_DebugInfos(),

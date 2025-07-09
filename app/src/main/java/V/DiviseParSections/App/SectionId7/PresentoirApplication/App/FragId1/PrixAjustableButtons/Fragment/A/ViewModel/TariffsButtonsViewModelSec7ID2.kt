@@ -66,8 +66,7 @@ class TariffsButtonsViewModelSec7ID2(
         newPrix: Double,
         listFocusedM10OpeVentCouleurParPrixDifineur: List<M10OperationVentCouleur>
     ): Unit {
-        setter.updateListRelativeVentCouleurPrixVent(
-            listFocusedM10OpeVentCouleurParPrixDifineur,
+        setter.updateListRelativeVentCouleurPrixVentFacade(
             m1produitInfos,
             newPrix
         )
@@ -152,8 +151,6 @@ class TariffsButtonsViewModelSec7ID2(
     }
 
     fun deleteVents(parentProduitOldId: Long) {
-        setter.deleteVents(parentProduitOldId)
-
     }
 
 

@@ -7,30 +7,22 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ImageDisplayer
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.Firebase
@@ -205,75 +197,6 @@ fun CouleurDisplayer(
                     onClickToOpenWindow = { onClickToOpenWindow(data) }
                 )
             }
-
-            if (data.key.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.TopEnd)
-                ) {
-                    AfficheKeyCouleurAvecVentDebug(data)
-                }
-            }
         }
     }
 }
-
-@Composable
-private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
-    val text = "${
-        data.key.takeLast(4).uppercase()
-    } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
-
-    Text(
-        text = text,
-        color = Color.White,
-        fontSize = 10.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .background(
-                color = Color.Red,
-                shape = RoundedCornerShape(bottomStart = 8.dp)
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    )
-}
-
-@Composable
-fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
-    article: ArticlesBasesStatsTable,
-    colorIndex: Int,
-    getter: Get = koinInject(),
-) {
-    val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
-    val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
-
-    couleur
-        ?.let {
-            val text = with(couleur) {
-                "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentBProduitNomDebug ?: "NO"} ${vent?.quantityAchete}"
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text = text,
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.Companion
-                        .background(
-                            color = Color.Red,
-                            shape = RoundedCornerShape(bottomStart = 8.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
-        }
-}
-

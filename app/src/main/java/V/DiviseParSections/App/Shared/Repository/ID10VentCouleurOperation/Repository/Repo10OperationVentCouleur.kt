@@ -30,16 +30,10 @@ class Repo10OperationVentCouleur(
     private val depuitTestData = false
     private val _datas = mutableStateOf<List<M10OperationVentCouleur>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
-    val datasFiltered by derivedStateOf { _datas.value }
 
     val onVentFilteredDatas by derivedStateOf {
         val targetKey = zAppComptRepositoryComposable.currentAppCompt?.onVentM8BonVentKey
         datasValue.filter { it.parentM8BonVentKeyId == targetKey }
-    }
-
-    val datasFilteredParCurrentHVentPeriod by derivedStateOf {
-        val targetKey = zAppComptRepositoryComposable.currentAppCompt?.current_OnVent_M14VentPeriode_KeyID
-        datasValue.filter { it.parentHVentPeriodKeyId == targetKey }
     }
 
     init {
@@ -142,11 +136,11 @@ class Repo10OperationVentCouleur(
     ): M10OperationVentCouleur {
         return M10OperationVentCouleur(
             parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
-            parentHVentPeriodKeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
+            parent_M14VentPeriod_KeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
             parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
-            parentBProduitNomDebug = relatedCouleur.parentId1ProduitInfosDebugName,
+            parentM1ProduitDebugInfos = relatedCouleur.parentId1ProduitInfosDebugName,
             quantityAchete = quantity,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
             type = M10OperationVentCouleur.Type.CommandeDeLui,
@@ -181,15 +175,19 @@ data class M10OperationVentCouleur(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
+    val parent_M9AppCompt_KeyID: String = "null",
+    val parent_M9AppCompt_DebugInfos: String = "null",
     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
-    var parentHVentPeriodKeyId: String = "null",
-    var parentEVentPeriodDebugName: String = "null",
+    var parent_M14VentPeriod_KeyId: String = "null",
+    var parent_M14VentPeriod_DebugInfos: String = "null",
+    var parentEPeriodVentStartDate: Long = 0,
     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
     var parentM8BonVentKeyId: String = "null",
     val parentM8BonVentDebugInfos: String = "null",
     //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM1ProduitInfosKeyId: String = "null",
     val parentM1ProduitDebugInfos: String = "null",
+    var parentProduitInfosOldId: Long = 0,
     //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM3CouleurProduitInfosKeyID: String = "null",
     val parentM3CouleurProduitDebugInfos: String = "null",
@@ -200,27 +198,23 @@ data class M10OperationVentCouleur(
 
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
 
-    var parentBProduitNomDebug: String = "",
-    var parentProduitInfosOldId: Long = 0,
-    var parentEPeriodVentStartDate: Long = 0,
-
     //Mutable
     var quantityAchete: Int = 0,
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
     var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant2,
 
-    var parentZAppComptID: String = "",
     var parentClientInfosKeyID: String = "",
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    val parentDebugInfosID9AppCompt: String = "",
-    val parentDebugInfosID7VentPeriod: String = "",
+
 ) {
     fun getDebugInfos(): String {
-       return "$keyID =$parentM1ProduitDebugInfos / $parentM1ProduitInfosKeyId"
+        return buildString {
+            append("si besoin impl")
+        }
     }
 
     enum class EtateDelivery {

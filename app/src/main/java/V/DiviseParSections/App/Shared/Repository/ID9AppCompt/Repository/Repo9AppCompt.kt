@@ -31,7 +31,8 @@ class Repo9AppCompt(
     private val composScope = CoroutineScope(Dispatchers.IO)
 
     private val _datas = mutableStateOf<List<Z_AppCompt>>(emptyList())
-    val datasValue by derivedStateOf { _datas.value }
+    val
+            datasValue by derivedStateOf { _datas.value }
 
     val currentAppCompt by derivedStateOf {
         datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }

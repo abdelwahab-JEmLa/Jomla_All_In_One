@@ -262,7 +262,7 @@ class BSetterP (
         }
     }
 
-    fun updateListRelativeVentCouleurPrixVent(produitKey: String?, newPrix: Double) {
+    fun updateListRelativeVentCouleurPrixVentFacade(produitKey: String?, newPrix: Double) {
         val ventCouleursDuProduitKey =
             fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
                 .filter { it.parentM1ProduitInfosKeyId == produitKey }
@@ -294,7 +294,7 @@ class BSetterP (
         fVentCouleurOperationRepository.datasFilteredParCurrentHVentPeriod
             .filter { it.parentM1ProduitInfosKeyId == produitKey }
 
-    fun toggleEtateDeliveryNonTrouveVentOu(produitKey: String) {
+    fun toggleEtateDeliveryNonTrouveVentOuFacade(produitKey: String) {
         ventCouleursDuProduitKey(produitKey).forEach { vent ->
             val newState =
                 if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve)
