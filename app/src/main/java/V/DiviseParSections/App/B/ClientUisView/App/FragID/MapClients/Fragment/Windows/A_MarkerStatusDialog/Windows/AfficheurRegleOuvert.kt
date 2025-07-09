@@ -28,7 +28,7 @@ fun AfficheurRegleOuvert(
     fun getLatestTransactionForClient(clientId: Long): M8BonVent? {
         return uiState
             .c3_TransactionCommercialList
-            .filter { it.parentHClientOldID == clientId }
+            .filter { it.parent_M2Client_OldLongID == clientId }
             .maxByOrNull { it.creationTimestamps }
     }
 

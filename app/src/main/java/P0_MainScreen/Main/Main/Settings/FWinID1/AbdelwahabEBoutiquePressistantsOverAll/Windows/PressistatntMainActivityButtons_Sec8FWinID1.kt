@@ -89,8 +89,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler =
-        viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
 
     // Check if current fragment is FragmentProduitFastSearchDialog
@@ -227,7 +226,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     .getSemanticsTag(
                         cLenceDepuitFragmentsSepecialicteDeVents,
                         "cLenceDepuitFragmentsSepecialicteDeVents"
-                    ),
+                    )
+                ,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
@@ -250,6 +250,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
                         if (!cLenceDepuitFragmentsSepecialisteDeVents) {
                             ID3RecordingButton(
+                                viewModel,
                                 isRecording,
                                 showLabels,
                                 displayTime,
@@ -282,9 +283,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.active_CurrentApp_activeDialogSearchM1Produit(
-                                true
-                            )
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
                         },
                         modifier = Modifier.size(40.dp),
                         containerColor = MaterialTheme.colorScheme.primary,

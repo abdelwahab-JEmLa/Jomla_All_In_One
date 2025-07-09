@@ -326,7 +326,7 @@ open class HeadViewModel(
 
     }
 
-    // Add add callback for navigation
+    // Add addNew callback for navigation
     private var _onNavigateToSellerProduct = { _: Long -> }
 
     fun setNavigationCallback(callback: (Long) -> Unit) {
@@ -713,7 +713,7 @@ open class HeadViewModel(
                 val timestamp = System.currentTimeMillis()
                 val backupRef = firebaseDatabase.getReference("WarningDataBaseBakup/$timestamp")
 
-                // Create add backup object with all relevant data
+                // Create addNew backup object with all relevant data
                 val backupData = hashMapOf(
                     "articlesBasesStatTables" to _uiState.value.articlesBasesStatTables,
                     "appSettingsSaverModel" to _uiState.value.appSettingsSaverModel,
@@ -761,7 +761,7 @@ open class HeadViewModel(
         }
     }
 
-    // Optional: Add add separate function if you want to export articles only
+    // Optional: Add addNew separate function if you want to export articles only
     fun exportArticlesBasesStatsTableOnly() {
         viewModelScope.launch {
             try {

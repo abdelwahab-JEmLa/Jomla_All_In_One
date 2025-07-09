@@ -39,18 +39,17 @@ fun CommandButton(
             val currentPeriodKey = currentActiveFocuced_M14VentPeriode?.keyID ?: ""
 
             val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
-                bonVent.parentM2ClientInfosKey == m2Client.keyID &&
-                        bonVent.parentM7VentPeriodKeyId == currentPeriodKey
+                bonVent.parent_M2Client_KeyID == m2Client.keyID &&
+                        bonVent.parent_M14VentPeriod_KeyId == currentPeriodKey
             }
 
             val targetBonVent = existingBonVent?.copy(
                 etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             ) ?: M8BonVent().copy(
-                parentZAppComptNom = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID?:"null",
-                parentID7VentPeriodeKeyByParent = currentPeriodKey,
-                debugInfos = m2Client.nom,
-                parentM2ClientInfosKey = m2Client.keyID,
-                parentM2ClientInfosDebugName = m2Client.nom,
+                parent_M9AppCompt_DebugInfos = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID?:"null",
+                parent_M14VentPeriod_KeyId = currentPeriodKey,
+                parent_M2Client_KeyID = m2Client.keyID,
+                parent_M2Client_DebugInfos = m2Client.nom,
                 etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
 

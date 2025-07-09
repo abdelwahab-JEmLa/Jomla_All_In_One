@@ -55,7 +55,7 @@ fun B_ItemMessagesVocale(
         uiState.c3_BonAchate.find { it.vid == parentD_EtateMessageVocale.parentC3_BonAchateVID }
     }
 
-    val clientName = relatedBonAchate?.nomClientConcerned ?: "Client inconnu"
+    val clientName = relatedBonAchate?.parent_M2Client_DebugInfos ?: "Client inconnu"
 
     val vendorName = parentD_EtateMessageVocale.nomParent_1_5_Vendeur.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 

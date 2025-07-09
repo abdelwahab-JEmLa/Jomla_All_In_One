@@ -8,7 +8,7 @@ import java.util.Calendar
 object TimeFilterUtils {
 
     /**
-     * Checks if add timestamp is older than the specified number of days
+     * Checks if addNew timestamp is older than the specified number of days
      * Uses calendar-based comparison to match getTimeDifferenceInArabic behavior
      * @param timestamp The timestamp to check (in milliseconds)
      * @param days Number of days to compare against
@@ -42,7 +42,7 @@ object TimeFilterUtils {
 
 
     /**
-     * Safely parses add string to integer for days filter
+     * Safely parses addNew string to integer for days filter
      * @param daysString The string to parse
      * @return The parsed integer or 0 if parsing fails
      */

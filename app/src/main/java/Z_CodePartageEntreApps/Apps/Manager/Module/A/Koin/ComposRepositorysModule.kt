@@ -30,7 +30,7 @@ import org.koin.dsl.module
 val composRepositorysModule = module {
     single { Repo14VentPeriode(get(),) }
     single { Repo13TarificationInfos(get(),get(),) }
-    single { Repo9AppCompt(get()) }
+    single { Repo9AppCompt(context = androidContext(),get()) }
 
     single { Repo2Client(get(), get(), get(),get(), ) }
     single { CCategoriesCompoRepository(get()) }
@@ -59,6 +59,6 @@ val composRepositorysModule = module {
     single { Get(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(), ) }
 
     single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), get(), ) }
-    single { ModulesCentral(get(), get(), get(),) }
+    single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

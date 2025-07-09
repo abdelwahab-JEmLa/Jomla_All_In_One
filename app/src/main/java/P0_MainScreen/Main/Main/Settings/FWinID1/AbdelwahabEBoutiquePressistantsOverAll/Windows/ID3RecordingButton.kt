@@ -1,5 +1,7 @@
 package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows
 
+import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.A.ViewModel.ViewModelPresistantButtonsSec8FWinID1
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ID3RecordingButton(
+    viewModel: ViewModelPresistantButtonsSec8FWinID1,
     isRecording: Boolean,
     showLabels: Boolean,
     displayTime: String,
@@ -53,9 +56,20 @@ fun ID3RecordingButton(
 
         if (showLabels) {
             // Use the pre-cached value
+            val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+            val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
+                get.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
+
+            val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod =
+                get.filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+
             Text(
                 "$displayTime | بقي $remainingClients زبون",
                 modifier = Modifier
+                    .getSemanticsTag(filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod,
+                        "filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod",0)
+                    .getSemanticsTag(filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
+                        "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible")
                     .background(if (enable) buttonBackgroundColor else Color.Gray)
                     .padding(4.dp),
                 color = Color.White

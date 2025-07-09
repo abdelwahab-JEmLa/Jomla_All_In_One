@@ -142,7 +142,7 @@ class ViewModel_AProto_ProduitDataBase(
                         newDataList.add(newItem)
                     } catch (e: Exception) {
                         Log.e(TAG, "Error transforming item ${index+1}: ${e.message}")
-                        // Return add default item to maintain consistency
+                        // Return addNew default item to maintain consistency
                         val defaultItem = A_Produit(
                             id = ancienData.id,
                             nom = "Error: ${e.message}",
@@ -158,7 +158,7 @@ class ViewModel_AProto_ProduitDataBase(
                 _migrationProgress.value = 0.6f
                 Log.d(TAG, "Migration progress: 60% - Creating SnapshotStateList")
 
-                // Create add SnapshotStateList from the converted data
+                // Create addNew SnapshotStateList from the converted data
                 val snapshotList = SnapshotStateList<A_Produit>()
                 snapshotList.addAll(newDataList)
                 Log.d(TAG, "Created SnapshotStateList with ${snapshotList.size} items")

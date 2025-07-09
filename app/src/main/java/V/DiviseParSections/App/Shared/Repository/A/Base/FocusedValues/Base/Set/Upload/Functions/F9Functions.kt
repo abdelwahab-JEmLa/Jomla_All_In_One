@@ -44,7 +44,7 @@ fun updateCurrentAppComptDialogProduit(
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt
     if (currentAppCompt == null) {
-        Log.e("FocusedVarsDebug", "Cannot update dialog product - currentM9AppCompt is null")
+        Log.e("FocusedVarsDebug", "Cannot upsert dialog product - currentM9AppCompt is null")
         return
     }
 

@@ -3,8 +3,10 @@ package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
+import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -22,6 +24,7 @@ import java.util.Calendar
 
 @Stable
 class Repo9AppCompt(
+    private val context: Context,
     private val ancienRepo: Z_AppComptRepositoryProtoJuin17,
 ) {
     val dao = ancienRepo.dao
@@ -40,7 +43,7 @@ class Repo9AppCompt(
         }
     }
 
-    fun add(data: Z_AppCompt) {
+    fun addNew(data: Z_AppCompt) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
@@ -55,12 +58,40 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(-1, dataUpdate)
     }
 
+    fun updateIfExist(data: Z_AppCompt) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        ancienRepo.addOrUpdatedDataBase(existingIndex, updatedItem)
+    }
 
     fun upsert(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }
-
 
         _datas.value = if (existingIndex >= 0) {
             datasValue.toMutableList().apply {
@@ -118,7 +149,7 @@ data class Z_AppCompt(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
-    // Section Centralization Valeurs Pour Injection add TOu modules
+    // Section Centralization Valeurs Pour Injection addNew TOu modules
 
     // Section Paramaters App telephone
     val activeDialogSearchM1Produit: Boolean = false,

@@ -79,7 +79,7 @@ object FirebaseUtilsI_CategoriesProduits {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = I_CategoriesProduits.syncData(dataSnapshot = dataSnapshot) as I_CategoriesProduits
 
-                        // Check that the data has add valid ID
+                        // Check that the data has addNew valid ID
                         if (data.id > 0) {
                             repository.modelDatas.add(data)
                         }

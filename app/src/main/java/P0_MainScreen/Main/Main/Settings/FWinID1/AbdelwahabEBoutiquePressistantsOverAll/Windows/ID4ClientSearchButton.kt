@@ -139,9 +139,9 @@ fun ID4ClientSearchButton(
             .getSemanticsTag(repo8BonVent.datasValue.map {
                 with(it) {
                     buildString {
-                        append(it.parentM2ClientInfosDebugName)
+                        append(it.parent_M2Client_DebugInfos)
                         append(" ")
-                        append(it.parentM2ClientInfosKey.takeLast(4))
+                        append(it.parent_M2Client_KeyID.takeLast(4))
                         append(" ")
                         append(etateActuellementEst.name)
                     }
@@ -181,7 +181,7 @@ fun ID4ClientSearchButton(
                                     .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
                                     .groupBy { it.parentM1ProduitInfosKeyId }.size
 
-                            if (bon.nomClientConcerned.isNotEmpty() && bon.nomClientConcerned != "Non Defini") {
+                            if (bon.parent_M2Client_DebugInfos.isNotEmpty() && bon.parent_M2Client_DebugInfos != "Non Defini") {
                                 "$nomClient - $timeElapsed - $totalProducts produits"
                             } else "Rechercher Client"
                         } ?: run {
@@ -322,15 +322,14 @@ private fun CreateNewClientIcon(
     )
 
     val addedDefaultOnVentID8BonVentEtAdd = defaultId8BonVent.copy(
-        debugInfos = newClient.nom,
         creationTimestamps = System.currentTimeMillis(),
-        parentM2ClientInfosKey = newClient.keyID,
-        parentM2ClientInfosDebugName = newClient.nom
+        parent_M2Client_KeyID = newClient.keyID,
+        parent_M2Client_DebugInfos = newClient.nom
     )
 
     val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
         onVentM8BonVentKey = addedDefaultOnVentID8BonVentEtAdd.keyID,
-        onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.debugInfos
+        onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.get_DebugInfos()
     )
 
     IconButton(
@@ -363,31 +362,23 @@ fun ClientSearchItem(
 ) {
     val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
     val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
-    val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
-        bonVentRepository.datasValue
-            .filter { it.parentM2ClientInfosKey == m2Client.keyID }
-            .maxByOrNull { it.creationTimestamps }
-    }
-
-    // Improved: Single function to handle M8BonVent creation/update logic
     val handleBonVentSelection = remember(m2Client.keyID) {
         {
-            val currentactivefocucedM14ventperiode = get.currentActiveFocuced_M14VentPeriode
-            val currentPeriodKey = currentactivefocucedM14ventperiode?.keyID ?: ""
+            val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
+            val currentPeriodKey = currentActiveFocuced_M14VentPeriode?.keyID ?: ""
 
             val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
-                bonVent.parentM2ClientInfosKey == m2Client.keyID &&
-                        bonVent.parentM7VentPeriodKeyId == currentPeriodKey
+                bonVent.parent_M2Client_KeyID == m2Client.keyID &&
+                        bonVent.parent_M14VentPeriod_KeyId == currentPeriodKey
             }
 
             val targetBonVent = existingBonVent?.copy(
                 etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             ) ?: M8BonVent().copy(
-                parentZAppComptNom = currentactivefocucedM14ventperiode?.parent_M9AppCompt_KeyID?:"null",
-                parentID7VentPeriodeKeyByParent = currentPeriodKey,
-                debugInfos = m2Client.nom,
-                parentM2ClientInfosKey = m2Client.keyID,
-                parentM2ClientInfosDebugName = m2Client.nom,
+                parent_M9AppCompt_DebugInfos = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID?:"null",
+                parent_M14VentPeriod_KeyId = currentPeriodKey,
+                parent_M2Client_KeyID = m2Client.keyID,
+                parent_M2Client_DebugInfos = m2Client.nom,
                 etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
             )
 
@@ -403,20 +394,23 @@ fun ClientSearchItem(
             targetBonVent
         }
     }
-
+    val latestBonVent = remember(m2Client.keyID, bonVentRepository.datasValue) {
+        bonVentRepository.datasValue
+            .filter { it.parent_M2Client_KeyID == m2Client.keyID }
+            .maxByOrNull { it.creationTimestamps }
+    }
     val previewBonVent = remember(m2Client.keyID, get.currentActiveFocuced_M14VentPeriode?.keyID) {
         val currentPeriodKey = get.currentActiveFocuced_M14VentPeriode?.keyID ?: ""
         val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
-            bonVent.parentM2ClientInfosKey == m2Client.keyID &&
-                    bonVent.parentM7VentPeriodKeyId == currentPeriodKey
+            bonVent.parent_M2Client_KeyID == m2Client.keyID &&
+                    bonVent.parent_M14VentPeriod_KeyId == currentPeriodKey
         }
 
         existingBonVent?.copy(
             etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         ) ?: get.getDefaultM8BonVent().copy(
-            debugInfos = m2Client.nom,
-            parentM2ClientInfosKey = m2Client.keyID,
-            parentM2ClientInfosDebugName = m2Client.nom,
+            parent_M2Client_KeyID = m2Client.keyID,
+            parent_M2Client_DebugInfos = m2Client.nom,
             etateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
         )
     }

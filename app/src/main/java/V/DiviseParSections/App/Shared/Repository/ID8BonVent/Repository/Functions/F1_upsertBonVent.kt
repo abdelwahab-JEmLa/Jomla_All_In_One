@@ -35,9 +35,9 @@ fun upsertBonVent(
 
                 M8BonVent(
                     keyID = keyByParentBonVentOnClickButton,
-                    parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
-                    parentHClientOldID = client.id,
-                    parentID2ClientKeyByParent = parentID2ClientKeyByParent,
+                    parent_M14VentPeriod_KeyId = keyModelToOnVentHVentPeriodKeyByParent,
+                    parent_M2Client_OldLongID = client.id,
+                    parent_M2Client_KeyID = parentID2ClientKeyByParent,
                     parentID8C2TypeTransactionKeyByParent = parentID8C2TypeTransactionKeyByParent,
                     etateActuellementEst = findEtateParKeyByParent(
                         parentID8C2TypeTransactionKeyByParent

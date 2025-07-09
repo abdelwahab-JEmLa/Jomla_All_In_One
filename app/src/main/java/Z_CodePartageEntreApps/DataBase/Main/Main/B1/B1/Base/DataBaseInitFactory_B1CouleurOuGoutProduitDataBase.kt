@@ -229,7 +229,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
             val firebaseRef = M3CouleurProduitInfos.ref
             firebaseRef.updateChildren(updates).await()
         } catch (e: Exception) {
-            println("Error in batch Firebase update: ${e.message}")
+            println("Error in batch Firebase upsert: ${e.message}")
         }
     }
 

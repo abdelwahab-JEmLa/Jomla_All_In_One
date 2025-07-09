@@ -103,7 +103,7 @@ fun B_1_CameraFAB(
                                 Toast.makeText(context, "Image téléchargée avec succès", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            throw IOException("La vérification du téléchargement add échoué")
+                            throw IOException("La vérification du téléchargement addNew échoué")
                         }
                     } catch (e: Exception) {
                         if (localFile.exists() && !uploadSuccess) {

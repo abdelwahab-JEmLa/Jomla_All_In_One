@@ -76,7 +76,7 @@ class E0AfficheHistoriqueTransactionsViewModel(
     }
 
     fun openTransaction(data: M8BonVent): Unit {
-        updateActiveComptIdClientOuvertPoutCeCompt(data.parentHClientOldID)
+        updateActiveComptIdClientOuvertPoutCeCompt(data.parent_M2Client_OldLongID)
         setter.ouvreExistedDataEtNavigatePanie(data.keyID)
     }
 

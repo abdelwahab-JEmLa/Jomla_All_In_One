@@ -69,7 +69,7 @@ fun View_AdminAppPanelControleur(
         if (!showM14VentPeriod) {
             FloatingActionButton(
                 onClick = {
-                    viewModel.aCentralFacade.set.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
+                   // viewModel.aCentralFacade.set.addAuRepoM9AppComptParFacade(defaultGeneratedCompt)
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)

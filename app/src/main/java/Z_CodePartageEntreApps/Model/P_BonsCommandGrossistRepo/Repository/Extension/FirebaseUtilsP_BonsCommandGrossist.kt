@@ -81,7 +81,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = SyncDataUtilsP_BonsCommandGrossist.syncData(dataSnapshot = dataSnapshot) as P_BonsCommandGrossist
 
-                        // Check that the data has add valid ID
+                        // Check that the data has addNew valid ID
                         if (data.vid > 0) {
                             repository.modelDatas.add(data)
                         }

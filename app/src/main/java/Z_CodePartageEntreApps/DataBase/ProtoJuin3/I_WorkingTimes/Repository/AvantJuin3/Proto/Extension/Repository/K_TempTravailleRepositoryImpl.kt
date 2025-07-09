@@ -185,7 +185,7 @@ class K_TempTravailleRepositoryImpl :
         intervalId: String?,
         startTime: String?
     ) {
-        // Use the BonAchatInfos_FragID3 handler to upsert add new interval
+        // Use the BonAchatInfos_FragID3 handler to upsert addNew new interval
         IntervalesEtJoursHandler.addNewInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -254,7 +254,7 @@ class K_TempTravailleRepositoryImpl :
 
     private fun updateDataUnSeulDataInFirebase(tempTravaille: K_TempTravaille) {
         try {
-            // Use the unified function to convert the object to add Firebase-friendly format
+            // Use the unified function to convert the object to addNew Firebase-friendly format
             val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
             // Sanitize the key before using it in Firebase
@@ -368,7 +368,7 @@ class K_TempTravailleRepositoryImpl :
             checkConnectivityAndSync()
 
             datas.forEach { tempTravaille ->
-                // Use the unified function to convert the object to add Firebase-friendly format
+                // Use the unified function to convert the object to addNew Firebase-friendly format
                 val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
                 // Sanitize the key before using it in Firebase
@@ -396,7 +396,7 @@ class K_TempTravailleRepositoryImpl :
     }
 
     override fun ajoutJour(date: String) {
-        // Use the BonAchatInfos_FragID3 handler to upsert add new day
+        // Use the BonAchatInfos_FragID3 handler to upsert addNew new day
         IntervalesEtJoursHandler.ajoutJour(
             modelDatas = modelDatas,
             date = date

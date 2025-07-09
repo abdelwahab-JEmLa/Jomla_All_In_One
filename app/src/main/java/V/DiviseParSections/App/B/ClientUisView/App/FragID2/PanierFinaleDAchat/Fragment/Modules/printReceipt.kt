@@ -38,7 +38,7 @@ fun printReceipt(
 
     val printFunction = {
         // Get client information
-        val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parentHClientOldID }
+        val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parent_M2Client_OldLongID }
 
         // Generate current date string
         val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -52,7 +52,7 @@ fun printReceipt(
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
             }
 
-        // Create add map to group articles by product name and sum quantities
+        // Create addNew map to group articles by product name and sum quantities
         val productMap = mutableMapOf<String, ArticleImpression>()
         var totalAmount = 0.0
 

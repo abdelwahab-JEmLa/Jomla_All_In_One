@@ -178,7 +178,7 @@ class I_CategorieProduitsRepositoryImpl(
                 I_CategorieProduitsRepository.caReference.addValueEventListener(valueEventListener!!)
                 Log.d(TAG, "Firebase data change listener successfully registered")
             } else {
-                Log.w(TAG, "Data change listener already active, not creating add new one")
+                Log.w(TAG, "Data change listener already active, not creating addNew new one")
             }
         }
     }

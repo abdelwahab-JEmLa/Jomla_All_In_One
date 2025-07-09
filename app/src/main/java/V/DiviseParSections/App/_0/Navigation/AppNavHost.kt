@@ -290,7 +290,7 @@ fun AppNavHost(
                                 currentState.copy(soldArticlesModel = emptyList())
                             }
 
-                            // Clear the database in add coroutine
+                            // Clear the database in addNew coroutine
                             viewModel.database.soldArticlesModelDao().deleteAll()
 
                             // Clear Firebase references
@@ -363,7 +363,7 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_ClientsLocationGps.route,
     ) { backStackEntry ->
-        // Create add more reliable key that combines time and reload trigger
+        // Create addNew more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
             mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
@@ -407,7 +407,7 @@ private fun navigateToMainScreen(
 
 
 /**
- * Helper function to create add consistent screen key for proper recomposition
+ * Helper function to create addNew consistent screen key for proper recomposition
  */
 @Composable
 private fun rememberScreenKey(backStackEntry: NavBackStackEntry): Any {

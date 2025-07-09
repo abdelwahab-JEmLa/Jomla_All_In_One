@@ -82,7 +82,7 @@ fun View_M9AppCompt(
 
             IconButton(
                 onClick = {
-                    // FIXED: Add proper update handling for visibility toggle
+                    // FIXED: Add proper upsert handling for visibility toggle
                     val updatedVendeur = compt.copy(hideAppScreen = !compt.hideAppScreen)
                 }
             ) {
@@ -118,7 +118,7 @@ fun View_M9AppCompt(
             vendeur = compt,
             onDismiss = { showEditDialog = false },
             onConfirm = { updatedVendeur ->
-                // FIXED: Add proper update handling
+                // FIXED: Add proper upsert handling
                 showEditDialog = false
             }
         )

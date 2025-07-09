@@ -252,7 +252,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         val dataToUpsert = when (data) {
             is M8BonVent -> data.copy() as DataBase
             is _1_2_ProduitAcheteOperation -> data.copy() as DataBase
-            else -> data // Fallback to original object if not add known data class
+            else -> data // Fallback to original object if not addNew known data class
         }
 
         // Access the vid field with proper accessibility
@@ -295,7 +295,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
             }
 
             else -> {
-                // Log that we're inserting add new record
+                // Log that we're inserting addNew new record
                 Log.d(TAG, "Inserting new record")
 
                 // Insert as new
@@ -382,7 +382,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
                 // Notify any observers that may need to upsertLenceCommandeRepoGroupedProtoAvantJuin3 UI based on this change
                 // (This will cause connected components to recompose)
                 progressRepo.value =
-                    progressRepo.value  // Trigger add small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
+                    progressRepo.value  // Trigger addNew small upsertLenceCommandeRepoGroupedProtoAvantJuin3 to force recomposition
             } catch (e: Exception) {
                 Log.e(
                     TAG,
@@ -460,7 +460,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         try {
             progressRepo.value = 0.6f
             withContext(Dispatchers.IO) {
-                // Create add repository head with all repositories
+                // Create addNew repository head with all repositories
                 repositorys_Model = GroupeRepositorysProtoAvJuin3Model(
                     _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
                     repositoryC2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
@@ -486,7 +486,7 @@ class GroupeRepositorysProtoAvJuin3Impl(
         var hasCompletedOnce = false
 
         try {
-            // Use combine with add different syntax
+            // Use combine with addNew different syntax
             val combinedFlow = combine(
                 repo_1_1_CouleurAcheteOperation.progressRepo,
                 repo_1_2_ProduitAcheteOperation.progressRepo,

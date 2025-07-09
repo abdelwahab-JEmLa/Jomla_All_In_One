@@ -92,7 +92,7 @@ fun B_CouleurAfficheur(
 
     val currentQuantity = vent?.quantityAchete ?: 0
 
-    // Using add simpler approach for visibility tracking
+    // Using addNew simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository =
         koinInject<_1_1_CouleurAcheteOperation_Repository>()
@@ -105,7 +105,7 @@ fun B_CouleurAfficheur(
         key2 = couleurActuelleIndex,
         key3 = Unit // Adding this key to ensure it runs on initial composition
     ) {
-        // Only proceed if we have add valid parent ID - this is critical
+        // Only proceed if we have addNew valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
         }
@@ -131,11 +131,11 @@ fun B_CouleurAfficheur(
                     it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
         }
 
-        // Set the VID if it exists, otherwise create add new entry
+        // Set the VID if it exists, otherwise create addNew new entry
         compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
             existing_1_1_CouleurAcheteOperation.vid
         } else {
-            // Create add new unique VID using the synchronized generator
+            // Create addNew new unique VID using the synchronized generator
             val existingVids = allExistingOperations.map { it.vid }
             val newVid = VidGenerator.generateNewVid(existingVids)
 

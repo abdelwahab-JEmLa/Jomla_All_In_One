@@ -155,7 +155,6 @@ fun ProductImageCaptureButton(
             newCouleurP
         )
     }
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier

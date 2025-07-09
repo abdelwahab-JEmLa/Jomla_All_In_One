@@ -129,7 +129,7 @@ fun CategorySelectionDialog(
     }
 
     fun processText(input: String): String = if (input.contains(".")) {
-        input.replace(Regex("\\.([add-zA-Z]+)")) { "#${it.groupValues[1].uppercase()}" }
+        input.replace(Regex("\\.([addNew-zA-Z]+)")) { "#${it.groupValues[1].uppercase()}" }
     } else {
         input.trim().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }

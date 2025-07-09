@@ -43,7 +43,7 @@ data class ParametresAppComptNonSaved(
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.EditDatabaseWithCreateNewArticles,
+    val devStartUpScree: Screen = Screen.A_ClientsLocationGps,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 )
@@ -89,13 +89,13 @@ class Get(
         etateActuellementEst: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
     ): M8BonVent? {
         return repo8BonVent.datasValue.filter {
-            it.parentHClientOldID == clientId && it.etateActuellementEst == etateActuellementEst
+            it.parent_M2Client_OldLongID == clientId && it.etateActuellementEst == etateActuellementEst
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 
     fun getClientLastTransaction(clientId: Long): M8BonVent? {
         return repo8BonVent.datasValue.filter {
-            it.parentHClientOldID == clientId
+            it.parent_M2Client_OldLongID == clientId
         }.maxByOrNull { it.creationTimestamps } // Use creation timestamp for better ordering
     }
 

@@ -103,7 +103,7 @@ fun OptionsFragmentButtons(
                             val newPrdList =
                                 viewModel.uiState.value.a_ProduitInfosList.toMutableList()
 
-                            // Create add map for faster lookup
+                            // Create addNew map for faster lookup
                             val ancDataMap = ancDatas.associateBy { it.idArticle.toLong() }
 
                             newPrdList.forEach { currentProduct ->
@@ -165,7 +165,7 @@ fun OptionsFragmentButtons(
             text = {
                 Column {
                     Text(
-                        "Select add catalogue to move ${selectedCategories.size} selected categories:",
+                        "Select addNew catalogue to move ${selectedCategories.size} selected categories:",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )

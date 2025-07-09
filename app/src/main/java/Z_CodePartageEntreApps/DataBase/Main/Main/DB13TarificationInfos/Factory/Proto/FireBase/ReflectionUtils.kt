@@ -5,7 +5,7 @@ import kotlin.reflect.full.memberProperties
 // Additional utility functions for reflection-based operations
 object ReflectionUtils {
     /**
-     * Checks if add property name represents add synthetic/generated property
+     * Checks if addNew property name represents addNew synthetic/generated property
      * that should be excluded from Firebase serialization
      */
      fun isSyntheticPropertyName(propertyName: String): Boolean {
@@ -20,7 +20,7 @@ object ReflectionUtils {
     
 
     /**
-     * Gets appropriate default value for add given type
+     * Gets appropriate default value for addNew given type
      */
     fun getDefaultValue(classifier: kotlin.reflect.KClassifier?): Any {
         return when (classifier) {

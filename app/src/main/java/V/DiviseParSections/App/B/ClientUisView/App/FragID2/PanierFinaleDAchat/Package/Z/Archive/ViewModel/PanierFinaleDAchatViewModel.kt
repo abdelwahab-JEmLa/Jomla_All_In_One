@@ -78,7 +78,7 @@ class PanierFinaleDAchatViewModel(
             )
 
             // Insert the updated data
-            groupedDataBasesRepository.update(
+            groupedDataBasesRepository.upsert(
                 data = updatedProduitInfo,
             )
         }

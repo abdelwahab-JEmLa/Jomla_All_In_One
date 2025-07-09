@@ -123,7 +123,7 @@ fun QuantityGrid(
             items(quantities.size) { index ->
                 val quantityNumber = quantities[index]
                 QuantityButton(
-                    modifier = Modifier.fillMaxWidth(), // Pass the click update mode
+                    modifier = Modifier.fillMaxWidth(), // Pass the click upsert mode
                     clickUpdate = clickUpdate,
                     viewModel = viewModel,
                     newQuantity = quantityNumber,

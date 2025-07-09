@@ -106,7 +106,7 @@ class SetFocusedVars(
             repo9AppCompt.upsert(
                 it.copy(
                     onVentM8BonVentKey = bonVent.keyID,
-                    onVentM8BonVentDebugInfos = bonVent.debugInfos,
+                    onVentM8BonVentDebugInfos = bonVent.get_DebugInfos(),
                 )
             )
         }

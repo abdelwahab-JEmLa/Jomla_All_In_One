@@ -66,7 +66,7 @@ fun QuantityButton(
 
                 when(clickUpdate) {
                     ClickUpdate.CouleurQua -> {
-                        // Original functionality - update single color quantity
+                        // Original functionality - upsert single color quantity
                         vent.let { existingVent ->
                             val updatedVent = if (newQuantity == 0) {
                                 existingVent.copy(

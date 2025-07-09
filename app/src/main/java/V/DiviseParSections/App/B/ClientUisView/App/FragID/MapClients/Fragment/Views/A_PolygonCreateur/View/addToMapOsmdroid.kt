@@ -24,7 +24,7 @@ fun addToMapOsmdroid(
     Log.d("PolygonCreator", "Number of polygon points: ${allPolygonPoints.size}")
     Log.d("PolygonCreator", "Number of secteurPolygonInfo items: ${secteurPolygonInfoList.size}")
 
-    // For each secteurPolygonInfo, create and upsert add polygon to the map
+    // For each secteurPolygonInfo, create and upsert addNew polygon to the map
     secteurPolygonInfoList.forEach { secteurPolygonInfo ->
         Log.d("PolygonCreator", "Processing secteur info: ${secteurPolygonInfo.keyIDSecteurDeClients}")
 
@@ -89,7 +89,7 @@ fun addToMapOsmdroid(
         if (secteur.ouvert) {
             Log.d("PolygonCreator", "Processing openTransaction sector: ${secteur.nom}")
 
-            // Create add single polyline for all points
+            // Create addNew single polyline for all points
             if (geoPoints.size > 1) {
                 val polyline = Polyline(mapView)
                 polyline.setPoints(geoPoints)
@@ -120,10 +120,10 @@ fun addToMapOsmdroid(
         } else if (secteur.sonPolygonOnModeDessine) {
             Log.d("PolygonCreator", "Processing closed sector: ${secteur.nom}")
 
-            // Create add new polygon for closed sectors
+            // Create addNew new polygon for closed sectors
             val polygon = Polygon(mapView)
 
-            // Create add copy of the points
+            // Create addNew copy of the points
             val pointsList = ArrayList<GeoPoint>(geoPoints)
 
             // Close polygon by adding the first point at the end if needed

@@ -36,7 +36,7 @@ data class D_CouleursEtGoutesProduitsInfos(
         ) {
             viewModel.viewModelScope.launch {
                 try {
-                    // Create add snapshot of the current state
+                    // Create addNew snapshot of the current state
                     val currentState = this@update.copy()
 
                     // Update local state using clear and addAll

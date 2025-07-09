@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Patch
+package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.Patch   /*
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
@@ -64,9 +64,9 @@ class BSetterP (
 
                 M8BonVent(
                     keyID = keyByParentBonVentOnClickButton,
-                    parentID7VentPeriodeKeyByParent = keyModelToOnVentHVentPeriodKeyByParent,
-                    parentHClientOldID = client.id,
-                    parentID2ClientKeyByParent = parentID2ClientKeyByParent,
+                    parent_M14VentPeriod_KeyId = keyModelToOnVentHVentPeriodKeyByParent,
+                    parent_M2Client_OldLongID = client.id,
+                    parent_M2Client_KeyID = parentID2ClientKeyByParent,
                     parentID8C2TypeTransactionKeyByParent = parentID8C2TypeTransactionKeyByParent,
                     etateActuellementEst = findEtateParKeyByParent(parentID8C2TypeTransactionKeyByParent)
                 )
@@ -122,14 +122,12 @@ class BSetterP (
         gBonVentRepository.upsert(
             M8BonVent(
                 keyID = newTransactionKey,
-                parentM7VentPeriodKeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
-                parentM2ClientInfosKey = client.keyID,
-                parentHClientOldID = clientOldId,
-                nomClientConcerned = client.nom,
-                parentKeyId9AppComptInfos = zCompt.keyID,
+                parent_M14VentPeriod_KeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
+                parent_M2Client_KeyID = client.keyID,
+                parent_M2Client_OldLongID = clientOldId,
+                parent_M2Client_DebugInfos = client.nom,
+                parent_M9AppCompt_KeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
             )
         )
@@ -153,14 +151,12 @@ class BSetterP (
 
             val newBonVent = M8BonVent(
                 keyID = key,
-                parentM7VentPeriodKeyId = currentZCompt.current_OnVent_M14VentPeriode_KeyID,
-                parentM2ClientInfosKey = client.keyID,
-                parentHClientOldID = clientOldId,
-                nomClientConcerned = client.nom,
-                parentKeyId9AppComptInfos = currentZCompt.keyID,
+                parent_M14VentPeriod_KeyId = currentZCompt.current_OnVent_M14VentPeriode_KeyID,
+                parent_M2Client_KeyID = client.keyID,
+                parent_M2Client_OldLongID = clientOldId,
+                parent_M2Client_DebugInfos = client.nom,
+                parent_M9AppCompt_KeyID = currentZCompt.keyID,
                 etateActuellementEst = etate,
-                parentID2ClientKeyByParent = getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-                parentID7VentPeriodeKeyByParent = getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
                 parentID8C2TypeTransactionKeyByParent = getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
             )
 
@@ -189,9 +185,9 @@ class BSetterP (
             // Update the existing BonVent
             val updatedBonVent = existingBonVent.copy(
                 etateActuellementEst = etate,
-                nomClientConcerned = client.nom,
-                parentM2ClientInfosKey = client.keyID,
-                parentHClientOldID = clientOldId
+                parent_M2Client_DebugInfos = client.nom,
+                parent_M2Client_KeyID = client.keyID,
+                parent_M2Client_OldLongID = clientOldId
             )
 
             gBonVentRepository.upsert(updatedBonVent)
@@ -318,3 +314,4 @@ class BSetterP (
     }
 }
 
+                */

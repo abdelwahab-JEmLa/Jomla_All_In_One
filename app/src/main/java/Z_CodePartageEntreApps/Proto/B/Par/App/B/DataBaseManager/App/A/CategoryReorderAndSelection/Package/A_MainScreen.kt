@@ -73,7 +73,7 @@ fun A_MainScreen_SectionID4_FragmentID1(
     }
     val loadingProgress by viewModel.a_ProduitModelRepository.progressRepo.collectAsState()
 
-    // Removed Dialog wrapper - now add normal Fragment
+    // Removed Dialog wrapper - now addNew normal Fragment
     Surface(
         modifier = Modifier.fillMaxSize(),
         shape = MaterialTheme.shapes.large

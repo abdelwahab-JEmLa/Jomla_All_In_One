@@ -164,7 +164,7 @@ data class HClientInfos(
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
     //Etates Mutable
 
-    // Section Centralization Valeurs Pour Injection add TOu modules
+    // Section Centralization Valeurs Pour Injection addNew TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps
@@ -186,8 +186,17 @@ data class HClientInfos(
     ): Boolean {
         return m8BonVentList
             .sortedBy { it.creationTimestamps }
-            .lastOrNull { it.parentM2ClientInfosKey == keyID }
+            .lastOrNull { it.parent_M2Client_KeyID == keyID }
             ?.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    }
+
+    fun its_Last_M8BonVent_Is_Cible(
+        m8BonVentList: List<M8BonVent>
+    ): Boolean {
+        return m8BonVentList
+            .sortedBy { it.creationTimestamps }
+            .lastOrNull { it.parent_M2Client_KeyID == keyID }
+            ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
     }
 
 

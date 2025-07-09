@@ -35,7 +35,7 @@ data class ArB_ClientDataBaseProtoC(
     var snippet: String = "",
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
 
-    // Section Centralization Valeurs Pour Injection add TOu modules
+    // Section Centralization Valeurs Pour Injection addNew TOu modules
     var tagCeBonEstOuvertPourComptsIds: String ="",
 
     ) {

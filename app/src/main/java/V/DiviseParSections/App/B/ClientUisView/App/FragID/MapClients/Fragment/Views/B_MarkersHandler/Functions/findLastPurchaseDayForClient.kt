@@ -15,7 +15,7 @@ fun findLastPurchaseInfoForClient(
 ): LastPurchaseInfo {
     // Find the most recent transaction for this client (highest timestamp)
     val lastTransaction = historicalData
-        .filter { it.parentHClientOldID == clientId }
+        .filter { it.parent_M2Client_OldLongID == clientId }
         .maxByOrNull { it.creationTimestamps }
 
     return if (lastTransaction != null) {

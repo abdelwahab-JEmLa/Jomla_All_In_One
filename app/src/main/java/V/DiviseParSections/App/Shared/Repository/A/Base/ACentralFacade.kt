@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 
@@ -18,6 +19,7 @@ class ACentralFacade(
 class FocusedActiveValuesFacade(val get: GetFocusedVars, val set: SetFocusedVars)
 
 class ModulesCentral(
+    val recordingHandler: IRecordingHandler,
     val fragmentNavigationHandler: FragmentNavigationHandler,
     val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler,
     val debugKey: DebugKey

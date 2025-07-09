@@ -28,7 +28,7 @@ data class PeriodeVenteUiState(
 // Enum for different view modes
 enum class ViewMode {
     LIST,     // Standard list view of periods
-    DETAIL,   // Detailed view of add single period
+    DETAIL,   // Detailed view of addNew single period
     CALENDAR, // Calendar view showing periods by date
     ANALYTICS // Analytics/statistics view
 }
@@ -94,7 +94,7 @@ class PeriodeVenteViewModel(
     private fun loadPeriodesVente() {
         viewModelScope.launch {
             try {
-                // Check if we have add selected period and upsertLenceCommandeRepoGroupedProtoAvantJuin3 it if it exists
+                // Check if we have addNew selected period and upsertLenceCommandeRepoGroupedProtoAvantJuin3 it if it exists
                 val currentSelection = _uiState.value.selectedPeriode
                 val updatedSelection = if (currentSelection != null) {
                     // Try to find updated version of currently selected period
@@ -121,7 +121,7 @@ class PeriodeVenteViewModel(
         }
     }
 
-    // Function to select add period
+    // Function to select addNew period
     fun selectPeriode(periode: _01_PeriodVentHistorique) {
         _uiState.update { it.copy(
             selectedPeriode = periode,

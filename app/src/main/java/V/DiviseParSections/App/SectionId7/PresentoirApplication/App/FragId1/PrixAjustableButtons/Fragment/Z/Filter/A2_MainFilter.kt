@@ -29,8 +29,8 @@ fun MainFilter(
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: M8BonVent(
-            parentID2ClientKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parentID7VentPeriodeKeyByParent = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
+            parent_M2Client_KeyID = Set.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
+            parent_M14VentPeriod_KeyId = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
             parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         )
     }
@@ -40,7 +40,7 @@ fun MainFilter(
     }
 
     val idClientFiltruer = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID }?.parentM2ClientInfosKey ?: 0L
+        bonAchatList.find { it.vid == filterBonID }?.parent_M2Client_KeyID ?: 0L
     }
 
     val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {

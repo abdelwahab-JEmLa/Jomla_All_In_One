@@ -66,7 +66,7 @@ fun A_MainListFragId3(
         // Get product image info and convert to ColorsArticlesTabelle
         val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(stats)
 
-        // Create add list of exactly 4 ColorsArticlesTabelle objects
+        // Create addNew list of exactly 4 ColorsArticlesTabelle objects
         colorsListToDisplay = (1..4).mapNotNull { couleurId ->
             val imageInfo = productImageInfos.find { it.couleurId == couleurId }
 
@@ -79,9 +79,9 @@ fun A_MainListFragId3(
     }
 
     LaunchedEffect(clickedCouleurIndex, colorsListToDisplay) {
-        // Wait add short delay to ensure colors list is populated and layout is ready
+        // Wait addNew short delay to ensure colors list is populated and layout is ready
         delay(100)
-        // Only attempt to scroll if we have add valid index and it's within bounds
+        // Only attempt to scroll if we have addNew valid index and it's within bounds
         if (clickedCouleurIndex >= 0 && clickedCouleurIndex < colorsListToDisplay.size) {
             listState.animateScrollToItem(clickedCouleurIndex)
             // Log for debug purposes

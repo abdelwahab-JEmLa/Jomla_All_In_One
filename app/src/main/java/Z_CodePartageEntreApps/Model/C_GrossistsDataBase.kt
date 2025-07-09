@@ -40,7 +40,7 @@ data class C_GrossistsDataBase(
         ) {
             viewModel.viewModelScope.launch {
                 try {
-                    // Create add snapshot of the current state
+                    // Create addNew snapshot of the current state
                     val currentState = this@updateGrossistDataBase.copy()
 
                     // Update local state using clear and addAll

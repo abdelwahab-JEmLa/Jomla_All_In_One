@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,24 +27,70 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
     viewModel: MapClientsViewModel,
     clickedClient: Long,
 ) {
-    val aCentralFacade = viewModel.aCentralFacade
-    val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
-    val get = focusedVarsHandlerFacade.get
     val context = LocalContext.current
     val newEtate = this
-
+    val aCentralFacade = viewModel.aCentralFacade
     val m2Client = aCentralFacade.get.repo2Client.datasValue.find { it.id == clickedClient }!!
 
-    val defaultM8BonVent = get.getDefaultM8BonVent().copy(
-        debugInfos = m2Client.nom,
-        parentM2ClientInfosKey = m2Client.keyID,
-        parentM2ClientInfosDebugName = m2Client.nom,
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.get
+    val bonVentRepository = viewModel.aCentralFacade.get.repo8BonVent
+
+    val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
+    val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: ""
+    val parent_M9AppCompt_KeyID = currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID ?: "null"
+
+    val existingBonVent = bonVentRepository.datasValue.find { bonVent ->
+        bonVent.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode_KeyID
+                && bonVent.parent_M2Client_KeyID == m2Client.keyID
+                && bonVent.etateActuellementEst == newEtate
+    }
+    val new = M8BonVent().copy(
+        parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
+        parent_M14VentPeriod_KeyId = currentActiveFocuced_M14VentPeriode_KeyID,
+        parent_M2Client_KeyID = m2Client.keyID,
+        parent_M2Client_DebugInfos = m2Client.nom,
         etateActuellementEst = newEtate
     )
 
+    val targetBonVent = existingBonVent?.copy(
+        etateActuellementEst = newEtate
+    ) ?: new
+
+    val handleBonVentSelection = remember(m2Client.keyID) {
+        {
+            if (existingBonVent != null) {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.update_M8BonVent(
+                    targetBonVent
+                )
+            } else {
+                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
+            }
+
+            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+                targetBonVent
+            )
+
+            targetBonVent
+        }
+    }
+
+
+    /*   val defaultM8BonVent = get.getDefaultM8BonVent().copy(
+           debugInfos = m2Client.nom,
+           parentM2ClientInfosKey = m2Client.keyID,
+           parentM2ClientInfosDebugName = m2Client.nom,
+           etateActuellementEst = newEtate
+       )      */
+
+
     FilledTonalButton(
+        modifier = Modifier
+            .getSemanticsTag(currentActiveFocuced_M14VentPeriode,"currentActiveFocuced_M14VentPeriode")
+            .getSemanticsTag(new,"new")
+            .fillMaxWidth(),
         onClick = {
-            focusedVarsHandlerFacade.set.update_M8BonVent(defaultM8BonVent)
+            handleBonVentSelection()
+            // focusedVarsHandlerFacade.set.update_M8BonVent(defaultM8BonVent)
 
             if (newEtate == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI
                 || newEtate == M8BonVent.EtateActuellementEst.A_COMMANDE_CONFIRME
@@ -51,8 +99,6 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
                 viewModel.aCentralFacade.focusedActiveValuesFacade.set.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
             }
         },
-        modifier = Modifier
-            .fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(

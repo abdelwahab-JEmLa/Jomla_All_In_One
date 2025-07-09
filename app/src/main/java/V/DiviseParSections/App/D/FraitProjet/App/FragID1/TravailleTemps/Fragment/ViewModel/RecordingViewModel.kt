@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -91,9 +91,9 @@ class RecordingViewModel(
 
     private fun log(list: List<M8BonVent>) {
         val map = list.map { bon ->
-            val clientAcheteurID = bon.parentHClientOldID
+            val clientAcheteurID = bon.parent_M2Client_OldLongID
             val cli = bProto_ClientsDataBase.find { it.id == clientAcheteurID }
-            bon.vid to cli?.nom to (bon.etateActuellementEst.name to bon.parentPeriodeVentOldID)
+            bon.vid to cli?.nom
         }
         Log.d(TAG, "$map")
     }
@@ -103,7 +103,8 @@ class RecordingViewModel(
             val uiState = uiState.value
             log(list)
             if (list.any {
-                    it.parentPeriodeVentOldID == uiState.activePeriodeVent?.vid && it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                  //  it.parent_M14VentPeriod_Old_LongID == uiState.activePeriodeVent?.vid &&
+                            it.etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 })
                 Log.i(TAG, "LencePrint")
 

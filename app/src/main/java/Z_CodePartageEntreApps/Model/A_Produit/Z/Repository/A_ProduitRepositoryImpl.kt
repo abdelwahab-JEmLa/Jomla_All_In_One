@@ -393,12 +393,12 @@ class A_ProduitRepositoryImpl(
             val reference = A_ProduitRepository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
-            // Prepare all updates in add single map
+            // Prepare all updates in addNew single map
             for (data in datas) {
                 batchUpdates[data.id.toString()] = data
             }
 
-            // Apply all updates in add single operation
+            // Apply all updates in addNew single operation
             reference.updateChildren(batchUpdates)
                 .addOnSuccessListener {
                     // Success handling can be added here if needed

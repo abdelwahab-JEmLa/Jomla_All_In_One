@@ -53,7 +53,7 @@ class A_ProduitModel(
                 _coloursEtGoutsIds.addAll(value)
             }
 
-        // Function to upsert add new color ID
+        // Function to upsert addNew new color ID
         fun addColorId(colorId: Long) {
             _coloursEtGoutsIds.add(colorId)
         }
@@ -84,7 +84,7 @@ class A_ProduitModel(
         var diponibilityEtate: Boolean by mutableStateOf(false)
         var porbableNonDispo: Boolean by mutableStateOf(false)
 
-        // Add add string property for Firebase serialization
+        // Add addNew string property for Firebase serialization
         var enumVarNonDispoPourClients by mutableStateOf(NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT)
         var nonDispoPourClientsString: String? by mutableStateOf(null)
 

@@ -30,7 +30,7 @@ class Repo8BonVent(
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M8BonVent>>(emptyList())
-    val datasValue by derivedStateOf { _datas.value }
+    val datasValue by derivedStateOf { _datas.value.sortedBy { it.creationTimestamps } }
 
     init {
         composScope.launch {
@@ -94,33 +94,18 @@ data class M8BonVent(
 
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = DatesHandler().getCurrentTimestamps(),
-    var debugInfos: String = "",
 
-    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
-
-    //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
-    var parentM7VentPeriodKeyId: String = "",
-    var parentM7VentPeriodDebugInfos: String = "",
-
-    var parentPeriodeVentOldID: Long = 0L,
-
-    var parentPeriodeVentStartTimestampStr: String = "",
-
-    //Section Infos ForgingKeys
-    var parentM2ClientInfosKey: String = "Non Defini",
-    var parentM2ClientInfosDebugName: String = "",
-
-    var parentHClientKeyByParent: String = "",
-    var parentHClientOldID: Long = 0L,
-    var nomClientConcerned: String = "null",
-
-    var parentKeyId9AppComptInfos: String = "b1",
-    var parentDebugNameId9AppComptInfos: String = "",
-
-    //Autres Infos ForgingKeys
-    //PeriodeVen
-
-    //Autres Infos ForgingKeys
+    //---------------------------------Parent.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M9AppCompt_KeyID: String = "null",
+    var parent_M9AppCompt_DebugInfos: String = "null",
+    //---------------------------------Parent.M14VentPeriod----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M14VentPeriod_KeyId: String = "null",
+    var parent_M14VentPeriod_DebugInfos: String = "null",
+    //---------------------------------Parent.M2Client----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M2Client_KeyID: String = "null",
+    var parent_M2Client_DebugInfos: String = "null",
+    var parent_M2Client_OldLongID: Long = 0L,
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Section InfosDeBase
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
@@ -132,25 +117,22 @@ data class M8BonVent(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
-    // Section Centralization Valeurs Pour Injection add TOu modules
+    // Section Centralization Valeurs Pour Injection addNew TOu modules
 
     var cLeDataOuvertDuParentList: Boolean? = null,
     var cActive: Boolean = false,
 
     //A Supp
+    val parentID8C2TypeTransactionKeyByParent: String = "",
     var vid: Long = 0L,
-    var parentZAppComptNom: String = "",
 
     // Section keyFireBase et Update Version Id
-    var keyFireBase: String = "",
-    val parentID2ClientKeyByParent: String = "",
-    val parentID7VentPeriodeKeyByParent: String = "",
-    val parentID8C2TypeTransactionKeyByParent: String = "",
+
 ) {
     fun get_DebugInfos(): String {
         return buildString {
             append("Nom:(parentM2")
-            append(parentM2ClientInfosKey)
+            append(parent_M2Client_KeyID)
             append(") ")
             append("[")
             append(keyID.takeLast(3).uppercase())
@@ -199,13 +181,13 @@ data class M8BonVent(
     }
 
     fun isSameEntity(other: M8BonVent) =
-        keyID == other.keyID && parentKeyId9AppComptInfos == other.parentKeyId9AppComptInfos && parentM7VentPeriodKeyId == other.parentM7VentPeriodKeyId
+        keyID == other.keyID && parent_M9AppCompt_KeyID == other.parent_M9AppCompt_KeyID && parent_M14VentPeriod_KeyId == other.parent_M14VentPeriod_KeyId
 
     override fun equals(other: Any?) =
         this === other || (other is M8BonVent && isSameEntity(other))
 
     override fun hashCode() = Objects.hash(
-        keyID, parentZAppComptNom, parentM7VentPeriodKeyId
+        keyID, parent_M9AppCompt_DebugInfos, parent_M14VentPeriod_KeyId
     )
 
     companion object {

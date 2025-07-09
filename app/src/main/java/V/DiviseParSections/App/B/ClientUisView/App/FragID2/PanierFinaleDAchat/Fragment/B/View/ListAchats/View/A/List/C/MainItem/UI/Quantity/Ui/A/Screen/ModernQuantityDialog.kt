@@ -58,7 +58,7 @@ fun ModernQuantityDialog(
         text = {
             Column {
                 QuantityGrid(
-                    clickUpdate = clickUpdate, // FIXED: Pass the click update mode parameter
+                    clickUpdate = clickUpdate, // FIXED: Pass the click upsert mode parameter
                     vent = vent,
                     currentQuantity = selectedQuantity,
                     onQuantitySelected = { newQuantity ->

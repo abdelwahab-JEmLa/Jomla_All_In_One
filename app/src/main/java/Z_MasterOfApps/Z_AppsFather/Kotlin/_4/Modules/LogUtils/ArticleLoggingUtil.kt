@@ -1,4 +1,4 @@
-// Add this to add new file: ArticleLoggingUtil.kt
+// Add this to addNew new file: ArticleLoggingUtil.kt
 package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils
 
 import android.util.Log

@@ -18,7 +18,7 @@ fun MainFilter(
 ) {
     val datasValue = vm.getter.repo8BonVent.datasValue
     val filtered = datasValue.filter {
-        it.parentM2ClientInfosKey == (markerStatusDialogM2Client?.keyID ?: "")
+        it.parent_M2Client_KeyID == (markerStatusDialogM2Client?.keyID ?: "")
     }.sortedByDescending { it.creationTimestamps }
 
     ElevatedCard(

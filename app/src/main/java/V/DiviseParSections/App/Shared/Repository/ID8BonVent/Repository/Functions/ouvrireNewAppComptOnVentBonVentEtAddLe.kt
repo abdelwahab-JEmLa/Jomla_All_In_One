@@ -5,7 +5,6 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 
 fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
     clientOldId: Long,
@@ -28,16 +27,12 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
         gBonVentRepository.upsert(
             M8BonVent(
                 keyID = newTransactionKey,
-                parentM7VentPeriodKeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
-                parentM2ClientInfosKey = client.keyID,
-                parentHClientOldID = clientOldId,
-                nomClientConcerned = client.nom,
-                parentKeyId9AppComptInfos = zCompt.keyID,
+                parent_M14VentPeriod_KeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
+                parent_M2Client_KeyID = client.keyID,
+                parent_M2Client_OldLongID = clientOldId,
+                parent_M2Client_DebugInfos = client.nom,
+                parent_M9AppCompt_KeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID2ClientKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.keyModel]
-                    ?: "",
-                parentID7VentPeriodeKeyByParent = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent]
-                    ?: "",
                 parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.P
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 
-// Helper function to create add test product
+// Helper function to create addNew test product
 fun createTestProduct(): ArticlesBasesStatsTable {
     val randomId = (1000..9999).random().toLong()
     return ArticlesBasesStatsTable(

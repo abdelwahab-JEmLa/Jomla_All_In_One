@@ -96,7 +96,7 @@ class Startup_Extension(
 
 
     fun clearAchats() {
-        // Create add snapshot of the products to avoid concurrent modification
+        // Create addNew snapshot of the products to avoid concurrent modification
         val productsToProcess = viewModelInitApp._modelAppsFather.produitsMainDataBase.toList()
 
         // Clear Firebase references first
@@ -108,7 +108,7 @@ class Startup_Extension(
         productsToProcess.forEach { produit ->
             // Safely upsert current data to history
             produit.bonCommendDeCetteCota?.let { currentBonCommend ->
-                // Create add new list and upsert all items to avoid concurrent modification
+                // Create addNew new list and upsert all items to avoid concurrent modification
                 val updatedHistorique = ArrayList(produit.historiqueBonsCommend)
                 updatedHistorique.add(currentBonCommend)
                 produit.historiqueBonsCommend.clear()
@@ -116,7 +116,7 @@ class Startup_Extension(
             }
 
             if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
-                // Create add new list and upsert all items to avoid concurrent modification
+                // Create addNew new list and upsert all items to avoid concurrent modification
                 val updatedHistoriqueVents = ArrayList(produit.historiqueBonsVents)
                 updatedHistoriqueVents.addAll(produit.bonsVentDeCetteCotaList)
                 produit.historiqueBonsVents.clear()
@@ -172,7 +172,7 @@ class Startup_Extension(
     /**
      * Checks all products and removes bonCommendDeCetteCota if:
      * - The product has no bonsVentDeCetteCota entries, or
-     * - Any bonVent has add null coloursAcheteList
+     * - Any bonVent has addNew null coloursAcheteList
      * Updates Firebase after removing the orders.
      */
     /**
@@ -184,7 +184,7 @@ class Startup_Extension(
     fun suppBonCommendSiNaPasDeBonVent() {
         viewModelInitApp.viewModelScope.launch {
             try {
-                // Create add snapshot of products to avoid concurrent modification
+                // Create addNew snapshot of products to avoid concurrent modification
                 val productsToCheck = viewModelInitApp._modelAppsFather.produitsMainDataBase.toList()
 
                 // Process each product

@@ -41,29 +41,45 @@ class GetFocusedVars(
         repo14VentPeriode.datasValue.find { it.keyID == currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID }
     }
 
+    //----------------------------------Section.M8BonVent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod by derivedStateOf {
+        repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID }
+    }
+
     val onVentM8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentM9AppCompt?.onVentM8BonVentKey }
     }
 
-    // FIXED: Use the correct property to find the client
+    //----------------------------------Section.M2Client------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible by derivedStateOf {
+        repo2Client.datasValue.filter { client ->
+            filteredList_M8BonVent_Par_CurrentActive_M14VentPeriod
+                .sortedBy { it.creationTimestamps }
+                .lastOrNull { it.parent_M2Client_KeyID == client.keyID }
+                ?.etateActuellementEst == M8BonVent.EtateActuellementEst.Cible
+        }
+    }
+
     val activeOnVentM2ClientInfos by derivedStateOf {
         repo2Client.datasValue.find {
-            it.keyID == (onVentM8BonVent?.parentM2ClientInfosKey ?: "")
+            it.keyID == (onVentM8BonVent?.parent_M2Client_KeyID ?: "")
         }
     }
 
     fun getDefaultM8BonVent(): M8BonVent {
         return M8BonVent(
             keyID = M8BonVent.generePushKey(),
-            parentKeyId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
-            parentDebugNameId9AppComptInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
-            parentM7VentPeriodKeyId =  (currentActiveFocuced_M14VentPeriode?.keyID?: "null"),
-            parentM7VentPeriodDebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()?: "null"),
+            parent_M9AppCompt_KeyID = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID,
+            parent_M9AppCompt_DebugInfos = ParametresAppComptNonSaved().currentActiveFocucedM9AppComptDebugInfos,
+            parent_M14VentPeriod_KeyId = (currentActiveFocuced_M14VentPeriode?.keyID ?: "null"),
+            parent_M14VentPeriod_DebugInfos = (currentActiveFocuced_M14VentPeriode?.get_DebugInfos()
+                ?: "null"),
         )
     }
 
     val onVentM2ClientInfos by derivedStateOf {
-        val targetKey = onVentM8BonVent?.parentM2ClientInfosKey
+        val targetKey = onVentM8BonVent?.parent_M2Client_KeyID
         repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
@@ -72,11 +88,11 @@ class GetFocusedVars(
             with(it) {
                 M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
-                    parentHVentPeriodKeyId = parentM7VentPeriodKeyId,
-                    parentEVentPeriodDebugName = parentM7VentPeriodDebugInfos,
+                    parentHVentPeriodKeyId = parent_M14VentPeriod_KeyId,
+                    parentEVentPeriodDebugName = parent_M14VentPeriod_DebugInfos,
                     //---------------------------------Parent M8BonVent----------------------------------------------------------------------------------------------------------------------------------
                     parentM8BonVentKeyId = keyID,
-                    parentM8BonVentDebugInfos = debugInfos,
+                    parentM8BonVentDebugInfos = get_DebugInfos(),
                 )
             }
         }
@@ -121,13 +137,6 @@ class GetFocusedVars(
         currentM9AppCompt?.activeDialogSearchM1Produit ?: false
     }
 
-    fun get_By_Client_Edited_M8BonVent_Et_M9CurrComptFacade(
-        m2Client: HClientInfos,
-        newEtate: M8BonVent.EtateActuellementEst = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    ) = get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
-        m2Client, getDefaultM8BonVent(), onVentM8BonVent, currentM9AppCompt, newEtate
-    )
-
     companion object {
         @SuppressLint("ModifierFactoryUnreferencedReceiver")
         fun Modifier.getSemanticsTagFocucedVars(getter: GetFocusedVars): Modifier {
@@ -145,7 +154,7 @@ class GetFocusedVars(
                         "onVentM8BonVent",
                         onVentM8BonVent?.let {
                             with(it) {
-                                "$parentM2ClientInfosDebugName/$etateActuellementEst"
+                                "$parent_M2Client_DebugInfos/$etateActuellementEst"
                             }
                         } ?: "null"
                     )
@@ -185,15 +194,14 @@ fun get_By_Client_Edited_M8BonVent_Et_M9CurrCompt(
     val onVentM8BonVentWithDefault = onVentM8BonVent ?: defaultM8BonVent
 
     val editedM8BonVent = onVentM8BonVentWithDefault.copy(
-        debugInfos = m2Client.nom,
-        parentM2ClientInfosKey = m2Client.keyID,
-        parentM2ClientInfosDebugName = m2Client.nom,
+        parent_M2Client_KeyID = m2Client.keyID,
+        parent_M2Client_DebugInfos = m2Client.nom,
         etateActuellementEst = newEtate
     )
 
     val editedM9CurrCompt = currentM9AppCompt?.copy(
         onVentM8BonVentKey = editedM8BonVent.keyID,
-        onVentM8BonVentDebugInfos = editedM8BonVent.debugInfos
+        onVentM8BonVentDebugInfos = editedM8BonVent.get_DebugInfos()
     )
     return Pair(editedM8BonVent, editedM9CurrCompt)
 }

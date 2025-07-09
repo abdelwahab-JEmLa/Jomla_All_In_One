@@ -24,7 +24,7 @@ class SoldArticlesTabelleRepositoryImpl :
     private var isFirebaseInitialized = false
 
     init {
-        // Initialize Firebase offline capability with add callback for completion
+        // Initialize Firebase offline capability with addNew callback for completion
         initializeFirebase {
             // Only start the database listener after Firebase is initialized
             startDatabaseListener ()
@@ -32,7 +32,7 @@ class SoldArticlesTabelleRepositoryImpl :
 
         // Update reposeteryLoading when progressRepo reaches 100%
         try {
-            // Launch add coroutine for collectLatest
+            // Launch addNew coroutine for collectLatest
             CoroutineScope(Dispatchers.Main).launch {
                 progressRepo.collectLatest { progress ->
                     if (progress >= 1.0f && isFirebaseInitialized) {

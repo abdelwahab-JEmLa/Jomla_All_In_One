@@ -30,7 +30,7 @@ fun List_AcheteursDeCetteProduit(
             val gBonVent =
                 viewModel.getter.repo8BonVent.datasValue.find { it.keyID == gBonVentKeyID }
             val lClient =
-                viewModel.getter.repo2Client.datasValue.find { it.id == gBonVent?.parentHClientOldID }
+                viewModel.getter.repo2Client.datasValue.find { it.id == gBonVent?.parent_M2Client_OldLongID }
 
             if (lClient != null) {
                 Text(

@@ -213,7 +213,7 @@ fun C_MainItem_APP2_ID_2(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Quantity in add background box
+                                // Quantity in addNew background box
                                 Box(
                                     modifier = Modifier
                                         .background(

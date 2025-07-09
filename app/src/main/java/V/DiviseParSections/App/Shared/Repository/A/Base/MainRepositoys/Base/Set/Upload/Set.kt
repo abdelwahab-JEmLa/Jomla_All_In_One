@@ -106,7 +106,7 @@ class Set(
         ventOperations.toggleEtateDeliveryNonTrouveVentOu(produitKey)
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
-        repo9AppCompt.add(defaultGeneratedCompt)
+        repo9AppCompt.addNew(defaultGeneratedCompt)
     }
 
     fun addOrUpdateGroAliTariff(latestTariffLocalData: M13TarificationInfos) {
