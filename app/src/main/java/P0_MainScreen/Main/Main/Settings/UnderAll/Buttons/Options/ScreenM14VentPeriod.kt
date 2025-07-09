@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test
+package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.ViewListM14
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.ViewListM14
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

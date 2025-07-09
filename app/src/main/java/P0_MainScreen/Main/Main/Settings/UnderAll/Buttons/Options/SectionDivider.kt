@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Ui
+package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider

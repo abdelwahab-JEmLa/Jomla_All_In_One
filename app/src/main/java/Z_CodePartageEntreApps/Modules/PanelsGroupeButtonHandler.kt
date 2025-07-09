@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Modules
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.View_AdminAppPanelControleur
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ScreenM14VentPeriod
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ScreenM14VentPeriod
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding

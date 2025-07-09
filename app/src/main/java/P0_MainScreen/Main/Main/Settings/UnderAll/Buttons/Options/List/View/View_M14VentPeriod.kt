@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.View
+package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel_M14VentPeriod
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

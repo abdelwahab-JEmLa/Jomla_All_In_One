@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List
+package P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID1.Test.Main.Z.View.Ui.SectionDivider
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel_M14VentPeriod
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.View.View_DefaultAddItem_M14VentPeriode
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.Z.List.View.View_M14VentPeriod
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.SectionDivider
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.ViewModel_M14VentPeriod
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View.View_DefaultAddItem_M14VentPeriode
+import P0_MainScreen.Main.Main.Settings.UnderAll.Buttons.Options.List.View.View_M14VentPeriod
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
