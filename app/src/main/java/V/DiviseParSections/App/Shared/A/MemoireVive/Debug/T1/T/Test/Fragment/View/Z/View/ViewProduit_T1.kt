@@ -98,6 +98,7 @@ fun ViewProduit_T1(
             if (produit != null) {
                 ViewDisponibilityEtates(product = produit)
             }
+
         }
     }
 

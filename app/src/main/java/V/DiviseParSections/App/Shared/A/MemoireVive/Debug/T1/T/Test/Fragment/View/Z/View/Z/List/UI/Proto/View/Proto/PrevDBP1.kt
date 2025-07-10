@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.DownerBar.Proto.View
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.DownerBar.Proto.View.Card.Card_Affiche_Infos
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto.Card.Card_Affiche_Infos
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -45,7 +45,7 @@ private fun PrevDBP2() {
 
 @SuppressLint("AutoboxingStateCreation")
 @Composable
-private fun DownerBarP2(
+ fun DownerBarP2(
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
 ) {
     val produit =
