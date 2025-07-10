@@ -3,8 +3,6 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.List_GroupeAchatProduit
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.Repo11AchatOperation
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -107,11 +104,11 @@ fun Screen_GrossistAchatSec12FragID1(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
+                  /*  Text(
                         text = "Filtré par: ${client.nom}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    )  */
                     IconButton(
                         onClick = { viewModel.clearClientFilter() }
                     ) {
@@ -227,7 +224,7 @@ fun Item_Client(
 ) {
     val repo11AchatOperation =viewModel.aCentralFacade.getRepositorys.repo11AchatOperation
 
-    val isSelected = isSelected     //<--
+  /*  val isSelected = isSelected     //<--
     //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)
     Card(
         modifier = modifier
@@ -278,5 +275,5 @@ fun Item_Client(
                 )
             }
         }
-    }
+    }           */
 }

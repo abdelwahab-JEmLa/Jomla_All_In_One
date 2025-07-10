@@ -32,7 +32,7 @@ class Repo11AchatOperation(
 
     val filteredDatas by derivedStateOf {
         when (val currentFilter = filterQuery.value) {
-            is FilterQuery.Client -> {      //->
+          /*  is FilterQuery.Client -> {      //->
                 //TODO(FIXME):Fix erreur Incompatible types: Repo11AchatOperation.FilterQuery.Client and Repo11AchatOperation.FilterQuery.NO_FILTER
                 datasValue.filter { data ->
                     data.listFCouleurVentOperation.any { operation ->
@@ -40,7 +40,7 @@ class Repo11AchatOperation(
                     }
                 }
             }
-            FilterQuery.NO_FILTER -> datasValue
+            FilterQuery.NO_FILTER -> datasValue      */
         }
     }
 
