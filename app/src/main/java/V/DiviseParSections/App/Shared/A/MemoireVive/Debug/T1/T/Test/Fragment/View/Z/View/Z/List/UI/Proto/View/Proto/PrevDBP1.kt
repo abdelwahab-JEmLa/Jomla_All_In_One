@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto.Card.Card_Affiche_Infos
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -39,27 +39,34 @@ import org.koin.androidx.compose.koinViewModel
 
 @Preview
 @Composable
-private fun PrevDBP2() {
-    DownerBarP2()
+private fun PrevDBP2(
+
+) {
+    /* val viewModel= ViewModelsProduit_T1 = koinViewModel()
+  
+      DownerBarP2(produit = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
+          it.nom.contains("liya")
+      }, m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+          it.parentBProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
+              it.nom.contains("liya")
+          }?.keyID
+      }, vent = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
+          it.parentM3CouleurProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+              it.parentBProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
+                  it.nom.contains("liya")
+              }?.keyID
+          }?.keyID
+      })       */
 }
 
 @SuppressLint("AutoboxingStateCreation")
 @Composable
- fun DownerBarP2(
-    viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
+fun DownerBarP2(
+    viewModel: ViewModelsProduit_T1 = koinViewModel(),
+    produit: ArticlesBasesStatsTable?,
+    m3Couleur: M3CouleurProduitInfos?,
+    vent: M10OperationVentCouleur?,
 ) {
-    val produit =
-        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
-            it.nom.contains("liya")
-        }
-    val m3Couleur =
-        viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-            it.parentBProduitInfosKeyID == produit?.keyID
-        }
-    val vent =
-        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
-            it.parentM3CouleurProduitInfosKeyID == m3Couleur?.keyID
-        }
 
     Column(
         modifier = Modifier.padding(vertical = 8.dp),
@@ -67,7 +74,7 @@ private fun PrevDBP2() {
     ) {
         Vent_Quantitys(
             produit = produit,
-            m3Couleur=m3Couleur,
+            m3Couleur = m3Couleur,
             vm = viewModel,
             vent = vent,
         )
@@ -83,7 +90,7 @@ private fun Vent_Quantitys(
     vent: M10OperationVentCouleur?,
     m3Couleur: M3CouleurProduitInfos?,
     produit: ArticlesBasesStatsTable?,
-    vm: ViewModelMainFastSearchProduitPourVent,
+    vm: ViewModelsProduit_T1,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -115,7 +122,7 @@ private fun Vent_Quantitys(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Vent_Par_Carton(
-                    m3Couleur=m3Couleur,
+                    m3Couleur = m3Couleur,
                     vent = vent,
                     produit = produit,
                     viewModel = vm,
@@ -204,7 +211,7 @@ private fun Vent_Par_Carton(
     vent: M10OperationVentCouleur?,
     m3Couleur: M3CouleurProduitInfos?,
     produit: ArticlesBasesStatsTable?,
-    viewModel: ViewModelMainFastSearchProduitPourVent,
+    viewModel: ViewModelsProduit_T1,
     modifier: Modifier = Modifier,
 ) {
     val vent_quantity_Par_Carton = vent?.quantity_Par_Carton ?: 0
@@ -315,10 +322,11 @@ private fun Vent_Par_Carton(
 private fun Vent_Par_Boit(
     vent: M10OperationVentCouleur?,
     produit: ArticlesBasesStatsTable?,
-    vm: ViewModelMainFastSearchProduitPourVent,
+    vm: ViewModelsProduit_T1,
     modifier: Modifier = Modifier,
 ) {
-    val vent_quantity_Par_Boit = (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 0)
+    val vent_quantity_Par_Boit =
+        (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 0)
     val m3Couleur =
         vm.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
             it.parentBProduitInfosKeyID == produit?.keyID
@@ -398,7 +406,7 @@ private fun Vent_Par_Boit(
 }
 
 private fun lanceVent(
-    viewModel: ViewModelMainFastSearchProduitPourVent,
+    viewModel: ViewModelsProduit_T1,
     produit: ArticlesBasesStatsTable?,
     m3Couleur: M3CouleurProduitInfos?,
     newQuant: Int

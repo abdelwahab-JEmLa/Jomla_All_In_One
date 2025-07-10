@@ -195,7 +195,12 @@ fun ViewVentCouleur_T1(
                     }
                 }
             }
-            DownerBarP2()
+            DownerBarP2(
+                viewModel = viewModel,
+                produit = produit,
+                m3Couleur = m3Couleur,
+                vent = findVent
+            )
         }
     }
 

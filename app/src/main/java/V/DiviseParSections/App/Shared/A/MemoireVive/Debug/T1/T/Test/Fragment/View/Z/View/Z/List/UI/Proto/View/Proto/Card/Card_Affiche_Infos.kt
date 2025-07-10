@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto.Card
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 @Preview
 @Composable
 private fun Card_Affiche_InfosP(
-    vm: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
+    vm: ViewModelsProduit_T1 = koinViewModel(),
 ) {
     val repoProduit = vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
     val datas1 = repoProduit.datasValue
@@ -45,7 +45,7 @@ private fun Card_Affiche_InfosP(
 
 @Composable
 fun Card_Affiche_Infos(
-    vm: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
+    vm: ViewModelsProduit_T1 = koinViewModel(),
     produit: ArticlesBasesStatsTable?,
 ) {
     Card(
@@ -91,7 +91,7 @@ fun Card_Affiche_Infos(
 @Composable
 private fun CartonDisplayer(
     produit: ArticlesBasesStatsTable,
-    vm: ViewModelMainFastSearchProduitPourVent,
+    vm: ViewModelsProduit_T1,
     modifier: Modifier = Modifier,
 ) {
     val repoProduit = vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
