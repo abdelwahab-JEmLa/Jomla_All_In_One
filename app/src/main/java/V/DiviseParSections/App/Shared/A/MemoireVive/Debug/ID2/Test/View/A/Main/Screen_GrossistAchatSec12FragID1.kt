@@ -87,40 +87,40 @@ fun Screen_GrossistAchatSec12FragID1(
             }
         )
 
-        ?.let { client ->       //<--
-            //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Row(
+            .let { client ->       //<--
+                //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
                 ) {
-                  /*  Text(
-                        text = "Filtré par: ${client.nom}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )  */
-                    IconButton(
-                        onClick = { viewModel.clearClientFilter() }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Effacer filtre",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        /*  Text(
+                            text = "Filtré par: ${client.nom}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )  */
+                        IconButton(
+                            onClick = { viewModel.clearClientFilter() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Effacer filtre",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                     }
                 }
             }
-        }
 
         // Main Content
         List_GroupeAchatProduit(
