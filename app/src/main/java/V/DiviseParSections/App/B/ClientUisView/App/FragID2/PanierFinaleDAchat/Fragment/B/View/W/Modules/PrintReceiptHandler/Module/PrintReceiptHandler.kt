@@ -54,7 +54,7 @@ class PrintReceiptHandler {
 
                 // RepositorysMainGetter color details
                 val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
-                    it.key == vent.parentM3CouleurProduitInfosKeyID
+                    it.keyID == vent.parentM3CouleurProduitInfosKeyID
                 }
 
                 val productName = product?.nom?.takeIf { it.isNotBlank() }

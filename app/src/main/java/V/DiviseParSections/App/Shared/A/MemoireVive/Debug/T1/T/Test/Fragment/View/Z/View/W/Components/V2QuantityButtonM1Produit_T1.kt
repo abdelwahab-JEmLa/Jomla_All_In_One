@@ -98,7 +98,7 @@ fun QuantityButtonM1Produit_T1(
                                     keyID = getPushFireBase(ref),
                                     parentM1ProduitInfosKeyId = produit.keyID,
                                     parentM1ProduitDebugInfos = produit.nom,
-                                    parentM3CouleurProduitInfosKeyID = color.key,
+                                    parentM3CouleurProduitInfosKeyID = color.keyID,
                                     parentM3CouleurProduitDebugInfos = "${produit.nom}_${color.indexCouleurDansAncienProto}",
                                     quantity_Par_Boit = itemQuantity,
                                     etateActuellementEst = if (itemQuantity > 0) {

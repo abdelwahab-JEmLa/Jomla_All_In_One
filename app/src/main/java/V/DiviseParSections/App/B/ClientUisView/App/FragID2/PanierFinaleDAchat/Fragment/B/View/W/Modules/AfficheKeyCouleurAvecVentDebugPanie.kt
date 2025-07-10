@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AfficheKeyCouleurAvecVentDebugPanieT(data: M3CouleurProduitInfos) {
     val text = "${
-        data.key.takeLast(4).uppercase()
+        data.keyID.takeLast(4).uppercase()
     } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
 
     Text(

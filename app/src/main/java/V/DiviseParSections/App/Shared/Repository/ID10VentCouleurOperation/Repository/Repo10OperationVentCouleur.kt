@@ -143,7 +143,7 @@ class Repo10OperationVentCouleur(
             parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
             parentM1ProduitDebugInfos = relatedCouleur.parentId1ProduitInfosDebugName,
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
-            parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
+            parentM3CouleurProduitInfosKeyID = relatedCouleur.keyID,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
             quantity_Par_Boit = quantity,
             type = M10OperationVentCouleur.Type.CommandeDeLui,

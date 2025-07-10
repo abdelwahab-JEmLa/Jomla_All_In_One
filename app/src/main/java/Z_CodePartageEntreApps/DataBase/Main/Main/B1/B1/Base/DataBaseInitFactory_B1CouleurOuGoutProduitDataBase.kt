@@ -147,10 +147,10 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
                             try {
                                 child.getValue(M3CouleurProduitInfos::class.java)
                                     ?.let { entity ->
-                                        val entityWithKey = entity.copy(key = child.key ?: "")
+                                        val entityWithKey = entity.copy(keyID = child.key ?: "")
                                         val shouldUpdate = try {
                                             val localEntity =
-                                                dao.getAll().find { it.key == entityWithKey.key }
+                                                dao.getAll().find { it.keyID == entityWithKey.keyID }
                                             if (localEntity == null) {
                                                 true
                                             } else {
@@ -214,7 +214,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
 
     private suspend fun deleteFromFireBase(data: M3CouleurProduitInfos) {
         try {
-            repoRef.child(data.key).removeValue().await()
+            repoRef.child(data.keyID).removeValue().await()
         } catch (e: Exception) {
             println("Error deleting from Firebase: ${e.message}")
         }
@@ -224,7 +224,7 @@ class DataBaseInitFactory_B1CouleurOuGoutProduitDataBase(
         try {
             val updates = mutableMapOf<String, Any>()
             datas.forEach { data ->
-                updates[data.key] = data
+                updates[data.keyID] = data
             }
             val firebaseRef = M3CouleurProduitInfos.ref
             firebaseRef.updateChildren(updates).await()
@@ -258,7 +258,7 @@ fun CouleurDisplayer(
     size: Dp = 200.dp
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
-    val data = datas.find { it.key == keyCouleur }!!
+    val data = datas.find { it.keyID == keyCouleur }!!
 
     val imageFile by derivedStateOf {
         if (data.nomImageFichieSansEtansion != "Non Dispo") {
@@ -295,7 +295,7 @@ fun CouleurDisplayer(
                 }
             }
 
-            if (data.key.isNotEmpty()) {
+            if (data.keyID.isNotEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -311,7 +311,7 @@ fun CouleurDisplayer(
 @Composable
 private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
     val text = "${
-        data.key.takeLast(4).uppercase()
+        data.keyID.takeLast(4).uppercase()
     } ${data.nomImageFichieSansEtansion}.${data.extensionDisponible}"
 
     Text(
@@ -341,7 +341,7 @@ fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
 
     couleur?.let {
         val text = with(couleur) {
-            "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
+            "${keyID.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
                     " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity_Par_Boit}"
         }
 

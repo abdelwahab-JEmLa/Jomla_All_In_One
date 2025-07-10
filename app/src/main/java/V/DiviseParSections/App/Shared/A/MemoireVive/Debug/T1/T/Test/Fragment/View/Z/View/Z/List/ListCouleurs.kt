@@ -29,7 +29,7 @@ fun ListCouleurs(
         contentPadding = PaddingValues(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(colors, key = { it.key }) { color ->
+        items(colors, key = { it.keyID }) { color ->
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier

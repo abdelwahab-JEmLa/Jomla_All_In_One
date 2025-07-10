@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vie
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,22 +46,28 @@ private fun PrevDBP2() {
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 private fun DownerBarP2(
-    vm: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
+    viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
 ) {
-    val produit = vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull { it.nom.contains("liya") }
-    val vent = vm.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.getDefaultM10VentOperation()
+    val produit = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull { it.nom.contains("liya") }
+    val m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+        it.parentBProduitInfosKeyID == produit?.keyID
+    }
+    val vent =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
+        it.parentM3CouleurProduitInfosKeyID==m3Couleur?.keyID
+    }
+
     Column(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Vent_Quantitys(
             produit = produit,
-            vm = vm,
+            vm = viewModel,
             vent = vent,
         )
         Card_Affiche_Infos(
             produit = produit,
-            vm = vm,
+            vm = viewModel,
         )
     }
 }
@@ -72,7 +79,6 @@ private fun Vent_Quantitys(
     vm: ViewModelMainFastSearchProduitPourVent,
     vent: M10OperationVentCouleur?,
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -386,20 +392,19 @@ private fun Vent_Par_Boit(
 private fun lanceVent(
     viewModel: ViewModelMainFastSearchProduitPourVent,
     produit: ArticlesBasesStatsTable?,
-    m3Couleur: Any?, // Replace with actual type
+    m3Couleur: M3CouleurProduitInfos?,
     newQuant: Int
 ) {
     val setRepositorys = viewModel.aCentralFacade.repositorysMainSetter
-    val focusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val getterFocusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val parentM1ProduitDebugInfos = produit?.getDebugInfos() ?: "null"
 
-    // Find existing vent operation
-    val findVent = focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-        .find { it.parentM3CouleurProduitInfosKeyID == (m3Couleur as? Any)?.let { /* get key property */ } }
+    val findVent =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
+        it.parentM3CouleurProduitInfosKeyID==m3Couleur?.keyID
+    }
 
-    // Create default vent operation if needed
     val defaultM10Vent = m3Couleur?.let {
-        focusedValuesGetter.getDefaultM10VentOperation()?.copy(
+        getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
             parentM1ProduitInfosKeyId = produit?.keyID ?: "null",
             parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
             parentM3CouleurProduitInfosKeyID = "key", // Replace with actual key extraction

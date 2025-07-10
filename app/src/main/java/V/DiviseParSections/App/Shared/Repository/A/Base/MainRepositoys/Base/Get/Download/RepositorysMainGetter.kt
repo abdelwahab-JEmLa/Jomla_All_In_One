@@ -106,7 +106,7 @@ class RepositorysMainGetter(
         article: ArticlesBasesStatsTable, colorIndex: Int
     ): M10OperationVentCouleur? {
         val relatedCouleur = relatedCouleurKeyParAncienMethod(article, colorIndex) ?: return null
-        return getVent(relatedCouleur.key, article.id)
+        return getVent(relatedCouleur.keyID, article.id)
     }
 
     fun getVent(couleurKey: String, produitId: Long): M10OperationVentCouleur? {

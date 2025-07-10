@@ -56,7 +56,7 @@ fun VentDisplayer_Sec2FragId2(
         .datasValue.find { it.keyID == ventKey }
     val data = vent?.let { v ->
         b1CouleurOuGoutProduitDataBaseRepository.datasValue
-            .find { it.key == v.parentM3CouleurProduitInfosKeyID }
+            .find { it.keyID == v.parentM3CouleurProduitInfosKeyID }
     }
 
     if (data == null) {

@@ -52,7 +52,7 @@ class ViewModelsProduit_T1(
 
     fun calculateExistingVent(produit: ArticlesBasesStatsTable?, color: M3CouleurProduitInfos) =
         fVentCouleurOperationRepository.datasValue.find {
-            it.parentM1ProduitInfosKeyId == produit?.keyID && it.parentM3CouleurProduitInfosKeyID == color.key
+            it.parentM1ProduitInfosKeyId == produit?.keyID && it.parentM3CouleurProduitInfosKeyID == color.keyID
         }
 
 

@@ -89,7 +89,7 @@ class Repo3CouleurProduitInfos(
         val existingIndex =
             datasValue.indexOfFirst { M3CouleurProduitInfos.compareEntre(it, data) }
         val updatedData = data.copy(
-            key = if (existingIndex >= 0) datasValue[existingIndex].key else data.key,
+            keyID = if (existingIndex >= 0) datasValue[existingIndex].keyID else data.keyID,
             dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
         )
         composScope.launch { mainInitDataBase.addOrUpdatedAncienRepo(existingIndex, updatedData) }
@@ -116,7 +116,7 @@ class Repo3CouleurProduitInfos(
 @Entity
 data class M3CouleurProduitInfos(
     @PrimaryKey
-    var key: String = getPushFireBase(ref),
+    var keyID: String = getPushFireBase(ref),
     var debugInfos: String = "",
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -164,7 +164,7 @@ fun CouleurDisplayer(
     onClickToOpenWindow: (M3CouleurProduitInfos) -> Unit = {}
 ) {
     val datas = b1CouleurOuGoutProduitDataBaseRepository.datasValue
-    val data = datas.find { it.key == keyCouleur }!!
+    val data = datas.find { it.keyID == keyCouleur }!!
 
     val imageFile by derivedStateOf {
         if (data.nomImageFichieSansEtansion != "Non Dispo") {

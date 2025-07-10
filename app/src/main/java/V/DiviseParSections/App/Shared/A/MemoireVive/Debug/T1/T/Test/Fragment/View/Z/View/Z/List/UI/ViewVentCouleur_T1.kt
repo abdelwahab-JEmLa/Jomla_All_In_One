@@ -75,7 +75,7 @@ fun ViewVentCouleur_T1(
     val findVent by remember {
         derivedStateOf {
             getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-                .find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.key }
+                .find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
         }
     }
     val defaultM10Vent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
@@ -83,7 +83,7 @@ fun ViewVentCouleur_T1(
         parentM1ProduitInfosKeyId = produit?.keyID ?: null.toString(),
         parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
         //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-        parentM3CouleurProduitInfosKeyID = m3Couleur.key,
+        parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
         parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
         quantity_Par_Boit = 1
     )
@@ -97,10 +97,10 @@ fun ViewVentCouleur_T1(
         }
     }.value
 
-    val shouldShowDialog by remember(findVent, m3Couleur.key) {
+    val shouldShowDialog by remember(findVent, m3Couleur.keyID) {
         derivedStateOf {
             val onVentM3 =
-                viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation;onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.key
+                viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation;onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
         }
     }
 

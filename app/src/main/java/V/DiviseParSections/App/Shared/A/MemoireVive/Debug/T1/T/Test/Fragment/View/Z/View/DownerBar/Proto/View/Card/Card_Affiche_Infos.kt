@@ -34,14 +34,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 private fun Card_Affiche_InfosP(
     vm: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
-
-    ) {
-    val repoProduit =vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
-    val datas1 =repoProduit.datasValue
-    val produit  =datas1.firstOrNull {
+) {
+    val repoProduit = vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+    val datas1 = repoProduit.datasValue
+    val produit = datas1.firstOrNull {
         it.nom.contains("liya")
     }
-
     Card_Affiche_Infos(produit = produit)
 }
 
@@ -50,8 +48,6 @@ fun Card_Affiche_Infos(
     vm: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
     produit: ArticlesBasesStatsTable?,
 ) {
-
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,7 +78,7 @@ fun Card_Affiche_Infos(
             ) {
                 if (produit != null) {
                     CartonDisplayer(
-                        vm=vm,
+                        vm = vm,
                         produit = produit,
                         modifier = Modifier.weight(1f),
                     )
@@ -92,14 +88,13 @@ fun Card_Affiche_Infos(
     }
 }
 
-
 @Composable
 private fun CartonDisplayer(
     produit: ArticlesBasesStatsTable,
     vm: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier = Modifier,
 ) {
-    val repoProduit =vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+    val repoProduit = vm.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
 
     val quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton
     val actuelle_Affiche_Est_Carton = produit.actuelle_Affiche_Est_Carton
@@ -155,8 +150,8 @@ private fun CartonDisplayer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
-                    // FIXED: Calculate new value and update repository directly
-                    val newQuantity = if (quantite_Boit_Par_Carton > 0) quantite_Boit_Par_Carton - 1 else 0
+                    val newQuantity =
+                        if (quantite_Boit_Par_Carton > 0) quantite_Boit_Par_Carton - 1 else 0
                     updateQyt(repoProduit, produit, newQuantity)
                 }) {
                     Icon(
@@ -167,7 +162,6 @@ private fun CartonDisplayer(
                 }
 
                 Text(
-                    // FIXED: This will now update because quantite_Boit_Par_Carton comes from produit state
                     text = if (quantite_Boit_Par_Carton == 0) "0" else "$quantite_Boit_Par_Carton",
                     style = MaterialTheme.typography.titleMedium,
                     color = if (quantite_Boit_Par_Carton == 0) Color.Red else Color.Black,
@@ -175,7 +169,6 @@ private fun CartonDisplayer(
                 )
 
                 IconButton(onClick = {
-                    // FIXED: Calculate new value and update repository directly
                     val newQuantity = quantite_Boit_Par_Carton + 1
                     updateQyt(repoProduit, produit, newQuantity)
                 }) {
