@@ -52,8 +52,8 @@ fun DownerBar() {
     val vent by remember { mutableStateOf(Vent()) }
 
     Column(
-        modifier = Modifier.padding(vertical = 8.dp), // Added space between components
-        verticalArrangement = Arrangement.spacedBy(16.dp) // Added spacing
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Vent_Quantitys(
             produit = produit,
@@ -78,11 +78,17 @@ class Produit {
 
 @Stable
 class Vent {
-    private val _qty_Vendu = MutableStateFlow(0)
-    val qty_Vendu: StateFlow<Int> = _qty_Vendu
+    private val _qty_Boit_Vendu = MutableStateFlow(0)
+    val qty_Boit_Vendu: StateFlow<Int> = _qty_Boit_Vendu
 
-    fun updateQtyVendu(newValue: Int) {
-        _qty_Vendu.value = newValue
+    var qty_Carton_Vendu by mutableStateOf(0)
+
+    fun updateQty_Boit_Vendu(newValue: Int) {
+        _qty_Boit_Vendu.value = newValue
+    }
+
+    fun update_qty_Carton_Vendu(newValue: Int) {
+        qty_Carton_Vendu = newValue
     }
 }
 
@@ -94,11 +100,33 @@ fun Vent_Quantitys(
 ) {
     var vent_quantityCarton by remember { mutableStateOf(0) }
     val qtyBoitParCarton by produit.qty_Boit_Par_Carton.collectAsState()
-    val qtyVendu by vent.qty_Vendu.collectAsState()
+    val qtyVendu by vent.qty_Boit_Vendu.collectAsState()
 
     val quantityBoit_On_Vent_Carton by remember {
         derivedStateOf {
             vent_quantityCarton * qtyBoitParCarton
+        }
+    }
+
+    // Calculate carton quantity based on individual boxes sold
+    val quantity_Carton_On_Vent_Par_Boit by remember {
+        derivedStateOf {
+            if (qtyBoitParCarton > 0) {
+                qtyVendu / qtyBoitParCarton
+            } else {
+                0
+            }
+        }
+    }
+
+    // Check if individual boxes can form complete cartons
+    val hasPartialCarton by remember {
+        derivedStateOf {
+            if (qtyBoitParCarton > 0) {
+                qtyVendu % qtyBoitParCarton != 0
+            } else {
+                false
+            }
         }
     }
 
@@ -116,7 +144,6 @@ fun Vent_Quantitys(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Added header
             Text(
                 text = "Vent Quantitys",
                 style = MaterialTheme.typography.titleMedium,
@@ -133,40 +160,58 @@ fun Vent_Quantitys(
             ) {
                 Vent_Par_Carton(
                     modifier = Modifier.weight(1f),
+                    hasPartialCarton = hasPartialCarton,
+                    qtyBoitParCarton = qtyBoitParCarton,
+                    qtyVendu = qtyVendu
                 ) { newQuantity ->
                     vent_quantityCarton = newQuantity
                 }
 
-                Displaye_Boit_On_Vent_Carton(
+                Vent_Par_Boit(
                     modifier = Modifier.weight(1f),
-                    quantityBoit_On_Vent_Carton
-                )
+                    quantityBoit_On_Vent_Carton,
+                    qtyBoitParCarton = qtyBoitParCarton,
+                    currentQtyVendu = qtyVendu
+                ) { newQuantity ->
+                    vent.updateQty_Boit_Vendu(qtyVendu + newQuantity)
+                    vent.update_qty_Carton_Vendu(quantity_Carton_On_Vent_Par_Boit)
+                }
             }
 
-            // Display current qty_Vendu
             if (qtyVendu > 0) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.Green.copy(alpha = 0.1f)),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(
-                        text = "Quantité vendue: $qtyVendu boîtes",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp)
-                    )
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "Quantité vendue: $qtyVendu boîtes",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(
+                            text = "Cartons complets: $quantity_Carton_On_Vent_Par_Boit",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
 
-            // Confirmation button
             Button(
                 onClick = {
-                    vent.updateQtyVendu(quantityBoit_On_Vent_Carton)
+                    vent.updateQty_Boit_Vendu(quantityBoit_On_Vent_Carton)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
@@ -192,13 +237,25 @@ fun Vent_Quantitys(
 @Composable
 fun Vent_Par_Carton(
     modifier: Modifier = Modifier,
+    hasPartialCarton: Boolean,
+    qtyBoitParCarton: Int,
+    qtyVendu: Int,
     onClick_Vent_Change_PurchaseQty: (Int) -> Unit,
 ) {
     var quantity by remember { mutableStateOf(0) }
 
+    // Determine if the carton display should be grayed out
+    // FIXED: Also gray out when qtyBoitParCarton is 0
+    val shouldGrayOut = (hasPartialCarton && qtyBoitParCarton > 0) || qtyBoitParCarton == 0
+
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(
+            containerColor = if (shouldGrayOut)
+                Color.Gray.copy(alpha = 0.3f)
+            else
+                Color.Blue.copy(alpha = 0.1f)
+        ),
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(
@@ -210,7 +267,7 @@ fun Vent_Par_Carton(
             Text(
                 text = "Carton",
                 style = MaterialTheme.typography.titleSmall,
-                color = Color.Black,
+                color = if (shouldGrayOut) Color.Gray else Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -220,13 +277,25 @@ fun Vent_Par_Carton(
                 Text(
                     text = "$quantity Boit/Par Carton",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black
+                    color = if (shouldGrayOut) Color.Gray else Color.Black
                 )
                 Text(
                     text = "Quantité par carton",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
+
+                if (shouldGrayOut) {
+                    Text(
+                        text = if (qtyBoitParCarton == 0)
+                            "Définir d'abord la quantité par carton"
+                        else
+                            "Cartons incomplets détectés",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Row(
@@ -234,39 +303,44 @@ fun Vent_Par_Carton(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = {
-                    if (quantity > 0) {
-                        quantity--
-                        // Set to 0 when reaching minimum instead of null
-                        if (quantity == 0) {
-                            onClick_Vent_Change_PurchaseQty(0)
-                        } else {
-                            onClick_Vent_Change_PurchaseQty(quantity)
+                IconButton(
+                    onClick = {
+                        if (quantity > 0) {
+                            quantity--
+                            if (quantity == 0) {
+                                onClick_Vent_Change_PurchaseQty(0)
+                            } else {
+                                onClick_Vent_Change_PurchaseQty(quantity)
+                            }
                         }
-                    }
-                }) {
+                    },
+                    enabled = !shouldGrayOut
+                ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
                         contentDescription = "Diminuer quantité carton",
-                        tint = Color.Red
+                        tint = if (shouldGrayOut) Color.Gray else Color.Red
                     )
                 }
 
                 Text(
                     text = "$quantity",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Black,
+                    color = if (shouldGrayOut) Color.Gray else Color.Black,
                     fontWeight = FontWeight.Bold
                 )
 
-                IconButton(onClick = {
-                    quantity++
-                    onClick_Vent_Change_PurchaseQty(quantity)
-                }) {
+                IconButton(
+                    onClick = {
+                        quantity++
+                        onClick_Vent_Change_PurchaseQty(quantity)
+                    },
+                    enabled = !shouldGrayOut
+                ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Augmenter quantité carton",
-                        tint = Color.Green
+                        tint = if (shouldGrayOut) Color.Gray else Color.Green
                     )
                 }
             }
@@ -275,11 +349,16 @@ fun Vent_Par_Carton(
 }
 
 @Composable
-fun Displaye_Boit_On_Vent_Carton(
+fun Vent_Par_Boit(
     modifier: Modifier = Modifier,
-    quantityBoit_On_Vent_Carton: Int,
+    int_quantity: Int,
+    qtyBoitParCarton: Int,
+    currentQtyVendu: Int,
+    onClick_To_Vent: (Int) -> Unit,
 ) {
-    val nom = "Displaye_Boit_On_Vent_Carton"
+    var quantity by remember { mutableStateOf(0) }
+
+    val nom = "Vent_Par_Boit"
 
     Card(
         modifier = modifier,
@@ -303,10 +382,63 @@ fun Displaye_Boit_On_Vent_Carton(
 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = "$quantityBoit_On_Vent_Carton Boit",
+                    text = "$quantity Boit",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black
                 )
+                Text(
+                    text = "Quantité calculée: $int_quantity",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+
+                // FIXED: Show notification when complete carton is reached
+                if (qtyBoitParCarton > 0 && (currentQtyVendu + quantity) >= qtyBoitParCarton &&
+                    (currentQtyVendu + quantity) % qtyBoitParCarton == 0) {
+                    Text(
+                        text = "Carton complet atteint!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Green,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    if (quantity > 0) {
+                        quantity--
+                        onClick_To_Vent(quantity)
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "Diminuer quantité",
+                        tint = Color.Red
+                    )
+                }
+
+                Text(
+                    text = "$quantity",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(onClick = {
+                    quantity++
+                    onClick_To_Vent(quantity)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Augmenter quantité",
+                        tint = Color.Green
+                    )
+                }
             }
         }
     }
@@ -333,9 +465,8 @@ private fun Card_Affiche_Infos(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Added header
             Text(
-                text = "Infos Produit",
+                text = "Change Infos Produit",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
@@ -518,9 +649,9 @@ private fun CartonDisplayer(
                 }
 
                 Text(
-                    text = "$quantite_Carton",
+                    text = if (quantite_Carton == 0) "0" else "$quantite_Carton",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Black,
+                    color = if (quantite_Carton == 0) Color.Red else Color.Black,
                     fontWeight = FontWeight.Bold
                 )
 

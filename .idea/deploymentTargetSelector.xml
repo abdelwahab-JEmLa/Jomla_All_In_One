@@ -29,9 +29,6 @@
       <SelectionState runConfigName="ClearAPP Lence">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ButtonAutreEtatesP">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="ButtonAutreEtatesPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -42,6 +39,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="PrevDB">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="PrevDB (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
