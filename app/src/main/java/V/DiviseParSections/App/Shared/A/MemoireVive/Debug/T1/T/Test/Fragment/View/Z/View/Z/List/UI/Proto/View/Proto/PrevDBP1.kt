@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -43,7 +45,7 @@ private fun PrevDBP2(
 
 ) {
     /* val viewModel= ViewModelsProduit_T1 = koinViewModel()
-  
+
       DownerBarP2(produit = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
           it.nom.contains("liya")
       }, m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
@@ -67,10 +69,12 @@ fun DownerBarP2(
     m3Couleur: M3CouleurProduitInfos?,
     vent: M10OperationVentCouleur?,
 ) {
-
+    // Reduced vertical spacing and made it more compact
     Column(
-        modifier = Modifier.padding(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier
+            .wrapContentHeight()
+            .padding(vertical = 4.dp), // Reduced from 8.dp
+        verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced from 16.dp
     ) {
         Vent_Quantitys(
             produit = produit,
@@ -96,29 +100,34 @@ private fun Vent_Quantitys(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .wrapContentHeight() // Changed from default height
+            .padding(horizontal = 8.dp, vertical = 4.dp), // Reduced padding
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(12.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp), // Reduced elevation
+        shape = RoundedCornerShape(8.dp) // Reduced corner radius
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(12.dp), // Reduced from 16.dp
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced from 12.dp
         ) {
+            // Smaller title
             Text(
                 text = "Vent Quantitys Du Vent ${vent?.parentM1ProduitDebugInfos}",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall, // Changed from titleMedium
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Compact controls row
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp), // Fixed height to prevent expansion
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Reduced spacing
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Vent_Par_Carton(
@@ -140,53 +149,59 @@ private fun Vent_Quantitys(
             val vent_quantityParBoit = vent?.quantity_Par_Boit
             val vent_quantity_Par_Carton = vent?.quantity_Par_Carton
 
-            if (vent_quantityParBoit != null) {
-                if (vent_quantityParBoit > 0) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.Green.copy(alpha = 0.1f)),
-                        shape = RoundedCornerShape(8.dp)
+            // Compact quantity display
+            if (vent_quantityParBoit != null && vent_quantityParBoit > 0) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(), // Wrap content instead of expanding
+                    colors = CardDefaults.cardColors(containerColor = Color.Green.copy(alpha = 0.1f)),
+                    shape = RoundedCornerShape(6.dp) // Smaller corner radius
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp), // Reduced padding
+                        verticalArrangement = Arrangement.spacedBy(2.dp) // Reduced spacing
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "Quantité vendue: $vent_quantityParBoit boîtes",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(
-                                text = "Cartons complets: $vent_quantity_Par_Carton",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Gray,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                        Text(
+                            text = "Quantité: $vent_quantityParBoit boîtes",
+                            style = MaterialTheme.typography.bodySmall, // Smaller text
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(
+                            text = "Cartons: $vent_quantity_Par_Carton",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
 
-            if (vent != null) {
-                if (vent_quantityParBoit != null) {
-                    Button(
-                        onClick = {
-                            vm.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
-                                vent.copy(
-                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme
-                                )
+            // Compact confirm button
+            if (vent != null && vent_quantityParBoit != null && vent_quantityParBoit > 0) {
+                Button(
+                    onClick = {
+                        vm.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                            vent.copy(
+                                etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme
                             )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                        shape = RoundedCornerShape(8.dp),
-                        enabled = vent_quantityParBoit > 0
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp), // Fixed height for button
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                    shape = RoundedCornerShape(6.dp) // Smaller corner radius
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -194,10 +209,10 @@ private fun Vent_Quantitys(
                             tint = Color.White
                         )
                         Text(
-                            text = "Confirmer la vente",
+                            text = "Confirmer",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 8.dp)
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
@@ -230,51 +245,37 @@ private fun Vent_Par_Carton(
     val shouldGrayOut = hasPartialCarton && vent_quantity_Par_Carton > 0
 
     Card(
-        modifier = modifier,
+        modifier = modifier.height(80.dp), // Fixed height
         colors = CardDefaults.cardColors(
             containerColor = if (shouldGrayOut)
                 Color.Gray.copy(alpha = 0.3f)
             else
                 Color.Blue.copy(alpha = 0.1f)
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(6.dp) // Smaller corner radius
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(6.dp), // Reduced padding
+            verticalArrangement = Arrangement.spacedBy(4.dp) // Reduced spacing
         ) {
             Text(
                 text = "Carton",
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.labelSmall, // Smaller text
                 color = if (shouldGrayOut) Color.Gray else Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "$vent_quantity_Par_Carton Boit/Par Carton",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (shouldGrayOut) Color.Gray else Color.Black
-                )
-                Text(
-                    text = "Quantité par carton",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-
-                if (shouldGrayOut) {
-                    Text(
-                        text = "Cartons incomplets détectés",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Red,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            Text(
+                text = "$vent_quantity_Par_Carton Boit",
+                style = MaterialTheme.typography.bodySmall,
+                color = if (shouldGrayOut) Color.Gray else Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -289,14 +290,14 @@ private fun Vent_Par_Carton(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Diminuer quantité carton",
+                        contentDescription = "Diminuer",
                         tint = if (shouldGrayOut) Color.Gray else Color.Red
                     )
                 }
 
                 Text(
                     text = "$vent_quantity_Par_Carton",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = if (shouldGrayOut) Color.Gray else Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -309,7 +310,7 @@ private fun Vent_Par_Carton(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Augmenter quantité carton",
+                        contentDescription = "Augmenter",
                         tint = if (shouldGrayOut) Color.Gray else Color.Green
                     )
                 }
@@ -332,40 +333,33 @@ private fun Vent_Par_Boit(
             it.parentBProduitInfosKeyID == produit?.keyID
         }
 
-    val nom = "Vent_Par_Boit"
-
     Card(
-        modifier = modifier,
+        modifier = modifier.height(80.dp), // Fixed height
         colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(6.dp) // Smaller corner radius
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(6.dp), // Reduced padding
+            verticalArrangement = Arrangement.spacedBy(4.dp) // Reduced spacing
         ) {
             Text(
-                text = "Unité par $nom",
-                style = MaterialTheme.typography.titleSmall,
+                text = "Unité",
+                style = MaterialTheme.typography.labelSmall, // Smaller text
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "$vent_quantity_Par_Boit Boit",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black
-                )
-                Text(
-                    text = "Quantité calculée: $vent_quantity_Par_Boit",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
+            Text(
+                text = "$vent_quantity_Par_Boit Boit",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -379,14 +373,14 @@ private fun Vent_Par_Boit(
                 }) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Diminuer quantité",
+                        contentDescription = "Diminuer",
                         tint = Color.Red
                     )
                 }
 
                 Text(
                     text = "$vent_quantity_Par_Boit",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -396,7 +390,7 @@ private fun Vent_Par_Boit(
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Augmenter quantité",
+                        contentDescription = "Augmenter",
                         tint = Color.Green
                     )
                 }

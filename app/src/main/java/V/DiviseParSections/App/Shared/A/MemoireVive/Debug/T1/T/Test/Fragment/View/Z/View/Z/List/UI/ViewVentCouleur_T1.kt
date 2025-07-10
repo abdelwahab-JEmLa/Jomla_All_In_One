@@ -12,7 +12,6 @@ import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Reposi
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,7 +57,6 @@ fun ViewVentCouleur_T1(
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
     val parentM1ProduitDebugInfos = produit?.getDebugInfos() ?: "null"
 
-
     val haptic = LocalHapticFeedback.current
 
     fun handelUiAction(haptic: HapticFeedback) {
@@ -72,13 +70,13 @@ fun ViewVentCouleur_T1(
         )
     }
 
-
     val findVent by remember {
         derivedStateOf {
             getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
                 .find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
         }
     }
+
     val defaultM10Vent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
         //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
         parentM1ProduitInfosKeyId = produit?.keyID ?: null.toString(),
@@ -105,8 +103,9 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    Card(
-        modifier = Modifier
+    // Main container with proper layout structure
+    Column(
+        modifier = modifier
             .getSemanticsTag(
                 defaultM10Vent, "defaultM3CouleurProduitInfos"
             )
@@ -114,94 +113,101 @@ fun ViewVentCouleur_T1(
             .alpha(ventUIState.itemAlpha)
             .graphicsLayer(alpha = if (findVent?.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp)
+        // Image/Color display card
+        Card(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            fun lenceVent() {
-                findVent?.let { findVent ->
-                    viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond()
-                    setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
-                } ?: run {
-                    defaultM10Vent?.let { defaultVent ->
-                        setter.ajoute_New_M10OperationVentCouleur(defaultVent)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                fun lenceVent() {
+                    findVent?.let { findVent ->
                         viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                        setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
+                    } ?: run {
+                        defaultM10Vent?.let { defaultVent ->
+                            setter.ajoute_New_M10OperationVentCouleur(defaultVent)
+                            viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                        }
+                    }
+                }
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    when (m3Couleur.aAffiche) {
+                        M3CouleurProduitInfos.Type.Image -> {
+                            ImageDisplayerGlide_Sec2FragID2(
+                                modifier = Modifier.size(size),
+                                imageFile = imageFile,
+                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                contentScale = ContentScale.Crop,
+                                imageSize = DpSize(size, size),
+                                colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
+                                onClickToOpenWindow = {
+                                    lenceVent()
+                                    handelUiAction(haptic)
+                                },
+                            )
+                        }
+
+                        M3CouleurProduitInfos.Type.Nom -> {
+                            ColorNameDisplayer_Sec2FragID2(
+                                modifier = Modifier.size(size),
+                                colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
+                                onClickToOpenWindow = {
+                                    lenceVent()
+                                    handelUiAction(haptic)
+                                })
+                        }
+                    }
+
+                    if (ventUIState.isRemoved) {
+                        Surface(
+                            modifier = Modifier.align(Alignment.Center),
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.9f)
+                        ) {
+                            Text(
+                                text = "REMOVED",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onError,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    if (ventUIState.quantity > 0 && !ventUIState.isRemoved) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ) {
+                                    Text(
+                                        text = findVent?.quantity_Par_Boit.toString(),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }, modifier = Modifier.align(Alignment.BottomEnd)
+                        ) {
+                            Box(modifier = Modifier.size(16.dp))
+                        }
                     }
                 }
             }
-
-            Box(modifier = Modifier.fillMaxWidth()) {
-                when (m3Couleur.aAffiche) {
-                    M3CouleurProduitInfos.Type.Image -> {
-                        ImageDisplayerGlide_Sec2FragID2(
-                            modifier = Modifier.size(size),
-                            imageFile = imageFile,
-                            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
-                            contentScale = ContentScale.Crop,
-                            imageSize = DpSize(size, size),
-                            colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
-                            onClickToOpenWindow = {
-                                lenceVent()
-                                handelUiAction(haptic)
-                            },
-                        )
-                    }
-
-                    M3CouleurProduitInfos.Type.Nom -> {
-                        ColorNameDisplayer_Sec2FragID2(
-                            modifier = Modifier.size(size),
-                            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
-                            onClickToOpenWindow = {
-                                lenceVent()
-
-                                handelUiAction(haptic)
-                            })
-                    }
-                }
-
-                if (ventUIState.isRemoved) {
-                    Surface(
-                        modifier = Modifier.align(Alignment.Center),
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.9f)
-                    ) {
-                        Text(
-                            text = "REMOVED",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onError,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
-                }
-
-                if (ventUIState.quantity > 0 && !ventUIState.isRemoved) {
-                    BadgedBox(
-                        badge = {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ) {
-                                Text(
-                                    text = findVent?.quantity_Par_Boit.toString(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }, modifier = Modifier.align(Alignment.BottomEnd)
-                    ) {
-                        Box(modifier = Modifier.size(16.dp))
-                    }
-                }
-            }
-            DownerBarP2(
-                viewModel = viewModel,
-                produit = produit,
-                m3Couleur = m3Couleur,
-                vent = findVent
-            )
         }
+
+        // DownerBarP2 component - now properly positioned outside the image card
+        // This ensures it has its own space and won't be constrained by the image card layout
+        DownerBarP2(
+            viewModel = viewModel,
+            produit = produit,
+            m3Couleur = m3Couleur,
+            vent = findVent
+        )
     }
 
     if (shouldShowDialog && findVent != null) {
