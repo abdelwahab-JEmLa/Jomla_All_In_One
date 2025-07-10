@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -19,6 +22,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Preview
 @Composable
@@ -40,9 +48,60 @@ private fun PrevDB() {
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun DownerBar() {
-    val default_Affiche_Est_Boit by remember { mutableStateOf(true) }
+    val produit by remember { mutableStateOf(Produit()) }
+    val vent by remember { mutableStateOf(Vent()) }
 
-    var actuelle_Affiche_Est_Boit by remember { mutableStateOf(default_Affiche_Est_Boit) }
+    Column(
+        modifier = Modifier.padding(vertical = 8.dp), // Added space between components
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Added spacing
+    ) {
+        Vent_Quantitys(
+            produit = produit,
+            vent = vent
+        )
+
+        Card_Affiche_Infos { qtyBoitParCarton ->
+            produit.updateQtyBoitParCarton(qtyBoitParCarton)
+        }
+    }
+}
+
+@Stable
+class Produit {
+    private val _qty_Boit_Par_Carton = MutableStateFlow(0)
+    val qty_Boit_Par_Carton: StateFlow<Int> = _qty_Boit_Par_Carton
+
+    fun updateQtyBoitParCarton(newValue: Int) {
+        _qty_Boit_Par_Carton.value = newValue
+    }
+}
+
+@Stable
+class Vent {
+    private val _qty_Vendu = MutableStateFlow(0)
+    val qty_Vendu: StateFlow<Int> = _qty_Vendu
+
+    fun updateQtyVendu(newValue: Int) {
+        _qty_Vendu.value = newValue
+    }
+}
+
+@Composable
+fun Vent_Quantitys(
+    modifier: Modifier = Modifier,
+    produit: Produit,
+    vent: Vent
+) {
+    var vent_quantityCarton by remember { mutableStateOf(0) }
+    val qtyBoitParCarton by produit.qty_Boit_Par_Carton.collectAsState()
+    val qtyVendu by vent.qty_Vendu.collectAsState()
+
+    val quantityBoit_On_Vent_Carton by remember {
+        derivedStateOf {
+            vent_quantityCarton * qtyBoitParCarton
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,24 +110,258 @@ fun DownerBar() {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CartonDisplayer(
-                modifier = Modifier.weight(1f),
-                actuelle_Affiche_Est_Boit,
+            // Added header
+            Text(
+                text = "Vent Quantitys",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                actuelle_Affiche_Est_Boit = false
+                Vent_Par_Carton(
+                    modifier = Modifier.weight(1f),
+                ) { newQuantity ->
+                    vent_quantityCarton = newQuantity
+                }
+
+                Displaye_Boit_On_Vent_Carton(
+                    modifier = Modifier.weight(1f),
+                    quantityBoit_On_Vent_Carton
+                )
             }
-            UnitParBoit(
-                modifier = Modifier.weight(1f),
-                actuelle_Affiche_Est_Boit,
+
+            // Display current qty_Vendu
+            if (qtyVendu > 0) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Green.copy(alpha = 0.1f)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Quantité vendue: $qtyVendu boîtes",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    )
+                }
+            }
+
+            // Confirmation button
+            Button(
+                onClick = {
+                    vent.updateQtyVendu(quantityBoit_On_Vent_Carton)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                shape = RoundedCornerShape(8.dp),
+                enabled = quantityBoit_On_Vent_Carton > 0
             ) {
-                actuelle_Affiche_Est_Boit = true
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Confirmer vente",
+                    tint = Color.White
+                )
+                Text(
+                    text = "Confirmer la vente",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Vent_Par_Carton(
+    modifier: Modifier = Modifier,
+    onClick_Vent_Change_PurchaseQty: (Int) -> Unit,
+) {
+    var quantity by remember { mutableStateOf(0) }
+
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.1f)),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Carton",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "$quantity Boit/Par Carton",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Quantité par carton",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    if (quantity > 0) {
+                        quantity--
+                        // Set to 0 when reaching minimum instead of null
+                        if (quantity == 0) {
+                            onClick_Vent_Change_PurchaseQty(0)
+                        } else {
+                            onClick_Vent_Change_PurchaseQty(quantity)
+                        }
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "Diminuer quantité carton",
+                        tint = Color.Red
+                    )
+                }
+
+                Text(
+                    text = "$quantity",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(onClick = {
+                    quantity++
+                    onClick_Vent_Change_PurchaseQty(quantity)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Augmenter quantité carton",
+                        tint = Color.Green
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Displaye_Boit_On_Vent_Carton(
+    modifier: Modifier = Modifier,
+    quantityBoit_On_Vent_Carton: Int,
+) {
+    val nom = "Displaye_Boit_On_Vent_Carton"
+
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.1f)),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Unité par $nom",
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "$quantityBoit_On_Vent_Carton Boit",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Card_Affiche_Infos(
+    on_Change_Boit_Par_Carton: (Int) -> Unit,
+) {
+    val default_Affiche_Est_Boit by remember { mutableStateOf(true) }
+    var actuelle_Affiche_Est_Boit by remember { mutableStateOf(default_Affiche_Est_Boit) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Added header
+            Text(
+                text = "Infos Produit",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CartonDisplayer(
+                    modifier = Modifier.weight(1f),
+                    actuelle_Affiche_Est_Boit,
+                ) { newQuantity ->
+                    on_Change_Boit_Par_Carton(newQuantity)
+                    actuelle_Affiche_Est_Boit = false
+                }
+
+                UnitParBoit(
+                    modifier = Modifier.weight(1f),
+                    actuelle_Affiche_Est_Boit,
+                ) {
+                    actuelle_Affiche_Est_Boit = true
+                }
             }
         }
     }
@@ -155,11 +448,13 @@ fun UnitParBoit(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = if (actuelle_Affiche) Icons.Default.Star else Icons.Default.StarBorder,
-                    contentDescription = "Toggle Actuelle Affiche",
-                    tint = if (actuelle_Affiche) Color.Yellow else Color.Gray
-                )
+                IconButton(onClick = onClick_actuelle_Affiche) {
+                    Icon(
+                        imageVector = if (actuelle_Affiche) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = "Toggle Actuelle Affiche",
+                        tint = if (actuelle_Affiche) Color.Yellow else Color.Gray
+                    )
+                }
             }
         }
     }
@@ -169,9 +464,10 @@ fun UnitParBoit(
 private fun CartonDisplayer(
     modifier: Modifier = Modifier,
     actuelle_Affiche_Est_Boit: Boolean,
-    onClick_actuelle_Affiche: () -> Unit,
+    onClick_actuelle_Affiche: (Int) -> Unit,
 ) {
-    var quantite_Carton by remember { mutableStateOf(5) }
+    var quantite_Carton by remember { mutableStateOf(10) }
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.1f)),
@@ -212,7 +508,7 @@ private fun CartonDisplayer(
             ) {
                 IconButton(onClick = {
                     if (quantite_Carton > 0) quantite_Carton--
-                    onClick_actuelle_Affiche()
+                    onClick_actuelle_Affiche(quantite_Carton)
                 }) {
                     Icon(
                         imageVector = Icons.Default.Remove,
@@ -230,7 +526,7 @@ private fun CartonDisplayer(
 
                 IconButton(onClick = {
                     quantite_Carton++
-                    onClick_actuelle_Affiche()
+                    onClick_actuelle_Affiche(quantite_Carton)
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -244,11 +540,13 @@ private fun CartonDisplayer(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = if (!actuelle_Affiche_Est_Boit) Icons.Default.Star else Icons.Default.StarBorder,
-                    contentDescription = "Toggle Actuelle Affiche",
-                    tint = if (!actuelle_Affiche_Est_Boit) Color.Yellow else Color.Gray
-                )
+                IconButton(onClick = { onClick_actuelle_Affiche(quantite_Carton) }) {
+                    Icon(
+                        imageVector = if (!actuelle_Affiche_Est_Boit) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = "Toggle Actuelle Affiche",
+                        tint = if (!actuelle_Affiche_Est_Boit) Color.Yellow else Color.Gray
+                    )
+                }
             }
         }
     }
