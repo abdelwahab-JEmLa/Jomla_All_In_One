@@ -67,6 +67,7 @@ private fun DownerBarP2(
     ) {
         Vent_Quantitys(
             produit = produit,
+            m3Couleur=m3Couleur,
             vm = viewModel,
             vent = vent,
         )
@@ -79,10 +80,11 @@ private fun DownerBarP2(
 
 @Composable
 private fun Vent_Quantitys(
-    modifier: Modifier = Modifier,
+    vent: M10OperationVentCouleur?,
+    m3Couleur: M3CouleurProduitInfos?,
     produit: ArticlesBasesStatsTable?,
     vm: ViewModelMainFastSearchProduitPourVent,
-    vent: M10OperationVentCouleur?,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = Modifier
@@ -99,7 +101,7 @@ private fun Vent_Quantitys(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Vent Quantitys",
+                text = "Vent Quantitys Du Vent ${vent?.parentM1ProduitDebugInfos}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
@@ -113,6 +115,7 @@ private fun Vent_Quantitys(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Vent_Par_Carton(
+                    m3Couleur=m3Couleur,
                     vent = vent,
                     produit = produit,
                     viewModel = vm,
@@ -199,6 +202,7 @@ private fun Vent_Quantitys(
 @Composable
 private fun Vent_Par_Carton(
     vent: M10OperationVentCouleur?,
+    m3Couleur: M3CouleurProduitInfos?,
     produit: ArticlesBasesStatsTable?,
     viewModel: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier = Modifier,
@@ -217,11 +221,6 @@ private fun Vent_Par_Carton(
     }
 
     val shouldGrayOut = hasPartialCarton && vent_quantity_Par_Carton > 0
-
-    val m3Couleur =
-        viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-            it.parentBProduitInfosKeyID == produit?.keyID
-        }
 
     Card(
         modifier = modifier,
@@ -319,8 +318,7 @@ private fun Vent_Par_Boit(
     vm: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier = Modifier,
 ) {
-    val vent_quantity_Par_Boit =
-        (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 1)
+    val vent_quantity_Par_Boit = (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 0)
     val m3Couleur =
         vm.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
             it.parentBProduitInfosKeyID == produit?.keyID
