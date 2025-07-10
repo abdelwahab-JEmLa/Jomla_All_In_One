@@ -10,8 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.ToggleOff
-import androidx.compose.material.icons.filled.ToggleOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,9 +33,12 @@ import androidx.compose.ui.unit.dp
 private fun PrevDB() {
     DownerBar()
 }
+
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun DownerBar() {
+    var default_Affiche_Est_Boit by remember { mutableStateOf(true) }
+    var actuelle_Affiche_Est_Boit by remember { mutableStateOf(default_Affiche_Est_Boit) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,22 +59,28 @@ fun DownerBar() {
             verticalAlignment = Alignment.CenterVertically  // ✅ Alignement vertical
         ) {
             CartonDisplayer(
-                modifier = Modifier.weight(1f)
-            )
+                modifier = Modifier.weight(1f),
+                actuelle_Affiche_Est_Boit,
+            ) {
+                actuelle_Affiche_Est_Boit = false
+            }
             UnitParBoit(
-                modifier = Modifier.weight(1f)
-            )
+                modifier = Modifier.weight(1f),
+                actuelle_Affiche_Est_Boit,
+            ) {
+                actuelle_Affiche_Est_Boit = true
+            }
         }
     }
 }
 
 @Composable
 fun UnitParBoit(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actuelle_Affiche: Boolean,
+    onClick_actuelle_Affiche: () -> Unit,
 ) {
     val quantite by remember { mutableStateOf(5) }
-    var default_Affiche by remember { mutableStateOf(true) }
-    var actuelle_Affiche by remember { mutableStateOf(default_Affiche) }
     val nom = "Boit"
 
     Card(
@@ -116,7 +123,7 @@ fun UnitParBoit(
                 ) {
                     IconButton(
                         onClick = {
-                            actuelle_Affiche = !actuelle_Affiche
+                            onClick_actuelle_Affiche()
                         }
                     ) {
                         Icon(
@@ -135,32 +142,6 @@ fun UnitParBoit(
                         textAlign = TextAlign.Center
                     )
                 }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    IconButton(
-                        onClick = {
-                            default_Affiche = !default_Affiche
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (default_Affiche)
-                                Icons.Default.ToggleOn
-                            else
-                                Icons.Default.ToggleOff,
-                            contentDescription = "Toggle Default Affiche",
-                            tint = if (default_Affiche) Color.Green else Color.Gray
-                        )
-                    }
-                    Text(
-                        text = "Affichage Défaut",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Black,  // ✅ Texte noir
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
         }
     }
@@ -168,12 +149,11 @@ fun UnitParBoit(
 
 @Composable
 private fun CartonDisplayer(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actuelle_Affiche_Est_Boit: Boolean,
+    onClick_actuelle_Affiche: () -> Unit,
 ) {
     val quantite_Carton by remember { mutableStateOf(5) }
-    var default_Affiche_Est_Boit by remember { mutableStateOf(true) }
-    var actuelle_Affiche_Est_Boit by remember { mutableStateOf(default_Affiche_Est_Boit) }
-
     Card(
         modifier = modifier,  // ✅ Pas de padding ici
         colors = CardDefaults.cardColors(
@@ -214,46 +194,20 @@ private fun CartonDisplayer(
                 ) {
                     IconButton(
                         onClick = {
-                            actuelle_Affiche_Est_Boit = !actuelle_Affiche_Est_Boit
+                            onClick_actuelle_Affiche()
                         }
                     ) {
                         Icon(
-                            imageVector = if (actuelle_Affiche_Est_Boit)
+                            imageVector = if (!actuelle_Affiche_Est_Boit)
                                 Icons.Default.Star
                             else
                                 Icons.Default.StarBorder,
                             contentDescription = "Toggle Actuelle Affiche",
-                            tint = if (actuelle_Affiche_Est_Boit) Color.Yellow else Color.Gray
+                            tint = if (!actuelle_Affiche_Est_Boit) Color.Yellow else Color.Gray
                         )
                     }
                     Text(
                         text = "Affichage Actuel",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Black,  // ✅ Texte noir
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    IconButton(
-                        onClick = {
-                            default_Affiche_Est_Boit = !default_Affiche_Est_Boit
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (default_Affiche_Est_Boit)
-                                Icons.Default.ToggleOn
-                            else
-                                Icons.Default.ToggleOff,
-                            contentDescription = "Toggle Default Affiche",
-                            tint = if (default_Affiche_Est_Boit) Color.Green else Color.Gray
-                        )
-                    }
-                    Text(
-                        text = "Affichage Défaut",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Black,  // ✅ Texte noir
                         textAlign = TextAlign.Center
