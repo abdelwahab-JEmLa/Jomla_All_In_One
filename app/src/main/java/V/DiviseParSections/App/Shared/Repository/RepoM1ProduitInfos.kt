@@ -134,8 +134,8 @@ data class ArticlesBasesStatsTable(
     var id: Long = 0L,
     var keyID: String = Get.getPushFireBase(ref),
 
-    val quantite_Boit_Par_Carton:Int=0,
-    val actuelle_Affiche_Est_Carton:Boolean=false,
+    val quantite_Boit_Par_Carton: Int = 0,
+    val actuelle_Affiche_Est_Carton: Boolean = false,
 
     var bsonObjectId: String = Get.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),

@@ -43,7 +43,7 @@ fun Card_Affiche_Infos(
     val repoProduit =vm.aCentral.getRepositorys.repoM1ProduitInfos
     val datas1 =repoProduit.datasValue
     val produit  =datas1.firstOrNull {
-        it.nom.contains("liya")
+        it.keyID.contains("liya")
     }
 
     Card(
@@ -61,7 +61,7 @@ fun Card_Affiche_Infos(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Change Infos Produit ${produit?.nom}",
+                text = "Change Infos Produit ${produit?.getDebugInfos()}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
