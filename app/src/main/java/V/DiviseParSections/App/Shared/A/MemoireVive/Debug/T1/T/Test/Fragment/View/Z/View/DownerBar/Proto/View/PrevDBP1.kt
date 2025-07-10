@@ -48,13 +48,18 @@ private fun PrevDBP2() {
 private fun DownerBarP2(
     viewModel: ViewModelMainFastSearchProduitPourVent = koinViewModel(),
 ) {
-    val produit = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull { it.nom.contains("liya") }
-    val m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-        it.parentBProduitInfosKeyID == produit?.keyID
-    }
-    val vent =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
-        it.parentM3CouleurProduitInfosKeyID==m3Couleur?.keyID
-    }
+    val produit =
+        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
+            it.nom.contains("liya")
+        }
+    val m3Couleur =
+        viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == produit?.keyID
+        }
+    val vent =
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
+            it.parentM3CouleurProduitInfosKeyID == m3Couleur?.keyID
+        }
 
     Column(
         modifier = Modifier.padding(vertical = 8.dp),
@@ -162,9 +167,11 @@ private fun Vent_Quantitys(
                 if (vent_quantityParBoit != null) {
                     Button(
                         onClick = {
-                            vm.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(vent.copy(
-                                etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme
-                            ))
+                            vm.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                                vent.copy(
+                                    etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme
+                                )
+                            )
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
@@ -211,9 +218,10 @@ private fun Vent_Par_Carton(
 
     val shouldGrayOut = hasPartialCarton && vent_quantity_Par_Carton > 0
 
-    val m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-        it.parentBProduitInfosKeyID == produit?.keyID
-    }
+    val m3Couleur =
+        viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == produit?.keyID
+        }
 
     Card(
         modifier = modifier,
@@ -311,10 +319,12 @@ private fun Vent_Par_Boit(
     vm: ViewModelMainFastSearchProduitPourVent,
     modifier: Modifier = Modifier,
 ) {
-    val vent_quantity_Par_Boit = (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 1)
-    val m3Couleur = vm.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-        it.parentBProduitInfosKeyID == produit?.keyID
-    }
+    val vent_quantity_Par_Boit =
+        (produit?.quantite_Boit_Par_Carton ?: 1) * (vent?.quantity_Par_Carton ?: 1)
+    val m3Couleur =
+        vm.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
+            it.parentBProduitInfosKeyID == produit?.keyID
+        }
 
     val nom = "Vent_Par_Boit"
 
@@ -396,12 +406,14 @@ private fun lanceVent(
     newQuant: Int
 ) {
     val setRepositorys = viewModel.aCentralFacade.repositorysMainSetter
-    val getterFocusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val getterFocusedVarsHandlerFacade =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val parentM1ProduitDebugInfos = produit?.getDebugInfos() ?: "null"
 
-    val findVent =viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
-        it.parentM3CouleurProduitInfosKeyID==m3Couleur?.keyID
-    }
+    val findVent =
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
+            it.parentM3CouleurProduitInfosKeyID == m3Couleur?.keyID
+        }
 
     val defaultM10Vent = m3Couleur?.let {
         getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
