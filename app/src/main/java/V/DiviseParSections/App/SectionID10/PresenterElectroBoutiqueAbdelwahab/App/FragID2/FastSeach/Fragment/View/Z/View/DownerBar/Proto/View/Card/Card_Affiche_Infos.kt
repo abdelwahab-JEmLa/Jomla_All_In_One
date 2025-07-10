@@ -43,7 +43,7 @@ fun Card_Affiche_Infos(
     val repoProduit =vm.aCentral.getRepositorys.repoM1ProduitInfos
     val datas1 =repoProduit.datasValue
     val produit  =datas1.firstOrNull {
-        it.keyID.contains("liya")
+        it.nom.contains("liya")
     }
 
     Card(
