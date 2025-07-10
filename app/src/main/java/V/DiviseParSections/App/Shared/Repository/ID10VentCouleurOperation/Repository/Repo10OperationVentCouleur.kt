@@ -195,7 +195,8 @@ class Repo10OperationVentCouleur(
         if (existingIndex < 0) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             return
@@ -217,7 +218,6 @@ class Repo10OperationVentCouleur(
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
     }
 }
-
 @Entity
 data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
@@ -248,7 +248,6 @@ data class M10OperationVentCouleur(
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
 
     //Mutable
-    var quantity_Par_Boit: Int = 0,
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
     var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant2,
@@ -257,13 +256,78 @@ data class M10OperationVentCouleur(
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
-    val quantity_Par_Carton: Int = 1,
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    var quantity_Par_Boit: Int = 0,
+    val quantity_Par_Carton: Int = 1,
+    var setIN_VentQuantity_Actuellement_Va_Remplire: SetIN_VentQuantity_Actuellement_Va_Remplire = SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit,
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ) {
+    enum class SetIN_VentQuantity_Actuellement_Va_Remplire {
+        quantity_Par_Boit,
+        quantity_Par_Carton;
+
+        fun toggle(): SetIN_VentQuantity_Actuellement_Va_Remplire {
+            return when (this) {
+                quantity_Par_Boit -> quantity_Par_Carton
+                quantity_Par_Carton -> quantity_Par_Boit
+            }
+        }
+
+        // Additional utility function to get display name
+        fun getDisplayName(): String {
+            return when (this) {
+                quantity_Par_Boit -> "Par Boîte"
+                quantity_Par_Carton -> "Par Carton"
+            }
+        }
+
+        // Additional utility function to get multiplier
+        fun getMultiplier(): Int {
+            return when (this) {
+                quantity_Par_Boit -> 1
+                quantity_Par_Carton -> 24 // Assuming 24 units per carton, adjust as needed
+            }
+        }
+    }
     fun getDebugInfos(): String {
         return buildString {
-            append("si besoin impl")
+            append("KeyID: $keyID\n")
+            append("Parent Product: $parentM1ProduitDebugInfos\n")
+            append("Quantity: $quantity_Par_Boit\n")
+            append("Unit Type: ${setIN_VentQuantity_Actuellement_Va_Remplire.getDisplayName()}\n")
+            append("State: $etateActuellementEst\n")
+            append("Delivery: $etateDelivery\n")
+            append("Type: $type")
+        }
+    }
+
+    fun toggleQuantityUnit(): M10OperationVentCouleur {
+        val newQuantityUnit = setIN_VentQuantity_Actuellement_Va_Remplire.toggle()
+
+        // Convert quantity when toggling units
+        val newQuantity = when (newQuantityUnit) {
+            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton -> {
+                // Convert from boîte to carton
+                if (quantity_Par_Boit > 0) quantity_Par_Boit / newQuantityUnit.getMultiplier() else 0
+            }
+            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit -> {
+                // Convert from carton to boîte
+                quantity_Par_Boit * setIN_VentQuantity_Actuellement_Va_Remplire.getMultiplier()
+            }
+        }
+
+        return this.copy(
+            setIN_VentQuantity_Actuellement_Va_Remplire = newQuantityUnit,
+            quantity_Par_Boit = newQuantity,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+    }
+
+    // Helper function to get effective quantity based on unit type
+    fun getEffectiveQuantity(): Int {
+        return when (setIN_VentQuantity_Actuellement_Va_Remplire) {
+            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit -> quantity_Par_Boit
+            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton -> quantity_Par_Boit * setIN_VentQuantity_Actuellement_Va_Remplire.getMultiplier()
         }
     }
 
@@ -274,7 +338,6 @@ data class M10OperationVentCouleur(
 
     enum class EtateActuellementEst {
         CreeSlote,
-
         ParentBonVentOuvert,
         ParentProduitOuvert,
         ChoisiQuantityDialogOuvert,
@@ -287,20 +350,15 @@ data class M10OperationVentCouleur(
 
     enum class Type { SiNonDispo, CommandeDeLui }
 
-
     companion object {
         val ref =
             Firebase.database.getReference("/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/Datas10OperationVentCouleur")
-
 
         fun isSame(
             ancien: M10OperationVentCouleur,
             newData: M10OperationVentCouleur
         ): Boolean {
-            val delimiterExistence =
-                ancien.keyID == newData.keyID
-
-            return delimiterExistence
+            return ancien.keyID == newData.keyID
         }
     }
 }

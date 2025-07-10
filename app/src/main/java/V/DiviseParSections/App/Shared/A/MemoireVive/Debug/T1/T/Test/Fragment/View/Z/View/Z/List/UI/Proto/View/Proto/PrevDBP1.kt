@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vi
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto.Card.Card_Affiche_Infos
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
@@ -35,31 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-
-@Preview
-@Composable
-private fun PrevDBP2(
-
-) {
-    /* val viewModel= ViewModelsProduit_T1 = koinViewModel()
-
-      DownerBarP2(produit = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
-          it.nom.contains("liya")
-      }, m3Couleur = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-          it.parentBProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
-              it.nom.contains("liya")
-          }?.keyID
-      }, vent = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue.find {
-          it.parentM3CouleurProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue.find {
-              it.parentBProduitInfosKeyID == viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue.firstOrNull {
-                  it.nom.contains("liya")
-              }?.keyID
-          }?.keyID
-      })       */
-}
 
 @SuppressLint("AutoboxingStateCreation")
 @Composable
@@ -99,6 +77,7 @@ private fun Vent_Quantitys(
 ) {
     Card(
         modifier = Modifier
+            .getSemanticsTag(vent,"vent")
             .fillMaxWidth()
             .wrapContentHeight() // Changed from default height
             .padding(horizontal = 8.dp, vertical = 4.dp), // Reduced padding
@@ -245,7 +224,10 @@ private fun Vent_Par_Carton(
     val shouldGrayOut = hasPartialCarton && vent_quantity_Par_Carton > 0
 
     Card(
-        modifier = modifier.height(80.dp), // Fixed height
+        modifier = modifier
+            .getSemanticsTag(vent?.quantity_Par_Carton,"vent")        //<--
+            //TODO(1): pk ca ne s afficeh pas memsi le tag affiche au ilgae
+            .height(80.dp), // Fixed height
         colors = CardDefaults.cardColors(
             containerColor = if (shouldGrayOut)
                 Color.Gray.copy(alpha = 0.3f)

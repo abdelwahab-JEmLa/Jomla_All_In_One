@@ -56,15 +56,15 @@ fun QuantityDisplay(
 ) {
     val getter = viewModel.getterFocusedVarsHandlerFacade
 
-    val onVentM8BonVentM10OperationVentFilteredList = viewModel.getterFocusedVarsHandlerFacade
-        .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+    val ventOperationsForProduct = remember(produit.keyID) {
+        viewModel.getterFocusedVarsHandlerFacade
+            .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+            .filter { ventOperation ->
+                ventOperation.parentM1ProduitInfosKeyId == produit.keyID
+            }
+    }
 
-    val operationsForThisProduct = onVentM8BonVentM10OperationVentFilteredList
-        .filter {
-            it.parentM1ProduitInfosKeyId == produit.keyID
-        }
-
-    val totalQuantity = operationsForThisProduct.sumOf { it.quantity_Par_Boit }
+    val totalQuantity = ventOperationsForProduct.sumOf { it.quantity_Par_Boit }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -119,6 +119,7 @@ fun QuantityDisplay(
                 )
             }
         }
+
         val datasValue =
             viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
         val itsChezGroApp =
@@ -177,8 +178,6 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-
-
                 Text(prixVent)
 
                 Icon(
@@ -192,7 +191,6 @@ fun QuantityDisplay(
         }
     }
 }
-
 
 @Composable
 fun VentProduitQuantityDialog_T1(
@@ -342,4 +340,3 @@ fun QuantityGridM1Produit_T1(
         }
     }
 }
-

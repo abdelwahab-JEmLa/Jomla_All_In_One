@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Proto.View.Proto.DownerBarP2
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.VentCouleurQuantityDialog_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -199,15 +198,6 @@ fun ViewVentCouleur_T1(
                 }
             }
         }
-
-        // DownerBarP2 component - now properly positioned outside the image card
-        // This ensures it has its own space and won't be constrained by the image card layout
-        DownerBarP2(
-            viewModel = viewModel,
-            produit = produit,
-            m3Couleur = m3Couleur,
-            vent = findVent
-        )
     }
 
     if (shouldShowDialog && findVent != null) {
