@@ -38,7 +38,7 @@ fun SearchDialog_F3(viewModelProduits: ViewModelInitApp) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    // Get unpositioned items
+    // RepositorysMainGetter unpositioned items
     val unpositionedItems = viewModelProduits.produitsMainDataBase.filter {
         it.isVisible && it.bonCommendDeCetteCota
             ?.mutableBasesStates

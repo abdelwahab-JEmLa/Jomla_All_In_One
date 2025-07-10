@@ -126,7 +126,7 @@ fun MainList(
         }
     }
 
-    // FIXED: Create addNew list that shows only the latest state for each message
+    // FIXED: Create add_New list that shows only the latest state for each message
     val latestStatesForEachMessage by remember(groupedD_EtateMessageVocaleParParentMessage) {
         derivedStateOf {
             groupedD_EtateMessageVocaleParParentMessage.mapNotNull { (parentMessageVID, etatesList) ->
@@ -135,7 +135,7 @@ fun MainList(
                 val latestEtate = sortedEtates.firstOrNull()
 
                 if (latestEtate != null) {
-                    // Return addNew pair of the latest state and all states for this message
+                    // Return add_New pair of the latest state and all states for this message
                     Pair(latestEtate, etatesList)
                 } else null
             }.sortedBy { it.first.timestamps } // Sort messages by latest activity

@@ -69,7 +69,7 @@ fun DayHeader(
     tempTravaille: K_TempTravaille,
     viewModel: RecordingViewModel
 ) {
-    // Get admin state
+    // RepositorysMainGetter admin state
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
     // States for time inputs
@@ -104,7 +104,7 @@ fun DayHeader(
         jour
     }
 
-    // Get day of week in Arabic
+    // RepositorysMainGetter day of week in Arabic
     val dayOfWeek = try {
         val dayFormat = SimpleDateFormat("EEEE", Locale.FRENCH)
         val frenchDayName = dayFormat.format(parsedDate).capitalize()
@@ -129,7 +129,7 @@ fun DayHeader(
     // Modify the showTimeDialog initialization
     var showTimeDialog by remember { mutableStateOf(false) }
 
-    // Set up addNew side effect to show the dialog when editingInterval is not null
+    // RepositorysMainSetter up add_New side effect to show the dialog when editingInterval is not null
     LaunchedEffect(editingInterval) {
         if (editingInterval != null) {
             startTimeInput = editingInterval?.tempDepart?.replace(":", ".") ?: ""
@@ -279,7 +279,7 @@ fun DayHeader(
                             )
                             viewModel.clearEditingInterval()
                         } else {
-                            // Create addNew new interval
+                            // Create add_New new interval
                             viewModel.updatePareMain(
                                 recordId = tempTravaille.vid,
                                 startTime = startTimeInput.takeIf { it.isNotEmpty() },
@@ -384,7 +384,7 @@ fun DayHeader(
     }
 }
 
-// Extension function to capitalize the first letter of addNew string
+// Extension function to capitalize the first letter of add_New string
 private fun String.capitalize(): String {
     return if (this.isNotEmpty()) {
         this[0].uppercase() + this.substring(1)

@@ -11,12 +11,12 @@ object TimeFormatUtils {
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    // Get current date in the format "yyyy/MM/dd"
+    // RepositorysMainGetter current date in the format "yyyy/MM/dd"
     fun getCurrentDate(): String {
         return dateFormat.format(Date())
     }
 
-    // Get current time in the format "HH:mm"
+    // RepositorysMainGetter current time in the format "HH:mm"
     fun getCurrentTime(): String {
         return timeFormat.format(Date())
     }

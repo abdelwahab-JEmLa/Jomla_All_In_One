@@ -1,11 +1,13 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -22,6 +24,7 @@ import kotlinx.coroutines.withContext
 
 @Stable
 class Repo10OperationVentCouleur(
+    val context: Context,
     private val ancienRepo: DataBaseFactoryDCouleurAchatOperation,
     val zAppComptRepositoryComposable: Repo9AppCompt,
 ) {
@@ -135,14 +138,14 @@ class Repo10OperationVentCouleur(
         quantity: Int
     ): M10OperationVentCouleur {
         return M10OperationVentCouleur(
-            parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
             parent_M14VentPeriod_KeyId = zCompt.current_OnVent_M14VentPeriode_KeyID,
             parentM8BonVentKeyId = zCompt.onVentM8BonVentKey,
             parentM1ProduitInfosKeyId = relatedCouleur.parentBProduitInfosKeyID,
-            parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentM1ProduitDebugInfos = relatedCouleur.parentId1ProduitInfosDebugName,
-            quantityAchete = quantity,
+            parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
+            parentM3CouleurProduitInfosKeyID = relatedCouleur.key,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
+            quantity_Par_Boit = quantity,
             type = M10OperationVentCouleur.Type.CommandeDeLui,
         )
     }
@@ -166,6 +169,52 @@ class Repo10OperationVentCouleur(
         private const val TAG = "ColorOperation"
         fun String?.findData(repo: Repo10OperationVentCouleur) =
             repo.datasValue.find { it.keyID == this }
+    }
+    //---------------------------------Forging Keys----------------------------------------------------------------------------------------------------------------------------------
+
+    fun add_New(data: M10OperationVentCouleur) {
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = _datas.value.toMutableList().apply {
+                    add(dataUpdate)
+                }
+            }
+        }
+
+        ancienRepo.addOrUpdatedAncienRepo(-1, data)
+    }
+
+    fun update_If_Exist(data: M10OperationVentCouleur) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
     }
 }
 
@@ -199,7 +248,7 @@ data class M10OperationVentCouleur(
     var etateActuellementEst: EtateActuellementEst = EtateActuellementEst.CreeSlote,
 
     //Mutable
-    var quantityAchete: Int = 0,
+    var quantity_Par_Boit: Int = 0,
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
     var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant2,
@@ -208,6 +257,7 @@ data class M10OperationVentCouleur(
     var parentClientName: String = "",
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
+    val quantity_Par_Carton: Int = 1,
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ) {

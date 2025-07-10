@@ -53,8 +53,8 @@ class MapClientsViewModel(
     val recordingHandler: IRecordingHandler,
     val appDatabase: AppDatabase
 ) : ViewModel() {
-    val getter = aCentralFacade.getRepositorys
-    val setter = aCentralFacade.setRepositorys
+    val getter = aCentralFacade.repositorysMainGetter
+    val setter = aCentralFacade.repositorysMainSetter
     // Repository references
     val groupeRepositorysProtoAvJuin3 =
         a_MasterRepositorysGrpProtoJuin3.e_GroupedDataBasesRepositoryProtoAvant3Juin

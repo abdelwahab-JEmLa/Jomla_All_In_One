@@ -340,7 +340,7 @@ class PanelsGroupeButtonHandler {
 
     @Composable
     fun AfficheDialogesHeadApps() {
-        // Get the current values from state
+        // RepositorysMainGetter the current values from state
         val isDialogVisible = _showDialogeControleFabs.value
 
         if (isDialogVisible) {
@@ -403,7 +403,7 @@ class PanelsGroupeButtonHandler {
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButtonDeClasse) {
         try {
-            // Get current list value
+            // RepositorysMainGetter current list value
             val currentList = _paneleGroupeButtonList.value
             val index = currentList.indexOfFirst { it.key == updatedState.key }
 
@@ -411,7 +411,7 @@ class PanelsGroupeButtonHandler {
                 return
             }
 
-            // Create addNew new list with the updated item
+            // Create add_New new list with the updated item
             val updatedList = currentList.toMutableList()
             updatedList[index] = updatedState
 

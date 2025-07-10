@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.Init
 
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import java.io.File
@@ -59,9 +59,9 @@ fun parseCsvLine(line: String): M8BonVent {
 
 
 private fun zAppcompt(values: List<String>) = M8BonVent(
-    parent_M2Client_KeyID = Set.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-    parent_M14VentPeriod_KeyId = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-    parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
+    parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
+    parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
+    parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
 )
 
 

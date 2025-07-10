@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.U
 
 /**
  * Calculates time difference from timestamp and returns formatted Arabic string
- * Example: "قبل أسبوع و 3 أيام" (addNew week and 3 days ago)
+ * Example: "قبل أسبوع و 3 أيام" (add_New week and 3 days ago)
  * Returns "غير محدد" if timestamp is null, 0, or undefined
  */
 fun getTimeDifferenceInArabic(timestamp: Long): String {
@@ -16,7 +16,7 @@ fun getTimeDifferenceInArabic(timestamp: Long): String {
 
     if (diffInMillis < 0) return "الآن" // Now (if timestamp is in future)
 
-    // Get calendar dates to compare actual days, not just 24-hour periods
+    // RepositorysMainGetter calendar dates to compare actual days, not just 24-hour periods
     val currentCalendar = java.util.Calendar.getInstance()
     val timestampCalendar = java.util.Calendar.getInstance().apply {
         timeInMillis = timestamp

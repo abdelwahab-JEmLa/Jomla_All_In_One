@@ -214,7 +214,7 @@ fun Infos(achat: M10OperationVentCouleur?, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Qty: ${achatData.quantityAchete}",
+                        text = "Qty: ${achatData.quantity_Par_Boit}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

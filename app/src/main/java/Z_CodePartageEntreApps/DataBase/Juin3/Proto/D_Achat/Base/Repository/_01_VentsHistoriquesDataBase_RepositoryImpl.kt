@@ -117,7 +117,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
 
             // If we found any transactions for this client in this period
             if (clientTransactions.isNotEmpty()) {
-                // Create addNew pair with the period and its matching transactions
+                // Create add_New pair with the period and its matching transactions
                 result.add(Pair(period, clientTransactions))
             }
         }

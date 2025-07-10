@@ -72,7 +72,7 @@ open class HeadViewModel(
     val database: AppDatabase,
     val a_MasterRepositorys: A_MasterRepositorysGrpProtoJuin3
 ) : ViewModel() {
-    val getter = aCentralFacade.getRepositorys
+    val getter = aCentralFacade.repositorysMainGetter
 
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
@@ -283,7 +283,7 @@ open class HeadViewModel(
         return try {
             val currentState = _uiState.value
 
-            val now = LocalDateTime.now() // Get the current date and time
+            val now = LocalDateTime.now() // RepositorysMainGetter the current date and time
             val formatter =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
             val formattedDate = now.format(formatter)
@@ -326,7 +326,7 @@ open class HeadViewModel(
 
     }
 
-    // Add addNew callback for navigation
+    // Add add_New callback for navigation
     private var _onNavigateToSellerProduct = { _: Long -> }
 
     fun setNavigationCallback(callback: (Long) -> Unit) {
@@ -340,7 +340,7 @@ open class HeadViewModel(
     ) {
         viewModelScope.launch {
             try {
-                // Get the current UI state once to avoid race conditions
+                // RepositorysMainGetter the current UI state once to avoid race conditions
                 val currentState = _uiState.value
 
                 // Find the maximum VID from existing sales
@@ -709,11 +709,11 @@ open class HeadViewModel(
                 setLoading(true)
 
 
-                // Get current timestamp for the backup
+                // RepositorysMainGetter current timestamp for the backup
                 val timestamp = System.currentTimeMillis()
                 val backupRef = firebaseDatabase.getReference("WarningDataBaseBakup/$timestamp")
 
-                // Create addNew backup object with all relevant data
+                // Create add_New backup object with all relevant data
                 val backupData = hashMapOf(
                     "articlesBasesStatTables" to _uiState.value.articlesBasesStatTables,
                     "appSettingsSaverModel" to _uiState.value.appSettingsSaverModel,
@@ -761,7 +761,7 @@ open class HeadViewModel(
         }
     }
 
-    // Optional: Add addNew separate function if you want to export articles only
+    // Optional: Add add_New separate function if you want to export articles only
     fun exportArticlesBasesStatsTableOnly() {
         viewModelScope.launch {
             try {
@@ -935,7 +935,7 @@ open class HeadViewModel(
                         loadingProgress = model.progress
                     )
 
-                    // Optional: Set loading to false when progress reaches 100%
+                    // Optional: RepositorysMainSetter loading to false when progress reaches 100%
                     if (model.progress >= 1.0f) {
                         setLoading(false)
                     }

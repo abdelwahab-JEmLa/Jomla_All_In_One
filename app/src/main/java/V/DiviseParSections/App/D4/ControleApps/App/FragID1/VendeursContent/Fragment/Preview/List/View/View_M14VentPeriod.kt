@@ -21,7 +21,7 @@ fun View_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
 ) {
     val focusedActiveValuesFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-    val currentActiveFocuced_M14VentPeriode = focusedActiveValuesFacade.getterFocusedValues.currentActiveFocuced_M14VentPeriode
+    val currentActiveFocuced_M14VentPeriode = focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
     val active = (currentActiveFocuced_M14VentPeriode?.keyID ?: "") == m14VentPeriode.keyID
 
     val backgroundColor = when {
@@ -35,7 +35,7 @@ fun View_M14VentPeriod(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                focusedActiveValuesFacade.set.setIN_CurrentApp_current_OnVent_M14VentPeriode_KeyID(m14VentPeriode)
+                focusedActiveValuesFacade.focusedValuesSetter.setIN_CurrentApp_current_OnVent_M14VentPeriode_KeyID(m14VentPeriode)
             }
             .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
             .padding(8.dp)

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("StaticFieldLeak")
 class WifiTransferDatas(
     private val context: Context,
-    val a_CentralCompoRepositoryProtoJuin9: Get,
+    val a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
     private val onPayloadReceiveRaw: (String) -> Unit = {},
 ) : ViewModel() {
     val appComptComposeRepositoryProtoJuin17 =
@@ -144,7 +144,7 @@ class WifiTransferDatas(
         }
     }
 
-    // Add addNew new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
+    // Add add_New new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
     private fun shouldAttemptReconnection(): Boolean {
         return !_connectionUiState.value.isConnected && retryCount < maxRetries && lastConnectionMode != ConnectionMode.NONE
     }

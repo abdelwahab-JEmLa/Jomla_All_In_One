@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -33,7 +33,7 @@ fun ouvrireNewAppComptOnVentBonVentEtAddLeHelper(
                 parent_M2Client_DebugInfos = client.nom,
                 parent_M9AppCompt_KeyID = zCompt.keyID,
                 etateActuellementEst = newEtate,
-                parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
+                parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel]
                     ?: ""
             )
         )

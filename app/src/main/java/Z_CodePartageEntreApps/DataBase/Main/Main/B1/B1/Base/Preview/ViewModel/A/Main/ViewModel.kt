@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.ViewModel.A.Main
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class B1CouleurOuGoutProduitDataBaseTestDatasViewModel(
-    val a_CentralDatasHandlerProtoJuin9: Get,
+    val a_CentralDatasHandlerProtoJuin9: RepositorysMainGetter,
 ) : ViewModel() {
     val b1CouleurOuGoutProduitDataBaseRepository =
         a_CentralDatasHandlerProtoJuin9.repo3CouleurProduitInfos

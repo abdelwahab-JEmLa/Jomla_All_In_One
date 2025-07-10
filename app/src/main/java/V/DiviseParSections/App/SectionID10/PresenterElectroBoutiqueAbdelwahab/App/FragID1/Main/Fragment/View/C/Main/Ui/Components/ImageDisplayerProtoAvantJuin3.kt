@@ -73,7 +73,7 @@ fun ImageDisplayerProtoAvantJuin3(
     viewModelInitApp: ViewModelInitApp,
     onClickToOpenWindow: () -> Unit = {},
 ) {
-    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.getRepositorys.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
+    val enablePerformAutoClickImageDisplayer = viewModel.aCentralFacade.repositorysMainGetter.parametresAppComptNonSaved.enablePerformAutoClickImageDisplayer
 
     val baseFileName =
         "${produit.id}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
@@ -143,8 +143,8 @@ fun ImageDisplayerProtoAvantJuin3(
         if (enablePerformAutoClickImageDisplayer && imageLoaded && !isLoading && !hasPerformedAutoClick) {
             hasPerformedAutoClick = true
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
-            focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
+            focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
+            focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
             onClickToOpenWindow()
         }
     }
@@ -152,7 +152,7 @@ fun ImageDisplayerProtoAvantJuin3(
     Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
             val focusedVarsHandlerFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-            val get = focusedVarsHandlerFacade.getterFocusedValues
+            val get = focusedVarsHandlerFacade.focusedValuesGetter
             val activeProduit =
                 get.focused_M1ProduitInfos_Pour_PrixDifineur
 
@@ -167,9 +167,9 @@ fun ImageDisplayerProtoAvantJuin3(
                     .getSemanticsTag(activeProduit?.getDebugInfos() ?: "null", "activeProduit", 1)
                     .clickable {
                         // Manual click handler - always available
-                        focusedVarsHandlerFacade.set.active_CurrentApp_activeDialogSearchM1Produit(true)
-                        focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit(produit.nom)
-                        focusedVarsHandlerFacade.set.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
+                        focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(produit.nom)
+                        focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
 
                         onClickToOpenWindow()
                     }

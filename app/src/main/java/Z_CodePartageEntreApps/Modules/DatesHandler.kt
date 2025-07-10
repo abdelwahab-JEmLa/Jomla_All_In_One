@@ -92,7 +92,7 @@ class DatesHandler {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val date = dateFormat.parse(dataStr) ?: return "غير معروف"
 
-            // Get the day of week
+            // RepositorysMainGetter the day of week
             val calendar = Calendar.getInstance()
             calendar.time = date
             val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
@@ -118,7 +118,7 @@ class DatesHandler {
         if (timestamp == null) return ""
 
         try {
-            // Get current date without time
+            // RepositorysMainGetter current date without time
             val currentCalendar = Calendar.getInstance()
             currentCalendar.set(Calendar.HOUR_OF_DAY, 0)
             currentCalendar.set(Calendar.MINUTE, 0)
@@ -133,7 +133,7 @@ class DatesHandler {
             }
             currentCalendar.add(Calendar.DAY_OF_MONTH, -daysToSubtract)
 
-            // Set given date calendar
+            // RepositorysMainSetter given date calendar
             val givenCalendar = Calendar.getInstance()
             givenCalendar.timeInMillis = timestamp
             givenCalendar.set(Calendar.HOUR_OF_DAY, 0)
@@ -195,14 +195,14 @@ class DatesHandler {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val givenDate = dateFormat.parse(dataStr) ?: return "هذا الأسبوع"
 
-            // Get current date without time
+            // RepositorysMainGetter current date without time
             val currentCalendar = Calendar.getInstance()
             currentCalendar.set(Calendar.HOUR_OF_DAY, 0)
             currentCalendar.set(Calendar.MINUTE, 0)
             currentCalendar.set(Calendar.SECOND, 0)
             currentCalendar.set(Calendar.MILLISECOND, 0)
 
-            // Set given date calendar
+            // RepositorysMainSetter given date calendar
             val givenCalendar = Calendar.getInstance()
             givenCalendar.time = givenDate
             givenCalendar.set(Calendar.HOUR_OF_DAY, 0)

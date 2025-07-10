@@ -77,7 +77,7 @@ class H_GroupesCategoriesRepositoryImpl : H_GroupesCategoriesRepository {
                         }
 
                         datas.sortBy { it.statuesMutable.classmentDonsParentList }
-                        // Set progress to complete
+                        // RepositorysMainSetter progress to complete
                         progressFlow.value = 1.0f
 
                         // Resume the coroutine with the result

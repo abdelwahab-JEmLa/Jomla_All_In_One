@@ -50,7 +50,7 @@ fun MapSecteursPolygenHandelButtons(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
-    // Get dialog states from ViewModel
+    // RepositorysMainGetter dialog states from ViewModel
     val showSecteurDialog by viewModel.showSecteurDialog
     val showAddSecteurDialog by viewModel.showAddSecteurDialog
 

@@ -71,7 +71,7 @@ fun updateNewModelDeLachat(
 
         // Format current date as yyyy-MM-dd
         val currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        // Get grossist information with fallback to default
+        // RepositorysMainGetter grossist information with fallback to default
         val lastIdGrossitChoisi = product.historiqueBonsCommend.lastOrNull()?.idGrossistChoisi
             ?: 1
 

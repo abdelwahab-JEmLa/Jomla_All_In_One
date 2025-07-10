@@ -23,7 +23,7 @@ fun DetailleSection(
     updateProduct: (ArticlesBasesStatsTable) -> Unit,
     viewModel: Sec9FragId1ViewId2ViewModel
 ) {
-    // Get individual product expansion state
+    // RepositorysMainGetter individual product expansion state
     val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
 
     // Final expansion state: global setting AND individual setting

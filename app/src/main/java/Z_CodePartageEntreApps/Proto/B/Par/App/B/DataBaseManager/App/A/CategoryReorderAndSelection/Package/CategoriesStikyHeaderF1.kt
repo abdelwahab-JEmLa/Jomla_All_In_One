@@ -114,13 +114,13 @@ fun CategoriesStikyHeaderF1(
 
                 // Added toggle button with background color
                 if (!itsAddNewCatItem) {
-                    // Get background color based on the toggle state
+                    // RepositorysMainGetter background color based on the toggle state
                     val toggleBackgroundColor = if (category.afficheSonHeader)
                         MaterialTheme.colorScheme.primary
                     else
                         MaterialTheme.colorScheme.surfaceVariant
 
-                    // Get icon color based on the toggle state
+                    // RepositorysMainGetter icon color based on the toggle state
                     val iconColor = if (category.afficheSonHeader)
                         MaterialTheme.colorScheme.onPrimary
                     else

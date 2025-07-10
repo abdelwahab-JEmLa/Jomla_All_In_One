@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.genereUnPushKeyFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.genereUnPushKeyFireBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import android.content.Context
 import android.os.Build
@@ -148,7 +148,7 @@ data class Z_AppCompt(
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
-    // Section Centralization Valeurs Pour Injection addNew TOu modules
+    // Section Centralization Valeurs Pour Injection add_New TOu modules
 
     // Section Paramaters App telephone
     val activeDialogSearchM1Produit: Boolean = false,

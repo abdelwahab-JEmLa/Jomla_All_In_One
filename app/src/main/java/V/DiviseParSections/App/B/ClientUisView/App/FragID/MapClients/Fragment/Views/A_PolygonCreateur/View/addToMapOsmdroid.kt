@@ -24,7 +24,7 @@ fun addToMapOsmdroid(
     Log.d("PolygonCreator", "Number of polygon points: ${allPolygonPoints.size}")
     Log.d("PolygonCreator", "Number of secteurPolygonInfo items: ${secteurPolygonInfoList.size}")
 
-    // For each secteurPolygonInfo, create and upsert addNew polygon to the map
+    // For each secteurPolygonInfo, create and upsert add_New polygon to the map
     secteurPolygonInfoList.forEach { secteurPolygonInfo ->
         Log.d("PolygonCreator", "Processing secteur info: ${secteurPolygonInfo.keyIDSecteurDeClients}")
 
@@ -43,7 +43,7 @@ fun addToMapOsmdroid(
 
         Log.d("PolygonCreator", "Found sector: ${secteur.nom}, openTransaction: ${secteur.ouvert}, closed: ${secteur.sonPolygonOnModeDessine}")
 
-        // Get polygon points for this sector
+        // RepositorysMainGetter polygon points for this sector
         val polygonPoints = allPolygonPoints.filter { it.parentSecteurDeClientsId == secteurId }
         Log.d("PolygonCreator", "Number of points for this sector: ${polygonPoints.size}")
 
@@ -89,7 +89,7 @@ fun addToMapOsmdroid(
         if (secteur.ouvert) {
             Log.d("PolygonCreator", "Processing openTransaction sector: ${secteur.nom}")
 
-            // Create addNew single polyline for all points
+            // Create add_New single polyline for all points
             if (geoPoints.size > 1) {
                 val polyline = Polyline(mapView)
                 polyline.setPoints(geoPoints)
@@ -120,10 +120,10 @@ fun addToMapOsmdroid(
         } else if (secteur.sonPolygonOnModeDessine) {
             Log.d("PolygonCreator", "Processing closed sector: ${secteur.nom}")
 
-            // Create addNew new polygon for closed sectors
+            // Create add_New new polygon for closed sectors
             val polygon = Polygon(mapView)
 
-            // Create addNew copy of the points
+            // Create add_New copy of the points
             val pointsList = ArrayList<GeoPoint>(geoPoints)
 
             // Close polygon by adding the first point at the end if needed
@@ -157,14 +157,14 @@ fun addToMapOsmdroid(
 
             Log.d("PolygonCreator", "Polygon fill color: ${Integer.toHexString(fillColor)}")
 
-            // Set fill color and ensure it's visible
+            // RepositorysMainSetter fill color and ensure it's visible
             polygon.fillPaint.color = fillColor
             polygon.fillPaint.style = Paint.Style.FILL
 
             // Clear any previous polygons for this sector first
             mapView.overlays.removeAll { it is Polygon && it.title == secteur.nom }
 
-            // Set title for identification
+            // RepositorysMainSetter title for identification
             polygon.title = secteur.nom
 
             // Add polygon at the beginning of overlays for proper z-order

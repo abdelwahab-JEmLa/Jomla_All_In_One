@@ -107,7 +107,7 @@ fun ImageDisplayerGlid_ProtoAvrile11(
         contentAlignment = Alignment.Center
     ) {
         if (!imageExists) {
-            // Since onImageNeExistePas is now addNew @Composable lambda, we can call it directly here
+            // Since onImageNeExistePas is now add_New @Composable lambda, we can call it directly here
             onImageNeExistePas()
         } else {
             GlideImage(

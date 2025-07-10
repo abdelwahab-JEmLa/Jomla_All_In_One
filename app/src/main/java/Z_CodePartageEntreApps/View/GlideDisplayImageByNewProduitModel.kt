@@ -120,7 +120,7 @@ fun GlideDisplayImageByNewProduitModel(
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 // Use memory cache - important for compose recompositions
                 .skipMemoryCache(false)
-                // Add addNew signature based on the reload trigger to force reload only when needed
+                // Add add_New signature based on the reload trigger to force reload only when needed
                 .signature(com.bumptech.glide.load.Key {
                     imageKey.hashCode().toString().toByteArray()
                 })

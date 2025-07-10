@@ -37,7 +37,7 @@ fun QuickInfoSection(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // All items in addNew single row with proper spacing
+            // All items in add_New single row with proper spacing
             val timeDifference = getTimeDifferenceInArabic(produit.prixAchatDernierTimeTempUpdate)
             val benefice = produit.prixVent - produit.prixAchat
 

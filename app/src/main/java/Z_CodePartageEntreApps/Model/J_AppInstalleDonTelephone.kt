@@ -119,7 +119,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                                 ?: phoneSnapshot.child("infosDeBase").child("widthScreen")
                                     .getValue(Int::class.java)
                                         ?: screenWidth
-                            // Check if the device is addNew tablet based on screen width
+                            // Check if the device is add_New tablet based on screen width
                             infosDeBase.itsTablette = infosDeBase.widthScreen > 400
                             etatesMutable.itsReciverTelephone =
                                 phoneSnapshot.child("etatesMutable/itsReciverTelephone")
@@ -147,7 +147,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                     id = newId
                     infosDeBase.nom = phoneName
                     infosDeBase.widthScreen = screenWidth
-                    // Check if the device is addNew tablet based on screen width
+                    // Check if the device is add_New tablet based on screen width
                     infosDeBase.itsTablette = screenWidth > 400
                     etatesMutable.itsReciverTelephone = false
                 }
@@ -180,7 +180,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                     for (dataSnapshot in snapshot.children) {
                         val category = dataSnapshot.getValue(J_AppInstalleDonTelephone::class.java)
                         category?.let { cat ->
-                            // Set tablet status based on screen width
+                            // RepositorysMainSetter tablet status based on screen width
                             cat.infosDeBase.itsTablette = cat.infosDeBase.widthScreen > 400
                             modelDatas.add(cat)
                         }
@@ -233,7 +233,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
                             val category =
                                 dataSnapshot.getValue(J_AppInstalleDonTelephone::class.java)
                             category?.let { cat ->
-                                // Set tablet status based on screen width
+                                // RepositorysMainSetter tablet status based on screen width
                                 cat.infosDeBase.itsTablette = cat.infosDeBase.widthScreen > 400
                                 categories.add(cat)
                                 modelDatas.add(cat)

@@ -9,7 +9,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.ifTrue
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -98,7 +98,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         activeFragment == Screen.FragmentProduitFastSearchDialog
 
     val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {
@@ -206,7 +206,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         val cLenceDepuitFragmentsSepecialicteDeVents =
             (cLenceDepuitFragmentsSepecialisteDeVents
                     || itsFragmentProduitFastSearchDialog
-                    && viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.focused_M1ProduitInfos_Pour_PrixDifineur != null)
+                    && viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focused_M1ProduitInfos_Pour_PrixDifineur != null)
         Box(
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
@@ -276,7 +276,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         viewModel = viewModel
                     )
                 }
-                val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
+                val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
                     ?.dialogAboveAll_OutlinedSearchListProduits
 
                 Row(
@@ -285,7 +285,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.set
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
                                 .active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(true)
                         },
                         modifier = Modifier.size(40.dp),
@@ -376,7 +376,7 @@ fun B1CataloguesAffiche(
         appComptComposeRepositoryProtoJuin17.currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId
     val buttonAFficheAuCata = catalogues.find { it.key == catalogueId }
 
-    // Get the catalogue name and color, with fallbacks
+    // RepositorysMainGetter the catalogue name and color, with fallbacks
     val catalogueName = buttonAFficheAuCata?.nom ?: "Catalogues"
     val buttonBackgroundColor = buttonAFficheAuCata?.couleur ?: Color(0xFF9C27B0)
 

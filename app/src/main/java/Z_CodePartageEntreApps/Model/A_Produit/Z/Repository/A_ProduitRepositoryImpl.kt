@@ -87,12 +87,12 @@ class A_ProduitRepositoryImpl(
                 importDeFireBaseAuRoom(repositoryScope)
             }
 
-            // Set up listener after data consistency checkADD_1_4_PeriodeVent
+            // RepositorysMainSetter up listener after data consistency checkADD_1_4_PeriodeVent
             withContext(Dispatchers.Main) {
                 setUpFlowDataListener()
             }
         } catch (e: Exception) {
-            // Set up listener even if consistency checkADD_1_4_PeriodeVent fails
+            // RepositorysMainSetter up listener even if consistency checkADD_1_4_PeriodeVent fails
             withContext(Dispatchers.Main) {
                 setUpFlowDataListener()
             }
@@ -148,7 +148,7 @@ class A_ProduitRepositoryImpl(
                     }
                 }
 
-                // Set flag before adding listener
+                // RepositorysMainSetter flag before adding listener
                 isFlowListenerActive.set(true)
                 try {
                     A_ProduitRepository.iDsDatasFlowUpdateRef.addValueEventListener(flowValueEventListener!!)
@@ -393,12 +393,12 @@ class A_ProduitRepositoryImpl(
             val reference = A_ProduitRepository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
-            // Prepare all updates in addNew single map
+            // Prepare all updates in add_New single map
             for (data in datas) {
                 batchUpdates[data.id.toString()] = data
             }
 
-            // Apply all updates in addNew single operation
+            // Apply all updates in add_New single operation
             reference.updateChildren(batchUpdates)
                 .addOnSuccessListener {
                     // Success handling can be added here if needed

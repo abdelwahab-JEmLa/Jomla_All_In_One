@@ -85,14 +85,14 @@ fun B_CouleurAfficheur(
     clickedCouleurIndex: Int,
     _0_0_HeadSQLRepositorys: GroupeRepositorysProtoAvJuin3 = koinInject(),
 ) {
-    val vent = viewModel.aCentral.getRepositorys.getVentForArticleAndColorInThisApp(
+    val vent = viewModel.aCentral.repositorysMainGetter.getVentForArticleAndColorInThisApp(
         article,
         colorIndex
     )
 
-    val currentQuantity = vent?.quantityAchete ?: 0
+    val currentQuantity = vent?.quantity_Par_Boit ?: 0
 
-    // Using addNew simpler approach for visibility tracking
+    // Using add_New simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository =
         koinInject<_1_1_CouleurAcheteOperation_Repository>()
@@ -105,7 +105,7 @@ fun B_CouleurAfficheur(
         key2 = couleurActuelleIndex,
         key3 = Unit // Adding this key to ensure it runs on initial composition
     ) {
-        // Only proceed if we have addNew valid parent ID - this is critical
+        // Only proceed if we have add_New valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
         }
@@ -121,7 +121,7 @@ fun B_CouleurAfficheur(
             "Checking: Index=$couleurActuelleIndex, ParentVID=$parentCompose_1_2_ProduitAcheteOperationVid"
         )
 
-        // Get all existing operations to avoid race conditions
+        // RepositorysMainGetter all existing operations to avoid race conditions
         val allExistingOperations =
             _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.toList()
 
@@ -131,11 +131,11 @@ fun B_CouleurAfficheur(
                     it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
         }
 
-        // Set the VID if it exists, otherwise create addNew new entry
+        // RepositorysMainSetter the VID if it exists, otherwise create add_New new entry
         compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
             existing_1_1_CouleurAcheteOperation.vid
         } else {
-            // Create addNew new unique VID using the synchronized generator
+            // Create add_New new unique VID using the synchronized generator
             val existingVids = allExistingOperations.map { it.vid }
             val newVid = VidGenerator.generateNewVid(existingVids)
 
@@ -170,7 +170,7 @@ fun B_CouleurAfficheur(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
-    // Get all color operations for the current product
+    // RepositorysMainGetter all color operations for the current product
     val _1_1_CouleurAcheteOperations = _0_0_HeadSQLRepositorys
         .repositorys_Model
         ._1_1_CouleurAcheteOperation_Repository
@@ -194,7 +194,7 @@ fun B_CouleurAfficheur(
 
         if (vent != null) {
             QuantityBadge(
-                quantity = vent.quantityAchete.toString(),
+                quantity = vent.quantity_Par_Boit.toString(),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
@@ -321,11 +321,11 @@ fun B_CouleurAfficheur(
     article: ArticlesBasesStatsTable,
     colorIndex: Int
 ) {
-    val couleur = viewModel.aCentral.getRepositorys.relatedCouleurKeyParAncienMethod(
+    val couleur = viewModel.aCentral.repositorysMainGetter.relatedCouleurKeyParAncienMethod(
         article,
         colorIndex
     )
-    val vent = viewModel.aCentral.getRepositorys.getVentForArticleAndColorInThisApp(
+    val vent = viewModel.aCentral.repositorysMainGetter.getVentForArticleAndColorInThisApp(
         article,
         colorIndex
     )
@@ -336,7 +336,7 @@ fun B_CouleurAfficheur(
                 "${
                     key.takeLast(4).uppercase()
                 } $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantityAchete}"
+                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity_Par_Boit}"
             }
 
             Box(

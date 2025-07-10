@@ -140,7 +140,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
         onAddSuccess: (Long) -> Unit
     ) {
         try {
-            // Create addNew copy of the data to work with
+            // Create add_New copy of the data to work with
             val dataToAdd = data.copy()
 
             repositoryScope.launch(Dispatchers.IO) {

@@ -45,7 +45,7 @@ class _012_ComptsVendeurs : RealmObject {
             val vendeurKey = snapshot.key ?: return null
 
             try {
-                // Extract ObjectId if available, or create addNew new one
+                // Extract ObjectId if available, or create add_New new one
                 val objectIdStr = snapshot.child(SchemaFields.BSON_OBJECT_ID).getValue(String::class.java)
                 val objectId = if (!objectIdStr.isNullOrEmpty()) {
                     try {

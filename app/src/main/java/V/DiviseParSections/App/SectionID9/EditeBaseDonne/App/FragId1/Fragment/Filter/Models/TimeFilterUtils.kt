@@ -8,7 +8,7 @@ import java.util.Calendar
 object TimeFilterUtils {
 
     /**
-     * Checks if addNew timestamp is older than the specified number of days
+     * Checks if add_New timestamp is older than the specified number of days
      * Uses calendar-based comparison to match getTimeDifferenceInArabic behavior
      * @param timestamp The timestamp to check (in milliseconds)
      * @param days Number of days to compare against
@@ -17,7 +17,7 @@ object TimeFilterUtils {
     fun isOlderThanDays(timestamp: Long, days: Int): Boolean {
         if (timestamp <= 0 || days < 0) return false
 
-        // Get calendar dates to compare actual days, not just 24-hour periods
+        // RepositorysMainGetter calendar dates to compare actual days, not just 24-hour periods
         val currentCalendar = Calendar.getInstance()
         val timestampCalendar = Calendar.getInstance().apply {
             timeInMillis = timestamp
@@ -42,7 +42,7 @@ object TimeFilterUtils {
 
 
     /**
-     * Safely parses addNew string to integer for days filter
+     * Safely parses add_New string to integer for days filter
      * @param daysString The string to parse
      * @return The parsed integer or 0 if parsing fails
      */

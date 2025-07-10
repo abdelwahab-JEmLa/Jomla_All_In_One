@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -11,13 +11,13 @@ fun upsertVentCouleurOperation(
     colorIndex: Int,
     quantity: Int,
     zAppComptRepositoryComposable: Repo9AppCompt,
-    getter: Get,
+    getter: RepositorysMainGetter,
 ) {
     val relatedCouleur = getter.getRelatedCouleur(produit, colorIndex)
     val zCompt = zAppComptRepositoryComposable.currentAppCompt
 
     fCouleurVentOperation?.let { existingOperation ->
-        val updatedOperation = existingOperation.copy(quantityAchete = quantity)
+        val updatedOperation = existingOperation.copy(quantity_Par_Boit = quantity)
         getter.repo10OperationVentCouleur.addOrUpdateData(updatedOperation)
     } ?: zCompt?.let {
         getter.repo10OperationVentCouleur.acheterUneCouleur(

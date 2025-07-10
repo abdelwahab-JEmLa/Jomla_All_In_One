@@ -30,7 +30,7 @@ fun AnimatedIconLottieJsonFile(
 ) {
     val isPlaying by remember { mutableStateOf(true) }
 
-    // Get the resource ID either from LottieJsonGetterR_Raw_Icons or direct Int reference
+    // RepositorysMainGetter the resource ID either from LottieJsonGetterR_Raw_Icons or direct Int reference
     val lottieResourceId = ressourceXml?.resourceId ?: resourceId ?: throw IllegalArgumentException("Either ressourceXml or resourceId must be provided")
 
     val composition by rememberLottieComposition(

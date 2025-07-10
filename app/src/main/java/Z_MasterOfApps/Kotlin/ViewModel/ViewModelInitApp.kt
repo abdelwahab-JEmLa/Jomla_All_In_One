@@ -44,7 +44,7 @@ class ViewModelInitApp(
     val _1_4_PeriodeVent_Repository: DataBaseFactoryMVentPeriode,
     val repo_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
-    val getter = aCentral.getRepositorys
+    val getter = aCentral.repositorysMainGetter
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 

@@ -22,7 +22,7 @@ data class E1SecteurDeClients(
 LaunchedEffect(mapView, sectorMapReloadTrigger) {
 // Execute all database operations on Dispatchers.IO
 withContext(Dispatchers.IO) {
-// Get sector and polygon DAOs
+// RepositorysMainGetter sector and polygon DAOs
 val polygonDao = viewModel.appDatabase.polygonGeoLimiteDaoDao()
 
 // Check if there are existing sectors
@@ -34,11 +34,11 @@ if (uiState.e1SecteurDeClientsList.isEmpty()) {
   )
 }
 
-// Get all sectors and polygon points
+// RepositorysMainGetter all sectors and polygon points
 val allSecteurs = uiState.e1SecteurDeClientsList
 val allPolygonPoints = polygonDao.getAll()
 
-// Get structured information about sectors and their polygons
+// RepositorysMainGetter structured information about sectors and their polygons
 
 val secteurPolygonInfoList = getNoSqlDisplayer(
   uiState = uiState,

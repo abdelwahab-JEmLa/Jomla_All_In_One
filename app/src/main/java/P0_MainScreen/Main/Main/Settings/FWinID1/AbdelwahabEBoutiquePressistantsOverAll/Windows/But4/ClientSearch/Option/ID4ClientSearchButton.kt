@@ -62,7 +62,7 @@ fun ID4ClientSearchButton(
     onClientSelectedToToast: (M2Client) -> Unit = {},
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
-    val getter = uiState.focusedVarsHandlerFacade.getterFocusedValues
+    val getter = uiState.focusedVarsHandlerFacade.focusedValuesGetter
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -143,7 +143,7 @@ fun ID4ClientSearchButton(
                         onVentId8BonVent?.let { bon ->
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
                             val totalProducts =
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                                     .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
                                     .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
                                     .groupBy { it.parentM1ProduitInfosKeyId }.size
@@ -286,7 +286,7 @@ private fun CreateNewClientIcon(
     IconButton(
         onClick = {
             viewModel.setter.addNewM2ClientInfos(newClient)
-            viewModel.aCentralFacade.focusedActiveValuesFacade.set.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
+            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.upsert_M8BonVent_Et_Focuce_Le_Au_M9CurrCompt(
                 addedDefaultOnVentID8BonVentEtAdd,
                 updatedAppCompt
             )

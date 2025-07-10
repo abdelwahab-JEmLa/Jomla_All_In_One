@@ -29,7 +29,7 @@ class FragmentNavigationHandler {
         _currentFragment.value = screen
     }
 
-    // Set startup screen as current
+    // RepositorysMainSetter startup screen as current
     fun setStartupScreen(startupScreen: Screen) {
         _currentFragment.value = startupScreen
     }

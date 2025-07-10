@@ -56,7 +56,7 @@ fun View_MainItem(
     val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
     val etateActuellementEst = bonVent.etateActuellementEst
-    val activeM8BonVentId = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.onVentM8BonVent?.vid
+    val activeM8BonVentId = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent?.vid
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()

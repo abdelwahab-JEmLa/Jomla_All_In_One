@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
@@ -24,13 +24,13 @@ data class SecID5FragID2UiState(
 class E0AfficheHistoriqueTransactionsViewModel(
     val aCentral: ACentralFacade,
 
-    val a_CentralDatasHandlerProtoJuin9: Get,
+    val a_CentralDatasHandlerProtoJuin9: RepositorysMainGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
-    val getter = aCentral.getRepositorys
-    val setter =aCentral.setRepositorys
+    val getter = aCentral.repositorysMainGetter
+    val setter =aCentral.repositorysMainSetter
     val audioRecorderAndPlayHandler =aCentral.modulesCentral.audioRecorderAndPlayHandler
 
     val gBonVentRepository = getter.repo8BonVent

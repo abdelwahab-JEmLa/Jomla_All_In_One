@@ -38,21 +38,21 @@ class PrintReceiptHandler {
         val printFunction = {
             val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
-            // Get all vents that are not removed from cart
+            // RepositorysMainGetter all vents that are not removed from cart
             val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
                 vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
-                        vent.quantityAchete > 0
+                        vent.quantity_Par_Boit > 0
             }
 
             val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
 
             activeVents.forEach { vent ->
-                // Get product details
+                // RepositorysMainGetter product details
                 val product = bProduitInfosRepository.datasValue.find {
                     it.keyID == vent.parentM1ProduitInfosKeyId
                 }
 
-                // Get color details
+                // RepositorysMainGetter color details
                 val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
                     it.key == vent.parentM3CouleurProduitInfosKeyID
                 }
@@ -70,7 +70,7 @@ class PrintReceiptHandler {
 
                 val article = ArticleImpression(
                     nomArticle = articleName,
-                    quantite = vent.quantityAchete,
+                    quantite = vent.quantity_Par_Boit,
                     prixUnitaire = vent.provisoireMonPrix,
                     couleur = colorName
                 )

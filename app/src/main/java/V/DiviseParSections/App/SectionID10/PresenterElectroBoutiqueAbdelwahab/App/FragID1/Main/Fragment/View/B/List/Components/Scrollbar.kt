@@ -43,7 +43,7 @@ fun Scrollbar(
     var dragOffset by remember { mutableStateOf(0f) }
     var expandJob by remember { mutableStateOf<Job?>(null) }
 
-    // Get layout info
+    // RepositorysMainGetter layout info
     val layoutInfo = state.layoutInfo
     val totalItems = layoutInfo.totalItemsCount
     val firstVisibleItem = state.firstVisibleItemIndex

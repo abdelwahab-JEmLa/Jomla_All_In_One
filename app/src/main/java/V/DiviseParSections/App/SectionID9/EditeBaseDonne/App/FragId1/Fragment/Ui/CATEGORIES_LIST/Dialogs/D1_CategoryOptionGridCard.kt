@@ -67,7 +67,7 @@ fun CategoryOptionGridCard(
         }
     }
 
-    // Get the first product to display its image
+    // RepositorysMainGetter the first product to display its image
     val displayProduct = productsForCategory.firstOrNull()
     val displayProduct2 = productsForCategory.lastOrNull()
 

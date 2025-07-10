@@ -85,7 +85,7 @@ private fun AfficheKeyCouleurAvecVent(
         ?.let {
             val text = with(couleur) {
                 "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantityAchete}"
+                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity_Par_Boit}"
             }
 
             Box(

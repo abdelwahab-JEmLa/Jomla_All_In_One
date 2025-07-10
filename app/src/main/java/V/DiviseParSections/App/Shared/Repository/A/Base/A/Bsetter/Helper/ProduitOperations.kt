@@ -1,5 +1,5 @@
 
-// File: Set/Helper/ProduitOperations.kt
+// File: RepositorysMainSetter/Helper/ProduitOperations.kt
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable

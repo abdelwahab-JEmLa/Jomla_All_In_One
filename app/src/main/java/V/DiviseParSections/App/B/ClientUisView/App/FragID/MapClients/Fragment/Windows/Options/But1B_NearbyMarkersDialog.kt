@@ -14,7 +14,7 @@ fun But1B_NearbyMarkersDialog(
     mapView: MapView,
 ) {
     /*
-    // Get reference location with proper fallback handling
+    // RepositorysMainGetter reference location with proper fallback handling
     val referenceLocation = remember(currentLocation, mapView.mapCenter) {
         currentLocation ?: Location("map_center").apply {
             val center = mapView.mapCenter

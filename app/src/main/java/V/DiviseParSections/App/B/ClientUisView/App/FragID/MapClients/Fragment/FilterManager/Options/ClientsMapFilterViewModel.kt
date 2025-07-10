@@ -39,24 +39,24 @@ open class ClientsMapFilterViewModel(
         val calendar = Calendar.getInstance()
         val today = calendar.timeInMillis
 
-        // Create addNew list to store unique days with transactions
+        // Create add_New list to store unique days with transactions
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         allListrepo_0_0_HeadSQLRepositorys?.forEach { transaction ->
             if (transaction.etateActuellementEst == M8BonVent.EtateActuellementEst.COMMANDE_LIVRAI) {
-                // Get transaction date
+                // RepositorysMainGetter transaction date
                 val transactionDate = Date(transaction.creationTimestamps)
                 val cal = Calendar.getInstance()
                 cal.time = transactionDate
 
-                // Get start and end of day
+                // RepositorysMainGetter start and end of day
                 val startDay = getStartOfDay(transaction.creationTimestamps)
                 val endDay = getEndOfDay(transaction.creationTimestamps)
 
                 // Calculate how many weeks ago this was
                 val weeksDifference = getWeeksDifference(today, transaction.creationTimestamps)
 
-                // Get day name in Arabic
+                // RepositorysMainGetter day name in Arabic
                 val dayFormat = SimpleDateFormat("EEEE", Locale("ar"))
                 val dayName = dayFormat.format(transactionDate)
 
@@ -68,7 +68,7 @@ open class ClientsMapFilterViewModel(
 
                 if (existingDay == null) {
                     // Add new day if not exists
-                    uniqueDays.addNew(
+                    uniqueDays.add_New(
                         StrNomJourEtSonSemainToStartJourTimeTemp(
                             vid = transaction.vid,
                             nomJourArabe = dayName,
@@ -112,11 +112,11 @@ open class ClientsMapFilterViewModel(
                 } ?: emptyList()
 
                 jour.cesCommercialTransactions = dayTransactions
-                joursList.addNew(jour)
+                joursList.add_New(jour)
             }
 
             semain.cesJours = joursList
-            semainsList.addNew(semain)
+            semainsList.add_New(semain)
         }
 
         datesHistoriqueTransactions.cesSemains = semainsList

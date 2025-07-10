@@ -35,7 +35,7 @@ class _2_1_ProduitsDataBaseRepositoryLogOperationsExtension(
         try {
             val firebaseRef = _2_1_ProduitsDataBase_Repository.sonDataBaseRef
             
-            // Get complete reference path
+            // RepositorysMainGetter complete reference path
             val refPath = firebaseRef.toString()
             
             Log.d(TAG, "=== Firebase Reference Debug Info ===")

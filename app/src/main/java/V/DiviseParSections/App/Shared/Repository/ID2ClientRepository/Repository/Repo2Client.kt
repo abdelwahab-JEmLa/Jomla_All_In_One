@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.withOutFireBaseInvalidCharacters
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter.Companion.getListDesParentKeys
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -160,7 +160,7 @@ data class M2Client(
     var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI,
     //Etates Mutable
 
-    // Section Centralization Valeurs Pour Injection addNew TOu modules
+    // Section Centralization Valeurs Pour Injection add_New TOu modules
     var tagCeBonEstOuvertPourComptsIds: String = "",
 
     // Section keyFireBase et dernierFireBaseUpdateTimestamps

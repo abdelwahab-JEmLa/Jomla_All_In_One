@@ -15,7 +15,7 @@ suspend fun startImplementationViewModel(nombreEntries: Int = 100, onInitProgres
         GrossistInfosModel(3, "Grossist Gamma")
     )
 
-    // Get and process products
+    // RepositorysMainGetter and process products
     val products = GetAncienDataBasesMain().produitsDatabase
         .filter { it.idArticle != 0L }
         .shuffled()

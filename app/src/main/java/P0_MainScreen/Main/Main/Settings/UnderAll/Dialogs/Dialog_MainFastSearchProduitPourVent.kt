@@ -1,8 +1,8 @@
 package P0_MainScreen.Main.Main.Settings.UnderAll.Dialogs
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.ViewModel.ViewModelMainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ModernToastMessageLo
 import androidx.compose.animation.AnimatedVisibility
@@ -84,10 +84,10 @@ fun Dialog_MainFastSearchProduitPourVent(
 
                 FloatingActionButton(
                     onClick = {
-                        focusedVarsHandlerFacade.set.clear_CurrentApp_activeDialogSearchM1Produit()
-                        focusedVarsHandlerFacade.set.set_Current_startTextSearchM1Produit("")
-                        focusedVarsHandlerFacade.set.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
-                        focusedVarsHandlerFacade.set.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
+                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit("")
+                        focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
+                        focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
                     },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import android.util.Log
 
-// Get all Firebase data
+// RepositorysMainGetter all Firebase data
 fun C_CategorieProduitInfosRepository.getFirebaseData(onSuccess: (List<CategoriesTabelle>) -> Unit) {
     updateProgress(0.1f)
     repoRef.get()

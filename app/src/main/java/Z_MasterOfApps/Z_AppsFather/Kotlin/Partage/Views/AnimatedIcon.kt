@@ -36,7 +36,7 @@ fun AnimatedIcon(
     val progress by animateLottieCompositionAsState(
         composition = composition,
         isPlaying = isPlaying,
-        // Set to infinite iterations
+        // RepositorysMainSetter to infinite iterations
         iterations = LottieConstants.IterateForever,
         speed = 1.5f
     )

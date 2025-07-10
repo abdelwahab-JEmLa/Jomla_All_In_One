@@ -66,10 +66,10 @@ class P_BonsCommandGrossistRepositoryImpl(
         val dataCalcule = OperationHandler_Model_P_BonsCommandGrossist
             .groupedProduitsParGrossist(soldArticlesTabelleRepository.modelDatas)
 
-        // Get total product IDs from calculated data
+        // RepositorysMainGetter total product IDs from calculated data
         val calculatedProductIdsCount = dataCalcule.sumOf { it.produitCommendeIDs.size }
 
-        // Get total product IDs from current modelDatas
+        // RepositorysMainGetter total product IDs from current modelDatas
         val currentProductIdsCount = modelDatas.sumOf { it.produitCommendeIDs.size }
 
         // Check if we need to upsertLenceCommandeRepoGroupedProtoAvantJuin3 based on product ID count differences

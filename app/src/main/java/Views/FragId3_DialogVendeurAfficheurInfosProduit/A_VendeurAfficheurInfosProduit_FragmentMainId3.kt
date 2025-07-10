@@ -185,7 +185,7 @@ fun MainUi(
 
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.onVentM8BonVent
+    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent
 
     if (onVentBonVent == null) {
         Box(
@@ -206,7 +206,7 @@ fun MainUi(
     val isLoading = (progressValue ?: 0f) < 1.0f
 
     // Safe handling for client ID
-    val clientOuSonMarqueMapEstOuvert = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.activeOnVentM2ClientInfos
+    val clientOuSonMarqueMapEstOuvert = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
     if (clientOuSonMarqueMapEstOuvert == null) {
         // Handle case where there's no client
         Box(

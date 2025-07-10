@@ -7,7 +7,7 @@ import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
@@ -71,7 +71,7 @@ fun AppNavHost(
     val startUpScreen = when {
         itsDevMode -> viewModel.getter.parametresAppComptNonSaved.devStartUpScree
 
-        viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.currentM9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
         else -> Screen.FacadePresentoireProduits
@@ -81,7 +81,7 @@ fun AppNavHost(
         fragmentNavigationHandler.updateCurrentFragmentByRoute(currentRoute)
     }
 
-    // Set startup screen when component initializes
+    // RepositorysMainSetter startup screen when component initializes
     LaunchedEffect(startUpScreen) {
         fragmentNavigationHandler.setStartupScreen(startUpScreen)
     }
@@ -290,7 +290,7 @@ fun AppNavHost(
                                 currentState.copy(soldArticlesModel = emptyList())
                             }
 
-                            // Clear the database in addNew coroutine
+                            // Clear the database in add_New coroutine
                             viewModel.database.soldArticlesModelDao().deleteAll()
 
                             // Clear Firebase references
@@ -363,7 +363,7 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_ClientsLocationGps.route,
     ) { backStackEntry ->
-        // Create addNew more reliable key that combines time and reload trigger
+        // Create add_New more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
             mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
@@ -407,7 +407,7 @@ private fun navigateToMainScreen(
 
 
 /**
- * Helper function to create addNew consistent screen key for proper recomposition
+ * Helper function to create add_New consistent screen key for proper recomposition
  */
 @Composable
 private fun rememberScreenKey(backStackEntry: NavBackStackEntry): Any {

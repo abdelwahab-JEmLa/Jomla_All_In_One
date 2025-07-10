@@ -104,13 +104,13 @@ class I_CategorieProduitsRepositoryImpl(
                 Log.d(TAG, "Data consistency verified between Room and Firebase")
             }
 
-            // Set up listener after data consistency checkADD_1_4_PeriodeVent
+            // RepositorysMainSetter up listener after data consistency checkADD_1_4_PeriodeVent
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error checking data consistency: ${e.message}", e)
-            // Set up listener even if consistency checkADD_1_4_PeriodeVent fails
+            // RepositorysMainSetter up listener even if consistency checkADD_1_4_PeriodeVent fails
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
                 Log.d(TAG, "Setting up data change listener despite consistency checkADD_1_4_PeriodeVent failure")
@@ -173,12 +173,12 @@ class I_CategorieProduitsRepositoryImpl(
                     }
                 }
 
-                // Set flag before adding listener
+                // RepositorysMainSetter flag before adding listener
                 isListenerActive.set(true)
                 I_CategorieProduitsRepository.caReference.addValueEventListener(valueEventListener!!)
                 Log.d(TAG, "Firebase data change listener successfully registered")
             } else {
-                Log.w(TAG, "Data change listener already active, not creating addNew new one")
+                Log.w(TAG, "Data change listener already active, not creating add_New new one")
             }
         }
     }

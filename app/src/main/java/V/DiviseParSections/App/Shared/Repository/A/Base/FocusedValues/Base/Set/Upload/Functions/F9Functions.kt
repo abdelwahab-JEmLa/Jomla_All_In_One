@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.Functions
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -9,7 +9,7 @@ import android.util.Log
 
 fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     produitKey: String,
-    getterFocusedVars: GetterFocusedValues,
+    getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt
@@ -24,7 +24,7 @@ fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
 }
 
 fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
-    getterFocusedVars: GetterFocusedValues,
+    getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt ?: return
@@ -38,7 +38,7 @@ fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
 }
 
 fun updateCurrentAppComptDialogProduit(
-    getterFocusedVars: GetterFocusedValues,
+    getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt,
     produit: ArticlesBasesStatsTable? = null
 ) {
@@ -58,7 +58,7 @@ fun updateCurrentAppComptDialogProduit(
 
 fun focuceOnVentM3CouleurProduitInfos(
     m10OperationVentCouleur: M10OperationVentCouleur? = null,
-    getterFocusedVars: GetterFocusedValues,
+    getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
     val currentAppCompt = getterFocusedVars.currentM9AppCompt

@@ -73,7 +73,7 @@ object FirebaseUtilsSoldArticlesTabelle {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = SyncDataUtils.syncData(dataSnapshot = dataSnapshot) as SoldArticlesTabelle
 
-                        // Check that the data has addNew valid ID
+                        // Check that the data has add_New valid ID
                         if (data.vid > 0) {
                             repository.modelDatas.add(data)
                         }

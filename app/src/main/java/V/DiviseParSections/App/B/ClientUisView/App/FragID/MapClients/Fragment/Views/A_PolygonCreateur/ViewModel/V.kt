@@ -141,11 +141,11 @@ class MapClientsViewModelss(
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
         viewModelScope.launch {
-            // Create addNew new list with the updated panel
+            // Create add_New new list with the updated panel
             val currentList = _uiState.value.paneleGroupeButtonList
             val index = currentList.indexOfFirst { it.key == updatedState.key }
 
-            // Create addNew new list with the updated item
+            // Create add_New new list with the updated item
             val updatedList = currentList.toMutableList()
             updatedList[index] = updatedState
 
@@ -211,7 +211,7 @@ class MapClientsViewModelss(
                 if (sectorId == null) {
                     Log.e(
                         "PolygonCreator",
-                        "No active sector selected. Please select or create addNew sector first."
+                        "No active sector selected. Please select or create add_New sector first."
                     )
                     return@launch
                 }
@@ -230,7 +230,7 @@ class MapClientsViewModelss(
                     "Adding point to sector ${sector.nom} (ID: $sectorId): lat=$latMicroDegrees, lon=$lonMicroDegrees"
                 )
 
-                // Create addNew new point for the polygon
+                // Create add_New new point for the polygon
                 val newPoint = PolygonGeoLimite(
                     parentSecteurDeClientsId = sectorId,
                     parentE1SecteurDeClientsKey = "E1SecteurDeClients.$sectorId(${sector.nom})",

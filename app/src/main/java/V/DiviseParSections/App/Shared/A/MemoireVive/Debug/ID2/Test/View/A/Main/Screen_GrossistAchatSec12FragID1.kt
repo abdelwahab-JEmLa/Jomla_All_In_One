@@ -202,7 +202,7 @@ fun LazyColumn_Client(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel
 ) {
-    val clients=viewModel.aCentralFacade.getRepositorys.repo2Client.datasValue
+    val clients=viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -222,7 +222,7 @@ fun Item_Client(
     client: M2Client,
     viewModel: GrossistAchatSec12FragID1_ViewModel
 ) {
-    val repo11AchatOperation =viewModel.aCentralFacade.getRepositorys.repo11AchatOperation
+    val repo11AchatOperation =viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
   /*  val isSelected = isSelected     //<--
     //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)

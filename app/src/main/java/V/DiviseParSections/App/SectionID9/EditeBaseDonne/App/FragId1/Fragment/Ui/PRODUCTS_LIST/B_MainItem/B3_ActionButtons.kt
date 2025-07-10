@@ -33,7 +33,7 @@ fun ActionButtons(
     viewModel: Sec9FragId1ViewId2ViewModel,
     uiState: Sec9FragId1ViewId2ViewModel.UiState,
 ) {
-    // Get individual product expansion state
+    // RepositorysMainGetter individual product expansion state
     val isIndividuallyExpanded = viewModel.isProductDetailsExpanded(produit.bsonObjectId)
 
     // Final expansion state: global setting AND individual setting

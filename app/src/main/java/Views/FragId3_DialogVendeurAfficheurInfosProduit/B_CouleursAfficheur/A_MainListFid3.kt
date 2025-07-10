@@ -53,7 +53,7 @@ fun A_MainListFragId3(
     // Use LazyListState for list control and scrolling
     val listState = rememberLazyListState()
 
-    // Get screen height to calculate appropriate LazyColumn height
+    // RepositorysMainGetter screen height to calculate appropriate LazyColumn height
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
@@ -63,10 +63,10 @@ fun A_MainListFragId3(
     }
 
     LaunchedEffect(Unit) {
-        // Get product image info and convert to ColorsArticlesTabelle
+        // RepositorysMainGetter product image info and convert to ColorsArticlesTabelle
         val productImageInfos = calculeCouleurHandler.getProduitInfoImageParIndex(stats)
 
-        // Create addNew list of exactly 4 ColorsArticlesTabelle objects
+        // Create add_New list of exactly 4 ColorsArticlesTabelle objects
         colorsListToDisplay = (1..4).mapNotNull { couleurId ->
             val imageInfo = productImageInfos.find { it.couleurId == couleurId }
 
@@ -79,9 +79,9 @@ fun A_MainListFragId3(
     }
 
     LaunchedEffect(clickedCouleurIndex, colorsListToDisplay) {
-        // Wait addNew short delay to ensure colors list is populated and layout is ready
+        // Wait add_New short delay to ensure colors list is populated and layout is ready
         delay(100)
-        // Only attempt to scroll if we have addNew valid index and it's within bounds
+        // Only attempt to scroll if we have add_New valid index and it's within bounds
         if (clickedCouleurIndex >= 0 && clickedCouleurIndex < colorsListToDisplay.size) {
             listState.animateScrollToItem(clickedCouleurIndex)
             // Log for debug purposes

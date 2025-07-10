@@ -70,12 +70,12 @@ class LocationTracker(
         }
     }
 
-    // Get current latitude
+    // RepositorysMainGetter current latitude
     fun getCurrentLatitude(): Double {
         return getCurrentPosition()?.latitude ?: 0.0
     }
 
-    // Get current longitude
+    // RepositorysMainGetter current longitude
     fun getCurrentLongitude(): Double {
         return getCurrentPosition()?.longitude ?: 0.0
     }

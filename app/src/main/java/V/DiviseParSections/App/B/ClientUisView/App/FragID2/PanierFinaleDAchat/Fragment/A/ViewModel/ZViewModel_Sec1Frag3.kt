@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.update
 class ZViewModel_Sec1Frag3(
     val aCentral: ACentralFacade,
 ) : ViewModel() {
-    val uiStateCentralRepositorys = aCentral.getRepositorys
-    val setter = aCentral.setRepositorys
+    val uiStateCentralRepositorys = aCentral.repositorysMainGetter
+    val setter = aCentral.repositorysMainSetter
 
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,

@@ -38,7 +38,7 @@ class Startup_Extension(
     }
 
     fun verifyAndAddPhone(phoneName: String, screenWidth: Int) {
-        // Get reference to the phones in Firebase
+        // RepositorysMainGetter reference to the phones in Firebase
         E_AppsOptionsStates.caReference.get().addOnSuccessListener { snapshot ->
             var phoneExists = false
             var maxId = 0
@@ -96,7 +96,7 @@ class Startup_Extension(
 
 
     fun clearAchats() {
-        // Create addNew snapshot of the products to avoid concurrent modification
+        // Create add_New snapshot of the products to avoid concurrent modification
         val productsToProcess = viewModelInitApp._modelAppsFather.produitsMainDataBase.toList()
 
         // Clear Firebase references first
@@ -108,7 +108,7 @@ class Startup_Extension(
         productsToProcess.forEach { produit ->
             // Safely upsert current data to history
             produit.bonCommendDeCetteCota?.let { currentBonCommend ->
-                // Create addNew new list and upsert all items to avoid concurrent modification
+                // Create add_New new list and upsert all items to avoid concurrent modification
                 val updatedHistorique = ArrayList(produit.historiqueBonsCommend)
                 updatedHistorique.add(currentBonCommend)
                 produit.historiqueBonsCommend.clear()
@@ -116,7 +116,7 @@ class Startup_Extension(
             }
 
             if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
-                // Create addNew new list and upsert all items to avoid concurrent modification
+                // Create add_New new list and upsert all items to avoid concurrent modification
                 val updatedHistoriqueVents = ArrayList(produit.historiqueBonsVents)
                 updatedHistoriqueVents.addAll(produit.bonsVentDeCetteCotaList)
                 produit.historiqueBonsVents.clear()
@@ -172,7 +172,7 @@ class Startup_Extension(
     /**
      * Checks all products and removes bonCommendDeCetteCota if:
      * - The product has no bonsVentDeCetteCota entries, or
-     * - Any bonVent has addNew null coloursAcheteList
+     * - Any bonVent has add_New null coloursAcheteList
      * Updates Firebase after removing the orders.
      */
     /**
@@ -184,7 +184,7 @@ class Startup_Extension(
     fun suppBonCommendSiNaPasDeBonVent() {
         viewModelInitApp.viewModelScope.launch {
             try {
-                // Create addNew snapshot of products to avoid concurrent modification
+                // Create add_New snapshot of products to avoid concurrent modification
                 val productsToCheck = viewModelInitApp._modelAppsFather.produitsMainDataBase.toList()
 
                 // Process each product

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -334,7 +334,7 @@ private fun AfficheKeyCouleurAvecVentDebug(data: M3CouleurProduitInfos) {
 fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
-    getter: Get = koinInject(),
+    getter: RepositorysMainGetter = koinInject(),
 ) {
     val couleur = getter.relatedCouleurKeyParAncienMethod(article, colorIndex)
     val vent = getter.getVentForArticleAndColorInThisApp(article, colorIndex)
@@ -342,7 +342,7 @@ fun AfficheKeyCouleurAvecVentDebugParAncienMethodePreviewRepo(
     couleur?.let {
         val text = with(couleur) {
             "${key.takeLast(4).uppercase()} $nomImageFichieSansEtansion.$extensionDisponible" +
-                    " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantityAchete}"
+                    " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity_Par_Boit}"
         }
 
         Box(

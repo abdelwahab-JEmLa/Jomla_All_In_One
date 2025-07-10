@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -99,6 +99,6 @@ data class M14VentPeriode(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DatasM14VentPeriode"
         )
 
-        fun generePushKey() = Set.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
     }
 }

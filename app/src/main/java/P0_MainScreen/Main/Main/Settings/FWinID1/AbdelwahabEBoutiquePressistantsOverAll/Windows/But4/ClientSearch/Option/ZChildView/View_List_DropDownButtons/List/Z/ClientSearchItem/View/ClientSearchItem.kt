@@ -7,7 +7,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 fun get_Edited_M8BonVent(
-    getFocusedVars: GetterFocusedValues,
+    getFocusedVars: FocusedValuesGetter,
     repo8BonVent: Repo8BonVent,
     m2Client: M2Client,
     onShowToast: (ToastData) -> Unit
@@ -84,7 +84,7 @@ fun ClientSearchItem(
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
 ) {
-    val bonVentRepository = viewModel.aCentralFacade.getRepositorys.repo8BonVent
+    val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
 
     // Add toast state management
     var toastData by remember { mutableStateOf<ToastData?>(null) }
@@ -94,7 +94,7 @@ fun ClientSearchItem(
             .filter { it.parent_M2Client_KeyID == m2Client.keyID }
             .maxByOrNull { it.creationTimestamps }
     }
-    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
     val bonVentResult = get_Edited_M8BonVent(get, bonVentRepository, m2Client) { toastDataToShow -> toastData = toastDataToShow }
 
@@ -115,16 +115,16 @@ fun ClientSearchItem(
                     .clickable {
                         val handleClick = {
                             if (existingBonVent != null) {
-                                viewModel.aCentralFacade.setRepositorys.update_IfExist_Setter(
+                                viewModel.aCentralFacade.repositorysMainSetter.update_IfExist_Setter(
                                     existingBonVent
                                 )
                             } else {
-                                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(
                                     newBonVent
                                 )
                             }
 
-                            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+                            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
                                 existingBonVent ?: newBonVent
                             )
                         }

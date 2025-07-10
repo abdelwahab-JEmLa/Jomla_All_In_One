@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
  fun ViewListM14(
     viewModel: ViewModel_M14VentPeriod
 ) {
-    val M14VentPeriodList = viewModel.aCentralFacade.getRepositorys.repo14VentPeriode.datasValue
+    val M14VentPeriodList = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
 
     LazyColumn(
         modifier = Modifier

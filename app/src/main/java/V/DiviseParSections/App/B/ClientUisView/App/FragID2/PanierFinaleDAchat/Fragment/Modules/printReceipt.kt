@@ -37,14 +37,14 @@ fun printReceipt(
     if (bonAchat == null) return
 
     val printFunction = {
-        // Get client information
+        // RepositorysMainGetter client information
         val client = datasB_ClientInfosProtoJuin3List.find { it.id == bonAchat.parent_M2Client_OldLongID }
 
         // Generate current date string
         val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             .format(Date())
 
-        // Get all confirmed products in this receipt
+        // RepositorysMainGetter all confirmed products in this receipt
         val products = repositorysModel.repositoryC2_ProduitAcheteOperation
             .modelDatasSnapList
             .filter {
@@ -52,13 +52,13 @@ fun printReceipt(
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
             }
 
-        // Create addNew map to group articles by product name and sum quantities
+        // Create add_New map to group articles by product name and sum quantities
         val productMap = mutableMapOf<String, ArticleImpression>()
         var totalAmount = 0.0
 
         // Process each product and sum quantities across its colors
         products.forEach { product ->
-            // Get product details
+            // RepositorysMainGetter product details
             val productDetails = repositorysModel._2_1_ProduitsDataBase_Repository
                 .modelDatasSnapList
                 .find { it.vid == product.produitAcheterID }
@@ -72,7 +72,7 @@ fun printReceipt(
                 productDetails?.monPrixVent ?: 0.0
             }
 
-            // Get colors with quantity > 0 and sum their quantities
+            // RepositorysMainGetter colors with quantity > 0 and sum their quantities
             val totalQuantity = repositorysModel._1_1_CouleurAcheteOperation_Repository
                 .modelDatasSnapList
                 .filter {
@@ -105,7 +105,7 @@ fun printReceipt(
         // Calculate total amount after grouping
         totalAmount = articles.sumOf { it.quantite * it.prixUnitaire }
 
-        // Get client credit balance
+        // RepositorysMainGetter client credit balance
         val creditBalance = client?.currentCreditBalance ?: 0.0
 
         // Prepare text for printing

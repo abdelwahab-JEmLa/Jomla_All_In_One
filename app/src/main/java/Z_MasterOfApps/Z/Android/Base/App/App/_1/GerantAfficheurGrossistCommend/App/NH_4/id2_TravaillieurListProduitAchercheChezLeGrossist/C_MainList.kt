@@ -34,7 +34,7 @@ fun MainList_F2(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    // Get products from ViewModel
+    // RepositorysMainGetter products from ViewModel
     val produitsAChoisireLeurClient =
         viewModelInitApp._paramatersAppsViewModelModel.produitsAChoisireLeurClient
 

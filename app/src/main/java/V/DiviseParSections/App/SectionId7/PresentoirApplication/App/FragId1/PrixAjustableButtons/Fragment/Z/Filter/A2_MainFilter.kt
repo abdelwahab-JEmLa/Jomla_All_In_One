@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -29,9 +29,9 @@ fun MainFilter(
 ) {
     val filteredBonAchat = remember(bonAchatList, filterBonID) {
         bonAchatList.find { it.vid == filterBonID } ?: M8BonVent(
-            parent_M2Client_KeyID = Set.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = Set.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = Set.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
+            parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
+            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
+            parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
         )
     }
 

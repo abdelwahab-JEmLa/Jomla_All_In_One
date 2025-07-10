@@ -4,10 +4,10 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ClientO
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.ProduitOperations
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
 import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -39,24 +39,24 @@ val composRepositorysModule = module {
 
     single { RepoM1ProduitInfos(androidContext(),get()) }
     single { Repo3CouleurProduitInfos(get()) }
-    single { Repo10OperationVentCouleur(get(), get()) }
+    single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
     single { Repo11AchatOperation(get(),get(),) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
-    // Helper classes for Set
+    // Helper classes for RepositorysMainSetter
     single { BonVentOperations(get(), get(), get()) }
     single { ClientOperations(get(), get()) }
     single { ProduitOperations(get()) }
 
 
-    single { GetterFocusedValues(get(), get(),get(),get(),get(),get(),get(),get(),) }
-    single { SetFocusedVars(get(), get(), get(), get(), get(),get(), ) }
+    single { FocusedValuesGetter(get(), get(),get(),get(),get(),get(),get(),get(),) }
+    single { FocusedValuesSetter(get(), get(), get(), get(), get(),get(), ) }
     single { FocusedActiveValuesFacade(get(), get()) }
 
-    single { Get(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(), ) }
+    single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(), ) }
 
-    single { Set(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), ) }
+    single { RepositorysMainSetter(get(), get(), get(), get(),get(),get(),get(),get(), get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

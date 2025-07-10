@@ -33,7 +33,7 @@ fun FabButtonsMessageurMainScreen(
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
-    // Get screen configuration to position at the right edge
+    // RepositorysMainGetter screen configuration to position at the right edge
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeightDp = configuration.screenHeightDp.dp

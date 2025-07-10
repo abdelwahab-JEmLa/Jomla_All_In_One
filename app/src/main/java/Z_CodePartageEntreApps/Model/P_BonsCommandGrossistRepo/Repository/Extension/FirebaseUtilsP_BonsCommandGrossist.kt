@@ -67,7 +67,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
                         repository.progressRepo.value = 1.0f
                         repository.isUpdating = false
 
-                        // Set flag that initial data loading is complete
+                        // RepositorysMainSetter flag that initial data loading is complete
                         repository.initialDataLoaded = true
 
                         // Now that data is loaded, checkADD_1_4_PeriodeVent if we need to initialize
@@ -81,7 +81,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = SyncDataUtilsP_BonsCommandGrossist.syncData(dataSnapshot = dataSnapshot) as P_BonsCommandGrossist
 
-                        // Check that the data has addNew valid ID
+                        // Check that the data has add_New valid ID
                         if (data.vid > 0) {
                             repository.modelDatas.add(data)
                         }
@@ -92,7 +92,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
 
                     repository.progressRepo.value = 1.0f
 
-                    // Set flag that initial data loading is complete
+                    // RepositorysMainSetter flag that initial data loading is complete
                     repository.initialDataLoaded = true
 
                     // Now that data is loaded, checkADD_1_4_PeriodeVent if we need to initialize

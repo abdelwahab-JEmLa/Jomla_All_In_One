@@ -107,7 +107,7 @@ data class ArB_ClientsDataBaseProtoD(
         ) {
             viewModel.viewModelScope.launch {
                 try {
-                    // Create addNew snapshot of the current state
+                    // Create add_New snapshot of the current state
                     val currentState = this@updateClientsDataBase.copy()
 
                     // Update local state using clear and addAll

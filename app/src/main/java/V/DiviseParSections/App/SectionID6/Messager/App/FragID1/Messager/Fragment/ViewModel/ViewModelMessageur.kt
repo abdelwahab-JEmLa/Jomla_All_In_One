@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
@@ -22,7 +22,7 @@ data class UiState(
 )
 
 class ViewModelMessageur(
-    val getter : Get,
+    val getter : RepositorysMainGetter,
     val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
     val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler
 ) : ViewModel() {

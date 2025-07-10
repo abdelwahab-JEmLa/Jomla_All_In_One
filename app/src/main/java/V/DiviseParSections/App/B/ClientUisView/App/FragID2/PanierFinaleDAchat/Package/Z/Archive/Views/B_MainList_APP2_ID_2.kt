@@ -30,7 +30,7 @@ fun B_MainList_APP2_ID_2(
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
 
-    // Get the product operations and sort them by VID in descending order
+    // RepositorysMainGetter the product operations and sort them by VID in descending order
     val produitOperations = produitsBonAchatIDs(
         _0_HeadOfRepositorys_Repository_Model,
         composeKeyVID,

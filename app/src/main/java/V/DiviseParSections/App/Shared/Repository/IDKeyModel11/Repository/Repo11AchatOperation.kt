@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.centralRef
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 
 @Stable
 class Repo11AchatOperation(
-    val getterFocusedValues: GetterFocusedValues,
+    val getterFocusedValues: FocusedValuesGetter,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
 ) {
     private val sourceDatas by derivedStateOf {
@@ -55,7 +55,7 @@ class Repo11AchatOperation(
         val operations = sourceDatas.groupBy { it.parentM3CouleurProduitInfosKeyID }
 
         return operations.map { (couleurKeyId, ventOperations) ->
-            val totalQuantity = ventOperations.sumOf { it.quantityAchete }
+            val totalQuantity = ventOperations.sumOf { it.quantity_Par_Boit }
 
             M11AchatOperation(
                 parentCouleurInfosKeyID = couleurKeyId,

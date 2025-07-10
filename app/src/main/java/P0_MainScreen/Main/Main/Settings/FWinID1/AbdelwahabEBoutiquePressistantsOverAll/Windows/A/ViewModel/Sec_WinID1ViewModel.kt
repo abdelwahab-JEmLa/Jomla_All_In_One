@@ -2,8 +2,8 @@ package P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistants
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedActiveValuesFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.SetFocusedVars
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.Upload.FocusedValuesSetter
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -18,16 +18,16 @@ class ViewModelPresistantButtonsSec8FWinID1(
     val  aCentralFacade: ACentralFacade,
     val wifiTransferDatas: WifiTransferDatas,
 ) : ViewModel() {
-    val getter=aCentralFacade.getRepositorys
-    val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.set
-    val  getterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
-    val  setter =aCentralFacade.focusedActiveValuesFacade.set
+    val getter=aCentralFacade.repositorysMainGetter
+    val  setterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
+    val  getterFocusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val  setter =aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter
     val appComptComposeRepositoryProtoJuin17 = getter.repo9AppCompt
 
     data class UiState(
-        val setter: SetFocusedVars,
+        val setter: FocusedValuesSetter,
         val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
-        val getter: GetterFocusedValues,
+        val getter: FocusedValuesGetter,
         val hClientRepository: Repo2Client,
         val id8BonVentRepository: Repo8BonVent,
         val expandButon: Map.Entry<Button, Boolean>? = null,
@@ -38,8 +38,8 @@ class ViewModelPresistantButtonsSec8FWinID1(
     }
     private val _uiState = MutableStateFlow(UiState(
         focusedVarsHandlerFacade =aCentralFacade.focusedActiveValuesFacade,
-        getter =aCentralFacade.focusedActiveValuesFacade.getterFocusedValues,
-        setter =aCentralFacade.focusedActiveValuesFacade.set,
+        getter =aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
+        setter =aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter,
         id8BonVentRepository =getter.repo8BonVent,
         hClientRepository =getter.repo2Client,
         zAppComptRepositoryComposable =getter.repo9AppCompt

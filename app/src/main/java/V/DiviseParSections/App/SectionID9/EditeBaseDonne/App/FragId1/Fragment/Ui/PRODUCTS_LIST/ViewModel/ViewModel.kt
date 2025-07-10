@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui.PRODUCTS_LIST.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class Sec9FragId1ViewId2ViewModel(
-    a_CentralCompoRepositoryProtoJuin9: Get,
+    a_CentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
 ) : ViewModel() {
     data class UiState(
         var showDetailsExpandedPourTout: Boolean = true,

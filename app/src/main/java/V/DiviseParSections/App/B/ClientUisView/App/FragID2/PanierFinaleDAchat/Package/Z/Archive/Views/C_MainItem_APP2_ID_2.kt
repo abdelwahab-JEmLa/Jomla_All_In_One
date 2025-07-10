@@ -138,7 +138,7 @@ fun C_MainItem_APP2_ID_2(
                             var productNameText by remember { mutableStateOf("") }  // Start with empty text
                             val productNameFocusRequester = remember { FocusRequester() }
 
-                            // Get the current product name for reference
+                            // RepositorysMainGetter the current product name for reference
                             val currentProductName = relative_2_1_ProduitsDataBase?.nom ?: "N/A"
 
                             // Product name section (at the top)
@@ -213,7 +213,7 @@ fun C_MainItem_APP2_ID_2(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Quantity in addNew background box
+                                // Quantity in add_New background box
                                 Box(
                                     modifier = Modifier
                                         .background(

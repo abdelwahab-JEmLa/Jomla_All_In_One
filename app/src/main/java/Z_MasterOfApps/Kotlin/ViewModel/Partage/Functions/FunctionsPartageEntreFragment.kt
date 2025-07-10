@@ -50,7 +50,7 @@ class FunctionsPartageEntreFragment(
         selectedBonVent?.let { bonVent ->
             val soldArticlesRef = Firebase.database.getReference("O_SoldArticlesTabelle")
 
-            // Create addNew query to find the existing record
+            // Create add_New query to find the existing record
             soldArticlesRef.orderByChild("idArticle").equalTo(produit.id.toDouble())
                 .get()
                 .addOnSuccessListener { snapshot ->

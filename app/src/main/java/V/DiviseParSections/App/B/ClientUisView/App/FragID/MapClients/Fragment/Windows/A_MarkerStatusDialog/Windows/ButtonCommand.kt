@@ -33,8 +33,8 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
 ) {
     val handleBonVentSelection_With_Semantics_Debug = remember(m2Client.keyID) {
-        val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
-        val bonVentRepository = viewModel.aCentralFacade.getRepositorys.repo8BonVent
+        val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        val bonVentRepository = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent
 
         val currentActiveFocuced_M14VentPeriode = get.currentActiveFocuced_M14VentPeriode
         val currentActiveFocuced_M14VentPeriode_KeyID = currentActiveFocuced_M14VentPeriode?.keyID ?: "null"
@@ -60,12 +60,12 @@ fun CommandButton(
 
         val handleClick = {
             if (existingBonVent != null) {
-                viewModel.aCentralFacade.setRepositorys.update_IfExist_Setter(targetBonVent)
+                viewModel.aCentralFacade.repositorysMainSetter.update_IfExist_Setter(targetBonVent)
             } else {
-                viewModel.aCentralFacade.focusedActiveValuesFacade.set.add_M8BonVent(targetBonVent)
+                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(targetBonVent)
             }
 
-            viewModel.aCentralFacade.focusedActiveValuesFacade.set.setIN_M9CurrentApp_onVentM8BonVentKey(
+            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.setIN_M9CurrentApp_onVentM8BonVentKey(
                 targetBonVent
             )
         }

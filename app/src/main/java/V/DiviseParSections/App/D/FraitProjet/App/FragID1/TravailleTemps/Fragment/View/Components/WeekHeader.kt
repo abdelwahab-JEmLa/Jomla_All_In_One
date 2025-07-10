@@ -47,7 +47,7 @@ fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: RecordingViewModel
 ) {
-    // Get all records for this specific week and checkADD_1_4_PeriodeVent if all are paid
+    // RepositorysMainGetter all records for this specific week and checkADD_1_4_PeriodeVent if all are paid
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
@@ -70,7 +70,7 @@ fun WeekHeader(
     val areAllDaysPaid = weekRecords.isNotEmpty() && weekRecords.all { it.infosDeBase.paye }
     val allDaysPaid = remember { mutableStateOf(areAllDaysPaid) }
 
-    // Get admin privileges status
+    // RepositorysMainGetter admin privileges status
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
     // Calculate total work time for the week
@@ -232,7 +232,7 @@ fun markAllDaysAsPaid(
     viewModel: RecordingViewModel,
     paidStatus: MutableState<Boolean>
 ) {
-    // Get all records for the specific week and year
+    // RepositorysMainGetter all records for the specific week and year
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")
@@ -305,7 +305,7 @@ fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String
 fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: RecordingViewModel): Int {
     var totalMinutes = 0
 
-    // Get all records for the specific week and year
+    // RepositorysMainGetter all records for the specific week and year
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")

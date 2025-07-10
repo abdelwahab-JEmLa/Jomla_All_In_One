@@ -61,7 +61,7 @@ class PermissionHandler(private val activity: MainActivity) {
     }
 
     /**
-     * Get required permissions based on the device's API level
+     * RepositorysMainGetter required permissions based on the device's API level
      */
     fun getRequiredPermissions(): Array<String> {
         return when {

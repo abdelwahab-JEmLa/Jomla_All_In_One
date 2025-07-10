@@ -56,7 +56,7 @@ fun DayFilterDialog(
         "السبت"     // Saturday
     )
 
-    // Create addNew local state for selected days to provide immediate UI feedback before updating viewModel
+    // Create add_New local state for selected days to provide immediate UI feedback before updating viewModel
     var selectedDays by remember { mutableStateOf(viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList) }
 
     // Local state to track the toggle value of afficheLesJoursAuNoms

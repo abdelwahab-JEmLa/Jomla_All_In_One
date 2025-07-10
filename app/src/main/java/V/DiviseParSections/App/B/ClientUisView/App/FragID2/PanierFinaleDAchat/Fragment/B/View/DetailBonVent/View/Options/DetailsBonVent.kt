@@ -109,7 +109,7 @@ fun DetailsBonVent(
                             fVentCouleurOperationRepository = fVentCouleurOperationRepository,
                             bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
                             b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
-                            client = viewModel.aCentral.focusedActiveValuesFacade.getterFocusedValues.activeOnVentM2ClientInfos,
+                            client = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                             scope = scope
                         )
                     }

@@ -159,7 +159,7 @@ fun CartItem(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Using addNew list of color quantities with their indices
+                // Using add_New list of color quantities with their indices
                 val colorQuantities = listOf(
                     soldArticle.color1SoldQuantity,
                     soldArticle.color2SoldQuantity,
@@ -317,7 +317,7 @@ private fun ColorItemWithQuantity(
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Get color name
+                // RepositorysMainGetter color name
                 val colorId = when (colorIndex) {
                     0 -> article.idcolor1
                     1 -> article.idcolor2

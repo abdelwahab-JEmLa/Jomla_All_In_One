@@ -70,12 +70,12 @@ fun QuantityButton(
                         vent.let { existingVent ->
                             val updatedVent = if (newQuantity == 0) {
                                 existingVent.copy(
-                                    quantityAchete = newQuantity,
+                                    quantity_Par_Boit = newQuantity,
                                     etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
                                 )
                             } else {
                                 existingVent.copy(
-                                    quantityAchete = newQuantity,
+                                    quantity_Par_Boit = newQuantity,
                                     etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                 )
                             }
@@ -92,7 +92,7 @@ fun QuantityButton(
                             if (newQuantity == 0) {
                                 allProductVents.forEach { ventItem ->
                                     val updatedVent = ventItem.copy(
-                                        quantityAchete = 0,
+                                        quantity_Par_Boit = 0,
                                         etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
                                         dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
                                     )
@@ -105,7 +105,7 @@ fun QuantityButton(
                                 allProductVents.forEachIndexed { index, ventItem ->
                                     val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
                                     val updatedVent = ventItem.copy(
-                                        quantityAchete = itemQuantity,
+                                        quantity_Par_Boit = itemQuantity,
                                         etateActuellementEst = if (itemQuantity > 0) {
                                             M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                         } else {

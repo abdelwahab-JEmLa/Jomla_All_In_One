@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
 import android.content.Context
@@ -132,12 +132,12 @@ class RepoM1ProduitInfos(
 data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
-    var keyID: String = Get.getPushFireBase(ref),
+    var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
 
-    val quantite_Boit_Par_Carton: Int = 0,
+    val quantite_Boit_Par_Carton: Int = 1,
     val actuelle_Affiche_Est_Carton: Boolean = false,
 
-    var bsonObjectId: String = Get.getPushFireBase(ref),
+    var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var dernierFireBaseUpdateTimestamps: Long = 0,
 

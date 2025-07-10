@@ -59,18 +59,18 @@ fun parseCsvLine(line: String): M10OperationVentCouleur {
 private fun parsedData(values: List<String>) = M10OperationVentCouleur(
     keyID = values.getOrElse(0) { BsonObjectId().toHexString() },
     dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis(),
+    parent_M9AppCompt_KeyID = values.getOrElse(5) { "" },
     parentM8BonVentKeyId = values.getOrElse(3) { "" },
     parentM1ProduitInfosKeyId = values.getOrElse(4) { "" },
-    parent_M9AppCompt_KeyID = values.getOrElse(5) { "" },
-    parentClientInfosKeyID = values.getOrElse(6) { "" },
     parentProduitInfosOldId = values.getOrElse(7) { "0" }.toLongOrNull() ?: 0L,
-    quantityAchete = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     etateActuellementEst = try {
         M10OperationVentCouleur.EtateActuellementEst.valueOf(values.getOrElse(9) { "ClickOuvre" })
     } catch (e: IllegalArgumentException) {
         M10OperationVentCouleur.EtateActuellementEst.CreeSlote
     },
-    provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0
+    quantity_Par_Boit = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
+    provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
+    parentClientInfosKeyID = values.getOrElse(6) { "" }
 )
 
 

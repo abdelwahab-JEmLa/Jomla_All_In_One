@@ -163,7 +163,7 @@ fun MapContent(
             )
         }
 
-        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues.activeOnVentM2ClientInfos
+        val activeOnVentM2ClientInfos = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
 
         if (activeOnVentM2ClientInfos != null ||  markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(

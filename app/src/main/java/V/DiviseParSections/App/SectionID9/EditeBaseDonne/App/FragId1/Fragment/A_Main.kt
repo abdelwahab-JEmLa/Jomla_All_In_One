@@ -119,7 +119,7 @@ fun EditeBaseDonneMainScreenIdS9(
                 val days = TimeFilterUtils.parseDaysString(filterState.prixAchatTimeFilterDays)
                 if (days > 0) {
                     filtered = filtered.filter { product ->
-                        // Assuming ArticlesBasesStatsTable has addNew field like prixAchatDernierTimeTempUpdate
+                        // Assuming ArticlesBasesStatsTable has add_New field like prixAchatDernierTimeTempUpdate
                         // You may need to adjust this field name based on your actual data model
                         TimeFilterUtils.isOlderThanDays(product.prixAchatDernierTimeTempUpdate, days)
                     }

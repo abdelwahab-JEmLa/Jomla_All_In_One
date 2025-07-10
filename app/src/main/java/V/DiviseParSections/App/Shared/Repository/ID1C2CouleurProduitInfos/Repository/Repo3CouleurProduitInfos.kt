@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.DataBaseInitFactory_B1CouleurOuGoutProduitDataBase
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.Preview.View.A.List.ColorNameDisplayer
@@ -101,7 +101,7 @@ class Repo3CouleurProduitInfos(
 
     companion object {
         fun getRelatedCouleur(
-            aCentralCompoRepositoryProtoJuin9: Get,
+            aCentralCompoRepositoryProtoJuin9: RepositorysMainGetter,
             produit: ArticlesBasesStatsTable,
             colorIndex: Int
         ) =

@@ -67,7 +67,7 @@ object FirebaseUtilsI_CategoriesProduits {
                         repository.progressRepo.value = 1.0f
                         repository.isUpdating = false
 
-                        // Set flag that initial data loading is complete
+                        // RepositorysMainSetter flag that initial data loading is complete
                         repository.initialDataLoaded = true
 
                         return
@@ -79,7 +79,7 @@ object FirebaseUtilsI_CategoriesProduits {
                     snapshot.children.forEach { dataSnapshot ->
                         val data = I_CategoriesProduits.syncData(dataSnapshot = dataSnapshot) as I_CategoriesProduits
 
-                        // Check that the data has addNew valid ID
+                        // Check that the data has add_New valid ID
                         if (data.id > 0) {
                             repository.modelDatas.add(data)
                         }
@@ -90,7 +90,7 @@ object FirebaseUtilsI_CategoriesProduits {
 
                     repository.progressRepo.value = 1.0f
 
-                    // Set flag that initial data loading is complete
+                    // RepositorysMainSetter flag that initial data loading is complete
                     repository.initialDataLoaded = true
 
 

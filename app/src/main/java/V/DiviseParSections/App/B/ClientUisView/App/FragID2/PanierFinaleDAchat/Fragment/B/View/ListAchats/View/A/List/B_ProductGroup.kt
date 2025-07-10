@@ -55,13 +55,13 @@ fun ProductGroup(
     productKeyId: String,
     vents: List<M10OperationVentCouleur>,
 ) {
-   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.getRepositorys.repoM1ProduitInfos
+   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.repositorysMainGetter.repoM1ProduitInfos
 
     val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = vents.sumOf { it.quantityAchete }
+    val totalQuantity = vents.sumOf { it.quantity_Par_Boit }
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
@@ -142,7 +142,7 @@ fun ProductGroup(
                                     modifier = Modifier.padding(4.dp),
                                     ventKey = vent.keyID,
                                     size = 120.dp,
-                                    purchasedQuantity = vent.quantityAchete,
+                                    purchasedQuantity = vent.quantity_Par_Boit,
                                     viewModel = viewModel
                                 )
                             }
@@ -160,7 +160,7 @@ fun ProductGroup(
             onDissmiss_showQuantityDialog = { showDialog = false },
             onDismiss = { showDialog = false },
             viewModel = viewModel,
-            vent = vents.first().copy(quantityAchete = totalQuantity)
+            vent = vents.first().copy(quantity_Par_Boit = totalQuantity)
         )
     }
 }

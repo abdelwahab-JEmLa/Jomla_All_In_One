@@ -100,7 +100,7 @@ private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabas
 }
 
 private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
-    // Get all categories from database
+    // RepositorysMainGetter all categories from database
     val categories = appDatabase.categoriesModelDao().getAll()
 
     // Create CSV content
@@ -131,7 +131,7 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
     }
 }
 private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
-    // Get all articles from database
+    // RepositorysMainGetter all articles from database
     val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
 
     // Create CSV content
@@ -210,7 +210,7 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
 }
 
 private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
-    // Get all clients from database
+    // RepositorysMainGetter all clients from database
     val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll() // Adjust DAO method name as needed
 
     // Create CSV content

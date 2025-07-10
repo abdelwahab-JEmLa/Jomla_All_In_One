@@ -55,7 +55,7 @@ fun ID3RecordingButton(
 
         if (showLabels) {
             // Use the pre-cached value
-            val get = viewModel.aCentralFacade.focusedActiveValuesFacade.getterFocusedValues
+            val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             val filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible =
                 get.filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
 
