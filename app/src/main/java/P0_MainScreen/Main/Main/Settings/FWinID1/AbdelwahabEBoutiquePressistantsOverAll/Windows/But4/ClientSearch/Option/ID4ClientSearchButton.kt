@@ -5,7 +5,7 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import V.DiviseParSections.App.Shared.Modules.Helper.M1.LocationTracker.Module.LocationTracker
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.annotation.SuppressLint
@@ -59,14 +59,14 @@ fun ID4ClientSearchButton(
     hClientRepository: Repo2Client,
     showLabels: Boolean,
     locationTracker: LocationTracker? = null,
-    onClientSelectedToToast: (HClientInfos) -> Unit = {},
+    onClientSelectedToToast: (M2Client) -> Unit = {},
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val getter = uiState.focusedVarsHandlerFacade.getterFocusedValues
     var isTextCollapsed by remember { mutableStateOf(false) }
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var filteredClients by remember { mutableStateOf<List<HClientInfos>>(emptyList()) }
+    var filteredClients by remember { mutableStateOf<List<M2Client>>(emptyList()) }
     var showDropdown by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val searchQueryFlow = remember { MutableStateFlow("") }
@@ -250,17 +250,17 @@ private fun CreateNewClientIcon(
     searchQuery: String,
     locationTracker: LocationTracker?,
     defaultId8BonVent: M8BonVent,
-    onClientSelectedToToast: (HClientInfos) -> Unit,
+    onClientSelectedToToast: (M2Client) -> Unit,
     onResetSearchMode: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1
 ) {
     val currentLocation = locationTracker?.getCurrentPosition()
 
-    val newClient = HClientInfos(
+    val newClient = M2Client(
         nom = searchQuery.ifEmpty { "Err Definition" },
         title = searchQuery.ifEmpty { "Nouveau Client" },
-        latitude = currentLocation?.latitude ?: HClientInfos.getCurrentDefaultLatitude(),
-        longitude = currentLocation?.longitude ?: HClientInfos.getCurrentDefaultLongitude(),
+        latitude = currentLocation?.latitude ?: M2Client.getCurrentDefaultLatitude(),
+        longitude = currentLocation?.longitude ?: M2Client.getCurrentDefaultLongitude(),
         caMarqueGpsEstOuvert = currentLocation != null,
         snippet = currentLocation?.let {
             "Lat: ${String.format("%.6f", it.latitude)}, Lng: ${

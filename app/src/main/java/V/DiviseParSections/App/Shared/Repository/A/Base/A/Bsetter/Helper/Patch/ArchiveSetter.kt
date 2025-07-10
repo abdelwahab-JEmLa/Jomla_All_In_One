@@ -5,7 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -40,7 +40,7 @@ class BSetterP (
         etate: M8BonVent.EtateActuellementEst,
     ): String {
         val clientKeyByParent = client(clientOldID)?.getTempKeyByParent()
-        val keyModelToClientKeyByParent = HClientInfos.keyModel + "-" + clientKeyByParent
+        val keyModelToClientKeyByParent = M2Client.keyModel + "-" + clientKeyByParent
         val keyModelToEtateKey = M8BonVent.EtateActuellementEst.keyModel + "-" + etate
 
         return ("$keyModelToOnVentHVentPeriodKeyByParent--$keyModelToClientKeyByParent--$keyModelToEtateKey")
@@ -57,7 +57,7 @@ class BSetterP (
         val data = existingData?.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
             ?: run {
                 val getKeyByParentDe = getListDesParentKeys(keyByParentBonVentOnClickButton)
-                val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
+                val parentID2ClientKeyByParent = getKeyByParentDe[M2Client.keyModel]!!
                 val client = hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =
                     getKeyByParentDe[M8BonVent.EtateActuellementEst.keyModel]!!
@@ -254,7 +254,7 @@ class BSetterP (
             hClientRepository.dataBaseCreationFactory.dao.deleteAll()
             hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
-            HClientInfos.safeRemoveRef()
+            M2Client.safeRemoveRef()
 
             hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas

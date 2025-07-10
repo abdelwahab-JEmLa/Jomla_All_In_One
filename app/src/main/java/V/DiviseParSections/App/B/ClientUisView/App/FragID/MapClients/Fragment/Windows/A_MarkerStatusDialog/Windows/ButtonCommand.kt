@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ import androidx.core.content.ContextCompat
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
-    m2Client: HClientInfos,
+    m2Client: M2Client,
     newEtate: M8BonVent.EtateActuellementEst,
     viewModel: MapClientsViewModel,
     context: Context,

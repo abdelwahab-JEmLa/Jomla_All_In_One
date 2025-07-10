@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.Modules
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -32,7 +32,7 @@ fun printReceipt(
     bonAchat: M8BonVent?,
     repositorysModel: GroupeRepositorysProtoAvJuin3Model,
     scope: CoroutineScope? = null,
-    datasB_ClientInfosProtoJuin3List: List<HClientInfos>
+    datasB_ClientInfosProtoJuin3List: List<M2Client>
 ) {
     if (bonAchat == null) return
 

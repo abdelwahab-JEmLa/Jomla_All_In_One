@@ -1,8 +1,8 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperation
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.List_AchatCouleurOperation
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List.List_AchatCouleurOperation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Card
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    groupeAchatProduit: Map.Entry<String, List<KAchatCouleurOperation>>,
+    groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
 ) {
     val produit = viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 

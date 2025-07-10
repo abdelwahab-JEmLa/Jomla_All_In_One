@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ViewModel
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -843,7 +843,7 @@ open class HeadViewModel(
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
         val clients = clientsSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(HClientInfos::class.java)
+            snapshot.getValue(M2Client::class.java)
         }
         updateLoadingProgress(fl)
     }

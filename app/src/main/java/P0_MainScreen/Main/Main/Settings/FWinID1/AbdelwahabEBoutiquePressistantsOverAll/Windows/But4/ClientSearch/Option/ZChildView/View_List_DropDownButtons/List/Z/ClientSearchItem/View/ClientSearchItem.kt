@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.GetterFocusedValues
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.annotation.SuppressLint
@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 fun get_Edited_M8BonVent(
     getFocusedVars: GetterFocusedValues,
     repo8BonVent: Repo8BonVent,
-    m2Client: HClientInfos,
+    m2Client: M2Client,
     onShowToast: (ToastData) -> Unit
 ): Triple<M8BonVent?, M8BonVent, Modifier>? {
     val currentPeriod = getFocusedVars.currentActiveFocuced_M14VentPeriode
@@ -80,7 +80,7 @@ fun get_Edited_M8BonVent(
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
-    m2Client: HClientInfos,
+    m2Client: M2Client,
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
 ) {

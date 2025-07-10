@@ -7,13 +7,13 @@ import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
@@ -64,7 +64,7 @@ class Get(
 
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 
-    val kAchatRepository: KAchatCouleurOperationRepository,
+    val repo11AchatOperation: Repo11AchatOperation,
 
     val mVentPeriodeRepository: MVentPeriodeRepository,
 
@@ -85,7 +85,7 @@ class Get(
         getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
 
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun get_Last_M8BonVent_Par_M2Client(m2Client: HClientInfos): M8BonVent? {
+    fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
         return repo8BonVent.datasValue
             .filter {
                 (it.parent_M2Client_KeyID == m2Client.keyID)
@@ -179,7 +179,7 @@ class Get(
         // Fixed: This should be a function that returns a Modifier
         fun modifierAcDebugSemantics(hClientRepository: Repo2Client? = null): Modifier {
             return Modifier.semantics(mergeDescendants = true) {
-                set(SemanticsPropertyKey("DebugID1=HClientInfos"), HClientInfos())
+                set(SemanticsPropertyKey("DebugID1=M2Client"), M2Client())
             }
         }
 

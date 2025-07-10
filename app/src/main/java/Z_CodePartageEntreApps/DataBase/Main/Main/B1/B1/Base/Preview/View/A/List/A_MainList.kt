@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun MainList(
     b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
 ) {
-    val items = b1CouleurOuGoutProduitDataBaseRepository.datasValueFiltred
+    val items = b1CouleurOuGoutProduitDataBaseRepository.datasValueFiltered
 
     val groupedItems by remember(items) {
         derivedStateOf {

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init.triggerUpdateFbParTimestampsListener
@@ -26,12 +26,12 @@ class dataBaseCreationFactoryMID2ClientRepository(
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
     data class RepoState(
-        val modelListFlow: List<HClientInfos>,
+        val modelListFlow: List<M2Client>,
         val mainProgressRepo: Float
     )
 
     val dao = appDatabase.B_ClientInfosProtoJuin3Dao()
-    val repoRef = HClientInfos.ref
+    val repoRef = M2Client.ref
     var isListenerRegistered = false
 
     init {
@@ -45,7 +45,7 @@ class dataBaseCreationFactoryMID2ClientRepository(
         }
     }
 
-    suspend fun updateRepoState(data: List<HClientInfos>) {
+    suspend fun updateRepoState(data: List<M2Client>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,
@@ -59,7 +59,7 @@ class dataBaseCreationFactoryMID2ClientRepository(
         }
     }
     fun set(
-        dataAvecTigerUpdate: HClientInfos,
+        dataAvecTigerUpdate: M2Client,
     ) {
         factoryScope.launch {
             dao.upsert(dataAvecTigerUpdate)
@@ -67,7 +67,7 @@ class dataBaseCreationFactoryMID2ClientRepository(
         }
     }
 
-    fun batchFireBaseUpdate(datas: List<HClientInfos>): Unit {
+    fun batchFireBaseUpdate(datas: List<M2Client>): Unit {
         CoroutineScope(Dispatchers.IO).launch {
             val updates = mutableMapOf<String, Any>()
             datas.forEach { data ->

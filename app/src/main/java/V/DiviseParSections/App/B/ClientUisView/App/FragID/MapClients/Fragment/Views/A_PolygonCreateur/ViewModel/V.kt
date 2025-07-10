@@ -6,9 +6,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.HClientInfos
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.upsert
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.HClientInfos.Repository.C.Update.deleteData
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.A.ViewModel.Repository.M2Client
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.M2Client.Repository.C.Update.upsert
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.M2Client.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.Z_AppCompt.Z_AppCompt
 import Z_CodePartageEntreApps.Modules.B_RecordingHandler.IRecordingHandler
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.B_MainList.Z.B.Repository.A2_Passive.M8BonVent
@@ -61,7 +61,7 @@ class MapClientsViewModelss(
 
     val bProto_ClientsDataBase = uiState.value.b_ClientInfosProtoJuin3List
 
-    var auClickeCaUpdateClientPar by mutableStateOf(HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
 
     var afficheLesJoursAuNoms by mutableStateOf(true)
@@ -123,7 +123,7 @@ class MapClientsViewModelss(
     }
 
     fun getClientLastBonVentParEtate(
-        client: HClientInfos
+        client: M2Client
     ): M8BonVent? {
         val historicalData = groupeRepositorysProtoAvJuin3
             .repositorys_Model
@@ -289,7 +289,7 @@ class MapClientsViewModelss(
         }
     }
 
-    fun updateData(client: HClientInfos): Unit {
+    fun updateData(client: M2Client): Unit {
         viewModelScope.launch {
             b_ClientDataBaseRepository.upsert(client)
         }
@@ -312,7 +312,7 @@ class MapClientsViewModelss(
 
             val newnom = "ز.$newID"
 
-            val newClientAchteur = HClientInfos().apply {
+            val newClientAchteur = M2Client().apply {
                 keyID = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -398,7 +398,7 @@ class MapClientsViewModelss(
         }
     }
 
-    fun deleteUnSeulData(data: HClientInfos) { b_ClientDataBaseRepository.deleteData(data) }
+    fun deleteUnSeulData(data: M2Client) { b_ClientDataBaseRepository.deleteData(data) }
     fun startRecordIfNot(): Unit { recordingHandler.startRecordIfNot() }
 
     fun ouvreBonVent(data: Long) {

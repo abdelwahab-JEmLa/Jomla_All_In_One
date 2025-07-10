@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +15,7 @@ fun List_GroupeAchatProduit(
     modifier: Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
 ) {
-    val repo = viewModel.getter.kAchatRepository
+    val repo = viewModel.getter.repo11AchatOperation
     Box(
         modifier = modifier
             .fillMaxSize()

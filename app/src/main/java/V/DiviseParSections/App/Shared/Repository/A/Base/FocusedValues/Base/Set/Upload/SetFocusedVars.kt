@@ -8,7 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.U
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -41,7 +41,7 @@ class SetFocusedVars(
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.upsert(data)
     fun add_M8BonVent(defaultM8BonVent: M8BonVent) = repo8BonVent.add(defaultM8BonVent)
 
-    fun addNewM2ClientInfos(newClient: HClientInfos) = Repo2Client.addClient(newClient)
+    fun addNewM2ClientInfos(newClient: M2Client) = Repo2Client.addClient(newClient)
 
     fun ajoute_New_M10OperationVentCouleur(it: M10OperationVentCouleur) {
         repo10OperationVentCouleur.addOrUpdateData(it)

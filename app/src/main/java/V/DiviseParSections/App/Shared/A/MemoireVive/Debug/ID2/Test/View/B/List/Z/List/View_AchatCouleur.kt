@@ -1,9 +1,9 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.CouleurDisplayer
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperation
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.List_AcheteursDeCetteProduit
+import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List.Z.AcheteursDeCetteProduit.List.List_AcheteursDeCetteProduit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun View_AchatCouleur(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    achatCouleur: KAchatCouleurOperation
+    achatCouleur: M11AchatOperation
 ) {
     Card(
         modifier = Modifier.background(Color.Red)

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.W.Test
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -100,7 +100,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.setupLocalDbUpdateTracker() {
  * Détermine la source de la mise à jour basée sur les données
  */
 private fun dataBaseCreationFactoryMID2ClientRepository.determineUpdateSource(
-    dataList: List<HClientInfos>
+    dataList: List<M2Client>
 ): UpdateSource {
     return when {
         dataList.any { it.keyFireBase.contains("TEST_") } -> UpdateSource.FIREBASE_SYNC
@@ -113,7 +113,7 @@ private fun dataBaseCreationFactoryMID2ClientRepository.determineUpdateSource(
  * Actions à effectuer quand la base de données locale est mise à jour
  */
 private fun dataBaseCreationFactoryMID2ClientRepository.onLocalDatabaseUpdated(
-    updatedData: List<HClientInfos>,
+    updatedData: List<M2Client>,
     updateState: LocalDbUpdateState
 ) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -154,7 +154,7 @@ private fun dataBaseCreationFactoryMID2ClientRepository.onLocalDatabaseUpdated(
  * Valide la cohérence des données après mise à jour
  */
 private suspend fun dataBaseCreationFactoryMID2ClientRepository.validateDataConsistency(
-    data: List<HClientInfos>
+    data: List<M2Client>
 ) {
     withContext(Dispatchers.IO) {
         // Vérifier les doublons
@@ -180,7 +180,7 @@ private suspend fun dataBaseCreationFactoryMID2ClientRepository.validateDataCons
  * Met à jour les statistiques locales
  */
 private fun dataBaseCreationFactoryMID2ClientRepository.updateLocalStatistics(
-    data: List<HClientInfos>
+    data: List<M2Client>
 ) {
     val stats = mapOf(
         "total_clients" to data.size,
@@ -206,7 +206,7 @@ private fun dataBaseCreationFactoryMID2ClientRepository.triggerUpdateNotificatio
  * Synchronise les changements récents avec Firebase
  */
 private fun dataBaseCreationFactoryMID2ClientRepository.syncRecentChangesToFirebase(
-    data: List<HClientInfos>
+    data: List<M2Client>
 ) {
     val recentChanges = data.filter {
         System.currentTimeMillis() - it.dernierTimeTampsSynchronisationAvecFireBase < 60000 // 1 minute
@@ -222,7 +222,7 @@ private fun dataBaseCreationFactoryMID2ClientRepository.syncRecentChangesToFireb
  * Nettoie les données de test anciennes
  */
 private suspend fun dataBaseCreationFactoryMID2ClientRepository.cleanupTestDataIfNeeded(
-    data: List<HClientInfos>
+    data: List<M2Client>
 ) {
     withContext(Dispatchers.IO) {
         val testData = data.filter { it.keyFireBase.contains("TEST_") }
@@ -275,7 +275,7 @@ fun dataBaseCreationFactoryMID2ClientRepository.testTriggerUpdateFbParTimestamps
                 Log.d(repoTAG, "Creating new test entity")
 
                 // Create new test entity
-                val testEntity = HClientInfos(
+                val testEntity = M2Client(
                     nom = "TEST_ENTITY_${System.currentTimeMillis()}",
                     keyFireBase = "TEST_${System.currentTimeMillis()}",
                     cUnClientTemporaire = true,

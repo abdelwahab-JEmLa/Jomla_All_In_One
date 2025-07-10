@@ -2,7 +2,7 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +42,7 @@ class ClientOperations(
             hClientRepository.dataBaseCreationFactory.dao.deleteAll()
             hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
-            HClientInfos.safeRemoveRef()
+            M2Client.safeRemoveRef()
 
             hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas

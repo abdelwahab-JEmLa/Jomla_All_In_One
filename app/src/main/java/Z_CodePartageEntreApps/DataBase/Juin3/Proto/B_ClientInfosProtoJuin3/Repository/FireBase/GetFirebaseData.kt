@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.FireBase
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Function.updateProgress
 
-fun dataBaseCreationFactoryMID2ClientRepository.getFirebaseData(onSuccess: (List<HClientInfos>) -> Unit) {
+fun dataBaseCreationFactoryMID2ClientRepository.getFirebaseData(onSuccess: (List<M2Client>) -> Unit) {
     updateProgress(0.1f)
     repoRef.get()
         .addOnSuccessListener { snapshot ->
-            val dataList = mutableListOf<HClientInfos>()
+            val dataList = mutableListOf<M2Client>()
             snapshot.children.forEach { child ->
-                child.getValue(HClientInfos::class.java)?.let { item ->
+                child.getValue(M2Client::class.java)?.let { item ->
                     item.keyFireBase = child.key ?: ""
                     dataList.add(item)
                 }

@@ -16,7 +16,7 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperationRepository
+import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
@@ -41,7 +41,7 @@ val composRepositorysModule = module {
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
-    single { KAchatCouleurOperationRepository(get(),get(),) }
+    single { Repo11AchatOperation(get(),get(),) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
     // Helper classes for Set

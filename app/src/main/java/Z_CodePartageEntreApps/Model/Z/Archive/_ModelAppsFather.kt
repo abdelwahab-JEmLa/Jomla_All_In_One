@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model.Z.Archive
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
@@ -42,8 +42,8 @@ open class _ModelAppsFather(
         initial_Produits_Main_DataBase.toMutableStateList()
 
     @get:Exclude
-    var clientDataBase: SnapshotStateList<HClientInfos> =
-        emptyList<HClientInfos>().toMutableStateList()
+    var clientDataBase: SnapshotStateList<M2Client> =
+        emptyList<M2Client>().toMutableStateList()
 
     @get:Exclude
     var grossistsDataBase: SnapshotStateList<C_GrossistsDataBase> =

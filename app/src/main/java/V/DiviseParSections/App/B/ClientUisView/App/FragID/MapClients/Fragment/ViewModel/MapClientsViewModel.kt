@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -37,11 +37,11 @@ import java.util.Date
 
 @Stable
 data class UiState(
-    val b_ClientInfosProtoJuin3List: List<HClientInfos> = emptyList(),
+    val b_ClientInfosProtoJuin3List: List<M2Client> = emptyList(),
     val c3_TransactionCommercialList: List<M8BonVent> = emptyList(),
     val secteursList: List<E1SecteurDeClients> = emptyList(),
     val panelsGroupeList: List<Z_AutreStatesCompoRepository.PanelsGroupeButton> = emptyList(),
-    val markerStatusDialogActiveM2Client: HClientInfos? = null,
+    val markerStatusDialogActiveM2Client: M2Client? = null,
     val mainLoadingProgress: Float = 0f,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -71,11 +71,11 @@ class MapClientsViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    val bProto_ClientsDataBase: List<HClientInfos>
+    val bProto_ClientsDataBase: List<M2Client>
         get() = clientsState.datasState.value
 
     // UI State variables
-    var auClickeCaUpdateClientPar by mutableStateOf(HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTrigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
@@ -96,7 +96,7 @@ class MapClientsViewModel(
         initializeDataObservers()
     }
 
-    fun set_M2Client_UiState_In_MarkerStatusDialog(data: HClientInfos?) {
+    fun set_M2Client_UiState_In_MarkerStatusDialog(data: M2Client?) {
         _uiState.value = _uiState.value.copy(
             markerStatusDialogActiveM2Client = data
         )
@@ -137,13 +137,13 @@ class MapClientsViewModel(
 
     }
 
-    fun getLastTransaction(m2Client: HClientInfos): M8BonVent? {
+    fun getLastTransaction(m2Client: M2Client): M8BonVent? {
         return getter.get_Last_M8BonVent_Par_M2Client(
             m2Client
         )
     }
 
-    fun updateData(client: HClientInfos) {
+    fun updateData(client: M2Client) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.addOrUpdateData(client)
             clientsState.updateClient(client)
@@ -165,7 +165,7 @@ class MapClientsViewModel(
 
             val newnom = "ز.$newID"
 
-            val newClientAchteur = HClientInfos().apply {
+            val newClientAchteur = M2Client().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -186,7 +186,7 @@ class MapClientsViewModel(
         }
     }
 
-    fun deleteUnSeulData(data: HClientInfos) {
+    fun deleteUnSeulData(data: M2Client) {
         viewModelScope.launch {
             b_ClientDataBaseRepository.deleteData(data)
             clientsState.removeClient(data.id)

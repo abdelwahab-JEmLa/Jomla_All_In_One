@@ -74,7 +74,7 @@ private fun MainScreen(
             // Only show filtered count when text filter is active
             if (repository.filterQuery.value == FilterQuery.SearchText) {
                 Text(
-                    "Total: ${datas.size} | Filtered: ${repository.datasValueFiltred.size}",
+                    "Total: ${datas.size} | Filtered: ${repository.datasValueFiltered.size}",
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }

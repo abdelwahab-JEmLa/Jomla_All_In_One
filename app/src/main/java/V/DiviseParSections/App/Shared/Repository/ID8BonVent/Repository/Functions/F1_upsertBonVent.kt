@@ -2,7 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Function
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
@@ -27,7 +27,7 @@ fun upsertBonVent(
             ?: run {
                 val getKeyByParentDe =
                     getListDesParentKeys(keyByParentBonVentOnClickButton)
-                val parentID2ClientKeyByParent = getKeyByParentDe[HClientInfos.keyModel]!!
+                val parentID2ClientKeyByParent = getKeyByParentDe[M2Client.keyModel]!!
                 val client =
                     hClientRepository.findHClientInfosByKeyDeClient(parentID2ClientKeyByParent)
                 val parentID8C2TypeTransactionKeyByParent =

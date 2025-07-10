@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,41 +12,41 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface B_ClientInfosProtoJuin3Dao {
-    @Query("SELECT * FROM HClientInfos ")
-    suspend fun getAll(): MutableList<HClientInfos>
+    @Query("SELECT * FROM M2Client ")
+    suspend fun getAll(): MutableList<M2Client>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: HClientInfos)
+    suspend fun insert(category: M2Client)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<HClientInfos>)
+    suspend fun insertAll(categories: List<M2Client>)
 
-    @Query("DELETE FROM HClientInfos")
+    @Query("DELETE FROM M2Client")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(categories: List<HClientInfos>)
+    suspend fun updateAll(categories: List<M2Client>)
 
-    @Query("SELECT * FROM HClientInfos")
-    fun getAllFlow(): Flow<List<HClientInfos>>
+    @Query("SELECT * FROM M2Client")
+    fun getAllFlow(): Flow<List<M2Client>>
 
     @Update
-    suspend fun updateData(data: HClientInfos)
+    suspend fun updateData(data: M2Client)
 
     @Delete
-    suspend fun deleteData(data: HClientInfos)
+    suspend fun deleteData(data: M2Client)
 
-    @Query("SELECT COUNT(*) FROM HClientInfos")
+    @Query("SELECT COUNT(*) FROM M2Client")
     suspend fun getCount(): Int
 
     @Upsert
-    suspend fun upsert(data: HClientInfos)
+    suspend fun upsert(data: M2Client)
 
     @Upsert
-    suspend fun upsertAllDatas(datas: List<HClientInfos>)
+    suspend fun upsertAllDatas(datas: List<M2Client>)
 
     @Delete
-    suspend fun delete(item: HClientInfos)
+    suspend fun delete(item: M2Client)
 
 
 }

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -45,7 +45,7 @@ fun addOuUpdateMapMarkers(
 
 fun addMarkersForFilteredClients(
     mapView: MapView,
-    clientsToShow: List<HClientInfos>,
+    clientsToShow: List<M2Client>,
     viewModel: MapClientsViewModel,
     showMarkerDetails: Boolean,
 ) {
@@ -71,7 +71,7 @@ fun addMarkersForFilteredClients(
 fun createAndAddMarker(
     viewModel: MapClientsViewModel,
     mapView: MapView,
-    client: HClientInfos,
+    client: M2Client,
     context: Context,
     showMarkerDetails: Boolean,
 ) {
@@ -114,7 +114,7 @@ fun createAndAddMarker(
 
 private fun Marker.title(
     viewModel: MapClientsViewModel,
-    client: HClientInfos,
+    client: M2Client,
 ) {
     title = if (viewModel.afficheLesJoursAuNoms) {
         val dateHandler = DatesHandler()
@@ -144,7 +144,7 @@ fun configureMarkerInfoWindow(
     mapView: MapView,
     context: Context,
     viewModel: MapClientsViewModel,
-    client: HClientInfos,
+    client: M2Client,
 ) {
     val markerInfoWindowLayout = xmlResources
         .find { it.first == "marker_info_window" }?.second

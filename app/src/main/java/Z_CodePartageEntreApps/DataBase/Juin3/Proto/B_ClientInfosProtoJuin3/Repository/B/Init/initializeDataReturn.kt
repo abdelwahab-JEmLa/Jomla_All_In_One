@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.B.Init
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.FireBase.getFirebaseData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.isRoomEmpty
@@ -11,7 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
 
-suspend fun dataBaseCreationFactoryMID2ClientRepository.initializeDataReturn(): List<HClientInfos> {
+suspend fun dataBaseCreationFactoryMID2ClientRepository.initializeDataReturn(): List<M2Client> {
     return if (isRoomEmpty()) {
         val hasInternetConnection = isInternetAvailable(context)
 
@@ -44,15 +44,15 @@ suspend fun dataBaseCreationFactoryMID2ClientRepository.initializeDataReturn(): 
     }
 }
 
-private fun loadClientsFromCsv(): List<HClientInfos> {
+private fun loadClientsFromCsv(): List<M2Client> {
     val csvBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
-    val csvFile = File(csvBasePath, "HClientInfos.csv")
+    val csvFile = File(csvBasePath, "M2Client.csv")
 
     if (!csvFile.exists()) {
         return emptyList()
     }
 
-    val clients = mutableListOf<HClientInfos>()
+    val clients = mutableListOf<M2Client>()
     var isFirstLine = true
 
     try {
@@ -82,7 +82,7 @@ private fun loadClientsFromCsv(): List<HClientInfos> {
     return clients
 }
 
-private fun parseCsvLineToClient(line: String): HClientInfos {
+private fun parseCsvLineToClient(line: String): M2Client {
     val values = parseCsvValues(line)
 
     // Adjust the expected column count based on your CSV structure
@@ -90,7 +90,7 @@ private fun parseCsvLineToClient(line: String): HClientInfos {
         throw IllegalArgumentException("Invalid CSV format: expected at least 20 columns, got ${values.size}")
     }
 
-    return HClientInfos(
+    return M2Client(
         id = values[0].toLongOrNull() ?: 0L,
         nom = values[1].takeIf { it.isNotBlank() } ?: "Non Defini",
         cretionTimestamps = values[2].toLongOrNull() ?: System.currentTimeMillis(),
@@ -103,16 +103,16 @@ private fun parseCsvLineToClient(line: String): HClientInfos {
         auFilterFAB = values[9].toBooleanStrictOrNull() ?: false,
         typeDeSonMagasine = values[10].let {
             try {
-                HClientInfos.TypeDeSonMagasine.valueOf(it)
+                M2Client.TypeDeSonMagasine.valueOf(it)
             } catch (e: Exception) {
-                HClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                M2Client.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         },
         clientTypeMode = values[11].let {
             try {
-                HClientInfos.ClientTypeMode.valueOf(it)
+                M2Client.ClientTypeMode.valueOf(it)
             } catch (e: Exception) {
-                HClientInfos.ClientTypeMode.NEVEAU
+                M2Client.ClientTypeMode.NEVEAU
             }
         },
         caMarqueGpsEstOuvert = values[12].toBooleanStrictOrNull() ?: false,
@@ -122,9 +122,9 @@ private fun parseCsvLineToClient(line: String): HClientInfos {
         snippet = values[16],
         actuelleEtat = values[17].let {
             try {
-                HClientInfos.DernierEtatAAffiche.valueOf(it)
+                M2Client.DernierEtatAAffiche.valueOf(it)
             } catch (e: Exception) {
-                HClientInfos.DernierEtatAAffiche.NON_DEFINI
+                M2Client.DernierEtatAAffiche.NON_DEFINI
             }
         },
         tagCeBonEstOuvertPourComptsIds = values[18],

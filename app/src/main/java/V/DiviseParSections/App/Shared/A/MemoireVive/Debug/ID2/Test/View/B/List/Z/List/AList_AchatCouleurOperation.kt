@@ -1,8 +1,8 @@
-package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List
 
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.A.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.KAchatCouleurOperation
-import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.Z.List.W.Ui.AfficheIconVentMultiItems
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List.W.Ui.AfficheIconVentMultiItems
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun List_AchatCouleurOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    listAchatCouleur: List<KAchatCouleurOperation>,
+    listAchatCouleur: List<M11AchatOperation>,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically

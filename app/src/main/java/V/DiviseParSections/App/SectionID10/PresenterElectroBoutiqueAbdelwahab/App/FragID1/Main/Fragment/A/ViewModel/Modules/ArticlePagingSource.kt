@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.A
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.D.Filter.filterArticles
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -13,7 +13,7 @@ import org.koin.core.context.GlobalContext
 class ArticlePagingSource(
     val articles: List<ArticlesBasesStatsTable>,
     val filterText: String,
-    val currentClient: HClientInfos?,
+    val currentClient: M2Client?,
     private val uiState: UiState,
     val a_ProduitRepository: A_ProduitRepository = GlobalContext.get().get()
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {

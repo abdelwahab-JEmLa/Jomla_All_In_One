@@ -216,7 +216,7 @@ private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabas
     // Create CSV content
     val csvContent = StringBuilder()
 
-    // Add CSV header for HClientInfos
+    // Add CSV header for M2Client
     csvContent.append("keyID,nom,cretionTimestamps,numTelephone,couleur,bonDuClientsSu,currentCreditBalance,positionDonClientsList,cUnClientTemporaire,auFilterFAB,typeDeSonMagasine,clientTypeMode,caMarqueGpsEstOuvert,latitude,longitude,title,snippet,actuelleEtat,tagCeBonEstOuvertPourComptsIds,keyFireBase,dernierTimeTampsSynchronisationAvecFireBase\n")
 
     // Add client data
@@ -245,7 +245,7 @@ private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabas
     }
 
     // Create file with fixed name
-    val fileName = "HClientInfos.csv"
+    val fileName = "M2Client.csv"
     val file = File(exportDir, fileName)
 
     // Write CSV content to file

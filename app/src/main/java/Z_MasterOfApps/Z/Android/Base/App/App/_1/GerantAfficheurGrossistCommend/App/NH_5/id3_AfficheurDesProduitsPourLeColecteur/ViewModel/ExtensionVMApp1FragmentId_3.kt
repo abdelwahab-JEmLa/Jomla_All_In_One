@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.id3_AfficheurDesProduitsPourLeColecteur.ViewModel
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
@@ -12,6 +12,6 @@ class ExtensionVMApp1FragmentId_3(
 ) {
     private val clientDataBaseSnapList = viewModelInitApp._modelAppsFather.clientDataBase
     var iDClientAuFilter by mutableStateOf<Long?>(0)
-    var clientFocused by mutableStateOf<Pair<HClientInfos, List<A_ProduitModel>>?>(null)
+    var clientFocused by mutableStateOf<Pair<M2Client, List<A_ProduitModel>>?>(null)
 
 }

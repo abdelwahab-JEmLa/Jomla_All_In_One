@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,11 +28,11 @@ import org.osmdroid.views.overlay.Marker
 fun ClientEdites(
     viewModel: MapClientsViewModel,
     marqueClick: Marker,
-    marqueClickRelativeClient: HClientInfos?,
+    marqueClickRelativeClient: M2Client?,
     onDismiss: () -> Unit,
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
-    onClientTypeModeChange: (HClientInfos.ClientTypeMode?) -> Unit = {},
+    onClientTypeModeChange: (M2Client.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
 ) {
@@ -76,10 +76,10 @@ fun ClientEdites(
                 .padding(end = 8.dp)
                 .clickable {
                     val newClientTypeMode = when (clientTypeMode) {
-                        HClientInfos.ClientTypeMode.ANCIEN -> HClientInfos.ClientTypeMode.NEVEAU
-                        HClientInfos.ClientTypeMode.NEVEAU -> HClientInfos.ClientTypeMode.EVITE
-                        HClientInfos.ClientTypeMode.EVITE -> HClientInfos.ClientTypeMode.ANCIEN
-                        null -> HClientInfos.ClientTypeMode.NEVEAU
+                        M2Client.ClientTypeMode.ANCIEN -> M2Client.ClientTypeMode.NEVEAU
+                        M2Client.ClientTypeMode.NEVEAU -> M2Client.ClientTypeMode.EVITE
+                        M2Client.ClientTypeMode.EVITE -> M2Client.ClientTypeMode.ANCIEN
+                        null -> M2Client.ClientTypeMode.NEVEAU
                     }
 
                     // Update the client's type mode

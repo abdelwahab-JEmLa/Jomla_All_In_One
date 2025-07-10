@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.withOutFireBaseInvalidCharacters
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.Set.Companion.getListDesParentKeys
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
@@ -42,8 +41,8 @@ class Repo2Client(
     val TAG_REPO = "Repo2Client"
     private val composScope = CoroutineScope(Dispatchers.IO)
 
-    private val _datas = mutableStateOf<List<HClientInfos>>(emptyList())
-    val datasState: State<List<HClientInfos>> = this._datas
+    private val _datas = mutableStateOf<List<M2Client>>(emptyList())
+    val datasState: State<List<M2Client>> = this._datas
     val datasValue by derivedStateOf { this._datas.value }
 
     private val _loadingProgress = mutableFloatStateOf(0f)
@@ -71,23 +70,20 @@ class Repo2Client(
 
     }
 
-    fun findHClientInfos(id: Long) = datasValue.find { it.id == id }
-
-
     fun removeClient(clientId: Long) {
         this._datas.value = this._datas.value.filter { it.id != clientId }
     }
 
-    fun updateClients(newClients: List<HClientInfos>) {
+    fun updateClients(newClients: List<M2Client>) {
         this._datas.value = newClients
         _isInitialized.value = true
     }
 
-    fun addClient(client: HClientInfos) {
+    fun addClient(client: M2Client) {
         this._datas.value += client
     }
 
-    fun upsertData(data: HClientInfos) {
+    fun upsertData(data: M2Client) {
         val dataUpdate =
             data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
         val existingIndex = datasValue.indexOfFirst { it.keyID == dataUpdate.keyID }
@@ -106,11 +102,11 @@ class Repo2Client(
         ancienRepoUpsertUneDataEtReturnVID(dataUpdate)
     }
 
-    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: HClientInfos) {
+    private fun ancienRepoUpsertUneDataEtReturnVID(dataUpdate: M2Client) {
         dataBaseCreationFactory.set(dataUpdate)
     }
 
-    fun updateClient(updatedClient: HClientInfos) {
+    fun updateClient(updatedClient: M2Client) {
         this._datas.value = this._datas.value.map { client ->
             if (client.id == updatedClient.id)
                 updatedClient.withProperKeyFireBaseAndTimeTamp()
@@ -118,13 +114,13 @@ class Repo2Client(
         }
     }
 
-    fun findHClientInfosByKeyDeClient(parentID2ClientKeyByParent: String): HClientInfos {
+    fun findHClientInfosByKeyDeClient(parentID2ClientKeyByParent: String): M2Client {
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
             ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
     }
 
-    fun findHClientInfosByKey(key: String): HClientInfos {
-        val parentID2ClientKeyByParent = getListDesParentKeys(key)[HClientInfos.keyModel]
+    fun findHClientInfosByKey(key: String): M2Client {
+        val parentID2ClientKeyByParent = getListDesParentKeys(key)[M2Client.keyModel]
         return datasValue.find { it.getTempKeyByParent() == parentID2ClientKeyByParent }
             ?: throw IllegalArgumentException("Client not found with keyByParent: $parentID2ClientKeyByParent")
     }
@@ -132,7 +128,7 @@ class Repo2Client(
 }
 
 @Entity
-data class HClientInfos(
+data class M2Client(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var keyID: String = getPushFireBase(ref),
@@ -185,7 +181,6 @@ data class HClientInfos(
         return this.nom.withOutFireBaseInvalidCharacters()
     }
 
-
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
@@ -224,7 +219,7 @@ data class HClientInfos(
         )
     }
 
-    fun withProperKeyFireBaseAndTimeTamp(): HClientInfos {
+    fun withProperKeyFireBaseAndTimeTamp(): M2Client {
         val safeKey = keyFireBase.ifEmpty { getKeyFireBase(id, nom) }
         return this.copy(
             keyFireBase = safeKey,
@@ -235,27 +230,14 @@ data class HClientInfos(
     companion object {
         const val keyModel = "ID2"
 
-        // Helper functions for default location values
         fun getCurrentDefaultLatitude(): Double {
-            // Returns 0.0 as default, but can be updated using updateLocationFromCurrentPosition()
             return 0.0
         }
 
         fun getCurrentDefaultLongitude(): Double {
-            // Returns 0.0 as default, but can be updated using updateLocationFromCurrentPosition()
             return 0.0
         }
 
-        fun extractSonKeyByParent(stringAExtractDepuit: String) =
-            stringAExtractDepuit.split("--").find { it.startsWith("$keyModel-") }
-                ?.removePrefix("$keyModel-")
-                ?: if (stringAExtractDepuit.startsWith("$keyModel-")) stringAExtractDepuit.removePrefix(
-                    "$keyModel-"
-                ).split("--").first() else null
-
-        fun createTestInstance(): List<HClientInfos> {
-            return emptyList()
-        }
 
         val parent = Firebase.database.getReference(
             "00_DataPrototype-04-02" +
@@ -270,7 +252,7 @@ data class HClientInfos(
         }
 
         fun removeRef(
-            preparedData: HClientInfos
+            preparedData: M2Client
         ) {
             ref.child(preparedData.keyFireBase).removeValue()
         }

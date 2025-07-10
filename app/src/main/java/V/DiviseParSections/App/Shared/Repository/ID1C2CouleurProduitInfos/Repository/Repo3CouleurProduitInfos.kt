@@ -47,15 +47,15 @@ class Repo3CouleurProduitInfos(
     private val _datas = mutableStateOf<List<M3CouleurProduitInfos>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
-    val datasValueFiltred by derivedStateOf {
+    val datasValueFiltered by derivedStateOf {
         when (filterQuery.value) {
             FilterQuery.SearchText -> if (filterTextSearch.value.isBlank()) datasValue else
-                datasValue.filter { d ->
+                datasValue.filter { data ->
                     listOf(
-                        d.nomCouleurStrSiSonImageDispo,
-                        d.parentId1ProduitInfosDebugName,
-                        d.nomImageFichieSansEtansion,
-                        d.parentBProduitOldID.toString()
+                        data.nomCouleurStrSiSonImageDispo,
+                        data.parentId1ProduitInfosDebugName,
+                        data.nomImageFichieSansEtansion,
+                        data.parentBProduitOldID.toString()
                     ).any { it.contains(filterTextSearch.value, true) }
                 }
 

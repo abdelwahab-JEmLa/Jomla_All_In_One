@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.Z.Archive.Proto.D.Repository
 
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.material.icons.Icons
@@ -95,14 +95,14 @@ data class ArB_ClientsDataBaseProtoD(
         }
     }
 
-    // HClientInfos.kt - Updated companion object
+    // M2Client.kt - Updated companion object
     companion object {
         val refClientsDataBase = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
-            .child("HClientInfos")
+            .child("M2Client")
 
 
-        fun HClientInfos.updateClientsDataBase(
+        fun M2Client.updateClientsDataBase(
             viewModel: ViewModelInitApp
         ) {
             viewModel.viewModelScope.launch {
@@ -142,7 +142,7 @@ data class ArB_ClientsDataBaseProtoD(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("HClientInfos", "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 client", e)
+                    Log.e("M2Client", "Failed to upsertLenceCommandeRepoGroupedProtoAvantJuin3 client", e)
                 }
             }
         }

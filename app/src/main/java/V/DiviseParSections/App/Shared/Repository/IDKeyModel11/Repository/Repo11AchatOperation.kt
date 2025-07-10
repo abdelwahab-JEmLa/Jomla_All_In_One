@@ -4,30 +4,60 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 
 @Stable
-class KAchatCouleurOperationRepository(
-    val getterFocusedValues:GetterFocusedValues,
+class Repo11AchatOperation(
+    val getterFocusedValues: GetterFocusedValues,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
 ) {
-    private val sourceDatas by derivedStateOf { getterFocusedValues
-        .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali }
-    val datasValue by derivedStateOf { initImplimentaion() }
-    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf { datasValue.groupBy {
-        it.listFCouleurVentOperation.first()
-            .parentM1ProduitInfosKeyId }
+    private val sourceDatas by derivedStateOf {
+        getterFocusedValues
+            .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
     }
 
-    private fun initImplimentaion(): List<KAchatCouleurOperation> {
+    val datasValue by derivedStateOf { initImplimentaion() }
+
+    sealed class FilterQuery {
+        data object NO_FILTER : FilterQuery()
+        data class Client(val m2Client: M2Client) : FilterQuery()
+    }
+
+    private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
+    val filterQuery get() = _filterQuery
+
+    val filteredDatas by derivedStateOf {
+        when (val currentFilter = filterQuery.value) {
+            is FilterQuery.Client -> {      //->
+                //TODO(FIXME):Fix erreur Incompatible types: Repo11AchatOperation.FilterQuery.Client and Repo11AchatOperation.FilterQuery.NO_FILTER
+                datasValue.filter { data ->
+                    data.listFCouleurVentOperation.any { operation ->
+                        operation.parentClientInfosKeyID == currentFilter.m2Client.keyID
+                    }
+                }
+            }
+            FilterQuery.NO_FILTER -> datasValue
+        }
+    }
+
+    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf {
+        datasValue.groupBy {
+            it.listFCouleurVentOperation.first()
+                .parentM1ProduitInfosKeyId
+        }
+    }
+
+    private fun initImplimentaion(): List<M11AchatOperation> {
         val operations = sourceDatas.groupBy { it.parentM3CouleurProduitInfosKeyID }
 
         return operations.map { (couleurKeyId, ventOperations) ->
             val totalQuantity = ventOperations.sumOf { it.quantityAchete }
 
-            KAchatCouleurOperation(
+            M11AchatOperation(
                 parentCouleurInfosKeyID = couleurKeyId,
                 sumAchatQantity = totalQuantity,
                 listFCouleurVentOperation = ventOperations
@@ -36,7 +66,7 @@ class KAchatCouleurOperationRepository(
     }
 }
 
-data class KAchatCouleurOperation(
+data class M11AchatOperation(
     val keyID: String = generePushKey(),
     val parentCouleurInfosKeyID: String,
     val parentGrossistKeyID: String = generePushKey(),
@@ -44,7 +74,6 @@ data class KAchatCouleurOperation(
     val listFCouleurVentOperation: List<M10OperationVentCouleur>
 ) {
     companion object {
-        val keyIDModel ="Model11"
         fun generePushKey() =
             centralRef.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
     }

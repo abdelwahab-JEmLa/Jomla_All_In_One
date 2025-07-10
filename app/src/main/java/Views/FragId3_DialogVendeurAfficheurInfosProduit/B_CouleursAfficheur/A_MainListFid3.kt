@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.ViewModel.VendeurAfficheurInfosProduitViewModel
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -43,7 +43,7 @@ fun A_MainListFragId3(
     calculeCouleurHandler: CalculeCouleurHandler = koinInject(),
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
-    currentClient: HClientInfos?,
+    currentClient: M2Client?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,

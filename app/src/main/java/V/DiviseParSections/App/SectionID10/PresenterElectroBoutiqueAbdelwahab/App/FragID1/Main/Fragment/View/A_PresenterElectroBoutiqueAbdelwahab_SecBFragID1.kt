@@ -5,7 +5,7 @@ import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.Ap
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.MainList
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.FloatingActionButtonGroup
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.HClientInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -55,7 +55,7 @@ fun PresenterElectroBoutiqueAbdelwahab_Sec10Frag1(
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-    currentClient: HClientInfos?,
+    currentClient: M2Client?,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
@@ -264,7 +264,7 @@ fun ArticleGridWithScrollbar(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    currentClient: HClientInfos?,
+    currentClient: M2Client?,
     viewModelInitApp: ViewModelInitApp,
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
