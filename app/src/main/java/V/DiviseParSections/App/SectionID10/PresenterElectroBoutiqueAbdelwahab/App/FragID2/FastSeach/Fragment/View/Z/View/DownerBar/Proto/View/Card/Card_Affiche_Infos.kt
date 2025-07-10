@@ -61,7 +61,7 @@ fun Card_Affiche_Infos(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Change Infos Produit",
+                text = "Change Infos Produit ${produit?.nom}",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
