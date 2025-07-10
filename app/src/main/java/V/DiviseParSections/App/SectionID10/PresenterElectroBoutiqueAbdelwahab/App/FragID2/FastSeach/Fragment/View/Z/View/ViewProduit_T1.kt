@@ -98,15 +98,6 @@ fun ViewProduit_T1(
             if (produit != null) {
                 ViewDisponibilityEtates(product = produit)
             }
-            ProductHeader_T1(
-                produit = product,
-                viewModel = viewModel,
-                productName = productName,
-                allNonTrouve = allNonTrouve,
-                onQuantityClickToHaptic = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                }
-            )
         }
     }
 

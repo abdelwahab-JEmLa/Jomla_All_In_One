@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.Proto.View
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.Proto.View.Card.Card_Affiche_Infos
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,9 +58,7 @@ private fun DownerBarP2() {
             vent = vent
         )
 
-        Card_Affiche_Infos { qtyBoitParCarton ->
-            produit.updateQtyBoitParCarton(qtyBoitParCarton)
-        }
+
     }
 }
 

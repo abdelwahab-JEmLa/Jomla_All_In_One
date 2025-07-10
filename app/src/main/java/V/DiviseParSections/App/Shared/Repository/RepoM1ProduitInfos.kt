@@ -3,7 +3,9 @@ package V.DiviseParSections.App.Shared.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.Get
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.A_ProduitDataBaseProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.Fonctions.Main.getKeyFireBase
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -15,9 +17,11 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Stable
 class RepoM1ProduitInfos(
+    val context: Context,
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {
     val dao = ancienRepo.dao
@@ -92,6 +96,36 @@ class RepoM1ProduitInfos(
             "data is null"
         }
     }
+
+    fun update(data: ArticlesBasesStatsTable) {
+        val existingIndex = datasValue.indexOfFirst { ancien ->
+            ancien.keyID == data.keyID
+        }
+
+        if (existingIndex < 0) {
+            composScope.launch {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+            return
+        }
+
+        val updatedItem = data.copy(
+            keyID = datasValue[existingIndex].keyID,
+            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
+        )
+
+        composScope.launch {
+            withContext(Dispatchers.Main.immediate) {
+                _datas.value = datasValue.toMutableList().apply {
+                    this[existingIndex] = updatedItem
+                }
+            }
+        }
+        ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
+    }
 }
 
 @Entity
@@ -99,6 +133,9 @@ data class ArticlesBasesStatsTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
     var keyID: String = Get.getPushFireBase(ref),
+
+    val quantite_Boit_Par_Carton:Int=0,
+    val actuelle_Affiche_Est_Carton:Boolean=false,
 
     var bsonObjectId: String = Get.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
