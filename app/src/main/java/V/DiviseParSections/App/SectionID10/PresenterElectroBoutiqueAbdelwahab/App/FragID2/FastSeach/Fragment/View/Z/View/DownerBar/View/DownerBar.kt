@@ -68,7 +68,7 @@ fun DownerBar() {
 
 @Stable
 class Produit {
-    private val _qty_Boit_Par_Carton = MutableStateFlow(0)
+    private val _qty_Boit_Par_Carton = MutableStateFlow(10)
     val qty_Boit_Par_Carton: StateFlow<Int> = _qty_Boit_Par_Carton
 
     fun updateQtyBoitParCarton(newValue: Int) {
