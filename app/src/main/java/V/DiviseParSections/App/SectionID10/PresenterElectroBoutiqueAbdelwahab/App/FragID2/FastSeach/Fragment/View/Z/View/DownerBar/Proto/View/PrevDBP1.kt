@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.View
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.Proto.View
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +41,13 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Preview
 @Composable
-private fun PrevDBP1() {
-    DownerBarP1()
+private fun PrevDBP2() {
+    DownerBarP2()
 }
 
 @SuppressLint("AutoboxingStateCreation")
 @Composable
-private fun DownerBarP1() {
+private fun DownerBarP2() {
     val produit by remember { mutableStateOf(Produit()) }
     val vent by remember { mutableStateOf(Vent()) }
 
@@ -414,8 +414,7 @@ private fun Vent_Par_Boit(
                     quantity++
                     onClick_To_Vent(quantity)
                 }) {
-                    Icon(           //<--
-                    //TODO(1): pk qund la quanityy arrive au conmplete cart ca ne le vent carton 
+                    Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Augmenter quantité",
                         tint = Color.Green
