@@ -27,10 +27,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@Preview
 @Composable
- fun UnitParBoit(
+private fun UnitParBoitP() {
+    val default_Affiche_Est_Boit by remember { mutableStateOf(true) }
+
+    var actuelle_Affiche_Est_Boit by remember { mutableStateOf(default_Affiche_Est_Boit) }
+    UnitParBoit(
+        modifier = Modifier,
+        actuelle_Affiche_Est_Boit,
+    ) {
+        actuelle_Affiche_Est_Boit = true
+    }
+}
+
+@Composable
+fun UnitParBoit(
     modifier: Modifier = Modifier,
     actuelle_Affiche: Boolean,
     onClick_actuelle_Affiche: () -> Unit,

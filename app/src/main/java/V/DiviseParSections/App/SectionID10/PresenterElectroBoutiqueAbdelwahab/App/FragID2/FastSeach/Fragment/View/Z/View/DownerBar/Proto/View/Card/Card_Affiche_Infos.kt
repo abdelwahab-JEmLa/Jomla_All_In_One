@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.Proto.View.Card
 
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.DownerBar.Proto.View.Card.Card.UnitParBoit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
+@Preview
+@Composable
+private fun Card_Affiche_InfosP() {
+    Card_Affiche_Infos() {}
+}
 
 @Composable
 fun Card_Affiche_Infos(
@@ -73,16 +79,12 @@ fun Card_Affiche_Infos(
                     actuelle_Affiche_Est_Boit = false
                 }
 
-                UnitParBoit(
-                    modifier = Modifier.weight(1f),
-                    actuelle_Affiche_Est_Boit,
-                ) {
-                    actuelle_Affiche_Est_Boit = true
-                }
+
             }
         }
     }
 }
+
 
 @Composable
 private fun CartonDisplayer(
