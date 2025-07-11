@@ -256,6 +256,7 @@ data class M10OperationVentCouleur(
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
 
+    val quantite_Boit_Par_Carton: Int = 10,
     var quantity: Int = 0,
     var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
         SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
@@ -270,6 +271,15 @@ data class M10OperationVentCouleur(
                 quantity_Par_Carton -> quantity_Par_Boit
             }
         }
+    }
+
+    fun get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(): Int {
+        return if (setIN_Vent_Its_Quantity_Represent ==
+            SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+        )
+            quantity / quantite_Boit_Par_Carton
+        else
+            quantity
     }
 
     fun getDebugInfos(): String {

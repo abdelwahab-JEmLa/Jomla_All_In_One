@@ -2,7 +2,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -33,24 +33,29 @@ import androidx.compose.ui.unit.dp
 fun QuantityButton_T1(
     newQuantity: Int,
     modifier: Modifier = Modifier,
-    viewModel: ViewModelsProduit_T1,
-    vent: M10OperationVentCouleur,
     isSelected: Boolean,
-    onClick: (Int) -> Unit = {}
+    setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent,
+    quantite_Boit_Par_Carton: Int,
+    onClick: (Int) -> Unit = {},
 ) {
-    val fCouleurAchatOperationRepositoryComposable = viewModel.getter
-        .repo10OperationVentCouleur
-
     val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Use the separated animation functions
     val animations = rememberQuantityButtonAnimations(isSelected)
+
+    val quantity_Finale = when (setIN_Vent_Its_Quantity_Represent) {
+        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> {
+            newQuantity * quantite_Boit_Par_Carton
+        }
+
+        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> {
+            newQuantity
+        }
+    }
 
     Surface(
         modifier = modifier
-            .scale(animations.scale)
-            .size(56.dp)
+            .getSemanticsTag(quantity_Finale,"quantity_Finale")
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(
@@ -61,8 +66,11 @@ fun QuantityButton_T1(
                 )
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                onClick(newQuantity)
-            },
+                onClick(quantity_Finale)
+            }
+            .scale(animations.scale)
+            .size(56.dp)
+            ,
         shape = RoundedCornerShape(16.dp),
         color = animations.backgroundColor,
         shadowElevation = if (isSelected) 8.dp else 2.dp,

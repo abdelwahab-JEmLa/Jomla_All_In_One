@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.VentCouleurQuantityDialog_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -54,7 +54,7 @@ fun ViewVentCouleur_T1(
 
     val uiState by viewModel.uiState.collectAsState()
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
-    val parentM1ProduitDebugInfos = produit?.getDebugInfos() ?: "null"
+    val parentM1ProduitDebugInfos = produit.getDebugInfos() ?: "null"
 
     val haptic = LocalHapticFeedback.current
 
@@ -74,7 +74,7 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    val defaultM10Vent = produit?.let {
+    val defaultM10Vent = produit.let {
         getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
             //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
             parentM1ProduitInfosKeyId = produit.keyID,
@@ -83,6 +83,7 @@ fun ViewVentCouleur_T1(
             parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
             parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
             setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,
+            quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton,
             quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
                 M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
             )
@@ -94,15 +95,16 @@ fun ViewVentCouleur_T1(
     val ventUIState = remember(findVent, uiState) {
         derivedStateOf {
             viewModel.calculateUIState(
-               produit, findVent, uiState
+                produit, findVent, uiState
             )
         }
     }.value
 
     val shouldShowDialog by remember(findVent, m3Couleur.keyID) {
         derivedStateOf {
-            val onVentM3 =
-                viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation;onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
+            val onVentM3 = viewModel.getterFocusedVarsHandlerFacade.onVentM10VentOperation
+
+            onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
         }
     }
 
@@ -197,7 +199,8 @@ fun ViewVentCouleur_T1(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Text(
-                                        text = findVent?.quantity.toString(),
+                                        text = findVent?.quantity
+                                            .toString(),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -213,40 +216,31 @@ fun ViewVentCouleur_T1(
     }
 
     if (shouldShowDialog && findVent != null) {
-        VentCouleurQuantityDialog_T1(
-            vent = findVent!!,
+        Dialog_Choisire_Quantity_Modularized(
+            old_quantity = findVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            setIN_Vent_Its_Quantity_Represent = findVent!!.setIN_Vent_Its_Quantity_Represent,
+            quantite_Boit_Par_Carton = findVent!!.quantite_Boit_Par_Carton,
             viewModel = viewModel,
             colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
-        ) { newQuantity ->
+        ) { quantity_Finale ->
+
             findVent?.let { existingVent ->
-                val actualQuantity = when (produit.setIN_Vent_Its_Quantity_Represent) {
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> {
-                        val cartonSize = produit.nombreProduitDonSonCarton
-                        newQuantity * cartonSize
-                    }
-
-                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> {
-                        newQuantity
-                    }
-                }
-
-                val updatedVent = if (newQuantity == 0) {
+                val updatedVent = quantity_Finale?.let {
                     existingVent.copy(
-                        quantity = actualQuantity,
-                    )
-                } else {
-                    existingVent.copy(
-                        quantity = actualQuantity,
+                        quantity = it,
                     )
                 }
 
-                viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
-                    updatedVent
-                )
-                viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
-                    existingVent.parentM1ProduitInfosKeyId
-                )
+                if (updatedVent != null) {
+                    viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                        updatedVent
+                    )
+                }
             }
+
+            viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
+                findVent!!.parentM1ProduitInfosKeyId
+            )
         }
     }
 }

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.QuantityGrid_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
@@ -12,10 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -24,23 +19,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun VentCouleurQuantityDialog_T1(
-    vent: M10OperationVentCouleur,
+fun Dialog_Choisire_Quantity_Modularized(
+    old_quantity: Int,
+    setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent,
+    quantite_Boit_Par_Carton: Int,
     viewModel: ViewModelsProduit_T1,
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     colorName: String,
-    onClick_Quantity_Button: (Int) -> Unit,
+    onClick_Quantity_Button: (Int?) -> Unit,
 ) {
-    var selectedQuantity by remember { mutableStateOf(vent.quantity) }
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
-    fun closeDialogChoisireQuantity(): Unit {
-        viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(produitKey = vent.parentM1ProduitInfosKeyId)
-    }
-
     AlertDialog(
-        onDismissRequest = { closeDialogChoisireQuantity() },
+        onDismissRequest = {
+            onClick_Quantity_Button(null)
+        },
         properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = true
@@ -62,12 +55,10 @@ fun VentCouleurQuantityDialog_T1(
         text = {
             Column {
                 QuantityGrid_T1(
-                    clickUpdate = clickUpdate,
-                    vent = vent,
-                    currentQuantity = selectedQuantity,
-                    viewModel = viewModel,
-                    onQuantitySelected = { newQuantity ->
-                        selectedQuantity = newQuantity
+                    old_quantity = old_quantity,
+                    setIN_Vent_Its_Quantity_Represent = setIN_Vent_Its_Quantity_Represent,
+                    quantite_Boit_Par_Carton = quantite_Boit_Par_Carton,
+                    on_Dismiss_Confirme_New_Quantity = { newQuantity ->
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
 
                         val message = if (newQuantity == 0) {
@@ -77,7 +68,6 @@ fun VentCouleurQuantityDialog_T1(
                         }
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
-                        closeDialogChoisireQuantity()
                         onClick_Quantity_Button(newQuantity)
                     }
                 )
@@ -86,7 +76,7 @@ fun VentCouleurQuantityDialog_T1(
         confirmButton = {
             OutlinedButton(
                 onClick = {
-                    closeDialogChoisireQuantity()
+                    onClick_Quantity_Button(null)
                 },
                 modifier = Modifier.getSemanticsTagFocucedVars(viewModel.getterFocusedVarsHandlerFacade)
             ) {

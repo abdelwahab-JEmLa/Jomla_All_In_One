@@ -1,7 +1,5 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI.QuantityButton_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
@@ -34,11 +32,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun QuantityGrid_T1(
-    currentQuantity: Int,
-    viewModel: ViewModelsProduit_T1,
-    vent: M10OperationVentCouleur,
-    clickUpdate: ClickUpdate,
-    onQuantitySelected: (Int) -> Unit
+    old_quantity: Int,
+    on_Dismiss_Confirme_New_Quantity: (Int) -> Unit,
+    setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent,
+    quantite_Boit_Par_Carton: Int,
 ) {
     var showExtendedRange by remember { mutableStateOf(false) }
 
@@ -123,12 +120,12 @@ fun QuantityGrid_T1(
             items(quantities.size) { index ->
                 val quantityNumber = quantities[index]
                 QuantityButton_T1(
-                    modifier = Modifier.fillMaxWidth(), // Pass the click upsert mode
-                    viewModel = viewModel,
-                    newQuantity = quantityNumber,
-                    isSelected = quantityNumber == currentQuantity,
-                    onClick = onQuantitySelected,
-                    vent = vent
+                    newQuantity = quantityNumber, // Pass the click upsert mode
+                    modifier = Modifier.fillMaxWidth(),
+                    isSelected = quantityNumber == old_quantity,
+                    setIN_Vent_Its_Quantity_Represent = setIN_Vent_Its_Quantity_Represent,
+                    quantite_Boit_Par_Carton=quantite_Boit_Par_Carton,
+                    onClick = on_Dismiss_Confirme_New_Quantity,
                 )
             }
         }
