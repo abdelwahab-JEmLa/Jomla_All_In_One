@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.Modules.Ui.C.UI.Integer_Outlined_Displaye_Modularized
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,6 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +47,7 @@ fun ProductHeader_T1(
     productName: String,
     allNonTrouve: Boolean,
 ) {
+    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
@@ -52,6 +57,8 @@ fun ProductHeader_T1(
         )
     }
 
+    // State for dialog visibility
+    var shouldShowDialog by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,9 +127,7 @@ fun ProductHeader_T1(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    var quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton
 
-                    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
                     IconButton(
                         onClick = {
@@ -163,27 +168,52 @@ fun ProductHeader_T1(
                         )
                     }
 
-                    Integer_Outlined_Displaye_Modularized(
-                        currentUnits =
-                            quantite_Boit_Par_Carton,
-                        label = "",
-                        onUnitsUpdate = { newQuantity ->
-                            produit.apply {
-                                quantite_Boit_Par_Carton = newQuantity
-                            }.also {
-                                repositorysMainGetter.repoM1ProduitInfos.update(
-                                    it
-                                )
-                            }
+                    IconButton(
+                        onClick = {
+                            shouldShowDialog = true
                         },
-                        modifier = Modifier.size(width = 100 .dp, height = 60.dp),
-                        showOnlyWhenPositive = false,
-                        textColor = if (allNonTrouve)
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else
-                            MaterialTheme.colorScheme.onSurface
-                    )
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Numbers,
+                                contentDescription = "Quantity per carton",
+                                tint = if (allNonTrouve)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else
+                                    MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "${produit.quantite_Boit_Par_Carton}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (allNonTrouve)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else
+                                    MaterialTheme.colorScheme.tertiary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
+            }
+        }
+        if (shouldShowDialog) {
+            Dialog_Choisire_Quantity_Modularized(
+                old_quantity = produit.quantite_Boit_Par_Carton,
+                label = "quantite_Boit_Par_Carton",
+            ) { new_Qyt ->
+                produit.apply {
+                    if (new_Qyt != null) {
+                        quantite_Boit_Par_Carton = new_Qyt
+                    }
+                }.also {
+                    viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                }
+                shouldShowDialog = false
             }
         }
     }

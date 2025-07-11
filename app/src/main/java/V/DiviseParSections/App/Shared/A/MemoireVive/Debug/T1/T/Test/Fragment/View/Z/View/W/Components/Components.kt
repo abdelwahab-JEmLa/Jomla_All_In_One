@@ -63,7 +63,8 @@ fun QuantityDisplay(
                 ventOperation.parentM1ProduitInfosKeyId == produit.keyID
             }
     }
-
+                //<--
+                //TODO(1): enleve et utilise 
     val totalQuantity = ventOperationsForProduct.sumOf { it.quantity }
 
     Row(

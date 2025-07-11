@@ -1,8 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.QuantityGrid_T1
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -11,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -21,10 +18,10 @@ import androidx.compose.ui.window.DialogProperties
 @Composable
 fun Dialog_Choisire_Quantity_Modularized(
     old_quantity: Int,
-    setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent,
-    quantite_Boit_Par_Carton: Int,
-    viewModel: ViewModelsProduit_T1,
-    colorName: String,
+    setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent=
+        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
+    quantite_Boit_Par_Carton: Int= 1,
+    label: String,
     onClick_Quantity_Button: (Int?) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -46,7 +43,7 @@ fun Dialog_Choisire_Quantity_Modularized(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = colorName,
+                    text = label,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -62,9 +59,9 @@ fun Dialog_Choisire_Quantity_Modularized(
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
 
                         val message = if (newQuantity == 0) {
-                            "Removed $colorName from cart"
+                            "Removed $label from cart"
                         } else {
-                            "Updated $colorName quantity to $newQuantity"
+                            "Updated $label quantity to $newQuantity"
                         }
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
@@ -78,7 +75,6 @@ fun Dialog_Choisire_Quantity_Modularized(
                 onClick = {
                     onClick_Quantity_Button(null)
                 },
-                modifier = Modifier.getSemanticsTagFocucedVars(viewModel.getterFocusedVarsHandlerFacade)
             ) {
                 Text("Close")
             }

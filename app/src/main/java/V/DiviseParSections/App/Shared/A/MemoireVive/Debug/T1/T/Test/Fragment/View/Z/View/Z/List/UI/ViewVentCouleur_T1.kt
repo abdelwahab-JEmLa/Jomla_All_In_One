@@ -215,17 +215,14 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (shouldShowDialog && findVent != null) {
+    if (shouldShowDialog ) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = findVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
-            setIN_Vent_Its_Quantity_Represent = findVent!!.setIN_Vent_Its_Quantity_Represent,
-            quantite_Boit_Par_Carton = findVent!!.quantite_Boit_Par_Carton,
-            viewModel = viewModel,
-            colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
-        ) { quantity_Finale ->
+            label = m3Couleur.nomCouleurStrSiSonImageDispo,
+        ) { new_Qyt ->
 
             findVent?.let { existingVent ->
-                val updatedVent = quantity_Finale?.let {
+                val updatedVent = new_Qyt?.let {
                     existingVent.copy(
                         quantity = it,
                     )

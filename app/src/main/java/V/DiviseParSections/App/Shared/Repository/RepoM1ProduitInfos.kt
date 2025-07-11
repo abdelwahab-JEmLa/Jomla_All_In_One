@@ -217,7 +217,7 @@ data class ArticlesBasesStatsTable(
     ///-------------------------------------------------------------------------------
     var setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent =
         M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
-    val quantite_Boit_Par_Carton: Int = 10,
+    var quantite_Boit_Par_Carton: Int = 10,
     ) {
 
     fun getDebugInfos(): String {
