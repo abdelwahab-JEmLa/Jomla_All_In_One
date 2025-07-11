@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory2
@@ -35,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -114,7 +118,9 @@ fun ProductHeader_T1(
                 }
             }
 
-            Card_Produit_Nombre_Unites(allNonTrouve, produit)
+            Card_Produit_Nombre_Unites(
+                allNonTrouve, produit
+            )
             {
                 shouldShowDialog_quantite_Unite_Par_Boit = true
             }
@@ -132,8 +138,6 @@ fun ProductHeader_T1(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-
-
                     IconButton(
                         onClick = {
                             val toggled_setIN_Vent_Its_Quantity_Represent =
@@ -211,6 +215,9 @@ fun ProductHeader_T1(
                 }.also {
                     viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                 }
+                viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                    ventOperationsForProduct
+                )
                 shouldShowDialog_quantite_Unite_Par_Boit = false
             }
         }
@@ -245,49 +252,36 @@ private fun Card_Produit_Nombre_Unites(
             containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
             else MaterialTheme.colorScheme.surface
         ),
-        modifier = Modifier.padding(start = 8.dp)
+        modifier = Modifier.padding(start = petitePaddine)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(petitePaddine),
+            modifier = Modifier.padding(petitePaddine)
         ) {
             IconButton(
                 onClick = {
                     onClick_PourOuvrireDialog()
-                }, modifier = Modifier.size(36.dp)
+                },
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(36.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Numbers,
-                        contentDescription = null,
-                        tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                Row {
+                    Text(
+                        text = "Nbr.U ",
+                        fontSize = 8.sp,
+                        color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
                             alpha = 0.6f
                         )
                         else MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(16.dp)
                     )
-                    Column {
-                        Text(
-                            text = "Unite Par Boit${produit.nombreUniteInt}",
-                            fontSize = 8.sp,
-                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                alpha = 0.6f
-                            )
-                            else MaterialTheme.colorScheme.tertiary,
-                        )
-                        Text(
-                            text = "${produit.nombreUniteInt}",
-                            fontSize = 8.sp,
-                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
-                                alpha = 0.6f
-                            )
-                            else MaterialTheme.colorScheme.tertiary,
-                        )
-                    }
+                    Text(
+                        text = "${produit.nombreUniteInt}",
+                        fontSize = 15.sp,
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
