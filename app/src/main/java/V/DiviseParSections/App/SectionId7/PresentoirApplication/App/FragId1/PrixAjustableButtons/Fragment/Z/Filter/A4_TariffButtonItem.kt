@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -51,7 +50,7 @@ fun TariffButtonItem(
     typeTarification: TypeChoisi,
     tariffs: List<M13TarificationInfos>,
     showLabels: Boolean,
-    nombreUnite: Int = 10,
+    nombreUnite: Int = 1,
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
 ) {
@@ -67,6 +66,9 @@ fun TariffButtonItem(
             )
         )
     }
+    val m10OperationVentCouleurs =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
     // Also reset editing state when product changes
     var isEditingPrice by remember(produit) { mutableStateOf(true) }
@@ -80,9 +82,8 @@ fun TariffButtonItem(
     fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                focused_M13TarificationInfos_Pour_Produit = latestTariff,
-                m10OperationVentCouleurs = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                    .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+                focused_M13TarificationInfos_Pour_Produit = latestTariffLocalData,
+                m10OperationVentCouleurs = m10OperationVentCouleurs
             )
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
 
@@ -288,13 +289,16 @@ fun TariffButtonItem(
         } else {
             couleurButton
         }
-        val getter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+
+        val m10OperationVentCouleurs =
+            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
         FloatingActionButton(
             modifier = Modifier
-                .size(40.dp)
-                .getSemanticsTag(latestTariffLocalData, "latestTariffLocalData")
-                .getSemanticsTagFocucedVars(getter),
+                .getSemanticsTag(latestTariffLocalData, "latestTariffLocalData",0)
+                .getSemanticsTag(m10OperationVentCouleurs, "m10OperationVentCouleurs",1)
+                .size(40.dp),
             onClick = {
 
                 handelClick()

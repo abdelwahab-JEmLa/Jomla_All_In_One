@@ -74,15 +74,11 @@ class RepositorysMainGetter(
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: FocusedValuesGetter,
-
-    ) {
+) {
     val parametresAppComptNonSaved = ParametresAppComptNonSaved()
     val composScope = CoroutineScope(Dispatchers.IO)
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
-
-    val travailleChezGrossisst3Ali =
-        getterFocusedVars.currentM9AppCompt?.travailleChezGrossisst3Ali ?: false
 
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {

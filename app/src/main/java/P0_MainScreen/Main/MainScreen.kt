@@ -1,7 +1,6 @@
 package P0_MainScreen.Main
 
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.PressistatntMainActivityButtons_Sec8FWinID1
-import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.Z.Option.DialogsSearchProduit
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
@@ -177,20 +176,18 @@ fun MainScreen(
                     }
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        if (!viewModel.getter.travailleChezGrossisst3Ali) {
-                            AnimatedVisibility(
-                                visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost)
-                            ) {
-                                ConnexionCard(
-                                    headViewModel = headViewModel,
-                                    productDisplayController = productDisplayController,
-                                    onClickToStartAsClient = {
-                                        isNavBarVisible = false
-                                        isFabVisible = false
-                                    },
-                                    lockHost = lockHost
-                                )
-                            }
+                        AnimatedVisibility(
+                            visible = isDisplayedConnexionWifiVisible || (!productDisplayController.isConnected && !lockHost)
+                        ) {
+                            ConnexionCard(
+                                headViewModel = headViewModel,
+                                productDisplayController = productDisplayController,
+                                onClickToStartAsClient = {
+                                    isNavBarVisible = false
+                                    isFabVisible = false
+                                },
+                                lockHost = lockHost
+                            )
                         }
 
                         LaunchedEffect(Unit) {
@@ -308,9 +305,8 @@ fun MainScreen(
                     }
                 }
 
-
-                if (isHostPhone) {
-                    PressistatntMainActivityButtons_Sec8FWinID1()
+                if (isHostPhone && shouldShowContent && !hideAppScreen) {
+                        PressistatntMainActivityButtons_Sec8FWinID1()
                 }
             }
         }

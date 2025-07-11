@@ -65,14 +65,14 @@ class FocusedValuesGetter(
 
     val filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
-            val is_This_M10Vent_From_travailleChezGrossisst3Ali =
+            val parent_M9AppCompt =
                 repo9AppCompt.datasValue.find { compt ->
                     compt.keyID == it.parent_M9AppCompt_KeyID
-                }?.travailleChezGrossisst3Ali ?: false
+                }
 
             it.parent_M14VentPeriod_KeyId ==
                     currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID
-                    && !is_This_M10Vent_From_travailleChezGrossisst3Ali
+                    && parent_M9AppCompt?.travailleChezGrossisst3Ali == false
         }
     }
 

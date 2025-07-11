@@ -30,8 +30,8 @@ fun MainList(
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
-    val currentM9AppCompt =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     val tariffs = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue

@@ -99,6 +99,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
 
     val currentM9AppCompt =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
     DisposableEffect(isRecording) {

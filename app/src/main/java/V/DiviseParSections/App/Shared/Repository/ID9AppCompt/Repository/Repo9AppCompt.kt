@@ -153,7 +153,7 @@ data class Z_AppCompt(
     // Section Paramaters App telephone
     val activeDialogSearchM1Produit: Boolean = false,
 
-    val travailleChezGrossisst3Ali: Boolean = false,
+    val travailleChezGrossisst3Ali: Boolean = true,
 
     var mainInitDataBaseProgressEtate: Float = 0f,
 
