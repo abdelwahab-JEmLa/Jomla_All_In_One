@@ -17,7 +17,8 @@ class ViewModelsProduit_T1(
     val getter = aCentralFacade.repositorysMainGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
 
-    val getterFocusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val getterFocusedVarsHandlerFacade =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val setterFocusedVarsHandlerFacade = focusedVarsHandlerFacade.focusedValuesSetter
 
     val b1CouleurOuGoutProduitDataBaseRepository = getter.repo3CouleurProduitInfos
@@ -38,12 +39,27 @@ class ViewModelsProduit_T1(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun calculateUIState(existingVent: M10OperationVentCouleur?, uiState: UiState): ViewVentUIState {
+    fun calculateUIState(
+        produit: ArticlesBasesStatsTable,
+        existingVent: M10OperationVentCouleur?,
+        uiState: UiState
+    ): ViewVentUIState {
         val ventKey = existingVent?.keyID ?: ""
-        val isRemoved = existingVent?.etateActuellementEst == M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+        val isRemoved =
+            existingVent?.etateActuellementEst == M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+
+        val existingVentQ = existingVent?.quantity ?: 0
+        val quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
+            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+        ) {
+            existingVentQ * produit.quantite_Boit_Par_Carton
+        } else {
+            existingVentQ
+        }
+
         return ViewVentUIState(
             ventKey = ventKey,
-            quantity = existingVent?.quantity ?: 0,
+            quantity = quantity,
             isRemoved = isRemoved,
             itemAlpha = if (isRemoved) 0.4f else 1.0f,
             colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
@@ -57,26 +73,37 @@ class ViewModelsProduit_T1(
 
 
     private fun extractField(obj: Any?, fieldName: String): String? = try {
-        obj?.javaClass?.getDeclaredField(fieldName)?.apply { isAccessible = true }?.get(obj) as? String
-    } catch (e: Exception) { null }
+        obj?.javaClass?.getDeclaredField(fieldName)?.apply { isAccessible = true }
+            ?.get(obj) as? String
+    } catch (e: Exception) {
+        null
+    }
 
     fun getImageFile(nomImageFichieSansEtansion: String, extensionDisponible: String): File? =
         if (nomImageFichieSansEtansion != "Non Dispo")
-            File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", "$nomImageFichieSansEtansion.$extensionDisponible")
+            File(
+                "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne",
+                "$nomImageFichieSansEtansion.$extensionDisponible"
+            )
         else null
 
-    fun getTotalQuantity(relatedVents: List<M10OperationVentCouleur>) = relatedVents.sumOf { it.quantity }
+    fun getTotalQuantity(relatedVents: List<M10OperationVentCouleur>) =
+        relatedVents.sumOf { it.quantity }
 
     fun getProductName(produit: Any?, productKeyId: String): String {
         val nom = produit?.let {
             try {
                 val nomField = it.javaClass.getDeclaredField("nom").apply { isAccessible = true }
                 (nomField.get(it) as? String)?.takeIf { it.isNotBlank() }
-                    ?: it.javaClass.getDeclaredField("nomMutable").apply { isAccessible = true }.get(it) as? String
-            } catch (e: Exception) { null }
+                    ?: it.javaClass.getDeclaredField("nomMutable").apply { isAccessible = true }
+                        .get(it) as? String
+            } catch (e: Exception) {
+                null
+            }
         }
         return nom?.takeIf { it.isNotBlank() } ?: "Product #$productKeyId"
     }
 
-    fun allNonTrouve(relatedVents: List<M10OperationVentCouleur>) = relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+    fun allNonTrouve(relatedVents: List<M10OperationVentCouleur>) =
+        relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 }

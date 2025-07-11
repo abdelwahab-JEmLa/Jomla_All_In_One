@@ -130,7 +130,7 @@ class RepositorysMainSetter(
     fun update_IfExist_Setter(data: M8BonVent) = repo8BonVent.updateIfExist(data)
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
-    fun update_IfExist_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+    fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
     //----------------------------------------------------------------------------------------------------------------------------------------------
 
     fun upsertM8BonVent(data: M8BonVent) {

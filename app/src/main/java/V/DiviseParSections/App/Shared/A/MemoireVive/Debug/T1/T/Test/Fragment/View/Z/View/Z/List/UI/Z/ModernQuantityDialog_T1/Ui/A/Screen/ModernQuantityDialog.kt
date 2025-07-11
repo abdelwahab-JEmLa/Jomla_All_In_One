@@ -29,10 +29,9 @@ fun VentCouleurQuantityDialog_T1(
     viewModel: ViewModelsProduit_T1,
     clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     colorName: String,
-    currentQuantity: Int,
     onClick_Quantity_Button: (Int) -> Unit,
 ) {
-    var selectedQuantity by remember { mutableStateOf(currentQuantity) }
+    var selectedQuantity by remember { mutableStateOf(vent.quantity) }
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 

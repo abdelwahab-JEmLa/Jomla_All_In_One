@@ -51,8 +51,6 @@ fun ProductHeader_T1(
             }
     }
 
-    val currentQuantityUnit = ventOperationsForProduct.firstOrNull()?.quantity_Represent
-        ?: M10OperationVentCouleur.Quantity_Represent.quantity_Par_Boit
 
     Box(
         modifier = Modifier
@@ -114,11 +112,11 @@ fun ProductHeader_T1(
                 val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
                 IconButton(
-
                     onClick = {
+                        val toggled_setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent.toggle()
                         produit.apply {
                             setIN_Vent_Its_Quantity_Represent =
-                                setIN_Vent_Its_Quantity_Represent.toggle()
+                                toggled_setIN_Vent_Its_Quantity_Represent
                         }.also {
                             repositorysMainGetter.repoM1ProduitInfos.update(
                                 it
@@ -128,7 +126,7 @@ fun ProductHeader_T1(
                     modifier = Modifier.size(36.dp)
                 ) {
                     val carton = produit.setIN_Vent_Its_Quantity_Represent ==
-                            ArticlesBasesStatsTable.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
                     Icon(
                         imageVector = if (carton)
                             Icons.Default.Inventory2

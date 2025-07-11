@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 fun ViewVentCouleur_T1(
     modifier: Modifier = Modifier,
     m3Couleur: M3CouleurProduitInfos,
-    produit: ArticlesBasesStatsTable?,
+    produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     size: Dp = 200.dp
 ) {
@@ -64,33 +64,37 @@ fun ViewVentCouleur_T1(
 
     val imageFile by derivedStateOf {
         viewModel.getImageFile(
-            m3Couleur.nomImageFichieSansEtansion,
-            m3Couleur.extensionDisponible
+            m3Couleur.nomImageFichieSansEtansion, m3Couleur.extensionDisponible
         )
     }
 
     val findVent by remember {
         derivedStateOf {
-            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-                .find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
+            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
         }
     }
 
-    val defaultM10Vent = getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
-        //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-        parentM1ProduitInfosKeyId = produit?.keyID ?: null.toString(),
-        parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
-        //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-        parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
-        parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
-        quantity = 1
-    )
+    val defaultM10Vent = produit?.let {
+        getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
+            //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+            parentM1ProduitInfosKeyId = produit.keyID,
+            parentM1ProduitDebugInfos = parentM1ProduitDebugInfos,
+            //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+            parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
+            parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
+            setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent,
+            quantity = if (produit.setIN_Vent_Its_Quantity_Represent ==
+                M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+            )
+                1 * produit.quantite_Boit_Par_Carton
+            else 1
+        )
+    }
 
     val ventUIState = remember(findVent, uiState) {
         derivedStateOf {
             viewModel.calculateUIState(
-                findVent,
-                uiState
+               produit, findVent, uiState
             )
         }
     }.value
@@ -213,15 +217,15 @@ fun ViewVentCouleur_T1(
             vent = findVent!!,
             viewModel = viewModel,
             colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
-            currentQuantity = ventUIState.quantity,
         ) { newQuantity ->
             findVent?.let { existingVent ->
-                val actualQuantity = when (existingVent.quantity_Represent) {
-                    M10OperationVentCouleur.Quantity_Represent.quantity_Par_Carton -> {
-                        val cartonSize = produit?.nombreProduitDonSonCarton ?: 1
+                val actualQuantity = when (produit.setIN_Vent_Its_Quantity_Represent) {
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton -> {
+                        val cartonSize = produit.nombreProduitDonSonCarton
                         newQuantity * cartonSize
                     }
-                    M10OperationVentCouleur.Quantity_Represent.quantity_Par_Boit -> {
+
+                    M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit -> {
                         newQuantity
                     }
                 }
@@ -236,8 +240,9 @@ fun ViewVentCouleur_T1(
                     )
                 }
 
-                viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-                    .addOrUpdateData(updatedVent)
+                viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.addOrUpdateData(
+                    updatedVent
+                )
                 viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
                     existingVent.parentM1ProduitInfosKeyId
                 )

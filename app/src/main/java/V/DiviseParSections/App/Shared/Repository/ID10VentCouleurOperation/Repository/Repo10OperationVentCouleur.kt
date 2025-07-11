@@ -257,14 +257,14 @@ data class M10OperationVentCouleur(
     var achatParentBsonIDOld: String = "",
 
     var quantity: Int = 0,
-    var quantity_Represent: Quantity_Represent = Quantity_Represent.quantity_Par_Boit,
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
+        SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
 ) {
-    enum class Quantity_Represent {
+    enum class SetIN_Vent_Its_Quantity_Represent {
         quantity_Par_Boit,
         quantity_Par_Carton;
 
-        fun toggle(): Quantity_Represent {
+        fun toggle(): SetIN_Vent_Its_Quantity_Represent {
             return when (this) {
                 quantity_Par_Boit -> quantity_Par_Carton
                 quantity_Par_Carton -> quantity_Par_Boit
