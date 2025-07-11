@@ -229,13 +229,14 @@ fun ProductHeader_T1(
                 old_quantity = produit.quantite_Boit_Par_Carton,
                 label = "quantite_Boit_Par_Carton",
             ) { new_Qyt ->
-                produit.apply {
-                    if (new_Qyt != null) {
+                if (new_Qyt != null) {
+                    produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
+                    }.also {
+                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                     }
-                }.also {
-                    viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                 }
+
                 shouldShowDialog_quantite_Boit_Par_Carton = false
             }
         }
