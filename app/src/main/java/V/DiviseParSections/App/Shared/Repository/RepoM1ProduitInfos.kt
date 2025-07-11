@@ -134,8 +134,6 @@ data class ArticlesBasesStatsTable(
     var id: Long = 0L,
     var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
 
-    val quantite_Boit_Par_Carton: Int = 1,
-    val actuelle_Affiche_Est_Carton: Boolean = false,
 
     var bsonObjectId: String = RepositorysMainGetter.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
@@ -215,7 +213,23 @@ data class ArticlesBasesStatsTable(
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
-) {
+    ///-------------------------------------------------------------------------------
+    var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
+        SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
+    val quantite_Boit_Par_Carton: Int = 10,
+    ) {
+    enum class SetIN_Vent_Its_Quantity_Represent {
+        quantity_Par_Boit,
+        quantity_Par_Carton;
+
+        fun toggle(): SetIN_Vent_Its_Quantity_Represent {
+            return when (this) {
+                quantity_Par_Boit -> quantity_Par_Carton
+                quantity_Par_Carton -> quantity_Par_Boit
+            }
+        }
+    }
+
     fun getDebugInfos(): String {
         return nom + "[" + keyID.takeLast(4).uppercase() + "]"
     }

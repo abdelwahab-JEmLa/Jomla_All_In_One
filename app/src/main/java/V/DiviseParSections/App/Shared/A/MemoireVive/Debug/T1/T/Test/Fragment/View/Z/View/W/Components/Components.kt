@@ -64,7 +64,7 @@ fun QuantityDisplay(
             }
     }
 
-    val totalQuantity = ventOperationsForProduct.sumOf { it.quantity_Par_Boit }
+    val totalQuantity = ventOperationsForProduct.sumOf { it.quantity }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

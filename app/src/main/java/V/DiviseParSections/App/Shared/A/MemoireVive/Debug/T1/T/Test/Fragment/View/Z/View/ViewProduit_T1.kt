@@ -116,7 +116,7 @@ fun ViewProduit_T1(
                 parentM1ProduitInfosKeyId = produit.keyID,
                 parentM1ProduitDebugInfos = produit.nom,
                 parentM3CouleurProduitDebugInfos = "Default Color",
-                quantity_Par_Boit = 0
+                quantity = 0
             )
 
         operationForDialog?.let { operation ->
@@ -124,7 +124,7 @@ fun ViewProduit_T1(
                 produit = produit,
                 viewModel = viewModel,
                 colorName = operation.parentM3CouleurProduitDebugInfos,
-                currentQuantity = operation.quantity_Par_Boit,
+                currentQuantity = operation.quantity,
                 onDismiss = {
                     viewModel.setterFocusedVarsHandlerFacade.fermeFocucePourPrixDeM1ProduitDialogChoisireQuantityFacade(
                         produit

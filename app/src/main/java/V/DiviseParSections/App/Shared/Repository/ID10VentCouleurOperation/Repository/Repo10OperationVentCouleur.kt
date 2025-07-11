@@ -52,10 +52,12 @@ class Repo10OperationVentCouleur(
                             withContext(Dispatchers.Main) {
                                 _datas.value = data
                             }
-                        } catch (e: Exception) {}
+                        } catch (e: Exception) {
+                        }
                     }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
         }
     }
 
@@ -141,7 +143,7 @@ class Repo10OperationVentCouleur(
             parentProduitInfosOldId = relatedCouleur.parentBProduitOldID,
             parentM3CouleurProduitInfosKeyID = relatedCouleur.keyID,
             etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.ChoisiQuantityConfirme,
-            quantity_Par_Boit = quantity,
+            quantity = quantity,
             type = M10OperationVentCouleur.Type.CommandeDeLui,
         )
     }
@@ -214,6 +216,7 @@ class Repo10OperationVentCouleur(
         ancienRepo.addOrUpdatedAncienRepo(existingIndex, data)
     }
 }
+
 @Entity
 data class M10OperationVentCouleur(
     @PrimaryKey var keyID: String = getPushFireBase(ref),
@@ -253,27 +256,27 @@ data class M10OperationVentCouleur(
     var type: Type = Type.CommandeDeLui,
     var achatParentBsonIDOld: String = "",
 
-    var quantity_Par_Boit: Int = 0,
-    val quantity_Par_Carton: Int = 1,
-    var setIN_VentQuantity_Actuellement_Va_Remplire: SetIN_VentQuantity_Actuellement_Va_Remplire = SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit,
+    var quantity: Int = 0,
+    var quantity_Represent: Quantity_Represent = Quantity_Represent.quantity_Par_Boit,
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ) {
-    enum class SetIN_VentQuantity_Actuellement_Va_Remplire {
+    enum class Quantity_Represent {
         quantity_Par_Boit,
         quantity_Par_Carton;
 
-        fun toggle(): SetIN_VentQuantity_Actuellement_Va_Remplire {
+        fun toggle(): Quantity_Represent {
             return when (this) {
                 quantity_Par_Boit -> quantity_Par_Carton
                 quantity_Par_Carton -> quantity_Par_Boit
             }
         }
     }
+
     fun getDebugInfos(): String {
         return buildString {
             append("KeyID: $keyID\n")
             append("Parent Product: $parentM1ProduitDebugInfos\n")
-            append("Quantity: $quantity_Par_Boit\n")
+            append("Quantity: $quantity\n")
             append("State: $etateActuellementEst\n")
             append("Delivery: $etateDelivery\n")
             append("Type: $type")

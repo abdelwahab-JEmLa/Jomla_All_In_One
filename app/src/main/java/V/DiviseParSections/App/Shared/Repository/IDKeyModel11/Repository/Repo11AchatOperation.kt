@@ -55,7 +55,7 @@ class Repo11AchatOperation(
         val operations = sourceDatas.groupBy { it.parentM3CouleurProduitInfosKeyID }
 
         return operations.map { (couleurKeyId, ventOperations) ->
-            val totalQuantity = ventOperations.sumOf { it.quantity_Par_Boit }
+            val totalQuantity = ventOperations.sumOf { it.quantity }
 
             M11AchatOperation(
                 parentCouleurInfosKeyID = couleurKeyId,

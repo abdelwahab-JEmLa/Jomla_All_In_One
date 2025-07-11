@@ -48,7 +48,7 @@ fun List_AcheteursDeCetteProduit(
             val achatQuantityDeCetteBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade
                 .focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
-                .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantity_Par_Boit
+                .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantity
 
             Text(
                 text = "Qté: $achatQuantityDeCetteBonVent",

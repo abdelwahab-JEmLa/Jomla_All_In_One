@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI.QuantityButton_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI.QuantityButton_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun QuantityGrid_T1(
     currentQuantity: Int,
-    onQuantitySelected: (Int) -> Unit,
     viewModel: ViewModelsProduit_T1,
     vent: M10OperationVentCouleur,
-    clickUpdate: ClickUpdate
+    clickUpdate: ClickUpdate,
+    onQuantitySelected: (Int) -> Unit
 ) {
     var showExtendedRange by remember { mutableStateOf(false) }
 
@@ -124,7 +124,6 @@ fun QuantityGrid_T1(
                 val quantityNumber = quantities[index]
                 QuantityButton_T1(
                     modifier = Modifier.fillMaxWidth(), // Pass the click upsert mode
-                    clickUpdate = clickUpdate,
                     viewModel = viewModel,
                     newQuantity = quantityNumber,
                     isSelected = quantityNumber == currentQuantity,

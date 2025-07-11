@@ -90,7 +90,7 @@ fun B_CouleurAfficheur(
         colorIndex
     )
 
-    val currentQuantity = vent?.quantity_Par_Boit ?: 0
+    val currentQuantity = vent?.quantity ?: 0
 
     // Using add_New simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -194,7 +194,7 @@ fun B_CouleurAfficheur(
 
         if (vent != null) {
             QuantityBadge(
-                quantity = vent.quantity_Par_Boit.toString(),
+                quantity = vent.quantity.toString(),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(2.dp)
@@ -336,7 +336,7 @@ fun B_CouleurAfficheur(
                 "${
                     keyID.takeLast(4).uppercase()
                 } $nomImageFichieSansEtansion.$extensionDisponible" +
-                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity_Par_Boit}"
+                        " V= ${vent?.parentM1ProduitDebugInfos ?: "NO"} ${vent?.quantity}"
             }
 
             Box(

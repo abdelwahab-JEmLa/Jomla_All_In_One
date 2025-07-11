@@ -68,7 +68,7 @@ private fun parsedData(values: List<String>) = M10OperationVentCouleur(
     } catch (e: IllegalArgumentException) {
         M10OperationVentCouleur.EtateActuellementEst.CreeSlote
     },
-    quantity_Par_Boit = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
+    quantity = values.getOrElse(8) { "0" }.toIntOrNull() ?: 0,
     provisoireMonPrix = values.getOrElse(10) { "0.0" }.toDoubleOrNull() ?: 0.0,
     parentClientInfosKeyID = values.getOrElse(6) { "" }
 )

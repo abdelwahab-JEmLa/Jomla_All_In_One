@@ -83,7 +83,7 @@ fun ViewVentCouleur_T1(
         //---------------------------------Parent M3CouleurProduitInfos----------------------------------------------------------------------------------------------------------------------------------
         parentM3CouleurProduitInfosKeyID = m3Couleur.keyID,
         parentM3CouleurProduitDebugInfos = parentM1ProduitDebugInfos + m3Couleur.indexCouleurDansAncienProto,
-        quantity_Par_Boit = 1
+        quantity = 1
     )
 
     val ventUIState = remember(findVent, uiState) {
@@ -114,7 +114,11 @@ fun ViewVentCouleur_T1(
     ) {
         // Image/Color display card
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .getSemanticsTag(
+                    defaultM10Vent, "defaultM3CouleurProduitInfos"
+                )
+                .fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
@@ -142,7 +146,11 @@ fun ViewVentCouleur_T1(
                                 colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
                                 contentScale = ContentScale.Crop,
                                 imageSize = DpSize(size, size),
-                                colorFilter = ventUIState.colorMatrix?.let { ColorFilter.colorMatrix(it) },
+                                colorFilter = ventUIState.colorMatrix?.let {
+                                    ColorFilter.colorMatrix(
+                                        it
+                                    )
+                                },
                                 onClickToOpenWindow = {
                                     lenceVent()
                                     handelUiAction(haptic)
@@ -185,7 +193,7 @@ fun ViewVentCouleur_T1(
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ) {
                                     Text(
-                                        text = findVent?.quantity_Par_Boit.toString(),
+                                        text = findVent?.quantity.toString(),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -206,6 +214,34 @@ fun ViewVentCouleur_T1(
             viewModel = viewModel,
             colorName = m3Couleur.nomCouleurStrSiSonImageDispo,
             currentQuantity = ventUIState.quantity,
-        )
+        ) { newQuantity ->
+            findVent?.let { existingVent ->
+                val actualQuantity = when (existingVent.quantity_Represent) {
+                    M10OperationVentCouleur.Quantity_Represent.quantity_Par_Carton -> {
+                        val cartonSize = produit?.nombreProduitDonSonCarton ?: 1
+                        newQuantity * cartonSize
+                    }
+                    M10OperationVentCouleur.Quantity_Represent.quantity_Par_Boit -> {
+                        newQuantity
+                    }
+                }
+
+                val updatedVent = if (newQuantity == 0) {
+                    existingVent.copy(
+                        quantity = actualQuantity,
+                    )
+                } else {
+                    existingVent.copy(
+                        quantity = actualQuantity,
+                    )
+                }
+
+                viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
+                    .addOrUpdateData(updatedVent)
+                viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
+                    existingVent.parentM1ProduitInfosKeyId
+                )
+            }
+        }
     }
 }

@@ -42,15 +42,15 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
 
             DeliveryStatusSummary(
                 trouveSummary = CartSummary(
-                    totalItems = ventsTrouve.sumOf { it.quantity_Par_Boit },
+                    totalItems = ventsTrouve.sumOf { it.quantity },
                     totalProducts = ventsTrouve.groupBy { it.parentM1ProduitInfosKeyId }.size,
-                    totalValue = ventsTrouve.sumOf { it.quantity_Par_Boit * it.provisoireMonPrix },
+                    totalValue = ventsTrouve.sumOf { it.quantity * it.provisoireMonPrix },
                     itemsCount = ventsTrouve.size
                 ),
                 nonTrouveSummary = CartSummary(
-                    totalItems = ventsNonTrouve.sumOf { it.quantity_Par_Boit },
+                    totalItems = ventsNonTrouve.sumOf { it.quantity },
                     totalProducts = ventsNonTrouve.groupBy { it.parentM1ProduitInfosKeyId }.size,
-                    totalValue = ventsNonTrouve.sumOf { it.quantity_Par_Boit * it.provisoireMonPrix },
+                    totalValue = ventsNonTrouve.sumOf { it.quantity * it.provisoireMonPrix },
                     itemsCount = ventsNonTrouve.size
                 )
             )

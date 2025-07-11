@@ -61,7 +61,7 @@ fun ProductGroup(
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = vents.sumOf { it.quantity_Par_Boit }
+    val totalQuantity = vents.sumOf { it.quantity }
     val productName = produit?.nom?.takeIf { it.isNotBlank() }
         ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
@@ -142,7 +142,7 @@ fun ProductGroup(
                                     modifier = Modifier.padding(4.dp),
                                     ventKey = vent.keyID,
                                     size = 120.dp,
-                                    purchasedQuantity = vent.quantity_Par_Boit,
+                                    purchasedQuantity = vent.quantity,
                                     viewModel = viewModel
                                 )
                             }
@@ -160,7 +160,7 @@ fun ProductGroup(
             onDissmiss_showQuantityDialog = { showDialog = false },
             onDismiss = { showDialog = false },
             viewModel = viewModel,
-            vent = vents.first().copy(quantity_Par_Boit = totalQuantity)
+            vent = vents.first().copy(quantity = totalQuantity)
         )
     }
 }

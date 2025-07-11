@@ -41,7 +41,7 @@ class PrintReceiptHandler {
             // RepositorysMainGetter all vents that are not removed from cart
             val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
                 vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
-                        vent.quantity_Par_Boit > 0
+                        vent.quantity > 0
             }
 
             val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
@@ -70,7 +70,7 @@ class PrintReceiptHandler {
 
                 val article = ArticleImpression(
                     nomArticle = articleName,
-                    quantite = vent.quantity_Par_Boit,
+                    quantite = vent.quantity,
                     prixUnitaire = vent.provisoireMonPrix,
                     couleur = colorName
                 )

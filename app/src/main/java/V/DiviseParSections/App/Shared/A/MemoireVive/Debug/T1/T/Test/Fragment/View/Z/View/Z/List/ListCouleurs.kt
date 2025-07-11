@@ -30,19 +30,13 @@ fun ListCouleurs(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(colors, key = { it.keyID }) { color ->
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
-            ) {
-                ViewVentCouleur_T1(
-                    modifier = Modifier.padding(4.dp),
-                    m3Couleur= color,
-                    produit = produit,
-                    viewModel = viewModel,
-                    size = 120.dp
-                )
-            }
+            ViewVentCouleur_T1(
+                modifier = Modifier.padding(4.dp),
+                m3Couleur = color,
+                produit = produit,
+                viewModel = viewModel,
+                size = 120.dp
+            )
         }
     }
 }

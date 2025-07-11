@@ -43,7 +43,7 @@ class ViewModelsProduit_T1(
         val isRemoved = existingVent?.etateActuellementEst == M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
         return ViewVentUIState(
             ventKey = ventKey,
-            quantity = existingVent?.quantity_Par_Boit ?: 0,
+            quantity = existingVent?.quantity ?: 0,
             isRemoved = isRemoved,
             itemAlpha = if (isRemoved) 0.4f else 1.0f,
             colorMatrix = if (isRemoved) ColorMatrix().apply { setToSaturation(0f) } else null
@@ -65,7 +65,7 @@ class ViewModelsProduit_T1(
             File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne", "$nomImageFichieSansEtansion.$extensionDisponible")
         else null
 
-    fun getTotalQuantity(relatedVents: List<M10OperationVentCouleur>) = relatedVents.sumOf { it.quantity_Par_Boit }
+    fun getTotalQuantity(relatedVents: List<M10OperationVentCouleur>) = relatedVents.sumOf { it.quantity }
 
     fun getProductName(produit: Any?, productKeyId: String): String {
         val nom = produit?.let {

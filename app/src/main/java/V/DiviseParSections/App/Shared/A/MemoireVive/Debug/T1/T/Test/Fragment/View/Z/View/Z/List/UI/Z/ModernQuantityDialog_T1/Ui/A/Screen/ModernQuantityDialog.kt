@@ -30,6 +30,7 @@ fun VentCouleurQuantityDialog_T1(
     clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     colorName: String,
     currentQuantity: Int,
+    onClick_Quantity_Button: (Int) -> Unit,
 ) {
     var selectedQuantity by remember { mutableStateOf(currentQuantity) }
     val haptic = LocalHapticFeedback.current
@@ -65,6 +66,7 @@ fun VentCouleurQuantityDialog_T1(
                     clickUpdate = clickUpdate,
                     vent = vent,
                     currentQuantity = selectedQuantity,
+                    viewModel = viewModel,
                     onQuantitySelected = { newQuantity ->
                         selectedQuantity = newQuantity
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -77,8 +79,8 @@ fun VentCouleurQuantityDialog_T1(
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
                         closeDialogChoisireQuantity()
-                    },
-                    viewModel = viewModel
+                        onClick_Quantity_Button(newQuantity)
+                    }
                 )
             }
         },

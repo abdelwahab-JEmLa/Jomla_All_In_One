@@ -75,7 +75,7 @@ fun QuantityButtonM1Produit_T1(
                     ventsDuProduit.forEachIndexed { index, ventItem ->
                         val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
                         val updatedVent = ventItem.copy(
-                            quantity_Par_Boit = itemQuantity,
+                            quantity = itemQuantity,
                         )
                         repo10OperationVentCouleur.addOrUpdateData(updatedVent)
                     }
@@ -100,7 +100,7 @@ fun QuantityButtonM1Produit_T1(
                                     parentM1ProduitDebugInfos = produit.nom,
                                     parentM3CouleurProduitInfosKeyID = color.keyID,
                                     parentM3CouleurProduitDebugInfos = "${produit.nom}_${color.indexCouleurDansAncienProto}",
-                                    quantity_Par_Boit = itemQuantity,
+                                    quantity = itemQuantity,
                                     etateActuellementEst = if (itemQuantity > 0) {
                                         M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
                                     } else {

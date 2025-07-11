@@ -1,7 +1,6 @@
 // Enhanced QuantityButton.kt - Fixed TODOs
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.B.List.UI
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.rememberQuantityButtonAnimations
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -32,11 +31,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun QuantityButton_T1(
+    newQuantity: Int,
     modifier: Modifier = Modifier,
     viewModel: ViewModelsProduit_T1,
     vent: M10OperationVentCouleur,
-    newQuantity: Int,
-    clickUpdate: ClickUpdate = ClickUpdate.CouleurQua,
     isSelected: Boolean,
     onClick: (Int) -> Unit = {}
 ) {
@@ -64,66 +62,6 @@ fun QuantityButton_T1(
             ) {
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 onClick(newQuantity)
-
-                when(clickUpdate) {
-                    ClickUpdate.CouleurQua -> {
-                        vent.let { existingVent ->
-                            val updatedVent = if (newQuantity == 0) {
-                                existingVent.copy(
-                                    quantity_Par_Boit = newQuantity,
-                                )
-                            } else {
-                                existingVent.copy(
-                                    quantity_Par_Boit = newQuantity,
-                                )
-                            }
-
-                            fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                            viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
-                                vent.parentM1ProduitInfosKeyId
-                            )
-                        }
-                    }
-                    ClickUpdate.TotalQua -> {
-                        val allProductVents = fCouleurAchatOperationRepositoryComposable.datasValue.filter {
-                            it.parentM1ProduitInfosKeyId == vent.parentM1ProduitInfosKeyId &&
-                                    it.etateActuellementEst != M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                        }
-
-                        if (allProductVents.isNotEmpty()) {
-                            if (newQuantity == 0) {
-                                allProductVents.forEach { ventItem ->
-                                    val updatedVent = ventItem.copy(
-                                        quantity_Par_Boit = 0,
-                                        etateActuellementEst = M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE,
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                                    viewModel.setterFocusedVarsHandlerFacade.fermeDialogChoisireQuantityDeVentCouleur(
-                                        vent.parentM1ProduitInfosKeyId
-                                    )
-                                }
-                            } else {
-                                val quantityPerItem = newQuantity / allProductVents.size
-                                val remainder = newQuantity % allProductVents.size
-
-                                allProductVents.forEachIndexed { index, ventItem ->
-                                    val itemQuantity = quantityPerItem + if (index < remainder) 1 else 0
-                                    val updatedVent = ventItem.copy(
-                                        quantity_Par_Boit = itemQuantity,
-                                        etateActuellementEst = if (itemQuantity > 0) {
-                                            M10OperationVentCouleur.EtateActuellementEst.ParentBonVentConfirme
-                                        } else {
-                                            M10OperationVentCouleur.EtateActuellementEst.SUPP_AU_PANIER_FINALE
-                                        },
-                                        dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-                                    )
-                                    fCouleurAchatOperationRepositoryComposable.addOrUpdateData(updatedVent)
-                                }
-                            }
-                        }
-                    }
-                }
             },
         shape = RoundedCornerShape(16.dp),
         color = animations.backgroundColor,

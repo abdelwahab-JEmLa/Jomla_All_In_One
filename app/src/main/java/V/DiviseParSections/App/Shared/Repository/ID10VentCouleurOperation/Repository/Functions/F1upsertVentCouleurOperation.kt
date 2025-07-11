@@ -17,7 +17,7 @@ fun upsertVentCouleurOperation(
     val zCompt = zAppComptRepositoryComposable.currentAppCompt
 
     fCouleurVentOperation?.let { existingOperation ->
-        val updatedOperation = existingOperation.copy(quantity_Par_Boit = quantity)
+        val updatedOperation = existingOperation.copy(quantity = quantity)
         getter.repo10OperationVentCouleur.addOrUpdateData(updatedOperation)
     } ?: zCompt?.let {
         getter.repo10OperationVentCouleur.acheterUneCouleur(

@@ -44,7 +44,6 @@ fun ProductHeader_T1(
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
-    // Fixed: Using derivedStateOf instead of remember for computed values
     val ventOperationsForProduct by derivedStateOf {
         onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
             .filter { ventOperation ->
@@ -52,8 +51,8 @@ fun ProductHeader_T1(
             }
     }
 
-    val currentQuantityUnit = ventOperationsForProduct.firstOrNull()?.setIN_VentQuantity_Actuellement_Va_Remplire
-        ?: M10OperationVentCouleur.SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit
+    val currentQuantityUnit = ventOperationsForProduct.firstOrNull()?.quantity_Represent
+        ?: M10OperationVentCouleur.Quantity_Represent.quantity_Par_Boit
 
     Box(
         modifier = Modifier
@@ -78,8 +77,11 @@ fun ProductHeader_T1(
     ) {
         Row(
             modifier = Modifier
-                .getSemanticsTag(onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent,"onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent")
-                .getSemanticsTag(ventOperationsForProduct,"ventOperationsForProduct")
+                .getSemanticsTag(
+                    onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent,
+                    "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent"
+                )
+                .getSemanticsTag(ventOperationsForProduct, "ventOperationsForProduct")
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -109,35 +111,39 @@ fun ProductHeader_T1(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Toggle button for quantity unit
-                if (ventOperationsForProduct.isNotEmpty()) {
-                    IconButton(
-                        onClick = {
-                            ventOperationsForProduct.forEach { ventOperation ->
-                                viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-                                    .addOrUpdateData(ventOperation.copy(
-                                        setIN_VentQuantity_Actuellement_Va_Remplire= ventOperation
-                                            .setIN_VentQuantity_Actuellement_Va_Remplire.toggle()
-                                    ))
-                            }
+                val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
+
+                IconButton(
+
+                    onClick = {
+                        produit.apply {
+                            setIN_Vent_Its_Quantity_Represent =
+                                setIN_Vent_Its_Quantity_Represent.toggle()
+                        }.also {
+                            repositorysMainGetter.repoM1ProduitInfos.update(
+                                it
+                            )
+                        }
+                    },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    val carton = produit.setIN_Vent_Its_Quantity_Represent ==
+                            ArticlesBasesStatsTable.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                    Icon(
+                        imageVector = if (carton)
+                            Icons.Default.Inventory2
+                        else
+                            Icons.Default.ViewModule,
+                        contentDescription = null,
+                        tint = when {
+                            allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            carton ->
+                                MaterialTheme.colorScheme.primary
+
+                            else -> MaterialTheme.colorScheme.secondary
                         },
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (currentQuantityUnit == M10OperationVentCouleur.SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton)
-                                Icons.Default.Inventory2
-                            else
-                                Icons.Default.ViewModule,
-                            contentDescription = null,
-                            tint = when {
-                                allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                currentQuantityUnit == M10OperationVentCouleur.SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit ->
-                                    MaterialTheme.colorScheme.primary
-                                else -> MaterialTheme.colorScheme.secondary
-                            },
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
 
                 QuantityDisplay(
