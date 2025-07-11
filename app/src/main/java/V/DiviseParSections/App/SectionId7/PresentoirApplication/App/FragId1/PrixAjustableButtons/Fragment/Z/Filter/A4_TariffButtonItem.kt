@@ -57,7 +57,6 @@ fun TariffButtonItem(
     val latestTariff = tariffs.maxByOrNull { it.id }
     if (latestTariff == null) return
 
-    // Fix: Add produit as a key to remember so it recomposes when product changes
     var latestTariffLocalData by remember(produit, latestTariff) {
         mutableStateOf(
             latestTariff.copy(
@@ -66,14 +65,16 @@ fun TariffButtonItem(
             )
         )
     }
+
     val m10OperationVentCouleurs =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
-    // Also reset editing state when product changes
-    var isEditingPrice by remember(produit) { mutableStateOf(true) }
-    var editablePriceText by remember(produit) { mutableStateOf("10") }
-    var isEditingUnitPrice by remember(produit) { mutableStateOf(true) }
+    // Fixed: Initialize with current price when editing starts
+    var editablePriceText by remember(produit) { mutableStateOf("") }
+    var isEditingPrice by remember(produit) { mutableStateOf(false) }
+    var isEditingUnitPrice by remember(produit) { mutableStateOf(false) }
+
     val focusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
@@ -82,18 +83,23 @@ fun TariffButtonItem(
     fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                focused_M13TarificationInfos_Pour_Produit = latestTariffLocalData,
+                m13TarificationInfos_Pour_Produit = latestTariffLocalData,
                 m10OperationVentCouleurs = m10OperationVentCouleurs
             )
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
 
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.dismisses_By_toggle_CurrentApp_activeDialogSearchM1Produit()
     }
 
     fun handlePriceEditDone() {
         val newPrice = editablePriceText.toDoubleOrNull()
         if (newPrice != null && newPrice >= 0) {
+            val finalPrice = if (isEditingUnitPrice) {
+                newPrice * nombreUnite
+            } else {
+                newPrice
+            }
             latestTariffLocalData = latestTariffLocalData.copy(
-                prixCurrency = newPrice
+                prixCurrency = finalPrice
             )
             handelClick()
         }
@@ -132,21 +138,16 @@ fun TariffButtonItem(
                     }
                     if (isEditingPrice && isEditableTariff) {
                         val nombreUniteInt = produit.nombreUniteInt
-                        val newPrice = if (isEditingUnitPrice) {
-                            editablePriceText.toDoubleOrNull()
-                                ?.times(nombreUniteInt)
-                        } else
-                            editablePriceText.toDoubleOrNull()
 
                         OutlinedTextField(
                             modifier = Modifier
-                                .getSemanticsTag(newPrice,"newPrice")
+                                .getSemanticsTag(editablePriceText, "editablePriceText")
                                 .width(100.dp)
                                 .focusRequester(focusRequester),
                             value = editablePriceText,
-                            onValueChange = {
-
-                                editablePriceText = newPrice.toString()
+                            onValueChange = { newInput ->
+                                // Fixed: Direct assignment of user input
+                                editablePriceText = newInput
                             },
 
                             label = {
@@ -167,6 +168,8 @@ fun TariffButtonItem(
                                 IconButton(
                                     onClick = {
                                         isEditingUnitPrice = !isEditingUnitPrice
+                                        // Start with empty text when switching modes
+                                        editablePriceText = ""
                                     }
                                 ) {
                                     Icon(
@@ -201,6 +204,7 @@ fun TariffButtonItem(
                                 .then(
                                     if (isEditableTariff) {
                                         Modifier.clickable {
+                                            // Start with empty text field
                                             editablePriceText = ""
                                             isEditingPrice = true
                                             isEditingUnitPrice = false
@@ -300,10 +304,7 @@ fun TariffButtonItem(
                 .getSemanticsTag(m10OperationVentCouleurs, "m10OperationVentCouleurs",1)
                 .size(40.dp),
             onClick = {
-
                 handelClick()
-
-
                 onClickPrixButton(typeTarification, latestTariffLocalData, context)
             },
             containerColor = buttonBackgroundColor

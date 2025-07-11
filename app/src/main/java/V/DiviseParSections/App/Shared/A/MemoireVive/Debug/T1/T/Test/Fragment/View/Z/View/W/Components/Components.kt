@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -63,15 +64,13 @@ fun QuantityDisplay(
                 ventOperation.parentM1ProduitInfosKeyId == produit.keyID
             }
     }
-                //<--
-                //TODO(1): enleve et utilise 
+
     val totalQuantity = ventOperationsForProduct.sumOf { it.quantity }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Quantity Card
         Surface(
             shape = RoundedCornerShape(20.dp),
             color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
@@ -81,9 +80,10 @@ fun QuantityDisplay(
                     val get = viewModel.focusedVarsHandlerFacade.focusedValuesGetter
 
                     viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                        focused_M13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
+                        m13TarificationInfos_Pour_Produit = get.focused_M13TarificationInfos_Pour_Produit,
                         m10OperationVentCouleurs = get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
                     )
+
                     viewModel.setterFocusedVarsHandlerFacade.active_M1Produit_Pour_Choisire_TotalQuantity(
                         produit
                     )
@@ -96,7 +96,7 @@ fun QuantityDisplay(
                 )
                 .getSemanticsTag(
                     getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID,
-                    "dialogChoisireQuantityM1ProduitInfosDebugName", 1
+                    "dialogChoisireQuantityM1ProduitInfosKeyID", 1
                 )
         ) {
             Row(
@@ -121,52 +121,30 @@ fun QuantityDisplay(
             }
         }
 
-        val datasValue =
-            viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-        val itsChezGroApp =
-            viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt?.travailleChezGrossisst3Ali
+        val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-        val findTariff = M13TarificationInfos.findTariff(datasValue, produit)
-
-        val prixVent = if (itsChezGroApp == true) {
-            val prixAchatDepuitGrossistGerant = findTariff?.prixCurrency
-            when {
-                prixAchatDepuitGrossistGerant != null && prixAchatDepuitGrossistGerant > 0 -> {
-                    "Gérant: ${String.format("%.2f", prixAchatDepuitGrossistGerant)}"
-                }
-
-                produit.prixAchat > 0.0 -> {
-                    "Autres Grossissts: ${String.format("%.2f", produit.prixAchat)}"
-                }
-
-                else -> {
-                    "Non défini"
-                }
-            }
-        } else {
-            if (produit.prixVent > 0.0) {
-                "P.V: ${String.format("%.2f", produit.prixVent)}"
-            } else {
-                "Prix non défini"
-            }
-        }
+        val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant2)
+        val default_Tariff = M13TarificationInfos.get_default(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
+        val finale_Tariff = findTariff ?: default_Tariff.first
 
         Surface(
             modifier = Modifier
                 .getSemanticsTag(datasValue, "repo13TarificationInfos")
-                .getSemanticsTag(findTariff, "findTariff", 2)
+                .getSemanticsTag(finale_Tariff, "finale_Tariff", 2)
+                .getSemanticsTag(findTariff, "findTariff", 3) // Fixed: Added proper debug tag for findTariff
                 .clickable(enabled = !allNonTrouve) {
                     val aCentral = viewModel.aCentralFacade
                     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade
-                    val getFocusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade.focusedValuesGetter
                     val set = aCentral.repositorysMainSetter
 
                     set.saveTariff_Et_RelateIt_Au_Vents_Correspond(
-                        focused_M13TarificationInfos_Pour_Produit = getFocusedVarsHandlerFacade.focused_M13TarificationInfos_Pour_Produit,
+                        m13TarificationInfos_Pour_Produit = finale_Tariff,
                         m10OperationVentCouleurs = getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
                     )
 
-                    focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(produit)
+                    focusedVarsHandlerFacade.focusedValuesSetter.setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
+                        produit
+                    )
 
                     onQuantityClickToHaptic()
                 },
@@ -179,7 +157,22 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(prixVent)
+                // Fixed: Correct logic - when findTariff is NULL, it's from old database, when NOT NULL it's defined by Ali
+                val depuit_Qui = if (findTariff != null) {
+                    "Définie Par Ali"
+                } else {
+                    "Depuis Mon Old BaseDonnée"
+                }
+
+                val prix = "$depuit_Qui - ${finale_Tariff.prixCurrency}"
+
+                Text(
+                    text = prix,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.onSecondary
+                )
 
                 Icon(
                     imageVector = Icons.Default.AttachMoney,

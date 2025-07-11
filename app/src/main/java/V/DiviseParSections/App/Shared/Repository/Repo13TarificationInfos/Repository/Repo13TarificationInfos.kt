@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.getPushFireBase
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
@@ -142,6 +144,20 @@ data class M13TarificationInfos(
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
         )
+
+        fun get_default(
+            parentM1ProduitInfos: ArticlesBasesStatsTable,
+            start_Prix_Depuit_Ancient: Double,
+        ): Pair<M13TarificationInfos, Modifier> {
+            val m13TarificationInfos = M13TarificationInfos(
+                parentM1ProduitInfosKeyId = parentM1ProduitInfos.keyID,
+                parentM1ProduitDebugInfos = parentM1ProduitInfos.getDebugInfos() ,
+                prixCurrency = start_Prix_Depuit_Ancient
+            )
+            val modifier = Modifier.getSemanticsTag(m13TarificationInfos, "m13TarificationInfos")
+            return Pair(m13TarificationInfos, modifier)
+        }
+
         fun findTariff(
             datasValue: List<M13TarificationInfos>,
             produit: ArticlesBasesStatsTable,

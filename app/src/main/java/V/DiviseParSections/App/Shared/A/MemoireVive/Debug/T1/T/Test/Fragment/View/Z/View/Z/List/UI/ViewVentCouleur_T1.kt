@@ -8,6 +8,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsT
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -107,6 +109,12 @@ fun ViewVentCouleur_T1(
             onVentM3?.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID
         }
     }
+    val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant2)
+    val default_Tariff = M13TarificationInfos.get_default(produit,start_Prix_Depuit_Ancient = produit.prixAchat)
+
+    val finale_Tariff = findTariff ?: default_Tariff.first
+
 
     // Main container with proper layout structure
     Column(
@@ -133,12 +141,18 @@ fun ViewVentCouleur_T1(
             ) {
                 fun lenceVent() {
                     findVent?.let { findVent ->
-                        viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                        viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                            finale_Tariff,
+                            buildList { add(findVent) }
+                        )
                         setter.active_M3Couleur_pour_ouvrire_son_Dialog_choixQuantity(findVent)
                     } ?: run {
                         defaultM10Vent?.let { defaultVent ->
                             setter.ajoute_New_M10OperationVentCouleur(defaultVent)
-                            viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond()
+                            viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
+                                finale_Tariff,
+                                buildList { add(defaultVent) }
+                            )
                         }
                     }
                 }

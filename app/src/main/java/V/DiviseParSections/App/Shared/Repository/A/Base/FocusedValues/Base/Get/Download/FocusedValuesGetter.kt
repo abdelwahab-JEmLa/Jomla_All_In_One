@@ -173,8 +173,7 @@ class FocusedValuesGetter(
     val focused_M13TarificationInfos_Pour_Produit by derivedStateOf {
         repo13TarificationInfos.datasValue.lastOrNull { tariff ->
             tariff.typeChoisi == TypeChoisi.DefiniParGerant2 &&
-                    tariff.parentM1ProduitInfosKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID
-                ?: "")
+                    tariff.parentM1ProduitInfosKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
         }
     }
 

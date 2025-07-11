@@ -10,7 +10,6 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Functions.upsertVentCouleurOperation
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Functions.BonVentOperations
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -23,7 +22,6 @@ import com.google.firebase.database.DatabaseReference
 
 class RepositorysMainSetter(
     private val getter: RepositorysMainGetter,
-    val bonVentOperations: BonVentOperations,
     private val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     private val produitOperations: ProduitOperations,
     private val clientOperations: ClientOperations,
@@ -34,24 +32,20 @@ class RepositorysMainSetter(
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
-    fun ajoute_New_M10OperationVentCouleur(it: M10OperationVentCouleur) {
-        repo10OperationVentCouleur.addOrUpdateData(it)
-    }
+
     fun saveTariff_Et_RelateIt_Au_Vents_Correspond(
-        focused_M13TarificationInfos_Pour_Produit: M13TarificationInfos? =
-            get.focused_M13TarificationInfos_Pour_Produit,
-        m10OperationVentCouleurs: List<M10OperationVentCouleur> =
-            get.focused_ListM10OpeVentCouleur_Par_PD_M1Produit
+        m13TarificationInfos_Pour_Produit: M13TarificationInfos?,
+        m10OperationVentCouleurs: List<M10OperationVentCouleur>
     ) {
-        focused_M13TarificationInfos_Pour_Produit?.let {
+
+        m13TarificationInfos_Pour_Produit?.let {
             addOrUpdateGroAliTariff(it)
 
             val listFocusedM10OpeVentCouleurParPrixDifineur =
                 m10OperationVentCouleurs.map { listVent ->
                     listVent.copy(
-                        parentM13TarificationDebugInfos = focused_M13TarificationInfos_Pour_Produit.getDebugInfos(),
-                        parentM13TarificationKeyID = focused_M13TarificationInfos_Pour_Produit.keyID,
-                        provisoireMonPrix = focused_M13TarificationInfos_Pour_Produit.prixCurrency
+                        parentM13TarificationDebugInfos = m13TarificationInfos_Pour_Produit.getDebugInfos(),
+                        parentM13TarificationKeyID = m13TarificationInfos_Pour_Produit.keyID,
                     )
                 }
 
@@ -60,7 +54,6 @@ class RepositorysMainSetter(
             )
         }
     }
-
 
     fun ouvreExistedDataEtNavigatePanie(keyID: String) =
         clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
