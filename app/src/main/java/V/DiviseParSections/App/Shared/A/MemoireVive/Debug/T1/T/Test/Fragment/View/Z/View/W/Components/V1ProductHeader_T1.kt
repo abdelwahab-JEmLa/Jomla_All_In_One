@@ -58,7 +58,8 @@ fun ProductHeader_T1(
     }
 
     // State for dialog visibility
-    var shouldShowDialog by remember { mutableStateOf(false) }
+    var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
+    var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,6 +110,53 @@ fun ProductHeader_T1(
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(top = 2.dp)
                     )
+                }
+            }
+            Card(
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (allNonTrouve)
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    else
+                        MaterialTheme.colorScheme.surface
+                ),
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    IconButton(
+                        onClick = {
+                            shouldShowDialog_quantite_Unite_Par_Boit = true
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Numbers,
+                                contentDescription = null,
+                                tint = if (allNonTrouve)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else
+                                    MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Unite Par Boit${produit.nombreUniteInt}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (allNonTrouve)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                else
+                                    MaterialTheme.colorScheme.tertiary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
             }
 
@@ -170,7 +218,7 @@ fun ProductHeader_T1(
 
                     IconButton(
                         onClick = {
-                            shouldShowDialog = true
+                            shouldShowDialog_quantite_Boit_Par_Carton = true
                         },
                         modifier = Modifier.size(36.dp)
                     ) {
@@ -201,7 +249,24 @@ fun ProductHeader_T1(
                 }
             }
         }
-        if (shouldShowDialog) {
+
+        if (shouldShowDialog_quantite_Unite_Par_Boit) {
+            Dialog_Choisire_Quantity_Modularized(
+                old_quantity = produit.nombreUniteInt,
+                label = "nombreUniteInt",
+            ) { new_Qyt ->
+                produit.apply {
+                    if (new_Qyt != null) {
+                        nombreUniteInt = new_Qyt
+                    }
+                }.also {
+                    viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                }
+                shouldShowDialog_quantite_Unite_Par_Boit = false
+            }
+        }
+
+        if (shouldShowDialog_quantite_Boit_Par_Carton) {
             Dialog_Choisire_Quantity_Modularized(
                 old_quantity = produit.quantite_Boit_Par_Carton,
                 label = "quantite_Boit_Par_Carton",
@@ -213,7 +278,7 @@ fun ProductHeader_T1(
                 }.also {
                     viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                 }
-                shouldShowDialog = false
+                shouldShowDialog_quantite_Boit_Par_Carton = false
             }
         }
     }

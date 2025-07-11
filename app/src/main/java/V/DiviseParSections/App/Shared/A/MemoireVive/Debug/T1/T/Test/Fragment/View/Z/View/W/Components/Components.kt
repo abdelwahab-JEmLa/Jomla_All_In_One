@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
-@SuppressLint("DefaultLocale")
+@SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
 fun QuantityDisplay(
     produit: ArticlesBasesStatsTable,
@@ -57,15 +58,13 @@ fun QuantityDisplay(
 ) {
     val getter = viewModel.getterFocusedVarsHandlerFacade
 
-    val ventOperationsForProduct = remember(produit.keyID) {
+    val totalQuantity by derivedStateOf {
         viewModel.getterFocusedVarsHandlerFacade
             .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
             .filter { ventOperation ->
                 ventOperation.parentM1ProduitInfosKeyId == produit.keyID
-            }
+            }   .sumOf { it.quantity }
     }
-
-    val totalQuantity = ventOperationsForProduct.sumOf { it.quantity }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -76,7 +75,7 @@ fun QuantityDisplay(
             color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
             else MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable(enabled = !allNonTrouve) {
+                .clickable(enabled = false) {
                     val get = viewModel.focusedVarsHandlerFacade.focusedValuesGetter
 
                     viewModel.aCentralFacade.repositorysMainSetter.saveTariff_Et_RelateIt_Au_Vents_Correspond(
@@ -157,7 +156,6 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Fixed: Correct logic - when findTariff is NULL, it's from old database, when NOT NULL it's defined by Ali
                 val depuit_Qui = if (findTariff != null) {
                     "Définie Par Ali"
                 } else {
