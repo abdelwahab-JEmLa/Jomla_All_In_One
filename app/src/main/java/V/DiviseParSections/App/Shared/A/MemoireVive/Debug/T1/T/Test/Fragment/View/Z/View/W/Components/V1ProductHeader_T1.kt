@@ -208,16 +208,18 @@ fun ProductHeader_T1(
                 old_quantity = produit.nombreUniteInt,
                 label = "nombreUniteInt",
             ) { new_Qyt ->
-                produit.apply {
-                    if (new_Qyt != null) {
+                if (new_Qyt != null) {
+                    produit.apply {
                         nombreUniteInt = new_Qyt
+
+                    }.also {
+                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                     }
-                }.also {
-                    viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+
+                    viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                        ventOperationsForProduct
+                    )
                 }
-                viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
-                    ventOperationsForProduct
-                )
                 shouldShowDialog_quantite_Unite_Par_Boit = false
             }
         }
