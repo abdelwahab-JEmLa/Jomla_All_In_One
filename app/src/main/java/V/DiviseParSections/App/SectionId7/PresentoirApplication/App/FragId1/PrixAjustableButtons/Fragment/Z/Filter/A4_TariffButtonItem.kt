@@ -72,8 +72,8 @@ fun TariffButtonItem(
 
     // Also reset editing state when product changes
     var isEditingPrice by remember(produit) { mutableStateOf(true) }
-    var editablePriceText by remember(produit) { mutableStateOf("210") }
-    var isEditingUnitPrice by remember(produit) { mutableStateOf(false) }
+    var editablePriceText by remember(produit) { mutableStateOf("10") }
+    var isEditingUnitPrice by remember(produit) { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
