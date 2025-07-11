@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.D
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
@@ -41,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun TariffButtonItem(
     produit: ArticlesBasesStatsTable,
@@ -66,14 +69,15 @@ fun TariffButtonItem(
     }
 
     // Also reset editing state when product changes
-    var isEditingPrice by remember(produit) { mutableStateOf(false) }
-    var editablePriceText by remember(produit) { mutableStateOf("") }
+    var isEditingPrice by remember(produit) { mutableStateOf(true) }
+    var editablePriceText by remember(produit) { mutableStateOf("210") }
+    var isEditingUnitPrice by remember(produit) { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
 
-    fun handelClick()  {
+    fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter
             .saveTariff_Et_RelateIt_Au_Vents_Correspond(
                 focused_M13TarificationInfos_Pour_Produit = latestTariff,
@@ -93,6 +97,7 @@ fun TariffButtonItem(
             handelClick()
         }
         isEditingPrice = false
+        isEditingUnitPrice = false
     }
 
     Row(
@@ -124,12 +129,52 @@ fun TariffButtonItem(
                     } else {
                         Color.White
                     }
-
                     if (isEditingPrice && isEditableTariff) {
+                        val nombreUniteInt = produit.nombreUniteInt
+                        val newPrice = if (isEditingUnitPrice) {
+                            editablePriceText.toDoubleOrNull()
+                                ?.times(nombreUniteInt)
+                        } else
+                            editablePriceText.toDoubleOrNull()
+
                         OutlinedTextField(
+                            modifier = Modifier
+                                .getSemanticsTag(newPrice,"newPrice")
+                                .width(100.dp)
+                                .focusRequester(focusRequester),
                             value = editablePriceText,
-                            onValueChange = { editablePriceText = it },
-                            label = { Text("${latestTariffLocalData.prixCurrency}") },
+                            onValueChange = {
+
+                                editablePriceText = newPrice.toString()
+                            },
+
+                            label = {
+                                Text(
+                                    if (isEditingUnitPrice) {
+                                        "Prix unitaire: ${
+                                            String.format(
+                                                "%.2f",
+                                                latestTariffLocalData.prixCurrency / nombreUnite
+                                            )
+                                        }"
+                                    } else {
+                                        "Prix total: ${latestTariffLocalData.prixCurrency}"
+                                    }
+                                )
+                            },
+                            leadingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        isEditingUnitPrice = !isEditingUnitPrice
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Calculate,
+                                        contentDescription = if (isEditingUnitPrice) "Éditer prix total" else "Éditer prix unitaire",
+                                        tint = if (isEditingUnitPrice) Color.Blue else Color.Gray
+                                    )
+                                }
+                            },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Decimal,
                                 imeAction = ImeAction.Done
@@ -137,10 +182,8 @@ fun TariffButtonItem(
                             keyboardActions = KeyboardActions(
                                 onDone = { handlePriceEditDone() }
                             ),
-                            modifier = Modifier
-                                .width(100.dp)
-                                .focusRequester(focusRequester)
-                        )
+
+                            )
 
                         LaunchedEffect(isEditingPrice) {
                             if (isEditingPrice) {
@@ -159,6 +202,7 @@ fun TariffButtonItem(
                                         Modifier.clickable {
                                             editablePriceText = ""
                                             isEditingPrice = true
+                                            isEditingUnitPrice = false
                                         }
                                     } else {
                                         Modifier
@@ -245,8 +289,6 @@ fun TariffButtonItem(
             couleurButton
         }
         val getter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-        val listFocusedM10OpeVentCouleurParPrixDifineur =
-            getter.focused_ListM10OpeVentCouleur_Par_PD_M1Produit.toMutableList()
 
         FloatingActionButton(
             modifier = Modifier
