@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -48,8 +49,8 @@ fun ProductHeader_T1(
     allNonTrouve: Boolean,
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
-    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
-        .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
+        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
     val ventOperationsForProduct by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_BY_M1Produit_list_m10OperationVentCouleurs(
@@ -57,9 +58,9 @@ fun ProductHeader_T1(
         )
     }
 
-    // State for dialog visibility
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,61 +113,17 @@ fun ProductHeader_T1(
                     )
                 }
             }
-            Card(
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (allNonTrouve)
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                    else
-                        MaterialTheme.colorScheme.surface
-                ),
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    IconButton(
-                        onClick = {
-                            shouldShowDialog_quantite_Unite_Par_Boit = true
-                        },
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Numbers,
-                                contentDescription = null,
-                                tint = if (allNonTrouve)
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                else
-                                    MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = "Unite Par Boit${produit.nombreUniteInt}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (allNonTrouve)
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                else
-                                    MaterialTheme.colorScheme.tertiary,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                }
+
+            Card_Produit_Nombre_Unites(allNonTrouve, produit)
+            {
+                shouldShowDialog_quantite_Unite_Par_Boit = true
             }
 
             Card(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (allNonTrouve)
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                    else
-                        MaterialTheme.colorScheme.surface
+                    containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    else MaterialTheme.colorScheme.surface
                 ),
                 modifier = Modifier.padding(start = 8.dp)
             ) {
@@ -193,34 +150,26 @@ fun ProductHeader_T1(
                             viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
                                 ventOperationsForProduct
                             )
-                        },
-                        modifier = Modifier.size(36.dp)
+                        }, modifier = Modifier.size(36.dp)
                     ) {
-                        val carton = produit.setIN_Vent_Its_Quantity_Represent ==
-                                M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                        val carton =
+                            produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
                         Icon(
-                            imageVector = if (carton)
-                                Icons.Default.Inventory2
-                            else
-                                Icons.Default.ViewModule,
-                            contentDescription = null,
-                            tint = when {
+                            imageVector = if (carton) Icons.Default.Inventory2
+                            else Icons.Default.ViewModule, contentDescription = null, tint = when {
                                 allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                carton ->
-                                    MaterialTheme.colorScheme.primary
+                                carton -> MaterialTheme.colorScheme.primary
 
                                 else -> MaterialTheme.colorScheme.secondary
-                            },
-                            modifier = Modifier.size(20.dp)
+                            }, modifier = Modifier.size(20.dp)
                         )
                     }
 
                     IconButton(
                         onClick = {
                             shouldShowDialog_quantite_Boit_Par_Carton = true
-                        },
-                        modifier = Modifier.size(36.dp)
+                        }, modifier = Modifier.size(36.dp)
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -229,19 +178,19 @@ fun ProductHeader_T1(
                             Icon(
                                 imageVector = Icons.Default.Numbers,
                                 contentDescription = "Quantity per carton",
-                                tint = if (allNonTrouve)
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                else
-                                    MaterialTheme.colorScheme.tertiary,
+                                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.6f
+                                )
+                                else MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = "${produit.quantite_Boit_Par_Carton}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = if (allNonTrouve)
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                else
-                                    MaterialTheme.colorScheme.tertiary,
+                                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.6f
+                                )
+                                else MaterialTheme.colorScheme.tertiary,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -279,6 +228,67 @@ fun ProductHeader_T1(
                     viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
                 }
                 shouldShowDialog_quantite_Boit_Par_Carton = false
+            }
+        }
+    }
+}
+
+@Composable
+private fun Card_Produit_Nombre_Unites(
+    allNonTrouve: Boolean,
+    produit: ArticlesBasesStatsTable,
+    onClick_PourOuvrireDialog: () -> Unit
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (allNonTrouve) MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        modifier = Modifier.padding(start = 8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(8.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    onClick_PourOuvrireDialog()
+                }, modifier = Modifier.size(36.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Numbers,
+                        contentDescription = null,
+                        tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.6f
+                        )
+                        else MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "Unite Par Boit${produit.nombreUniteInt}",
+                            fontSize = 8.sp,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.6f
+                            )
+                            else MaterialTheme.colorScheme.tertiary,
+                        )
+                        Text(
+                            text = "${produit.nombreUniteInt}",
+                            fontSize = 8.sp,
+                            color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.6f
+                            )
+                            else MaterialTheme.colorScheme.tertiary,
+                        )
+                    }
+                }
             }
         }
     }
