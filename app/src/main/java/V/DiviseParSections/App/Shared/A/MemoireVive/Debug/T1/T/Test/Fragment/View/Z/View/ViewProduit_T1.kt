@@ -99,7 +99,6 @@ fun ViewProduit_T1(
             Downer_Bar(
                 produit = product,
                 viewModel = viewModel,
-                productName = productName,
                 allNonTrouve = allNonTrouve,
                 onQuantityClickToHaptic = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)

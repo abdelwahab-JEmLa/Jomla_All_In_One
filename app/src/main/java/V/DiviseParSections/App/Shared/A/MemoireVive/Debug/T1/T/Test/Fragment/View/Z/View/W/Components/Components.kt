@@ -23,10 +23,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -130,7 +131,7 @@ fun QuantityDisplay(
             modifier = Modifier
                 .getSemanticsTag(datasValue, "repo13TarificationInfos")
                 .getSemanticsTag(finale_Tariff, "finale_Tariff", 2)
-                .getSemanticsTag(findTariff, "findTariff", 3) // Fixed: Added proper debug tag for findTariff
+                .getSemanticsTag(findTariff, "findTariff", 3)
                 .clickable(enabled = !allNonTrouve) {
                     val aCentral = viewModel.aCentralFacade
                     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade
@@ -156,16 +157,14 @@ fun QuantityDisplay(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                val depuit_Qui = if (findTariff != null) {
-                    "Définie Par Ali"
+                val (depuit_Qui, tariffIcon) = if (findTariff != null) {
+                    "Définie Par Ali" to Icons.Default.TrendingUp
                 } else {
-                    "Depuis Mon Old BaseDonnée"
+                    "Depuis Mon Old BaseDonnée" to Icons.Default.History
                 }
 
-                val prix = "$depuit_Qui - ${finale_Tariff.prixCurrency}"
-
                 Text(
-                    text = prix,
+                    text = "$depuit_Qui - ${finale_Tariff.prixCurrency}",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -173,8 +172,8 @@ fun QuantityDisplay(
                 )
 
                 Icon(
-                    imageVector = Icons.Default.AttachMoney,
-                    contentDescription = "Price",
+                    imageVector = tariffIcon,
+                    contentDescription = if (findTariff != null) "Defined by Ali" else "From old database",
                     tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     else MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier.size(16.dp)
@@ -277,7 +276,6 @@ fun QuantityGridM1Produit_T1(
     val quantities = if (showExtendedRange) extendedQuantities else basicQuantities
 
     Column {
-        // Toggle Button
         Row(
             modifier = Modifier
                 .fillMaxWidth()

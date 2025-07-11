@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 fun Downer_Bar(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
-    productName: String,
     allNonTrouve: Boolean,
     onQuantityClickToHaptic: () -> Unit
 ) {
@@ -90,7 +89,6 @@ fun Downer_Bar(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
                 ) {
-
                     QuantityDisplay(
                         produit = produit,
                         viewModel = viewModel,
