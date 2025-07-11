@@ -179,7 +179,7 @@ fun ProductHeader_T1(
                                 )
                             }
                         },
-                        modifier = Modifier.size(width = 40.dp, height = 60.dp),
+                        modifier = Modifier.size(width = 100 .dp, height = 60.dp),
                         showOnlyWhenPositive = false,
                         textColor = if (allNonTrouve)
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
