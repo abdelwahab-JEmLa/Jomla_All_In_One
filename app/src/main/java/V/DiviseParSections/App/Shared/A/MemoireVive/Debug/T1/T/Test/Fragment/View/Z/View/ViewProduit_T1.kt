@@ -85,10 +85,7 @@ fun ViewProduit_T1(
                 produit = product,
                 viewModel = viewModel,
                 productName = productName,
-                allNonTrouve = allNonTrouve,
-                onQuantityClickToHaptic = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                }
+                allNonTrouve = allNonTrouve
             )
             Spacer(modifier = Modifier.height(12.dp))
 

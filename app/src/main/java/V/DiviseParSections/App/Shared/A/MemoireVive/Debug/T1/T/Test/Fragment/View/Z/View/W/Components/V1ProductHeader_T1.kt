@@ -42,7 +42,6 @@ fun ProductHeader_T1(
     viewModel: ViewModelsProduit_T1,
     productName: String,
     allNonTrouve: Boolean,
-    onQuantityClickToHaptic: () -> Unit
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
@@ -169,10 +168,8 @@ fun ProductHeader_T1(
                             quantite_Boit_Par_Carton,
                         label = "",
                         onUnitsUpdate = { newQuantity ->
-
                             produit.apply {
-                                quantite_Boit_Par_Carton =
-                                    newQuantity
+                                quantite_Boit_Par_Carton = newQuantity
                             }.also {
                                 repositorysMainGetter.repoM1ProduitInfos.update(
                                     it
