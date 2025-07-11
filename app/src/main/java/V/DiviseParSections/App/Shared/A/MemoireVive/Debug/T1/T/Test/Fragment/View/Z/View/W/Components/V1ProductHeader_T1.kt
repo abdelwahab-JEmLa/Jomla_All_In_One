@@ -114,18 +114,20 @@ fun ProductHeader_T1(
                     IconButton(
                         onClick = {
                             ventOperationsForProduct.forEach { ventOperation ->
-                                val toggledOperation = ventOperation.toggleQuantityUnit()
                                 viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-                                    .addOrUpdateData(toggledOperation)
+                                    .addOrUpdateData(ventOperation.copy(
+                                        setIN_VentQuantity_Actuellement_Va_Remplire= ventOperation
+                                            .setIN_VentQuantity_Actuellement_Va_Remplire.toggle()
+                                    ))
                             }
                         },
                         modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
                             imageVector = if (currentQuantityUnit == M10OperationVentCouleur.SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton)
-                                Icons.Default.Inventory2 // Box icon for carton
+                                Icons.Default.Inventory2
                             else
-                                Icons.Default.ViewModule, // Unit/grid icon for boîte
+                                Icons.Default.ViewModule,
                             contentDescription = null,
                             tint = when {
                                 allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)

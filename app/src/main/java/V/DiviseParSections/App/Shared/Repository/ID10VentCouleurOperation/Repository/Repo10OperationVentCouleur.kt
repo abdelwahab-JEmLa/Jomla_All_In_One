@@ -52,14 +52,10 @@ class Repo10OperationVentCouleur(
                             withContext(Dispatchers.Main) {
                                 _datas.value = data
                             }
-                        } catch (e: Exception) {
-                            // Error handling
-                        }
+                        } catch (e: Exception) {}
                     }
                 }
-            } catch (e: Exception) {
-                // Error handling
-            }
+            } catch (e: Exception) {}
         }
     }
 
@@ -272,64 +268,18 @@ data class M10OperationVentCouleur(
                 quantity_Par_Carton -> quantity_Par_Boit
             }
         }
-
-        // Additional utility function to get display name
-        fun getDisplayName(): String {
-            return when (this) {
-                quantity_Par_Boit -> "Par Boîte"
-                quantity_Par_Carton -> "Par Carton"
-            }
-        }
-
-        // Additional utility function to get multiplier
-        fun getMultiplier(): Int {
-            return when (this) {
-                quantity_Par_Boit -> 1
-                quantity_Par_Carton -> 24 // Assuming 24 units per carton, adjust as needed
-            }
-        }
     }
     fun getDebugInfos(): String {
         return buildString {
             append("KeyID: $keyID\n")
             append("Parent Product: $parentM1ProduitDebugInfos\n")
             append("Quantity: $quantity_Par_Boit\n")
-            append("Unit Type: ${setIN_VentQuantity_Actuellement_Va_Remplire.getDisplayName()}\n")
             append("State: $etateActuellementEst\n")
             append("Delivery: $etateDelivery\n")
             append("Type: $type")
         }
     }
 
-    fun toggleQuantityUnit(): M10OperationVentCouleur {
-        val newQuantityUnit = setIN_VentQuantity_Actuellement_Va_Remplire.toggle()
-
-        // Convert quantity when toggling units
-        val newQuantity = when (newQuantityUnit) {
-            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton -> {
-                // Convert from boîte to carton
-                if (quantity_Par_Boit > 0) quantity_Par_Boit / newQuantityUnit.getMultiplier() else 0
-            }
-            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit -> {
-                // Convert from carton to boîte
-                quantity_Par_Boit * setIN_VentQuantity_Actuellement_Va_Remplire.getMultiplier()
-            }
-        }
-
-        return this.copy(
-            setIN_VentQuantity_Actuellement_Va_Remplire = newQuantityUnit,
-            quantity_Par_Boit = newQuantity,
-            dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis()
-        )
-    }
-
-    // Helper function to get effective quantity based on unit type
-    fun getEffectiveQuantity(): Int {
-        return when (setIN_VentQuantity_Actuellement_Va_Remplire) {
-            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Boit -> quantity_Par_Boit
-            SetIN_VentQuantity_Actuellement_Va_Remplire.quantity_Par_Carton -> quantity_Par_Boit * setIN_VentQuantity_Actuellement_Va_Remplire.getMultiplier()
-        }
-    }
 
     enum class EtateDelivery {
         Trouve,
