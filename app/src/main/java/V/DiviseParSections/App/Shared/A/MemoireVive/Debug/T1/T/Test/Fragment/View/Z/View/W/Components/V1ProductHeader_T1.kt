@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.Modules.Ui.C.UI.Integer_Outlined_Displaye_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.ViewModule
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,12 +48,10 @@ fun ProductHeader_T1(
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
     val ventOperationsForProduct by derivedStateOf {
-        onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
-            .filter { ventOperation ->
-                ventOperation.parentM1ProduitInfosKeyId == produit.keyID
-            }
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_BY_M1Produit_list_m10OperationVentCouleurs(
+            produit
+        )
     }
-
 
     Box(
         modifier = Modifier
@@ -105,51 +106,86 @@ fun ProductHeader_T1(
                 }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Card(
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (allNonTrouve)
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    else
+                        MaterialTheme.colorScheme.surface
+                ),
+                modifier = Modifier.padding(start = 8.dp)
             ) {
-                val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    var quantite_Boit_Par_Carton = produit.quantite_Boit_Par_Carton
 
-                IconButton(
-                    onClick = {
-                        val toggled_setIN_Vent_Its_Quantity_Represent = produit.setIN_Vent_Its_Quantity_Represent.toggle()
-                        produit.apply {
-                            setIN_Vent_Its_Quantity_Represent =
-                                toggled_setIN_Vent_Its_Quantity_Represent
-                        }.also {
-                            repositorysMainGetter.repoM1ProduitInfos.update(
-                                it
+                    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
+
+                    IconButton(
+                        onClick = {
+                            val toggled_setIN_Vent_Its_Quantity_Represent =
+                                produit.setIN_Vent_Its_Quantity_Represent.toggle()
+
+                            produit.apply {
+                                setIN_Vent_Its_Quantity_Represent =
+                                    toggled_setIN_Vent_Its_Quantity_Represent
+                            }.also {
+                                repositorysMainGetter.repoM1ProduitInfos.update(
+                                    it
+                                )
+                            }
+                            viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                                ventOperationsForProduct
                             )
-                        }
-                    },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    val carton = produit.setIN_Vent_Its_Quantity_Represent ==
-                            M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
-                    Icon(
-                        imageVector = if (carton)
-                            Icons.Default.Inventory2
-                        else
-                            Icons.Default.ViewModule,
-                        contentDescription = null,
-                        tint = when {
-                            allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            carton ->
-                                MaterialTheme.colorScheme.primary
-
-                            else -> MaterialTheme.colorScheme.secondary
                         },
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        val carton = produit.setIN_Vent_Its_Quantity_Represent ==
+                                M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
-                QuantityDisplay(
-                    produit = produit,
-                    viewModel = viewModel,
-                    allNonTrouve = allNonTrouve,
-                ) {
-                    onQuantityClickToHaptic()
+                        Icon(
+                            imageVector = if (carton)
+                                Icons.Default.Inventory2
+                            else
+                                Icons.Default.ViewModule,
+                            contentDescription = null,
+                            tint = when {
+                                allNonTrouve -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                carton ->
+                                    MaterialTheme.colorScheme.primary
+
+                                else -> MaterialTheme.colorScheme.secondary
+                            },
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Integer_Outlined_Displaye_Modularized(
+                        currentUnits =
+                            quantite_Boit_Par_Carton,
+                        label = "",
+                        onUnitsUpdate = { newQuantity ->
+
+                            produit.apply {
+                                quantite_Boit_Par_Carton =
+                                    newQuantity
+                            }.also {
+                                repositorysMainGetter.repoM1ProduitInfos.update(
+                                    it
+                                )
+                            }
+                        },
+                        modifier = Modifier.size(width = 40.dp, height = 60.dp),
+                        showOnlyWhenPositive = false,
+                        textColor = if (allNonTrouve)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        else
+                            MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }

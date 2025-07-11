@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.ParametresAppComptNonSaved
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -146,12 +147,22 @@ class FocusedValuesGetter(
     val focused_M1ProduitInfos_Pour_PrixDifineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find { it.keyID == currentM9AppCompt?.activeFocuce_TariffPrixDifineur_M1ProduitKeyID }
     }
+    //---------------------------------Parent m10OperationVentCouleurs----------------------------------------------------------------------------------------------------------------------------------
+
+    fun get_BY_M1Produit_list_m10OperationVentCouleurs(
+        produit: ArticlesBasesStatsTable
+    ) = onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+        .filter { ventOperation ->
+            ventOperation.parentM1ProduitInfosKeyId == produit.keyID
+        }
 
     val focused_ListM10OpeVentCouleur_Par_PD_M1Produit by derivedStateOf {
         onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.filter {
             it.parentM1ProduitInfosKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
         }
     }
+
+    //---------------------------------m10OperationVentCouleurs----------------------------------------------------------------------------------------------------------------------------------
 
     val active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur by derivedStateOf {
         repoM1ProduitInfos.datasValue.find {

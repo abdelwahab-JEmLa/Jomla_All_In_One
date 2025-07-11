@@ -259,7 +259,7 @@ data class M10OperationVentCouleur(
     val quantite_Boit_Par_Carton: Int = 10,
     var quantity: Int = 0,
     var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
-        SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
+        SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
 ) {
     enum class SetIN_Vent_Its_Quantity_Represent {
         quantity_Par_Boit,

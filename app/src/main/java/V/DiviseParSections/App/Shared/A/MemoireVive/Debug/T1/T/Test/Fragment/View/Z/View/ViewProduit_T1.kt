@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.A.DownerBar.View.Downer_Bar
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ProductHeader_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.VentProduitQuantityDialog_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ViewDisponibilityEtates
@@ -98,7 +99,15 @@ fun ViewProduit_T1(
             if (produit != null) {
                 ViewDisponibilityEtates(product = produit)
             }
-
+            Downer_Bar(
+                produit = product,
+                viewModel = viewModel,
+                productName = productName,
+                allNonTrouve = allNonTrouve,
+                onQuantityClickToHaptic = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+            )
         }
     }
 

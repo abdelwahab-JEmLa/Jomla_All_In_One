@@ -131,11 +131,18 @@ class RepositorysMainSetter(
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
     fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+    //--------------------------------------m10--------------------------------------------------------------------------------------------------------
+    fun m10_delete(ventOperationsForProduct: List<M10OperationVentCouleur>) {
+        ventOperationsForProduct.map {
+            repo10OperationVentCouleur.delete(it)
+        }
+    }
     //----------------------------------------------------------------------------------------------------------------------------------------------
 
     fun upsertM8BonVent(data: M8BonVent) {
         repo8BonVent.upsert(data)
     }
+
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =
