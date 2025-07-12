@@ -55,7 +55,7 @@ fun QuantityButton_T1(
 
     Surface(
         modifier = modifier
-            .getSemanticsTag(quantity_Finale,"quantity_Finale")
+            .getSemanticsTag(nomVal = "quantity_Finale", data = quantity_Finale)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(

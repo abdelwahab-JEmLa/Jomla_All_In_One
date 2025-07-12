@@ -112,9 +112,9 @@ fun ID4ClientSearchButton(
 
     Row(
         modifier = Modifier
-            .getSemanticsTag(hClientRepository.datasValue.filter { it.nom.contains("rach") }
-                .map { it.keyID }.takeLast(4), "hClientRepository")
-            .getSemanticsTag(clientsWithCommandBonVents, "clientsWithCommandBonVents", 1),
+            .getSemanticsTag(nomVal = "hClientRepository", data = hClientRepository.datasValue.filter { it.nom.contains("rach") }
+                .map { it.keyID }.takeLast(4))
+            .getSemanticsTag(1, "clientsWithCommandBonVents", clientsWithCommandBonVents),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {

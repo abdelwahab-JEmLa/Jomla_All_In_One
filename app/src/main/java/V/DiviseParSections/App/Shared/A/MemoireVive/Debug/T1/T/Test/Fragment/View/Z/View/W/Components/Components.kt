@@ -91,12 +91,12 @@ fun QuantityDisplay(
                     onQuantityClickToHaptic()
                 }
                 .getSemanticsTag(
-                    getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName,
-                    "dialogChoisireQuantityM1ProduitInfosDebugName"
+                    nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
+                    data = getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
                 )
                 .getSemanticsTag(
-                    getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID,
-                    "dialogChoisireQuantityM1ProduitInfosKeyID", 1
+                    1,
+                    "dialogChoisireQuantityM1ProduitInfosKeyID", getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
                 )
         ) {
             Row(
@@ -129,9 +129,9 @@ fun QuantityDisplay(
 
         Surface(
             modifier = Modifier
-                .getSemanticsTag(datasValue, "repo13TarificationInfos")
-                .getSemanticsTag(finale_Tariff, "finale_Tariff", 2)
-                .getSemanticsTag(findTariff, "findTariff", 3)
+                .getSemanticsTag(nomVal = "repo13TarificationInfos", data = datasValue)
+                .getSemanticsTag(2, "finale_Tariff", finale_Tariff)
+                .getSemanticsTag(3, "findTariff", findTariff)
                 .clickable(enabled = !allNonTrouve) {
                     val aCentral = viewModel.aCentralFacade
                     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade

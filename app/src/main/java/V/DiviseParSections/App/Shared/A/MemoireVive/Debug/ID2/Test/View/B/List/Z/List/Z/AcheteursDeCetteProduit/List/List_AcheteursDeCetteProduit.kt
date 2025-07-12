@@ -25,7 +25,7 @@ fun List_AcheteursDeCetteProduit(
     val listGBonVentKeyID = listFCouleurVentOperation.map { it.parentM8BonVentKeyId }
     Column(
         modifier = Modifier
-            .getSemanticsTag(listFCouleurVentOperation,"listFCouleurVentOperation")
+            .getSemanticsTag(nomVal = "listFCouleurVentOperation", data = listFCouleurVentOperation)
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
@@ -47,7 +47,7 @@ fun List_AcheteursDeCetteProduit(
 
             val achatQuantityDeCetteBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade
                 .focusedValuesGetter
-                .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
+                .filtered_ListM10Vent_BY_Curr_M14VentPeriod
                 .find { it.parentM8BonVentKeyId == gBonVentKeyID }?.quantity
 
             Text(

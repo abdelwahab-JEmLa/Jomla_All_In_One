@@ -109,7 +109,7 @@ fun TariffButtonItem(
 
     Row(
         modifier = Modifier
-            .getSemanticsTag(produit.nom, "produit"),
+            .getSemanticsTag(nomVal = "produit", data = produit.nom),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
 
@@ -141,7 +141,10 @@ fun TariffButtonItem(
 
                         OutlinedTextField(
                             modifier = Modifier
-                                .getSemanticsTag(editablePriceText, "editablePriceText")
+                                .getSemanticsTag(
+                                    nomVal = "editablePriceText",
+                                    data = editablePriceText
+                                )
                                 .width(100.dp)
                                 .focusRequester(focusRequester),
                             value = editablePriceText,
@@ -300,8 +303,8 @@ fun TariffButtonItem(
 
         FloatingActionButton(
             modifier = Modifier
-                .getSemanticsTag(latestTariffLocalData, "latestTariffLocalData",0)
-                .getSemanticsTag(m10OperationVentCouleurs, "m10OperationVentCouleurs",1)
+                .getSemanticsTag(0, "latestTariffLocalData", latestTariffLocalData)
+                .getSemanticsTag(1, "m10OperationVentCouleurs", m10OperationVentCouleurs)
                 .size(40.dp),
             onClick = {
                 handelClick()

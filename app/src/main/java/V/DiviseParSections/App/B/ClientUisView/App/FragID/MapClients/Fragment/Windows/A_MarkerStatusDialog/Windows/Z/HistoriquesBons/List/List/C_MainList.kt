@@ -19,7 +19,10 @@ fun View_MainList(
 ) {
     Column(
         modifier = Modifier
-            .getSemanticsTag(listGBonVentFilteredByClientKeySorted,"listGBonVentFilteredByClientKeySorted")
+            .getSemanticsTag(
+                nomVal = "listGBonVentFilteredByClientKeySorted",
+                data = listGBonVentFilteredByClientKeySorted
+            )
             .fillMaxWidth()
             .padding(6.dp)
     ) {

@@ -44,8 +44,9 @@ fun Screen_GrossistAchatSec12FragID1(
         TopAppBar(
             modifier =
                 Modifier
-                    .getSemanticsTag(datas_A_Affiche_Au_Nom = data.map { it.parent_M14VentPeriod_KeyId })
-                    .getSemanticsTag(repositorysMainGetter.repo11AchatOperation.sourceDatas, "repo11AchatOperation",log=true),
+                    .getSemanticsTag(viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,"currentActiveFocuced_M14VentPeriode")
+                    .getSemanticsTag(data.map { it.parent_M14VentPeriod_KeyId }, "repo10OperationVentCouleur")
+                    .getSemanticsTag(repositorysMainGetter.repo11AchatOperation.sourceDatas, "repo11AchatOperation"),
             title = { Text("Grossist Achat") },
             actions = {
                 IconButton(onClick = { viewModel.updateShowMenu(!uiState.showMenu) }) {

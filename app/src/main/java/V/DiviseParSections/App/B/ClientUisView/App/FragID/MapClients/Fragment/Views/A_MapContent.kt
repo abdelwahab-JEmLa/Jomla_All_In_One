@@ -101,7 +101,10 @@ fun MapContent(
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
-                .getSemanticsTag(markerStatusDialogActiveM2Client,"markerStatusDialogActiveM2Client")
+                .getSemanticsTag(
+                    nomVal = "markerStatusDialogActiveM2Client",
+                    data = markerStatusDialogActiveM2Client
+                )
             ,
             factory = { mapView }
         )

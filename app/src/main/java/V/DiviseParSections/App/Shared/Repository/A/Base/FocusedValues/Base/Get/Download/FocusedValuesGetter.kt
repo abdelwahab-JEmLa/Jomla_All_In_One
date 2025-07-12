@@ -63,15 +63,14 @@ class FocusedValuesGetter(
     }
     //----------------------------------Section.M10Vent------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    val filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali by derivedStateOf {
+    val filtered_ListM10Vent_BY_Curr_M14VentPeriod by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
             val parent_M9AppCompt =
                 repo9AppCompt.datasValue.find { compt ->
                     compt.keyID == it.parent_M9AppCompt_KeyID
                 }
 
-            it.parent_M14VentPeriod_KeyId ==
-                    currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID
+            it.parent_M14VentPeriod_KeyId ==currentActiveFocuced_M14VentPeriode?.keyID
         }
     }
 
@@ -221,7 +220,7 @@ class FocusedValuesGetter(
             }
 
             return map.entries.foldIndexed(this) { index, modifier, (key, value) ->
-                modifier.getSemanticsTag(value, key, index + 6)
+                modifier.getSemanticsTag(index + 6, key, value)
             }
         }
     }

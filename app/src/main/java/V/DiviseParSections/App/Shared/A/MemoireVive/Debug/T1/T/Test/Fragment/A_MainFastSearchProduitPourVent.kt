@@ -140,7 +140,7 @@ fun MainFastSearchProduitPourVent(
                                     handleBonVentSelection()
                                 },
                                 modifier = Modifier
-                                    .getSemanticsTag(newProduit, "newProduit")
+                                    .getSemanticsTag(nomVal = "newProduit", data = newProduit)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,

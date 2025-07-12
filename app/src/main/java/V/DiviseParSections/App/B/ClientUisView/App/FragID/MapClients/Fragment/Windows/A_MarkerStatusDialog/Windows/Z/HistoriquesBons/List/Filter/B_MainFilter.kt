@@ -23,7 +23,7 @@ fun MainFilter(
 
     ElevatedCard(
         Modifier
-            .getSemanticsTag(datasValue, "datasValue")
+            .getSemanticsTag(nomVal = "datasValue", data = datasValue)
             .padding(2.dp)
     ) {
         View_MainList(filtered, vm)

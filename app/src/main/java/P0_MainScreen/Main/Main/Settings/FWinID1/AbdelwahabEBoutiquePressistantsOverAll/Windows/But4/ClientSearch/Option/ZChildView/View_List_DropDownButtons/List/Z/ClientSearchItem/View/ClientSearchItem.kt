@@ -72,7 +72,7 @@ fun get_Edited_M8BonVent(
         parent_M2Client_DebugInfos = m2Client.nom,
     )
 
-    val semanticsModifier = Modifier.getSemanticsTag(newBonVent, "newBonVent")
+    val semanticsModifier = Modifier.getSemanticsTag(nomVal = "newBonVent", data = newBonVent)
 
     return Triple(existingBonVent, newBonVent, semanticsModifier)
 }

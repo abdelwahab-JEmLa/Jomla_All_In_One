@@ -129,7 +129,7 @@ fun MainList(
     ) {
         Column(
             modifier = modifier
-                .getSemanticsTag(currentM9AppCompt?.nom, "currentM9AppCompt")
+                .getSemanticsTag(nomVal = "currentM9AppCompt", data = currentM9AppCompt?.nom)
         ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(

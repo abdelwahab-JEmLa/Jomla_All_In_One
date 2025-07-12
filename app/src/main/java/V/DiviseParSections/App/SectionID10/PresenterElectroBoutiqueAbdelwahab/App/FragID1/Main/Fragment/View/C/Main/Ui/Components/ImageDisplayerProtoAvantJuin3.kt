@@ -159,12 +159,12 @@ fun ImageDisplayerProtoAvantJuin3(
             GlideImage(
                 modifier = Modifier
                     .getSemanticsTag(
-                        get.activeDialogSearchM1Produit,
+                        0,
                         "activeDialogSearchM1Produit",
-                        0
+                        get.activeDialogSearchM1Produit
                     )
-                    .getSemanticsTag(produit.getDebugInfos(), "produit", 1)
-                    .getSemanticsTag(activeProduit?.getDebugInfos() ?: "null", "activeProduit", 1)
+                    .getSemanticsTag(1, "produit", produit.getDebugInfos())
+                    .getSemanticsTag(1, "activeProduit", activeProduit?.getDebugInfos() ?: "null")
                     .clickable {
                         // Manual click handler - always available
                         focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)

@@ -65,10 +65,13 @@ fun Downer_Bar(
         Row(
             modifier = Modifier
                 .getSemanticsTag(
-                    onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent,
-                    "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent"
+                    nomVal = "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
+                    data = onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
                 )
-                .getSemanticsTag(ventOperationsForProduct, "ventOperationsForProduct")
+                .getSemanticsTag(
+                    nomVal = "ventOperationsForProduct",
+                    data = ventOperationsForProduct
+                )
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically

@@ -17,7 +17,7 @@ class Repo11AchatOperation(
 ) {
      val sourceDatas by derivedStateOf {
         getterFocusedValues
-            .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
+            .filtered_ListM10Vent_BY_Curr_M14VentPeriod
     }
 
     val datasValue by derivedStateOf { initImplimentaion() }

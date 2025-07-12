@@ -85,7 +85,7 @@ class RepositorysMainSetter(
         if (m1produitInfos != null) {
             updateListRelativeVentCouleurPrixVent(
                 repo10OperationVentCouleur,
-                filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali ,
+                filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod ,
                 m1produitInfos.keyID,
                 newPrix)
         }
@@ -102,7 +102,7 @@ class RepositorysMainSetter(
     fun toggleEtateDeliveryNonTrouveVentOuFacade(produitKey: String) =
         toggleEtateDeliveryNonTrouveVentOu(
             repo10OperationVentCouleur=repo10OperationVentCouleur,
-            filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali ,
+            filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod ,
             produitKey=produitKey)
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {

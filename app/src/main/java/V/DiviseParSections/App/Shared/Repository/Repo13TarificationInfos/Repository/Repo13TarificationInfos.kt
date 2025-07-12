@@ -154,7 +154,10 @@ data class M13TarificationInfos(
                 parentM1ProduitDebugInfos = parentM1ProduitInfos.getDebugInfos() ,
                 prixCurrency = start_Prix_Depuit_Ancient
             )
-            val modifier = Modifier.getSemanticsTag(m13TarificationInfos, "m13TarificationInfos")
+            val modifier = Modifier.getSemanticsTag(
+                nomVal = "m13TarificationInfos",
+                data = m13TarificationInfos
+            )
             return Pair(m13TarificationInfos, modifier)
         }
 

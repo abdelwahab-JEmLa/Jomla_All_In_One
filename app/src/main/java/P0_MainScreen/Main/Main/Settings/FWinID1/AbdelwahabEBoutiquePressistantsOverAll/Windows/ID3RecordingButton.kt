@@ -70,12 +70,12 @@ fun ID3RecordingButton(
                 "$displayTime | بقي $remainM2 زبون",
                 modifier = Modifier
                     .getSemanticsTag(
-                        get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID,
-                        "parent_M9AppCompt_KeyID"
+                        nomVal = "parent_M9AppCompt_KeyID",
+                        data = get.currentActiveFocuced_M14VentPeriode?.parent_M9AppCompt_KeyID
                     )
                     .getSemanticsTag(
-                        filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible,
-                        "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible"
+                        nomVal = "filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible",
+                        data = filteredList_M2Client_Ou_Leur_Last_M8BonVent_Etate_IS_Cible
                     )
                     .background(if (enable) buttonBackgroundColor else Color.Gray)
                     .padding(4.dp),

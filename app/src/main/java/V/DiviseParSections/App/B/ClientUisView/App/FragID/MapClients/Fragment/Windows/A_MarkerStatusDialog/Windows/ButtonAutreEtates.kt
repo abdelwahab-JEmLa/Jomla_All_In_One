@@ -69,7 +69,7 @@ fun M8BonVent.EtateActuellementEst.ButtonAutreEtates(
             )
         }
 
-        val semMod = Modifier.getSemanticsTag(new, "new")
+        val semMod = Modifier.getSemanticsTag(nomVal = "new", data = new)
 
         Pair(semMod, handleClick)
     }

@@ -98,7 +98,10 @@ fun MarkerStatusDialog(
 
         Box(
             modifier = Modifier
-                .getSemanticsTag(markerStatusDialogActiveM2Client?.nom?:"","markerStatusDialogActiveM2Client")
+                .getSemanticsTag(
+                    nomVal = "markerStatusDialogActiveM2Client",
+                    data = markerStatusDialogActiveM2Client?.nom?:""
+                )
                 .fillMaxSize()
         ) {
 

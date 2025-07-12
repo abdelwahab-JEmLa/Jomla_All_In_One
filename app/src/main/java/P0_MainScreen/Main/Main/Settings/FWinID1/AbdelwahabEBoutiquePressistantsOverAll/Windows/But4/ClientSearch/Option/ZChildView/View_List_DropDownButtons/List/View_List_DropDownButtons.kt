@@ -32,8 +32,8 @@ fun View_List_DropDownButtons(
     ) {
         LazyColumn(
             Modifier.getSemanticsTag(
-                clientsWithCommandBonVents,
-                "clientsWithCommandBonVents"
+                nomVal = "clientsWithCommandBonVents",
+                data = clientsWithCommandBonVents
             )
         ) {
             items(filteredClients) { client ->
