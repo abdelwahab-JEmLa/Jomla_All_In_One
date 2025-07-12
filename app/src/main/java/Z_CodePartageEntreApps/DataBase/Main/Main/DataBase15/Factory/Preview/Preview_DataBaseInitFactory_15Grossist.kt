@@ -6,15 +6,11 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.MoreVert
@@ -31,9 +27,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -107,6 +100,11 @@ class Preview_DataBaseInitFactory_15Grossist(
         _uiState.value = _uiState.value.copy(safeCountClick = _uiState.value.safeCountClick + 1)
     }
 
+    fun active_ShowMenu() {
+        _uiState.value = _uiState.value
+            .copy(showMenu = true)
+    }
+
     fun desactive_ShowMenu() {
         _uiState.value = _uiState.value
             .copy(showMenu = false)
@@ -135,50 +133,10 @@ private fun Main_DataBaseInitFactory_15Grossist(
 private fun MainScreen(
     viewModel: Preview_DataBaseInitFactory_15Grossist,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val datas = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
+            Spacer(Modifier.padding(top = 20.dp))
             Top_App_Bar_With_DropdownMenu(viewModel)
-
-            Box {
-                LazyColumn(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(datas) { item ->
-                        Item_M15Grossist(
-                            item = item,
-                            viewModel = viewModel,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun Item_M15Grossist(
-    modifier: Modifier = Modifier,
-    item: M15Grossist,
-    viewModel: Preview_DataBaseInitFactory_15Grossist
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(
-                text = item.get_DebugInfos(),
-                modifier = Modifier.padding(16.dp)
-            )
-            Text(
-                text = item.nom,
-                modifier = Modifier.padding(16.dp)
-            )
-
         }
     }
 }
@@ -187,14 +145,13 @@ private fun Item_M15Grossist(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Top_App_Bar_With_DropdownMenu(viewModel: Preview_DataBaseInitFactory_15Grossist) {
-
-    var showMenu by remember { mutableStateOf(false) }
-
+    val datas = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     TopAppBar(
+        modifier = Modifier.getSemanticsTag(datas, "datas"),
         title = { Text("15Grossist") },
         actions = {
             IconButton(onClick = {
-                showMenu = !showMenu
+                viewModel.active_ShowMenu()
             }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
@@ -217,12 +174,13 @@ private fun Top_App_Bar_With_DropdownMenu(viewModel: Preview_DataBaseInitFactory
 private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFactory_15Grossist) {
     val uiState by viewModel.uiState.collectAsState()
     val nomFn = "EcraseMigre"
-    val title = if (uiState.ecraseMigre_safeCountClick == 0) nomFn else "esque t sure de $nomFn tout "
+    val title =
+        if (uiState.ecraseMigre_safeCountClick == 0) nomFn else "esque t sure de $nomFn tout "
 
     val oldDataBase = uiState.oldDataBase
     Card(
         modifier = Modifier
-            .getSemanticsTag(oldDataBase,"oldDataBase")
+            .getSemanticsTag(oldDataBase, "oldDataBase")
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
@@ -246,7 +204,7 @@ private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFacto
                 else {
                     val repositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
 
-                 //   repositorysMainSetter.repo15Grossist_deleteMulti()
+                    //   repositorysMainSetter.repo15Grossist_deleteMulti()
 
                     oldDataBase.map { old ->
                         repositorysMainSetter.repo15Grossist_add_New(
