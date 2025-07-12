@@ -83,6 +83,21 @@ class Repo11AchatOperation(
         dataBaseCreationFactory.addOrUpdatedAncienRepo(existingIndex, data)
     }
 
+    fun deleteMulti(data: List<M11AchatOperation>) {
+        composScope.launch {
+            try {
+                val keyIDsToDelete = data.map { it.keyID }.toSet()
+                _datas.value = datasValue.filter { it.keyID !in keyIDsToDelete }
+                data.forEach { item ->
+                    dataBaseCreationFactory.delete(item)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Error deleting items: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     fun delete(data: M11AchatOperation) {
         composScope.launch {
             try {

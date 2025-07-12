@@ -74,7 +74,6 @@ fun TopAppBar_With_DropDownMenu(
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
-                // Premier item
                 DropdownMenuItem(
                     modifier = Modifier
                         .getSemanticsTag(
@@ -92,7 +91,26 @@ fun TopAppBar_With_DropDownMenu(
                     }
                 )
 
-                // Deuxième item
+                DropdownMenuItem(
+                    text = { Text("Filtrer par Client") },
+                    onClick = {
+                        val keyID = viewModel.aCentralFacade
+                            .focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+                            ?.keyID
+
+                        keyID?.let { nonNullKeyID ->
+                            viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_deleteMulti(
+                                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                                    .datasValue.filter {
+                                        it.parent_M14VentPeriod_KeyID == nonNullKeyID
+                                    }
+                            )
+                        }
+
+                        viewModel.updateShowMenu(false)
+                    }
+                )
+
                 DropdownMenuItem(
                     text = { Text("Filtrer par Client") },
                     onClick = {

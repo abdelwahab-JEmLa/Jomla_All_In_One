@@ -136,6 +136,9 @@ class RepositorysMainSetter(
 
     //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
     fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
+    fun repo11AchatOperation_deleteMulti(datas:List<M11AchatOperation> ) = repo11AchatOperation.deleteMulti(datas)
+    //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
+
 
     fun upsertM8BonVent(data: M8BonVent) {
         repo8BonVent.upsert(data)
