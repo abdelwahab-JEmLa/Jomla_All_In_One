@@ -3,6 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repositor
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
@@ -23,6 +24,7 @@ import kotlinx.coroutines.withContext
 class Repo11AchatOperation(
     val context: Context,
     val dataBaseCreationFactory: DataBaseInitFactory_11AchatOperation,
+    val repo10OperationVentCouleur: Repo10OperationVentCouleur,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M11AchatOperation>>(emptyList())
@@ -100,7 +102,8 @@ class Repo11AchatOperation(
 
     val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf {
         datasValue.groupBy {
-            it.parent_M1Produit_KeyID
+            it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
+                .parentM1ProduitInfosKeyId
         }
     }
 

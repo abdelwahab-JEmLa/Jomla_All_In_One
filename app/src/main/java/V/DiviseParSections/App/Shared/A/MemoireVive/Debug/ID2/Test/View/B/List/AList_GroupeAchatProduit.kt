@@ -2,7 +2,6 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,26 +36,7 @@ fun List_GroupeAchatProduit(
             .padding(4.dp)
     ) {
         Column {
-            ElevatedCard(
-                modifier = Modifier
-                    .getSemanticsTag(items,"items",log=true)
-                    .fillMaxWidth()
-                    .padding(petitePaddine),
-                elevation = androidx.compose.material3.CardDefaults.elevatedCardElevation(
-                    defaultElevation = 6.dp
-                )
-            ) {
-                Text(
-                    text = "List_GroupeAchatProduit",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
+            Elevated_Text(viewModel)
 
             LazyColumn {
                 items(items) { groupeAchatProduit ->
@@ -66,5 +47,28 @@ fun List_GroupeAchatProduit(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Elevated_Text(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(petitePaddine),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 6.dp
+        )
+    ) {
+        Text(
+            text = "List_GroupeAchatProduit",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
     }
 }
