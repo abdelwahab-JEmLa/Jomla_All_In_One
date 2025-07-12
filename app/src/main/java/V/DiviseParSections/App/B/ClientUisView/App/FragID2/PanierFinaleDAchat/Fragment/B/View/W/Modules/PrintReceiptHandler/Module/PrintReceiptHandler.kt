@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
-import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -26,7 +26,6 @@ class PrintReceiptHandler {
         val couleur: String? = null
     )
 
-    // New method for current vent system
     fun printVentReceipt(
         context: Context,
         fVentCouleurOperationRepository: Repo10OperationVentCouleur,
@@ -38,7 +37,6 @@ class PrintReceiptHandler {
         val printFunction = {
             val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
-            // RepositorysMainGetter all vents that are not removed from cart
             val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
                 vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
                         vent.quantity > 0
@@ -47,12 +45,10 @@ class PrintReceiptHandler {
             val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
 
             activeVents.forEach { vent ->
-                // RepositorysMainGetter product details
                 val product = bProduitInfosRepository.datasValue.find {
                     it.keyID == vent.parentM1ProduitInfosKeyId
                 }
 
-                // RepositorysMainGetter color details
                 val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
                     it.keyID == vent.parentM3CouleurProduitInfosKeyID
                 }
@@ -82,7 +78,6 @@ class PrintReceiptHandler {
                 }
             }
 
-            // Flatten articles and group similar items
             val finalArticles = mutableListOf<ArticleImpression>()
             productMap.values.forEach { articles ->
                 articles.groupBy { "${it.nomArticle}_${it.prixUnitaire}" }.forEach { (_, groupedArticles) ->
