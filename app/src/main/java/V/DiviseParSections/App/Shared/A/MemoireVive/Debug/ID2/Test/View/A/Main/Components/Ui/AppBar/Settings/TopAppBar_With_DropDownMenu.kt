@@ -53,29 +53,36 @@ fun TopAppBar_With_DropDownMenu(
 
             val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
-            val achats_Depuit_M11AchatOperation_List = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-                .genere_Achats_Depuit_M11AchatOperation_List(vents)
+            val achats_Depuit_M11AchatOperation_List =
+                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                    .genere_Achats_Depuit_M11AchatOperation_List(vents)
 
             DropdownMenu(
                 modifier = Modifier
-                    .getSemanticsTag(data=vents,
-                       nomVal =  "vents")
-                    .getSemanticsTag(achats_Depuit_M11AchatOperation_List,
-                        "achats_Depuit_M11AchatOperation_List")
-                ,
+                    .getSemanticsTag(
+                        data = vents,
+                        nomVal = "vents"
+                    )
+                    .getSemanticsTag(
+                        achats_Depuit_M11AchatOperation_List,
+                        "achats_Depuit_M11AchatOperation_List"
+                    ),
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
                 // Premier item
                 DropdownMenuItem(
                     modifier = Modifier
-                        .getSemanticsTag(data=achats_Depuit_M11AchatOperation_List,
-                            nomVal =  "achats_Depuit_M11AchatOperation_List")
-                    ,
+                        .getSemanticsTag(
+                            data = achats_Depuit_M11AchatOperation_List,
+                            nomVal = "achats_Depuit_M11AchatOperation_List"
+                        ),
                     text = { Text("genere_Achats_Depuit_M11AchatOperation_List()") },
                     onClick = {
                         achats_Depuit_M11AchatOperation_List.map {
-                            viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(it)
+                            viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(
+                                it
+                            )
                         }
                         viewModel.updateShowMenu(false)
                     }
