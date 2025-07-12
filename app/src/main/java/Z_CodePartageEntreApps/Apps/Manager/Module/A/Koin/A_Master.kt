@@ -39,6 +39,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.P
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Proto.SQL.G_RoomOperationsHandler
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.DataBaseFactoryDCouleurAchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.Preview.D_AchatOperationTestDatasViewModel
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
@@ -113,6 +114,7 @@ val centralDataBasesModule = module {
 }
 
 val factoryDataBaseProtoAvantJuin3Module = module {
+    single { DataBaseInitFactory_11AchatOperation(get()) }
     single { DataBaseInitFactory_15Grossist(get()) }
     single { DataBaseInitFactory_14VentPeriode(get()) }
 
@@ -153,7 +155,7 @@ val factoryDataBaseProtoAvantJuin3Module = module {
 val classesHandlersModule = module {
     single { DebugKey(get()) }
     single { WifiTransferDatas(androidContext(), get()) }
-    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(),) }
+    single { WDatabaseInitializationManager(get(), get(), get(), get(),get(),get(),get(), get(), ) }
 
     single { CalculeCouleurHandler(get()) }
     single { PanelsGroupeButtonHandler() }

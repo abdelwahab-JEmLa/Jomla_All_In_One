@@ -14,6 +14,8 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
@@ -28,6 +30,7 @@ class RepositorysMainSetter(
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
+    private val repo11AchatOperation: Repo11AchatOperation,
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
@@ -130,7 +133,9 @@ class RepositorysMainSetter(
             repo10OperationVentCouleur.delete(it)
         }
     }
-    //----------------------------------------------------------------------------------------------------------------------------------------------
+
+    //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
+    fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
 
     fun upsertM8BonVent(data: M8BonVent) {
         repo8BonVent.upsert(data)

@@ -25,22 +25,18 @@ fun TopAppBar_With_DropDownMenu(
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
     val data = repositorysMainGetter.repo10OperationVentCouleur.datasValue
+
     TopAppBar(
-        modifier =
-            Modifier
-                .getSemanticsTag(
-                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
-                    "currentActiveFocuced_M14VentPeriode"
-                )
-                .getSemanticsTag(
-                    data.map { it.parent_M14VentPeriod_KeyId },
-                    "repo10OperationVentCouleur"
-                )
-                .getSemanticsTag(
-                    repositorysMainGetter.repo11AchatOperation.sourceDatas,
-                    "repo11AchatOperation"
-                )
-                .height(30.dp),
+        modifier = Modifier
+            .getSemanticsTag(
+                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode,
+                "currentActiveFocuced_M14VentPeriode"
+            )
+            .getSemanticsTag(
+                data.map { it.parent_M14VentPeriod_KeyId },
+                "repo10OperationVentCouleur"
+            )
+            .height(30.dp),
         title = {
             Text(
                 "Grossist Achat",
@@ -55,10 +51,28 @@ fun TopAppBar_With_DropDownMenu(
                 )
             }
 
+            val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                .filtered_ListM10Vent_BY_Curr_M14VentPeriod
+            val initDatas = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                .genere_Achats_Depuit_M11AchatOperation_List(vents)
+
             DropdownMenu(
+                modifier = initDatas.second,
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
+                // Premier item
+                DropdownMenuItem(
+                    text = { Text("genere_Achats_Depuit_M11AchatOperation_List()") },
+                    onClick = {
+                        initDatas.first.map {
+                            viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(it)
+                        }
+                        viewModel.updateShowMenu(false)
+                    }
+                )
+
+                // Deuxième item
                 DropdownMenuItem(
                     text = { Text("Filtrer par Client") },
                     onClick = {

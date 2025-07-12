@@ -44,7 +44,7 @@ val composRepositorysModule = module {
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
-    single { Repo11AchatOperation(get(),get(),) }
+    single { Repo11AchatOperation(androidContext(), get(),) }
     single { MVentPeriodeRepository(get(), get(), get()) }
 
     // Helper classes for RepositorysMainSetter
@@ -59,7 +59,7 @@ val composRepositorysModule = module {
 
     single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(), ) }
 
-    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), ) }
+    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

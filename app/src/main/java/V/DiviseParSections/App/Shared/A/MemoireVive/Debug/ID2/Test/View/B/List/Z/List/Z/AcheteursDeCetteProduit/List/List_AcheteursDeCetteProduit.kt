@@ -21,7 +21,8 @@ fun List_AcheteursDeCetteProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     achatCouleur: M11AchatOperation
 ) {
-    val listFCouleurVentOperation = achatCouleur.listFCouleurVentOperation
+    val repo10OperationVentCouleur=viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+    val listFCouleurVentOperation = achatCouleur.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur)
     val listGBonVentKeyID = listFCouleurVentOperation.map { it.parentM8BonVentKeyId }
     Column(
         modifier = Modifier
