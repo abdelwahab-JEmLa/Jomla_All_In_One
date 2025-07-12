@@ -2,8 +2,6 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.semantics.SemanticsPropertyKey
@@ -43,19 +41,32 @@ object DebugsTests {
     }
 
 
-    @Composable
-    fun DebugTestsPerformInitialSearch(
+    suspend fun DebugTestsPerformInitialSearch(
         enabled: Boolean,
         focusRequester: FocusRequester,
-        onSearchQueryChange: (String) -> Unit,
-        s: String
+        onSearchTextChange: (String) -> Unit,
+        searchQuery: String
     ) {
-        LaunchedEffect(enabled) {
-            if (enabled) {
-                delay(2000)
-                onSearchQueryChange(s)
-                focusRequester.requestFocus()
-            }
+        if (!enabled) return
+
+        try {
+            // Wait for UI to be ready
+            delay(200)
+
+            // Check if focusRequester is properly initialized before using it
+            // This is the line that was causing the crash (line 57)
+            focusRequester.requestFocus()
+
+            // Perform your search logic
+            onSearchTextChange(searchQuery)
+
+        } catch (e: IllegalStateException) {
+            // Log the error instead of crashing
+            println("Focus request failed in DebugTestsPerformInitialSearch: ${e.message}")
+            // Still execute the search even if focus fails
+            onSearchTextChange(searchQuery)
         }
     }
+
+
 }

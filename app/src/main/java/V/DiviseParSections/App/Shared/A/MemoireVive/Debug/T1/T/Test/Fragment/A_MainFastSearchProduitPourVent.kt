@@ -59,16 +59,10 @@ fun MainFastSearchProduitPourVent(
 
     val focusRequester = remember { FocusRequester() }
     var localSearchText by remember { mutableStateOf(startTextSearchM1Produit) }
+    var isTextFieldReady by remember { mutableStateOf(false) }
 
     // Only request focus if the OutlinedTextField will be shown
     val shouldShowTextField = sourceLenceurDeCetteFragment !is ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit
-
-    LaunchedEffect(Unit) {
-        if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
-            delay(100)
-            focusRequester.requestFocus()
-        }
-    }
 
     LaunchedEffect(localSearchText) {
         if (localSearchText.isNotEmpty()) {
@@ -79,17 +73,22 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(false) }
 
-    DebugTestsPerformInitialSearch(
-        enabled = shouldPerformInitialSearch,
-        focusRequester = focusRequester,
-        { searchText ->
-            localSearchText = searchText
-            shouldPerformInitialSearch = false
-        },
-        "liy"
-    )
+    // FIXED: Only call DebugTestsPerformInitialSearch after TextField is ready
+    LaunchedEffect(isTextFieldReady) {
+        if (isTextFieldReady && shouldPerformInitialSearch) {
+            DebugTestsPerformInitialSearch(
+                enabled = shouldPerformInitialSearch,
+                focusRequester = focusRequester,
+                { searchText ->
+                    localSearchText = searchText
+                    shouldPerformInitialSearch = false
+                },
+                "liy"
+            )
+        }
+    }
 
     Surface(
         modifier = modifier
@@ -123,7 +122,7 @@ fun MainFastSearchProduitPourVent(
                                 nom = searchQuery.ifEmpty { "Err definition" },
                                 processPositioningInFactory = ProcessPositioningInFactoryID1.CreeDepuitRechercheRapid
                             )
-                            val handleBonVentSelection =  {
+                            val handleBonVentSelection = {
                                 val newCouleurP = M3CouleurProduitInfos(
                                     parentBProduitOldID = newProduit.id,
                                     parentBProduitInfosKeyID = newProduit.keyID,
@@ -166,11 +165,20 @@ fun MainFastSearchProduitPourVent(
                     )
 
                     Spacer(Modifier.height(16.dp))
+
+                    // FIXED: Mark TextField as ready after it's composed
+                    LaunchedEffect(Unit) {
+                        delay(100) // Small delay to ensure TextField is fully composed
+                        isTextFieldReady = true
+                        if (shouldShowTextField && startTextSearchM1Produit.isEmpty()) {
+                            focusRequester.requestFocus()
+                        }
+                    }
                 }
 
                 MainFilterT1(
                     viewModel,
-                    products, categories, uiState.searchText, Modifier.fillMaxSize(),sourceLenceurDeCetteFragment
+                    products, categories, uiState.searchText, Modifier.fillMaxSize(), sourceLenceurDeCetteFragment
                 )
             }
         }

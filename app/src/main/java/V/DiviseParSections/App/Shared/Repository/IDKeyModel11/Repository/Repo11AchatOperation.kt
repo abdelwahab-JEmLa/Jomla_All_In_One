@@ -15,7 +15,7 @@ class Repo11AchatOperation(
     val getterFocusedValues: FocusedValuesGetter,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
 ) {
-    private val sourceDatas by derivedStateOf {
+     val sourceDatas by derivedStateOf {
         getterFocusedValues
             .filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali
     }
