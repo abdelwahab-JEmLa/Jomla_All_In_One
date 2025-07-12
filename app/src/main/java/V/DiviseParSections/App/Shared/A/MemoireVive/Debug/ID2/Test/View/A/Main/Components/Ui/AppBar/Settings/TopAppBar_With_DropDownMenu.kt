@@ -66,13 +66,6 @@ fun TopAppBar_With_DropDownMenu(
                         viewModel.updateShowMenu(false)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Effacer Filtre") },
-                    onClick = {
-                        viewModel.clearClientFilter()
-                        viewModel.updateShowMenu(false)
-                    }
-                )
             }
         }
     )
