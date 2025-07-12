@@ -20,8 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Changed from: import androidx.wear.compose.material.Text
-
 @Composable
 fun List_GroupeAchatProduit(
     modifier: Modifier,
@@ -29,7 +27,8 @@ fun List_GroupeAchatProduit(
 ) {
     val repo = viewModel.getter.repo11AchatOperation
 
-    val items = repo.bProduitKeyIDToListKAchatCouleurOperation.entries.toList()
+    val items = repo.bProduitKeyID_To_List_KAchatCouleurOperation.entries.toList()
+
     Box(
         modifier = modifier
             .fillMaxSize()

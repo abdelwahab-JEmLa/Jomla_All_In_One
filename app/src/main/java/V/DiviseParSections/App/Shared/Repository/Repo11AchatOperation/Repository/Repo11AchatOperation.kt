@@ -100,7 +100,7 @@ class Repo11AchatOperation(
     private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
     val filterQuery get() = _filterQuery
 
-    val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf {
+    val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
         datasValue.groupBy {
             it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
                 .parentM1ProduitInfosKeyId
