@@ -1,12 +1,12 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Components.Ui.AppBar.Settings
 
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
@@ -85,6 +85,10 @@ fun TopAppBar_With_DropDownMenu(
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
                 DropDownItem_2(viewModel)
+
+                // Clear filter button
+                ClearFilterButton(viewModel)
+
                 Repo11AchatOperation_deleteMulti(viewModel)
 
                 //  dropdown item - Add operations
@@ -120,7 +124,6 @@ fun TopAppBar_With_DropDownMenu(
                     )
                 }
 
-
                 Card(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(
@@ -146,15 +149,35 @@ fun TopAppBar_With_DropDownMenu(
             }
         }
     )
-    if (uiState.dialog_Choisire_Grossist_Modularized_showDialog) {
-        Dialog_Choisire_Grossist_Modularized(
-            viewModel = viewModel,
-        ) { grossistSelected ->
-            if (grossistSelected != null) {
+}
 
+@Composable
+private fun ClearFilterButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Clear Filter",
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
+            },
+            text = { Text("Effacer le filtre") },
+            onClick = {
+                // Clear the filter
+                viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                    .updateFilterQuery(
+                        V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation.FilterQuery.NO_FILTER
+                    )
+                viewModel.updateShowMenu(false)
             }
-            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(false)
-        }
+        )
     }
 }
 
@@ -199,11 +222,11 @@ private fun Repo11AchatOperation_deleteMulti(viewModel: GrossistAchatSec12FragID
 
 @Composable
 private fun DropDownItem_2(viewModel: GrossistAchatSec12FragID1_ViewModel) {
-    val text = "DropDownItem_2"
+    val text = "Choisir Grossiste"
     Card(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -212,7 +235,7 @@ private fun DropDownItem_2(viewModel: GrossistAchatSec12FragID1_ViewModel) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error
+                    tint = MaterialTheme.colorScheme.primary
                 )
             },
             text = { Text(text) },
@@ -220,7 +243,6 @@ private fun DropDownItem_2(viewModel: GrossistAchatSec12FragID1_ViewModel) {
                 viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = true)
                 viewModel.updateShowMenu(false)
             }
-        )   //<--
-        //TODO(1): ajout un foating qui clear
+        )
     }
 }

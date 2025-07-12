@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.W_AchatProduitOperation.View.updated_Achats
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,9 +44,20 @@ import androidx.core.graphics.toColorInt
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
+    list_M11AchatOperation: List<M11AchatOperation> = emptyList(),
     onDismiss: (M15Grossist?) -> Unit
 ) {
+    val datasValue_repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+
+    // Calculate purchase count for each grossist and sort by it
+    val grossistsWithPurchaseCount = grossists.map { grossist ->
+        val purchaseCount = datasValue_repo11AchatOperation.count { achat ->
+            achat.parent_M15Grossist_KeyID == grossist.keyID
+        }
+        Pair(grossist, purchaseCount)
+    }.sortedByDescending { it.second } // Sort by purchase count (descending)
+
     Dialog(
         onDismissRequest = { onDismiss(null) }
     ) {
@@ -61,14 +77,15 @@ fun Dialog_Choisire_Grossist_Modularized(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Grossists List
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(grossists) { grossist ->
+                    items(grossistsWithPurchaseCount) { (grossist, purchaseCount) ->
                         GrossistItem(
+                            list_M11AchatOperation = list_M11AchatOperation,
                             grossist = grossist,
+                            purchaseCount = purchaseCount,
                             onSelect = {
                                 onDismiss(grossist)
                             }
@@ -123,12 +140,17 @@ fun Dialog_Choisire_Grossist_Modularized(
 @Composable
 private fun GrossistItem(
     grossist: M15Grossist,
-    onSelect: () -> Unit
+    purchaseCount: Int,
+    onSelect: () -> Unit,
+    list_M11AchatOperation: List<M11AchatOperation> = emptyList()
 ) {
+    val datas = updated_Achats(list_M11AchatOperation, grossist)
+
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSelect() },
+            .getSemanticsTag(datas, "datas")
+            .clickable { onSelect() }
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
@@ -140,27 +162,43 @@ private fun GrossistItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Color indicator
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(
-                        try {
-                            Color(grossist.couleur_In_Str.toColorInt())
-                        } catch (e: Exception) {
-                            MaterialTheme.colorScheme.primary
+            // Color indicator with badge
+            BadgedBox(
+                badge = {
+                    if (purchaseCount > 0) {
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ) {
+                            Text(
+                                text = purchaseCount.toString(),
+                                style = MaterialTheme.typography.labelSmall
+                            )
                         }
-                    )
+                    }
+                }
             ) {
-                Icon(
-                    Icons.Default.Business,
-                    contentDescription = null,
-                    tint = Color.White,
+                Box(
                     modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.Center)
-                )
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(
+                            try {
+                                Color(grossist.couleur_In_Str.toColorInt())
+                            } catch (e: Exception) {
+                                MaterialTheme.colorScheme.primary
+                            }
+                        )
+                ) {
+                    Icon(
+                        Icons.Default.Business,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -177,13 +215,27 @@ private fun GrossistItem(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Text(
-                    text = grossist.get_DebugInfos(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = grossist.get_DebugInfos(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    if (purchaseCount > 0) {
+                        Text(
+                            text = "• $purchaseCount achats",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
     }
