@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.Repository.Repo15.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import android.content.Context
 import android.widget.Toast
@@ -12,8 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -116,11 +114,9 @@ data class M15Grossist(
     }
 
     companion object {
-        val ref = Firebase.database.getReference(
-            "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
-        ).child("DatasM15Grossist")
+        val ref = centralRef.child("DatasM15Grossist")
 
-        fun generePushKey() = RepositorysMainSetter.genereUnPushKeyFireBase(ref)
+        fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
 
         fun get_default(
         ): Pair<M15Grossist, Modifier> {

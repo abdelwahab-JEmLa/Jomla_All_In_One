@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository
+package V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 class Repo11AchatOperation(
     val getterFocusedValues: FocusedValuesGetter,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
+
 ) {
      val sourceDatas by derivedStateOf {
         getterFocusedValues
@@ -29,20 +30,6 @@ class Repo11AchatOperation(
 
     private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
     val filterQuery get() = _filterQuery
-
-    val filteredDatas by derivedStateOf {
-        when (val currentFilter = filterQuery.value) {
-          /*  is FilterQuery.Client -> {      //->
-                //TODO(FIXME):Fix erreur Incompatible types: Repo11AchatOperation.FilterQuery.Client and Repo11AchatOperation.FilterQuery.NO_FILTER
-                datasValue.filter { data ->
-                    data.listFCouleurVentOperation.any { operation ->
-                        operation.parentClientInfosKeyID == currentFilter.m2Client.keyID
-                    }
-                }
-            }
-            FilterQuery.NO_FILTER -> datasValue      */
-        }
-    }
 
     val bProduitKeyIDToListKAchatCouleurOperation by derivedStateOf {
         datasValue.groupBy {
@@ -74,7 +61,9 @@ data class M11AchatOperation(
     val listFCouleurVentOperation: List<M10OperationVentCouleur>
 ) {
     companion object {
-        fun generePushKey() =
-            centralRef.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        val ref = centralRef.child("M11AchatOperation")
+
+        fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+
     }
 }
