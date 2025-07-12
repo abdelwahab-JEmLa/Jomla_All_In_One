@@ -108,11 +108,11 @@ class Repo11AchatOperation(
         }
     }
 
-
     fun genere_Achats_Depuit_M11AchatOperation_List(
-        M14VentPeriod: M14VentPeriode?,
+        m14VentPeriod: M14VentPeriode?,
         filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>
     ): List<M11AchatOperation> {
+
         val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
             it.parentM3CouleurProduitInfosKeyID
         }
@@ -121,7 +121,7 @@ class Repo11AchatOperation(
             val totalQuantity = ventOperations.sumOf { it.quantity }
 
             M11AchatOperation.get_default().first.copy(
-                parent_M14VentPeriod_KeyID = M14VentPeriod?.keyID ?: "null",
+                parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
                 parent_M1Produit_DebugInfos = ventOperations.first().parentM1ProduitDebugInfos,
                 parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId,
                 parent_M3CouleurProduit_DebugInfos = ventOperations.first().parentM3CouleurProduitDebugInfos,
