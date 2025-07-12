@@ -140,9 +140,12 @@ class RepositorysMainSetter(
     //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
     fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
     fun repo11AchatOperation_deleteMulti(datas:List<M11AchatOperation> ) = repo11AchatOperation.deleteMulti(datas)
+    fun repo11AchatOperation_update_If_Exist(data: M11AchatOperation) = repo11AchatOperation.update_If_Exist(data)
 
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
     fun repo15Grossist_add_New(data: M15Grossist) = repo15Grossist.add_New(data)
+    fun repo15Grossist_update_If_Exist(data: M15Grossist) = repo15Grossist.update_If_Exist(data)
+
     fun repo15Grossist_deleteMulti(datas:List<M15Grossist>?=null)= repo15Grossist.deleteMulti(datas)
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -116,7 +116,7 @@ data class M15Grossist(
     fun get_DebugInfos(): String {
         return buildString {
             append("(M15=")
-            append("")
+            append(nom)
             append("[")
             append(keyID.takeLast(3).uppercase())
             append("])")

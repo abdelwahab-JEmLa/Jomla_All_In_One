@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,21 +27,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.core.graphics.toColorInt
 
 @Composable
 fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
 ) {
-    val produit = viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
+    val produit =
+        viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 
     if (produit != null) {
-        Card(Modifier.getSemanticsTag(produit,"produit")) {
+        Card(Modifier.getSemanticsTag(produit, "produit")) {
             HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)
 
             Column {
-                Header(produit)
+                Header(
+                    produit,
+                    viewModel = viewModel,
+                    groupeAchatProduit=groupeAchatProduit,
+                    )
 
                 List_AchatCouleurOperation(
                     viewModel = viewModel,
@@ -49,10 +56,19 @@ fun View_AchatProduitOperation(
         }
     }
 }
-
 @Composable
-private fun Header(produit: ArticlesBasesStatsTable) {
+private fun Header(
+    produit: ArticlesBasesStatsTable,
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>
+) {
     var showDialog by remember { mutableStateOf(false) }
+
+    val firstAchatOperation = groupeAchatProduit.value.lastOrNull()
+    val grossist = firstAchatOperation?.let { achat ->
+        viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+            .find { it.keyID == achat.parent_M15Grossist_KeyID }
+    }
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -73,57 +89,34 @@ private fun Header(produit: ArticlesBasesStatsTable) {
             )
 
             Button(
-                onClick = { showDialog = true }
+                onClick = { showDialog = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (grossist != null) {
+                        try {
+                            Color(grossist.couleur_In_Str.toColorInt())
+                        } catch (e: Exception) {
+                            MaterialTheme.colorScheme.primary
+                        }
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
+                )
             ) {
-                Text("Dialog_Choisire_Grossist")
+                Text(
+                    text = grossist?.nom ?: "Choisir Grossiste",
+                    color = Color.White
+                )
             }
         }
     }
 
     if (showDialog) {
-        Dialog_Choisire_Grossist(produit)
-        {
+        Dialog_Choisire_Grossist(
+            viewModel = viewModel,
+            groupeAchatProduit = groupeAchatProduit,
+        ) {
             showDialog = false
         }
     }
 }
 
-@Composable
-private fun Dialog_Choisire_Grossist(
-    produit: ArticlesBasesStatsTable,
-    onDismiss: () -> Unit
-) {
-    Dialog(
-        onDismissRequest = { onDismiss() }
-    ) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Product Details",
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Name: ${produit.nom}",
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                    text = "ID: ${produit.keyID}",
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Button(
-                    onClick = {
-                        onDismiss()
-                              },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Close")
-                }
-            }
-        }
-    }
-}

@@ -118,7 +118,6 @@ fun TopAppBar_With_DropDownMenu(
                 }
 
 
-                // Third dropdown item - Filter operations
                 Card(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     colors = CardDefaults.cardColors(
