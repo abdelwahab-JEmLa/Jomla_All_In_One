@@ -31,7 +31,8 @@ fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
 ) {
-    val produit = viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
+    val produit =
+        viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 
     if (produit != null) {
         Card {
@@ -74,41 +75,53 @@ private fun Header(produit: ArticlesBasesStatsTable) {
             Button(
                 onClick = { showDialog = true }
             ) {
-                Text("Details")
+                Text("Dialog_Choisire_Grossist")
             }
         }
     }
 
-    // Dialog that appears when button is clicked
     if (showDialog) {
-        Dialog(
-            onDismissRequest = { showDialog = false }
+        Dialog_Choisire_Grossist(produit)
+        {
+            showDialog = false
+        }
+    }
+}
+
+@Composable
+private fun Dialog_Choisire_Grossist(
+    produit: ArticlesBasesStatsTable,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { onDismiss() }
+    ) {
+        Card(
+            modifier = Modifier.padding(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Card(
-                modifier = Modifier.padding(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                Text(
+                    text = "Product Details",
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Name: ${produit.nom}",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "ID: ${produit.keyID}",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Button(
+                    onClick = {
+                        onDismiss()
+                              },
+                    modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text(
-                        text = "Product Details",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = "Name: ${produit.nom}",
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "ID: ${produit.keyID}",
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    Button(
-                        onClick = { showDialog = false },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Close")
-                    }
+                    Text("Close")
                 }
             }
         }
