@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.Z.List.List_AchatCouleurOperation
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +32,10 @@ fun View_AchatProduitOperation(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
 ) {
-    val produit =
-        viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
+    val produit = viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 
     if (produit != null) {
-        Card {
+        Card(Modifier.getSemanticsTag(produit,"produit")) {
             HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp, color = Color.Red)
 
             Column {
