@@ -29,7 +29,10 @@ fun Screen_GrossistAchatSec12FragID1(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        TopAppBar_With_DropDownMenu(viewModel, uiState)
+        TopAppBar_With_DropDownMenu(
+            viewModel,
+            uiState
+        )
 
         List_GroupeAchatProduit(
             modifier = Modifier

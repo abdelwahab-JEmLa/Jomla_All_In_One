@@ -36,7 +36,7 @@ object DebugsTests {
         data: Any?,
         nomVal: String,
         index: Int = 0,
-        log: Boolean = true
+        log: Boolean = false
     ): Modifier {
         if (log) {
             log(nomVal, index, data)
@@ -60,7 +60,6 @@ object DebugsTests {
         Log.d("getSemanticsTag", "[$logTag] $nomVal = $dataString")
     }
 
-
     suspend fun DebugTestsPerformInitialSearch(
         enabled: Boolean,
         focusRequester: FocusRequester,
@@ -70,20 +69,14 @@ object DebugsTests {
         if (!enabled) return
 
         try {
-            // Wait for UI to be ready
             delay(200)
 
-            // Check if focusRequester is properly initialized before using it
-            // This is the line that was causing the crash (line 57)
             focusRequester.requestFocus()
 
-            // Perform your search logic
             onSearchTextChange(searchQuery)
 
         } catch (e: IllegalStateException) {
-            // Log the error instead of crashing
             println("Focus request failed in DebugTestsPerformInitialSearch: ${e.message}")
-            // Still execute the search even if focus fails
             onSearchTextChange(searchQuery)
         }
     }
