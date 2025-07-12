@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import androidx.compose.foundation.layout.Arrangement
@@ -35,10 +36,6 @@ fun Header(
     val uiState by viewModel.uiState.collectAsState()
 
     val firstAchatOperation = groupeAchatProduit.value.firstOrNull()
-    val grossist = firstAchatOperation?.let { achat ->
-        viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
-            .find { it.keyID == achat.parent_M15Grossist_KeyID }
-    }
 
     val priceFormatter = DecimalFormat("#,##0.00")
     val formattedPrixAchat =
@@ -80,8 +77,14 @@ fun Header(
                 }
             }
 
-            // Grossist button
+            val grossist = firstAchatOperation?.let { achat ->
+                viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+                    .find { it.keyID == achat.parent_M15Grossist_KeyID }
+            }
+
             Button(
+                modifier = Modifier
+                    .getSemanticsTag(grossist,"grossist"),
                 onClick = { viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(true)  },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (grossist != null) {

@@ -220,6 +220,7 @@ private fun DropDownItem_2(viewModel: GrossistAchatSec12FragID1_ViewModel) {
                 viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = true)
                 viewModel.updateShowMenu(false)
             }
-        )
+        )   //<--
+        //TODO(1): ajout un foating qui clear
     }
 }
