@@ -1,8 +1,9 @@
-package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.W_AchatProduitOperation.View
+package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,15 +39,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.graphics.toColorInt
 
 @Composable
-fun Dialog_Choisire_Grossist(
+fun Dialog_Choisire_Grossist_Modularized(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
-    onDismiss: () -> Unit
+    onDismiss: (M15Grossist?) -> Unit
 ) {
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     val list_M11AchatOperation = groupeAchatProduit.value
     Dialog(
-        onDismissRequest = { onDismiss() }
+        onDismissRequest = { onDismiss(null) }
     ) {
         Card(
             modifier = Modifier
@@ -74,15 +75,7 @@ fun Dialog_Choisire_Grossist(
                         GrossistItem(
                             grossist = grossist,
                             onSelect = {
-                                list_M11AchatOperation.map {
-                                    viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_update_If_Exist(
-                                        it.copy(
-                                            parent_M15Grossist_DebugInfos = grossist.get_DebugInfos(),
-                                            parent_M15Grossist_KeyID = grossist.keyID
-                                        )
-                                    )
-                                }
-                                onDismiss()
+                                onDismiss(grossist)
                             }
                         )
                     }
@@ -123,7 +116,7 @@ fun Dialog_Choisire_Grossist(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    TextButton(onClick = { onDismiss(null) }) {
                         Text("Annuler")
                     }
                 }
@@ -134,7 +127,7 @@ fun Dialog_Choisire_Grossist(
 
 @Composable
 private fun GrossistItem(
-    grossist: V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist,
+    grossist: M15Grossist,
     onSelect: () -> Unit
 ) {
     Card(

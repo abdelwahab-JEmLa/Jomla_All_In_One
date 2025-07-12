@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.B.List.W_AchatProduitOperation.View
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
@@ -42,7 +43,8 @@ fun Header(
     }
 
     val priceFormatter = DecimalFormat("#,##0.00")
-    val formattedPrixAchat = priceFormatter.format(firstAchatOperation?.prix_Achat_De_Cette_Grossist)
+    val formattedPrixAchat =
+        priceFormatter.format(firstAchatOperation?.prix_Achat_De_Cette_Grossist)
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -103,11 +105,22 @@ fun Header(
         }
     }
 
+    val list_M11AchatOperation = groupeAchatProduit.value
     if (showDialog) {
-        Dialog_Choisire_Grossist(
+        Dialog_Choisire_Grossist_Modularized(
             viewModel = viewModel,
             groupeAchatProduit = groupeAchatProduit,
-        ) {
+        ) { grossistSelected ->
+            if (grossistSelected != null) {
+                list_M11AchatOperation.map {
+                    viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_update_If_Exist(
+                        it.copy(
+                            parent_M15Grossist_DebugInfos = grossistSelected.get_DebugInfos(),
+                            parent_M15Grossist_KeyID = grossistSelected.keyID
+                        )
+                    )
+                }
+            }
             showDialog = false
         }
     }
