@@ -36,16 +36,16 @@ fun Screen_GrossistAchatSec12FragID1(
         viewModel.loadClients()
     }
 
+    val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
     Column(
         modifier = modifier.fillMaxSize()
     ) {
+        val data = repositorysMainGetter.repo10OperationVentCouleur.datasValue
         TopAppBar(
             modifier =
-                Modifier.getSemanticsTag(
-                    viewModel.aCentralFacade.repositorysMainGetter
-                        .repo11AchatOperation
-                        .sourceDatas, "repo11AchatOperation"
-                ),
+                Modifier
+                    .getSemanticsTag(datas_A_Affiche_Au_Nom = data.map { it.parent_M14VentPeriod_KeyId })
+                    .getSemanticsTag(repositorysMainGetter.repo11AchatOperation.sourceDatas, "repo11AchatOperation",log=true),
             title = { Text("Grossist Achat") },
             actions = {
                 IconButton(onClick = { viewModel.updateShowMenu(!uiState.showMenu) }) {

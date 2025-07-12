@@ -72,7 +72,6 @@ class FocusedValuesGetter(
 
             it.parent_M14VentPeriod_KeyId ==
                     currentM9AppCompt?.current_OnVent_M14VentPeriode_KeyID
-                    && parent_M9AppCompt?.travailleChezGrossisst3Ali == false
         }
     }
 

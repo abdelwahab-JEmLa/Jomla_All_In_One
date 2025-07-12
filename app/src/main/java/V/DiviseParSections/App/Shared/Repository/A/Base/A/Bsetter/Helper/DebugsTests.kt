@@ -13,17 +13,22 @@ object DebugsTests {
 
     @SuppressLint("ModifierFactoryUnreferencedReceiver")
     fun Modifier.getSemanticsTag(
-        data: Any?,
-        nomVal: String,
+        data: Any?=null,
+        nomVal: String = "",
+        datas_A_Affiche_Au_Nom: Any?=null,
         index: Int = 0,
-        log: Boolean = true
+        log: Boolean = false
     ): Modifier {
         if (log) {
             log(nomVal, index, data)
         }
 
         return this.semantics(mergeDescendants = true) {
-            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
+            val old = "${index + 1} TagDebug == [$nomVal]"
+            val new = "${index + 1}-SemDeb ${datas_A_Affiche_Au_Nom.toString()}"
+            val name = if (datas_A_Affiche_Au_Nom != null) new else old
+            val dataWithNullSafety = data ?: datas_A_Affiche_Au_Nom
+            set(SemanticsPropertyKey(name), dataWithNullSafety)
         }
     }
 
@@ -37,7 +42,7 @@ object DebugsTests {
             else -> data.toString()
         }
 
-        Log.d(nomVal, "[$logTag] $nomVal = $dataString")
+        Log.d("getSemanticsTag", "[$logTag] $nomVal = $dataString")
     }
 
 
