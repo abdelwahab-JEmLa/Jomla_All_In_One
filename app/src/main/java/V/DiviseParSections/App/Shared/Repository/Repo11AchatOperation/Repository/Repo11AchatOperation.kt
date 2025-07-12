@@ -5,8 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
 import android.widget.Toast
@@ -32,10 +32,92 @@ class Repo11AchatOperation(
     private val _datas = mutableStateOf<List<M11AchatOperation>>(emptyList())
     val datasValue by derivedStateOf { _datas.value }
 
+    sealed class FilterQuery {
+        object NO_FILTER : FilterQuery()
+        data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
+    }
+
+    private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
+    val filterQuery get() = _filterQuery.value
+
+    // Filtered data based on current filter
+    private val filteredDatasValue by derivedStateOf {
+        when (val filter = _filterQuery.value) {  e'when' expression must be exhaustive, add necessary 'else' branch
+            is FilterQuery.NO_FILTER -> datasValue  //->
+            //TODO(FIXME):Fix erreur Check for instance is always 'true'
+            is FilterQuery.Grossist -> datasValue.filter {  //->
+                //TODO(FIXME):Fix erreur Incompatible types: Repo11AchatOperation.FilterQuery.Grossist and Repo11AchatOperation.FilterQuery.NO_FILTER
+                it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
+            }
+        }
+    }
+
+    val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
+        // Apply grossist filter if set
+        filteredDatasValue.groupBy {
+            it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
+                .parentM1ProduitInfosKeyId
+        }
+    }
+
     init {
         composScope.launch {
             dataBaseCreationFactory.dao.getAllFlow().collect { _datas.value = it }
         }
+    }
+
+    // Method to update filter query
+    fun updateFilterQuery(newFilter: FilterQuery) {
+        _filterQuery.value = newFilter    //->
+        //TODO(FIXME):Fix erreur Type mismatch.
+        //Required:
+        //Repo11AchatOperation.FilterQuery.NO_FILTER
+        //Found:
+        //Repo11AchatOperation.FilterQuery
+    }
+
+    fun genere_Achats_Depuit_M11AchatOperation_List(
+        m14VentPeriod: M14VentPeriode?,
+        filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>,
+        produits: List<ArticlesBasesStatsTable>
+    ): List<M11AchatOperation> {
+
+        val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
+            it.parentM3CouleurProduitInfosKeyID
+        }
+
+        val newAchatOperations = operations.map { (couleurKeyId, ventOperations) ->
+            val totalQuantity = ventOperations.sumOf { it.quantity }
+
+            // Find the last achat operation with the same M3CouleurProduit
+            val lastAchatWithSameCouleur = datasValue
+                .filter { it.parent_M3CouleurProduit_KeyID == couleurKeyId }
+                .maxByOrNull { it.creationTimestamp }
+
+            // Get grossist info from the last achat operation
+            val grossistDebugInfos =
+                lastAchatWithSameCouleur?.parent_M15Grossist_DebugInfos ?: "null"
+            val grossistKeyID = lastAchatWithSameCouleur?.parent_M15Grossist_KeyID ?: "null"
+            val parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId
+            val parent_M1Produit = produits.find {
+                it.keyID == parent_M1Produit_KeyID
+            }
+
+            M11AchatOperation.get_default().first.copy(
+                prix_Achat_De_Cette_Grossist = parent_M1Produit?.prixAchat ?: 0.0,
+                parent_M15Grossist_DebugInfos = grossistDebugInfos,
+                parent_M15Grossist_KeyID = grossistKeyID,
+                parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
+                parent_M1Produit_DebugInfos = ventOperations.first().parentM1ProduitDebugInfos,
+                parent_M1Produit_KeyID = parent_M1Produit_KeyID,
+                parent_M3CouleurProduit_DebugInfos = ventOperations.first().parentM3CouleurProduitDebugInfos,
+                parent_M3CouleurProduit_KeyID = couleurKeyId,
+                sumAchatQantity = totalQuantity,
+                joined_Str_keys_De_Relatives_FCouleurVentOperation = ventOperations.joinToString(",") { it.keyID }
+            )
+        }
+
+        return newAchatOperations
     }
 
     fun add_New(data: M11AchatOperation) {
@@ -114,64 +196,7 @@ class Repo11AchatOperation(
         }
     }
 
-    sealed class FilterQuery {
-        data object NO_FILTER : FilterQuery()
-        data class Client(val m2Client: M2Client) : FilterQuery()
-    }
 
-    private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
-    val filterQuery get() = _filterQuery
-
-    val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
-        datasValue.groupBy {
-            it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
-                .parentM1ProduitInfosKeyId
-        }
-    }
-
-    fun genere_Achats_Depuit_M11AchatOperation_List(
-        m14VentPeriod: M14VentPeriode?,
-        filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>,
-        produits: List<ArticlesBasesStatsTable>
-    ): List<M11AchatOperation> {
-
-        val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
-            it.parentM3CouleurProduitInfosKeyID
-        }
-
-        val newAchatOperations = operations.map { (couleurKeyId, ventOperations) ->
-            val totalQuantity = ventOperations.sumOf { it.quantity }
-
-            // Find the last achat operation with the same M3CouleurProduit
-            val lastAchatWithSameCouleur = datasValue
-                .filter { it.parent_M3CouleurProduit_KeyID == couleurKeyId }
-                .maxByOrNull { it.creationTimestamp }
-
-            // Get grossist info from the last achat operation
-            val grossistDebugInfos =
-                lastAchatWithSameCouleur?.parent_M15Grossist_DebugInfos ?: "null"
-            val grossistKeyID = lastAchatWithSameCouleur?.parent_M15Grossist_KeyID ?: "null"
-            val parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId
-            val parent_M1Produit = produits.find {
-                it.keyID == parent_M1Produit_KeyID
-            }
-
-            M11AchatOperation.get_default().first.copy(
-                prix_Achat_De_Cette_Grossist = parent_M1Produit?.prixAchat ?: 0.0,
-                parent_M15Grossist_DebugInfos = grossistDebugInfos,
-                parent_M15Grossist_KeyID = grossistKeyID,
-                parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
-                parent_M1Produit_DebugInfos = ventOperations.first().parentM1ProduitDebugInfos,
-                parent_M1Produit_KeyID = parent_M1Produit_KeyID,
-                parent_M3CouleurProduit_DebugInfos = ventOperations.first().parentM3CouleurProduitDebugInfos,
-                parent_M3CouleurProduit_KeyID = couleurKeyId,
-                sumAchatQantity = totalQuantity,
-                joined_Str_keys_De_Relatives_FCouleurVentOperation = ventOperations.joinToString(",") { it.keyID }
-            )
-        }
-
-        return newAchatOperations
-    }
 }
 
 @Entity

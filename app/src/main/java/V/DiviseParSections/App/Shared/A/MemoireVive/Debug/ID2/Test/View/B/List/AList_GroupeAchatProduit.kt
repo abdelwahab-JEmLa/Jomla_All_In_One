@@ -28,6 +28,7 @@ fun List_GroupeAchatProduit(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
 ) {
     val repo = viewModel.getter.repo11AchatOperation
+
     val items = repo.bProduitKeyID_To_List_KAchatCouleurOperation.entries.toList()
 
     Box(

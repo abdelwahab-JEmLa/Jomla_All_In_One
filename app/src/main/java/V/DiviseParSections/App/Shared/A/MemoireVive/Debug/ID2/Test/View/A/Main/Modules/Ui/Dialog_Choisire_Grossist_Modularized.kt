@@ -1,8 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.M11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,17 +39,14 @@ import androidx.core.graphics.toColorInt
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
     onDismiss: (M15Grossist?) -> Unit
 ) {
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
-    val list_M11AchatOperation = groupeAchatProduit.value
     Dialog(
         onDismissRequest = { onDismiss(null) }
     ) {
         Card(
             modifier = Modifier
-                .getSemanticsTag(list_M11AchatOperation, "lM11AchatOperation")
                 .padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {

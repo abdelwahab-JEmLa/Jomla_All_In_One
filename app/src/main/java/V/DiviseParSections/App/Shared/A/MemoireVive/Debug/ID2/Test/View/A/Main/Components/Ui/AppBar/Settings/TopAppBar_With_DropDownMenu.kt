@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Components.Ui.AppBar.Settings
 
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import androidx.compose.foundation.layout.height
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -82,7 +84,7 @@ fun TopAppBar_With_DropDownMenu(
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
-                //  dropdown item - Delete operations
+                DropDownItem_2(viewModel)
                 Repo11AchatOperation_deleteMulti(viewModel)
 
                 //  dropdown item - Add operations
@@ -144,6 +146,16 @@ fun TopAppBar_With_DropDownMenu(
             }
         }
     )
+    if (uiState.dialog_Choisire_Grossist_Modularized_showDialog) {
+        Dialog_Choisire_Grossist_Modularized(
+            viewModel = viewModel,
+        ) { grossistSelected ->
+            if (grossistSelected != null) {
+
+            }
+            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(false)
+        }
+    }
 }
 
 @Composable
@@ -179,6 +191,33 @@ private fun Repo11AchatOperation_deleteMulti(viewModel: GrossistAchatSec12FragID
                     )
                 }
 
+                viewModel.updateShowMenu(false)
+            }
+        )
+    }
+}
+
+@Composable
+private fun DropDownItem_2(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+    val text = "DropDownItem_2"
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            text = { Text(text) },
+            onClick = {
+                viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = true)
                 viewModel.updateShowMenu(false)
             }
         )
