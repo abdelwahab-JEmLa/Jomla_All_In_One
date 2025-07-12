@@ -201,7 +201,7 @@ object NavigationItems {
         Screen.FragmentProduitFastSearchDialog,
         Screen.Screen1PanieVentsFinale,
         Screen.TravailleTempRecorder,
-        Screen.CommandeProduits,
+        Screen.Achats_Produits_Chez_Grossists,
         Screen.ToggleFab,
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.DialogTests

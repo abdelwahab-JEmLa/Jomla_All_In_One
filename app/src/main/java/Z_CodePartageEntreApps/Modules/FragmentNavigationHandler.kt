@@ -106,7 +106,7 @@ class FragmentNavigationHandler {
             Screen.FacadePresentoireProduits,
             Screen.EditDatabaseWithCreateNewArticles,
             Screen.Screen1PanieVentsFinale,
-            Screen.CommandeProduits,
+            Screen.Achats_Produits_Chez_Grossists,
             Screen.TravailleTempRecorder,
             Screen.NewFragTest,
             Screen.DialogTests,

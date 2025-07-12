@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,42 +85,6 @@ fun Screen_GrossistAchatSec12FragID1(
             }
         )
 
-            .let { client ->       //<--
-                //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        /*  Text(
-                            text = "Filtré par: ${client.nom}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )  */
-                        IconButton(
-                            onClick = { viewModel.clearClientFilter() }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Effacer filtre",
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                    }
-                }
-            }
-
-        // Main Content
         List_GroupeAchatProduit(
             modifier = Modifier
                 .fillMaxSize()
@@ -131,7 +93,6 @@ fun Screen_GrossistAchatSec12FragID1(
         )
     }
 
-    // Dialog
     if (uiState.showDialog) {
         Dialog_Filter_Client(
             uiState = uiState,

@@ -231,7 +231,7 @@ fun AppNavHost(
                 }
 
                 composable(
-                    route = Screen.CommandeProduits.route,
+                    route = Screen.Achats_Produits_Chez_Grossists.route,
                 ) { backStackEntry ->
                     val screenKey = rememberScreenKey(backStackEntry)
 

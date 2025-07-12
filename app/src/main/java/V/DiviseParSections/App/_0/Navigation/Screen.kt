@@ -49,10 +49,10 @@ sealed class Screen(
         color = Color(0xFFF44336)
     )
 
-    data object CommandeProduits : Screen(
-        route = "CommandeProduits",
+    data object Achats_Produits_Chez_Grossists : Screen(
+        route = "Achats_Produits_Chez_Grossists",
         icon = Icons.Default.Receipt,
-        title = "CommandeProduits",
+        title = "Achats_Produits_Chez_Grossists",
         color = Color(0xFF009688)
     )
 
