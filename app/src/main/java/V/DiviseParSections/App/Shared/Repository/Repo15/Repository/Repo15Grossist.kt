@@ -117,7 +117,7 @@ data class M15Grossist(
         val ref = centralRef.child("DatasM15Grossist")
 
         fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
-
+        fun safeRemoveRef(): Unit { ref.removeValue() }
         fun get_default(
         ): Pair<M15Grossist, Modifier> {
             val data = M15Grossist()

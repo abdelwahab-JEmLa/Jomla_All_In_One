@@ -42,6 +42,7 @@ import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJu
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.DataBaseInitFactory_14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview.Preview_DataBaseInitFactory_15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.DataBaseCreationFactoryGBonVent
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.Z_AppComptRepositoryProtoJuin17
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
@@ -176,6 +177,7 @@ val classesHandlersModule = module {
 }
 
 val viewModelModule = module {
+    viewModel { Preview_DataBaseInitFactory_15Grossist(get(),  ) }
     viewModel { ViewModel_DataBaseInitFactory_1Produit(get(),  ) }
     viewModel { ViewModel_M14VentPeriod(get(),  ) }
 
