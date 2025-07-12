@@ -40,15 +40,13 @@ class ViewModel_DataBaseInitFactory_1Produit(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
     val mainRepo = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+
     data class UiState(
-        val showMenu: Boolean = false,
+        val value: Boolean = false,
     )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    fun updateShowMenu(show: Boolean) {
-        _uiState.value = _uiState.value.copy(showMenu = show)
-    }
 }
 
 @Preview
@@ -117,6 +115,7 @@ fun Item_M1Produit(
 @Composable
 private fun Top_App_Bar_With_DropdownMenu(viewModel: ViewModel_DataBaseInitFactory_1Produit) {
     var showMenu by remember { mutableStateOf(false) }
+    var safeCountClick by remember { mutableStateOf(0) }
 
     TopAppBar(
         title = { Text("1Produit") },
@@ -134,10 +133,18 @@ private fun Top_App_Bar_With_DropdownMenu(viewModel: ViewModel_DataBaseInitFacto
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
+                val title =
+                    if (safeCountClick == 0)
+                        "Delete Ref" else "esque t sure de supp tout "
                 DropdownMenuItem(
-                    text = { Text("Test") },
+                    text = { Text(title) },
                     onClick = {
-                        showMenu = false
+                        if (safeCountClick == 0)
+                            safeCountClick++
+                        else {
+                            ArticlesBasesStatsTable.safeRemoveRef()
+                            showMenu = false
+                        }
                     }
                 )
             }
