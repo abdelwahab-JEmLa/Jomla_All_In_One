@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Ui.LoadingScreen
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -111,6 +112,7 @@ fun Item_M1Produit(
     }
 }
 
+@SuppressLint("AutoboxingStateCreation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Top_App_Bar_With_DropdownMenu(viewModel: ViewModel_DataBaseInitFactory_1Produit) {
