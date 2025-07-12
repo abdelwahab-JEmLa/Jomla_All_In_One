@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -105,10 +106,17 @@ fun Item_M1Produit(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Text(
-            text = produit.getDebugInfos(),
-            modifier = Modifier.padding(16.dp)
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = produit.getDebugInfos(),
+                modifier = Modifier.padding(16.dp)
+            )
+            Text(
+                text = produit.nom,
+                modifier = Modifier.padding(16.dp)
+            )
+
+        }
     }
 }
 
