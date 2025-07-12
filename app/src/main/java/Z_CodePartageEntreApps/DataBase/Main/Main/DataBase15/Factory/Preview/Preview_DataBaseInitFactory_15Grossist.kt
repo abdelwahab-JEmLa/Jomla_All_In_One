@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview.Old.DataBase.OldDataBase15Grossist
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -42,28 +42,10 @@ import org.koin.androidx.compose.koinViewModel
 class Preview_DataBaseInitFactory_15Grossist(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
-    data class Old_DataBase(
-        val bonDuSupplierSu: String = "",
-        val classmentSupplier: Int = 0,
-        val couleurSu: String = "",
-        val currentCreditBalance: Int = 0,
-        val idSupplierSu: Int = 0,
-        val ignoreItProdects: Boolean = false,
-        val longTermCredit: Boolean = false,
-        val nameInFrenche: String = "",
-        val nomSupplierSu: String = "",
-        val nomVocaleArabeDuSupplier: String = "",
-        val supplierNameInFrenche: String = ""
-    ) {
-        companion object {
-            val ref = centralRef.child("/AncienDataBase/M15Grossist/1_1")
-        }
-    }
-
     data class UiState(
-        val oldDataBase: List<Old_DataBase> = emptyList(),
+        val oldDataBase: List<OldDataBase15Grossist> = emptyList(),
         var safeCountClick: Int = 0,
-        val ecraseMigre_safeCountClick: Int = 0,
+        val dropDown_I2_safeCountClick: Int = 0,
         var showMenu: Boolean = false,
     )
 
@@ -73,12 +55,12 @@ class Preview_DataBaseInitFactory_15Grossist(
     init {
         viewModelScope.launch {
             try {
-                val snapshot = Old_DataBase.ref.get().await()
-                val oldDataList = mutableListOf<Old_DataBase>()
+                val snapshot = OldDataBase15Grossist.ref.get().await()
+                val oldDataList = mutableListOf<OldDataBase15Grossist>()
 
                 if (snapshot.exists()) {
                     snapshot.children.forEach { child ->
-                        val oldData = child.getValue(Old_DataBase::class.java)
+                        val oldData = child.getValue(OldDataBase15Grossist::class.java)
                         oldData?.let { oldDataList.add(it) }
                     }
                 }
@@ -175,7 +157,7 @@ private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFacto
     val uiState by viewModel.uiState.collectAsState()
     val nomFn = "EcraseMigre"
     val title =
-        if (uiState.ecraseMigre_safeCountClick == 0) nomFn else "esque t sure de $nomFn tout "
+        if (uiState.dropDown_I2_safeCountClick == 0) nomFn else "esque t sure de $nomFn tout "
 
     val oldDataBase = uiState.oldDataBase
     Card(
@@ -197,9 +179,9 @@ private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFacto
             },
             text = { Text(title) },
             onClick = {
-                if (uiState.ecraseMigre_safeCountClick == 0)
+                if (uiState.dropDown_I2_safeCountClick == 0)
                     viewModel._uiState.value = viewModel._uiState.value.copy(
-                        ecraseMigre_safeCountClick = viewModel._uiState.value.ecraseMigre_safeCountClick + 1
+                        dropDown_I2_safeCountClick = viewModel._uiState.value.dropDown_I2_safeCountClick + 1
                     )
                 else {
                     val repositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
@@ -216,7 +198,7 @@ private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFacto
                     }
 
                     viewModel._uiState.value =
-                        viewModel._uiState.value.copy(ecraseMigre_safeCountClick = 0)
+                        viewModel._uiState.value.copy(dropDown_I2_safeCountClick = 0)
                     viewModel.desactive_ShowMenu()
                 }
             }
