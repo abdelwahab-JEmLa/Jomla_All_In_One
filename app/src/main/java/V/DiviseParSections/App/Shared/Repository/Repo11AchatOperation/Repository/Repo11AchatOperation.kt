@@ -33,27 +33,22 @@ class Repo11AchatOperation(
     val datasValue by derivedStateOf { _datas.value }
 
     sealed class FilterQuery {
-        object NO_FILTER : FilterQuery()
+        data object NO_FILTER : FilterQuery()
         data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
     }
 
-    private val _filterQuery = mutableStateOf(FilterQuery.NO_FILTER)
-    val filterQuery get() = _filterQuery.value
+    private val _filterQuery = mutableStateOf<FilterQuery>(FilterQuery.NO_FILTER)
 
-    // Filtered data based on current filter
     private val filteredDatasValue by derivedStateOf {
-        when (val filter = _filterQuery.value) {  e'when' expression must be exhaustive, add necessary 'else' branch
-            is FilterQuery.NO_FILTER -> datasValue  //->
-            //TODO(FIXME):Fix erreur Check for instance is always 'true'
-            is FilterQuery.Grossist -> datasValue.filter {  //->
-                //TODO(FIXME):Fix erreur Incompatible types: Repo11AchatOperation.FilterQuery.Grossist and Repo11AchatOperation.FilterQuery.NO_FILTER
+        when (val filter = _filterQuery.value) {
+            FilterQuery.NO_FILTER -> datasValue
+            is FilterQuery.Grossist -> datasValue.filter {
                 it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
             }
         }
     }
 
     val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
-        // Apply grossist filter if set
         filteredDatasValue.groupBy {
             it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
                 .parentM1ProduitInfosKeyId
@@ -68,12 +63,7 @@ class Repo11AchatOperation(
 
     // Method to update filter query
     fun updateFilterQuery(newFilter: FilterQuery) {
-        _filterQuery.value = newFilter    //->
-        //TODO(FIXME):Fix erreur Type mismatch.
-        //Required:
-        //Repo11AchatOperation.FilterQuery.NO_FILTER
-        //Found:
-        //Repo11AchatOperation.FilterQuery
+        _filterQuery.value = newFilter
     }
 
     fun genere_Achats_Depuit_M11AchatOperation_List(

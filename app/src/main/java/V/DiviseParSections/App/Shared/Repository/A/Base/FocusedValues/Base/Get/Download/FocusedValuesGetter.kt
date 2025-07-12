@@ -27,13 +27,13 @@ class FocusedValuesGetter(
     repo2Client: Repo2Client,
     repoM1ProduitInfos: RepoM1ProduitInfos,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
+
     repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
-    // Use collectAsState or observe the repository state directly
     val currentM9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
     }
