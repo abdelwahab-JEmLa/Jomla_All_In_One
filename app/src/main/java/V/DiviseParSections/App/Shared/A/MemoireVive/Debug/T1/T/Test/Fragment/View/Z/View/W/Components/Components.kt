@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vi
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter.Companion.getSemanticsTagFocucedVars
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
@@ -94,7 +95,7 @@ fun QuantityDisplay(
                     nomVal = "dialogChoisireQuantityM1ProduitInfosDebugName",
                     data = getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosDebugName
                 )
-                .getSemanticsTag(
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
                     1,
                     "dialogChoisireQuantityM1ProduitInfosKeyID", getter.currentM9AppCompt?.dialogChoisireQuantityM1ProduitInfosKeyID
                 )
@@ -130,8 +131,8 @@ fun QuantityDisplay(
         Surface(
             modifier = Modifier
                 .getSemanticsTag(nomVal = "repo13TarificationInfos", data = datasValue)
-                .getSemanticsTag(2, "finale_Tariff", finale_Tariff)
-                .getSemanticsTag(3, "findTariff", findTariff)
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(2, "finale_Tariff", finale_Tariff)
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(3, "findTariff", findTariff)
                 .clickable(enabled = !allNonTrouve) {
                     val aCentral = viewModel.aCentralFacade
                     val focusedVarsHandlerFacade = aCentral.focusedActiveValuesFacade

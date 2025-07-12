@@ -106,7 +106,7 @@ class Repo11AchatOperation(
 
     fun genere_Achats_Depuit_M11AchatOperation_List(
         filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>
-    ): Pair<List<M11AchatOperation>, Modifier> {
+    ): List<M11AchatOperation> {
         val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
             it.parentM3CouleurProduitInfosKeyID
         }
@@ -125,12 +125,7 @@ class Repo11AchatOperation(
             )
         }
 
-        val modifier = Modifier.getSemanticsTag(
-            data = newAchatOperations,
-            nomVal = "generated_achat_operations"
-        )
-
-        return Pair(newAchatOperations, modifier)
+        return newAchatOperations
     }
 }
 

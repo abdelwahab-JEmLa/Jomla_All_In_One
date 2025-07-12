@@ -53,19 +53,28 @@ fun TopAppBar_With_DropDownMenu(
 
             val vents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
-            val initDatas = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+            val achats_Depuit_M11AchatOperation_List = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
                 .genere_Achats_Depuit_M11AchatOperation_List(vents)
 
             DropdownMenu(
-                modifier = initDatas.second,
+                modifier = Modifier
+                    .getSemanticsTag(data=vents,
+                       nomVal =  "vents")
+                    .getSemanticsTag(achats_Depuit_M11AchatOperation_List,
+                        "achats_Depuit_M11AchatOperation_List")
+                ,
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
                 // Premier item
                 DropdownMenuItem(
+                    modifier = Modifier
+                        .getSemanticsTag(data=achats_Depuit_M11AchatOperation_List,
+                            nomVal =  "achats_Depuit_M11AchatOperation_List")
+                    ,
                     text = { Text("genere_Achats_Depuit_M11AchatOperation_List()") },
                     onClick = {
-                        initDatas.first.map {
+                        achats_Depuit_M11AchatOperation_List.map {
                             viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_add_New(it)
                         }
                         viewModel.updateShowMenu(false)

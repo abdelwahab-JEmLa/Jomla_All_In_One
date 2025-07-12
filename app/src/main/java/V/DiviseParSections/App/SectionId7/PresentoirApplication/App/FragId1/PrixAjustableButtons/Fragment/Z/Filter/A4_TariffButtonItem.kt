@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -303,8 +304,8 @@ fun TariffButtonItem(
 
         FloatingActionButton(
             modifier = Modifier
-                .getSemanticsTag(0, "latestTariffLocalData", latestTariffLocalData)
-                .getSemanticsTag(1, "m10OperationVentCouleurs", m10OperationVentCouleurs)
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(0, "latestTariffLocalData", latestTariffLocalData)
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "m10OperationVentCouleurs", m10OperationVentCouleurs)
                 .size(40.dp),
             onClick = {
                 handelClick()

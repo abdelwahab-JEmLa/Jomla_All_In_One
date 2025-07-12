@@ -10,9 +10,7 @@ import kotlinx.coroutines.delay
 
 object DebugsTests {
     const val TAG = "DebugsTests"
-
-    @SuppressLint("ModifierFactoryUnreferencedReceiver")
-    fun Modifier.getSemanticsTag(
+    fun Modifier.getSemanticsTag_By_datas_A_Affiche_Au_Nom(
         datas_A_Affiche_Au_Nom: Any?=null,
         nomVal: String = "",
         data: Any?=null,
@@ -29,6 +27,23 @@ object DebugsTests {
             val name = if (datas_A_Affiche_Au_Nom != null) new else old
             val dataWithNullSafety = data ?: datas_A_Affiche_Au_Nom
             set(SemanticsPropertyKey(name), dataWithNullSafety)
+        }
+    }
+
+
+    @SuppressLint("ModifierFactoryUnreferencedReceiver")
+    fun Modifier.getSemanticsTag(
+        data: Any?,
+        nomVal: String,
+        index: Int = 0,
+        log: Boolean = true
+    ): Modifier {
+        if (log) {
+            log(nomVal, index, data)
+        }
+
+        return this.semantics(mergeDescendants = true) {
+            set(SemanticsPropertyKey("${index + 1} TagDebug == [$nomVal]"), data)
         }
     }
 

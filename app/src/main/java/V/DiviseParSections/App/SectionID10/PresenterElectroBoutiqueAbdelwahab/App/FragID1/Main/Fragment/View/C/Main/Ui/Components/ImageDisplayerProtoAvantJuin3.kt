@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.C.Main.Ui.Components
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Modules.D.Glide.Proto.CalculeCouleurHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -158,13 +158,13 @@ fun ImageDisplayerProtoAvantJuin3(
 
             GlideImage(
                 modifier = Modifier
-                    .getSemanticsTag(
+                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
                         0,
                         "activeDialogSearchM1Produit",
                         get.activeDialogSearchM1Produit
                     )
-                    .getSemanticsTag(1, "produit", produit.getDebugInfos())
-                    .getSemanticsTag(1, "activeProduit", activeProduit?.getDebugInfos() ?: "null")
+                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "produit", produit.getDebugInfos())
+                    .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "activeProduit", activeProduit?.getDebugInfos() ?: "null")
                     .clickable {
                         // Manual click handler - always available
                         focusedVarsHandlerFacade.focusedValuesSetter.active_CurrentApp_activeDialogSearchM1Produit(true)
