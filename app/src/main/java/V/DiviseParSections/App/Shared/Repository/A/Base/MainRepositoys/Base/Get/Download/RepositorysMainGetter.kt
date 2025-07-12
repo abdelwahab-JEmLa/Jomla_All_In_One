@@ -16,6 +16,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import V.DiviseParSections.App.Shared.Repository.IDKeyModel11.Repository.Repo11AchatOperation
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
@@ -71,6 +72,7 @@ class RepositorysMainGetter(
     val repo9AppCompt: Repo9AppCompt,
     val repo13TarificationInfos: Repo13TarificationInfos,
     val repo14VentPeriode: Repo14VentPeriode,
+    val repo15Grossist: Repo15Grossist,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: FocusedValuesGetter,

@@ -52,7 +52,8 @@ class DataBaseFactoryDCouleurAchatOperation(
                                 child.getValue(M10OperationVentCouleur::class.java)?.let { entity ->
                                     val entityWithKey = entity.copy(keyID = child.key ?: "")
                                     val shouldUpdate = try {
-                                        val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
+                                        val localEntity =
+                                            dao.getAll().find { it.keyID == entityWithKey.keyID }
                                         if (localEntity == null) {
                                             true
                                         } else {
@@ -67,9 +68,11 @@ class DataBaseFactoryDCouleurAchatOperation(
                                         updateCount++
                                     }
                                 }
-                            } catch (e: Exception) {}
+                            } catch (e: Exception) {
+                            }
                         }
-                    } catch (e: Exception) {}
+                    } catch (e: Exception) {
+                    }
                 }
             }
 
@@ -78,7 +81,6 @@ class DataBaseFactoryDCouleurAchatOperation(
             }
         })
     }
-
 
     fun addOrUpdatedAncienRepo(
         existingIndex: Int,
@@ -94,7 +96,6 @@ class DataBaseFactoryDCouleurAchatOperation(
             }
         }
     }
-
 
     private suspend fun batchFireBaseUpdateD_AchatOperation(datas: List<M10OperationVentCouleur>) {
         val updates = mutableMapOf<String, Any>()

@@ -172,6 +172,5 @@ data class M13TarificationInfos(
                             tariff.parentM1ProduitInfosKeyId == produit.keyID
                 match
             }
-
     }
 }

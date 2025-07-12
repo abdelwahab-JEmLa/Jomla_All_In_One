@@ -13,8 +13,8 @@ import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
@@ -22,6 +22,8 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposito
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase14VentPeriode.Factory.Dao14VentPeriode
+import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Dao15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.G.BonVent.Base.SQL.GBonVentDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.Z.Base.SQL.Z_AppComptDao
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.Extensions.H.Dao.ArticlesBasesStatsModelDao
@@ -96,6 +98,7 @@ import java.util.Date
         Z_AppCompt::class,
         M8BonVent::class,
         M14VentPeriode::class,
+        M15Grossist::class,
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -144,6 +147,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun GBonVentDao(): GBonVentDao
     abstract fun MVentPeriodeDao(): MVentPeriodeDao
     abstract fun Dao14VentPeriode(): Dao14VentPeriode
+    abstract fun Dao15Grossist(): Dao15Grossist
 
     object DatabaseModule {
 
