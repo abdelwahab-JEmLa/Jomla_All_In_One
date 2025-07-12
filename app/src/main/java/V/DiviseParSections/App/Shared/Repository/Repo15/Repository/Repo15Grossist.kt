@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.Shared.Repository.Repo15.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
 import android.content.Context
@@ -9,7 +8,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.coroutines.CoroutineScope
@@ -88,6 +86,17 @@ class Repo15Grossist(
             }
         }
     }
+
+    fun deleteMulti(datas: List<M15Grossist>?= datasValue) {
+        composScope.launch {
+            val keyIDsToDelete = datas!!.map { it.keyID }.toSet()
+            _datas.value = datasValue.filter { it.keyID !in keyIDsToDelete }
+            datas.forEach { item ->
+                dataBaseCreationFactory.delete(item)
+            }
+        }
+    }
+
 }
 
 @Entity
@@ -98,6 +107,7 @@ data class M15Grossist(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
     var nom: String = "Non Definie",
+    var couleur_In_Str: String = "#229DAD",
 
     //---------------------------------ForgingKeys.----------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -116,16 +126,19 @@ data class M15Grossist(
     companion object {
         val ref = centralRef.child("DatasM15Grossist")
 
-        fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
-        fun safeRemoveRef(): Unit { ref.removeValue() }
+        fun generePushKey() =
+            ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+
+        fun safeRemoveRef(): Unit {
+            ref.removeValue()
+        }
+
         fun get_default(
-        ): Pair<M15Grossist, Modifier> {
-            val data = M15Grossist()
-            val modifier = Modifier.getSemanticsTag(
-                nomVal = "m15Grossist",
-                data = data
+        ): M15Grossist {
+            val data = M15Grossist(
+
             )
-            return Pair(data, modifier)
+            return data
         }
 
         fun find_depuit_DB(

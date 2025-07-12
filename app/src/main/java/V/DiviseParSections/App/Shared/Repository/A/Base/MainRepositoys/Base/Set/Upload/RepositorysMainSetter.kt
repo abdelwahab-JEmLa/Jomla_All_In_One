@@ -20,6 +20,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
 import com.google.firebase.database.DatabaseReference
 
 class RepositorysMainSetter(
@@ -33,6 +35,7 @@ class RepositorysMainSetter(
     private val repo11AchatOperation: Repo11AchatOperation,
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
+    private val repo15Grossist: Repo15Grossist,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
 
@@ -137,13 +140,15 @@ class RepositorysMainSetter(
     //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
     fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
     fun repo11AchatOperation_deleteMulti(datas:List<M11AchatOperation> ) = repo11AchatOperation.deleteMulti(datas)
-    //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
 
+    //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
+    fun repo15Grossist_add_New(data: M15Grossist) = repo15Grossist.add_New(data)
+    fun repo15Grossist_deleteMulti(datas:List<M15Grossist>?=null)= repo15Grossist.deleteMulti(datas)
+    //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     fun upsertM8BonVent(data: M8BonVent) {
         repo8BonVent.upsert(data)
     }
-
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =

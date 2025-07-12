@@ -59,7 +59,7 @@ val composRepositorysModule = module {
 
     single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(), ) }
 
-    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), ) }
+    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

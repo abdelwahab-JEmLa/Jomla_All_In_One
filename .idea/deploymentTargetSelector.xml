@@ -38,6 +38,9 @@
       <SelectionState runConfigName="Preview_DataBaseInitFactory_15Grossist">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="Preview_DataBaseInitFactory_15Grossist (1)">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

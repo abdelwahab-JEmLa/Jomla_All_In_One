@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
-import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.Preview.Old.DataBase.Dialog_Old_DataBase
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,6 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -66,10 +68,13 @@ class Preview_DataBaseInitFactory_15Grossist(
     }
 
     data class UiState(
-        val affiche_Dialog_Old_DataBase: Boolean = false,
         val oldDataBase: List<Old_DataBase> = emptyList(),
+        var safeCountClick: Int = 0,
+        val ecraseMigre_safeCountClick: Int = 0,
+        var showMenu: Boolean = false,
     )
-    private val _uiState = MutableStateFlow(UiState())
+
+    val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
@@ -78,7 +83,6 @@ class Preview_DataBaseInitFactory_15Grossist(
                 val snapshot = Old_DataBase.ref.get().await()
                 val oldDataList = mutableListOf<Old_DataBase>()
 
-                // Handle the case where the data might be a single object or a list
                 if (snapshot.exists()) {
                     snapshot.children.forEach { child ->
                         val oldData = child.getValue(Old_DataBase::class.java)
@@ -98,13 +102,16 @@ class Preview_DataBaseInitFactory_15Grossist(
         }
     }
 
-    fun showOldDataBaseDialog() {
-        _uiState.value = _uiState.value.copy(affiche_Dialog_Old_DataBase = true)
+
+    fun updateSafe() {
+        _uiState.value = _uiState.value.copy(safeCountClick = _uiState.value.safeCountClick + 1)
     }
 
-    fun hideOldDataBaseDialog() {
-        _uiState.value = _uiState.value.copy(affiche_Dialog_Old_DataBase = false)
+    fun desactive_ShowMenu() {
+        _uiState.value = _uiState.value
+            .copy(showMenu = false)
     }
+
 }
 
 @Preview
@@ -149,9 +156,6 @@ private fun MainScreen(
                 }
             }
         }
-        if (uiState.affiche_Dialog_Old_DataBase) {
-            Dialog_Old_DataBase(viewModel)
-        }
     }
 }
 
@@ -183,8 +187,8 @@ private fun Item_M15Grossist(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Top_App_Bar_With_DropdownMenu(viewModel: Preview_DataBaseInitFactory_15Grossist) {
+
     var showMenu by remember { mutableStateOf(false) }
-    var safeCountClick by remember { mutableStateOf(0) }
 
     TopAppBar(
         title = { Text("15Grossist") },
@@ -197,33 +201,89 @@ private fun Top_App_Bar_With_DropdownMenu(viewModel: Preview_DataBaseInitFactory
                     contentDescription = "Menu"
                 )
             }
-
+            val uiState by viewModel.uiState.collectAsState()
             DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
+                expanded = uiState.showMenu,
+                onDismissRequest = { uiState.showMenu = false }
             ) {
-                val title =
-                    if (safeCountClick == 0)
-                        "Delete Ref" else "esque t sure de supp tout "
-                DropdownMenuItem(
-                    text = { Text(title) },
-                    onClick = {
-                        if (safeCountClick == 0)
-                            safeCountClick++
-                        else {
-                            M15Grossist.safeRemoveRef()
-                            showMenu = false
-                        }
-                    }
-                )
+                I1_DropdownMenuItem(viewModel)
+                I3_EcraseMigre_DropdownMenuItem(viewModel)
+            }
+        }
+    )
+}
 
-                DropdownMenuItem(
-                    text = { Text("Show Old Database") },
-                    onClick = {
-                        viewModel.showOldDataBaseDialog()
-                        showMenu = false
-                    }
+@Composable
+private fun I3_EcraseMigre_DropdownMenuItem(viewModel: Preview_DataBaseInitFactory_15Grossist) {
+    val uiState by viewModel.uiState.collectAsState()
+    val nomFn = "EcraseMigre"
+    val title = if (uiState.ecraseMigre_safeCountClick == 0) nomFn else "esque t sure de $nomFn tout "
+
+    val oldDataBase = uiState.oldDataBase
+    Card(
+        modifier = Modifier
+            .getSemanticsTag(oldDataBase,"oldDataBase")
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Archive,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
                 )
+            },
+            text = { Text(title) },
+            onClick = {
+                if (uiState.ecraseMigre_safeCountClick == 0)
+                    viewModel._uiState.value = viewModel._uiState.value.copy(
+                        ecraseMigre_safeCountClick = viewModel._uiState.value.ecraseMigre_safeCountClick + 1
+                    )
+                else {
+                    val repositorysMainSetter = viewModel.aCentralFacade.repositorysMainSetter
+
+                 //   repositorysMainSetter.repo15Grossist_deleteMulti()
+
+                    oldDataBase.map { old ->
+                        repositorysMainSetter.repo15Grossist_add_New(
+                            M15Grossist.get_default().copy(
+                                nom = old.nomSupplierSu,
+                                couleur_In_Str = old.couleurSu
+                            )
+                        )
+                    }
+
+                    viewModel._uiState.value =
+                        viewModel._uiState.value.copy(ecraseMigre_safeCountClick = 0)
+                    viewModel.desactive_ShowMenu()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun I1_DropdownMenuItem(viewModel: Preview_DataBaseInitFactory_15Grossist) {
+    val uiState by viewModel.uiState.collectAsState()
+    val title =
+        if (uiState.safeCountClick == 0)
+            "Delete Ref" else "esque t sure de supp tout "
+    DropdownMenuItem(
+        text = { Text(title) },
+        onClick = {
+            if (uiState.safeCountClick == 0)
+                viewModel.updateSafe()
+            else {
+                M15Grossist.safeRemoveRef()
+
+                viewModel._uiState.value = viewModel._uiState.value.copy(
+                    safeCountClick = 0
+                )
+                viewModel.desactive_ShowMenu()
             }
         }
     )
