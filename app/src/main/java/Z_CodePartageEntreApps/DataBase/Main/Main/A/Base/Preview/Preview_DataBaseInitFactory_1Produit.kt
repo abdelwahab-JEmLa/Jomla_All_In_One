@@ -41,8 +41,6 @@ import org.koin.androidx.compose.koinViewModel
 class ViewModel_DataBaseInitFactory_1Produit(
     val aCentralFacade: ACentralFacade,
 ) : ViewModel() {
-    val mainRepo = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
-
     data class UiState(
         val value: Boolean = false,
     )
@@ -59,7 +57,7 @@ private fun Preview_DataBaseInitFactory_1Produit() {
 
 @Preview
 @Composable
-fun Main_DataBaseInitFactory_1Produit(
+private fun Main_DataBaseInitFactory_1Produit(
     viewModel: ViewModel_DataBaseInitFactory_1Produit = koinViewModel()
 ) {
     val loadingProgress = viewModel.aCentralFacade.repositorysMainGetter.loadingProgress ?: 0f
@@ -97,7 +95,7 @@ private fun MainScreen(
 }
 
 @Composable
-fun Item_M1Produit(
+private fun Item_M1Produit(
     modifier: Modifier = Modifier,
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModel_DataBaseInitFactory_1Produit
