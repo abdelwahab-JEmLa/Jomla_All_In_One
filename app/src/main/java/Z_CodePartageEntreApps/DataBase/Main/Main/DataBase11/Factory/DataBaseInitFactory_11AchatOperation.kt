@@ -143,6 +143,17 @@ class DataBaseInitFactory_11AchatOperation(
         }
     }
 
+    // New suspend version that waits for completion
+    suspend fun deleteAndWait(data: M11AchatOperation) {
+        try {
+            dao.delete(data)
+            repoRef.child(data.keyID).removeValue().await()
+        } catch (e: Exception) {
+            println("Error in deleteAndWait: ${e.message}")
+            throw e // Re-throw to let caller handle if needed
+        }
+    }
+
     fun deleteAll() {
         factoryScope.launch {
             try {

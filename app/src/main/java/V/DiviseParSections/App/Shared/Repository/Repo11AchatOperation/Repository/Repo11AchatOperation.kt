@@ -5,6 +5,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
 import android.widget.Toast
@@ -107,18 +108,20 @@ class Repo11AchatOperation(
         }
     }
 
+
     fun genere_Achats_Depuit_M11AchatOperation_List(
+        M14VentPeriod: M14VentPeriode?,
         filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>
     ): List<M11AchatOperation> {
         val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
             it.parentM3CouleurProduitInfosKeyID
         }
 
-
         val newAchatOperations = operations.map { (couleurKeyId, ventOperations) ->
             val totalQuantity = ventOperations.sumOf { it.quantity }
 
             M11AchatOperation.get_default().first.copy(
+                parent_M14VentPeriod_KeyID = M14VentPeriod?.keyID ?: "null",
                 parent_M1Produit_DebugInfos = ventOperations.first().parentM1ProduitDebugInfos,
                 parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId,
                 parent_M3CouleurProduit_DebugInfos = ventOperations.first().parentM3CouleurProduitDebugInfos,
@@ -139,6 +142,9 @@ data class M11AchatOperation(
     var creationTimestamp: Long = System.currentTimeMillis(),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
+    //---------------------------------ForgingKeys.----------------------------------------------------------------------------------------------------------------------------------
+    val parent_M14VentPeriod_DebugInfos: String = "null",
+    val parent_M14VentPeriod_KeyID: String = "null",
     //---------------------------------ForgingKeys.----------------------------------------------------------------------------------------------------------------------------------
     val parent_M1Produit_DebugInfos: String = "null",
     val parent_M1Produit_KeyID: String = "null",

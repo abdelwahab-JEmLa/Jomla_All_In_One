@@ -55,7 +55,11 @@ fun TopAppBar_With_DropDownMenu(
                 .filtered_ListM10Vent_BY_Curr_M14VentPeriod
             val achats_Depuit_M11AchatOperation_List =
                 viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-                    .genere_Achats_Depuit_M11AchatOperation_List(vents)
+                    .genere_Achats_Depuit_M11AchatOperation_List(
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                            .currentActiveFocuced_M14VentPeriode,
+                        vents
+                    )
 
             DropdownMenu(
                 modifier = Modifier
