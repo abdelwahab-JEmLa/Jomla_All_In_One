@@ -2,6 +2,7 @@ package V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repositor
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -93,11 +94,16 @@ class Repo11AchatOperation(
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error deleting items: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Error deleting items: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
+
     fun delete(data: M11AchatOperation) {
         composScope.launch {
             try {
@@ -125,7 +131,8 @@ class Repo11AchatOperation(
 
     fun genere_Achats_Depuit_M11AchatOperation_List(
         m14VentPeriod: M14VentPeriode?,
-        filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>
+        filtered_ListM10Vent_BY_Curr_M14VentPeriod: List<M10OperationVentCouleur>,
+        produits: List<ArticlesBasesStatsTable>
     ): List<M11AchatOperation> {
 
         val operations = filtered_ListM10Vent_BY_Curr_M14VentPeriod.groupBy {
@@ -135,14 +142,31 @@ class Repo11AchatOperation(
         val newAchatOperations = operations.map { (couleurKeyId, ventOperations) ->
             val totalQuantity = ventOperations.sumOf { it.quantity }
 
+            // Find the last achat operation with the same M3CouleurProduit
+            val lastAchatWithSameCouleur = datasValue
+                .filter { it.parent_M3CouleurProduit_KeyID == couleurKeyId }
+                .maxByOrNull { it.creationTimestamp }
+
+            // Get grossist info from the last achat operation
+            val grossistDebugInfos =
+                lastAchatWithSameCouleur?.parent_M15Grossist_DebugInfos ?: "null"
+            val grossistKeyID = lastAchatWithSameCouleur?.parent_M15Grossist_KeyID ?: "null"
+            val parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId
+            val parent_M1Produit = produits.find {
+                it.keyID == parent_M1Produit_KeyID
+            }
+
             M11AchatOperation.get_default().first.copy(
+                prix_Achat_De_Cette_Grossist = parent_M1Produit?.prixAchat ?: 0.0,
+                parent_M15Grossist_DebugInfos = grossistDebugInfos,
+                parent_M15Grossist_KeyID = grossistKeyID,
                 parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
                 parent_M1Produit_DebugInfos = ventOperations.first().parentM1ProduitDebugInfos,
-                parent_M1Produit_KeyID = ventOperations.first().parentM1ProduitInfosKeyId,
+                parent_M1Produit_KeyID = parent_M1Produit_KeyID,
                 parent_M3CouleurProduit_DebugInfos = ventOperations.first().parentM3CouleurProduitDebugInfos,
                 parent_M3CouleurProduit_KeyID = couleurKeyId,
                 sumAchatQantity = totalQuantity,
-                joinedStrkeys_De_Relatives_FCouleurVentOperation = ventOperations.joinToString(",") { it.keyID }
+                joined_Str_keys_De_Relatives_FCouleurVentOperation = ventOperations.joinToString(",") { it.keyID }
             )
         }
 
@@ -171,8 +195,9 @@ data class M11AchatOperation(
     val parent_M15Grossist_KeyID: String = "null",
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    val prix_Achat_De_Cette_Grossist: Double = 0.0,
     val sumAchatQantity: Int = 0,
-    val joinedStrkeys_De_Relatives_FCouleurVentOperation: String = ","
+    val joined_Str_keys_De_Relatives_FCouleurVentOperation: String = ","
 ) {
     fun get_DebugInfos(): String {
         return buildString {
@@ -185,12 +210,12 @@ data class M11AchatOperation(
     }
 
     fun get_list_v_Depuit_joinedStringKeys(repo10datas: List<M10OperationVentCouleur>): List<M10OperationVentCouleur> {
-        return if (joinedStrkeys_De_Relatives_FCouleurVentOperation.isBlank() ||
-            joinedStrkeys_De_Relatives_FCouleurVentOperation == ","
+        return if (joined_Str_keys_De_Relatives_FCouleurVentOperation.isBlank() ||
+            joined_Str_keys_De_Relatives_FCouleurVentOperation == ","
         ) {
             emptyList()
         } else {
-            val keyIds = joinedStrkeys_De_Relatives_FCouleurVentOperation
+            val keyIds = joined_Str_keys_De_Relatives_FCouleurVentOperation
                 .split(",")
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
