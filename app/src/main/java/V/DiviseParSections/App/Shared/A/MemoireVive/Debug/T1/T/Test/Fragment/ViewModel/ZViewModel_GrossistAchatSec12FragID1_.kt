@@ -6,7 +6,7 @@ import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,7 @@ class ViewModelMainFastSearchProduitPourVent(
 
     data class UiState(
         val zAppComptRepositoryComposable: Repo9AppCompt,
-        val bProduitInfosRepository: RepoM1ProduitInfos,
+        val bProduitInfosRepository: RepoM1Produit,
         val searchText: String = "",
         val isLoading: Boolean = false,
         val showAddDialog: Boolean = false,

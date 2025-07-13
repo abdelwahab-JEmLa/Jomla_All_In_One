@@ -22,6 +22,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import com.google.firebase.database.DatabaseReference
 
 class RepositorysMainSetter(
@@ -29,6 +30,7 @@ class RepositorysMainSetter(
     private val focusedVarsHandlerFacade: FocusedActiveValuesFacade,
     private val produitOperations: ProduitOperations,
     private val clientOperations: ClientOperations,
+    private val repoM1Produit: RepoM1Produit,
     private val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     private val repo8BonVent: Repo8BonVent,
     private val repo9AppCompt: Repo9AppCompt,
@@ -124,6 +126,8 @@ class RepositorysMainSetter(
         repo14VentPeriode.upsert(generatedDefaultM14)
     }
 
+    //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
+    fun m1Produit_Update(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_Setter(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_IfExist_Setter(data: M8BonVent) = repo8BonVent.updateIfExist(data)

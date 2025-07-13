@@ -20,7 +20,7 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
 import Z_CodePartageEntreApps.Repository.Main.Passive.Repository.A2_Passive.Z_AutreStatesCompoRepository
@@ -40,7 +40,7 @@ val composRepositorysModule = module {
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }
 
-    single { RepoM1ProduitInfos(androidContext(),get()) }
+    single { RepoM1Produit(androidContext(),get()) }
     single { Repo3CouleurProduitInfos(get()) }
     single { Repo10OperationVentCouleur(context = androidContext(),get(), get()) }
     single { Repo8BonVent( androidContext(),get(), get()) }
@@ -59,7 +59,7 @@ val composRepositorysModule = module {
 
     single { RepositorysMainGetter(context = androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get() ,get(),get(), get(),get(), ) }
 
-    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), ) }
+    single { RepositorysMainSetter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),get(), get(), ) }
     single { ModulesCentral(get(), get(), get(),get(),) }
     single { ACentralFacade(get(), get(), get(), get()) }
 }

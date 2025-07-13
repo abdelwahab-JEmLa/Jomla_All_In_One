@@ -11,7 +11,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class BSetterP (
     val getter: RepositorysMainGetter,
-    val bProduitDataBase_SubClassFunctionality: RepoM1ProduitInfos,
+    val bProduitDataBase_SubClassFunctionality: RepoM1Produit,
     val fVentCouleurOperationRepository: Repo10OperationVentCouleur,
     val hClientRepository: Repo2Client,
     val gBonVentRepository: Repo8BonVent,

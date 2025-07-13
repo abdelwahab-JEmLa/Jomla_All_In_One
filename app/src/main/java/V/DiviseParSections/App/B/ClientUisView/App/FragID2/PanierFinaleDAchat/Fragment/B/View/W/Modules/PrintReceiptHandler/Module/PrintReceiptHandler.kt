@@ -4,7 +4,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -29,7 +29,7 @@ class PrintReceiptHandler {
     fun printVentReceipt(
         context: Context,
         fVentCouleurOperationRepository: Repo10OperationVentCouleur,
-        bProduitInfosRepository: RepoM1ProduitInfos,
+        bProduitInfosRepository: RepoM1Produit,
         b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
         client: M2Client?,
         scope: CoroutineScope? = null

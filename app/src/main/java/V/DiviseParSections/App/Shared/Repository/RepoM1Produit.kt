@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Stable
-class RepoM1ProduitInfos(
+class RepoM1Produit(
     val context: Context,
     val ancienRepo: A_ProduitDataBaseProtoJuin17,
 ) {

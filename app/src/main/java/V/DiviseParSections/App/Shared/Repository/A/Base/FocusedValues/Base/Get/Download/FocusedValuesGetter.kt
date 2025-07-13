@@ -15,7 +15,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.RepoM1ProduitInfos
+import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 @Stable
 class FocusedValuesGetter(
     repo2Client: Repo2Client,
-    repoM1ProduitInfos: RepoM1ProduitInfos,
+    repoM1ProduitInfos: RepoM1Produit,
     repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
 
     repo8BonVent: Repo8BonVent,
