@@ -51,23 +51,33 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ProductGroup(
     modifier: Modifier = Modifier,
-    viewModel: ZViewModel_Sec1Frag3= koinViewModel(),
+    viewModel: ZViewModel_Sec1Frag3 = koinViewModel(),
     productKeyId: String,
     vents: List<M10OperationVentCouleur>,
 ) {
-   val  bProduitDataBase_SubClassFunctionality= viewModel.aCentral.repositorysMainGetter.repoM1ProduitInfos
+    val bProduitDataBase_SubClassFunctionality =
+        viewModel.aCentral.repositorysMainGetter.repoM1ProduitInfos
+    val relative_M1Produit =
+        bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+    val relative_M13Tariffication = viewModel.aCentral.repositorysMainGetter.m13Tarification_By(
+        vents.first().parentM13TarificationKeyID
+    )
 
-    val produit = bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
     val totalQuantity = vents.sumOf { it.quantity }
-    val productName = produit?.nom?.takeIf { it.isNotBlank() }
-        ?: produit?.nomMutable?.takeIf { it.isNotBlank() }
+    val productName = relative_M1Produit?.nom?.takeIf { it.isNotBlank() }
+        ?: relative_M1Produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
-    val currentPrice = vents.firstOrNull()?.provisoireMonPrix ?: 0.0
-    val hasNonTrouve = vents.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
-    val allNonTrouve = vents.isNotEmpty() && vents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+
+
+    val currentPrice = relative_M13Tariffication?.prixCurrency ?:0.0
+    val hasNonTrouve =
+        vents.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+    val allNonTrouve =
+        vents.isNotEmpty() && vents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -79,7 +89,9 @@ fun ProductGroup(
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp).graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
+            modifier = Modifier
+                .padding(16.dp)
+                .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
             ProductHeader(
                 productName = productName,
@@ -88,7 +100,7 @@ fun ProductGroup(
                 totalQuantity = totalQuantity,
                 onToggleDelivery = {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    produit?.keyID?.let { viewModel.toggleEtateDeliveryNonTrouveVentOu(it) }
+                    relative_M1Produit?.keyID?.let { viewModel.toggleEtateDeliveryNonTrouveVentOu(it) }
                 },
                 onQuantityClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -100,7 +112,7 @@ fun ProductGroup(
 
             PriceEditorFragID2(
                 currentPrice = currentPrice,
-                label = "Prix unitaire (toutes variantes)",
+                label = "Prix Boit (toutes variantes)",
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
                         vents.forEach { vent ->

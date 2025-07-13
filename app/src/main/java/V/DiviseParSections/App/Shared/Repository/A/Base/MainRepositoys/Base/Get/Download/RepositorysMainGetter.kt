@@ -14,6 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonV
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
@@ -79,6 +80,9 @@ class RepositorysMainGetter(
     private val _loadingProgress = mutableFloatStateOf(0f)
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
+
+    //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun m13Tarification_By(keyID:String): M13TarificationInfos?= repo13TarificationInfos.datasValue.find { it.keyID==keyID }
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
         return repo8BonVent.datasValue
