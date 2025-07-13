@@ -6,8 +6,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Screen_GrossistAchatSec12FragID1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.MainFastSearchProduitPourVent
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Screen_GrossistAchatSec12FragID1
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Main_DataBaseInitFactory_1Produit

@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
+package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.W.Components
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Options.petitePaddine
+import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.A.ViewModel.ViewModelsProduit_T1
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.View.Z.View.Z.List.UI.Z.ModernQuantityDialog_T1.Ui.A.Screen.Dialog_Choisire_Quantity_Modularized
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.ViewModule
@@ -48,15 +46,15 @@ import androidx.compose.ui.unit.sp
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun ProductHeader_SemiModularized(
-    relative_M1Produit: ArticlesBasesStatsTable,
-    viewModel: ZViewModel_Sec1Frag3,
+fun ProductHeader_T1(
+    produit: ArticlesBasesStatsTable,
+    viewModel: ViewModelsProduit_T1,
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 
     val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
-            relative_M1Produit
+            produit
         )
     }
 
@@ -65,10 +63,8 @@ fun ProductHeader_SemiModularized(
 
 
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
-    val hasNonTrouve =
-        listFiltered_M10OperationVentCouleurs_By_M1Produit.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
@@ -110,7 +106,7 @@ fun ProductHeader_SemiModularized(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = relative_M1Produit.nom,
+                    text = produit.nom,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -130,7 +126,7 @@ fun ProductHeader_SemiModularized(
             }
 
             Card_Produit_Nombre_Unites(
-                allNonTrouve, relative_M1Produit
+                allNonTrouve, produit
             )
             {
                 shouldShowDialog_quantite_Unite_Par_Boit = true
@@ -152,9 +148,9 @@ fun ProductHeader_SemiModularized(
                     IconButton(
                         onClick = {
                             val toggled_setIN_Vent_Its_Quantity_Represent =
-                                relative_M1Produit.setIN_Vent_Its_Quantity_Represent.toggle()
+                                produit.setIN_Vent_Its_Quantity_Represent.toggle()
 
-                            relative_M1Produit.apply {
+                            produit.apply {
                                 setIN_Vent_Its_Quantity_Represent =
                                     toggled_setIN_Vent_Its_Quantity_Represent
                             }.also {
@@ -162,10 +158,13 @@ fun ProductHeader_SemiModularized(
                                     it
                                 )
                             }
+                            viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
+                                listFiltered_M10OperationVentCouleurs_By_M1Produit
+                            )
                         }, modifier = Modifier.size(36.dp)
                     ) {
                         val carton =
-                            relative_M1Produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
+                            produit.setIN_Vent_Its_Quantity_Represent == M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton
 
                         Icon(
                             imageVector = if (carton) Icons.Default.Inventory2
@@ -197,7 +196,7 @@ fun ProductHeader_SemiModularized(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
-                                text = "${relative_M1Produit.quantite_Boit_Par_Carton}",
+                                text = "${produit.quantite_Boit_Par_Carton}",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(
                                     alpha = 0.6f
@@ -207,23 +206,17 @@ fun ProductHeader_SemiModularized(
                             )
                         }
                     }
-                    ToggleButton_SemiModularized_F_Panie(
-                        allNonTrouve = allNonTrouve,
-                        hasNonTrouve = hasNonTrouve,
-                        viewModel = viewModel,
-                        relative_M1Produit = relative_M1Produit
-                    )
                 }
             }
         }
 
         if (shouldShowDialog_quantite_Unite_Par_Boit) {
             Dialog_Choisire_Quantity_Modularized(
-                old_quantity = relative_M1Produit.nombreUniteInt,
+                old_quantity = produit.nombreUniteInt,
                 label = "nombreUniteInt",
             ) { new_Qyt ->
                 if (new_Qyt != null) {
-                    relative_M1Produit.apply {
+                    produit.apply {
                         nombreUniteInt = new_Qyt
 
                     }.also {
@@ -240,11 +233,11 @@ fun ProductHeader_SemiModularized(
 
         if (shouldShowDialog_quantite_Boit_Par_Carton) {
             Dialog_Choisire_Quantity_Modularized(
-                old_quantity = relative_M1Produit.quantite_Boit_Par_Carton,
+                old_quantity = produit.quantite_Boit_Par_Carton,
                 label = "quantite_Boit_Par_Carton",
             ) { new_Qyt ->
                 if (new_Qyt != null) {
-                    relative_M1Produit.apply {
+                    produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
                     }.also {
                         viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
@@ -254,39 +247,6 @@ fun ProductHeader_SemiModularized(
                 shouldShowDialog_quantite_Boit_Par_Carton = false
             }
         }
-    }
-}
-
-@Composable
-fun ToggleButton_SemiModularized_F_Panie(
-    allNonTrouve: Boolean,
-    hasNonTrouve: Boolean,
-    viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?
-) {
-    IconButton(
-        onClick = {
-            relative_M1Produit?.keyID?.let {
-                viewModel.aCentralFacade.repositorysMainSetter.toggleEtateDeliveryNonTrouveVentOuFacade(
-                    it
-                )
-            }
-        },
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            )
-    ) {
-        Icon(
-            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.CheckCircle,
-            contentDescription = if (hasNonTrouve) "Mark as found" else "Mark as not found",
-            tint = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f),
-            modifier = Modifier.size(20.dp)
-        )
     }
 }
 
