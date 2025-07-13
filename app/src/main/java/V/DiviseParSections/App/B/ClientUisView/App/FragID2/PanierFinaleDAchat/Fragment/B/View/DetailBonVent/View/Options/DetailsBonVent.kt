@@ -6,7 +6,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.Details.UI.B.UI.GBonVentInfosHeader
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ErrorCard
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.PeriodDetailsSection
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
@@ -66,20 +65,19 @@ data class ActionButtonData(
 @Composable
 fun DetailsBonVent(
     modifier: Modifier = Modifier,
+    aCentralFacade: ACentralFacade= koinInject(),
     viewModel: ZViewModel_Sec1Frag3 = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isMinimized = uiState.isMinimized
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val printHandler = remember { PrintReceiptHandler() }
+    val printHandler = aCentralFacade.modulesCentral.printReceiptHandler
 
     val zAppComptRepositoryComposable =
         viewModel.uiStateCentralRepositorys.repo9AppCompt
     val comptAppActuelle = zAppComptRepositoryComposable.currentAppCompt
 
-    val fVentCouleurOperationRepository =
-        viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
     val ouvertPeriodKeyId = comptAppActuelle?.current_OnVent_M14VentPeriode_KeyID ?: ""
 
@@ -107,12 +105,12 @@ fun DetailsBonVent(
                     onPrint = {
                         printHandler.printVentReceipt(
                             context = context,
-                            fVentCouleurOperationRepository = fVentCouleurOperationRepository,
-                            bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
-                            b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
+                            repo13TarificationInfos = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos ,
+                            repoM1Produit = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
+                            repo3CouleurProduitInfos = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
                             scope = scope,
-                            activeVents = it
+                            relative_ListM10OperationVentCouleur = it
                         )
                     }
                 )

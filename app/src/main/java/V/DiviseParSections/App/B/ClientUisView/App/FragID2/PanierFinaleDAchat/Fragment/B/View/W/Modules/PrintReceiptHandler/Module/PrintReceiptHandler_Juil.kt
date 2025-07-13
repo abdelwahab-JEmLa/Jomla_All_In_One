@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module
 
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.content.Context
 import android.content.Intent
@@ -15,9 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class PrintReceiptHandler {
+class PrintReceiptHandler_Juil() {
     private val PRINT_INTENT = "pe.diegoveloper.printing"
-    private val TAG = "PrintReceiptHandler"
+    private val TAG = "PrintReceiptHandler_Juil"
 
     data class ArticleImpression(
         val nomArticle: String,
@@ -28,24 +28,25 @@ class PrintReceiptHandler {
 
     fun printVentReceipt(
         context: Context,
-        fVentCouleurOperationRepository: Repo10OperationVentCouleur,
-        bProduitInfosRepository: RepoM1Produit,
-        b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
+        repoM1Produit: RepoM1Produit,
+        repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
         client: M2Client?,
         scope: CoroutineScope? = null,
-        activeVents: List<M10OperationVentCouleur>
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
+        repo13TarificationInfos: Repo13TarificationInfos
     ) {
         val printFunction = {
-            val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+            val dateString =
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
             val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
 
-            activeVents.forEach { vent ->
-                val product = bProduitInfosRepository.datasValue.find {
+            relative_ListM10OperationVentCouleur.forEach { vent ->
+                val product = repoM1Produit.datasValue.find {
                     it.keyID == vent.parentM1ProduitInfosKeyId
                 }
 
-                val colorInfo = b1CouleurOuGoutProduitDataBaseRepository.datasValue.find {
+                val colorInfo = repo3CouleurProduitInfos.datasValue.find {
                     it.keyID == vent.parentM3CouleurProduitInfosKeyID
                 }
 
@@ -76,23 +77,22 @@ class PrintReceiptHandler {
 
             val finalArticles = mutableListOf<ArticleImpression>()
             productMap.values.forEach { articles ->
-                articles.groupBy { "${it.nomArticle}_${it.prixUnitaire}" }.forEach { (_, groupedArticles) ->
-                    val firstArticle = groupedArticles.first()
-                    val totalQuantity = groupedArticles.sumOf { it.quantite }
-                    finalArticles.add(
-                        firstArticle.copy(quantite = totalQuantity)
-                    )
-                }
+                articles.groupBy { "${it.nomArticle}_${it.prixUnitaire}" }
+                    .forEach { (_, groupedArticles) ->
+                        val firstArticle = groupedArticles.first()
+                        val totalQuantity = groupedArticles.sumOf { it.quantite }
+                        finalArticles.add(
+                            firstArticle.copy(quantite = totalQuantity)
+                        )
+                    }
             }
 
             val creditBalance = client?.currentCreditBalance ?: 0.0
             val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
 
             val (texteImprimable, totalBon) = prepareTexteToPrint(
-                nomClient = clientName,
-                dateString = dateString,
-                articles = finalArticles,
-                ancienCredits = creditBalance
+                relative_ListM10OperationVentCouleur, clientName, dateString, creditBalance ,repo13TarificationInfos,
+                 repoM1Produit
             )
 
             // Log the receipt content before printing
@@ -120,10 +120,12 @@ class PrintReceiptHandler {
     }
 
     private fun prepareTexteToPrint(
+        relative_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
         nomClient: String,
         dateString: String,
-        articles: List<ArticleImpression>,
-        ancienCredits: Double
+        ancienCredits: Double,
+        repo13TarificationInfos: Repo13TarificationInfos,
+        repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
@@ -142,14 +144,26 @@ class PrintReceiptHandler {
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
         }
 
-        articles.forEachIndexed { index, article ->
-            val arrondi = round(article.prixUnitaire * 10) / 10
-            val subtotal = arrondi * article.quantite
+        relative_ListM10OperationVentCouleur.forEachIndexed { index, vent ->
+            val datas_repo13TarificationInfos =
+                repo13TarificationInfos.datasValue
+            val relative_Tariffication =
+                datas_repo13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
+
+            val relative_M1Produit =
+                repoM1Produit.datasValue
+                    .find { it.keyID == vent.parentM1ProduitInfosKeyId }
+
+            val vent_quantity = vent.quantity
+            val vent_prix = relative_Tariffication!!.prixCurrency
+
+            val subtotal = vent_prix * vent_quantity
+
             if (subtotal != 0.0) {
                 texteImprimable.apply {
-                    append("<MEDIUM1><LEFT>${article.nomArticle}<BR>")
-                    append("    <MEDIUM1><LEFT>${article.quantite}   ")
-                    append("<MEDIUM1><LEFT>${arrondi}Da   ")
+                    append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
+                    append("    <MEDIUM1><LEFT>${vent_quantity}   ")
+                    append("<MEDIUM1><LEFT>${vent_prix}Da   ")
                     append("<SMALL>$subtotal<BR>")
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
