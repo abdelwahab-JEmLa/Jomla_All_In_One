@@ -73,7 +73,7 @@ fun MainFastSearchProduitPourVent(
         }
     }
 
-    var shouldPerformInitialSearch by remember { mutableStateOf(false) }
+    var shouldPerformInitialSearch by remember { mutableStateOf(true) }
 
     // FIXED: Only call DebugTestsPerformInitialSearch after TextField is ready
     LaunchedEffect(isTextFieldReady) {

@@ -1,9 +1,11 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
+package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.UI.PriceEditorFragID2
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,9 +61,10 @@ fun ProductGroup(
         viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
-    val relative_M13Tariffication = viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
-        vents.first().parentM13TarificationKeyID
-    )
+    val relative_M13Tariffication =
+        viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
+            vents.first().parentM13TarificationKeyID
+        )
 
 
     val haptic = LocalHapticFeedback.current
@@ -73,7 +76,7 @@ fun ProductGroup(
         ?: "Product #$productKeyId"
 
 
-    val currentPrice = relative_M13Tariffication?.prixCurrency ?:0.0
+    val currentPrice = relative_M13Tariffication?.prixCurrency ?: 0.0
     val hasNonTrouve =
         vents.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     val allNonTrouve =
@@ -93,23 +96,29 @@ fun ProductGroup(
                 .padding(16.dp)
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
+            //----------------------------Header---------------------------------------------------------------------------------------------------------------------------------------------------------
             if (relative_M1Produit != null) {
-                ProductHeader_Modularized(relative_M1Produit , viewModel )
+                ProductHeader_SemiModularized(relative_M1Produit, viewModel)
             }
             ProductHeader(
+
+                viewModel=viewModel,
                 productName = productName,
                 allNonTrouve = allNonTrouve,
                 hasNonTrouve = hasNonTrouve,
                 totalQuantity = totalQuantity,
                 onToggleDelivery = {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    relative_M1Produit?.keyID?.let { viewModel.toggleEtateDeliveryNonTrouveVentOu(it) }
+                    relative_M1Produit?.keyID?.let { viewModel.aCentralFacade.repositorysMainSetter.toggleEtateDeliveryNonTrouveVentOuFacade(it)  }
                 },
                 onQuantityClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showDialog = true
-                }
+                },
+                relative_M1Produit =relative_M1Produit,
             )
+
+            //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -187,7 +196,9 @@ private fun ProductHeader(
     hasNonTrouve: Boolean,
     totalQuantity: Int,
     onToggleDelivery: () -> Unit,
-    onQuantityClick: () -> Unit
+    onQuantityClick: () -> Unit,
+    viewModel: ZViewModel_Sec1Frag3,
+    relative_M1Produit: ArticlesBasesStatsTable?
 ) {
     Box(
         modifier = Modifier
@@ -240,7 +251,10 @@ private fun ProductHeader(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ToggleButton(allNonTrouve, hasNonTrouve, onToggleDelivery)
+                ToggleButton_SemiModularized_T1(
+
+                    allNonTrouve, hasNonTrouve, viewModel=viewModel, relative_M1Produit
+                )
                 QuantityDisplay(allNonTrouve, totalQuantity, onQuantityClick)
             }
         }
@@ -248,9 +262,16 @@ private fun ProductHeader(
 }
 
 @Composable
-private fun ToggleButton(allNonTrouve: Boolean, hasNonTrouve: Boolean, onClick: () -> Unit) {
+ fun ToggleButton_SemiModularized_T1(
+    allNonTrouve: Boolean,
+    hasNonTrouve: Boolean,
+    viewModel: ZViewModel_Sec1Frag3,
+    relative_M1Produit: ArticlesBasesStatsTable?
+) {
     IconButton(
-        onClick = onClick,
+        onClick = {
+            relative_M1Produit?.keyID?.let { viewModel.aCentralFacade.repositorysMainSetter.toggleEtateDeliveryNonTrouveVentOuFacade(it)  }
+        },
         modifier = Modifier
             .size(40.dp)
             .clip(RoundedCornerShape(20.dp))
