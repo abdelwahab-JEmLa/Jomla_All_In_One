@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.ProductGroup
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup.View_Vent_M1Produit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,7 @@ fun MainList(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(groupedVents.entries.toList()) { (productKeyId, achatGroup) ->
-            ProductGroup(
+            View_Vent_M1Produit(
                 viewModel = viewModel,
                 productKeyId = productKeyId,
                 relative_List_M10OperationVentCouleur = achatGroup

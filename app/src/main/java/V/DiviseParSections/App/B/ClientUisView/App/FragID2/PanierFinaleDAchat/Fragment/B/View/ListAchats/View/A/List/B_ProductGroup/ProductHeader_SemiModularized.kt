@@ -162,9 +162,6 @@ fun ProductHeader_SemiModularized(
                                     it
                                 )
                             }
-                            viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
-                                listFiltered_M10OperationVentCouleurs_By_M1Produit
-                            )
                         }, modifier = Modifier.size(36.dp)
                     ) {
                         val carton =

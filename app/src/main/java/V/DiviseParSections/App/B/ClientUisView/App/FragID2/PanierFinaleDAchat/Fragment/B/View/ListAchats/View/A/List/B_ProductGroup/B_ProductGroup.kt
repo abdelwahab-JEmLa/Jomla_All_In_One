@@ -1,10 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.B_ProductGroup
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.ViewVentCouleur_Module
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.UI.PriceEditorFragID2
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,13 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProductGroup(
+fun View_Vent_M1Produit(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel(),
     productKeyId: String,
@@ -83,7 +79,7 @@ fun ProductGroup(
             if (relative_M1Produit != null) {
                 ProductHeader_SemiModularized(relative_M1Produit, viewModel)
             }
-            ProductHeader(
+            /*ProductHeader(
                 viewModel=viewModel,
                 productName = productName,
                 allNonTrouve = allNonTrouve,
@@ -100,7 +96,6 @@ fun ProductGroup(
                 relative_M1Produit =relative_M1Produit,
             )
 
-            //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -123,7 +118,8 @@ fun ProductGroup(
                 modifier = Modifier.fillMaxWidth(),
                 textColor = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            )        */
+            //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -162,6 +158,7 @@ fun ProductGroup(
                         }
                 }
             }
+
             if (relative_M1Produit != null) {
                 Downer_Bar_SemiModularized_panie(
                     relative_List_M10OperationVentCouleur =relative_List_M10OperationVentCouleur ,
@@ -170,18 +167,6 @@ fun ProductGroup(
                 )
             }
         }
-    }
-
-    if (showDialog && relative_List_M10OperationVentCouleur.isNotEmpty() && !allNonTrouve) {
-        ModernQuantityDialog(
-            clickUpdate = ClickUpdate.TotalQua,
-            colorName = "Total - $productName",
-            currentQuantity = totalQuantity,
-            onDissmiss_showQuantityDialog = { showDialog = false },
-            onDismiss = { showDialog = false },
-            viewModel = viewModel,
-            vent = relative_List_M10OperationVentCouleur.first().copy(quantity = totalQuantity)
-        )
     }
 }
 

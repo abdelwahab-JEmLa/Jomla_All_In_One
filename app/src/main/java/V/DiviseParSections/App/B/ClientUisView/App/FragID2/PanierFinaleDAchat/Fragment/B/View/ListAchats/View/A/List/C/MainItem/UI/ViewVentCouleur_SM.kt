@@ -242,6 +242,8 @@ fun ViewVentCouleur_Module(
     if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = findVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
+            setIN_Vent_Its_Quantity_Represent=relative_M1Produit.setIN_Vent_Its_Quantity_Represent,
+            quantite_Boit_Par_Carton = relative_M1Produit.quantite_Boit_Par_Carton,
             label = relative_M3CouleurProduit.nomCouleurStrSiSonImageDispo,
         ) { new_Qyt ->
 

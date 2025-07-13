@@ -16,7 +16,7 @@ class ZViewModel_Sec1Frag3(
     data class UiState_Sec1Frag3(
         val isMinimized: Boolean = true,
         val panieMode: PanieMode = PanieMode.Delivery,
-        val filterNonTrouve: Boolean = true,
+        val filterNonTrouve: Boolean = false,
     )
 
     private val _uiState = MutableStateFlow(UiState_Sec1Frag3())
