@@ -5,48 +5,29 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.UI.PriceEditorFragID2
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -102,7 +83,6 @@ fun ProductGroup(
                 ProductHeader_SemiModularized(relative_M1Produit, viewModel)
             }
             ProductHeader(
-
                 viewModel=viewModel,
                 productName = productName,
                 allNonTrouve = allNonTrouve,
@@ -154,9 +134,12 @@ fun ProductGroup(
                 items(relative_List_M10OperationVentCouleur) { vent ->
                     viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
                         .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }?.let {
-                            Surface(
+                            Card(
                                 shape = RoundedCornerShape(12.dp),
-                                tonalElevation = if (allNonTrouve) 1.dp else 2.dp,
+                                elevation = CardDefaults.cardElevation(if (allNonTrouve) 1.dp else 2.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
                                 modifier = Modifier
                                     .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                     .graphicsLayer(
@@ -197,134 +180,3 @@ fun ProductGroup(
     }
 }
 
-@Composable
-private fun ProductHeader(
-    productName: String,
-    allNonTrouve: Boolean,
-    hasNonTrouve: Boolean,
-    totalQuantity: Int,
-    onToggleDelivery: () -> Unit,
-    onQuantityClick: () -> Unit,
-    viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = if (allNonTrouve) {
-                        listOf(
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                        )
-                    } else {
-                        listOf(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            MaterialTheme.colorScheme.secondaryContainer
-                        )
-                    }
-                )
-            )
-            .padding(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = productName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    else MaterialTheme.colorScheme.onPrimaryContainer,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (allNonTrouve) {
-                    Text(
-                        text = "Non disponible",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ToggleButton_SemiModularized_T1(
-
-                    allNonTrouve, hasNonTrouve, viewModel=viewModel, relative_M1Produit
-                )
-                QuantityDisplay(allNonTrouve, totalQuantity, onQuantityClick)
-            }
-        }
-    }
-}
-
-@Composable
- fun ToggleButton_SemiModularized_T1(
-    allNonTrouve: Boolean,
-    hasNonTrouve: Boolean,
-    viewModel: ZViewModel_Sec1Frag3,
-    relative_M1Produit: ArticlesBasesStatsTable?
-) {
-    IconButton(
-        onClick = {
-            relative_M1Produit?.keyID?.let { viewModel.aCentralFacade.repositorysMainSetter.toggleEtateDeliveryNonTrouveVentOuFacade(it)  }
-        },
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                if (hasNonTrouve) MaterialTheme.colorScheme.errorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-                else MaterialTheme.colorScheme.primaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            )
-    ) {
-        Icon(
-            imageVector = if (hasNonTrouve) Icons.Default.Cancel else Icons.Default.CheckCircle,
-            contentDescription = if (hasNonTrouve) "Mark as found" else "Mark as not found",
-            tint = if (hasNonTrouve) MaterialTheme.colorScheme.onErrorContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f)
-            else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (allNonTrouve) 0.7f else 1.0f),
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
-private fun QuantityDisplay(allNonTrouve: Boolean, totalQuantity: Int, onClick: () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-        else MaterialTheme.colorScheme.primary,
-        modifier = Modifier.clickable(enabled = !allNonTrouve) { onClick() }
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "Total quantity",
-                tint = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                else MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(16.dp)
-            )
-            Text(
-                text = totalQuantity.toString(),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                else MaterialTheme.colorScheme.onPrimary
-            )
-        }
-    }
-}

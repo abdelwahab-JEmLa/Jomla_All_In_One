@@ -4,9 +4,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ColorNameDisplayer_Sec2FragID2
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.ImageDisplayerGlide_Sec2FragID2
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
-import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -159,15 +159,13 @@ fun VentDisplayer_Sec2FragId2(
     }
 
     if (showQuantityDialog) {
-        vent?.let {
-            ModernQuantityDialog(
-                colorName = data.nomCouleurStrSiSonImageDispo,
-                currentQuantity = purchasedQuantity,
-                onDissmiss_showQuantityDialog = { showQuantityDialog = false },
-                onDismiss = { showQuantityDialog = false },
-                viewModel = viewModel,
-                vent = it
-            )
-        }
+        ModernQuantityDialog(
+            colorName = data.nomCouleurStrSiSonImageDispo,
+            currentQuantity = purchasedQuantity,
+            onDissmiss_showQuantityDialog = { showQuantityDialog = false },
+            onDismiss = { showQuantityDialog = false },
+            viewModel = viewModel,
+            vent = vent
+        )
     }
 }
