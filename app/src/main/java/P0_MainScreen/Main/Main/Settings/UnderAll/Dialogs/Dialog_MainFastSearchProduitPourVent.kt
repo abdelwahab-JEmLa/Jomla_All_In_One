@@ -32,7 +32,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 
-
 @Composable
 fun Dialog_MainFastSearchProduitPourVent(
     focusedVarsHandlerFacade: FocusedActiveValuesFacade,
@@ -57,7 +56,6 @@ fun Dialog_MainFastSearchProduitPourVent(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Toast Animation Component - Must be first to appear on top
                 AnimatedVisibility(
                     visible = showToast,
                     enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
@@ -85,7 +83,9 @@ fun Dialog_MainFastSearchProduitPourVent(
                 FloatingActionButton(
                     onClick = {
                         focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeDialogSearchM1Produit()
-                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit("")
+                        focusedVarsHandlerFacade.focusedValuesSetter.set_Current_startTextSearchM1Produit(
+                            ""
+                        )
                         focusedVarsHandlerFacade.focusedValuesSetter.clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID()
                         focusedVarsHandlerFacade.focusedValuesSetter.desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits()
                     },
