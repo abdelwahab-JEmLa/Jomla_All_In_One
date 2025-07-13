@@ -46,6 +46,7 @@ fun Item_2_Menu(
     }
 
     val currentProducts = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+
     val new_Edited_Datas = old_Datas.mapNotNull { old ->
         val m1Produit_IN_New = currentProducts.find { it.id.toInt() == old.idArticle }
         m1Produit_IN_New?.copy(quantite_Boit_Par_Carton = old.nmbrCaron)
@@ -55,6 +56,7 @@ fun Item_2_Menu(
         modifier = Modifier
             .getSemanticsTag(old_Datas, "old_Datas")
             .getSemanticsTag(new_Edited_Datas, "new_Edited_Datas")
+            .getSemanticsTag(new_Edited_Datas.find { it.nom.contains("l") }, "liy")
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer

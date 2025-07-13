@@ -67,6 +67,11 @@ fun MainScreen(
     }
 
     val repoDatas = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+    val currentProducts = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+    val new_Edited_Datas = old_Datas.mapNotNull { old ->
+        val m1Produit_IN_New = currentProducts.find { it.id.toInt() == old.idArticle }
+        m1Produit_IN_New?.copy(quantite_Boit_Par_Carton = old.nmbrCaron)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -80,8 +85,8 @@ fun MainScreen(
             TopAppBar(
                 modifier = Modifier
                     .getSemanticsTag(quantite_Boit_Par_Carton, "quantite_Boit_Par_Carton", 3)
+                    .getSemanticsTag(new_Edited_Datas.find { it.nom.contains("iy") }, "liy")
                 ,
-
                 title = { Text("1Produit") },
                 actions = {
                     IconButton(onClick = {
