@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View
 
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.A.ViewModel.ViewModelsProduit_T1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.A.DownerBar.View.Downer_Bar
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.A.DownerBar.View.Downer_Bar_SemiModularized_Searcher
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ProductHeader_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.VentProduitQuantityDialog_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ViewDisponibilityEtates
@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -94,13 +93,10 @@ fun ViewProduit_T1(
             if (produit != null) {
                 ViewDisponibilityEtates(product = produit)
             }
-            Downer_Bar(
+            Downer_Bar_SemiModularized_Searcher(
+                related_ListM10OperationVentCouleur=relatedVents,
                 produit = product,
                 viewModel = viewModel,
-                allNonTrouve = allNonTrouve,
-                onQuantityClickToHaptic = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                }
             )
         }
     }

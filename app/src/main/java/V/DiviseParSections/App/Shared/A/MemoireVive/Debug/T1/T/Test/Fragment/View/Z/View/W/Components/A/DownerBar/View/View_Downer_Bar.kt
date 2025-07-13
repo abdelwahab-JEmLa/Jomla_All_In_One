@@ -4,6 +4,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vie
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.QuantityDisplay
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +27,10 @@ import androidx.compose.ui.unit.dp
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun Downer_Bar(
+fun Downer_Bar_SemiModularized_Searcher(
+    related_ListM10OperationVentCouleur: List<M10OperationVentCouleur>,
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
-    allNonTrouve: Boolean,
-    onQuantityClickToHaptic: () -> Unit
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
@@ -40,6 +40,8 @@ fun Downer_Bar(
             produit
         )
     }
+    val allNonTrouve =
+        related_ListM10OperationVentCouleur.isNotEmpty() && related_ListM10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Box(
         modifier = Modifier
@@ -96,9 +98,7 @@ fun Downer_Bar(
                         produit = produit,
                         viewModel = viewModel,
                         allNonTrouve = allNonTrouve,
-                    ) {
-                        onQuantityClickToHaptic()
-                    }
+                    ) {}
                 }
             }
         }
