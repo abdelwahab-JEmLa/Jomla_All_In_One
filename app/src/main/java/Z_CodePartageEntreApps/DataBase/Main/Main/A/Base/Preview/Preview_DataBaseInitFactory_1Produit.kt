@@ -54,7 +54,6 @@ fun MainScreen(
 ) {
     var isLoading by remember { mutableStateOf(false) }
     var old_Datas by remember { mutableStateOf(emptyList<OldDataBase_M1>()) }
-    val repoDatas = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
 
     LaunchedEffect(Unit) {
         try {
@@ -67,13 +66,7 @@ fun MainScreen(
         }
     }
 
-    val currentProducts = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
-
-    // Fix: Use mapNotNull to transform and filter the data
-    val new_Edited_Datas = old_Datas.mapNotNull { old ->
-        val m1Produit_IN_New = currentProducts.find { it.id == old.id }
-        m1Produit_IN_New?.copy(quantite_Boit_Par_Carton = old.nmbrCaron)
-    }
+    val repoDatas = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -86,12 +79,9 @@ fun MainScreen(
 
             TopAppBar(
                 modifier = Modifier
-                    .getSemanticsTag(repoDatas, "repoDatas")  //<--
-                    //TODO(1): ici 
-                    .getSemanticsTag(old_Datas, "old_Datas", 1)
-                    .getSemanticsTag(new_Edited_Datas, "new_Datas", 2)
                     .getSemanticsTag(quantite_Boit_Par_Carton, "quantite_Boit_Par_Carton", 3)
                 ,
+
                 title = { Text("1Produit") },
                 actions = {
                     IconButton(onClick = {
