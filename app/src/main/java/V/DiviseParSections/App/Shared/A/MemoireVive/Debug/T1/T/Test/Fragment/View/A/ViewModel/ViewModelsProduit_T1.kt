@@ -28,6 +28,10 @@ class ViewModelsProduit_T1(
         val filterNonTrouve: Boolean = true,
     )
 
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
     data class ViewVentUIState(
         val ventKey: String = "",
         val quantity: Int = 0,
@@ -35,10 +39,6 @@ class ViewModelsProduit_T1(
         val itemAlpha: Float = 1.0f,
         val colorMatrix: ColorMatrix? = null
     )
-
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
     fun calculateUIState(
         produit: ArticlesBasesStatsTable,
         existingVent: M10OperationVentCouleur?,

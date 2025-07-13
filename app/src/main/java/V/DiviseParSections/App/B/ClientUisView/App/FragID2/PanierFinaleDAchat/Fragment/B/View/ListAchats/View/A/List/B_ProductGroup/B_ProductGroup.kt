@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.F
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ClickUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.Quantity.Ui.A.Screen.ModernQuantityDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.VentDisplayer_Sec2FragId2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.ListAchats.View.A.List.C.MainItem.UI.ViewVentCouleur_Module
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.UI.PriceEditorFragID2
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +43,7 @@ fun ProductGroup(
 
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
+
     val relative_First_OF_ListM13Tariffication =
         viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
             relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
@@ -134,6 +135,8 @@ fun ProductGroup(
                 items(relative_List_M10OperationVentCouleur) { vent ->
                     viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
                         .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }?.let {
+                            val relative_M3CouleurProduit = viewModel.aCentralFacade.repositorysMainGetter.repo3CouleurProduitInfos.datasValue
+                                .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }
                             Card(
                                 shape = RoundedCornerShape(12.dp),
                                 elevation = CardDefaults.cardElevation(if (allNonTrouve) 1.dp else 2.dp),
@@ -146,13 +149,15 @@ fun ProductGroup(
                                         alpha = if (vent.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve) 0.5f else 1.0f
                                     )
                             ) {
-                                VentDisplayer_Sec2FragId2(
-                                    modifier = Modifier.padding(4.dp),
-                                    ventKey = vent.keyID,
-                                    size = 120.dp,
-                                    purchasedQuantity = vent.quantity,
-                                    viewModel = viewModel
-                                )
+                                if (relative_M3CouleurProduit != null) {
+                                    if (relative_M1Produit != null) {
+                                        ViewVentCouleur_Module(
+                                            modifier = Modifier.padding(4.dp),
+                                            relative_M3CouleurProduit = relative_M3CouleurProduit,
+                                            relative_M1Produit=relative_M1Produit
+                                        )
+                                    }
+                                }
                             }
                         }
                 }
