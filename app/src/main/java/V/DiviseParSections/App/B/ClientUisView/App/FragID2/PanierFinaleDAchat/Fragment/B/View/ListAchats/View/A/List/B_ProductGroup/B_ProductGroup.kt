@@ -55,32 +55,33 @@ fun ProductGroup(
     modifier: Modifier = Modifier,
     viewModel: ZViewModel_Sec1Frag3 = koinViewModel(),
     productKeyId: String,
-    vents: List<M10OperationVentCouleur>,
+    relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
     val bProduitDataBase_SubClassFunctionality =
         viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
-    val relative_M13Tariffication =
+    val relative_First_OF_ListM13Tariffication =
         viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
-            vents.first().parentM13TarificationKeyID
+            relative_List_M10OperationVentCouleur.first().parentM13TarificationKeyID
         )
 
 
     val haptic = LocalHapticFeedback.current
     var showDialog by remember { mutableStateOf(false) }
 
-    val totalQuantity = vents.sumOf { it.quantity }
+    val totalQuantity = relative_List_M10OperationVentCouleur.sumOf { it.quantity }
     val productName = relative_M1Produit?.nom?.takeIf { it.isNotBlank() }
         ?: relative_M1Produit?.nomMutable?.takeIf { it.isNotBlank() }
         ?: "Product #$productKeyId"
 
 
-    val currentPrice = relative_M13Tariffication?.prixCurrency ?: 0.0
+    val currentPrice = relative_First_OF_ListM13Tariffication?.prixCurrency ?: 0.0
     val hasNonTrouve =
-        vents.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+        relative_List_M10OperationVentCouleur.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
     val allNonTrouve =
-        vents.isNotEmpty() && vents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+        relative_List_M10OperationVentCouleur.isNotEmpty() && relative_List_M10OperationVentCouleur.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -127,7 +128,7 @@ fun ProductGroup(
                 label = "Prix Boit (toutes variantes)",
                 onPriceUpdate = { price ->
                     if (!allNonTrouve) {
-                        vents.forEach { vent ->
+                        relative_List_M10OperationVentCouleur.forEach { vent ->
                             viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
                                 .addOrUpdateData(
                                     vent.copy(
@@ -150,7 +151,7 @@ fun ProductGroup(
                 contentPadding = PaddingValues(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(vents) { vent ->
+                items(relative_List_M10OperationVentCouleur) { vent ->
                     viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos.datasValue
                         .find { it.keyID == vent.parentM3CouleurProduitInfosKeyID }?.let {
                             Surface(
@@ -173,10 +174,17 @@ fun ProductGroup(
                         }
                 }
             }
+            if (relative_M1Produit != null) {
+                Downer_Bar_SemiModularized_panie(
+                    relative_List_M10OperationVentCouleur =relative_List_M10OperationVentCouleur ,
+                    viewModel = viewModel,
+                    relative_M1Produit = relative_M1Produit
+                )
+            }
         }
     }
 
-    if (showDialog && vents.isNotEmpty() && !allNonTrouve) {
+    if (showDialog && relative_List_M10OperationVentCouleur.isNotEmpty() && !allNonTrouve) {
         ModernQuantityDialog(
             clickUpdate = ClickUpdate.TotalQua,
             colorName = "Total - $productName",
@@ -184,7 +192,7 @@ fun ProductGroup(
             onDissmiss_showQuantityDialog = { showDialog = false },
             onDismiss = { showDialog = false },
             viewModel = viewModel,
-            vent = vents.first().copy(quantity = totalQuantity)
+            vent = relative_List_M10OperationVentCouleur.first().copy(quantity = totalQuantity)
         )
     }
 }

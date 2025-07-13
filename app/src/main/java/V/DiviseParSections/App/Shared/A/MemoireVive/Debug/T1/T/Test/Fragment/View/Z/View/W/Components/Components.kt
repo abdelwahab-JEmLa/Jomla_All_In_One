@@ -52,7 +52,7 @@ import androidx.compose.ui.window.DialogProperties
 
 @SuppressLint("DefaultLocale", "UnrememberedMutableState")
 @Composable
-fun QuantityDisplay(
+fun QuantityDisplay_Mo_F_Panie(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
     allNonTrouve: Boolean,

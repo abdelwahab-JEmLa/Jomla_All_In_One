@@ -47,7 +47,7 @@ fun MainList(
             ProductGroup(
                 viewModel = viewModel,
                 productKeyId = productKeyId,
-                vents = achatGroup
+                relative_List_M10OperationVentCouleur = achatGroup
             )
         }
     }
