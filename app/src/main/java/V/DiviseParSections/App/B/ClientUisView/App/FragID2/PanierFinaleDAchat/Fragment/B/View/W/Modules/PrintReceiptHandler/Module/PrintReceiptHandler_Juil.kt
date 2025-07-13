@@ -91,8 +91,12 @@ class PrintReceiptHandler_Juil() {
             val clientName = client?.nom?.takeIf { it.isNotBlank() } ?: "Client"
 
             val (texteImprimable, totalBon) = prepareTexteToPrint(
-                relative_ListM10OperationVentCouleur, clientName, dateString, creditBalance ,repo13TarificationInfos,
-                 repoM1Produit
+                relative_ListM10OperationVentCouleur,
+                clientName,
+                dateString,
+                creditBalance,
+                repo13TarificationInfos,
+                repoM1Produit
             )
 
             // Log the receipt content before printing
@@ -143,22 +147,27 @@ class PrintReceiptHandler_Juil() {
             append("<SMALL><CENTER>$nomClient                        $dateString<BR>")
             append("<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
-            append("<SMALL><BOLD>    Quantité      Tariff         <NORMAL>Sous-total<BR>")
+            append("<SMALL><BOLD>   Quantité      Tariff        <NORMAL>Sous-total<BR>")
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
         }
 
         groupe_Produit.forEachIndexed { index, produit_vent ->
             val datas_repo13TarificationInfos =
                 repo13TarificationInfos.datasValue
+            val standart_Vent = produit_vent.second.first()
+
             val relative_Tariffication =
-                datas_repo13TarificationInfos.find { it.keyID == produit_vent.second
-                    .first().parentM13TarificationKeyID }
+                datas_repo13TarificationInfos.find { it.keyID == standart_Vent.parentM13TarificationKeyID }
 
             val relative_M1Produit =
                 repoM1Produit.datasValue
                     .find { it.keyID == produit_vent.first }
+            val quantite_Boit_Par_Carton = relative_M1Produit?.quantite_Boit_Par_Carton ?: 1
 
             val vent_quantity = produit_vent.second.sumOf { it.quantity }
+
+            // Format quantity display based on carton packaging
+            val quantityDisplay = formatQuantityDisplay(vent_quantity, quantite_Boit_Par_Carton)
 
             val vent_prix = relative_Tariffication!!.prixCurrency
 
@@ -167,8 +176,8 @@ class PrintReceiptHandler_Juil() {
             if (subtotal != 0.0) {
                 texteImprimable.apply {
                     append("<MEDIUM1><LEFT>${relative_M1Produit?.nom}<BR>")
-                    append("    <MEDIUM1><LEFT>${vent_quantity}   ")
-                    append("<MEDIUM1><LEFT>${vent_prix}Da   ")
+                    append(" <MEDIUM1><LEFT>$quantityDisplay ")
+                    append("<MEDIUM1><LEFT>${vent_prix}Da ")
                     append("<SMALL>$subtotal<BR>")
                     append("<LEFT><NORMAL><MEDIUM1>---------------------<BR>")
                 }
@@ -195,6 +204,22 @@ class PrintReceiptHandler_Juil() {
         }
 
         return Pair(texteImprimable, totaleBon)
+    }
+
+    /**
+     * Formats quantity display based on carton packaging
+     * Examples:
+     * - If quantity = 12 and carton = 6 → "2x6(12)"
+     * - If quantity = 5 and carton = 6 → "5" (normal display)
+     * - If quantity = 18 and carton = 6 → "3x6(18)"
+     */
+    private fun formatQuantityDisplay(quantity: Int, quantiteBoitParCarton: Int): String {
+        return if (quantiteBoitParCarton in 2..quantity && quantity % quantiteBoitParCarton == 0) {
+            val cartons = quantity / quantiteBoitParCarton
+            "${cartons}x${quantiteBoitParCarton}(${quantity})"
+        } else {
+            quantity.toString()
+        }
     }
 
     /**

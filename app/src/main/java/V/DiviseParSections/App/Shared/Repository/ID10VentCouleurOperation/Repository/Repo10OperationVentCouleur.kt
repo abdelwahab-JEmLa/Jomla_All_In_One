@@ -260,6 +260,8 @@ data class M10OperationVentCouleur(
     var quantity: Int = 0,
     var setIN_Vent_Its_Quantity_Represent: SetIN_Vent_Its_Quantity_Represent =
         SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
+    var affiche_Unite_Au_Printing: Boolean =true,
+
 ) {
     enum class SetIN_Vent_Its_Quantity_Represent {
         quantity_Par_Boit,
