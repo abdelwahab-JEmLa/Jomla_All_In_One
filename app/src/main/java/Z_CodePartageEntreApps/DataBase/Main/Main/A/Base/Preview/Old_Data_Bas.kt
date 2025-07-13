@@ -202,7 +202,6 @@ data class OldDataBase_M1(
                 val snapshot = dataRef.get().await()
 
                 if (!snapshot.exists()) {
-                    Log.w(TAG, "No safe data found at path: ${dataRef.path}")
                     return emptyList()
                 }
 
