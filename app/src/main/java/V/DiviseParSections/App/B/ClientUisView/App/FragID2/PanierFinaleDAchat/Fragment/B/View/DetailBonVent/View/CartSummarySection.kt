@@ -72,7 +72,6 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
-        // Found items section
         if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
             SummarySection(
                 title = "Articles Trouvés",
@@ -82,7 +81,6 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
             )
         }
 
-        // Not found items section
         if (summaryByDeliveryStatus.nonTrouveSummary.itemsCount > 0) {
             SummarySection(
                 title = "Articles Non Trouvés",
@@ -92,7 +90,6 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
             )
         }
 
-        // Overall total (only for found items) - FIXED: Increased text size
         if (summaryByDeliveryStatus.trouveSummary.itemsCount > 0) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
