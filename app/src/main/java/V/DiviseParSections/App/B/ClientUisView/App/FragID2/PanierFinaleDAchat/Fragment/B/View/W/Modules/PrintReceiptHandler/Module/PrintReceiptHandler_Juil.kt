@@ -127,6 +127,9 @@ class PrintReceiptHandler_Juil() {
         repo13TarificationInfos: Repo13TarificationInfos,
         repoM1Produit: RepoM1Produit
     ): Pair<StringBuilder, Double> {
+        val groupe_Produit =
+            relative_ListM10OperationVentCouleur.groupBy { it.parentM1ProduitInfosKeyId }.toList()
+
         val texteImprimable = StringBuilder()
         var totaleBon = 0.0
         var pageCounter = 0
@@ -144,17 +147,19 @@ class PrintReceiptHandler_Juil() {
             append("<LEFT><NORMAL><MEDIUM1>=====================<BR>")
         }
 
-        relative_ListM10OperationVentCouleur.forEachIndexed { index, vent ->
+        groupe_Produit.forEachIndexed { index, produit_vent ->
             val datas_repo13TarificationInfos =
                 repo13TarificationInfos.datasValue
             val relative_Tariffication =
-                datas_repo13TarificationInfos.find { it.keyID == vent.parentM13TarificationKeyID }
+                datas_repo13TarificationInfos.find { it.keyID == produit_vent.second
+                    .first().parentM13TarificationKeyID }
 
             val relative_M1Produit =
                 repoM1Produit.datasValue
-                    .find { it.keyID == vent.parentM1ProduitInfosKeyId }
+                    .find { it.keyID == produit_vent.first }
 
-            val vent_quantity = vent.quantity
+            val vent_quantity = produit_vent.second.sumOf { it.quantity }
+
             val vent_prix = relative_Tariffication!!.prixCurrency
 
             val subtotal = vent_prix * vent_quantity
