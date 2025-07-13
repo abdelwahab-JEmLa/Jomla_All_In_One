@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -97,7 +98,7 @@ private fun MainScreen(
                     ) {
                         val title =
                             if (safeCountClick == 0)
-                                "Delete Ref" else "esque t sure de supp tout "
+                                "Delete Ref" else "Es-tu sûr de supprimer tout ?"
                         DropdownMenuItem(
                             text = { Text(title) },
                             onClick = {
@@ -106,11 +107,13 @@ private fun MainScreen(
                                 else {
                                     ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
                                     showMenu = false
+                                    safeCountClick = 0 // Reset counter
                                 }
                             }
                         )
-                        Item_2_Menu("Migre quanCarton") {
+                        Item_2_Menu("Migrer quantité carton") {
                             showMenu = false
+                            safeCountClick = 0 // Reset counter when menu closes
                         }
                     }
                 }
@@ -126,10 +129,33 @@ private fun Item_2_Menu(
     onClick_TO_Close_Menu: () -> Unit,
 ) {
     var safeCountClick by remember { mutableIntStateOf(0) }
-    val title_Ac_Securite = if (safeCountClick == 0) title else "esque t sure de Ca !!! "
+    var old_Datas by remember { mutableStateOf(emptyList<OldDataBase_M1>()) }
+    var new_Datas by remember { mutableStateOf(emptyList<ArticlesBasesStatsTable>()) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Fixed: Use LaunchedEffect instead of the typo "LunchedEffecte"
+    LaunchedEffect(Unit) {
+        try {
+            isLoading = true
+            old_Datas = get_old_Datas()
+            new_Datas = getData_AvecUpdated_Carton(old_Datas, aCentralFacade)
+        } catch (e: Exception) {
+            Log.e("Item_2_Menu", "Error loading old data: ${e.message}", e)
+        } finally {
+            isLoading = false
+        }
+    }
+
+    val title_Ac_Securite = when {
+        isLoading -> "Chargement..."
+        safeCountClick == 0 -> title
+        else -> "Es-tu sûr de faire cela ?"
+    }
 
     Card(
         modifier = Modifier
+            .getSemanticsTag(old_Datas,"")
+            .getSemanticsTag(new_Datas,"")
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
@@ -146,10 +172,14 @@ private fun Item_2_Menu(
             },
             text = { Text(title_Ac_Securite) },
             onClick = {
-                if (safeCountClick == 0)
+                if (isLoading) return@DropdownMenuItem
+
+                if (safeCountClick == 0) {
                     safeCountClick++
-                else {
-                    update_Carton_Detached(aCentralFacade)
+                } else {
+                    if (new_Datas.isNotEmpty()) {
+                        batchFireBaseUpdateArticlesBasesStatsTable(new_Datas)
+                    }
                     onClick_TO_Close_Menu()
                 }
             }
@@ -157,89 +187,61 @@ private fun Item_2_Menu(
     }
 }
 
-fun update_Carton_Detached(aCentralFacade: ACentralFacade) {
+// Fixed: Return the updated data instead of void, and made synchronous
+fun getData_AvecUpdated_Carton(
+    oldDatas: List<OldDataBase_M1>,
+    aCentralFacade: ACentralFacade
+): List<ArticlesBasesStatsTable> {
+    return try {
+        val updatedProducts = mutableListOf<ArticlesBasesStatsTable>()
+
+        oldDatas.forEach { old ->
+            val m1Produit_IN_New =
+                aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+                    .find { it.id == old.id }
+
+            if (m1Produit_IN_New != null) {
+                val updatedProduct = m1Produit_IN_New.copy(
+                    quantite_Boit_Par_Carton = old.nmbrCaron
+                )
+                updatedProducts.add(updatedProduct)
+            }
+        }
+
+        updatedProducts
+    } catch (e: Exception) {
+        Log.e("getData_AvecUpdated_Carton", "Error updating carton data: ${e.message}", e)
+        emptyList()
+    }
+}
+
+// Fixed: Better error handling and logging
+fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
+    if (datas.isEmpty()) {
+        Log.w("batchFireBaseUpdate", "No data to update")
+        return
+    }
+
     val detachedScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     detachedScope.launch {
         try {
-            val oldDatas = get_old_Datas()
-            val updatedProducts = mutableListOf<ArticlesBasesStatsTable>()
+            val updates = mutableMapOf<String, Any>()
 
-            oldDatas.forEach { old ->
-                val m1Produit_IN_New =
-                    aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
-                        .find { it.id == old.id }
-
-                if (m1Produit_IN_New != null) {
-                    val updatedProduct = m1Produit_IN_New.copy(
-                        quantite_Boit_Par_Carton = old.nmbrCaron
-                    )
-                    updatedProducts.add(updatedProduct)
-                }
+            datas.forEach { data ->
+                updates[data.keyID] = data.toFirebaseMap()
             }
 
-            if (updatedProducts.isNotEmpty()) {
-                batchFireBaseUpdateArticlesBasesStatsTable(updatedProducts)
-                Log.d("update_Carton", "Successfully updated ${updatedProducts.size} products")
-            } else {
-                Log.d("update_Carton", "No products to update")
-            }
+            val firebaseRef = Firebase.database.getReference(
+                "00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/AncienDataBase/A_ProduitInfos/07_13/Datas"
+            )
+
+            firebaseRef.updateChildren(updates).await()
+            Log.d("batchFireBaseUpdate", "Successfully updated ${datas.size} items in Firebase")
+
         } catch (e: Exception) {
-            Log.e("update_Carton", "Error updating carton data: ${e.message}", e)
+            Log.e("batchFireBaseUpdate", "Error updating Firebase: ${e.message}", e)
+            // Consider showing user-friendly error message here
         }
-    }
-}
-
-
-@Deprecated("Use update_Carton_Detached instead to avoid coroutine cancellation issues")
-fun update_Carton(
-    viewModelScope: CoroutineScope,
-    aCentralFacade: ACentralFacade
-) {
-    viewModelScope.launch {
-        try {
-            val oldDatas = get_old_Datas()
-            val updatedProducts = mutableListOf<ArticlesBasesStatsTable>()
-
-            oldDatas.forEach { old ->
-                val m1Produit_IN_New =
-                    aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
-                        .find { it.id == old.id }
-
-                if (m1Produit_IN_New != null) {
-                    val updatedProduct = m1Produit_IN_New.copy(
-                        quantite_Boit_Par_Carton = old.nmbrCaron
-                    )
-                    updatedProducts.add(updatedProduct)
-                }
-            }
-
-            if (updatedProducts.isNotEmpty()) {
-                batchFireBaseUpdateArticlesBasesStatsTable(updatedProducts)
-                Log.d("update_Carton", "Successfully updated ${updatedProducts.size} products")
-            } else {
-                Log.d("update_Carton", "No products to update")
-            }
-        } catch (e: Exception) {
-            Log.e("update_Carton", "Error updating carton data: ${e.message}", e)
-        }
-    }
-}
-
-suspend fun batchFireBaseUpdateArticlesBasesStatsTable(datas: List<ArticlesBasesStatsTable>) {
-    try {
-        val updates = mutableMapOf<String, Any>()
-        datas.forEach { data ->
-            updates[data.keyID] = data.toFirebaseMap()
-        }
-        val firebaseRef = Firebase.database.getReference(
-            "00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/AncienDataBase/A_ProduitInfos/07_13/Datas"
-        )
-
-        firebaseRef.updateChildren(updates).await()
-        Log.d("batchFireBaseUpdate", "Successfully updated ${datas.size} items in Firebase")
-    } catch (e: Exception) {
-        Log.e("batchFireBaseUpdate", "Error updating Firebase: ${e.message}", e)
-        throw e
     }
 }
