@@ -1,15 +1,16 @@
-// Updated AppNavHost.kt - Fixed startup screen usage
+// Updated AppNavHost.kt - Added Database Init route
 package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.Z.Main.PanierFinaleDAchatSec1Frag3
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.PresenterElectroBoutiqueAbdelwahab_Sec10Frag1
-import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.EditeBaseDonneMainScreenIdS9
+import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.ID2.Test.View.A.Main.Screen_GrossistAchatSec12FragID1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -257,6 +258,18 @@ fun AppNavHost(
                     }
                 }
 
+                // Database Init Factory screen - NEW
+                composable(
+                    route = Screen.Main_DataBaseInitFactory_1Produit.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                                Main_DataBaseInitFactory_1Produit()
+                        }
+                    }
+                }
+
                 // Test fragment screen (empty implementation)
                 composable(
                     route = Screen.NewFragTest.route,
@@ -265,17 +278,6 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         key(screenKey) {
                             //        A_MainScreen_APP2_ID_2PanierFinaleDAchat()
-                        }
-                    }
-                }
-                // Test fragment screen (empty implementation)
-                composable(
-                    route = Screen.FragmentProduitFastSearchDialog.route,
-                ) { backStackEntry ->
-                    val screenKey = rememberScreenKey(backStackEntry)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        key(screenKey) {
-                            MainFastSearchProduitPourVent()
                         }
                     }
                 }
@@ -300,7 +302,7 @@ fun AppNavHost(
                         }
                     },
                     mapReloadTrigger = mapReloadTrigger.intValue,
-                    fragmentNavigationHandler = fragmentNavigationHandler // Pass the handler
+                    fragmentNavigationHandler = fragmentNavigationHandler
                 )
             }
 
@@ -358,7 +360,7 @@ fun NavGraphBuilder.app2(
     navController: NavHostController,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
-    fragmentNavigationHandler: FragmentNavigationHandler, // Add this parameter
+    fragmentNavigationHandler: FragmentNavigationHandler,
 ) {
     composable(
         route = Screen.A_ClientsLocationGps.route,
@@ -404,7 +406,6 @@ private fun navigateToMainScreen(
     // Update the fragment handler
     fragmentNavigationHandler.updateCurrentFragment(Screen.FacadePresentoireProduits)
 }
-
 
 /**
  * Helper function to create add_New consistent screen key for proper recomposition

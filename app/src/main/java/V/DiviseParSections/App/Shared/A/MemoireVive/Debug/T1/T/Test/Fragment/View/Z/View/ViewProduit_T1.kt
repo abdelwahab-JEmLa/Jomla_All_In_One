@@ -6,6 +6,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vie
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.VentProduitQuantityDialog_T1
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.ListCouleurs
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Column
@@ -67,6 +68,8 @@ fun ViewProduit_T1(
 
     Card(
         modifier = modifier
+            .getSemanticsTag(produit,"produit")
+            .getSemanticsTag(produit?.quantite_Boit_Par_Carton?:"","produit",2)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),
         shape = RoundedCornerShape(16.dp),

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
@@ -75,6 +76,17 @@ fun TestScreens(
             icon = Icons.Default.Search,
             contentColor = Color.Blue,
             containerColor = Color(0xFFE3F2FD)
+        ),
+        NavigationItem(
+            title = "MainDataBaseInitFactory1Produit",
+            onClick = {
+                fragmentNavigationHandler.navigateToMainDataBaseInitFactory1Produit()
+                onDismiss()
+            },
+            isImageItem = false,
+            icon = Icons.Default.Dashboard,
+            contentColor = Color.White,
+            containerColor = Color(0xFF673AB7)
         )
     )
 
@@ -162,7 +174,6 @@ private fun NavigationItemCard(item: NavigationItem) {
                 contentAlignment = Alignment.Center
             ) {
                 if (item.isImageItem && item.imageRes != null) {
-                    // Show image when isImageItem is true
                     Image(
                         painter = painterResource(id = item.imageRes),
                         contentDescription = item.title,

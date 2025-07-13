@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Work
@@ -40,7 +41,6 @@ sealed class Screen(
         title = "EditDatabaseWithCreateNewArticles",
         color = Color(0xFF7B351D)
     )
-
 
     data object Screen1PanieVentsFinale : Screen(
         route = "Screen1PanieVentsFinale",
@@ -89,5 +89,12 @@ sealed class Screen(
         icon = Icons.Default.Search,
         title = "FragmentProduitFastSearchDialog",
         color = Color(0xFF009688)
+    )
+
+    data object Main_DataBaseInitFactory_1Produit : Screen(
+        route = "Main_DataBaseInitFactory_1Produit",
+        icon = Icons.Default.Storage,
+        title = "Database Init Factory",
+        color = Color(0xFF795548)
     )
 }

@@ -99,6 +99,10 @@ class FragmentNavigationHandler {
         navigateTo(Screen.FragmentProduitFastSearchDialog, OVERLAY_CONFIG)
     }
 
+    fun navigateToMainDataBaseInitFactory1Produit() {
+        navigateTo(Screen.Main_DataBaseInitFactory_1Produit, DEFAULT_CONFIG)
+    }
+
     // Helper function to get all screen instances
     private fun getAllScreens(): List<Screen> {
         return listOf(
@@ -111,7 +115,8 @@ class FragmentNavigationHandler {
             Screen.NewFragTest,
             Screen.DialogTests,
             Screen.ToggleFab,
-            Screen.FragmentProduitFastSearchDialog
+            Screen.FragmentProduitFastSearchDialog,
+            Screen.Main_DataBaseInitFactory_1Produit
         )
     }
 }
