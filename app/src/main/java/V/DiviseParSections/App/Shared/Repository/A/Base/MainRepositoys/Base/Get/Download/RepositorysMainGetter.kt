@@ -82,7 +82,9 @@ class RepositorysMainGetter(
 
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun m13Tarification_By(keyID:String): M13TarificationInfos?= repo13TarificationInfos.datasValue.find { it.keyID==keyID }
+    fun m13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
+        repo13TarificationInfos.datasValue.find { it.keyID == keyID }
+
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {
         return repo8BonVent.datasValue
@@ -178,6 +180,7 @@ class RepositorysMainGetter(
         val centralRef = Firebase.database.getReference(
             "00_DataPrototype-04-02" + "/_1_developingRef" + "/C_InfosSqlDataBases"
         )
+
         fun getPushFireBase(ref: DatabaseReference) = ref.push().key.toString()
 
         inline fun Long?.ifNotNullOrZero(block: () -> Unit) {
@@ -195,7 +198,6 @@ class RepositorysMainGetter(
         inline fun Boolean.ifFalse(block: () -> Unit) {
             if (!this) block()
         }
-
 
 
         // Version that returns Result for better error handling

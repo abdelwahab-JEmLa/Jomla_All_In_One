@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.A.ViewModel.ZViewModel_Sec1Frag3
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -40,11 +41,21 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
                 it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve
             }
 
+            val totalValue = ventsTrouve.sumOf {
+                val provisoireMonPrix =
+                    viewModel.aCentral.repositorysMainGetter.m13Tarification_By_KeyID(it.keyID)
+                        ?.prixCurrency
+                        ?: 0.0
+
+                it.quantity * provisoireMonPrix
+            }
+
+
             DeliveryStatusSummary(
                 trouveSummary = CartSummary(
                     totalItems = ventsTrouve.sumOf { it.quantity },
                     totalProducts = ventsTrouve.groupBy { it.parentM1ProduitInfosKeyId }.size,
-                    totalValue = ventsTrouve.sumOf { it.quantity * it.provisoireMonPrix },
+                    totalValue = totalValue,
                     itemsCount = ventsTrouve.size
                 ),
                 nonTrouveSummary = CartSummary(
@@ -89,11 +100,30 @@ fun CartSummarySection(viewModel: ZViewModel_Sec1Frag3) {
             ) {
                 Text(
                     text = "Total à Payer:",
-                    style = MaterialTheme.typography.headlineSmall, // Increased from titleMedium
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
+
+                val ventsTrouve = repo.onVentFilteredDatas.filter {
+                    it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve
+                }
+                val totalValue = ventsTrouve.sumOf {
+                    val provisoireMonPrix =
+                        viewModel.aCentral.repositorysMainGetter.m13Tarification_By_KeyID(it.parentM13TarificationKeyID)
+                            ?.prixCurrency
+                            ?: 0.0
+
+                    it.quantity * provisoireMonPrix
+                }
+
                 Text(
-                    text = "${String.format("%.2f", summaryByDeliveryStatus.trouveSummary.totalValue)} DA",
+                    modifier = Modifier.getSemanticsTag(ventsTrouve, "ventsTrouve"),
+                    text = "${
+                        String.format(
+                            "%.2f",
+                            totalValue
+                        )
+                    } DA",
                     style = MaterialTheme.typography.headlineSmall, // Increased from titleMedium
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

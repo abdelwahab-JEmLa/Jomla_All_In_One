@@ -59,7 +59,7 @@ fun ProductGroup(
         viewModel.aCentral.repositorysMainGetter.repoM1ProduitInfos
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
-    val relative_M13Tariffication = viewModel.aCentral.repositorysMainGetter.m13Tarification_By(
+    val relative_M13Tariffication = viewModel.aCentral.repositorysMainGetter.m13Tarification_By_KeyID(
         vents.first().parentM13TarificationKeyID
     )
 
