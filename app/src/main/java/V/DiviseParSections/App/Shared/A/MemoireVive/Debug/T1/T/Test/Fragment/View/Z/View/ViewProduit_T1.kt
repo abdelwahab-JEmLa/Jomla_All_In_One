@@ -7,6 +7,7 @@ import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.Vie
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.W.Components.ViewDisponibilityEtates
 import V.DiviseParSections.App.Shared.A.MemoireVive.Debug.T1.T.Test.Fragment.View.Z.View.Z.List.ListCouleurs
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +35,8 @@ fun ViewProduit_T1(
     viewModel: ViewModelsProduit_T1 = koinViewModel(),
 ) {
     val getter = viewModel.aCentralFacade.repositorysMainGetter
-    val bProduitDataBase_SubClassFunctionality = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+    val bProduitDataBase_SubClassFunctionality =
+        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
     val b1CouleurOuGoutProduitDataBaseRepository =
         viewModel.b1CouleurOuGoutProduitDataBaseRepository
     val productKeyId = product.keyID
@@ -54,17 +56,15 @@ fun ViewProduit_T1(
         }
     }
 
-    val relatedVents by remember {
-        derivedStateOf {
-            getter.repo10OperationVentCouleur.datasValue
-                .filter { it.parentM1ProduitInfosKeyId == productKeyId }
-        }
-    }
 
     val haptic = LocalHapticFeedback.current
+    val relatedVents = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
+            product
+        )
 
-    val productName = viewModel.getProductName(produit, productKeyId)
-    val allNonTrouve = viewModel.allNonTrouve(relatedVents)
+    val allNonTrouve =
+        relatedVents.isNotEmpty() && relatedVents.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
 
     Card(
         modifier = modifier
@@ -83,9 +83,7 @@ fun ViewProduit_T1(
         ) {
             ProductHeader_T1(
                 produit = product,
-                viewModel = viewModel,
-                productName = productName,
-                allNonTrouve = allNonTrouve
+                viewModel = viewModel
             )
             Spacer(modifier = Modifier.height(12.dp))
 

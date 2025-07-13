@@ -36,7 +36,7 @@ fun Downer_Bar(
         .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
     val ventOperationsForProduct by derivedStateOf {
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_BY_M1Produit_list_m10OperationVentCouleurs(
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
             produit
         )
     }

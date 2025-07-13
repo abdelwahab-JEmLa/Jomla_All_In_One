@@ -49,18 +49,22 @@ import androidx.compose.ui.unit.sp
 fun ProductHeader_T1(
     produit: ArticlesBasesStatsTable,
     viewModel: ViewModelsProduit_T1,
-    productName: String,
-    allNonTrouve: Boolean,
 ) {
     val repositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
-    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
-        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
 
-    val ventOperationsForProduct by derivedStateOf {
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_BY_M1Produit_list_m10OperationVentCouleurs(
+    val listFiltered_M10OperationVentCouleurs_By_M1Produit by derivedStateOf {
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
             produit
         )
     }
+
+    val allNonTrouve =
+        listFiltered_M10OperationVentCouleurs_By_M1Produit.isNotEmpty() && listFiltered_M10OperationVentCouleurs_By_M1Produit.all { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }
+
+
+    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
+        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }
     var shouldShowDialog_quantite_Unite_Par_Boit by remember { mutableStateOf(false) }
@@ -94,7 +98,7 @@ fun ProductHeader_T1(
                 )
                 .getSemanticsTag(
                     nomVal = "ventOperationsForProduct",
-                    data = ventOperationsForProduct
+                    data = listFiltered_M10OperationVentCouleurs_By_M1Produit
                 )
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -102,7 +106,7 @@ fun ProductHeader_T1(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = productName,
+                    text = produit.nom,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -155,7 +159,7 @@ fun ProductHeader_T1(
                                 )
                             }
                             viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
-                                ventOperationsForProduct
+                                listFiltered_M10OperationVentCouleurs_By_M1Produit
                             )
                         }, modifier = Modifier.size(36.dp)
                     ) {
@@ -220,7 +224,7 @@ fun ProductHeader_T1(
                     }
 
                     viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
-                        ventOperationsForProduct
+                        listFiltered_M10OperationVentCouleurs_By_M1Produit
                     )
                 }
                 shouldShowDialog_quantite_Unite_Par_Boit = false

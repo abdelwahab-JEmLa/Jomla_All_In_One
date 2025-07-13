@@ -147,7 +147,7 @@ class FocusedValuesGetter(
     }
     //---------------------------------Parent m10OperationVentCouleurs----------------------------------------------------------------------------------------------------------------------------------
 
-    fun get_BY_M1Produit_list_m10OperationVentCouleurs(
+    fun get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
         produit: ArticlesBasesStatsTable
     ) = onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
         .filter { ventOperation ->
