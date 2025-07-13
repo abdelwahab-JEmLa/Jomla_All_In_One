@@ -7,10 +7,9 @@ import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
-import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,13 +37,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
+data class return_get_Edited_M8BonVent(
+    val found_M8 :M8BonVent?,
+    val default_If_No_Found :M8BonVent,
+)
 fun get_Edited_M8BonVent(
-    getFocusedVars: FocusedValuesGetter,
-    repo8BonVent: Repo8BonVent,
-    m2Client: M2Client,
+    aCentralFacade: ACentralFacade,
+    relative_M2Client: M2Client,
     onShowToast: (ToastData) -> Unit
 ): Triple<M8BonVent?, M8BonVent, Modifier>? {
+    val getFocusedVars = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+    val repo8BonVent = aCentralFacade.repositorysMainGetter.repo8BonVent
     val currentPeriod = getFocusedVars.currentActiveFocuced_M14VentPeriode
 
     if (currentPeriod == null) {
@@ -62,14 +67,14 @@ fun get_Edited_M8BonVent(
 
     val existingBonVent = repo8BonVent.datasValue.find { bonVent ->
         bonVent.parent_M14VentPeriod_KeyId == currentPeriodKeyID &&
-                bonVent.parent_M2Client_KeyID == m2Client.keyID
+                bonVent.parent_M2Client_KeyID == relative_M2Client.keyID
     }
 
     val newBonVent = M8BonVent().copy(
         parent_M9AppCompt_KeyID = getFocusedVars.currentM9AppCompt?.keyID ?: "",
         parent_M14VentPeriod_KeyId = currentPeriodKeyID,
-        parent_M2Client_KeyID = m2Client.keyID,
-        parent_M2Client_DebugInfos = m2Client.nom,
+        parent_M2Client_KeyID = relative_M2Client.keyID,
+        parent_M2Client_DebugInfos = relative_M2Client.nom,
     )
 
     val semanticsModifier = Modifier.getSemanticsTag(nomVal = "newBonVent", data = newBonVent)
@@ -80,6 +85,7 @@ fun get_Edited_M8BonVent(
 @SuppressLint("DefaultLocale")
 @Composable
 fun ClientSearchItem(
+    aCentralFacade: ACentralFacade = koinInject(),
     m2Client: M2Client,
     onClick: () -> Unit,
     viewModel: ViewModelPresistantButtonsSec8FWinID1,
@@ -94,9 +100,11 @@ fun ClientSearchItem(
             .filter { it.parent_M2Client_KeyID == m2Client.keyID }
             .maxByOrNull { it.creationTimestamps }
     }
-    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
 
-    val bonVentResult = get_Edited_M8BonVent(get, bonVentRepository, m2Client) { toastDataToShow -> toastData = toastDataToShow }
+    val bonVentResult = get_Edited_M8BonVent(
+        aCentralFacade,
+        m2Client
+    ) { toastDataToShow -> toastData = toastDataToShow }
 
     ModernToastMessage(
         toastData = toastData,
@@ -115,7 +123,7 @@ fun ClientSearchItem(
                     .clickable {
                         val handleClick = {
                             if (existingBonVent != null) {
-                                viewModel.aCentralFacade.repositorysMainSetter.update_IfExist_Setter(
+                                viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                     existingBonVent
                                 )
                             } else {

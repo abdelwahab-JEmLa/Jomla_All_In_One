@@ -20,8 +20,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
-import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
-import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.Repo15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import com.google.firebase.database.DatabaseReference
 
@@ -129,8 +129,8 @@ class RepositorysMainSetter(
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
     fun m1Produit_Update(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
-    fun add_New_Setter(data: M8BonVent) = repo8BonVent.addNew(data)
-    fun update_IfExist_Setter(data: M8BonVent) = repo8BonVent.updateIfExist(data)
+    fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
+    fun update_M8BonVent(data: M8BonVent) = repo8BonVent.updateIfExist(data)
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
     fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)

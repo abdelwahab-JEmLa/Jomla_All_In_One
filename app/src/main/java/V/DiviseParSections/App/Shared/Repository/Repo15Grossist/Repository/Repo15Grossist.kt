@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository.Repo15.Repository
+package V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory.DataBaseInitFactory_15Grossist
@@ -135,18 +135,16 @@ data class M15Grossist(
 
         fun get_default(
         ): M15Grossist {
-            val data = M15Grossist(
-
-            )
+            val data = M15Grossist()
             return data
         }
 
-        fun find_depuit_DB(
+        fun find_By_MainValues_Depuit_List(
+            data_A_Cherche_Par_MainValues: M15Grossist,
             data_List: List<M15Grossist>,
-            data_A_Cherche: M15Grossist,
         ) = data_List
             .find { data ->
-                data.nom == data_A_Cherche.nom
+                data.nom == data_A_Cherche_Par_MainValues.nom
             }
     }
 }

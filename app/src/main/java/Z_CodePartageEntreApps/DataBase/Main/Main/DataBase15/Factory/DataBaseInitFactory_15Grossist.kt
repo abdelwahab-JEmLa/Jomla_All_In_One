@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory
 
-import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import com.google.firebase.database.DataSnapshot

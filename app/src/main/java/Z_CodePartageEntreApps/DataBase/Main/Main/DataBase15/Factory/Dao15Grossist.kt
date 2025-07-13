@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.DataBase15.Factory
 
-import V.DiviseParSections.App.Shared.Repository.Repo15.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

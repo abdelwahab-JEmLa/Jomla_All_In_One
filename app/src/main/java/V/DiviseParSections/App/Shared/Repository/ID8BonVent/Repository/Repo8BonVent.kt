@@ -112,7 +112,8 @@ class Repo8BonVent(
         if (existingIndex < 0) {
             composScope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Item not found, cannot update", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             return
@@ -246,5 +247,40 @@ data class M8BonVent(
         ).child("Datas08BonVent")
 
         fun generePushKey() = genereUnPushKeyFireBase(ref)
+
+        fun get_default(
+            parent_M9AppCompt_KeyID: String,
+            parent_M9AppCompt_DebugInfos: String,
+            parent_M14VentPeriod_DebugInfos: String,
+            parent_M14VentPeriod_KeyId: String,
+            parent_M2Client_KeyID: String,
+            parent_M2Client_DebugInfos: String,
+            etateActuellementEst: EtateActuellementEst,
+        ): M8BonVent {
+            return M8BonVent(
+                parent_M9AppCompt_DebugInfos = parent_M9AppCompt_DebugInfos,
+                parent_M9AppCompt_KeyID = parent_M9AppCompt_KeyID,
+                parent_M14VentPeriod_DebugInfos = parent_M14VentPeriod_DebugInfos,
+                parent_M14VentPeriod_KeyId = parent_M14VentPeriod_KeyId,
+                parent_M2Client_KeyID = parent_M2Client_KeyID,
+                parent_M2Client_DebugInfos = parent_M2Client_DebugInfos,
+                etateActuellementEst = etateActuellementEst
+            )
+        }
+
+        fun find_By_MainValuesKeys_Depuit_List(
+            data_List: List<M8BonVent>,
+            parent_M14VentPeriod_DebugInfos: String,
+            parent_M2Client_KeyID: String,
+            relative_Etate: EtateActuellementEst,
+        ) = data_List
+            .find { data ->
+                val match_MainValuesKeys =
+                    data.parent_M14VentPeriod_DebugInfos == parent_M14VentPeriod_DebugInfos
+                            && data.parent_M2Client_KeyID == parent_M2Client_KeyID
+                            && data.etateActuellementEst == relative_Etate
+
+                match_MainValuesKeys
+            }
     }
 }

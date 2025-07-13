@@ -60,7 +60,7 @@ fun CommandButton(
 
         val handleClick = {
             if (existingBonVent != null) {
-                viewModel.aCentralFacade.repositorysMainSetter.update_IfExist_Setter(targetBonVent)
+                viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(targetBonVent)
             } else {
                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.add_M8BonVent(targetBonVent)
             }
