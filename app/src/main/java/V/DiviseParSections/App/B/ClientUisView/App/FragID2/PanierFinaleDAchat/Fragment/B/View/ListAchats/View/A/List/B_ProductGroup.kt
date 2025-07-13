@@ -56,10 +56,10 @@ fun ProductGroup(
     vents: List<M10OperationVentCouleur>,
 ) {
     val bProduitDataBase_SubClassFunctionality =
-        viewModel.aCentral.repositorysMainGetter.repoM1ProduitInfos
+        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }
-    val relative_M13Tariffication = viewModel.aCentral.repositorysMainGetter.m13Tarification_By_KeyID(
+    val relative_M13Tariffication = viewModel.aCentralFacade.repositorysMainGetter.m13Tarification_By_KeyID(
         vents.first().parentM13TarificationKeyID
     )
 
@@ -93,6 +93,9 @@ fun ProductGroup(
                 .padding(16.dp)
                 .graphicsLayer(alpha = if (allNonTrouve) 0.4f else 1.0f)
         ) {
+            if (relative_M1Produit != null) {
+                ProductHeader_Modularized(relative_M1Produit , viewModel )
+            }
             ProductHeader(
                 productName = productName,
                 allNonTrouve = allNonTrouve,

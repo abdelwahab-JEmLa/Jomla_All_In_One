@@ -31,10 +31,10 @@ fun ConfirmationButton(
     showLabel: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val currentBonVent = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent
+    val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
-        viewModel.aCentral.repositorysMainSetter.upsertM8BonVent(
+        viewModel.aCentralFacade.repositorysMainSetter.upsertM8BonVent(
             data.copy(
                 etateActuellementEst = newEtate
             )
@@ -70,7 +70,7 @@ fun ConfirmationButton(
         if (etateActuellementEst == aCommandeConfirme || etateActuellementEst == onModeCommendActuellement) {
             FloatingActionButton(
                 modifier = Modifier
-                    .getSemanticsTagFocucedVars(viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter)
+                    .getSemanticsTagFocucedVars(viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter)
                     .size(48.dp),
                 onClick = {
                     currentBonVent?.let { bonVent ->
@@ -80,7 +80,7 @@ fun ConfirmationButton(
                                     bonVent,
                                     onModeCommendActuellement
                                 )
-                                viewModel.aCentral.focusedActiveValuesFacade.focusedValuesSetter.active_currentApp_M8BonVent(
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.active_currentApp_M8BonVent(
                                     bonVent
                                 )
                             }
@@ -90,7 +90,7 @@ fun ConfirmationButton(
                                     bonVent,
                                     aCommandeConfirme
                                 )
-                                viewModel.aCentral.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                                viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
                             }
 
                             else -> {

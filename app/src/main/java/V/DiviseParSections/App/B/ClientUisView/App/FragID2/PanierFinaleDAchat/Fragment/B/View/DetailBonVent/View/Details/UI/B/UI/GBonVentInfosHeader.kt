@@ -34,7 +34,7 @@ fun GBonVentInfosHeader(
     viewModel: ZViewModel_Sec1Frag3,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val get = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter
+    val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val onVentData =  get.onVentM8BonVent
     val fVentCouleurOperationRepository = viewModel.uiStateCentralRepositorys.repo10OperationVentCouleur
 
