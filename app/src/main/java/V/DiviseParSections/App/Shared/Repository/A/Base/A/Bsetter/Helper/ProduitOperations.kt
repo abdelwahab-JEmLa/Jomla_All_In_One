@@ -19,7 +19,7 @@ class ProduitOperations(
             bproduitdatabaseSubclassfunctionality.dao.deleteAll()
             bproduitdatabaseSubclassfunctionality.dao.insertAll(datas)
 
-            ArticlesBasesStatsTable.safeRemoveRef()
+            ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
             bproduitdatabaseSubclassfunctionality.ancienRepo.batchFireBaseUpdateArticlesBasesStatsTable(
                 datas
             )

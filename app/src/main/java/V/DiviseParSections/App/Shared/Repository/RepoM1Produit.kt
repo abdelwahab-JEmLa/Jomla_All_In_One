@@ -225,7 +225,8 @@ data class ArticlesBasesStatsTable(
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(
+        return mapOf(      //<--
+        //TODO(1): regle au new shema
             "id" to id,
             "keyID" to keyID,
             "bsonObjectId" to bsonObjectId,
@@ -318,7 +319,7 @@ data class ArticlesBasesStatsTable(
     companion object {
         val KeyTagModel = "IdKeyModel1"
 
-        fun safeRemoveRef(): Unit {
+        fun safe_Remove_DataBase_Ref(): Unit {
             ref.removeValue()
         }
 

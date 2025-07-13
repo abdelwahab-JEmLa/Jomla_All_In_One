@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.tasks.await
@@ -52,19 +53,76 @@ data class OldDataBase_M1(
     val prixDeVentTotaleChezClient: Int = 0
 ) {
     companion object {
+        private const val TAG = "OldDataBase_M1"
+
         val ref = Firebase.database.getReference(
             "00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases"
         )
 
         suspend fun get_old_Datas(): MutableList<OldDataBase_M1> {
-            val snapshot = ref.get().await()
             val oldDataList = mutableListOf<OldDataBase_M1>()
 
-            if (snapshot.exists()) {
-                snapshot.children.forEach { child ->
-                    val oldData = child.getValue(OldDataBase_M1::class.java)
-                    oldData?.let { oldDataList.add(it) }
+            try {
+                val snapshot = ref.get().await()
+
+                if (snapshot.exists()) {
+                    snapshot.children.forEach { child ->
+                        try {
+                            // Check if the child value is actually an object, not an array
+                            val childValue = child.value
+
+                            when (childValue) {
+                                is Map<*, *> -> {
+                                    // This is an object, safe to convert
+                                    val oldData = child.getValue(OldDataBase_M1::class.java)
+                                    oldData?.let { oldDataList.add(it) }
+                                }
+                                is List<*> -> {
+                                    // This is an array, handle differently
+                                    Log.w(TAG, "Found array at ${child.key}, skipping conversion")
+                                    // You could handle arrays here if needed
+                                }
+                                else -> {
+                                    Log.w(TAG, "Unknown data type at ${child.key}: ${childValue?.javaClass?.simpleName}")
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error converting child ${child.key}: ${e.message}", e)
+                            // Continue with other children instead of crashing
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching data from Firebase: ${e.message}", e)
+            }
+
+            return oldDataList
+        }
+
+        // Alternative method if you know the exact path to valid data
+        suspend fun get_old_Datas_Safe(): MutableList<OldDataBase_M1> {
+            val oldDataList = mutableListOf<OldDataBase_M1>()
+
+            try {
+                // Update this path to point to where your actual object data is stored
+                val dataRef = Firebase.database.getReference(
+                    "00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/AncienDataBase/A_ProduitInfos"
+                )
+
+                val snapshot = dataRef.get().await()
+
+                if (snapshot.exists()) {
+                    snapshot.children.forEach { child ->
+                        try {
+                            val oldData = child.getValue(OldDataBase_M1::class.java)
+                            oldData?.let { oldDataList.add(it) }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error converting child ${child.key}: ${e.message}", e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching safe data from Firebase: ${e.message}", e)
             }
 
             return oldDataList

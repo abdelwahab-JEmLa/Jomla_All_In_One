@@ -241,7 +241,7 @@ class BSetterP (
             bProduitDataBase_SubClassFunctionality.dao.deleteAll()
             bProduitDataBase_SubClassFunctionality.dao.insertAll(datas)
 
-            ArticlesBasesStatsTable.safeRemoveRef()
+            ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
             bProduitDataBase_SubClassFunctionality.ancienRepo.batchFireBaseUpdateArticlesBasesStatsTable(
                 datas
             )
@@ -254,7 +254,7 @@ class BSetterP (
             hClientRepository.dataBaseCreationFactory.dao.deleteAll()
             hClientRepository.dataBaseCreationFactory.dao.insertAll(datas)
 
-            M2Client.safeRemoveRef()
+            M2Client.safe_Remove_DataBase_Ref()
 
             hClientRepository.dataBaseCreationFactory.batchFireBaseUpdate(
                 datas
