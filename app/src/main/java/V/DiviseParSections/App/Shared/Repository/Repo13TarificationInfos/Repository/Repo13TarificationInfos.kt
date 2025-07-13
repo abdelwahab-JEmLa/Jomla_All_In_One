@@ -98,9 +98,7 @@ data class M13TarificationInfos(
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    //Forging IDs
-
-    //---------------------------------Parent M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------ForgingIDsParent.M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
     var parentM1ProduitInfosKeyId: String = "null",
     val parentM1ProduitDebugInfos:String="null",
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------
