@@ -229,7 +229,7 @@ fun ViewVentCouleur_T1(
         }
     }
 
-    if (shouldShowDialog ) {
+    if (shouldShowDialog) {
         Dialog_Choisire_Quantity_Modularized(
             old_quantity = findVent!!.get_Quantity_Apre_Passe_Au_SetIN_Vent_Its_Quantity_Represent(),
             label = m3Couleur.nomCouleurStrSiSonImageDispo,

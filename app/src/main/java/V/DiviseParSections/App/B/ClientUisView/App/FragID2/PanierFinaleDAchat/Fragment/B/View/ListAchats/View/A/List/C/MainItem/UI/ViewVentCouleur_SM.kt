@@ -53,7 +53,6 @@ fun ViewVentCouleur_Module(
     aCentralFacade: ACentralFacade = koinInject(),
     size: Dp = 200.dp
 ) {
-    val repositorysMainGetter = aCentralFacade.repositorysMainGetter
     val focusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     val focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade
 

@@ -216,8 +216,8 @@ data class ArticlesBasesStatsTable(
     var idForSearchArticles: Long = 0,
     ///-------------------------------------------------------------------------------
     var setIN_Vent_Its_Quantity_Represent: M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent =
-        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Carton,
-    var quantite_Boit_Par_Carton: Int = 10,
+        M10OperationVentCouleur.SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
+    var quantite_Boit_Par_Carton: Int = 1,
     ) {
 
     fun getDebugInfos(): String {

@@ -104,12 +104,9 @@ fun ViewProduit_T1(
     Spacer(modifier = Modifier.height(8.dp))
 
     val getterFocusedVarsHandlerFacade = viewModel.getterFocusedVarsHandlerFacade
-    val ouvertDialogProduit =
-        getterFocusedVarsHandlerFacade.active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur
+    val ouvertDialogProduit = getterFocusedVarsHandlerFacade.active_M1ProduitInfos_In_CurCompt_DialogQantity_Defineur
 
-    // Fixed: Show dialog for this specific product with proper operation handling
     if (produit != null && ouvertDialogProduit?.keyID == produit.keyID) {
-        // RepositorysMainGetter the first available operation for this product, or create a default one
         val operationForDialog = relatedVents.firstOrNull()
             ?: getterFocusedVarsHandlerFacade.getDefaultM10VentOperation()?.copy(
                 parentM1ProduitInfosKeyId = produit.keyID,
