@@ -225,8 +225,7 @@ data class ArticlesBasesStatsTable(
     }
 
     fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(      //<--
-        //TODO(1): regle au new shema
+        return mapOf(
             "id" to id,
             "keyID" to keyID,
             "bsonObjectId" to bsonObjectId,
@@ -283,7 +282,10 @@ data class ArticlesBasesStatsTable(
             "articleHaveUniteImages" to articleHaveUniteImages,
             "itsNewArrivale" to itsNewArrivale,
             "imageDimention" to imageDimention,
-            "idForSearchArticles" to idForSearchArticles
+            "idForSearchArticles" to idForSearchArticles,
+            // Missing fields that were added to complete the schema
+            "setIN_Vent_Its_Quantity_Represent" to setIN_Vent_Its_Quantity_Represent.name,
+            "quantite_Boit_Par_Carton" to quantite_Boit_Par_Carton
         )
     }
 
