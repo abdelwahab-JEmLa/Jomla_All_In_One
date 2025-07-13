@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Ui.LoadingScreen
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,6 +68,7 @@ private fun Main_DataBaseInitFactory_1Produit(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainScreen(
     viewModel: ViewModel_DataBaseInitFactory_1Produit,
@@ -75,7 +77,51 @@ private fun MainScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
-            Top_App_Bar_With_DropdownMenu(viewModel)
+            var showMenu by remember { mutableStateOf(false) }
+            var safeCountClick by remember { mutableIntStateOf(0) }
+
+            val datasValue = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+            val quantite_Boit_Par_Carton = datasValue.filter {
+                it.quantite_Boit_Par_Carton > 1
+            }
+
+            TopAppBar(
+                modifier = Modifier
+                    .getSemanticsTag(
+                        quantite_Boit_Par_Carton, "quantite_Boit_Par_Carton"
+                    ),
+                title = { Text("1Produit") },
+                actions = {
+                    IconButton(onClick = {
+                        showMenu = !showMenu
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Menu"
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        val title =
+                            if (safeCountClick == 0)
+                                "Delete Ref" else "esque t sure de supp tout "
+                        DropdownMenuItem(
+                            text = { Text(title) },
+                            onClick = {
+                                if (safeCountClick == 0)
+                                    safeCountClick++
+                                else {
+                                    ArticlesBasesStatsTable.safeRemoveRef()
+                                    showMenu = false
+                                }
+                            }
+                        )
+                    }
+                }
+            )
 
             Box {
                 LazyColumn(
@@ -93,6 +139,8 @@ private fun MainScreen(
         }
     }
 }
+
+
 
 @Composable
 private fun Item_M1Produit(
@@ -116,46 +164,4 @@ private fun Item_M1Produit(
 
         }
     }
-}
-
-@SuppressLint("AutoboxingStateCreation")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun Top_App_Bar_With_DropdownMenu(viewModel: ViewModel_DataBaseInitFactory_1Produit) {
-    var showMenu by remember { mutableStateOf(false) }
-    var safeCountClick by remember { mutableStateOf(0) }
-
-    TopAppBar(
-        title = { Text("1Produit") },
-        actions = {
-            IconButton(onClick = {
-                showMenu = !showMenu
-            }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Menu"
-                )
-            }
-
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                val title =
-                    if (safeCountClick == 0)
-                        "Delete Ref" else "esque t sure de supp tout "
-                DropdownMenuItem(
-                    text = { Text(title) },
-                    onClick = {
-                        if (safeCountClick == 0)
-                            safeCountClick++
-                        else {
-                            ArticlesBasesStatsTable.safeRemoveRef()
-                            showMenu = false
-                        }
-                    }
-                )
-            }
-        }
-    )
 }
