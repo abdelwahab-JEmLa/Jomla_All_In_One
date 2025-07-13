@@ -72,7 +72,7 @@ fun ViewVentCouleur_T1(
 
     val findVent by remember {
         derivedStateOf {
-            getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
+            getter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == m3Couleur.keyID }
         }
     }
 

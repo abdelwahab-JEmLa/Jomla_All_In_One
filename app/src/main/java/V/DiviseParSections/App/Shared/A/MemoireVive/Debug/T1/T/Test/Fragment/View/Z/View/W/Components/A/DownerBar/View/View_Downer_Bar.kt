@@ -32,7 +32,7 @@ fun Downer_Bar_SemiModularized_Searcher(
     viewModel: ViewModelsProduit_T1,
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.getterFocusedVarsHandlerFacade
-        .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
     val ventOperationsForProduct by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(

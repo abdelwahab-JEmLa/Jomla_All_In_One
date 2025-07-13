@@ -33,7 +33,7 @@ fun Downer_Bar_SemiModularized_panie(
 ) {
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent = viewModel.aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
-        .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
     val ventOperationsForProduct by derivedStateOf {
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(

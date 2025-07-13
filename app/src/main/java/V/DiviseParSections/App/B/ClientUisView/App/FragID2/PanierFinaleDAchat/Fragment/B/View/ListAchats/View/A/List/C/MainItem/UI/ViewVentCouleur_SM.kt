@@ -77,7 +77,7 @@ fun ViewVentCouleur_Module(
 
     val findVent by remember {
         derivedStateOf {
-            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == relative_M3CouleurProduit.keyID }
+            focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.find { it.parentM3CouleurProduitInfosKeyID == relative_M3CouleurProduit.keyID }
         }
     }
 

@@ -32,15 +32,11 @@ class PrintReceiptHandler {
         bProduitInfosRepository: RepoM1Produit,
         b1CouleurOuGoutProduitDataBaseRepository: Repo3CouleurProduitInfos,
         client: M2Client?,
-        scope: CoroutineScope? = null
+        scope: CoroutineScope? = null,
+        activeVents: List<M10OperationVentCouleur>
     ) {
         val printFunction = {
             val dateString = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-
-            val activeVents = fVentCouleurOperationRepository.onVentFilteredDatas.filter { vent ->
-                vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
-                        vent.quantity > 0
-            }
 
             val productMap = mutableMapOf<String, MutableList<ArticleImpression>>()
 

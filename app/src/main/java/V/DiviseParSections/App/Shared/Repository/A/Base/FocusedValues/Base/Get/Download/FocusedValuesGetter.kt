@@ -136,7 +136,7 @@ class FocusedValuesGetter(
         repo10OperationVentCouleur.datasValue.find { it.keyID == currentM9AppCompt?.onVentM3CouleurProduitInfosKeyID }
     }
 
-    val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent by derivedStateOf {
+    val onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent by derivedStateOf {
         repo10OperationVentCouleur.datasValue.filter {
             it.parentM8BonVentKeyId == (currentM9AppCompt?.onVentM8BonVentKey ?: "")
         }
@@ -149,13 +149,13 @@ class FocusedValuesGetter(
 
     fun get_ListFiltered_M10OperationVentCouleurs_By_M1Produit(
         produit: ArticlesBasesStatsTable
-    ) = onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+    ) = onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { ventOperation ->
             ventOperation.parentM1ProduitInfosKeyId == produit.keyID
         }
 
     val focused_ListM10OpeVentCouleur_Par_PD_M1Produit by derivedStateOf {
-        onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.filter {
+        onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.filter {
             it.parentM1ProduitInfosKeyId == (focused_M1ProduitInfos_Pour_PrixDifineur?.keyID ?: "")
         }
     }
@@ -208,7 +208,7 @@ class FocusedValuesGetter(
 
                     put(
                         "onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent",
-                        getter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent.map {
+                        getter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent.map {
                             "${it.parentM1ProduitDebugInfos} / ${it.parentM1ProduitInfosKeyId}"
                         }
                     )

@@ -69,7 +69,7 @@ fun ViewProduit_T1(
     Card(
         modifier = modifier
             .getSemanticsTag(produit,"produit")
-            .getSemanticsTag(produit?.getDebugInfos(),"produitkeyID")
+            .getSemanticsTag(produit?.getDebugInfos(),"getDebugInfos")
             .getSemanticsTag(produit?.quantite_Boit_Par_Carton?:"","quantite_boit_par_carton",2)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(if (allNonTrouve) 2.dp else 6.dp),

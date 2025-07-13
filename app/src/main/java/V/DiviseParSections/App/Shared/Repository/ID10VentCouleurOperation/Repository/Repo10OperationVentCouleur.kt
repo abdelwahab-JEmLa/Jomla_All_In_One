@@ -284,7 +284,7 @@ data class M10OperationVentCouleur(
 
     fun getDebugInfos(): String {
         return buildString {
-            append("KeyID: $keyID\n")
+            append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
             append("Parent Product: $parentM1ProduitDebugInfos\n")
             append("Quantity: $quantity\n")
             append("State: $etateActuellementEst\n")

@@ -43,7 +43,7 @@ fun QuantityButtonM1Produit_T1(
     val repo10OperationVentCouleur = viewModel.getter.repo10OperationVentCouleur
     val repo3CouleurProduitInfos = viewModel.getter.repo3CouleurProduitInfos
 
-    val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+    val ventsDuProduit = viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
         .filter { it.parentM1ProduitInfosKeyId == produit.keyID }
 
     val haptic = LocalHapticFeedback.current

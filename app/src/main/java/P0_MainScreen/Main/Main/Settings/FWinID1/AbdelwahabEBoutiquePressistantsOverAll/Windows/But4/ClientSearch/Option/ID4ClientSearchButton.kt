@@ -145,7 +145,7 @@ fun ID4ClientSearchButton(
                             val timeElapsed = getTimeElapsedString(bon.creationTimestamps)
                             val totalProducts =
                                 viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-                                    .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+                                    .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
                                     .filter { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.Trouve }
                                     .groupBy { it.parentM1ProduitInfosKeyId }.size
 

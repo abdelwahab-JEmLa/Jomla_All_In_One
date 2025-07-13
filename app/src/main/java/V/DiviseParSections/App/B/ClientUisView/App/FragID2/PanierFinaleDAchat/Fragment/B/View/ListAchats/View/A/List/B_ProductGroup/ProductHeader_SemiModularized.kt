@@ -65,7 +65,7 @@ fun ProductHeader_SemiModularized(
 
 
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
     val hasNonTrouve =
         listFiltered_M10OperationVentCouleurs_By_M1Produit.any { it.etateDelivery == M10OperationVentCouleur.EtateDelivery.NonTrouve }

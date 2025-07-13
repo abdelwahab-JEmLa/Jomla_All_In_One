@@ -7,6 +7,9 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fr
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.ErrorCard
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.DetailBonVent.View.PeriodDetailsSection
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Fragment.B.View.W.Modules.PrintReceiptHandler.Module.PrintReceiptHandler
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -108,7 +111,8 @@ fun DetailsBonVent(
                             bProduitInfosRepository = viewModel.uiStateCentralRepositorys.repoM1ProduitInfos,
                             b1CouleurOuGoutProduitDataBaseRepository = viewModel.uiStateCentralRepositorys.repo3CouleurProduitInfos,
                             client = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos,
-                            scope = scope
+                            scope = scope,
+                            activeVents = it
                         )
                     }
                 )
@@ -294,17 +298,29 @@ fun FilterButton(
 
 @Composable
 fun PrintButton(
+    aCentralFacade: ACentralFacade = koinInject(),
     showLabel: Boolean,
-    onPrint: () -> Unit
+    onPrint: (List<M10OperationVentCouleur>) -> Unit
 ) {
+    val activeVents = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
+        .filter { vent ->
+            vent.etateDelivery != M10OperationVentCouleur.EtateDelivery.NonTrouve &&
+                    vent.quantity > 0
+        }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         FloatingActionButton(
-            onClick = onPrint,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .getSemanticsTag(activeVents.map {
+                    it.getDebugInfos()
+                },"activeVents")
+                .size(48.dp),
+            onClick = { onPrint(activeVents) },
+            containerColor = MaterialTheme.colorScheme.secondary
         ) {
             Icon(
                 imageVector = Icons.Default.Print,

@@ -63,7 +63,7 @@ fun ProductHeader_T1(
 
 
     val onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent =
-        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+        viewModel.getterFocusedVarsHandlerFacade.onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
 
 
     var shouldShowDialog_quantite_Boit_Par_Carton by remember { mutableStateOf(false) }

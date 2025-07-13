@@ -48,7 +48,7 @@ fun QuantityDisplay_Mo_F_Panie(
 
     val totalQuantity by derivedStateOf {
         getterFocusedVarsHandlerFacade
-            .onVent_ListM10VentCouleur_FiltrePar_OV_M8BonVent
+            .onVent_ListM10VentCouleur_FiltrePar_onVent_M8BonVent
             .filter { ventOperation ->
                 ventOperation.parentM1ProduitInfosKeyId == produit.keyID
             }   .sumOf { it.quantity }
