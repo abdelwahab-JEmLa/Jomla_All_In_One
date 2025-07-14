@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID2.D.Fragment
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -91,6 +92,7 @@ fun View_M9AppCompt(
     // Settings Dialog
     if (showDialog) {
         SettingsDialog(
+            viewModel=viewModel,
             currentAppCompt = relative_M9AppCompt,
             onDismiss = { showDialog = false },
             onUpdateAppCompt = { updatedAppCompt ->
@@ -105,13 +107,18 @@ fun View_M9AppCompt(
 private fun SettingsDialog(
     currentAppCompt: Z_AppCompt,
     onDismiss: () -> Unit,
-    onUpdateAppCompt: (Z_AppCompt) -> Unit
+    onUpdateAppCompt: (Z_AppCompt) -> Unit,
+    viewModel: ViewModel_M9AppCompt ,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
     var hideAppScreen by remember { mutableStateOf(currentAppCompt.hideAppScreen) }
     var travailleChezGrossisst3Ali by remember { mutableStateOf(currentAppCompt.travailleChezGrossisst3Ali) }
     var itsAdmin by remember { mutableStateOf(currentAppCompt.its_Admin) }
-
+   val datas_Vent = aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
     AlertDialog(
+        //<--
+        //TODO(1): ajout un button au click affceh dialoge contien datas_Vent au clcik update compt  var current_OnVent_M14VentPeriode_KeyID: String = "",
+        //    var current_OnVent_M14VentPeriode_DebugInfos: String = "", ==get debug
         onDismissRequest = onDismiss,
         title = {
             Text(
