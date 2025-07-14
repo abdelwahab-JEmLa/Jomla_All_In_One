@@ -165,6 +165,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
 
     WorkCompletionAlertDialog(
+        viewModel =viewModel,
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {

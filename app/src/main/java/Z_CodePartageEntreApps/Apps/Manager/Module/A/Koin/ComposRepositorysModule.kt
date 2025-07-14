@@ -30,7 +30,7 @@ import org.koin.dsl.module
 val composRepositorysModule = module {
     single { Repo15Grossist(context = androidContext(),get(),) }
 
-    single { Repo14VentPeriode(get(),) }
+    single { Repo14VentPeriode(get(),get(),) }
     single { Repo13TarificationInfos(get(),get(),) }
     single { Repo9AppCompt(context = androidContext(),get()) }
 

@@ -128,14 +128,17 @@ class RepositorysMainSetter(
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
     fun m1Produit_Update(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
+
+    //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
+    fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
+    fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.updateIfExist(data)
     fun upsertM8BonVent(data: M8BonVent) { repo8BonVent.upsert(data) }
     fun delete_M8BonVent(data: M8BonVent) { repo8BonVent.delete(data) }
-    //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
-    fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
-    fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
+    fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.update(data)
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
     fun m10_delete(ventOperationsForProduct: List<M10OperationVentCouleur>) {
         ventOperationsForProduct.map {
@@ -147,12 +150,14 @@ class RepositorysMainSetter(
     fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
     fun repo11AchatOperation_deleteMulti(datas:List<M11AchatOperation> ) = repo11AchatOperation.deleteMulti(datas)
     fun repo11AchatOperation_update_If_Exist(data: M11AchatOperation) = repo11AchatOperation.update_If_Exist(data)
-
+    //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
+    fun update_M14VentPeriode(data: M14VentPeriode) =  repo14VentPeriode.update_If_Exist(data)
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
     fun repo15Grossist_add_New(data: M15Grossist) = repo15Grossist.add_New(data)
     fun repo15Grossist_update_If_Exist(data: M15Grossist) = repo15Grossist.update_If_Exist(data)
 
     fun repo15Grossist_deleteMulti(datas:List<M15Grossist>?=null)= repo15Grossist.deleteMulti(datas)
+
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
 

@@ -56,7 +56,7 @@ class Repo9AppCompt(
         ancienRepo.addOrUpdatedDataBase(-1, dataUpdate)
     }
 
-    fun updateIfExist(data: Z_AppCompt) {
+    fun update(data: Z_AppCompt) {
         val existingIndex = datasValue.indexOfFirst { ancien ->
             ancien.keyID == data.keyID
         }

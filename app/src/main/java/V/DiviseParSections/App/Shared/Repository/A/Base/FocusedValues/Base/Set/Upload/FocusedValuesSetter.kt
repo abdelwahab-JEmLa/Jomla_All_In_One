@@ -209,7 +209,7 @@ class FocusedValuesSetter(
     fun active_CurrentApp_dialogAboveAll_OutlinedSearchListProduits(value: Boolean) {
         getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
-                repo9AppCompt.updateIfExist(
+                repo9AppCompt.update(
                     it.copy(
                         dialogAboveAll_OutlinedSearchListProduits = value,
                     )
@@ -220,7 +220,7 @@ class FocusedValuesSetter(
     fun desactive_CurrentApp_dialogAboveAll_OutlinedSearchListProduits() {
         getterFocusedValues.currentM9AppCompt.let {
             if (it != null) {
-                repo9AppCompt.updateIfExist(
+                repo9AppCompt.update(
                     it.copy(
                         dialogAboveAll_OutlinedSearchListProduits = false,
                     )
