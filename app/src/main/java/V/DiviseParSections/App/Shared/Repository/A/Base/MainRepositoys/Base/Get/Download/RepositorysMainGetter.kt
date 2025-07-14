@@ -42,7 +42,7 @@ data class ParametresAppComptNonSaved(
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.EditDatabaseWithCreateNewArticles,
+    val devStartUpScree: Screen = Screen.Achats_Produits_Chez_Grossists,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 )

@@ -44,6 +44,7 @@ fun Screen_GrossistAchatSec12FragID1(
         )
     }
 
+    // Client filter dialog
     if (uiState.showDialog) {
         Dialog_Filter_Client(
             uiState = uiState,
@@ -52,24 +53,30 @@ fun Screen_GrossistAchatSec12FragID1(
         )
     }
 
-    val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-
+    // Grossist selection dialog for main screen
     if (uiState.dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen) {
+        val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+
         Dialog_Choisire_Grossist_Modularized(
+            titel = "Choisir un Grossiste",
             viewModel = viewModel,
+            list_M11AchatOperation = repo11AchatOperation.datasValue
         ) { grossistSelected ->
+            // Handle grossist selection
             if (grossistSelected != null) {
-                // Update the filter with the selected grossist
                 repo11AchatOperation.updateFilterQuery(
                     Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
                 )
             } else {
-                // Clear the filter if no grossist is selected
                 repo11AchatOperation.updateFilterQuery(
                     Repo11AchatOperation.FilterQuery.NO_FILTER
                 )
             }
-            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = false)
+
+            // Close the dialog
+            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(
+                pour_MainScreen = false
+            )
         }
     }
 }

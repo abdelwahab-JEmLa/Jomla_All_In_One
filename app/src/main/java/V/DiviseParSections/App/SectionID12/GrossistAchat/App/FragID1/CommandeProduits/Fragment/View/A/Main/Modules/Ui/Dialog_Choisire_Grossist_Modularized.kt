@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -35,20 +36,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.toColorInt
 
 @Composable
 fun Dialog_Choisire_Grossist_Modularized(
+    titel: String = "Choisir un Grossiste",
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     list_M11AchatOperation: List<M11AchatOperation> = emptyList(),
     onDismiss: (M15Grossist?) -> Unit
 ) {
     val datasValue_repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
+    val focusManager = LocalFocusManager.current
 
     // Calculate purchase count for each grossist and sort by it
     val grossistsWithPurchaseCount = grossists.map { grossist ->
@@ -59,34 +64,103 @@ fun Dialog_Choisire_Grossist_Modularized(
     }.sortedByDescending { it.second } // Sort by purchase count (descending)
 
     Dialog(
-        onDismissRequest = { onDismiss(null) }
+        onDismissRequest = {
+            focusManager.clearFocus()
+            onDismiss(null)
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = false
+        )
     ) {
         Card(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                // Header
-                Text(
-                    text = "Choisir un Grossiste",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                // Header with close button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = titel,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    TextButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            onDismiss(null)
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "Fermer",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    // Add "Clear Filter" option at the top
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .clickable {
+                                    focusManager.clearFocus()
+                                    onDismiss(null)
+                                }
+                                .fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.Clear,
+                                    contentDescription = "Supprimer le filtre",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(40.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Text(
+                                    text = "Supprimer le filtre",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
                     items(grossistsWithPurchaseCount) { (grossist, purchaseCount) ->
                         GrossistItem(
                             list_M11AchatOperation = list_M11AchatOperation,
                             grossist = grossist,
                             purchaseCount = purchaseCount,
                             onSelect = {
+                                focusManager.clearFocus()
                                 onDismiss(grossist)
                             }
                         )
@@ -128,7 +202,12 @@ fun Dialog_Choisire_Grossist_Modularized(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = { onDismiss(null) }) {
+                    TextButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            onDismiss(null)
+                        }
+                    ) {
                         Text("Annuler")
                     }
                 }
