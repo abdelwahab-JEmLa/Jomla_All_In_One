@@ -1,9 +1,6 @@
 // MainActivity.kt
 package com.example.materialexpressivebuttons
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -30,7 +27,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -264,13 +260,13 @@ fun ExpressiveButton(
                             )
                             isSelected -> Brush.linearGradient(
                                 colors = listOf(
-                                    Color(0xFF8B5CF6), // Violet Material Expressive
-                                    Color(0xFFEC4899)  // Rose Material Expressive
+                                    Color(0xFF8B5CF6),
+                                    Color(0xFFEC4899)
                                 )
                             )
                             isYellow -> Brush.linearGradient(
                                 colors = listOf(
-                                    Color(0xFFFBBF24), // Jaune vif
+                                    Color(0xFFFBBF24),
                                     Color(0xFFF59E0B)  // Jaune plus foncé
                                 )
                             )
