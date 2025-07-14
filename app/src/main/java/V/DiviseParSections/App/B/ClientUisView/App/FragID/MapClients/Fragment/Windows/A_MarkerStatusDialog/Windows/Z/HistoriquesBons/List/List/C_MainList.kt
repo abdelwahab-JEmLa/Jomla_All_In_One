@@ -31,7 +31,7 @@ fun View_MainList(
             key(transaction.keyID) {
                 View_MainItem(
                     viewModel = viewModel,
-                    bonVent = transaction,
+                    relative_M8BonVent = transaction,
                 )
             }
         }

@@ -110,6 +110,9 @@ class DataBaseCreationFactoryGBonVent(
     }
 
     fun delete(data: M8BonVent) {
-
+        factoryScope.launch {
+            dao.delete(data)
+            repoRef.child(data.keyID).removeValue().await()
+        }
     }
 }

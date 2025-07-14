@@ -22,16 +22,16 @@ data class SecID5FragID2UiState(
 )
 
 class E0AfficheHistoriqueTransactionsViewModel(
-    val aCentral: ACentralFacade,
+    val aCentralFacade: ACentralFacade,
 
     val a_CentralDatasHandlerProtoJuin9: RepositorysMainGetter,
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
 
     val r_0_0_HeadOfRepositorys_SQL_Repository: GroupeRepositorysProtoAvJuin3,
 ) : ViewModel() {
-    val getter = aCentral.repositorysMainGetter
-    val setter =aCentral.repositorysMainSetter
-    val audioRecorderAndPlayHandler =aCentral.modulesCentral.audioRecorderAndPlayHandler
+    val getter = aCentralFacade.repositorysMainGetter
+    val setter =aCentralFacade.repositorysMainSetter
+    val audioRecorderAndPlayHandler =aCentralFacade.modulesCentral.audioRecorderAndPlayHandler
 
     val gBonVentRepository = getter.repo8BonVent
 

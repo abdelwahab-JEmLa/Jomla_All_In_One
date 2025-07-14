@@ -131,6 +131,8 @@ class RepositorysMainSetter(
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.updateIfExist(data)
+    fun upsertM8BonVent(data: M8BonVent) { repo8BonVent.upsert(data) }
+    fun delete_M8BonVent(data: M8BonVent) { repo8BonVent.delete(data) }
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
     fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
@@ -153,9 +155,7 @@ class RepositorysMainSetter(
     fun repo15Grossist_deleteMulti(datas:List<M15Grossist>?=null)= repo15Grossist.deleteMulti(datas)
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    fun upsertM8BonVent(data: M8BonVent) {
-        repo8BonVent.upsert(data)
-    }
+
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =

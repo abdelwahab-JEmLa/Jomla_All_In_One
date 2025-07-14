@@ -2,6 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.ButtonAutreEtates
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Bottons.View.CommandButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
@@ -52,7 +54,10 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
-    clientOuCaMarqueGpsEstOuvert: M2Client?,
+    relative_M8: M8BonVent? =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .focuced_active_onVent_M8BonVent,
+    relative_M2Client: M2Client?,
     mapView: MapView,
     uiState: UiState,
     onUpdateLongAppSetting: () -> Unit = {},
@@ -62,7 +67,7 @@ fun MarkerStatusDialog(
     val marqueClick = mapView.overlays
         .filterIsInstance<Marker>()
         .find { marker ->
-            marker.id == clientOuCaMarqueGpsEstOuvert?.id.toString()
+            marker.id == relative_M2Client?.id.toString()
         } ?: return
 
     val context = LocalContext.current
@@ -73,12 +78,12 @@ fun MarkerStatusDialog(
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
 
-    val clientId = clientOuCaMarqueGpsEstOuvert?.id ?: 0L
-    var clientTypeMode by remember { mutableStateOf(clientOuCaMarqueGpsEstOuvert?.clientTypeMode) }
+    val clientId = relative_M2Client?.id ?: 0L
+    var clientTypeMode by remember { mutableStateOf(relative_M2Client?.clientTypeMode) }
 
-    if (editedName.isEmpty() && clientOuCaMarqueGpsEstOuvert != null) {
-        editedName = clientOuCaMarqueGpsEstOuvert.nom ?: ""
-        editedPhone = clientOuCaMarqueGpsEstOuvert.numTelephone ?: ""
+    if (editedName.isEmpty() && relative_M2Client != null) {
+        editedName = relative_M2Client.nom ?: ""
+        editedPhone = relative_M2Client.numTelephone ?: ""
     }
 
     fun handleDismiss() {
@@ -100,7 +105,7 @@ fun MarkerStatusDialog(
             modifier = Modifier
                 .getSemanticsTag(
                     nomVal = "markerStatusDialogActiveM2Client",
-                    data = markerStatusDialogActiveM2Client?.nom?:""
+                    data = markerStatusDialogActiveM2Client?.nom ?: ""
                 )
                 .fillMaxSize()
         ) {
@@ -119,8 +124,8 @@ fun MarkerStatusDialog(
                         ClientEdites(
                             viewModel = viewModel,
                             marqueClick = marqueClick,
-                            marqueClickRelativeClient = clientOuCaMarqueGpsEstOuvert,
-                            onDismiss = {  },
+                            marqueClickRelativeClient = relative_M2Client,
+                            onDismiss = { },
                             onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                             onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
                             onClientTypeModeChange = { clientTypeMode = it },
@@ -129,7 +134,8 @@ fun MarkerStatusDialog(
                         )
                     }
                     val activeCompt = viewModel.getter.repo9AppCompt.currentAppCompt
-                    val activeClient = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
+                    val activeClient =
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVentM2ClientInfos
 
                     activeCompt?.let {
                         if (activeClient != null) {
@@ -137,7 +143,7 @@ fun MarkerStatusDialog(
                                 AfficheurRegleOuvert(
                                     uiState = uiState,
                                     viewModel = viewModel,
-                                    relatedClients = clientOuCaMarqueGpsEstOuvert,
+                                    relatedClients = relative_M2Client,
                                 )
                             }
                         }
@@ -175,10 +181,10 @@ fun MarkerStatusDialog(
 
                                     item {
                                         CommandButton(
-                                            m2Client=clientOuCaMarqueGpsEstOuvert!!,
+                                            relative_M2Client = relative_M2Client!!,
                                             modifier = Modifier.height(60.dp),
                                             viewModel = viewModel,
-                                            newEtate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            relative_Etate = M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                             context = context,
                                             onUpdateLongAppSetting = onUpdateLongAppSetting
                                         )
@@ -235,7 +241,7 @@ fun MarkerStatusDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-                            markerStatusDialogM2Client= clientOuCaMarqueGpsEstOuvert,
+                            markerStatusDialogM2Client = relative_M2Client,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -248,7 +254,12 @@ fun MarkerStatusDialog(
 
             FloatingActionButton(
                 onClick = {
-                    handleDismiss()
+                    if (relative_M8 != null) {
+                        showExitConfirmationDialog = true
+                    } else {
+                        viewModel.clear_UiState_MarkerStatusDialog_Active_M2Client()
+                        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesSetter.desactive_CurrentApp_ActiveOnCourDeVent_M8BonVent()
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -316,12 +327,12 @@ fun MarkerStatusDialog(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            clientOuCaMarqueGpsEstOuvert?.apply {
+                            relative_M2Client?.apply {
                                 nom = editedName
                                 numTelephone = editedPhone
                             }
 
-                            clientOuCaMarqueGpsEstOuvert?.let { client ->
+                            relative_M2Client?.let { client ->
                                 viewModel.updateData(client)
                             }
 

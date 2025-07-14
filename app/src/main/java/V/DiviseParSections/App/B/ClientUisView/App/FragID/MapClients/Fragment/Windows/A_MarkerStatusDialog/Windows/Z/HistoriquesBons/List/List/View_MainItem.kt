@@ -51,39 +51,39 @@ import kotlinx.coroutines.launch
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
-    bonVent: M8BonVent,
+    relative_M8BonVent: M8BonVent,
 ) {
     val audioRecorderAndPlayHandler = viewModel.audioRecorderAndPlayHandler
     val datesHandler = DatesHandler()
-    val etateActuellementEst = bonVent.etateActuellementEst
-    val activeM8BonVentId = viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent?.vid
+    val etateActuellementEst = relative_M8BonVent.etateActuellementEst
+    val activeM8BonVentId = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focuced_active_onVent_M8BonVent?.vid
     val blinkState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
-    val hasVoiceMessage = bonVent.vocaleKeyID.isNotEmpty()
+    val hasVoiceMessage = relative_M8BonVent.vocaleKeyID.isNotEmpty()
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
     ) {
-        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == bonVent.vid && playbackProgress.isPlaying
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M8BonVent.vid && playbackProgress.isPlaying
     }
 
     val isCurrentlyDownloading = remember(
         playbackProgress.isDownloading,
         audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID
     ) {
-        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == bonVent.vid && playbackProgress.isDownloading
+        audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M8BonVent.vid && playbackProgress.isDownloading
     }
 
-    LaunchedEffect(bonVent.vid, isCurrentlyPlaying) {
+    LaunchedEffect(relative_M8BonVent.vid, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
                 while (isCurrentlyPlaying && audioRecorderAndPlayHandler.isPlaying()) {
                     audioRecorderAndPlayHandler.updatePlaybackProgress()
                     delay(100)
-                    if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != bonVent.vid) {
+                    if (audioRecorderAndPlayHandler.getCurrentPlaybackSession()?.parentMessageVID != relative_M8BonVent.vid) {
                         break
                     }
                 }
@@ -93,11 +93,11 @@ fun View_MainItem(
         }
     }
 
-    DisposableEffect(bonVent.vid) {
+    DisposableEffect(relative_M8BonVent.vid) {
         onDispose {
             try {
                 val currentSession = audioRecorderAndPlayHandler.getCurrentPlaybackSession()
-                if (currentSession?.parentMessageVID == bonVent.vid) {
+                if (currentSession?.parentMessageVID == relative_M8BonVent.vid) {
                     audioRecorderAndPlayHandler.stopPlayback()
                 }
             } catch (e: Exception) {
@@ -107,7 +107,7 @@ fun View_MainItem(
     }
 
     if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        && activeM8BonVentId != bonVent.vid
+        && activeM8BonVentId != relative_M8BonVent.vid
     ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
@@ -131,11 +131,12 @@ fun View_MainItem(
         ) {
             IconButton(
                 onClick = {
-                    if (bonVent.vocaleKeyID.isNotEmpty()) {
-                        viewModel.deleteVoiceRecordingFromStorage(bonVent.vocaleKeyID) { success ->
+                        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(relative_M8BonVent)
+
+                        viewModel.deleteVoiceRecordingFromStorage(relative_M8BonVent.vocaleKeyID) { success ->
                             if (success) {
                                 viewModel.getter.repo8BonVent.delete(
-                                    bonVent
+                                    relative_M8BonVent
                                 )
                             } else {
                                 Toast.makeText(
@@ -145,9 +146,7 @@ fun View_MainItem(
                                 ).show()
                             }
                         }
-                    } else {
-                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(bonVent)
-                    }
+
                 },
                 modifier = Modifier.align(Alignment.TopStart)
             ) {
@@ -171,14 +170,14 @@ fun View_MainItem(
                     if (etateActuellementEst == M8BonVent.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                         IconButton(
                             onClick = {
-                                viewModel.openTransaction(bonVent)
+                                viewModel.openTransaction(relative_M8BonVent)
 
                             }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ShoppingCart,
                                 contentDescription = "Select Transaction",
-                                tint = if (activeM8BonVentId == bonVent.vid) {
+                                tint = if (activeM8BonVentId == relative_M8BonVent.vid) {
                                     Color.White
                                 } else {
                                     if (blinkState.value) Color.Red else Color.Gray
@@ -188,7 +187,7 @@ fun View_MainItem(
                     }
 
                     Text(
-                        text = " الوقت: ${datesHandler.getDateAndTimStringAvecSeconds(bonVent.creationTimestamps).time}",
+                        text = " الوقت: ${datesHandler.getDateAndTimStringAvecSeconds(relative_M8BonVent.creationTimestamps).time}",
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -202,7 +201,7 @@ fun View_MainItem(
                     )
 
                     Text(
-                        text = bonVent.keyID.takeLast(4),
+                        text = relative_M8BonVent.keyID.takeLast(4),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.End
@@ -238,14 +237,14 @@ fun View_MainItem(
                                             val playResult =
                                                 audioRecorderAndPlayHandler.startPlayback(
                                                     context = context,
-                                                    parentMessageVID = bonVent.vid,
-                                                    firebaseUrl = bonVent.vocaleKeyID,
+                                                    parentMessageVID = relative_M8BonVent.vid,
+                                                    firebaseUrl = relative_M8BonVent.vocaleKeyID,
                                                     onPlaybackComplete = {
-                                                        if (!bonVent.sonVocaleEstEcoute) {
+                                                        if (!relative_M8BonVent.sonVocaleEstEcoute) {
                                                             val currentTimestamp =
                                                                 datesHandler.getCurrentTimestamps()
                                                             viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                                                bonVent.copy(
+                                                                relative_M8BonVent.copy(
                                                                     sonVocaleEstEcoute = true,
                                                                     sonEcoutementEstFaitAutimestamps = currentTimestamp
                                                                 )
@@ -360,7 +359,7 @@ fun View_MainItem(
                                     )
                                 }
 
-                                bonVent.sonVocaleEstEcoute -> {
+                                relative_M8BonVent.sonVocaleEstEcoute -> {
                                     Column {
                                         Icon(
                                             imageVector = Icons.Default.Check,
@@ -368,9 +367,9 @@ fun View_MainItem(
                                             tint = Color.Green,
                                             modifier = Modifier.size(24.dp)
                                         )
-                                        if (bonVent.sonEcoutementEstFaitAutimestamps > 0) {
+                                        if (relative_M8BonVent.sonEcoutementEstFaitAutimestamps > 0) {
                                             Text(
-                                                text = datesHandler.getDateAndTimString(bonVent.sonEcoutementEstFaitAutimestamps).time,
+                                                text = datesHandler.getDateAndTimString(relative_M8BonVent.sonEcoutementEstFaitAutimestamps).time,
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = Color.White
                                             )

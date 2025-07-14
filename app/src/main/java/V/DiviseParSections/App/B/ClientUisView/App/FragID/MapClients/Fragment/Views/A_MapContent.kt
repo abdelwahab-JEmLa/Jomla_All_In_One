@@ -171,7 +171,7 @@ fun MapContent(
         if (activeOnVentM2ClientInfos != null ||  markerStatusDialogActiveM2Client != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
-                clientOuCaMarqueGpsEstOuvert = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
+                relative_M2Client = activeOnVentM2ClientInfos ?: markerStatusDialogActiveM2Client,
                 mapView = mapView,
                 uiState = uiState,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

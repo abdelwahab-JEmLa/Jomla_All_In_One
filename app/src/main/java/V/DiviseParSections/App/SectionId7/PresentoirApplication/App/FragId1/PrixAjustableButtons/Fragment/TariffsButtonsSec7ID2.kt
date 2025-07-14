@@ -32,7 +32,7 @@ fun TariffsButtonsSec7ID2(
     cLenceDepuitFragmentsSepecialicteDeVents: Boolean = false,
 ) {
     val bonVentComQuiFilterButtons =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.onVentM8BonVent
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focuced_active_onVent_M8BonVent
 
     var afficheButtons by remember { mutableStateOf(cLenceDepuitFragmentsSepecialicteDeVents) }
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
