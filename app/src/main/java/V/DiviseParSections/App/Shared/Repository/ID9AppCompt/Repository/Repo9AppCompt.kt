@@ -140,22 +140,26 @@ data class Z_AppCompt(
 
     // Section Options Personnel
     var presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId: String = "",
+    var hideAppScreen: Boolean = false,
+    val travailleChezGrossisst3Ali: Boolean = false,
+    val its_Admin: Boolean = false,
+
 
     var itsProductionModePourCeCompt: Boolean = false,
     var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
     var ceComptVendeurStartAffichePeriod: Long = 0L,
-    var hideAppScreen: Boolean = false,
+
     var migreSonDataBaseAuStart: Boolean = false,
     var cConnectAuDevelopingDataBaseAuRelodApp: Boolean = false,
 
     // Section Centralization Valeurs Pour Injection add_New TOu modules
 
     // Section Paramaters App telephone
-    val activeDialogSearchM1Produit: Boolean = false,
 
-    val travailleChezGrossisst3Ali: Boolean = false,
 
     var mainInitDataBaseProgressEtate: Float = 0f,
+    val activeDialogSearchM1Produit: Boolean = false,
+
 
     var couleurAchateOperationIdOuvertPourCeCompt: String = "",
     var couleurAchateOperationKeyOuvertPourCeCompt: String = "",
