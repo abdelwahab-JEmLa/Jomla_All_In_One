@@ -121,7 +121,9 @@ fun TariffButtonItem(
             val typeName = typeTarification.nomArabe
             val prixCurrency = "${latestTariffLocalData.prixCurrency} "
 
-            Row(
+            Row(   //<--
+            //TODO(1): ajout un achachat changeur de prix achat pour admine
+            //regle pk l historiqe
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {

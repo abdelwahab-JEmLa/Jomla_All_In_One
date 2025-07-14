@@ -134,7 +134,8 @@ fun LazyColumn_Client(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     onClientSelected: (M2Client) -> Unit
-) {
+) {      //<--
+//TODO(1): n affiche que les clients qui on des achats
     val clients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
     LazyColumn(
         modifier = modifier,
@@ -156,7 +157,8 @@ fun Item_Client(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     onClientSelected: (M2Client) -> Unit
 ) {
-    Card(
+    Card(          //<--
+    //TODO(1): affiche le size des article de luit 
         modifier = Modifier
             .clickable { onClientSelected(client) }
             .fillMaxWidth(),

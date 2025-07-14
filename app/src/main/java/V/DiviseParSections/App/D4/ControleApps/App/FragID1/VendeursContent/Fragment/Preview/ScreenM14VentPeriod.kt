@@ -21,7 +21,8 @@ open class ViewModel_M14VentPeriod(val aCentralFacade: ACentralFacade) : ViewMod
 fun ScreenM14VentPeriod(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_M14VentPeriod = koinInject(),
-) {
+) {                  //<--
+//TODO(1): test les period
     Box(modifier = modifier.fillMaxSize()) {
         Surface(
             modifier = modifier.fillMaxWidth(),
