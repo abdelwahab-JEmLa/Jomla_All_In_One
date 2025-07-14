@@ -23,8 +23,9 @@ data class UiStateSec9Frag1(
     val a_ProduitInfosList: List<ArticlesBasesStatsTable> = emptyList(),
     val mainLoadingProgressPJuin3: Float = 0f,
     val activeCatalogue: CataloguesCaegorie = B4CatalogueCategoriesRepository().first(),
-    var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage = EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
-        .CATEGORIES_LIST,
+    var currentMode: EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage =
+        EditeBaseDonneMainScreenIdS9ViewModel.ModeAffichage
+        .PRODUCTS_LIST,
     val clickItemMode: ClickItemMode = ClickItemMode.FastMove,
 ) {
     enum class ClickItemMode(val couleur: Color, val icon: ImageVector) {
