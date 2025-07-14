@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -134,19 +135,55 @@ fun LazyColumn_Client(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     onClientSelected: (M2Client) -> Unit
-) {      //<--
-//TODO(1): n affiche que les clients qui on des achats
-    val clients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+) {
+    // Filter clients to show only those who have made purchases
+    val clientsWithPurchases = remember(
+        viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+    ) {
+        val allClients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
+        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        // Get all client IDs that have purchases
+        val clientIdsWithPurchases = allAchatOperations.flatMap { achatOperation ->
+            val relatedVentOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(allVentOperations)
+            relatedVentOperations.mapNotNull { ventOperation ->
+                val bonVent = allBonVents.find { it.keyID == ventOperation.parentM8BonVentKeyId }
+                bonVent?.parent_M2Client_KeyID
+            }
+        }.toSet()
+
+        // Filter clients to only include those with purchases
+        allClients.filter { client ->
+            client.keyID in clientIdsWithPurchases
+        }
+    }
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(clients) { client ->
-            Item_Client(
-                client = client,
-                viewModel = viewModel,
-                onClientSelected = onClientSelected
-            )
+        if (clientsWithPurchases.isEmpty()) {
+            item {
+                Text(
+                    text = "Aucun client avec des achats trouvé",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        } else {
+            items(clientsWithPurchases) { client ->
+                Item_Client(
+                    client = client,
+                    viewModel = viewModel,
+                    onClientSelected = onClientSelected
+                )
+            }
         }
     }
 }
@@ -157,8 +194,38 @@ fun Item_Client(
     viewModel: GrossistAchatSec12FragID1_ViewModel,
     onClientSelected: (M2Client) -> Unit
 ) {
-    Card(          //<--
-    //TODO(1): affiche le size des article de luit 
+    // Calculate the number of different products this client has purchased
+    val clientPurchaseInfo = remember(
+        client.keyID,
+        viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue,
+        viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+    ) {
+        val allBonVents = viewModel.aCentralFacade.repositorysMainGetter.repo8BonVent.datasValue
+        val allVentOperations = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur.datasValue
+        val allAchatOperations = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation.datasValue
+
+        // Get all BonVents for this client
+        val clientBonVents = allBonVents.filter { it.parent_M2Client_KeyID == client.keyID }
+        val clientBonVentIds = clientBonVents.map { it.keyID }.toSet()
+
+        // Get all vent operations for this client
+        val clientVentOperations = allVentOperations.filter {
+            it.parentM8BonVentKeyId in clientBonVentIds
+        }
+
+        // Get unique products (M1Produit) purchased by this client
+        val uniqueProducts = clientVentOperations.map {
+            it.parentM1ProduitInfosKeyId
+        }.toSet()
+
+        // Calculate total quantity
+        val totalQuantity = clientVentOperations.sumOf { it.quantity }
+
+        Pair(uniqueProducts.size, totalQuantity)
+    }
+
+    Card(
         modifier = Modifier
             .clickable { onClientSelected(client) }
             .fillMaxWidth(),
@@ -205,8 +272,14 @@ fun Item_Client(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // You can add more client details here if available
-                // For example: phone number, address, etc.
+                // Show purchase statistics
+                Text(
+                    text = "${clientPurchaseInfo.first} produits • ${clientPurchaseInfo.second} articles",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

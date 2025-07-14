@@ -414,8 +414,7 @@ private fun Vent_Par_Boit(
                     quantity++
                     onClick_To_Vent(quantity)
                 }) {
-                    Icon(           //<--
-                    //TODO(1): pk qund la quanityy arrive au conmplete cart ca ne le vent carton 
+                    Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Augmenter quantité",
                         tint = Color.Green

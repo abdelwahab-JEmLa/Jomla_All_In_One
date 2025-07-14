@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -76,10 +77,17 @@ fun TariffButtonItem(
     var isEditingPrice by remember(produit) { mutableStateOf(false) }
     var isEditingUnitPrice by remember(produit) { mutableStateOf(false) }
 
+    var editablePurchasePriceText by remember(produit) { mutableStateOf("") }
+    var isEditingPurchasePrice by remember(produit) { mutableStateOf(false) }
+
     val focusRequester = remember { FocusRequester() }
+    val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant2
+
+    // Check if this is a purchase price tariff that can be edited by admin
+    val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 
     fun handelClick() {
         viewModel.aCentralFacade.repositorysMainSetter
@@ -108,6 +116,27 @@ fun TariffButtonItem(
         isEditingUnitPrice = false
     }
 
+    fun handlePurchasePriceEditDone() {
+        val newPurchasePrice = editablePurchasePriceText.toDoubleOrNull()
+        if (newPurchasePrice != null && newPurchasePrice >= 0) {
+            // Update the product's purchase price
+            val updatedProduit = produit.copy(
+                prixAchat = newPurchasePrice,
+                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+            )
+
+            // Update the product in the repository
+            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+
+            // Update the tariff with the new purchase price
+            latestTariffLocalData = latestTariffLocalData.copy(
+                prixCurrency = newPurchasePrice
+            )
+            handelClick()
+        }
+        isEditingPurchasePrice = false
+    }
+
     Row(
         modifier = Modifier
             .getSemanticsTag(nomVal = "produit", data = produit.nom),
@@ -121,25 +150,66 @@ fun TariffButtonItem(
             val typeName = typeTarification.nomArabe
             val prixCurrency = "${latestTariffLocalData.prixCurrency} "
 
-            Row(   //<--
-            //TODO(1): ajout un achachat changeur de prix achat pour admine
-            //regle pk l historiqe
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ElevatedCard {
                     val labelBackgroundColor = if (isEditableTariff) {
                         Color.Yellow
+                    } else if (isPurchasePriceTariff) {
+                        Color.Cyan // Different color for purchase price
                     } else {
                         couleurButton
                     }
 
-                    val labelTextColor = if (isEditableTariff) {
+                    val labelTextColor = if (isEditableTariff || isPurchasePriceTariff) {
                         Color.Black
                     } else {
                         Color.White
                     }
-                    if (isEditingPrice && isEditableTariff) {
+
+                    // Handle purchase price editing
+                    if (isEditingPurchasePrice && isPurchasePriceTariff) {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .getSemanticsTag(
+                                    nomVal = "editablePurchasePriceText",
+                                    data = editablePurchasePriceText
+                                )
+                                .width(100.dp)
+                                .focusRequester(purchasePriceFocusRequester),
+                            value = editablePurchasePriceText,
+                            onValueChange = { newInput ->
+                                editablePurchasePriceText = newInput
+                            },
+                            label = {
+                                Text("Prix d'achat: ${produit.prixAchat}")
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.ShoppingCart,
+                                    contentDescription = "Prix d'achat",
+                                    tint = Color.Blue
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { handlePurchasePriceEditDone() }
+                            ),
+                        )
+
+                        LaunchedEffect(isEditingPurchasePrice) {
+                            if (isEditingPurchasePrice) {
+                                purchasePriceFocusRequester.requestFocus()
+                            }
+                        }
+                    }
+                    // Handle selling price editing
+                    else if (isEditingPrice && isEditableTariff) {
                         val nombreUniteInt = produit.nombreUniteInt
 
                         OutlinedTextField(
@@ -201,6 +271,8 @@ fun TariffButtonItem(
                             }
                         }
                     } else {
+// Replace the existing Text composable (around line 222) with this:
+
                         Text(
                             typeName,
                             modifier = Modifier
@@ -215,18 +287,28 @@ fun TariffButtonItem(
                                             isEditingPrice = true
                                             isEditingUnitPrice = false
                                         }
+                                    } else if (isPurchasePriceTariff) {
+                                        Modifier.clickable {
+                                            // Start purchase price editing
+                                            editablePurchasePriceText = ""
+                                            isEditingPurchasePrice = true
+                                        }
                                     } else {
                                         Modifier
                                     }
                                 ),
-                            color = labelTextColor,
+                            color = if (isEditableTariff || isPurchasePriceTariff) {
+                                Color.Black
+                            } else {
+                                typeTarification.couleur_Text  // Use the couleur_Text from TypeChoisi enum
+                            },
                             fontSize = 14.sp,
                             maxLines = 2
                         )
                     }
                 }
 
-                // Show decrease button for both editable tariff types
+                // Show decrease button for both editable tariff types and purchase price
                 if (isEditableTariff) {
                     IconButton(
                         onClick = {
@@ -244,28 +326,57 @@ fun TariffButtonItem(
                             tint = Color.Black
                         )
                     }
+                } else if (isPurchasePriceTariff) {
+                    IconButton(
+                        onClick = {
+                            val newPrice = (produit.prixAchat - 5.0).coerceAtLeast(0.0)
+                            val updatedProduit = produit.copy(
+                                prixAchat = newPrice,
+                                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                            )
+                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+                            latestTariffLocalData = latestTariffLocalData.copy(prixCurrency = newPrice)
+                        },
+                        modifier = Modifier.size(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Remove,
+                            contentDescription = "Diminuer le prix d'achat",
+                            tint = Color.Black
+                        )
+                    }
                 }
 
                 ElevatedCard(
                     onClick = {
-                        // Allow price increase for both editable tariff types
+                        // Allow price increase for editable tariffs
                         if (isEditableTariff) {
                             latestTariffLocalData = latestTariffLocalData.copy(
                                 prixCurrency = latestTariffLocalData.prixCurrency + 5.0
                             )
+                        } else if (isPurchasePriceTariff) {
+                            val newPrice = produit.prixAchat + 5.0
+                            val updatedProduit = produit.copy(
+                                prixAchat = newPrice,
+                                prixAchatDernierTimeTempUpdate = System.currentTimeMillis()
+                            )
+                            viewModel.aCentralFacade.repositorysMainSetter.update_M1Produit(updatedProduit)
+                            latestTariffLocalData = latestTariffLocalData.copy(prixCurrency = newPrice)
                         }
                     }
                 ) {
-                    // Show plus sign for both editable tariff types
-                    val pls = if (isEditableTariff) " +" else ""
+                    // Show plus sign for editable tariffs and purchase price
+                    val pls = if (isEditableTariff || isPurchasePriceTariff) " +" else ""
 
                     val priceBackgroundColor = if (isEditableTariff) {
                         Color.Yellow
+                    } else if (isPurchasePriceTariff) {
+                        Color.Cyan
                     } else {
                         couleurButton
                     }
 
-                    val priceTextColor = if (isEditableTariff) {
+                    val priceTextColor = if (isEditableTariff || isPurchasePriceTariff) {
                         Color.Black
                     } else {
                         Color.White
@@ -296,6 +407,8 @@ fun TariffButtonItem(
 
         val buttonBackgroundColor = if (isEditableTariff) {
             Color.Yellow
+        } else if (isPurchasePriceTariff) {
+            Color.Cyan
         } else {
             couleurButton
         }
@@ -316,7 +429,7 @@ fun TariffButtonItem(
             containerColor = buttonBackgroundColor
         ) {
             typeTarification.iconVector?.let { iconVector ->
-                val iconColor = if (isEditableTariff) {
+                val iconColor = if (isEditableTariff || isPurchasePriceTariff) {
                     Color.Black
                 } else {
                     Color.White

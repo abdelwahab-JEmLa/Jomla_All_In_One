@@ -127,7 +127,7 @@ class RepositorysMainSetter(
     }
 
     //------------repo1 -------------------------------------------------------------------------------------------------------------------------------------
-    fun m1Produit_Update(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
+    fun update_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
 
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
     fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)

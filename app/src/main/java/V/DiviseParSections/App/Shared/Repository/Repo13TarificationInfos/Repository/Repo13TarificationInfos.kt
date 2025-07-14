@@ -126,12 +126,15 @@ data class M13TarificationInfos(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
         val nomArabe: String ="",
+        val couleur_Text: Color = Color.White,
     ) {
         LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800),"فائدة محققة مع لاضا كثير من الزيناء"),
         DefiniParGerant2(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B),"محدد من عمي علي"),
         DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
-        Historique(Icons.Filled.History, Color(0xFF2196F3),"السعر الذي وصلنا له"),
-        PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة ")
+        Historique(Icons.Filled.History, Color(0xFF9C27B0),"السعر الذي وصلنا له"),
+        PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة "),
+
+        Tariff_Achat_Depuit_Grossisst(Icons.Filled.History, Color(0xFF000000),"سعر الشراء",Color(0xFF2196F3)) ,
     }
 
     fun withProperDefaults(): M13TarificationInfos {

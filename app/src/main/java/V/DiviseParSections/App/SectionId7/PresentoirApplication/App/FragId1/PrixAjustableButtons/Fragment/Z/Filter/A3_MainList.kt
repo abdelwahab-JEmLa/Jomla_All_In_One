@@ -82,6 +82,29 @@ fun MainList(
         }
     }
 
+    val tariffication_Depuit_Produit_Infos = remember(
+        produit,
+        maxPrixArriveDuProduit,
+        clientLastHistoricalPrice,
+        clientDefiniTariffs,
+        travailleChezGrossisst3Ali
+    ) {
+        buildList {
+            // Add purchase price tariff from wholesale supplier
+            if (produit.prixAchat != 0.0) {
+                add(
+                    M13TarificationInfos(
+                        typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
+                        prixCurrency = produit.prixAchat,
+                        parentM1ProduitInfosKeyId = produit.keyID,
+                        parentM1ProduitDebugInfos = produit.nom,
+                        idParentProduit = produit.id
+                    )
+                )
+            }
+        }
+    }
+
     val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
         tariffs,
         produit,
@@ -105,6 +128,7 @@ fun MainList(
     val allTariffsGroupedAndSorted = remember(
         clientDefiniTariffs,
         standardTariffs,
+        tariffication_Depuit_Produit_Infos,
         generatedTariffDefiniParGerant2
     ) {
         val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
@@ -113,9 +137,9 @@ fun MainList(
         }
 
         val allTariffs = if (shouldAddGeneratedTariff) {
-            clientDefiniTariffs + standardTariffs + generatedTariffDefiniParGerant2
+            clientDefiniTariffs + standardTariffs + tariffication_Depuit_Produit_Infos + generatedTariffDefiniParGerant2
         } else {
-            clientDefiniTariffs + standardTariffs
+            clientDefiniTariffs + standardTariffs + tariffication_Depuit_Produit_Infos
         }
 
         allTariffs
