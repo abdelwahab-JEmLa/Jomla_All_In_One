@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
     private var _showVendeursDialog = mutableStateOf(false)
-    private var _show_Dialog_M9ComptApp_List = mutableStateOf(true)
+    private var _show_Dialog_M9ComptApp_List = mutableStateOf(false) // Changed to false by default
 
     var _paneleGroupeButtonList = mutableStateOf(
         listOf(
@@ -137,6 +137,9 @@ class PanelsGroupeButtonHandler {
                         containerColor = Color(0xFFF44336)
                     )
                 }
+
+                // Add the Dialog_M9_Manager call here
+                Dialog_M9_Manager()
                 Affiche_VentPeriod_Manager()
             }
 
@@ -159,6 +162,7 @@ class PanelsGroupeButtonHandler {
             FloatingActionButton(
                 onClick = {
                     _show_Dialog_M9ComptApp_List.value = true
+                    // Fixed: Dialog will now show because Dialog_M9_Manager is called in the composable hierarchy
                 }, modifier = Modifier.size(40.dp), containerColor = couleur
             ) {
                 Icon(
@@ -176,6 +180,7 @@ class PanelsGroupeButtonHandler {
             }
         }
     }
+
     @Composable
     private fun Button_Affiche_Dialog_ListVentPeriodes(showLabels: Boolean) {
         Row(
@@ -311,6 +316,7 @@ class PanelsGroupeButtonHandler {
             }
         }
     }
+
     @Composable
     private fun Affiche_VentPeriod_Manager() {
         if (_showVendeursDialog.value) {
