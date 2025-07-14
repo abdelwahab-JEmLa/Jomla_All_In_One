@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Modules
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
+import V.DiviseParSections.App.D4.ControleApps.App.FragID2.D.Fragment.Screen_M9AppCompt
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFileFF
 import androidx.compose.foundation.background
@@ -310,7 +311,7 @@ class PanelsGroupeButtonHandler {
                     tonalElevation = 2.dp
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        ScreenM14VentPeriod()
+                        Screen_M9AppCompt()
                     }
                 }
             }
