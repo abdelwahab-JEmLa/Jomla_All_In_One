@@ -68,7 +68,7 @@ fun TopAppBar_With_DropDownMenu(
                         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                             .currentActiveFocuced_M14VentPeriode,
                         vents,
-                        produits=viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+                        produits = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
                     )
 
             DropdownMenu(
@@ -84,9 +84,9 @@ fun TopAppBar_With_DropDownMenu(
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
+                DropDownItem_3(viewModel)
                 DropDownItem_2(viewModel)
 
-                // Clear filter button
                 ClearFilterButton(viewModel)
 
                 Repo11AchatOperation_deleteMulti(viewModel)
@@ -215,6 +215,32 @@ private fun Repo11AchatOperation_deleteMulti(viewModel: GrossistAchatSec12FragID
                 }
 
                 viewModel.updateShowMenu(false)
+            }
+        )
+    }
+}
+
+@Composable
+private fun DropDownItem_3(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+    val text = "Choisir Client"
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = { Text(text) },
+            onClick = {
+                viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(true)
             }
         )
     }

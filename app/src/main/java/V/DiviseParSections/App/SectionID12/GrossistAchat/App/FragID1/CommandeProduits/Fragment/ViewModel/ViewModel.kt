@@ -14,6 +14,8 @@ class GrossistAchatSec12FragID1_ViewModel(
     val fVentCouleurOperationRepository = getter.repo10OperationVentCouleur
 
     data class UiState(
+        var show_Dialog_filter_AChats_Par_Client_Acheteur: Boolean = false,
+
         var dialog_Choisire_Grossist_Modularized_showDialog: Boolean = false,
         var dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen: Boolean = false,
         val showMenu: Boolean = false,
@@ -22,9 +24,16 @@ class GrossistAchatSec12FragID1_ViewModel(
         val mainLoadingProgress: Float = 0f,
     )
 
-    private val _uiState = MutableStateFlow(UiState())
+    val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+    fun update_show_Dialog_filter_AChats_Par_Client_Acheteur(
+        pour_MainScreen: Boolean = false
+    ) {
+        _uiState.value = _uiState.value.copy(
+            show_Dialog_filter_AChats_Par_Client_Acheteur = pour_MainScreen
+        )
+    }
     fun update_dialog_Choisire_Grossist_Modularized_showDialog(
         pour_Autre: Boolean = false,
         pour_MainScreen: Boolean = false

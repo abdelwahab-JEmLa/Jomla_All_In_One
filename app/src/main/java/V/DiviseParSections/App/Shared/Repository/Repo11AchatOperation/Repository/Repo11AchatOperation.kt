@@ -5,6 +5,8 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
+import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
@@ -27,6 +29,7 @@ class Repo11AchatOperation(
     val context: Context,
     val dataBaseCreationFactory: DataBaseInitFactory_11AchatOperation,
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
+    val repo8BonVent: Repo8BonVent,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M11AchatOperation>>(emptyList())
@@ -35,19 +38,29 @@ class Repo11AchatOperation(
     sealed class FilterQuery {
         data object NO_FILTER : FilterQuery()
         data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
+        data class Client(val m2Client: M2Client) : FilterQuery()
     }
-
     private val _filterQuery = mutableStateOf<FilterQuery>(FilterQuery.NO_FILTER)
-
     private val filteredDatasValue by derivedStateOf {
         when (val filter = _filterQuery.value) {
             FilterQuery.NO_FILTER -> datasValue
             is FilterQuery.Grossist -> datasValue.filter {
                 it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
             }
+            is FilterQuery.Client -> datasValue.filter { achatOperation ->
+                val relatedSalesOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(
+                    repo10OperationVentCouleur.datasValue
+                )
+
+                relatedSalesOperations.any { salesOperation ->
+                    val bonVent = repo8BonVent.datasValue.find {
+                        it.keyID == salesOperation.parentM8BonVentKeyId
+                    }
+                    bonVent?.parent_M2Client_KeyID == filter.m2Client.keyID
+                }
+            }
         }
     }
-
     val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
         filteredDatasValue.groupBy {
             it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
@@ -185,8 +198,6 @@ class Repo11AchatOperation(
             }
         }
     }
-
-
 }
 
 @Entity

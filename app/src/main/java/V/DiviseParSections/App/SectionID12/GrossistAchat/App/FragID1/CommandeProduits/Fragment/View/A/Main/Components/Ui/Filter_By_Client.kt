@@ -2,7 +2,10 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +13,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,18 +31,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
- fun Dialog_Filter_Client(
+fun Dialog_Filter_Client(
     uiState: GrossistAchatSec12FragID1_ViewModel.UiState,
     viewModel: GrossistAchatSec12FragID1_ViewModel,
-    onDismiss: () -> Unit
+    onDismiss: (M2Client?) -> Unit
 ) {
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onDismiss(null) },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = true
@@ -63,7 +72,7 @@ import androidx.compose.ui.window.DialogProperties
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-                    IconButton(onClick = onDismiss) {
+                    IconButton(onClick = { onDismiss(null) }) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Fermer"
@@ -73,10 +82,47 @@ import androidx.compose.ui.window.DialogProperties
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Clear Filter Option
+                Card(
+                    modifier = Modifier
+                        .clickable { onDismiss(null) }
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Supprimer le filtre",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = "Supprimer le filtre",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // Client List
                 LazyColumn_Client(
                     viewModel = viewModel,
-                    modifier = Modifier.weight(1f),
+                    onClientSelected = { client ->
+                        onDismiss(client)
+                    },
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -86,7 +132,8 @@ import androidx.compose.ui.window.DialogProperties
 @Composable
 fun LazyColumn_Client(
     modifier: Modifier = Modifier,
-    viewModel: GrossistAchatSec12FragID1_ViewModel
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    onClientSelected: (M2Client) -> Unit
 ) {
     val clients = viewModel.aCentralFacade.repositorysMainGetter.repo2Client.datasValue
     LazyColumn(
@@ -96,7 +143,8 @@ fun LazyColumn_Client(
         items(clients) { client ->
             Item_Client(
                 client = client,
-                viewModel = viewModel
+                viewModel = viewModel,
+                onClientSelected = onClientSelected
             )
         }
     }
@@ -104,62 +152,60 @@ fun LazyColumn_Client(
 
 @Composable
 fun Item_Client(
-    modifier: Modifier = Modifier,
     client: M2Client,
-    viewModel: GrossistAchatSec12FragID1_ViewModel
+    viewModel: GrossistAchatSec12FragID1_ViewModel,
+    onClientSelected: (M2Client) -> Unit
 ) {
-    val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+    Card(
+        modifier = Modifier
+            .clickable { onClientSelected(client) }
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Client avatar or icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = client.nom.take(2).uppercase(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-    /*  val isSelected = isSelected     //<--
-      //TODO(1): regle pour que le selected soit  Client(val m2Client: M2Client)
-      Card(
-          modifier = modifier
-              .fillMaxWidth()
-              .clickable {
-                  repo11AchatOperation.filterQuery.value =
-                      Repo11AchatOperation.FilterQuery.Client(client)  //->
-                  //TODO(FIXME):Fix erreur Type mismatch.
-                  //Required:
-                  //Repo11AchatOperation.FilterQuery.NO_FILTER
-                  //Found:
-                  //Repo11AchatOperation.FilterQuery.Clie
-              },
-          colors = CardDefaults.cardColors(
-              containerColor = if (isSelected)
-                  MaterialTheme.colorScheme.primaryContainer
-              else
-                  MaterialTheme.colorScheme.surface
-          ),
-          elevation = CardDefaults.cardElevation(
-              defaultElevation = if (isSelected) 8.dp else 2.dp
-          )
-      ) {
-          Row(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(16.dp),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically
-          ) {
-              Column {
-                  Text(
-                      text = client.nom,
-                      style = MaterialTheme.typography.bodyLarge,
-                      fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                      color = if (isSelected)
-                          MaterialTheme.colorScheme.onPrimaryContainer
-                      else
-                          MaterialTheme.colorScheme.onSurface
-                  )
-              }
+            Spacer(modifier = Modifier.width(16.dp))
 
-              if (isSelected) {
-                  Icon(
-                      imageVector = Icons.Default.Check,
-                      contentDescription = "Sélectionné",
-                      tint = MaterialTheme.colorScheme.onPrimaryContainer
-                  )
-              }
-          }
-      }           */
+            // Client info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = client.nom,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // You can add more client details here if available
+                // For example: phone number, address, etc.
+            }
+        }
+    }
 }

@@ -44,14 +44,7 @@ fun Screen_GrossistAchatSec12FragID1(
         )
     }
 
-    // Client filter dialog
-    if (uiState.showDialog) {
-        Dialog_Filter_Client(
-            uiState = uiState,
-            viewModel = viewModel,
-            onDismiss = { viewModel.updateShowDialog(false) }
-        )
-    }
+ 
 
     // Grossist selection dialog for main screen
     if (uiState.dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen) {
@@ -78,5 +71,31 @@ fun Screen_GrossistAchatSec12FragID1(
                 pour_MainScreen = false
             )
         }
+    }
+
+    if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
+        Dialog_Filter_Client(
+            uiState = uiState,
+            viewModel = viewModel,
+            onDismiss = { selectedClient ->
+                // Handle client selection similar to grossist selection
+                val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+
+                if (selectedClient != null) {
+                    // Apply client filter
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.Client(selectedClient)
+                    )
+                } else {
+                    // Clear filter
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.NO_FILTER
+                    )
+                }
+
+                // Close the dialog
+                viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
+            }
+        )
     }
 }
