@@ -7,6 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.ButtonAddVocale.ButtonAjouteRecordVoiceHistoriqueC3_BonAchate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.foundation.layout.Arrangement
@@ -54,8 +55,9 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
+    aCentralFacade: ACentralFacade =viewModel.aCentralFacade ,
     relative_M8: M8BonVent? =
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .focuced_active_onVent_M8BonVent,
     relative_M2Client: M2Client?,
     mapView: MapView,
