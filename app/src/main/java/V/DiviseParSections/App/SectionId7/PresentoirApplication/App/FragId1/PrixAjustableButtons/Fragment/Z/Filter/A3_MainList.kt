@@ -56,6 +56,22 @@ fun MainList(
             )
         }
 
+    val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
+        datasValue = list_M13TarificationInfos,
+        produit = relative_M1Produit,
+        typeChoisi = TypeChoisi.DefiniParGerant
+    )
+
+    val relative_Tariff_DefiniParGerant =
+        existingDefiniParGerant2Tariff?.let {
+            M13TarificationInfos.get_default().copy(
+                typeChoisi = TypeChoisi.DefiniParGerant,
+                parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+                parent_M1Produit_KeyId = relative_M1Produit.keyID,
+                prixCurrency = existingDefiniParGerant2Tariff.prixCurrency
+            )
+        }
+
     val standardTariffs = remember(
         relative_M1Produit,
         maxPrixArriveDuProduit,
@@ -63,6 +79,9 @@ fun MainList(
         travailleChezGrossisst3Ali
     ) {
         buildList {
+            if (relative_Tariff_DefiniParGerant != null) {
+                add(relative_Tariff_DefiniParGerant)
+            }
 
             if (relative_Tariff_Historique != null) {
                 add(relative_Tariff_Historique)
@@ -98,29 +117,9 @@ fun MainList(
         }
     }
 
-    val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
-        list_M13TarificationInfos,
-        relative_M1Produit,
-        TypeChoisi.DefiniParGerant
-    )
-
-    val generatedTariffDefiniParGerant2 = remember(
-        existingDefiniParGerant2Tariff,
-        relative_M1Produit,
-        list_M13TarificationInfos
-    ) {
-        existingDefiniParGerant2Tariff ?: M13TarificationInfos(
-            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-            parent_M1Produit_KeyId = relative_M1Produit.keyID,
-            prixCurrency = relative_M1Produit.prixAchat,
-            typeChoisi = TypeChoisi.DefiniParGerant
-        )
-    }
-
     val allTariffsGroupedAndSorted = remember(
         clientDefiniTariffs,
         standardTariffs,
-        generatedTariffDefiniParGerant2
     ) {
         val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
             it.typeChoisi == TypeChoisi.DefiniParGerant &&
@@ -129,8 +128,7 @@ fun MainList(
 
         val allTariffs = if (shouldAddGeneratedTariff) {
             clientDefiniTariffs +
-                    standardTariffs +
-                    generatedTariffDefiniParGerant2
+                    standardTariffs
         } else {
             clientDefiniTariffs + standardTariffs
         }
