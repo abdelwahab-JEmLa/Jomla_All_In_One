@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
 
 @Composable
-fun ID2MesasgerieTelegramme(
+fun ID2MesasgerieTelegramme(   //<--
+//TODO(1): regle
     showMessageurDialog: Boolean,
     showLabels: Boolean,
     onTelegramClick: () -> Unit = {}

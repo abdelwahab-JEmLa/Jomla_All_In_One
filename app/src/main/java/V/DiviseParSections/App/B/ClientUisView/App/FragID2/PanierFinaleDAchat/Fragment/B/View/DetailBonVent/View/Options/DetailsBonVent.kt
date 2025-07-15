@@ -253,7 +253,8 @@ fun FilterButton(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    ) {     //<--
+    //TODO(1): ajoute donne imprision et coomande
         FloatingActionButton(
             onClick = onToggleFilter,
             containerColor = if (uiState.filterNonTrouve) {
