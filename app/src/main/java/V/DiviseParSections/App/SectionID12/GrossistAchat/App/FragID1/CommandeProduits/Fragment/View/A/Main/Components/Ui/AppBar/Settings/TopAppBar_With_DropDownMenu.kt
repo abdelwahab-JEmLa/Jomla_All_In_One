@@ -2,8 +2,19 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -23,7 +34,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -91,7 +117,7 @@ fun TopAppBar_With_DropDownMenu(
 
                 ClearFilterButton(viewModel)
 
-                Repo11AchatOperation_deleteMulti(viewModel)
+                Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel)
 
                 //  dropdown item - Add operations
                 Card(
@@ -183,30 +209,24 @@ private fun ClearFilterButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
     }
 }
 
+// NEW: Material Expressive Delete Button Component
 @Composable
-private fun Repo11AchatOperation_deleteMulti(viewModel: GrossistAchatSec12FragID1_ViewModel) {
-    Card(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            },
-            text = { Text("Supprimer par Période") },
-            onClick = {
+private fun Repo11AchatOperation_deleteMulti_WithExpressiveButton(viewModel: GrossistAchatSec12FragID1_ViewModel) {
+    var isDeletePressed by remember { mutableStateOf(false) }
+    var isDeleteYellow by remember { mutableStateOf(false) }
+    var deleteProgress by remember { mutableStateOf(0f) }
+
+    // Animation pour le progress du bouton Delete
+    val animatedProgress by animateFloatAsState(
+        targetValue = if (isDeletePressed) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000),
+        finishedListener = { progress ->
+            if (progress == 1f && isDeletePressed) {
+                // Execute delete operation after 1 second
                 val keyID = viewModel.aCentralFacade
                     .focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
                     ?.keyID
 
-                // Fixed: Only delete if keyID is not null
                 keyID?.let { nonNullKeyID ->
                     viewModel.aCentralFacade.repositorysMainSetter.repo11AchatOperation_deleteMulti(
                         viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
@@ -217,7 +237,163 @@ private fun Repo11AchatOperation_deleteMulti(viewModel: GrossistAchatSec12FragID
                 }
 
                 viewModel.updateShowMenu(false)
+                isDeletePressed = false
+                isDeleteYellow = false
             }
+        }
+    )
+
+    LaunchedEffect(animatedProgress) {
+        deleteProgress = animatedProgress
+    }
+
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                ExpressiveDeleteIcon(
+                    isPressed = isDeletePressed,
+                    isYellow = isDeleteYellow,
+                    progress = deleteProgress,
+                    onClick = {
+                        // Premier clic : active l'état jaune
+                        if (!isDeleteYellow) {
+                            isDeleteYellow = true
+                        }
+                    },
+                    onLongPress = {
+                        // Commence l'animation seulement si le bouton est jaune
+                        if (isDeleteYellow) {
+                            isDeletePressed = true
+                        }
+                    },
+                    onRelease = {
+                        if (deleteProgress < 1f) {
+                            isDeletePressed = false
+                        }
+                    }
+                )
+            },
+            text = {
+                Text(
+                    "Supprimer par Période",
+                    color = when {
+                        isDeleteYellow -> Color(0xFFF59E0B)
+                        else -> MaterialTheme.colorScheme.error
+                    }
+                )
+            },
+            onClick = {
+                // Premier clic : active l'état jaune
+                if (!isDeleteYellow) {
+                    isDeleteYellow = true
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun ExpressiveDeleteIcon(
+    isPressed: Boolean = false,
+    isYellow: Boolean = false,
+    progress: Float = 0f,
+    onClick: () -> Unit,
+    onLongPress: () -> Unit = {},
+    onRelease: () -> Unit = {}
+) {
+    // Animation de scale
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed || isYellow) 1.2f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .size(24.dp)
+            .scale(scale)
+            .clip(CircleShape)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        onLongPress()
+                        tryAwaitRelease()
+                        onRelease()
+                    },
+                    onTap = {
+                        onClick()
+                    }
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        // Fond du bouton
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = when {
+                        isYellow -> Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFFBBF24),
+                                Color(0xFFF59E0B)
+                            )
+                        )
+                        else -> Brush.linearGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent
+                            )
+                        )
+                    },
+                    shape = CircleShape
+                )
+        )
+
+        // Indicateur de progression pour le bouton Delete
+        if (progress > 0f) {
+            // Cercle de progression
+            Canvas(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val strokeWidth = 2.dp.toPx()
+                drawArc(
+                    color = Color(0xFFDC2626), // Rouge pour delete
+                    startAngle = -90f,
+                    sweepAngle = 360f * progress,
+                    useCenter = false,
+                    style = Stroke(
+                        width = strokeWidth,
+                        cap = StrokeCap.Round
+                    ),
+                    size = Size(
+                        size.width - strokeWidth,
+                        size.height - strokeWidth
+                    ),
+                    topLeft = Offset(
+                        strokeWidth / 2,
+                        strokeWidth / 2
+                    )
+                )
+            }
+        }
+
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = "Delete",
+            tint = when {
+                isYellow -> Color.White
+                else -> MaterialTheme.colorScheme.error
+            },
+            modifier = Modifier.size(16.dp)
         )
     }
 }

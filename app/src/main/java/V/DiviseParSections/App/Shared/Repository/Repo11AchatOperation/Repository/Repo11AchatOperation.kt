@@ -107,7 +107,7 @@ class Repo11AchatOperation(
                 M11AchatOperation.get_default().first.copy(
                     prix_Achat_De_Cette_Grossist = produit?.prixAchat ?: 0.0,
                     parent_M15Grossist_DebugInfos = lastAchat?.parent_M15Grossist_DebugInfos ?: "Non Defini Gros",
-                    parent_M15Grossist_KeyID = lastAchat?.parent_M15Grossist_KeyID ?: "null",
+                    parent_M15Grossist_KeyID = lastAchat?.parent_M15Grossist_KeyID ?: "-OUzoKE1ANl4Kt2ESAB6",
                     parent_M14VentPeriod_KeyID = m14VentPeriod?.keyID ?: "null",
                     parent_M1Produit_DebugInfos = vents.firstOrNull()?.parentM1ProduitDebugInfos ?: "Unknown Product",
                     parent_M1Produit_KeyID = produitId ?: "null",
