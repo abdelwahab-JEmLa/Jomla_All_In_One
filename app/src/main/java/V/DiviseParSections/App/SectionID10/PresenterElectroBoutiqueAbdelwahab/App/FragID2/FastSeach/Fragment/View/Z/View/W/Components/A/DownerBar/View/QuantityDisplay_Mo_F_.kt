@@ -149,8 +149,9 @@ fun QuantityDisplay_Mo_F_(
                     "Depuis Mon Old BaseDonnée" to Icons.Default.History
                 }
 
+                val text = "$depuit_Qui - ${finale_Tariff.prixCurrency}"
                 Text(
-                    text = "$depuit_Qui - ${finale_Tariff.prixCurrency}",
+                    text = "Click Pour Affiche",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
