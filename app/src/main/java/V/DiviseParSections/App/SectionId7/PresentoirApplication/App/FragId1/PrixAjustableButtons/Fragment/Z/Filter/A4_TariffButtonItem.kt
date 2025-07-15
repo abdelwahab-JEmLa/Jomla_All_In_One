@@ -151,7 +151,8 @@ fun TariffButtonItem(
         }
         isEditingPurchasePrice = false
     }
-
+       //<--
+       //TODO(1): regle pour que si on edite affiche ben et autres
     Row(
         modifier = Modifier
             .getSemanticsTag(nomVal = "produit", data = produit.nom),
