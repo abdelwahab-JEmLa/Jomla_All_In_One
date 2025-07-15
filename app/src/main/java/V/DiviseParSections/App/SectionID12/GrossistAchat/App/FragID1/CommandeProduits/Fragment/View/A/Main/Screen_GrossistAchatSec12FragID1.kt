@@ -83,9 +83,16 @@ fun Screen_GrossistAchatSec12FragID1(
             try {
                 // Handle grossist selection with null safety
                 if (grossistSelected != null) {
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
-                    )
+                    // Check if this is the special null grossist filter
+                    if (grossistSelected.keyID == "NULL_GROSSIST_FILTER") {
+                        repo11AchatOperation.updateFilterQuery(
+                            Repo11AchatOperation.FilterQuery.NullGrossist
+                        )
+                    } else {
+                        repo11AchatOperation.updateFilterQuery(
+                            Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
+                        )
+                    }
                 } else {
                     repo11AchatOperation.updateFilterQuery(
                         Repo11AchatOperation.FilterQuery.NO_FILTER

@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -32,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +64,13 @@ fun Dialog_Choisire_Grossist_Modularized(
         }
         Pair(grossist, purchaseCount)
     }.sortedByDescending { it.second } // Sort by purchase count (descending)
+
+    // Calculate count for operations with null grossist
+    val nullGrossistCount = remember(datasValue_repo11AchatOperation) {
+        datasValue_repo11AchatOperation.count { achat ->
+            achat.parent_M15Grossist_KeyID == "null" || achat.parent_M15Grossist_KeyID.isBlank()
+        }
+    }
 
     Dialog(
         onDismissRequest = {
@@ -150,6 +159,85 @@ fun Dialog_Choisire_Grossist_Modularized(
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            }
+                        }
+                    }
+
+                    // Add option to show only operations with null grossist (only if there are any)
+                    if (nullGrossistCount > 0) {
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .clickable {
+                                        focusManager.clearFocus()
+                                        // Create a special grossist object to represent null grossist filter
+                                        val nullGrossist = M15Grossist(
+                                            keyID = "NULL_GROSSIST_FILTER",
+                                            nom = "Grossiste non défini",
+                                            couleur_In_Str = "#FF0000"
+                                        )
+                                        onDismiss(nullGrossist)
+                                    }
+                                    .fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Badge for null grossist count
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                                contentColor = MaterialTheme.colorScheme.onError
+                                            ) {
+                                                Text(
+                                                    text = nullGrossistCount.toString(),
+                                                    style = MaterialTheme.typography.labelSmall
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .clip(CircleShape)
+                                                .background(MaterialTheme.colorScheme.error),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Default.FilterList,
+                                                contentDescription = "Grossiste non défini",
+                                                tint = MaterialTheme.colorScheme.onError
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            text = "Grossiste non défini",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+
+                                        Text(
+                                            text = "$nullGrossistCount opérations sans grossiste",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
