@@ -135,7 +135,7 @@ fun QuantityDisplay_Mo_F_(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (allNonTrouve) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                else MaterialTheme.colorScheme.secondary
+                else MaterialTheme.colorScheme.error
             )
         ) {
             Row(
@@ -151,7 +151,7 @@ fun QuantityDisplay_Mo_F_(
 
                 val text = "$depuit_Qui - ${finale_Tariff.prixCurrency}"
                 Text(
-                    text = "Click Pour Affiche",
+                    text = "اضغط لاظهار السعر",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium,
                     color = if (allNonTrouve) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
