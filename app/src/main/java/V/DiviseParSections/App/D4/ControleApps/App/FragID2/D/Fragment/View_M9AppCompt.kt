@@ -2,6 +2,7 @@ package V.DiviseParSections.App.D4.ControleApps.App.FragID2.D.Fragment
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ScreenM14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.background
@@ -53,6 +54,7 @@ fun View_M9AppCompt(
 
     Column(
         modifier = Modifier
+            .getSemanticsTag(relative_M9AppCompt,"")
             .fillMaxWidth()
             .clickable {
             }
@@ -99,7 +101,7 @@ fun View_M9AppCompt(
     if (showDialog) {
         SettingsDialog(
             viewModel=viewModel,
-            currentAppCompt = relative_M9AppCompt,
+            relative_M9AppCompt = relative_M9AppCompt,
             onDismiss = { showDialog = false },
             onUpdateAppCompt = { updatedAppCompt ->
                 viewModel.aCentralFacade.repositorysMainSetter.update_M9AppCompt(updatedAppCompt)
@@ -111,15 +113,15 @@ fun View_M9AppCompt(
 
 @Composable
 private fun SettingsDialog(
-    currentAppCompt: Z_AppCompt,
+    relative_M9AppCompt: Z_AppCompt,
     onDismiss: () -> Unit,
     onUpdateAppCompt: (Z_AppCompt) -> Unit,
     viewModel: ViewModel_M9AppCompt,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
-    var hideAppScreen by remember { mutableStateOf(currentAppCompt.hideAppScreen) }
-    var travailleChezGrossisst3Ali by remember { mutableStateOf(currentAppCompt.travailleChezGrossisst3Ali) }
-    var itsAdmin by remember { mutableStateOf(currentAppCompt.its_Admin) }
+    var hideAppScreen by remember { mutableStateOf(relative_M9AppCompt.hideAppScreen) }
+    var travailleChezGrossisst3Ali by remember { mutableStateOf(relative_M9AppCompt.travailleChezGrossisst3Ali) }
+    var itsAdmin by remember { mutableStateOf(relative_M9AppCompt.its_Admin) }
     var showPeriodSelector by remember { mutableStateOf(false) }
 
 
@@ -218,7 +220,7 @@ private fun SettingsDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val updatedAppCompt = currentAppCompt.copy(
+                    val updatedAppCompt = relative_M9AppCompt.copy(
                         hideAppScreen = hideAppScreen,
                         travailleChezGrossisst3Ali = travailleChezGrossisst3Ali,
                         its_Admin = itsAdmin,
@@ -262,7 +264,8 @@ private fun SettingsDialog(
                     // Use the existing ScreenM14VentPeriod
                     ScreenM14VentPeriod(
                         modifier = Modifier.weight(1f),
-                        viewModel = koinInject<ViewModel_M14VentPeriod>()
+                        viewModel = koinInject<ViewModel_M14VentPeriod>(),
+                        relative_M9AppCompt =relative_M9AppCompt,
                     )
                 }
             }

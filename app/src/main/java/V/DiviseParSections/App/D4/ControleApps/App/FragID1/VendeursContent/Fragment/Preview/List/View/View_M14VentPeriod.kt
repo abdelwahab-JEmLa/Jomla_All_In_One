@@ -22,10 +22,11 @@ fun View_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
     aCentralFacade: ACentralFacade= viewModel.aCentralFacade,
     relative_M14VentPeriode: M14VentPeriode,
-    relative_M9: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt,
+    relative_M9AppCompt: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt,
 ) {
     val focusedActiveValuesFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-    val currentActiveFocuced_M14VentPeriode = focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
+    val currentActiveFocuced_M14VentPeriode =
+        focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
     val active = (currentActiveFocuced_M14VentPeriode?.keyID ?: "") == relative_M14VentPeriode.keyID
 
     val backgroundColor = when {
@@ -39,9 +40,9 @@ fun View_M14VentPeriod(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                if (relative_M9 != null) {
+                if (relative_M9AppCompt != null) {
                     aCentralFacade.repositorysMainSetter.update_M9AppCompt(
-                        relative_M9.copy(
+                        relative_M9AppCompt.copy(
                             current_OnVent_M14VentPeriode_KeyID = relative_M14VentPeriode.keyID ,
                             current_OnVent_M14VentPeriode_DebugInfos = relative_M14VentPeriode.get_DebugInfos()
                         )

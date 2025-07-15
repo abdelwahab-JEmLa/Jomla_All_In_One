@@ -4,6 +4,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.SectionDivider
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,10 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun ViewListM14(
-    viewModel: ViewModel_M14VentPeriod
+ fun ViewList_M14VentPeriod(
+    viewModel: ViewModel_M14VentPeriod,
+    relative_M9AppCompt: Z_AppCompt? ,
 ) {
-    val M14VentPeriodList = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
+    val m14VentPeriodList = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
 
     LazyColumn(
         modifier = Modifier
@@ -27,29 +29,16 @@ import androidx.compose.ui.unit.dp
             .padding(16.dp)
     ) {
         item {
-            SectionDivider(color = Color.Red)
-
-            Text(
-                text = "Périodes de Vente",
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            // Add debug info to see what's happening
-            Text(
-                text = "Count: ${M14VentPeriodList.size}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
-
             SectionDivider()
         }
 
         // Show periods if they exist
-        if (M14VentPeriodList.isNotEmpty()) {
-            items(M14VentPeriodList) { periode ->
+        if (m14VentPeriodList.isNotEmpty()) {
+            items(m14VentPeriodList) { periode ->
                 View_M14VentPeriod(
                     viewModel = viewModel,
                     relative_M14VentPeriode = periode,
+                    relative_M9AppCompt = relative_M9AppCompt
                 )
             }
         } else {
