@@ -30,7 +30,32 @@ fun View_AchatCouleur(
     ) {
         Column {
             Box {
-                CouleurDisplayer(keyCouleur = achatCouleur.parent_M3CouleurProduit_KeyID)
+                // Add null safety check for the color key
+                val couleurKey = achatCouleur.parent_M3CouleurProduit_KeyID
+                if (couleurKey.isNotEmpty()) {
+                    CouleurDisplayer(keyCouleur = couleurKey)
+                } else {
+                    // Fallback UI when color key is null or empty
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(
+                                color = Color.Gray.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    ) {
+                        Text(
+                            text = "Couleur non disponible",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        )
+                    }
+                }
 
                 Box(
                     modifier = Modifier
