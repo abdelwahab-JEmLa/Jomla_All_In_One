@@ -29,7 +29,6 @@ fun List_GroupeAchatProduit(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
     val repo = viewModel.getter.repo11AchatOperation
-
     val items = repo.bProduitKeyID_To_List_KAchatCouleurOperation.entries.toList()
 
     Box(
