@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
             items(M14VentPeriodList) { periode ->
                 View_M14VentPeriod(
                     viewModel = viewModel,
-                    m14VentPeriode = periode,
+                    relative_M14VentPeriode = periode,
                 )
             }
         } else {

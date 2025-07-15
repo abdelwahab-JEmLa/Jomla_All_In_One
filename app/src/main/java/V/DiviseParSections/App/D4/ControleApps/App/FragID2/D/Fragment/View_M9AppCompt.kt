@@ -4,7 +4,6 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
-import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -121,7 +121,6 @@ private fun SettingsDialog(
     var travailleChezGrossisst3Ali by remember { mutableStateOf(currentAppCompt.travailleChezGrossisst3Ali) }
     var itsAdmin by remember { mutableStateOf(currentAppCompt.its_Admin) }
     var showPeriodSelector by remember { mutableStateOf(false) }
-    var selectedPeriod by remember { mutableStateOf<M14VentPeriode?>(null) }
 
 
     AlertDialog(
@@ -197,7 +196,6 @@ private fun SettingsDialog(
                     }
                 }
 
-                // Period Selection Button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -208,13 +206,6 @@ private fun SettingsDialog(
                             text = "Select Period:",
                             style = MaterialTheme.typography.bodyLarge
                         )
-                        selectedPeriod?.let { period ->
-                            Text(
-                                text = "Selected: ${period.get_DebugInfos()}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
                     }
                     Button(
                         onClick = { showPeriodSelector = true }
@@ -231,8 +222,6 @@ private fun SettingsDialog(
                         hideAppScreen = hideAppScreen,
                         travailleChezGrossisst3Ali = travailleChezGrossisst3Ali,
                         its_Admin = itsAdmin,
-                        current_OnVent_M14VentPeriode_KeyID = selectedPeriod?.keyID ?: currentAppCompt.current_OnVent_M14VentPeriode_KeyID,
-                        current_OnVent_M14VentPeriode_DebugInfos = selectedPeriod?.get_DebugInfos() ?: currentAppCompt.current_OnVent_M14VentPeriode_DebugInfos
                     )
                     onUpdateAppCompt(updatedAppCompt)
                 }
@@ -253,7 +242,7 @@ private fun SettingsDialog(
             onDismissRequest = { showPeriodSelector = false },
             properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            androidx.compose.material3.Surface(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
                     .padding(16.dp),
@@ -275,27 +264,6 @@ private fun SettingsDialog(
                         modifier = Modifier.weight(1f),
                         viewModel = koinInject<ViewModel_M14VentPeriod>()
                     )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = { showPeriodSelector = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                        TextButton(
-                            onClick = {
-                                // Get the currently selected period from the focused values
-                                val currentlySelectedPeriod = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-                                selectedPeriod = currentlySelectedPeriod
-                                showPeriodSelector = false
-                            }
-                        ) {
-                            Text("Select")
-                        }
-                    }
                 }
             }
         }
