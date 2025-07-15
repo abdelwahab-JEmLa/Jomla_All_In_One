@@ -28,7 +28,8 @@ fun ScreenM14VentPeriod(
     viewModel: ViewModel_M14VentPeriod = koinInject(),
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     list_M14VentPeriode: List<M14VentPeriode> = aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue,
-    relative_M9AppCompt: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt,
+    relative_M9AppCompt: Z_AppCompt? =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Surface(
@@ -45,8 +46,6 @@ fun ScreenM14VentPeriod(
                         text = "Périodes de Vente de ${relative_M9AppCompt?.get_DebugInfos()}",
                         style = MaterialTheme.typography.titleLarge
                     )
-
-                    // Add debug info to see what's happening
                     Text(
                         text = "Count: ${list_M14VentPeriode.size}",
                         style = MaterialTheme.typography.bodySmall,
@@ -54,7 +53,8 @@ fun ScreenM14VentPeriod(
                     )
                     ViewList_M14VentPeriod(
                         viewModel,
-                        relative_M9AppCompt
+                        list_M14VentPeriode = list_M14VentPeriode,
+                        relative_M9AppCompt=relative_M9AppCompt
                     )
                 }
             }

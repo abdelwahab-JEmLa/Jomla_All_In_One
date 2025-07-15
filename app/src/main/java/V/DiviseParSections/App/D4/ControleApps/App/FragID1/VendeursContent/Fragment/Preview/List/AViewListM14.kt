@@ -4,7 +4,9 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.List.View.View_M14VentPeriod
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.SectionDivider
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.Preview.ViewModel_M14VentPeriod
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,11 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun ViewList_M14VentPeriod(
+fun ViewList_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
-    relative_M9AppCompt: Z_AppCompt? ,
+    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
+    relative_M9AppCompt: Z_AppCompt?,
+    list_M14VentPeriode: List<M14VentPeriode>,
 ) {
-    val m14VentPeriodList = viewModel.aCentralFacade.repositorysMainGetter.repo14VentPeriode.datasValue
 
     LazyColumn(
         modifier = Modifier
@@ -33,8 +36,8 @@ import androidx.compose.ui.unit.dp
         }
 
         // Show periods if they exist
-        if (m14VentPeriodList.isNotEmpty()) {
-            items(m14VentPeriodList) { periode ->
+        if (list_M14VentPeriode.isNotEmpty()) {
+            items(list_M14VentPeriode) { periode ->
                 View_M14VentPeriod(
                     viewModel = viewModel,
                     relative_M14VentPeriode = periode,

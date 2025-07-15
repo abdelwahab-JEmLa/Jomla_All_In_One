@@ -22,12 +22,11 @@ fun View_M14VentPeriod(
     viewModel: ViewModel_M14VentPeriod,
     aCentralFacade: ACentralFacade= viewModel.aCentralFacade,
     relative_M14VentPeriode: M14VentPeriode,
-    relative_M9AppCompt: Z_AppCompt? = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt,
+    relative_M9AppCompt: Z_AppCompt? ,
 ) {
-    val focusedActiveValuesFacade = viewModel.aCentralFacade.focusedActiveValuesFacade
-    val currentActiveFocuced_M14VentPeriode =
-        focusedActiveValuesFacade.focusedValuesGetter.currentActiveFocuced_M14VentPeriode
-    val active = (currentActiveFocuced_M14VentPeriode?.keyID ?: "") == relative_M14VentPeriode.keyID
+    val active_M14VentPeriode =
+        relative_M9AppCompt?.current_OnVent_M14VentPeriode_KeyID
+    val active = (active_M14VentPeriode ?: "") == relative_M14VentPeriode.keyID
 
     val backgroundColor = when {
         active -> MaterialTheme.colorScheme.surfaceVariant
