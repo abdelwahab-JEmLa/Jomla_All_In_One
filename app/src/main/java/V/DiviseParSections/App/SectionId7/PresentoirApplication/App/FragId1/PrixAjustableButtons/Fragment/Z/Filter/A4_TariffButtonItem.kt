@@ -56,14 +56,14 @@ fun TariffButtonItem(
     context: Context,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
 ) {
-    val latestTariff = tariffs.maxByOrNull { it.id }
+    val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
 
     var latestTariffLocalData by remember(produit, latestTariff) {
         mutableStateOf(
             latestTariff.copy(
-                parentM1ProduitInfosKeyId = produit.keyID,
-                parentM1ProduitDebugInfos = produit.nom
+                parent_M1Produit_KeyId = produit.keyID,
+                parent_M1Produit_DebugInfos = produit.nom
             )
         )
     }
@@ -84,7 +84,7 @@ fun TariffButtonItem(
     val purchasePriceFocusRequester = remember { FocusRequester() }
 
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
-            typeTarification == TypeChoisi.DefiniParGerant2
+            typeTarification == TypeChoisi.DefiniParGerant
 
     // Check if this is a purchase price tariff that can be edited by admin
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst

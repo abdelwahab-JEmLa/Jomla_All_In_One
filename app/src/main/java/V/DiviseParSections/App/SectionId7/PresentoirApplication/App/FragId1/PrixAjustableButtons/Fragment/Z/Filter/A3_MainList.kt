@@ -96,9 +96,9 @@ fun MainList(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
                         prixCurrency = produit.prixAchat,
-                        parentM1ProduitInfosKeyId = produit.keyID,
-                        parentM1ProduitDebugInfos = produit.nom,
-                        idParentProduit = produit.id
+                        parent_M1Produit_KeyId = produit.keyID,
+                        parent_M1Produit_DebugInfos = produit.nom,
+                        parent_M1Produit_KeyId = produit.id
                     )
                 )
             }
@@ -108,7 +108,7 @@ fun MainList(
     val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
         tariffs,
         produit,
-        TypeChoisi.DefiniParGerant2
+        TypeChoisi.DefiniParGerant
     )
 
     val generatedTariffDefiniParGerant2 = remember(
@@ -117,11 +117,10 @@ fun MainList(
         tariffs
     ) {
         existingDefiniParGerant2Tariff ?: M13TarificationInfos(
-            id = if (tariffs.isNotEmpty()) tariffs.maxOf { it.id } + 1 else 1L,
-            parentM1ProduitDebugInfos = produit.nom,
-            parentM1ProduitInfosKeyId = produit.keyID,
+            parent_M1Produit_DebugInfos = produit.nom,
+            parent_M1Produit_KeyId = produit.keyID,
             prixCurrency = produit.prixAchat,
-            typeChoisi = TypeChoisi.DefiniParGerant2
+            typeChoisi = TypeChoisi.DefiniParGerant
         )
     }
 
@@ -132,8 +131,8 @@ fun MainList(
         generatedTariffDefiniParGerant2
     ) {
         val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
-            it.typeChoisi == TypeChoisi.DefiniParGerant2 &&
-                    it.parentM1ProduitInfosKeyId == produit.keyID
+            it.typeChoisi == TypeChoisi.DefiniParGerant &&
+                    it.parent_M1Produit_KeyId == produit.keyID
         }
 
         val allTariffs = if (shouldAddGeneratedTariff) {

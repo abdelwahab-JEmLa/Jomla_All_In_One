@@ -61,7 +61,8 @@ class Repo13TarificationInfos(
     }
 
     fun add(data: M13TarificationInfos) {
-        val dataUpdate = data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
+        val dataUpdate =
+            data.copy(dernierTimeTampsSynchronisationAvecFireBase = System.currentTimeMillis())
 
         composScope.launch {
             withContext(Dispatchers.Main.immediate) {
@@ -98,50 +99,55 @@ data class M13TarificationInfos(
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    //---------------------------------ForgingIDsParent.M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
-    var parentM1ProduitInfosKeyId: String = "null",
-    val parentM1ProduitDebugInfos:String="null",
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    val idParentProduit: Long = 0L,
-    val typeChoisi: TypeChoisi =
-        TypeChoisi.DefiniParGerant2,
-
-    val parentIdClient: Long = 0L,
-
-    //Base Infos
+    val typeChoisi: TypeChoisi = TypeChoisi.DefiniParGerant,
     val prixCurrency: Double = 0.0,
-    val timestamps: Long = System.currentTimeMillis(),
-    val nom: String = "",
 
-    //Etates Mutable
-    val needUpdate: Boolean = true,
+    //---------------------------------ForgingIDsParent.M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M1Produit_KeyId: String = "null",
+    val parent_M1Produit_DebugInfos: String = "null",
+    //---------------------------------M8BonVent----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M8BonVent_KeyId: String = "null",
+    val parent_M8BonVent_DebugInfos: String = "null",
 
+    //---------------------------------M2Client----------------------------------------------------------------------------------------------------------------------------------
+    var parent_M2Client_KeyId: String = "null",
+    val parent_M2Client_DebugInfos: String = "null",
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
 ) {
     fun getDebugInfos(): String {
-        return "$parentM1ProduitDebugInfos $typeChoisi"
+        return "$parent_M1Produit_DebugInfos $typeChoisi"
     }
 
     enum class TypeChoisi(
         val iconVector: ImageVector? = null,
         val couleur: Color = Color.White,
-        val nomArabe: String ="",
+        val nomArabe: String = "",
         val couleur_Text: Color = Color.White,
     ) {
-        LeMaxPrixArrive(Icons.Filled.ArrowUpward, Color(0xFFFF9800),"فائدة محققة مع لاضا كثير من الزيناء"),
-        DefiniParGerant2(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B),"محدد من عمي علي"),
-        DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B),"المحدد من المدير بنصرف "),
-        Historique(Icons.Filled.History, Color(0xFF9C27B0),"السعر الذي وصلنا له"),
-        PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336),"الفايدة ابتداءا تكاد تكون معدومة "),
+        LeMaxPrixArrive(
+            Icons.Filled.ArrowUpward,
+            Color(0xFFFF9800),
+            "فائدة محققة مع لاضا كثير من الزيناء"
+        ),
+        DefiniParGerant(Icons.Filled.ArrowUpward, Color(0xFFFFEB3B), "محدد من المحل"),
+        Historique(Icons.Filled.History, Color(0xFF9C27B0), "السعر الذي وصلنا له"),
+        PRIX_BASE(Icons.Filled.EditOff, Color(0xFFF44336), "الفايدة ابتداءا تكاد تكون معدومة "),
+        Tariff_Achat_Depuit_Grossisst(
+            Icons.Filled.History,
+            Color(0xFF000000),
+            "سعر الشراء",
+            Color(0xFF2196F3)
+        ),
 
-        Tariff_Achat_Depuit_Grossisst(Icons.Filled.History, Color(0xFF000000),"سعر الشراء",Color(0xFF2196F3)) ,
+        DEFINI(Icons.Filled.Edit, Color(0xFFFFEB3B), "المحدد من المدير بنصرف "),
     }
 
     fun withProperDefaults(): M13TarificationInfos {
         return this
     }
 
-    companion object{
+    companion object {
         val ref = Firebase.database.getReference(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
         )
@@ -151,8 +157,8 @@ data class M13TarificationInfos(
             start_Prix_Depuit_Ancient: Double,
         ): Pair<M13TarificationInfos, Modifier> {
             val m13TarificationInfos = M13TarificationInfos(
-                parentM1ProduitInfosKeyId = parentM1ProduitInfos.keyID,
-                parentM1ProduitDebugInfos = parentM1ProduitInfos.getDebugInfos() ,
+                parent_M1Produit_KeyId = parentM1ProduitInfos.keyID,
+                parent_M1Produit_DebugInfos = parentM1ProduitInfos.getDebugInfos(),
                 prixCurrency = start_Prix_Depuit_Ancient
             )
             val modifier = Modifier.getSemanticsTag(
@@ -165,12 +171,12 @@ data class M13TarificationInfos(
         fun findTariff(
             datasValue: List<M13TarificationInfos>,
             produit: ArticlesBasesStatsTable,
-            typeChoisi: TypeChoisi =TypeChoisi.DefiniParGerant2
+            typeChoisi: TypeChoisi = TypeChoisi.DefiniParGerant
         ) = datasValue
             .lastOrNull { tariff ->
                 val match =
                     tariff.typeChoisi == typeChoisi &&
-                            tariff.parentM1ProduitInfosKeyId == produit.keyID
+                            tariff.parent_M1Produit_KeyId == produit.keyID
                 match
             }
     }

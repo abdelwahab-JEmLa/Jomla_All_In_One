@@ -111,7 +111,7 @@ fun QuantityDisplay_Mo_F_Panie(
 
         val datasValue = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
 
-        val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant2)
+        val findTariff = M13TarificationInfos.findTariff(datasValue, produit, TypeChoisi.DefiniParGerant)
         val default_Tariff = M13TarificationInfos.get_default(produit, start_Prix_Depuit_Ancient = produit.prixAchat)
         val finale_Tariff = findTariff ?: default_Tariff.first
 

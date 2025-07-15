@@ -51,8 +51,8 @@ fun MainFilter(
 
     val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter {
-            it.idParentProduit == filteredProduit.id &&
-                    it.parentIdClient == idClientFiltruer
+            it.parent_M1Produit_KeyId == filteredProduit.id &&
+                    it.parent_M2Client_KeyId == idClientFiltruer
         }
     }
 

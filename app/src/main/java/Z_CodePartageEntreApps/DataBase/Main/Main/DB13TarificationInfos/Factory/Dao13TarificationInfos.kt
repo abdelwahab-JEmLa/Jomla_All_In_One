@@ -23,17 +23,12 @@ interface Dao13TarificationInfos {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAll(datas: List<M13TarificationInfos>)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM M13TarificationInfos WHERE id = :id)")
-    suspend fun exists(id: Long): Boolean
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(tarificationInfos: M13TarificationInfos): Long
 
     @Query("SELECT * FROM M13TarificationInfos")
     fun getAllFlow(): Flow<List<M13TarificationInfos>>
 
-    @Query("SELECT * FROM M13TarificationInfos WHERE id = :id")
-    suspend fun getTarificationById(id: Long): M13TarificationInfos?
 
     @Update
     suspend fun update(tarification: M13TarificationInfos)

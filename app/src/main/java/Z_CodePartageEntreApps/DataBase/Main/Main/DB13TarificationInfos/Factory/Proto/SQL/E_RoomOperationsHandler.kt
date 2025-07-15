@@ -169,7 +169,7 @@ class G_RoomOperationsHandler(
 
                     // FIXED: Check if item exists first, then update_showDetailsExpanded or insert accordingly
                     val existingId = dataWithDefaults.id
-                    val finalId = if (existingId > 0 && database.Dao13TarificationInfos().exists(existingId)) {
+                    val finalId = if (existingId > 0 ) {
                         // Update existing record
                         database.Dao13TarificationInfos().update(dataWithDefaults)
                         existingId

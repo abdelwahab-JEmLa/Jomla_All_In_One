@@ -249,7 +249,7 @@ data class M10OperationVentCouleur(
     //Mutable
     var provisoireMonPrix: Double = 0.0,
     var etateDelivery: EtateDelivery = EtateDelivery.Trouve,
-    var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant2,
+    var typeTarificationEnumT2: M13TarificationInfos.TypeChoisi = M13TarificationInfos.TypeChoisi.DefiniParGerant,
 
     var parentClientInfosKeyID: String = "",
     var parentClientName: String = "",
@@ -262,7 +262,7 @@ data class M10OperationVentCouleur(
         SetIN_Vent_Its_Quantity_Represent.quantity_Par_Boit,
     var affiche_Unite_Au_Printing: Boolean =true,
 
-) {
+    ) {
     enum class SetIN_Vent_Its_Quantity_Represent {
         quantity_Par_Boit,
         quantity_Par_Carton;

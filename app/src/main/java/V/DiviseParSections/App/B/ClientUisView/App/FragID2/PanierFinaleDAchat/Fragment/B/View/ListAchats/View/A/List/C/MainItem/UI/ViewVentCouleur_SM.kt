@@ -117,7 +117,7 @@ fun ViewVentCouleur_Module(
     val datasValue =
         aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
     val findTariff =
-        M13TarificationInfos.findTariff(datasValue, relative_M1Produit, TypeChoisi.DefiniParGerant2)
+        M13TarificationInfos.findTariff(datasValue, relative_M1Produit, TypeChoisi.DefiniParGerant)
     val default_Tariff =
         M13TarificationInfos.get_default(relative_M1Produit, start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat)
 
