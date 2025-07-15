@@ -42,7 +42,7 @@ data class ParametresAppComptNonSaved(
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.FacadePresentoireProduits,
+    val devStartUpScree: Screen = Screen.Achats_Produits_Chez_Grossists,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 )
@@ -52,7 +52,7 @@ class RepositorysMainGetter(
     private val context: Context,
     val databaseInitializationManager: WDatabaseInitializationManager,
 
-    val repoM1ProduitInfos: RepoM1Produit,
+    val repo1ProduitInfos: RepoM1Produit,
     val repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
@@ -128,7 +128,7 @@ class RepositorysMainGetter(
         }
 
     val filteredA_ProduitsParCatalogueBsonId by derivedStateOf {
-        repoM1ProduitInfos.datasValue.filteredParCatalogueBsonId()
+        repo1ProduitInfos.datasValue.filteredParCatalogueBsonId()
     }
 
     fun List<ArticlesBasesStatsTable>.filteredParCatalogueBsonId(): List<ArticlesBasesStatsTable> {

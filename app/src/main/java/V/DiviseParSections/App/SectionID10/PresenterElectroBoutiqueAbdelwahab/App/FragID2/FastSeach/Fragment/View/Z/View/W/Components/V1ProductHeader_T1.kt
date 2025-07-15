@@ -154,7 +154,7 @@ fun ProductHeader_T1(
                                 setIN_Vent_Its_Quantity_Represent =
                                     toggled_setIN_Vent_Its_Quantity_Represent
                             }.also {
-                                repositorysMainGetter.repoM1ProduitInfos.update(
+                                repositorysMainGetter.repo1ProduitInfos.update(
                                     it
                                 )
                             }
@@ -220,7 +220,7 @@ fun ProductHeader_T1(
                         nombreUniteInt = new_Qyt
 
                     }.also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
 
                     viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
@@ -240,7 +240,7 @@ fun ProductHeader_T1(
                     produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
                     }.also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
                 }
 

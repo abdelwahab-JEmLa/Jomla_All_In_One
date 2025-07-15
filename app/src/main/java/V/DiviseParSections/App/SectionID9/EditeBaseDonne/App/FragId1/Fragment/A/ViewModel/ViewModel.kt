@@ -49,7 +49,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
 
     val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
     val a_ProduitDataBaseComposeRepositoryPJ17 =
-        a_CentralDatasHandlerProtoJuin9.repoM1ProduitInfos
+        a_CentralDatasHandlerProtoJuin9.repo1ProduitInfos
 
     private val _uiState = MutableStateFlow(UiStateSec9Frag1())
     val uiState: StateFlow<UiStateSec9Frag1> = _uiState.asStateFlow()

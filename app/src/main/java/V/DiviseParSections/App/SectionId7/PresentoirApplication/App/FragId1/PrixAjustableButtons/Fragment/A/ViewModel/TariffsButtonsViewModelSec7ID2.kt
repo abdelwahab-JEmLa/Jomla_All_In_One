@@ -34,7 +34,7 @@ class TariffsButtonsViewModelSec7ID2(
 
     private val groupedDataBases_modelListFlow = groupedDataBasesRepository.modelListFlow
 
-    private val produitRepository = getter.repoM1ProduitInfos
+    private val produitRepository = getter.repo1ProduitInfos
 
     private val repoC3_BonVent = getter.repo8BonVent
 

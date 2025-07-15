@@ -36,7 +36,7 @@ fun ViewProduit_T1(
 ) {
     val getter = viewModel.aCentralFacade.repositorysMainGetter
     val bProduitDataBase_SubClassFunctionality =
-        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos
     val b1CouleurOuGoutProduitDataBaseRepository =
         viewModel.b1CouleurOuGoutProduitDataBaseRepository
     val productKeyId = product.keyID

@@ -35,7 +35,7 @@ fun View_Vent_M1Produit(
     relative_List_M10OperationVentCouleur: List<M10OperationVentCouleur>,
 ) {
     val bProduitDataBase_SubClassFunctionality =
-        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos
+        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos
 
     val relative_M1Produit =
         bProduitDataBase_SubClassFunctionality.datasValue.find { it.keyID == productKeyId }

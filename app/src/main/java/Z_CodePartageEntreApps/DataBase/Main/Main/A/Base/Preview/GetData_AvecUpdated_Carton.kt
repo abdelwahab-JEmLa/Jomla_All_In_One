@@ -13,7 +13,7 @@ fun getData_AvecUpdated_Carton(
         val updatedProducts = mutableListOf<ArticlesBasesStatsTable>()
 
         // Wait for the repository to have data loaded
-        val currentProducts = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+        val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
 
         if (currentProducts.isEmpty()) {
             Log.w("getData_AvecUpdated_Carton", "No current products found in repository")

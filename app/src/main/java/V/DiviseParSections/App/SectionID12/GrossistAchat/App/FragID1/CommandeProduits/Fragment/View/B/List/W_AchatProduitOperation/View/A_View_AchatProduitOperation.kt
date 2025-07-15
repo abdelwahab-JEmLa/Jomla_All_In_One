@@ -19,7 +19,7 @@ fun View_AchatProduitOperation(
     groupeAchatProduit: Map.Entry<String, List<M11AchatOperation>>,
 ) {
     val produit =
-        viewModel.getter.repoM1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
+        viewModel.getter.repo1ProduitInfos.datasValue.find { it.keyID == groupeAchatProduit.key }
 
     if (produit != null) {
         Card(Modifier.getSemanticsTag(produit, "produit")) {

@@ -8,6 +8,7 @@ import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Reposi
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.Repo8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import Z_CodePartageEntreApps.DataBase.Main.Main.DataBase11.Factory.DataBaseInitFactory_11AchatOperation
 import android.content.Context
@@ -30,6 +31,7 @@ class Repo11AchatOperation(
     val dataBaseCreationFactory: DataBaseInitFactory_11AchatOperation,
     val repo10OperationVentCouleur: Repo10OperationVentCouleur,
     val repo8BonVent: Repo8BonVent,
+    val repo14VentPeriode: Repo14VentPeriode,
 ) {
     private val composScope = CoroutineScope(Dispatchers.IO)
     private val _datas = mutableStateOf<List<M11AchatOperation>>(emptyList())
@@ -37,36 +39,11 @@ class Repo11AchatOperation(
 
     sealed class FilterQuery {
         data object NO_FILTER : FilterQuery()
+        data class F14VentPeriode(val data: M14VentPeriode,) : FilterQuery()
         data class Grossist(val m15Grossist: M15Grossist) : FilterQuery()
         data class Client(val m2Client: M2Client) : FilterQuery()
     }
     private val _filterQuery = mutableStateOf<FilterQuery>(FilterQuery.NO_FILTER)
-    private val filteredDatasValue by derivedStateOf {
-        when (val filter = _filterQuery.value) {
-            FilterQuery.NO_FILTER -> datasValue
-            is FilterQuery.Grossist -> datasValue.filter {
-                it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
-            }
-            is FilterQuery.Client -> datasValue.filter { achatOperation ->
-                val relatedSalesOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(
-                    repo10OperationVentCouleur.datasValue
-                )
-
-                relatedSalesOperations.any { salesOperation ->
-                    val bonVent = repo8BonVent.datasValue.find {
-                        it.keyID == salesOperation.parentM8BonVentKeyId
-                    }
-                    bonVent?.parent_M2Client_KeyID == filter.m2Client.keyID
-                }
-            }
-        }
-    }
-    val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
-        filteredDatasValue.groupBy {
-            it.get_list_v_Depuit_joinedStringKeys(repo10OperationVentCouleur.datasValue).first()
-                .parentM1ProduitInfosKeyId
-        }
-    }
 
     init {
         composScope.launch {
@@ -74,6 +51,82 @@ class Repo11AchatOperation(
         }
     }
 
+    fun getValidatedAchatOperations(): List<M11AchatOperation> {
+        return datasValue.filter { achatOperation ->
+            // Validate that all required references exist
+            val hasValidCouleur = achatOperation.parent_M3CouleurProduit_KeyID.isNotBlank() &&
+                    achatOperation.parent_M3CouleurProduit_KeyID != "null"
+
+            val hasValidProduit = achatOperation.parent_M1Produit_KeyID.isNotBlank() &&
+                    achatOperation.parent_M1Produit_KeyID != "null"
+
+            val hasValidGrossist = achatOperation.parent_M15Grossist_KeyID.isNotBlank() &&
+                    achatOperation.parent_M15Grossist_KeyID != "null"
+
+            hasValidCouleur && hasValidProduit && hasValidGrossist
+        }
+    }
+
+    // Update the filteredDatasValue to use validated data
+    private val filteredDatasValue by derivedStateOf {
+        val validatedData = getValidatedAchatOperations()
+
+        when (val filter = _filterQuery.value) {
+            FilterQuery.NO_FILTER -> validatedData
+
+            is FilterQuery.F14VentPeriode -> validatedData.filter {
+                it.parent_M14VentPeriod_KeyID == filter.data.keyID
+            }
+
+            is FilterQuery.Grossist -> validatedData.filter {
+                it.parent_M15Grossist_KeyID == filter.m15Grossist.keyID
+            }
+
+            is FilterQuery.Client -> validatedData.filter { achatOperation ->
+                try {
+                    val relatedSalesOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(
+                        repo10OperationVentCouleur.datasValue
+                    )
+
+                    relatedSalesOperations.any { salesOperation ->
+                        val bonVent = repo8BonVent.datasValue.find {
+                            it.keyID == salesOperation.parentM8BonVentKeyId
+                        }
+                        bonVent?.parent_M2Client_KeyID == filter.m2Client.keyID
+                    }
+                } catch (e: Exception) {
+                    // Log error and exclude this item from results
+                    println("Error filtering by client: ${e.message}")
+                    false
+                }
+            }
+        }
+    }
+
+    // Update the bProduitKeyID_To_List_KAchatCouleurOperation to handle null safety
+    val bProduitKeyID_To_List_KAchatCouleurOperation by derivedStateOf {
+        filteredDatasValue.mapNotNull { achatOperation ->
+            try {
+                val relatedSalesOperations = achatOperation.get_list_v_Depuit_joinedStringKeys(
+                    repo10OperationVentCouleur.datasValue
+                )
+
+                if (relatedSalesOperations.isNotEmpty()) {
+                    val produitKeyId = relatedSalesOperations.first().parentM1ProduitInfosKeyId
+                    if (produitKeyId.isNotBlank() && produitKeyId != "null") {
+                        produitKeyId to achatOperation
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                println("Error processing achat operation: ${e.message}")
+                null
+            }
+        }.groupBy({ it.first }, { it.second })
+    }
     // Method to update filter query
     fun updateFilterQuery(newFilter: FilterQuery) {
         _filterQuery.value = newFilter

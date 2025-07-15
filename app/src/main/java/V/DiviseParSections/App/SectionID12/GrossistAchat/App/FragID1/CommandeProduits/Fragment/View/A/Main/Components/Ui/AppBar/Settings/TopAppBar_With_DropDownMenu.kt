@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -68,7 +69,7 @@ fun TopAppBar_With_DropDownMenu(
                         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                             .currentActiveFocuced_M14VentPeriode,
                         vents,
-                        produits = viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+                        produits = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
                     )
 
             DropdownMenu(
@@ -84,6 +85,7 @@ fun TopAppBar_With_DropDownMenu(
                 expanded = uiState.showMenu,
                 onDismissRequest = { viewModel.updateShowMenu(false) }
             ) {
+                DropDownItem_4(viewModel,"Dialog filter Vent Period")
                 DropDownItem_3(viewModel)
                 DropDownItem_2(viewModel)
 
@@ -241,6 +243,31 @@ private fun DropDownItem_3(viewModel: GrossistAchatSec12FragID1_ViewModel) {
             text = { Text(text) },
             onClick = {
                 viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(true)
+            }
+        )
+    }
+}
+
+@Composable
+private fun DropDownItem_4(viewModel: GrossistAchatSec12FragID1_ViewModel, text: String) {
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = { Text(text) },
+            onClick = {
+                viewModel.update_dialog_Filter_VentPeriod_showDialog(true)
             }
         )
     }

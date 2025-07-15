@@ -2,15 +2,16 @@ package V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePr
 
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.AppBar.Settings.TopAppBar_With_DropDownMenu
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_Client
+import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Components.Ui.Dialog_Filter_VentPeriod
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.A.Main.Modules.Ui.Dialog_Choisire_Grossist_Modularized
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.View.B.List.List_GroupeAchatProduit
 import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandeProduits.Fragment.ViewModel.GrossistAchatSec12FragID1_ViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository.Repo11AchatOperation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,12 +22,9 @@ import org.koin.androidx.compose.koinViewModel
 fun Screen_GrossistAchatSec12FragID1(
     modifier: Modifier = Modifier,
     viewModel: GrossistAchatSec12FragID1_ViewModel = koinViewModel(),
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.loadClients()
-    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -44,9 +42,36 @@ fun Screen_GrossistAchatSec12FragID1(
         )
     }
 
- 
+    // Dialog for filtering by VentPeriod
+    if (uiState.dialog_Filter_VentPeriod_showDialog) {
+        val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
-    // Grossist selection dialog for main screen
+        Dialog_Filter_VentPeriod(
+            uiState = uiState,
+            viewModel = viewModel
+        ) { selectedPeriod ->
+            try {
+                // Handle period selection with null safety
+                if (selectedPeriod != null) {
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.F14VentPeriode(selectedPeriod)
+                    )
+                } else {
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.NO_FILTER
+                    )
+                }
+            } catch (e: Exception) {
+                // Log error or handle gracefully
+                println("Error updating filter query: ${e.message}")
+            } finally {
+                // Always close the dialog
+                viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
+            }
+        }
+    }
+
+    // Dialog for choosing grossist
     if (uiState.dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen) {
         val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
@@ -55,46 +80,57 @@ fun Screen_GrossistAchatSec12FragID1(
             viewModel = viewModel,
             list_M11AchatOperation = repo11AchatOperation.datasValue
         ) { grossistSelected ->
-            // Handle grossist selection
-            if (grossistSelected != null) {
-                repo11AchatOperation.updateFilterQuery(
-                    Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
-                )
-            } else {
-                repo11AchatOperation.updateFilterQuery(
-                    Repo11AchatOperation.FilterQuery.NO_FILTER
+            try {
+                // Handle grossist selection with null safety
+                if (grossistSelected != null) {
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
+                    )
+                } else {
+                    repo11AchatOperation.updateFilterQuery(
+                        Repo11AchatOperation.FilterQuery.NO_FILTER
+                    )
+                }
+            } catch (e: Exception) {
+                // Log error or handle gracefully
+                println("Error updating grossist filter: ${e.message}")
+            } finally {
+                // Always close the dialog
+                viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(
+                    pour_MainScreen = false
                 )
             }
-
-            // Close the dialog
-            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(
-                pour_MainScreen = false
-            )
         }
     }
 
+    // Dialog for filtering by client
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
         Dialog_Filter_Client(
             uiState = uiState,
             viewModel = viewModel,
             onDismiss = { selectedClient ->
-                // Handle client selection similar to grossist selection
-                val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
+                try {
+                    // Handle client selection similar to grossist selection
+                    val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
-                if (selectedClient != null) {
-                    // Apply client filter
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.Client(selectedClient)
-                    )
-                } else {
-                    // Clear filter
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.NO_FILTER
-                    )
+                    if (selectedClient != null) {
+                        // Apply client filter
+                        repo11AchatOperation.updateFilterQuery(
+                            Repo11AchatOperation.FilterQuery.Client(selectedClient)
+                        )
+                    } else {
+                        // Clear filter
+                        repo11AchatOperation.updateFilterQuery(
+                            Repo11AchatOperation.FilterQuery.NO_FILTER
+                        )
+                    }
+                } catch (e: Exception) {
+                    // Log error or handle gracefully
+                    println("Error updating client filter: ${e.message}")
+                } finally {
+                    // Always close the dialog
+                    viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
                 }
-
-                // Close the dialog
-                viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
             }
         )
     }

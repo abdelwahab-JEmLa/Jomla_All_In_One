@@ -26,7 +26,7 @@ fun DialogsSearchProduit(aCentralFacade: ACentralFacade) {
         Dialog_MainFastSearchProduitPourVent(
             sourceLenceurDeCetteFragment =
                 ViewModelMainFastSearchProduitPourVent.RoleDefinieParSourceACetteFragment.SearchProduit(
-                    aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+                    aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
                         .find { it.nom == produitName }!!
                 ),
             focusedVarsHandlerFacade = aCentralFacade.focusedActiveValuesFacade,

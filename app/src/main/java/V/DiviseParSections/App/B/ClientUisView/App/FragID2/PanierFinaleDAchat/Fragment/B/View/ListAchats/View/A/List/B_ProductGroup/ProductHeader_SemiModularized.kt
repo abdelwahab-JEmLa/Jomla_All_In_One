@@ -158,7 +158,7 @@ fun ProductHeader_SemiModularized(
                                 setIN_Vent_Its_Quantity_Represent =
                                     toggled_setIN_Vent_Its_Quantity_Represent
                             }.also {
-                                repositorysMainGetter.repoM1ProduitInfos.update(
+                                repositorysMainGetter.repo1ProduitInfos.update(
                                     it
                                 )
                             }
@@ -227,7 +227,7 @@ fun ProductHeader_SemiModularized(
                         nombreUniteInt = new_Qyt
 
                     }.also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
 
                     viewModel.aCentralFacade.repositorysMainSetter.m10_delete(
@@ -247,7 +247,7 @@ fun ProductHeader_SemiModularized(
                     relative_M1Produit.apply {
                         quantite_Boit_Par_Carton = new_Qyt
                     }.also {
-                        viewModel.aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.update(it)
+                        viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.update(it)
                     }
                 }
 

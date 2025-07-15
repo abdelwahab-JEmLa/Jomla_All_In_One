@@ -66,8 +66,8 @@ fun MainScreen(
         }
     }
 
-    val repoDatas = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
-    val currentProducts = aCentralFacade.repositorysMainGetter.repoM1ProduitInfos.datasValue
+    val repoDatas = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
+    val currentProducts = aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
     val new_Edited_Datas = old_Datas.mapNotNull { old ->
         val m1Produit_IN_New = currentProducts.find { it.id.toInt() == old.idArticle }
         m1Produit_IN_New?.copy(quantite_Boit_Par_Carton = old.nmbrCaron)
