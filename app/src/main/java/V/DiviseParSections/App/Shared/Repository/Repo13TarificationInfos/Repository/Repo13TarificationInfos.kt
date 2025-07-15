@@ -152,7 +152,7 @@ data class M13TarificationInfos(
             "/00_DataPrototype-04-02/_1_developingRef/C_InfosSqlDataBases/DataBase13TarificationInfos"
         )
 
-        fun get_default(
+        fun get_default_P0(
             parentM1ProduitInfos: ArticlesBasesStatsTable,
             start_Prix_Depuit_Ancient: Double,
         ): Pair<M13TarificationInfos, Modifier> {
@@ -166,6 +166,10 @@ data class M13TarificationInfos(
                 data = m13TarificationInfos
             )
             return Pair(m13TarificationInfos, modifier)
+        }
+
+        fun get_default(): M13TarificationInfos {
+            return M13TarificationInfos()
         }
 
         fun findTariff(

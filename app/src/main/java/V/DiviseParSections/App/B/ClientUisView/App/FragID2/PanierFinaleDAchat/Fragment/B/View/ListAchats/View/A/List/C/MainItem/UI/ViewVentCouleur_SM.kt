@@ -119,7 +119,7 @@ fun ViewVentCouleur_Module(
     val findTariff =
         M13TarificationInfos.findTariff(datasValue, relative_M1Produit, TypeChoisi.DefiniParGerant)
     val default_Tariff =
-        M13TarificationInfos.get_default(relative_M1Produit, start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat)
+        M13TarificationInfos.get_default_P0(relative_M1Produit, start_Prix_Depuit_Ancient = relative_M1Produit.prixAchat)
 
     val finale_Tariff = findTariff ?: default_Tariff.first
 

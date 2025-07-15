@@ -41,7 +41,7 @@ fun TariffsButtonsSec7ID2(
     val repo13TarificationInfos = viewModel.getter.repo13TarificationInfos
     val tarificationList = repo13TarificationInfos.datasValue
     val repo10OperationVentCouleur = viewModel.aCentralFacade.repositorysMainGetter.repo10OperationVentCouleur
-    val operationVentCouleurList = repo10OperationVentCouleur.datasValue
+    val relative_List_M10Vent = repo10OperationVentCouleur.datasValue
     val datasValueDeM1ProduitInfos = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue
 
     val focusedProduct by remember {
@@ -120,7 +120,6 @@ fun TariffsButtonsSec7ID2(
                             viewModel = viewModel,
                             list_M8BonVent = bonVentList,
                             tarificationList = tarificationList,
-                            produitAcheteOperationList = operationVentCouleurList,
                             produitInfosList = datasValueDeM1ProduitInfos,
                             showLabels = showLabels,
                             filterProduitID = filterProductId.toInt(),

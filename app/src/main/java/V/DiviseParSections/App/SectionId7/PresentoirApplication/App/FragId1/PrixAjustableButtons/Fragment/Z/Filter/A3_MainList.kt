@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -20,38 +21,48 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    produit: ArticlesBasesStatsTable,
-    viewModel: TariffsButtonsViewModelSec7ID2,
-    showLabels: Boolean,
     modifier: Modifier = Modifier,
-    clientLastHistoricalPrice: Double,
+    relative_M1Produit: ArticlesBasesStatsTable,
+    viewModel: TariffsButtonsViewModelSec7ID2,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    list_M13TarificationInfos: List<M13TarificationInfos> = aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue,
+    context: Context = LocalContext.current,
+    showLabels: Boolean,
     maxPrixArriveDuProduit: Double?,
     clientDefiniTariffs: List<M13TarificationInfos>,
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
+    val relative_M2Client =
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
     val currentM9AppCompt =
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
-    val tariffs = viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
-    val context = LocalContext.current
+    val last_list_M13TarificationInfos = list_M13TarificationInfos.lastOrNull {
+        it.parent_M2Client_KeyId == relative_M2Client?.keyID
+    }
+
+    val relative_Tariff_Historique = M13TarificationInfos.get_default().copy(
+        typeChoisi = TypeChoisi.Historique,
+        prixCurrency = last_list_M13TarificationInfos?.prixCurrency ?: 0.0,
+        parent_M1Produit_KeyId = relative_M1Produit.keyID,
+        parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
+        parent_M2Client_KeyId = relative_M2Client?.keyID ?: "null",
+        parent_M2Client_DebugInfos = relative_M2Client?.get_DebugInfos() ?: "null",
+        creationTimestamps = System.currentTimeMillis()
+    )
 
     val standardTariffs = remember(
-        produit,
+        relative_M1Produit,
         maxPrixArriveDuProduit,
-        clientLastHistoricalPrice,
         clientDefiniTariffs,
         travailleChezGrossisst3Ali
     ) {
         buildList {
-            if (maxPrixArriveDuProduit != null &&
-                maxPrixArriveDuProduit != 0.0 &&
-                maxPrixArriveDuProduit != produit.prixVent &&
-                maxPrixArriveDuProduit > clientLastHistoricalPrice
-            ) {
-
+            add(relative_Tariff_Historique)
+            if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0 && maxPrixArriveDuProduit != relative_M1Produit.prixVent) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.LeMaxPrixArrive,
@@ -59,75 +70,43 @@ fun MainList(
                     )
                 )
             }
-
-            if (clientLastHistoricalPrice != 0.0 &&
-                clientLastHistoricalPrice != produit.prixVent
-            ) {
-                val currentClient = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
-                val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
-
-                add(
-                    M13TarificationInfos(
-                        typeChoisi = TypeChoisi.Historique,
-                        prixCurrency = clientLastHistoricalPrice,
-                        parent_M1Produit_KeyId = produit.keyID,
-                        parent_M1Produit_DebugInfos = produit.nom,
-                        parent_M2Client_KeyId = currentClient?.keyID ?: "null",
-                        parent_M2Client_DebugInfos = currentClient?.get_DebugInfos() ?: "null",
-                        parent_M8BonVent_KeyId = currentBonVent?.keyID ?: "null",
-                        parent_M8BonVent_DebugInfos = currentBonVent?.get_DebugInfos() ?: "null",
-                        creationTimestamps = System.currentTimeMillis()
-                    )
-                )
-            }
-
             if (!travailleChezGrossisst3Ali!!) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.PRIX_BASE,
-                        prixCurrency = produit.prixVent,
+                        prixCurrency = relative_M1Produit.prixVent,
                     )
                 )
             }
-        }
-    }
-
-    val tariffication_Depuit_Produit_Infos = remember(
-        produit,
-        maxPrixArriveDuProduit,
-        clientLastHistoricalPrice,
-        clientDefiniTariffs,
-        travailleChezGrossisst3Ali
-    ) {
-        buildList {
-            if (produit.prixAchat != 0.0) {
+            if (relative_M1Produit.prixAchat != 0.0) {
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Tariff_Achat_Depuit_Grossisst,
-                        prixCurrency = produit.prixAchat,
-                        parent_M1Produit_KeyId = produit.keyID,
-                        parent_M1Produit_DebugInfos = produit.nom,
+                        prixCurrency = relative_M1Produit.prixAchat,
+                        parent_M1Produit_KeyId = relative_M1Produit.keyID,
+                        parent_M1Produit_DebugInfos = relative_M1Produit.nom,
                     )
                 )
             }
+
         }
     }
 
     val existingDefiniParGerant2Tariff = M13TarificationInfos.findTariff(
-        tariffs,
-        produit,
+        list_M13TarificationInfos,
+        relative_M1Produit,
         TypeChoisi.DefiniParGerant
     )
 
     val generatedTariffDefiniParGerant2 = remember(
         existingDefiniParGerant2Tariff,
-        produit,
-        tariffs
+        relative_M1Produit,
+        list_M13TarificationInfos
     ) {
         existingDefiniParGerant2Tariff ?: M13TarificationInfos(
-            parent_M1Produit_DebugInfos = produit.nom,
-            parent_M1Produit_KeyId = produit.keyID,
-            prixCurrency = produit.prixAchat,
+            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+            parent_M1Produit_KeyId = relative_M1Produit.keyID,
+            prixCurrency = relative_M1Produit.prixAchat,
             typeChoisi = TypeChoisi.DefiniParGerant
         )
     }
@@ -135,18 +114,19 @@ fun MainList(
     val allTariffsGroupedAndSorted = remember(
         clientDefiniTariffs,
         standardTariffs,
-        tariffication_Depuit_Produit_Infos,
         generatedTariffDefiniParGerant2
     ) {
         val shouldAddGeneratedTariff = !clientDefiniTariffs.any {
             it.typeChoisi == TypeChoisi.DefiniParGerant &&
-                    it.parent_M1Produit_KeyId == produit.keyID
+                    it.parent_M1Produit_KeyId == relative_M1Produit.keyID
         }
 
         val allTariffs = if (shouldAddGeneratedTariff) {
-            clientDefiniTariffs + standardTariffs + tariffication_Depuit_Produit_Infos + generatedTariffDefiniParGerant2
+            clientDefiniTariffs +
+                    standardTariffs +
+                    generatedTariffDefiniParGerant2
         } else {
-            clientDefiniTariffs + standardTariffs + tariffication_Depuit_Produit_Infos
+            clientDefiniTariffs + standardTariffs
         }
 
         allTariffs
@@ -154,33 +134,28 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-    val currentTariffsForProduct = remember(tariffs, produit) {
-        tariffs.filter { it.parent_M1Produit_KeyId == produit.keyID }
-    }
 
     Row(
         modifier = Modifier
-            .getSemanticsTag(
-                nomVal = "product_tariffs_for_${produit.nom}",
-                data = "Found ${currentTariffsForProduct.size} tariffs for ${produit.nom}"
-            ),
+            .getSemanticsTag(last_list_M13TarificationInfos, "")
+            .getSemanticsTag(relative_M2Client?.keyID, "", 1)
+            .getSemanticsTag(list_M13TarificationInfos, "", 2),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
         Column(
             modifier = modifier
-                .getSemanticsTag(nomVal = "currentM9AppCompt", data = currentM9AppCompt?.nom)
         ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
-                    produit = produit,
+                    produit = relative_M1Produit,
                     viewModel = viewModel,
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,
                     onClickPrixButton = onClickPrixButton,
                     context = context,
-                    nombreUnite = produit.nombreUniteInt
+                    nombreUnite = relative_M1Produit.nombreUniteInt
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -189,7 +164,7 @@ fun MainList(
         val priceToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
             maxPrixArriveDuProduit
         } else {
-            produit.prixVent
+            relative_M1Produit.prixVent
         }
 
         val typeToUse = if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0) {
