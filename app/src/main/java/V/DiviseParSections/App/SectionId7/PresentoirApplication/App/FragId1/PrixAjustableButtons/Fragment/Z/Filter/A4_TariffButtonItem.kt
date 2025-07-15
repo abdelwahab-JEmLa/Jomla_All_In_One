@@ -286,7 +286,6 @@ fun TariffButtonItem(
                             }
                         }
                     } else {
-// Replace the existing Text composable (around line 222) with this:
 
                         Text(
                             typeName,
@@ -297,7 +296,6 @@ fun TariffButtonItem(
                                 .then(
                                     if (isEditableTariff) {
                                         Modifier.clickable {
-                                            // Start with empty text field
                                             editablePriceText = ""
                                             isEditingPrice = true
                                             isEditingUnitPrice = false

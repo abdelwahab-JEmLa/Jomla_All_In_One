@@ -63,14 +63,13 @@ fun MainList(
     )
 
     val relative_Tariff_DefiniParGerant =
-        existingDefiniParGerant2Tariff?.let {
-            M13TarificationInfos.get_default().copy(
-                typeChoisi = TypeChoisi.DefiniParGerant,
-                parent_M1Produit_DebugInfos = relative_M1Produit.nom,
-                parent_M1Produit_KeyId = relative_M1Produit.keyID,
-                prixCurrency = existingDefiniParGerant2Tariff.prixCurrency
-            )
-        }
+        M13TarificationInfos.get_default().copy(
+            typeChoisi = TypeChoisi.DefiniParGerant,
+            parent_M1Produit_DebugInfos = relative_M1Produit.nom,
+            parent_M1Produit_KeyId = relative_M1Produit.keyID,
+            prixCurrency = existingDefiniParGerant2Tariff?.prixCurrency
+                ?: relative_Tariff_Historique?.prixCurrency ?: relative_M1Produit.prixVent
+        )
 
     val standardTariffs = remember(
         relative_M1Produit,
@@ -79,9 +78,7 @@ fun MainList(
         travailleChezGrossisst3Ali
     ) {
         buildList {
-            if (relative_Tariff_DefiniParGerant != null) {
-                add(relative_Tariff_DefiniParGerant)
-            }
+            add(relative_Tariff_DefiniParGerant)
 
             if (relative_Tariff_Historique != null) {
                 add(relative_Tariff_Historique)
@@ -127,8 +124,7 @@ fun MainList(
         }
 
         val allTariffs = if (shouldAddGeneratedTariff) {
-            clientDefiniTariffs +
-                    standardTariffs
+            clientDefiniTariffs + standardTariffs
         } else {
             clientDefiniTariffs + standardTariffs
         }
@@ -137,7 +133,6 @@ fun MainList(
             .groupBy { it.typeChoisi }
             .toSortedMap(compareBy { it.ordinal })
     }
-
 
     Row(
         modifier = Modifier
