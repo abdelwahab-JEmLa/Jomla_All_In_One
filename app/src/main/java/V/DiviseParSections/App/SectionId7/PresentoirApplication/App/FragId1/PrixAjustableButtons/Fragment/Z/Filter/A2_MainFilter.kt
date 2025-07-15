@@ -1,11 +1,9 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
-import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.layout.Column
@@ -15,8 +13,8 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
+    list_M8BonVent: List<M8BonVent>,
     tarificationList: List<M13TarificationInfos>,
-    bonAchatList: List<M8BonVent>,
     produitAcheteOperationList: List<M10OperationVentCouleur>,
     produitInfosList: List<ArticlesBasesStatsTable>,
     showLabels: Boolean,
@@ -27,21 +25,18 @@ fun MainFilter(
     onClickAnulationButton: (() -> Unit)? = null,
     viewModel: TariffsButtonsViewModelSec7ID2
 ) {
-    val filteredBonAchat = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID } ?: M8BonVent(
-            parent_M2Client_KeyID = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.keyModel] ?: "",
-            parent_M14VentPeriod_KeyId = RepositorysMainSetter.getListDesParentKeys("null")[Z_AppCompt.keyModelValID7VentParent] ?: "",
-            parentID8C2TypeTransactionKeyByParent = RepositorysMainSetter.getListDesParentKeys("null")[M8BonVent.EtateActuellementEst.keyModel] ?: ""
-        )
+    val filteredBonAchat = remember(list_M8BonVent, filterBonID) {
+        list_M8BonVent.find { it.vid == filterBonID } ?: M8BonVent()
     }
 
     val filteredProduit = remember(produitInfosList, filterProduitID) {
         produitInfosList.find { it.id.toInt() == filterProduitID } ?: ArticlesBasesStatsTable()
     }
 
-    val idClientFiltruer = remember(bonAchatList, filterBonID) {
-        bonAchatList.find { it.vid == filterBonID }?.parent_M2Client_KeyID ?: 0L
+    val relative_M2Client = remember(list_M8BonVent, filterBonID) {
+        list_M8BonVent.find { it.vid == filterBonID }
     }
+
 
     val maxPrixArriveDuProduit = remember(tarificationList, filteredProduit) {
         produitAcheteOperationList
@@ -51,18 +46,18 @@ fun MainFilter(
 
     val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter {
-            it.parent_M1Produit_KeyId == filteredProduit.id &&
-                    it.parent_M2Client_KeyId == idClientFiltruer
+            it.parent_M1Produit_KeyId == filteredProduit.keyID &&
+                    it.parent_M2Client_KeyId == (relative_M2Client?.parent_M2Client_KeyID ?:"null")
         }
     }
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
         operation.parentProduitInfosOldId == filteredProduit.id &&
-                operation.parentClientInfosKeyID == idClientFiltruer
+                operation.parentClientInfosKeyID ==  (relative_M2Client?.parent_M2Client_KeyID ?:"null")
     }
 
     val clientLastHistoricalPrice =
-        remember(produitAcheteOperationList, filteredProduit, idClientFiltruer) {
+        remember(produitAcheteOperationList, filteredProduit, relative_M2Client) {
             lastOrNull_produitAcheteOperationList
                 ?.provisoireMonPrix ?: 0.0
         }

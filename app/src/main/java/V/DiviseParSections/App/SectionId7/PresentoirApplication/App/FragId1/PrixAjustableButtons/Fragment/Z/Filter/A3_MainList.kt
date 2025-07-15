@@ -98,7 +98,6 @@ fun MainList(
                         prixCurrency = produit.prixAchat,
                         parent_M1Produit_KeyId = produit.keyID,
                         parent_M1Produit_DebugInfos = produit.nom,
-                        parent_M1Produit_KeyId = produit.id
                     )
                 )
             }

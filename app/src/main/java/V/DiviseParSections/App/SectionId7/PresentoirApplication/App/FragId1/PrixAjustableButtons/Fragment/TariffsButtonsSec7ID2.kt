@@ -2,11 +2,11 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.Z.Filter.MainFilter
-import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ModernToastMessage
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +64,7 @@ fun TariffsButtonsSec7ID2(
 
     val keyID = focusedProduct?.keyID
     val filterProductId = datasValueDeM1ProduitInfos.find { it.keyID == keyID }?.id
+
     val m1produitInfos by remember {
         derivedStateOf {
             datasValueDeM1ProduitInfos.find { it.id.toInt().toLong() == filterProductId }
@@ -118,7 +119,7 @@ fun TariffsButtonsSec7ID2(
                         MainFilter(
                             viewModel = viewModel,
                             tarificationList = tarificationList,
-                            bonAchatList = bonVentList,
+                            list_M8BonVent = bonVentList,
                             produitAcheteOperationList = operationVentCouleurList,
                             produitInfosList = datasValueDeM1ProduitInfos,
                             showLabels = showLabels,
