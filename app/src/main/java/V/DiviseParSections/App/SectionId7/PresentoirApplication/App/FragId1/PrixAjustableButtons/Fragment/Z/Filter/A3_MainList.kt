@@ -44,15 +44,17 @@ fun MainList(
         it.parent_M2Client_KeyId == relative_M2Client?.keyID
     }
 
-    val relative_Tariff_Historique = M13TarificationInfos.get_default().copy(
-        typeChoisi = TypeChoisi.Historique,
-        prixCurrency = last_list_M13TarificationInfos?.prixCurrency ?: 0.0,
-        parent_M1Produit_KeyId = relative_M1Produit.keyID,
-        parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
-        parent_M2Client_KeyId = relative_M2Client?.keyID ?: "null",
-        parent_M2Client_DebugInfos = relative_M2Client?.get_DebugInfos() ?: "null",
-        creationTimestamps = System.currentTimeMillis()
-    )
+    val relative_Tariff_Historique =
+        last_list_M13TarificationInfos?.let {
+            M13TarificationInfos.get_default().copy(
+                prixCurrency = it.prixCurrency,
+                typeChoisi = TypeChoisi.Historique,
+                parent_M1Produit_KeyId = relative_M1Produit.keyID,
+                parent_M1Produit_DebugInfos = relative_M1Produit.getDebugInfos(),
+                parent_M2Client_KeyId = relative_M2Client?.keyID ?: "null",
+                parent_M2Client_DebugInfos = relative_M2Client?.get_DebugInfos() ?: "null",
+            )
+        }
 
     val standardTariffs = remember(
         relative_M1Produit,
@@ -61,7 +63,11 @@ fun MainList(
         travailleChezGrossisst3Ali
     ) {
         buildList {
-            add(relative_Tariff_Historique)
+
+            if (relative_Tariff_Historique != null) {
+                add(relative_Tariff_Historique)
+            }
+
             if (maxPrixArriveDuProduit != null && maxPrixArriveDuProduit != 0.0 && maxPrixArriveDuProduit != relative_M1Produit.prixVent) {
                 add(
                     M13TarificationInfos(
