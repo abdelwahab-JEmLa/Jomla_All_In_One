@@ -57,18 +57,14 @@ fun Dialog_Choisire_Grossist_Modularized(
     val grossists = viewModel.aCentralFacade.repositorysMainGetter.repo15Grossist.datasValue
     val focusManager = LocalFocusManager.current
 
-    // Calculate purchase count for each grossist and sort by it
     val grossistsWithPurchaseCount = grossists.map { grossist ->
-        val purchaseCount = datasValue_repo11AchatOperation.count { achat ->
-            achat.parent_M15Grossist_KeyID == grossist.keyID
-        }
-        Pair(grossist, purchaseCount)
-    }.sortedByDescending { it.second } // Sort by purchase count (descending)
+        val purchaseCount = datasValue_repo11AchatOperation.count { it.parent_M15Grossist_KeyID == grossist.keyID }
+        grossist to purchaseCount
+    }.sortedByDescending { it.second }
 
-    // Calculate count for operations with null grossist
     val nullGrossistCount = remember(datasValue_repo11AchatOperation) {
-        datasValue_repo11AchatOperation.count { achat ->
-            achat.parent_M15Grossist_KeyID == "null" || achat.parent_M15Grossist_KeyID.isBlank()
+        datasValue_repo11AchatOperation.count {
+            it.parent_M15Grossist_KeyID == "null" || it.parent_M15Grossist_KeyID.isBlank()
         }
     }
 
@@ -84,15 +80,10 @@ fun Dialog_Choisire_Grossist_Modularized(
         )
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Header with close button
+            Column(modifier = Modifier.padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -103,13 +94,10 @@ fun Dialog_Choisire_Grossist_Modularized(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-
-                    TextButton(
-                        onClick = {
-                            focusManager.clearFocus()
-                            onDismiss(null)
-                        }
-                    ) {
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        onDismiss(null)
+                    }) {
                         Icon(
                             Icons.Default.Clear,
                             contentDescription = "Fermer",
@@ -124,7 +112,6 @@ fun Dialog_Choisire_Grossist_Modularized(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Add "Clear Filter" option at the top
                     item {
                         Card(
                             modifier = Modifier
@@ -139,9 +126,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -150,9 +135,7 @@ fun Dialog_Choisire_Grossist_Modularized(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(40.dp)
                                 )
-
                                 Spacer(modifier = Modifier.width(16.dp))
-
                                 Text(
                                     text = "Supprimer le filtre",
                                     style = MaterialTheme.typography.bodyLarge,
@@ -163,14 +146,12 @@ fun Dialog_Choisire_Grossist_Modularized(
                         }
                     }
 
-                    // Add option to show only operations with null grossist (only if there are any)
                     if (nullGrossistCount > 0) {
                         item {
                             Card(
                                 modifier = Modifier
                                     .clickable {
                                         focusManager.clearFocus()
-                                        // Create a special grossist object to represent null grossist filter
                                         val nullGrossist = M15Grossist(
                                             keyID = "NULL_GROSSIST_FILTER",
                                             nom = "Grossiste non défini",
@@ -185,12 +166,9 @@ fun Dialog_Choisire_Grossist_Modularized(
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Badge for null grossist count
                                     BadgedBox(
                                         badge = {
                                             Badge(
@@ -218,19 +196,14 @@ fun Dialog_Choisire_Grossist_Modularized(
                                             )
                                         }
                                     }
-
                                     Spacer(modifier = Modifier.width(16.dp))
-
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = "Grossiste non défini",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Medium,
                                             color = MaterialTheme.colorScheme.onErrorContainer
                                         )
-
                                         Text(
                                             text = "$nullGrossistCount opérations sans grossiste",
                                             style = MaterialTheme.typography.bodySmall,
@@ -254,18 +227,13 @@ fun Dialog_Choisire_Grossist_Modularized(
                         )
                     }
 
-                    // Show message if no grossists available
                     if (grossists.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
+                                modifier = Modifier.fillMaxWidth().padding(32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Icon(
                                         Icons.Default.Business,
                                         contentDescription = null,
@@ -284,18 +252,15 @@ fun Dialog_Choisire_Grossist_Modularized(
                     }
                 }
 
-                // Cancel button
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(
-                        onClick = {
-                            focusManager.clearFocus()
-                            onDismiss(null)
-                        }
-                    ) {
+                    TextButton(onClick = {
+                        focusManager.clearFocus()
+                        onDismiss(null)
+                    }) {
                         Text("Annuler")
                     }
                 }
@@ -324,12 +289,9 @@ private fun GrossistItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Color indicator with badge
             BadgedBox(
                 badge = {
                     if (purchaseCount > 0) {
@@ -361,19 +323,14 @@ private fun GrossistItem(
                         Icons.Default.Business,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.Center)
+                        modifier = Modifier.size(24.dp).align(Alignment.Center)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Grossist info
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = grossist.nom,
                     style = MaterialTheme.typography.bodyLarge,
@@ -381,7 +338,6 @@ private fun GrossistItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -393,7 +349,6 @@ private fun GrossistItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-
                     if (purchaseCount > 0) {
                         Text(
                             text = "• $purchaseCount achats",

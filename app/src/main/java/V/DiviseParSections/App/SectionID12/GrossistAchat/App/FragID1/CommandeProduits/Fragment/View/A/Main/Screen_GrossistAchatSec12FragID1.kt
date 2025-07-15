@@ -25,120 +25,42 @@ fun Screen_GrossistAchatSec12FragID1(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val repo = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        TopAppBar_With_DropDownMenu(
-            viewModel,
-            uiState
-        )
-
+    Column(modifier = modifier.fillMaxSize()) {
+        TopAppBar_With_DropDownMenu(viewModel, uiState)
         List_GroupeAchatProduit(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(top = 8.dp),
             viewModel = viewModel
         )
     }
 
-    // Dialog for filtering by VentPeriod
     if (uiState.dialog_Filter_VentPeriod_showDialog) {
-        val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-
-        Dialog_Filter_VentPeriod(
-            uiState = uiState,
-            viewModel = viewModel
-        ) { selectedPeriod ->
-            try {
-                // Handle period selection with null safety
-                if (selectedPeriod != null) {
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.F14VentPeriode(selectedPeriod)
-                    )
-                } else {
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.NO_FILTER
-                    )
-                }
-            } catch (e: Exception) {
-                // Log error or handle gracefully
-                println("Error updating filter query: ${e.message}")
-            } finally {
-                // Always close the dialog
-                viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
-            }
+        Dialog_Filter_VentPeriod(uiState, viewModel) { period ->
+            updateFilter(repo, period?.let { Repo11AchatOperation.FilterQuery.F14VentPeriode(it) })
+            viewModel.update_dialog_Filter_VentPeriod_showDialog(false)
         }
     }
 
-    // Dialog for choosing grossist
     if (uiState.dialog_Choisire_Grossist_Modularized_showDialog_Pour_MainScreen) {
-        val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-
         Dialog_Choisire_Grossist_Modularized(
             titel = "Choisir un Grossiste",
             viewModel = viewModel,
-            list_M11AchatOperation = repo11AchatOperation.datasValue
-        ) { grossistSelected ->
-            try {
-                // Handle grossist selection with null safety
-                if (grossistSelected != null) {
-                    // Check if this is the special null grossist filter
-                    if (grossistSelected.keyID == "NULL_GROSSIST_FILTER") {
-                        repo11AchatOperation.updateFilterQuery(
-                            Repo11AchatOperation.FilterQuery.NullGrossist
-                        )
-                    } else {
-                        repo11AchatOperation.updateFilterQuery(
-                            Repo11AchatOperation.FilterQuery.Grossist(grossistSelected)
-                        )
-                    }
-                } else {
-                    repo11AchatOperation.updateFilterQuery(
-                        Repo11AchatOperation.FilterQuery.NO_FILTER
-                    )
-                }
-            } catch (e: Exception) {
-                // Log error or handle gracefully
-                println("Error updating grossist filter: ${e.message}")
-            } finally {
-                // Always close the dialog
-                viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(
-                    pour_MainScreen = false
-                )
-            }
+            list_M11AchatOperation = repo.datasValue
+        ) { grossist ->
+            updateFilter(repo, grossist?.let { Repo11AchatOperation.FilterQuery.Grossist(it) })
+            viewModel.update_dialog_Choisire_Grossist_Modularized_showDialog(pour_MainScreen = false)
         }
     }
 
-    // Dialog for filtering by client
     if (uiState.show_Dialog_filter_AChats_Par_Client_Acheteur) {
-        Dialog_Filter_Client(
-            uiState = uiState,
-            viewModel = viewModel,
-            onDismiss = { selectedClient ->
-                try {
-                    // Handle client selection similar to grossist selection
-                    val repo11AchatOperation = viewModel.aCentralFacade.repositorysMainGetter.repo11AchatOperation
-
-                    if (selectedClient != null) {
-                        // Apply client filter
-                        repo11AchatOperation.updateFilterQuery(
-                            Repo11AchatOperation.FilterQuery.Client(selectedClient)
-                        )
-                    } else {
-                        // Clear filter
-                        repo11AchatOperation.updateFilterQuery(
-                            Repo11AchatOperation.FilterQuery.NO_FILTER
-                        )
-                    }
-                } catch (e: Exception) {
-                    // Log error or handle gracefully
-                    println("Error updating client filter: ${e.message}")
-                } finally {
-                    // Always close the dialog
-                    viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
-                }
-            }
-        )
+        Dialog_Filter_Client(uiState, viewModel) { client ->
+            updateFilter(repo, client?.let { Repo11AchatOperation.FilterQuery.Client(it) })
+            viewModel.update_show_Dialog_filter_AChats_Par_Client_Acheteur(false)
+        }
     }
+}
+
+private fun updateFilter(repo: Repo11AchatOperation, filter: Repo11AchatOperation.FilterQuery?) {
+    repo.updateFilterQuery(filter ?: Repo11AchatOperation.FilterQuery.NO_FILTER)
 }
