@@ -30,7 +30,8 @@ fun MainList(
     onClickPrixButton: (TypeChoisi, M13TarificationInfos, Context) -> Unit,
     onClickAnulationButton: (() -> Unit)? = null
 ) {
-    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+    val currentM9AppCompt =
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
 
     val travailleChezGrossisst3Ali = currentM9AppCompt?.travailleChezGrossisst3Ali
 
@@ -90,7 +91,6 @@ fun MainList(
         travailleChezGrossisst3Ali
     ) {
         buildList {
-            // Add purchase price tariff from wholesale supplier
             if (produit.prixAchat != 0.0) {
                 add(
                     M13TarificationInfos(
@@ -145,7 +145,14 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
+    val tariffs_Tag =
+        viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+
     Row(
+        modifier = Modifier
+            .getSemanticsTag(
+                tariffs_Tag, "tariffs_Tag"
+            ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
     ) {
@@ -155,8 +162,8 @@ fun MainList(
         ) {
             allTariffsGroupedAndSorted.forEach { (type, typeTariffs) ->
                 TariffButtonItem(
-                    produit=produit,
-                    viewModel=viewModel,
+                    produit = produit,
+                    viewModel = viewModel,
                     typeTarification = type,
                     tariffs = typeTariffs,
                     showLabels = showLabels,

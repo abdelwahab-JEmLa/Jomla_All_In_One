@@ -185,7 +185,7 @@ fun MainUi(
 
     val idProduitActuelle = currentSale.idArticle
     val getter = viewModel.getter
-    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.focuced_active_onVent_M8BonVent
+    val onVentBonVent =  viewModel.aCentral.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
 
     if (onVentBonVent == null) {
         Box(

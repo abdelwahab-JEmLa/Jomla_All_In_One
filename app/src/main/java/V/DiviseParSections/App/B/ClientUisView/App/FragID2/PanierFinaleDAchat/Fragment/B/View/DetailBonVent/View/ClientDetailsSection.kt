@@ -30,7 +30,7 @@ fun ClientDetailsSection(
     val isMinimized = uiState.isMinimized
     val get = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
     // FIXED: Use the correct property name
-    val onVentClient = get.onVentM2ClientInfos
+    val onVentClient = get.activeOnVent_M2Client
 
     isMinimized.ifFalse { Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) }
 

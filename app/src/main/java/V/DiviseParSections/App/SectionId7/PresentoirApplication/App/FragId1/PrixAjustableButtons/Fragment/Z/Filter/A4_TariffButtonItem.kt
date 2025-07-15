@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.A.ViewModel.TariffsButtonsViewModelSec7ID2
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.sp
 fun TariffButtonItem(
     produit: ArticlesBasesStatsTable,
     viewModel: TariffsButtonsViewModelSec7ID2,
+    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
     typeTarification: TypeChoisi,
     tariffs: List<M13TarificationInfos>,
     showLabels: Boolean,
@@ -59,11 +61,26 @@ fun TariffButtonItem(
     val latestTariff = tariffs.maxByOrNull { it.creationTimestamps }
     if (latestTariff == null) return
 
-    var latestTariffLocalData by remember(produit, latestTariff) {
+    var latestTariffLocalData by remember(
+        produit,
+        latestTariff,
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .activeOnVent_M2Client,
+        aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+            .activeonVent_M8BonVent
+    ) {
         mutableStateOf(
             latestTariff.copy(
                 parent_M1Produit_KeyId = produit.keyID,
-                parent_M1Produit_DebugInfos = produit.nom
+                parent_M1Produit_DebugInfos = produit.nom,
+                parent_M2Client_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                    .activeOnVent_M2Client?.keyID ?:"null"  ,
+                parent_M2Client_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                    .activeOnVent_M2Client?.get_DebugInfos() ?:"null",
+                parent_M8BonVent_KeyId = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                    .activeonVent_M8BonVent?.keyID ?:"null",
+                parent_M8BonVent_DebugInfos = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
+                    .activeonVent_M8BonVent?.get_DebugInfos() ?:"null",
             )
         )
     }
@@ -72,7 +89,6 @@ fun TariffButtonItem(
         viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
             .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
-    // Fixed: Initialize with current price when editing starts
     var editablePriceText by remember(produit) { mutableStateOf("") }
     var isEditingPrice by remember(produit) { mutableStateOf(false) }
     var isEditingUnitPrice by remember(produit) { mutableStateOf(false) }
@@ -86,7 +102,6 @@ fun TariffButtonItem(
     val isEditableTariff = typeTarification == TypeChoisi.DEFINI ||
             typeTarification == TypeChoisi.DefiniParGerant
 
-    // Check if this is a purchase price tariff that can be edited by admin
     val isPurchasePriceTariff = typeTarification == TypeChoisi.Tariff_Achat_Depuit_Grossisst
 
     fun handelClick() {
@@ -413,14 +428,22 @@ fun TariffButtonItem(
             couleurButton
         }
 
-        val m10OperationVentCouleurs =
+        val m10OperationVentCouleurs_Tag =
             viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
                 .focused_ListM10OpeVentCouleur_Par_PD_M1Produit
 
         FloatingActionButton(
             modifier = Modifier
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(0, "latestTariffLocalData", latestTariffLocalData)
-                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(1, "m10OperationVentCouleurs", m10OperationVentCouleurs)
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
+                    0,
+                    "latestTariffLocalData",
+                    latestTariffLocalData
+                )
+                .getSemanticsTag_By_datas_A_Affiche_Au_Nom(
+                    1,
+                    "m10OperationVentCouleurs",
+                    m10OperationVentCouleurs
+                )
                 .size(40.dp),
             onClick = {
                 handelClick()

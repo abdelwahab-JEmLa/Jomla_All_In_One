@@ -48,7 +48,7 @@ class FocusedValuesGetter(
         repo8BonVent.datasValue.filter { it.parent_M14VentPeriod_KeyId == currentActiveFocuced_M14VentPeriode?.keyID }
     }
 
-    val focuced_active_onVent_M8BonVent by derivedStateOf {
+    val activeonVent_M8BonVent by derivedStateOf {
         repo8BonVent.datasValue.find { it.keyID == currentM9AppCompt?.onVentM8BonVentKey }
     }
 
@@ -95,7 +95,7 @@ class FocusedValuesGetter(
 
     val activeOnVentM2ClientInfos by derivedStateOf {
         repo2Client.datasValue.find {
-            it.keyID == (focuced_active_onVent_M8BonVent?.parent_M2Client_KeyID ?: "")
+            it.keyID == (activeonVent_M8BonVent?.parent_M2Client_KeyID ?: "")
         }
     }
 
@@ -110,13 +110,13 @@ class FocusedValuesGetter(
         )
     }
 
-    val onVentM2ClientInfos by derivedStateOf {
-        val targetKey = focuced_active_onVent_M8BonVent?.parent_M2Client_KeyID
+    val activeOnVent_M2Client by derivedStateOf {
+        val targetKey = activeonVent_M8BonVent?.parent_M2Client_KeyID
         repo2Client.datasValue.find { it.keyID == targetKey }
     }
 
     fun getDefaultM10VentOperation(): M10OperationVentCouleur? {
-        return focuced_active_onVent_M8BonVent?.let {
+        return activeonVent_M8BonVent?.let {
             with(it) {
                 M10OperationVentCouleur(
                     //---------------------------------Parent VentPeriod----------------------------------------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ class FocusedValuesGetter(
                 with(getter) {
                     put(
                         "onVentM2ClientInfos",
-                        onVentM2ClientInfos?.let {
+                        activeOnVent_M2Client?.let {
                             with(it) {
                                 nom
                             }
@@ -194,7 +194,7 @@ class FocusedValuesGetter(
                     )
                     put(
                         "onVentM8BonVent",
-                        focuced_active_onVent_M8BonVent?.let {
+                        activeonVent_M8BonVent?.let {
                             with(it) {
                                 "$parent_M2Client_DebugInfos/$etateActuellementEst"
                             }

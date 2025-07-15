@@ -55,10 +55,10 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun MarkerStatusDialog(
     viewModel: MapClientsViewModel,
-    aCentralFacade: ACentralFacade =viewModel.aCentralFacade ,
+    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
     relative_M8: M8BonVent? =
         aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter
-            .focuced_active_onVent_M8BonVent,
+            .activeonVent_M8BonVent,
     relative_M2Client: M2Client?,
     mapView: MapView,
     uiState: UiState,

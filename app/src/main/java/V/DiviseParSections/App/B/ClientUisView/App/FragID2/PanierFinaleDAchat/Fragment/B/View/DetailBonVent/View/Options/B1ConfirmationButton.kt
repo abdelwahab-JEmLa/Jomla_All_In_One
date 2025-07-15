@@ -31,7 +31,7 @@ fun ConfirmationButton(
     showLabel: Boolean,
     viewModel: ZViewModel_Sec1Frag3,
 ) {
-    val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.focuced_active_onVent_M8BonVent
+    val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
 
     fun updateBonVent(data: M8BonVent, newEtate: M8BonVent.EtateActuellementEst) =
         viewModel.aCentralFacade.repositorysMainSetter.update_M8BonVent(
