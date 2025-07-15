@@ -99,7 +99,7 @@ data class M13TarificationInfos(
     var creationTimestamps: Long = 0,
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
 
-    val typeChoisi: TypeChoisi = TypeChoisi.DefiniParGerant,
+    val typeChoisi: TypeChoisi = TypeChoisi.Historique,
     val prixCurrency: Double = 0.0,
 
     //---------------------------------ForgingIDsParent.M1ProduitInfos----------------------------------------------------------------------------------------------------------------------------------

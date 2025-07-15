@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList(
-    viewModel: TariffsButtonsViewModelSec7ID2,
     produit: ArticlesBasesStatsTable,
+    viewModel: TariffsButtonsViewModelSec7ID2,
     showLabels: Boolean,
     modifier: Modifier = Modifier,
     clientLastHistoricalPrice: Double,
@@ -63,11 +63,20 @@ fun MainList(
             if (clientLastHistoricalPrice != 0.0 &&
                 clientLastHistoricalPrice != produit.prixVent
             ) {
+                val currentClient = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeOnVent_M2Client
+                val currentBonVent = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeonVent_M8BonVent
 
                 add(
                     M13TarificationInfos(
                         typeChoisi = TypeChoisi.Historique,
                         prixCurrency = clientLastHistoricalPrice,
+                        parent_M1Produit_KeyId = produit.keyID,
+                        parent_M1Produit_DebugInfos = produit.nom,
+                        parent_M2Client_KeyId = currentClient?.keyID ?: "null",
+                        parent_M2Client_DebugInfos = currentClient?.get_DebugInfos() ?: "null",
+                        parent_M8BonVent_KeyId = currentBonVent?.keyID ?: "null",
+                        parent_M8BonVent_DebugInfos = currentBonVent?.get_DebugInfos() ?: "null",
+                        creationTimestamps = System.currentTimeMillis()
                     )
                 )
             }
@@ -145,13 +154,15 @@ fun MainList(
             .toSortedMap(compareBy { it.ordinal })
     }
 
-    val tariffs_Tag =
-        viewModel.aCentralFacade.repositorysMainGetter.repo13TarificationInfos.datasValue
+    val currentTariffsForProduct = remember(tariffs, produit) {
+        tariffs.filter { it.parent_M1Produit_KeyId == produit.keyID }
+    }
 
     Row(
         modifier = Modifier
             .getSemanticsTag(
-                tariffs_Tag, "tariffs_Tag"
+                nomVal = "product_tariffs_for_${produit.nom}",
+                data = "Found ${currentTariffsForProduct.size} tariffs for ${produit.nom}"
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
