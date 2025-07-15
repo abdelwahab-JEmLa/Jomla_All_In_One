@@ -110,7 +110,6 @@ fun TariffsButtonsSec7ID2(
         )
     }
 
-
     if (afficheButtons) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -118,8 +117,8 @@ fun TariffsButtonsSec7ID2(
                     if (bonVentComQuiFilterButtons != null) {
                         MainFilter(
                             viewModel = viewModel,
-                            tarificationList = tarificationList,
                             list_M8BonVent = bonVentList,
+                            tarificationList = tarificationList,
                             produitAcheteOperationList = operationVentCouleurList,
                             produitInfosList = datasValueDeM1ProduitInfos,
                             showLabels = showLabels,

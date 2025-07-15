@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainFilter(
+    viewModel: TariffsButtonsViewModelSec7ID2,
     list_M8BonVent: List<M8BonVent>,
     tarificationList: List<M13TarificationInfos>,
     produitAcheteOperationList: List<M10OperationVentCouleur>,
@@ -22,8 +23,7 @@ fun MainFilter(
     filterProduitID: Int,
     filterBonID: Long,
     onClickPrixButton: (M13TarificationInfos.TypeChoisi, M13TarificationInfos, Context) -> Unit,
-    onClickAnulationButton: (() -> Unit)? = null,
-    viewModel: TariffsButtonsViewModelSec7ID2
+    onClickAnulationButton: (() -> Unit)? = null
 ) {
     val filteredBonAchat = remember(list_M8BonVent, filterBonID) {
         list_M8BonVent.find { it.vid == filterBonID } ?: M8BonVent()
@@ -47,13 +47,14 @@ fun MainFilter(
     val clientDefiniTariffs = remember(tarificationList, filteredProduit, filteredBonAchat) {
         tarificationList.filter {
             it.parent_M1Produit_KeyId == filteredProduit.keyID &&
-                    it.parent_M2Client_KeyId == (relative_M2Client?.parent_M2Client_KeyID ?:"null")
+                    it.parent_M2Client_KeyId == (relative_M2Client?.parent_M2Client_KeyID ?: "null")
         }
     }
 
     val lastOrNull_produitAcheteOperationList = produitAcheteOperationList.lastOrNull { operation ->
         operation.parentProduitInfosOldId == filteredProduit.id &&
-                operation.parentClientInfosKeyID ==  (relative_M2Client?.parent_M2Client_KeyID ?:"null")
+                operation.parentClientInfosKeyID == (relative_M2Client?.parent_M2Client_KeyID
+            ?: "null")
     }
 
     val clientLastHistoricalPrice =
@@ -64,7 +65,7 @@ fun MainFilter(
 
     Column(modifier = modifier) {
         MainList(
-            viewModel =viewModel,
+            viewModel = viewModel,
             produit = filteredProduit,
             showLabels = showLabels,
             clientLastHistoricalPrice = clientLastHistoricalPrice,
