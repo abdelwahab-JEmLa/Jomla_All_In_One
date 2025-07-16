@@ -18,10 +18,10 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriodeRepository
-import V.DiviseParSections.App._0.Navigation.Screen
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.WDatabaseInitializationManager
 import android.content.Context
@@ -35,17 +35,6 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-data class ParametresAppComptNonSaved(
-    val itsDevMode: Boolean = true,
-    val currentActiveFocucedM9AppComptKeyID: String = "-OV9dYujH9cA3yEx8AYT",
-    val currentActiveFocucedM9AppComptDebugInfos: String = "",
-
-    val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.FragmentProduitFastSearchDialog,
-    var enablePerformAutoClickImageDisplayer: Boolean = false,
-    val isControleFabVisible: Boolean = false,
-)
 
 @Stable
 class RepositorysMainGetter(
