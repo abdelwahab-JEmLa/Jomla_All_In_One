@@ -199,7 +199,7 @@ val viewModelModule = module {
     viewModel { ViewModel_A4FragID1(get(), get()) }
     viewModel { VendeurAfficheurInfosProduitViewModel(get()) }
     viewModel { B_ClientInfosProtoJuin3PreviewViewModel(get()) }
-    viewModel { ViewModelMessageur(get(), get(), get()) }
+    viewModel { ViewModelMessageur(get(), get(), get(), get()) }
     viewModel { D_EtateMessageVocalePreviewViewModel(get()) }
     viewModel { A_ProduitInfosViewModel(get()) }
     viewModel { CategoriePrevViewModel(get()) }
