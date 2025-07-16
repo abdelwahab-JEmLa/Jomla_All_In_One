@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
@@ -10,9 +11,7 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -129,102 +127,18 @@ fun ButtonMessageVocale(
             )
         }
 
-        // TODO(1) Solution: Replay card for M8BonVent
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             // Replay Card for M8BonVent (left side)
             relative_M8BonVent?.let { bonVent ->
-                Card(
+                BonVentReplayCard(
+                    bonVent = bonVent,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(bonVent.etateActuellementEst.color).copy(alpha = 0.1f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        // Header with status and debug info
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = bonVent.get_DebugInfos(),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-
-                            // Status indicator
-                            Box(
-                                modifier = Modifier
-                                    .size(12.dp)
-                                    .background(
-                                        color = Color(bonVent.etateActuellementEst.color),
-                                        shape = CircleShape
-                                    )
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        // Status name in Arabic
-                        Text(
-                            text = bonVent.etateActuellementEst.nomArabe,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(bonVent.etateActuellementEst.color),
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        // Time info
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Début: ${bonVent.heurDebutInString}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-
-                            Text(
-                                text = "Fin: ${bonVent.heurFinInString}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        }
-
-                        // Voice recording indicator if present
-                        if (bonVent.vocaleKeyID.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_telegram_mic),
-                                    contentDescription = "Voice message",
-                                    tint = if (bonVent.sonVocaleEstEcoute) Color.Green else Color.Gray,
-                                    modifier = Modifier.size(16.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(4.dp))
-
-                                Text(
-                                    text = if (bonVent.sonVocaleEstEcoute) "Écouté" else "Non écouté",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = if (bonVent.sonVocaleEstEcoute) Color.Green else Color.Gray
-                                )
-                            }
-                        }
-                    }
-                }
+                        .padding(end = 8.dp)
+                )
             }
 
             // FAB (right side)
@@ -383,6 +297,106 @@ fun ButtonMessageVocale(
                         painter = painterResource(id = R.drawable.ic_telegram_mic),
                         contentDescription = "Commencer l'enregistrement vocal",
                         tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BonVentReplayCard(
+    bonVent: M8BonVent,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    // Function to get color from resource
+    fun getColorFromResource(colorRes: Int): Color {
+        return try {
+            Color(ContextCompat.getColor(context, colorRes))
+        } catch (e: Exception) {
+            // Fallback colors based on the color resource
+            when (colorRes) {
+                android.R.color.holo_green_light -> Color(0xFF99CC00)
+                android.R.color.holo_purple -> Color(0xFFAA66CC)
+                android.R.color.holo_red_light -> Color(0xFFFF4444)
+                android.R.color.holo_blue_dark -> Color(0xFF0099CC)
+                android.R.color.darker_gray -> Color(0xFF444444)
+                android.R.color.black -> Color(0xFF000000)
+                android.R.color.holo_orange_dark -> Color(0xFFFF8800)
+                R.color.c2 -> Color(0xFF6B73FF)
+                R.color.couleur1 -> Color(0xFF9C27B0)
+                else -> Color(0xFF6200EE) // Default purple
+            }
+        }
+    }
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = getColorFromResource(bonVent.etateActuellementEst.color)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            // Debug info header
+            Text(
+                text = bonVent.get_DebugInfos(),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.9f)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Status name in Arabic - main display
+            Text(
+                text = bonVent.etateActuellementEst.nomArabe,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Time info
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "بداية: ${bonVent.heurDebutInString}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+
+                Text(
+                    text = "نهاية: ${bonVent.heurFinInString}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+            }
+
+            // Voice recording indicator if present
+            if (bonVent.vocaleKeyID.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_telegram_mic),
+                        contentDescription = "Voice message",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = if (bonVent.sonVocaleEstEcoute) "تم الاستماع" else "لم يتم الاستماع",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.8f)
                     )
                 }
             }
