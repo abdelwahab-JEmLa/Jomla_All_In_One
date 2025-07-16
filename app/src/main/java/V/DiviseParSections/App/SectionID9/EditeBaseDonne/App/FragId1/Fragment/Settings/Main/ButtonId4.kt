@@ -99,27 +99,28 @@ private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabas
     }
 }
 
-private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {   //<--
-//TODO(1): regle avec le shema 
-    // RepositorysMainGetter all categories from database
+private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+    // Get all categories from database
     val categories = appDatabase.categoriesModelDao().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()
 
-    // Add CSV header
-    csvContent.append("keyID,catalogueParentId,nom,position,displayedHeader,itsHeldPourDeplacement,cSelectionePourDeplace,dernierTimeTampsSynchronisationAvecFireBase\n")
+    // Add CSV header - aligned with CategoriesTabelle schema
+    csvContent.append("id,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,catalogueParentId,parentCatalogueIdObject,nom,position,displayedHeader,itsHeldPourDeplacement,cSelectionePourDeplace\n")
 
     // Add category data
     categories.forEach { category ->
         csvContent.append("${category.id},")
+        csvContent.append("\"${category.bsonObjectId?.replace("\"", "\"\"") ?: ""}\",")
+        csvContent.append("${category.dernierTimeTampsSynchronisationAvecFireBase},")
         csvContent.append("${category.catalogueParentId},")
-        csvContent.append("\"${category.nom.replace("\"", "\"\"")}\",") // Escape quotes in CSV
+        csvContent.append("\"${category.parentCatalogueIdObject?.replace("\"", "\"\"") ?: ""}\",")
+        csvContent.append("\"${category.nom.replace("\"", "\"\"")}\",")
         csvContent.append("${category.position},")
         csvContent.append("${category.displayedHeader},")
         csvContent.append("${category.itsHeldPourDeplacement},")
-        csvContent.append("${category.cSelectionePourDeplace},")
-        csvContent.append("${category.dernierTimeTampsSynchronisationAvecFireBase}\n")
+        csvContent.append("${category.cSelectionePourDeplace}\n")
     }
 
     // Create file with fixed name
@@ -131,23 +132,25 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
         writer.write(csvContent.toString())
     }
 }
-private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {  //<--
-//TODO(1): regle avec le shema 
-    // RepositorysMainGetter all articles from database
+
+private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+    // Get all articles from database
     val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()
 
-    // Add CSV header - updated to match ArticlesBasesStatsTable schema
-    csvContent.append("keyID,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,dernierFireBaseUpdateTimestamps,idParentCategorie,positionDonSonCesFrereCategorieProduits,nom,nomMutable,etateActuelleOnFusionAvecBaseDonne,nombreUniteInt,nombreProduitDonSonCarton,heldPrioriteDemandAuGrossist,prixVent,cachePrixVent,prixAchat,prixAchatDernierTimeTempUpdate,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,afficheCesDetailPourComptBsonId,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles\n")
+    // Add CSV header - aligned with complete ArticlesBasesStatsTable schema
+    csvContent.append("id,keyID,bsonObjectId,dernierTimeTampsSynchronisationAvecFireBase,dernierFireBaseUpdateTimestamps,processPositioningInFactory,idParentCategorie,positionDonSonCesFrereCategorieProduits,nom,nomMutable,etateActuelleOnFusionAvecBaseDonne,nombreUniteInt,nombreProduitDonSonCarton,heldPrioriteDemandAuGrossist,prixDefiniParGerant,prixVent,cachePrixVent,prixAchat,prixAchatDernierTimeTempUpdate,clientPrixVentUnite,actualiseSonImage,actualiseSonImageTest2,afficheCesDetailPourComptBsonId,disponibilityEtates,keyFireBase,nomArab,autreNomDarticle,couleur1,idcolor1,couleur2,idcolor2,couleur3,idcolor3,couleur4,idcolor4,nomCategorie2,affichageUniteState,commmentSeVent,afficheBoitSiUniter,minQuan,monBenfice,neaon2,catalogeParentID,funChangeImagsDimention,nomCategorie,neaon1,lastUpdateState,cartonState,dateCreationCategorie,prixDeVentTotaleChezClient,benficeTotaleEntreMoiEtClien,benificeTotaleEn2,monPrixAchatUniter,monPrixVentUniter,articleHaveUniteImages,itsNewArrivale,imageDimention,idForSearchArticles,setIN_Vent_Its_Quantity_Represent,quantite_Boit_Par_Carton\n")
 
     // Add article data
     articles.forEach { article ->
+        csvContent.append("${article.id},")
         csvContent.append("\"${article.keyID.replace("\"", "\"\"")}\",")
         csvContent.append("\"${article.bsonObjectId.replace("\"", "\"\"")}\",")
         csvContent.append("${article.dernierTimeTampsSynchronisationAvecFireBase},")
         csvContent.append("${article.dernierFireBaseUpdateTimestamps},")
+        csvContent.append("\"${article.processPositioningInFactory.name}\",")
         csvContent.append("${article.idParentCategorie ?: ""},")
         csvContent.append("${article.positionDonSonCesFrereCategorieProduits},")
         csvContent.append("\"${article.nom.replace("\"", "\"\"")}\",")
@@ -156,6 +159,7 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
         csvContent.append("${article.nombreUniteInt},")
         csvContent.append("${article.nombreProduitDonSonCarton},")
         csvContent.append("${article.heldPrioriteDemandAuGrossist},")
+        csvContent.append("${article.prixDefiniParGerant ?: 0.0},")
         csvContent.append("${article.prixVent},")
         csvContent.append("${article.cachePrixVent},")
         csvContent.append("${article.prixAchat},")
@@ -198,7 +202,9 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
         csvContent.append("${article.articleHaveUniteImages},")
         csvContent.append("${article.itsNewArrivale},")
         csvContent.append("\"${article.imageDimention.replace("\"", "\"\"")}\",")
-        csvContent.append("${article.idForSearchArticles}\n")
+        csvContent.append("${article.idForSearchArticles},")
+        csvContent.append("\"${article.setIN_Vent_Its_Quantity_Represent.name}\",")
+        csvContent.append("${article.quantite_Boit_Par_Carton}\n")
     }
 
     // Create file with fixed name
@@ -206,19 +212,21 @@ private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDataba
     val file = File(exportDir, fileName)
 
     // Write CSV content to file
-    FileWriter(file).use { writer ->
-        writer.write(csvContent.toString())
+    withContext(Dispatchers.IO) {
+        FileWriter(file).use { writer ->
+            writer.write(csvContent.toString())
+        }
     }
 }
 
 private suspend fun exportClientsToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
-    // RepositorysMainGetter all clients from database
-    val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll() // Adjust DAO method name as needed
+    // Get all clients from database
+    val clients = appDatabase.B_ClientInfosProtoJuin3Dao().getAll()
 
     // Create CSV content
     val csvContent = StringBuilder()
 
-    // Add CSV header for M2Client
+    // Add CSV header for M2Client - keeping existing schema as it appears to be correct
     csvContent.append("keyID,nom,cretionTimestamps,numTelephone,couleur,bonDuClientsSu,currentCreditBalance,positionDonClientsList,cUnClientTemporaire,auFilterFAB,typeDeSonMagasine,clientTypeMode,caMarqueGpsEstOuvert,latitude,longitude,title,snippet,actuelleEtat,tagCeBonEstOuvertPourComptsIds,keyFireBase,dernierTimeTampsSynchronisationAvecFireBase\n")
 
     // Add client data

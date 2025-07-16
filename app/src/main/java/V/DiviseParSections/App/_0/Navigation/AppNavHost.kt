@@ -10,7 +10,7 @@ import V.DiviseParSections.App.SectionID12.GrossistAchat.App.FragID1.CommandePro
 import V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID2.FastSeach.Fragment.MainFastSearchProduitPourVent
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
-import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Main_DataBaseInitFactory_1Produit
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main.Main_DataBaseInitFactory_1Produit
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Modules.ModuleID1.WifiTransferDatas.Module.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

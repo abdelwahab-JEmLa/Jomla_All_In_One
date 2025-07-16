@@ -1,8 +1,10 @@
-package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview
+package Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.A.Main
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.Item_2_Menu
+import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1
 import Z_CodePartageEntreApps.DataBase.Main.Main.A.Base.Preview.OldDataBase_M1.Companion.get_old_Datas
 import Z_CodePartageEntreApps.Ui.LoadingScreen
 import android.util.Log
@@ -31,12 +33,12 @@ import org.koin.compose.koinInject
 
 @Preview
 @Composable
- fun Preview_DataBaseInitFactory_1Produit() {
+fun Preview_DataBaseInitFactory_1Produit() {
     Main_DataBaseInitFactory_1Produit()
 }
 
 @Composable
- fun Main_DataBaseInitFactory_1Produit(
+fun Main_DataBaseInitFactory_1Produit(
     aCentralFacade: ACentralFacade = koinInject(),
 ) {
     val loadingProgress = aCentralFacade.repositorysMainGetter.loadingProgress ?: 0f
@@ -46,7 +48,6 @@ import org.koin.compose.koinInject
         else -> MainScreen()
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -85,8 +86,7 @@ fun MainScreen(
             TopAppBar(
                 modifier = Modifier
                     .getSemanticsTag(quantite_Boit_Par_Carton, "quantite_Boit_Par_Carton", 3)
-                    .getSemanticsTag(new_Edited_Datas.find { it.nom.contains("mor") }, "liy")
-                ,
+                    .getSemanticsTag(new_Edited_Datas.find { it.nom.contains("mor") }, "liy"),
                 title = { Text("1Produit") },
                 actions = {
                     IconButton(onClick = {
@@ -121,6 +121,14 @@ fun MainScreen(
                             "Migrer quantité carton",
                             isLoading = isLoading,
                             old_Datas = old_Datas,
+                        ) {
+                            showMenu = false
+                            safeCountClick = 0
+                        }
+                        Item_3_Menu(
+                            title = "export",
+                            isLoading = isLoading,
+                            dataToExport = new_Edited_Datas
                         ) {
                             showMenu = false
                             safeCountClick = 0
