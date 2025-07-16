@@ -98,7 +98,7 @@ fun ProductItem(
             text = {
                 StringEditor(
                     currentValue = produit.nom,
-                    label = "Nom du produit",
+                    label = "Etate du produit",
                     onValueUpdate = { newName ->
                         updateProduct(produit.copy(nom = newName))
                         showNameEditor = false

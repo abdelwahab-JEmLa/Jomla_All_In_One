@@ -126,8 +126,7 @@ data class M15Grossist(
     companion object {
         val ref = centralRef.child("DatasM15Grossist")
 
-        fun generePushKey() =
-            ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
+        fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
 
         fun safeRemoveRef(): Unit {
             ref.removeValue()

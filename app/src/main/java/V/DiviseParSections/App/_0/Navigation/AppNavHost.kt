@@ -72,7 +72,7 @@ fun AppNavHost(
     val startUpScreen = when {
         itsDevMode -> viewModel.getter.parametresAppComptNonSaved.devStartUpScree
 
-        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+        viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
             ?.travailleChezGrossisst3Ali == true -> Screen.FragmentProduitFastSearchDialog
 
         else -> Screen.FacadePresentoireProduits

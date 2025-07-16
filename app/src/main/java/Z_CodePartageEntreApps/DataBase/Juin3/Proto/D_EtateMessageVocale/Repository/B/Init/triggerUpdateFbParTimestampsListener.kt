@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -21,14 +21,14 @@ fun D_EtateMessageVocaleRepository.triggerUpdateFbParTimestampsListener() {
                     var updateCount = 0
                     for (child in snapshot.children) {
                         try {
-                            child.getValue(D_EtateMessageVocale::class.java)?.let { entity ->
-                                val entityWithKey = entity.copy(keyFireBase = child.key ?: "")
+                            child.getValue(M17MessageVocale::class.java)?.let { entity ->
+                                val entityWithKey = entity.copy(keyID = child.key ?: "")
                                 val shouldUpdate = try {
-                                    val localEntity = dao.getAll().find { it.keyFireBase == entityWithKey.keyFireBase }
+                                    val localEntity = dao.getAll().find { it.keyID == entityWithKey.keyID }
                                     if (localEntity == null) {
                                         true
                                     } else {
-                                        entityWithKey.dernierFireBaseUpdateTimestamps > localEntity.dernierFireBaseUpdateTimestamps
+                                        entityWithKey.dernierTimeTampsSynchronisationAvecFireBase > localEntity.dernierTimeTampsSynchronisationAvecFireBase
                                     }
                                 } catch (e: Exception) {
                                     true

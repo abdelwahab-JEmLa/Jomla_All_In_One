@@ -142,7 +142,7 @@ fun FilterDropdownMenu(
 
                 item {
                     SortOption(
-                        label = "Nom A-Z",
+                        label = "Etate A-Z",
                         selected = filterState.sortOrder == SortOrder.NAME_ASC,
                         onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_ASC)) }
                     )
@@ -150,7 +150,7 @@ fun FilterDropdownMenu(
 
                 item {
                     SortOption(
-                        label = "Nom Z-A",
+                        label = "Etate Z-A",
                         selected = filterState.sortOrder == SortOrder.NAME_DESC,
                         onClick = { onFilterChanged(filterState.copy(sortOrder = SortOrder.NAME_DESC)) }
                     )

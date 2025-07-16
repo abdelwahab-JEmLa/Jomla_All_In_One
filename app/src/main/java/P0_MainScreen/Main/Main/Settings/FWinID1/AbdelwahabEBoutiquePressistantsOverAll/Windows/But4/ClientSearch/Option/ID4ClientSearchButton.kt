@@ -178,7 +178,7 @@ fun ID4ClientSearchButton(
                             .focusRequester(focusRequester),
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Nom ou téléphone...") },
+                        placeholder = { Text("Etate ou téléphone...") },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = Color.White,
@@ -280,7 +280,7 @@ private fun CreateNewClientIcon(
         parent_M2Client_DebugInfos = newClient.nom
     )
 
-    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.currentM9AppCompt?.copy(
+    val updatedAppCompt = viewModel.getterFocusedVarsHandlerFacade.active_Current_M9AppCompt?.copy(
         onVentM8BonVentKey = addedDefaultOnVentID8BonVentEtAdd.keyID,
         onVentM8BonVentDebugInfos = addedDefaultOnVentID8BonVentEtAdd.get_DebugInfos()
     )

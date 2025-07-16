@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 fun View_DefaultAddItem_M14VentPeriode(
     viewModel: ViewModel_M14VentPeriod,
 ) {
-    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+    val currentM9AppCompt = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
     val generatedDefaultM14 = M14VentPeriode(
         parent_M9AppCompt_KeyID = currentM9AppCompt?.keyID ?: "null",
         parent_M9AppCompt_DebugInfos = currentM9AppCompt?.get_DebugInfos() ?: "null"

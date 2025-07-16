@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateDatas
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.getFirebaseData
@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposito
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-suspend fun D_EtateMessageVocaleRepository.initializeDataReturn(): List<D_EtateMessageVocale> {
+suspend fun D_EtateMessageVocaleRepository.initializeDataReturn(): List<M17MessageVocale> {
     return if (isRoomEmpty()) {
         val firebaseData = suspendCancellableCoroutine { continuation ->
             getFirebaseData { dataFB ->
@@ -19,7 +19,7 @@ suspend fun D_EtateMessageVocaleRepository.initializeDataReturn(): List<D_EtateM
         if (firebaseData.isEmpty()) {
             val itsTestDataFlow = false
             if (itsTestDataFlow) {
-                val testData = D_EtateMessageVocale.createTestInstance()
+                val testData = M17MessageVocale.createTestInstance()
                 addOrUpdateDatas(testData)
                 testData
             } else emptyList()

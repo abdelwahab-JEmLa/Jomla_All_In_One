@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.pm.PackageManager
@@ -42,7 +43,12 @@ import kotlinx.coroutines.launch
 fun ButtonMessageVocale(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
+    aCentralFacade: ACentralFacade =viewModel.aCentralFacade,
 ) {
+    val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
+        .focusedValuesGetter
+        .active_Current_M9AppCompt
+
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -52,7 +58,7 @@ fun ButtonMessageVocale(
     var isRecording by remember { mutableStateOf(false) }
     var isUploading by remember { mutableStateOf(false) }
     var recordingTimeSeconds by remember { mutableStateOf(0) }
-    var currentRecordingEtate by remember { mutableStateOf<D_EtateMessageVocale?>(null) }
+    var currentRecordingEtate by remember { mutableStateOf<M17MessageVocale?>(null) }
     var hasRecordPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -156,7 +162,7 @@ fun ButtonMessageVocale(
 
                                     if (uploadResult.isSuccess) {
                                         val updatedEtate = etate.copy(
-                                            nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                            etate = M17MessageVocale.Etate.ENVOYER,
                                             timestamps = datesHandler.getCurrentTimestamps()
                                         )
                                         viewModel.addOrUpdateData(updatedEtate)
@@ -189,25 +195,22 @@ fun ButtonMessageVocale(
 
                         } else {
                             try {
-                                val idParent_1_5_Vendeur =
-                                    viewModel.getter.repo9AppCompt.currentAppCompt?.vid
+
+                                val active_Current_M9AppCompt_KeyId =active_Current_M9AppCompt?.keyID ?:"null"
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                val newEtate = idParent_1_5_Vendeur?.let {
-                                    D_EtateMessageVocale(
-                                        nomDeSonOriginaleFichie = originalFileName,
-                                        idParent_1_5_Vendeur = it,
-                                        nomParent_1_5_Vendeur = "Non Definie",
-                                        parentMessageVID = parentMessageVID,
-                                        nom = D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT,
-                                        timestamps = datesHandler.getCurrentTimestamps()
-                                    )
-                                }
+                                val newEtate = M17MessageVocale(
+                                    nomDeSonOriginaleFichie = originalFileName,
+                                    parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
+                                    parent_M9AppCompt_DebugInfos = "Non Definie",
+                                    parentMessageVID = parentMessageVID,
+                                    etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
+                                    timestamps = datesHandler.getCurrentTimestamps()
+                                )
 
-                                if (newEtate != null) {
-                                    viewModel.addOrUpdateData(newEtate)
-                                }
+                                viewModel.addOrUpdateData(newEtate)
+
                                 currentRecordingEtate = newEtate
 
                                 val startResult = newEtate?.let {

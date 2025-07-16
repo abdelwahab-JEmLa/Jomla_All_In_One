@@ -62,13 +62,13 @@ fun ClientDetailsSection(
                     // FIXED: Show client name on same line as status when minimized
                     if (isMinimized) {
                         Text(
-                            text = "Nom: $nom",
+                            text = "Etate: $nom",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
-                            text = "Nom: $nom",
+                            text = "Etate: $nom",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )

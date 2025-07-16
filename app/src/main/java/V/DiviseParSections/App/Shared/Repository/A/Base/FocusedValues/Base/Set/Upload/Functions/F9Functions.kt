@@ -12,7 +12,7 @@ fun setIN_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
-    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    val currentAppCompt = getterFocusedVars.active_Current_M9AppCompt
 
     val updatedAppCompt = currentAppCompt?.copy(
         activeFocuce_TariffPrixDifineur_M1ProduitKeyID = produitKey,
@@ -27,7 +27,7 @@ fun clear_CurrentApp_activeFocuce_TariffPrixDifineur_M1ProduitKeyID(
     getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
-    val currentAppCompt = getterFocusedVars.currentM9AppCompt ?: return
+    val currentAppCompt = getterFocusedVars.active_Current_M9AppCompt ?: return
 
     repo9AppCompt.upsert(
         currentAppCompt.copy(
@@ -42,7 +42,7 @@ fun updateCurrentAppComptDialogProduit(
     repo9AppCompt: Repo9AppCompt,
     produit: ArticlesBasesStatsTable? = null
 ) {
-    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    val currentAppCompt = getterFocusedVars.active_Current_M9AppCompt
     if (currentAppCompt == null) {
         Log.e("FocusedVarsDebug", "Cannot upsert dialog product - currentM9AppCompt is null")
         return
@@ -61,7 +61,7 @@ fun focuceOnVentM3CouleurProduitInfos(
     getterFocusedVars: FocusedValuesGetter,
     repo9AppCompt: Repo9AppCompt
 ) {
-    val currentAppCompt = getterFocusedVars.currentM9AppCompt
+    val currentAppCompt = getterFocusedVars.active_Current_M9AppCompt
     if (currentAppCompt == null) {
         Log.e("FocusedVarsDebug", "Cannot focus couleur product - currentM9AppCompt is null")
         return

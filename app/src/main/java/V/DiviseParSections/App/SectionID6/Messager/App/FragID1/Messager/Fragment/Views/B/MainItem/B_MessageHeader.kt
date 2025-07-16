@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,10 +39,10 @@ fun MessageHeader(
     messageVID: Long,
     timestamp: Long,
     datesHandler: DatesHandler,
-    // Added parameters for additional display
-    parentD_EtateMessageVocale: D_EtateMessageVocale,
-    etatesChildKeyIDsList: List<D_EtateMessageVocale>,
-    viewModel: ViewModelMessageur
+    parentD_EtateMessageVocale: M17MessageVocale,
+    etatesChildKeyIDsList: List<M17MessageVocale>,
+    viewModel: ViewModelMessageur,
+    isFromActiveAccount: Boolean = false // NEW: Added parameter for styling
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
@@ -57,15 +57,23 @@ fun MessageHeader(
         ) {
             Surface(
                 shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                modifier = Modifier.size(32.dp)
+                color = if (isFromActiveAccount) {
+                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
+                } else {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                },
+                modifier = Modifier.size(28.dp)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.GraphicEq,
                     contentDescription = "Message vocal",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
                     modifier = Modifier
-                        .size(18.dp)
+                        .size(16.dp)
                         .padding(2.dp)
                 )
             }
@@ -73,12 +81,16 @@ fun MessageHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                if(parentD_EtateMessageVocale.relativeAuDataBase== D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate) {
+                if (parentD_EtateMessageVocale.relativeAuDataBase == M17MessageVocale.RelativeAuDataBase.C3_BonAchate) {
                     Text(
                         text = clientName,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -87,7 +99,11 @@ fun MessageHeader(
                 Text(
                     text = "Vendeur: $vendorName",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -95,7 +111,11 @@ fun MessageHeader(
                 Text(
                     text = "Message vocal #$messageVID",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -104,7 +124,11 @@ fun MessageHeader(
                     Text(
                         text = "Fichier: ${parentD_EtateMessageVocale.nomDeSonOriginaleFichie}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        color = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -113,21 +137,30 @@ fun MessageHeader(
                 // Display current state information
                 val currentState = etatesChildKeyIDsList.maxByOrNull { it.timestamps }
                 currentState?.let { state ->
-                    val stateText = when (state.nom) {
-                        D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
-                        D_EtateMessageVocale.Nom.ENVOYER -> "📤 Envoyé"
-                        D_EtateMessageVocale.Nom.VUE -> "👁️ Vu"
-                        D_EtateMessageVocale.Nom.ECOUTE -> "🎧 Écouté"
+                    val stateText = when (state.etate) {
+                        M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"
+                        M17MessageVocale.Etate.ENVOYER -> "📤 Envoyé"
+                        M17MessageVocale.Etate.VUE -> "👁️ Vu"
+                        M17MessageVocale.Etate.ECOUTE -> "🎧 Écouté"
                     }
 
                     Text(
                         text = stateText,
                         style = MaterialTheme.typography.bodySmall,
-                        color = when (state.nom) {
-                            D_EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
-                            D_EtateMessageVocale.Nom.ENVOYER -> MaterialTheme.colorScheme.primary
-                            D_EtateMessageVocale.Nom.VUE -> MaterialTheme.colorScheme.secondary
-                            D_EtateMessageVocale.Nom.ECOUTE -> Color.Green
+                        color = if (isFromActiveAccount) {
+                            when (state.etate) {
+                                M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.onPrimary
+                                M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.onPrimary
+                                M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.onPrimary
+                                M17MessageVocale.Etate.ECOUTE -> MaterialTheme.colorScheme.onPrimary
+                            }
+                        } else {
+                            when (state.etate) {
+                                M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> MaterialTheme.colorScheme.error
+                                M17MessageVocale.Etate.ENVOYER -> MaterialTheme.colorScheme.primary
+                                M17MessageVocale.Etate.VUE -> MaterialTheme.colorScheme.secondary
+                                M17MessageVocale.Etate.ECOUTE -> Color.Green
+                            }
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -135,11 +168,11 @@ fun MessageHeader(
                 }
 
                 // Display Firebase sync status if available
-                if (parentD_EtateMessageVocale.keyFireBase.isNotEmpty()) {
+                if (parentD_EtateMessageVocale.keyID.isNotEmpty()) {
                     val syncStatus =
-                        if (parentD_EtateMessageVocale.dernierFireBaseUpdateTimestamps > 0) {
+                        if (parentD_EtateMessageVocale.dernierTimeTampsSynchronisationAvecFireBase > 0) {
                             val timeDiff =
-                                System.currentTimeMillis() - parentD_EtateMessageVocale.dernierFireBaseUpdateTimestamps
+                                System.currentTimeMillis() - parentD_EtateMessageVocale.dernierTimeTampsSynchronisationAvecFireBase
                             when {
                                 timeDiff < 60000 -> "🟢 Synchronisé"
                                 timeDiff < 300000 -> "🟡 Sync récente"
@@ -152,7 +185,11 @@ fun MessageHeader(
                     Text(
                         text = syncStatus,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        color = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -171,13 +208,17 @@ fun MessageHeader(
                     onClick = {
                         showDeleteConfirmation = true
                     },
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(28.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = "Supprimer le message",
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(18.dp)
+                        tint = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        },
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
@@ -187,7 +228,11 @@ fun MessageHeader(
                     Text(
                         text = datesHandler.getDateAndTimStringAvecSeconds(timestamp).time,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -197,7 +242,11 @@ fun MessageHeader(
                         Text(
                             text = "${etatesChildKeyIDsList.size} état(s)",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            color = if (isFromActiveAccount) {
+                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -211,7 +260,6 @@ fun MessageHeader(
     if (showDeleteConfirmation) {
         DeleteConfirmationDialog(
             onConfirm = {
-                // Delete the parent message and all related states
                 viewModel.deleteData(parentD_EtateMessageVocale)
                 etatesChildKeyIDsList.forEach { state ->
                     viewModel.deleteData(state)

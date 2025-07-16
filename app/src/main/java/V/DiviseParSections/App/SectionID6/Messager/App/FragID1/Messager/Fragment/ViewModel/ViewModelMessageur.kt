@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.deleteData
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
@@ -15,13 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
+    val d_EtateMessageVocaleList: List<M17MessageVocale> = emptyList(),
     val c3_BonAchate: List<M8BonVent> = emptyList(),
     val idActiveAppCompt:Long=0,
     val mainLoadingProgress: Float = 0f
 )
 
 class ViewModelMessageur(
+    val aCentralFacade : ACentralFacade,
     val getter : RepositorysMainGetter,
     val masterRepositorys: A_MasterRepositorysGrpProtoJuin3,
     val audioRecorderAndPlayHandler: AudioRecorderAndPlayHandler
@@ -53,6 +55,6 @@ class ViewModelMessageur(
     }
 
 
-    fun addOrUpdateData(data: D_EtateMessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data) }
-    fun deleteData(data: D_EtateMessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.deleteData(data) }
+    fun addOrUpdateData(data: M17MessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.addOrUpdateData(data) }
+    fun deleteData(data: M17MessageVocale): Unit { masterRepositorys.d_EtateMessageVocaleRepository.deleteData(data) }
 }

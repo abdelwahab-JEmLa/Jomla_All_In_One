@@ -313,7 +313,7 @@ fun MarkerStatusDialog(
                         OutlinedTextField(
                             value = editedName,
                             onValueChange = { editedName = it },
-                            label = { Text("Nom du client") },
+                            label = { Text("Etate du client") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp)

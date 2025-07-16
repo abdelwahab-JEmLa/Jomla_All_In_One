@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.UiState
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -150,15 +150,15 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
                                 val downloadUrl = uploadResult.getOrThrow()
 
                                 // Create and save the voice message record to database
-                                val voiceMessageRecord = D_EtateMessageVocale(
-                                    idParent_1_5_Vendeur = activeCompt!!.vid,
-                                    nomParent_1_5_Vendeur = activeCompt.nom,
+                                val voiceMessageRecord = M17MessageVocale(
+                                    parent_M9AppCompt_KeyID = activeCompt!!.keyID,
+                                    parent_M9AppCompt_DebugInfos = activeCompt.get_DebugInfos(),
                                     parentMessageVID = parentMessageVID,
-                                    nom = D_EtateMessageVocale.Nom.ENVOYER,
+                                    etate = M17MessageVocale.Etate.ENVOYER,
                                     timestamps = DatesHandler().getCurrentTimestamps(),
                                     relativeAuDataBase =
-                                        D_EtateMessageVocale.RelativeAuDataBase.C3_BonAchate,
-                                    parentC3_BonAchateVID = currentTransaction?.vid ?: 0
+                                        M17MessageVocale.RelativeAuDataBase.C3_BonAchate,
+                                    parent_M8BonVent_KeyID = currentTransaction?.keyID ?: "null"
                                 )
 
                                 d_EtateMessageVocaleRepository.addOrUpdateData(

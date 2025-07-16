@@ -33,7 +33,7 @@ fun MainPreviewD_EtateMessageVocale(
     val progress = uiState.mainLoadingProgress
 
     val sortedDatas = remember(datas) {
-        datas.sortedBy { it.id }
+        datas.sortedBy { it.keyID }
     }
 
     LaunchedEffect(Unit) {
@@ -70,15 +70,15 @@ fun MainPreviewD_EtateMessageVocale(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = data.nom.name,
+                                text = data.etate.name,
                                 modifier = Modifier.weight(1f)
                             )
 
-                            Text(data.id.toString())
+                            Text(data.keyID.toString())
 
 
                         }
-                        Text(data.dernierFireBaseUpdateTimestamps.toString())
+                        Text(data.dernierTimeTampsSynchronisationAvecFireBase.toString())
                     }
                 }
             }

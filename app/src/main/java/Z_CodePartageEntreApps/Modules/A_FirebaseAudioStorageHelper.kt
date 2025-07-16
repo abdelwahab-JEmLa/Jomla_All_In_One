@@ -10,7 +10,7 @@ import java.net.URLDecoder
 class A_FirebaseAudioStorageHelper {
     private val storage = FirebaseStorage.getInstance()
     private val storageRef = storage.reference
-    private val audioRef = storageRef.child("audio_messages").child("D_EtateMessageVocale")
+    private val audioRef = storageRef.child("audio_messages").child("M17MessageVocale")
 
     companion object {
         private const val TAG = "FirebaseAudioStorage"

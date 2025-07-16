@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Reposit
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class UiState(
-    val d_EtateMessageVocaleList: List<D_EtateMessageVocale> = emptyList(),
+    val d_EtateMessageVocaleList: List<M17MessageVocale> = emptyList(),
     val mainLoadingProgress: Float = 0f
 )
 

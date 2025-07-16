@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
 
-fun D_EtateMessageVocaleRepository.getFirebaseData(onSuccess: (List<D_EtateMessageVocale>) -> Unit) {
+fun D_EtateMessageVocaleRepository.getFirebaseData(onSuccess: (List<M17MessageVocale>) -> Unit) {
     updateProgress(0.1f)
     repoRef.get()
         .addOnSuccessListener { snapshot ->
-            val dataList = mutableListOf<D_EtateMessageVocale>()
+            val dataList = mutableListOf<M17MessageVocale>()
             snapshot.children.forEach { child ->
-                child.getValue(D_EtateMessageVocale::class.java)?.let { item ->
-                    item.keyFireBase = child.key ?: ""
+                child.getValue(M17MessageVocale::class.java)?.let { item ->
+                    item.keyID = child.key ?: ""
                     dataList.add(item)
                 }
             }

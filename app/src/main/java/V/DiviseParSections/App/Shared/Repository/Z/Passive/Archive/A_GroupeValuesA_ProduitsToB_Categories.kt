@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
-import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.RepoM16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue

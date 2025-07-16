@@ -1,24 +1,17 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Function.getMaxIdPlus1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun D_EtateMessageVocaleRepository.addOrUpdateData(data: D_EtateMessageVocale) {
+fun D_EtateMessageVocaleRepository.addOrUpdateData(data: M17MessageVocale) {
     CoroutineScope(Dispatchers.IO).launch {
-        val dataWhithId = if (data.id == 0L) data.copy(id = getMaxIdPlus1()) else data
-
-        val preparedData = dataWhithId.withProperKeyFireBaseAndTimeTamp()
-
-        dao.upsert(preparedData)
-
+        dao.upsert(data)
         val allData = dao.getAll()
         updateRepoState(allData)
-        repoRef.child(preparedData.keyFireBase).setValue(preparedData)
-
+        repoRef.child(data.keyID).setValue(data)
     }
 }
 

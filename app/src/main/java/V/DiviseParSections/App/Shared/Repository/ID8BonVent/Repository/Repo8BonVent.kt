@@ -180,7 +180,7 @@ data class M8BonVent(
 ) {
     fun get_DebugInfos(): String {
         return buildString {
-            append("Nom:(parentM2")
+            append("Etate:(parentM2")
             append(parent_M2Client_KeyID)
             append(") ")
             append("[")

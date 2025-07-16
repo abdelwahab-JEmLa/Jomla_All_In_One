@@ -81,7 +81,7 @@ fun SearchDialog_F1(
                     OutlinedTextField(
                         value = searchText,
                         onValueChange = { searchText = it },
-                        label = { Text("Nom du produit") },
+                        label = { Text("Etate du produit") },
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()

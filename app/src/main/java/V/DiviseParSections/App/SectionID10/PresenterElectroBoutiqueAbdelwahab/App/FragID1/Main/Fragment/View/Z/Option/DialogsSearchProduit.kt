@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun DialogsSearchProduit(aCentralFacade: ACentralFacade) {
-    val dialogAboveAll_OutlinedSearchListProduits= aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt
+    val dialogAboveAll_OutlinedSearchListProduits= aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
         ?.dialogAboveAll_OutlinedSearchListProduits
 
     if (dialogAboveAll_OutlinedSearchListProduits == true) {
@@ -19,7 +19,7 @@ fun DialogsSearchProduit(aCentralFacade: ACentralFacade) {
     }
 
     val produitName = (aCentralFacade
-        .focusedActiveValuesFacade.focusedValuesGetter.currentM9AppCompt?.startTextSearchM1Produit
+        .focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt?.startTextSearchM1Produit
         ?: "")
 
     if (aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.activeDialogSearchM1Produit) {

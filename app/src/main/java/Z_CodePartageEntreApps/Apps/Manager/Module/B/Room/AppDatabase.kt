@@ -6,7 +6,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.C_TypeTarificationInfos
-import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.CategoriesTabelle
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.M3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.M2Client
@@ -16,10 +15,11 @@ import V.DiviseParSections.App.Shared.Repository.Repo11AchatOperation.Repository
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.MVentPeriode
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.SQL.B_ClientInfosProtoJuin3Dao
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.D_EtateMessageVocaleDao
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions.H.Dao.M17MessageVocaleDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.B1.B1.Base.B1CouleurOuGoutProduitDataBaseDao
 import Z_CodePartageEntreApps.DataBase.Main.Main.DB13TarificationInfos.Factory.Dao13TarificationInfos
 import Z_CodePartageEntreApps.DataBase.Main.Main.D_AchatOperationDataBaseProtoJuin17.Base.C.SQL.D_AchatOperationDao
@@ -85,7 +85,6 @@ import java.util.Date
         E1SecteurDeClients::class,
         PolygonGeoLimite::class,
 
-        D_EtateMessageVocale::class,
 
         A_ProduitInfos::class,
         C_TypeTarificationInfos::class,
@@ -102,6 +101,9 @@ import java.util.Date
         M14VentPeriode::class,
         M15Grossist::class,
         M11AchatOperation::class,
+
+        M17MessageVocale::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -139,7 +141,6 @@ abstract class AppDatabase : RoomDatabase() {
     //Proto j3
     abstract fun ArticlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
-    abstract fun D_EtateMessageVocaleDao(): D_EtateMessageVocaleDao
 
     abstract fun B_ClientInfosProtoJuin3Dao(): B_ClientInfosProtoJuin3Dao
 
@@ -153,6 +154,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun Dao15Grossist(): Dao15Grossist
     abstract fun Dao11AchatOperation(): Dao11AchatOperation
 
+    abstract fun M17MessageVocaleDao(): M17MessageVocaleDao
     object DatabaseModule {
 
         @Volatile

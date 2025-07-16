@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main
 
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.triggerUpdateFbParTimestampsListener
@@ -22,12 +23,12 @@ class D_EtateMessageVocaleRepository(
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
 
     data class RepoState(
-        val modelListFlow: List<D_EtateMessageVocale>,
+        val modelListFlow: List<M17MessageVocale>,
         val mainProgressRepo: Float
     )
 
-    val dao = appDatabase.D_EtateMessageVocaleDao()
-    val repoRef = D_EtateMessageVocale.caRef
+    val dao = appDatabase.M17MessageVocaleDao()
+    val repoRef = M17MessageVocale.ref
     var isListenerRegistered = false
 
     init {
@@ -37,7 +38,7 @@ class D_EtateMessageVocaleRepository(
         }
     }
 
-    suspend fun updateRepoState(data: List<D_EtateMessageVocale>) {
+    suspend fun updateRepoState(data: List<M17MessageVocale>) {
         withContext(Dispatchers.Main) {
             val newRepoState = RepoState(
                 modelListFlow = data,

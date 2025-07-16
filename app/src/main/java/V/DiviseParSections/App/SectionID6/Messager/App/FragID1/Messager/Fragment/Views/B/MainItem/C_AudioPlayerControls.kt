@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioHandlerInterface
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -37,7 +37,7 @@ import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun AudioPlayerControls(
-    parentD_EtateMessageVocale: D_EtateMessageVocale,
+    parentD_EtateMessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     audioHandler: AudioRecorderAndPlayHandler,
     isCurrentlyPlaying: Boolean,
@@ -47,7 +47,8 @@ fun AudioPlayerControls(
     latestTimestamp: Long,
     datesHandler: DatesHandler,
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    isFromActiveAccount: Boolean = false // NEW: Added parameter for styling
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),

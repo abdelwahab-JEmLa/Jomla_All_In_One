@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.B.MainItem
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.C_PlayAndRecordeHandler.AudioRecorderAndPlayHandler
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.content.Context
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 fun handlePlaybackClick(
     isCurrentlyPlaying: Boolean,
     audioHandler: AudioRecorderAndPlayHandler,
-    parentD_EtateMessageVocale: D_EtateMessageVocale,
+    parentD_EtateMessageVocale: M17MessageVocale,
     isListened: Boolean,
     viewModel: ViewModelMessageur,
     datesHandler: DatesHandler,
@@ -39,14 +39,14 @@ fun handlePlaybackClick(
                         if (!isListened) {
                             coroutineScope.launch {
                                 try {
-                                    val newEtate = D_EtateMessageVocale(
+                                    val newEtate = M17MessageVocale(
                                         parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
-                                        nom = D_EtateMessageVocale.Nom.ECOUTE,
+                                        etate = M17MessageVocale.Etate.ECOUTE,
                                         timestamps = datesHandler.getCurrentTimestamps(),
-                                        idParent_1_5_Vendeur = parentD_EtateMessageVocale.idParent_1_5_Vendeur,
-                                        nomParent_1_5_Vendeur = parentD_EtateMessageVocale.nomParent_1_5_Vendeur,
+                                        parent_M9AppCompt_KeyID = parentD_EtateMessageVocale.parent_M9AppCompt_KeyID,
+                                        parent_M9AppCompt_DebugInfos = parentD_EtateMessageVocale.parent_M9AppCompt_DebugInfos,
                                         relativeAuDataBase = parentD_EtateMessageVocale.relativeAuDataBase,
-                                        parentC3_BonAchateVID = parentD_EtateMessageVocale.parentC3_BonAchateVID
+                                        parent_M8BonVent_KeyID = parentD_EtateMessageVocale.parent_M8BonVent_KeyID
                                     )
                                     viewModel.addOrUpdateData(newEtate)
                                 } catch (e: Exception) {
