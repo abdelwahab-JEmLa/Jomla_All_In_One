@@ -202,8 +202,8 @@ fun ButtonMessageVocale(
                                         if (relative_M8BonVent != null) {
                                             aCentralFacade.repositorysMainSetter.update_M8BonVent(
                                                 relative_M8BonVent.copy(
-                                                    parent_M17_KeyID = relative_M17Message.keyID,
-                                                    parent_M17_DebugInfos = relative_M17Message.getDebugInfos(),
+                                                    parent_M17Message_KeyID = relative_M17Message.keyID,
+                                                    parent_M17Message_DebugInfos = relative_M17Message.getDebugInfos(),
                                                 )
                                             )
                                         }

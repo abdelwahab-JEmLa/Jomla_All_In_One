@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Extensions
 
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 
-fun D_EtateMessageVocaleRepository.getFirebaseData(onSuccess: (List<M17MessageVocale>) -> Unit) {
+fun Repo17MessageVocale.getFirebaseData(onSuccess: (List<M17MessageVocale>) -> Unit) {
     updateProgress(0.1f)
     repoRef.get()
         .addOnSuccessListener { snapshot ->

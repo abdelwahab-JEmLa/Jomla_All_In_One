@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init
 
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun D_EtateMessageVocaleRepository.triggerUpdateFbParTimestampsListener() {
+fun Repo17MessageVocale.triggerUpdateFbParTimestampsListener() {
     if (isListenerRegistered) return
     isListenerRegistered = true
 
@@ -45,7 +45,7 @@ fun D_EtateMessageVocaleRepository.triggerUpdateFbParTimestampsListener() {
                     if (updateCount > 0) {
                         val allData = dao.getAll()
                         withContext(Dispatchers.Main) {
-                            val newRepoState = D_EtateMessageVocaleRepository.RepoState(
+                            val newRepoState = Repo17MessageVocale.RepoState(
                                 modelListFlow = allData,
                                 mainProgressRepo = 1.0f
                             )

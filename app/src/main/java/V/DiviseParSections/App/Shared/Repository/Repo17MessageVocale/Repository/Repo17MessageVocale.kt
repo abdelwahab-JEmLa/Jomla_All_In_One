@@ -1,14 +1,69 @@
 package V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository
 
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
-import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.initializeDataReturn
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.triggerUpdateFbParTimestampsListener
+import android.content.Context
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+@Stable
+class Repo17MessageVocale(
+    val context: Context,
+    appDatabase: AppDatabase,
+) {
+    val repoTAG = "Repo17MessageVocale"
+
+    val _repoState = MutableStateFlow<RepoState?>(null)
+    val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
+    val datasValue by derivedStateOf { _repoState.value?.modelListFlow?: emptyList() }
+
+    data class RepoState(
+        val modelListFlow: List<M17MessageVocale>,
+        val mainProgressRepo: Float
+    )
+
+    val dao = appDatabase.M17MessageVocaleDao()
+    val repoRef = M17MessageVocale.ref
+    var isListenerRegistered = false
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            val initializedData = initializeDataReturn()
+            updateRepoState(initializedData)
+        }
+    }
+
+    suspend fun updateRepoState(data: List<M17MessageVocale>) {
+        withContext(Dispatchers.Main) {
+            val newRepoState = RepoState(
+                modelListFlow = data,
+                mainProgressRepo = 1.0f
+            )
+            _repoState.value = newRepoState
+        }
+
+        if (!isListenerRegistered) {
+            triggerUpdateFbParTimestampsListener()
+        }
+    }
+}
 
 @Entity
 data class M17MessageVocale(
-    @PrimaryKey var keyID: String = getPushFireBase(ref),
+    @PrimaryKey var keyID: String = RepositorysMainGetter.getPushFireBase(ref),
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var creationTimestamps: Long = 0,
 
@@ -17,7 +72,7 @@ data class M17MessageVocale(
     var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.NONE,
 
     val parentMessageVID: Long = 0,
-    val nomDeSonOriginaleFichie: String = "",
+    val nomDeSonOriginaleFichie: String = "null.3gp",
 
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "null",
@@ -51,7 +106,7 @@ data class M17MessageVocale(
     }
 
     companion object {
-        val ref = centralRef.child("Datas17MessageVocale")
+        val ref = RepositorysMainGetter.centralRef.child("Datas17MessageVocale")
         fun get_default(
         ): M17MessageVocale {
             return M17MessageVocale(

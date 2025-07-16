@@ -18,6 +18,8 @@ import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Reposit
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo16CategorieProduit.Repository.RepoM16CategorieProduit
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive.A_GroupeValuesA_ProduitsToB_Categories
@@ -60,6 +62,7 @@ class RepositorysMainGetter(
     val repo14VentPeriode: Repo14VentPeriode,
     val repo15Grossist: Repo15Grossist,
     val repoM16CategorieProduit: RepoM16CategorieProduit,
+    val repo17MessageVocale: Repo17MessageVocale,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: FocusedValuesGetter,
@@ -78,6 +81,9 @@ class RepositorysMainGetter(
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun m13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }
+
+    //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------
+    fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? = repo17MessageVocale.datasValue?.find { it.keyID == keyID }
 
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {

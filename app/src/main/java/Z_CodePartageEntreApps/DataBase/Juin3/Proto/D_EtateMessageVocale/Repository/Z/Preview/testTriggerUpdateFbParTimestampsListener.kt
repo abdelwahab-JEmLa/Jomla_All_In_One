@@ -1,12 +1,12 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Z.Preview
 
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun D_EtateMessageVocaleRepository.testTriggerUpdateFbParTimestampsListener() {
+fun Repo17MessageVocale.testTriggerUpdateFbParTimestampsListener() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val existingTestEntity = dao.getAll().find { it.keyID.contains("TEST_") }

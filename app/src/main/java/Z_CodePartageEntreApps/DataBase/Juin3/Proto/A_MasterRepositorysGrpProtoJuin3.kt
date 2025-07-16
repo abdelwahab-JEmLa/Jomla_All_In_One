@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto
 
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.B_ClientInfosProtoJuin3.Repository.A.Main.dataBaseCreationFactoryMID2ClientRepository
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.A_ProduitInfosRepository
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.C_CategorieProduitInfos.Repository.A.Main.C_CategorieProduitInfosRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.GroupeRepositorysProtoAvJuin3
@@ -17,7 +17,7 @@ data class MasterRepositorysModel(
     val repoStateA_ProduitInfos: A_ProduitInfosRepository.RepoState?,
     val b_ClientInfosProtoJuin3Repository: dataBaseCreationFactoryMID2ClientRepository.RepoState?,
     val repoStateC_CategorieProduitInfos: C_CategorieProduitInfosRepository.RepoState?,
-    val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository.RepoState?,
+    val d_EtateMessageVocaleRepository: Repo17MessageVocale.RepoState?,
 
     val progress: Float = 0f
 )
@@ -26,7 +26,7 @@ class A_MasterRepositorysGrpProtoJuin3(
     val repoA_ProduitInfos: A_ProduitInfosRepository,
     val b_ClientInfosProtoJuin3Repository: dataBaseCreationFactoryMID2ClientRepository,
     val repoC_CategorieProduitInfos: C_CategorieProduitInfosRepository,
-    val d_EtateMessageVocaleRepository: D_EtateMessageVocaleRepository,
+    val d_EtateMessageVocaleRepository: Repo17MessageVocale,
     val e_GroupedDataBasesRepositoryProtoAvant3Juin: GroupeRepositorysProtoAvJuin3,
 ) {
     private val _model = MutableStateFlow<MasterRepositorysModel?>(null)

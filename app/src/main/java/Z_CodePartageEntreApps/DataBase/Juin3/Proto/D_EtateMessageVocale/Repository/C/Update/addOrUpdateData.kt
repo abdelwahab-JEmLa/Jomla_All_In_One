@@ -1,12 +1,12 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update
 
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun D_EtateMessageVocaleRepository.addOrUpdateData(data: M17MessageVocale) {
+fun Repo17MessageVocale.addOrUpdateData(data: M17MessageVocale) {
     CoroutineScope(Dispatchers.IO).launch {
         dao.upsert(data)
         val allData = dao.getAll()

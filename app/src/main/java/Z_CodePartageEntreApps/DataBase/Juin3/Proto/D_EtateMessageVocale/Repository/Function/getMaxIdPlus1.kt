@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.Function
 
-import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.A.Main.D_EtateMessageVocaleRepository
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 
-fun D_EtateMessageVocaleRepository.getMaxIdPlus1(): Long {
+fun Repo17MessageVocale.getMaxIdPlus1(): Long {
    return 1L
 }
