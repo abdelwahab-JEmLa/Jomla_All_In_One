@@ -32,7 +32,7 @@ import androidx.compose.ui.window.DialogProperties
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun A_MessageurMainScreen(
+fun A_MessageurTelegram_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur = koinViewModel(),
     onDismiss: () -> Unit = {}

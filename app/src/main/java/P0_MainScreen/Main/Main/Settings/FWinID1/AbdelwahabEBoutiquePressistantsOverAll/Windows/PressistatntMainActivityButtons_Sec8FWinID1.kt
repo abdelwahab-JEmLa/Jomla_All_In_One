@@ -4,11 +4,13 @@ import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsO
 import P0_MainScreen.Main.Main.Settings.FWinID1.AbdelwahabEBoutiquePressistantsOverAll.Windows.But4.ClientSearch.Option.ID4ClientSearchButton
 import P0_MainScreen.Main.Main.Settings.Windows.WorkCompletionAlertDialog
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.RecordingViewModel
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurMainScreen
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.A_MessageurTelegram_MainScreen
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.PrixAjustableButtons.Fragment.TariffsButtonsSec7ID2
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastData
 import V.DiviseParSections.App.Shared.Modules.Ui.A.UI.ToastType
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.ifTrue
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Repo9AppCompt
@@ -65,6 +67,8 @@ import kotlin.math.roundToInt
 fun PressistatntMainActivityButtons_Sec8FWinID1(
     cLenceDepuitFragmentsSepecialisteDeVents: Boolean = false,
     viewModel: ViewModelPresistantButtonsSec8FWinID1 = koinViewModel(),
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     viewModelHeadViewModel: HeadViewModel = koinViewModel(),
     recordingViewModel: RecordingViewModel = koinViewModel(),
     onClickAnulationButton: () -> Unit = {},
@@ -90,7 +94,8 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         currentAppCompt?.presentoireEBoutiqueFilterProduitDuCatalogueAvecBsonObjectId ?: ""
     var currentToast by remember { mutableStateOf<ToastData?>(null) }
 
-    val fragmentNavigationHandler = viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
+    val fragmentNavigationHandler =
+        viewModel.aCentralFacade.modulesCentral.fragmentNavigationHandler
     val activeFragment by fragmentNavigationHandler.currentFragment.collectAsState()
 
     // Check if current fragment is FragmentProduitFastSearchDialog
@@ -165,7 +170,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
     }
 
     WorkCompletionAlertDialog(
-        viewModel =viewModel,
+        viewModel = viewModel,
         showDialog = showAlertDialog,
         onDismiss = { showAlertDialog = false },
         onConfirm = {
@@ -174,9 +179,16 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    if (showMessageurDialog) {
-        A_MessageurMainScreen(
-            onDismiss = { showMessageurDialog = false }
+    val replay_Passed_AuMessage_M8BonVent =
+        focusedValuesGetter.active_Central_Values.replay_Passed_AuMessage_M8BonVent
+    if (showMessageurDialog || replay_Passed_AuMessage_M8BonVent != null) {
+        A_MessageurTelegram_MainScreen(
+            onDismiss = {
+                showMessageurDialog = false
+                focusedValuesGetter.update_activeCentralValues(
+                    focusedValuesGetter.active_Central_Values.copy(replay_Passed_AuMessage_M8BonVent=null)
+                )
+            }
         )
     }
 
@@ -229,8 +241,7 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                     .getSemanticsTag(
                         nomVal = "cLenceDepuitFragmentsSepecialicteDeVents",
                         data = cLenceDepuitFragmentsSepecialicteDeVents
-                    )
-                ,
+                    ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
@@ -278,8 +289,9 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
                         viewModel = viewModel
                     )
                 }
-                val dialogAboveAll_OutlinedSearchListProduits= viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
-                    ?.dialogAboveAll_OutlinedSearchListProduits
+                val dialogAboveAll_OutlinedSearchListProduits =
+                    viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
+                        ?.dialogAboveAll_OutlinedSearchListProduits
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

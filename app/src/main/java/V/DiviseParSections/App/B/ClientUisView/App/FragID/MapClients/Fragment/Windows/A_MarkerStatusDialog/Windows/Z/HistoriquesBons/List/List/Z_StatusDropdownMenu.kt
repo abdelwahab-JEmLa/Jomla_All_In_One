@@ -19,7 +19,6 @@ fun StatusDropdownMenu(
     onDismissRequest: () -> Unit,
     onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
 ) {
-
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -27,7 +26,7 @@ fun StatusDropdownMenu(
         DropdownMenuItem(
             text = { Text("اقترح ان يتجنب لمدة اسبوعين") },
             onClick = {
-                val new = focusedValuesGetter.activeCentralValues.copy(
+                val new = focusedValuesGetter.active_Central_Values.copy(
                     replay_Passed_AuMessage_M8BonVent = relative_M8BonVent
                 )
                 focusedValuesGetter.update_activeCentralValues(new)

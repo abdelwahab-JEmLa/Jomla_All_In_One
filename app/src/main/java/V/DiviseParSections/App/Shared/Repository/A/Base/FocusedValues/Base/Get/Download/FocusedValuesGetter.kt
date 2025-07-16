@@ -47,7 +47,7 @@ class FocusedValuesGetter(
 ) {
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
-    val activeCentralValues by derivedStateOf { _activeCentralValues.value}
+    val active_Central_Values by derivedStateOf { _activeCentralValues.value}
 
     fun update_activeCentralValues(new: ActiveCentralValues): Unit {
         _activeCentralValues.value= new
