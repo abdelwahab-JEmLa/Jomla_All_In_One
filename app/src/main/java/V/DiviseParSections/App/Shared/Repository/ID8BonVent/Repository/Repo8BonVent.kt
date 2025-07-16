@@ -216,11 +216,12 @@ data class M8BonVent(
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 
         Cible(android.R.color.holo_red_light, "Cible"),
-        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"), CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
+        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
+        CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
 
         Speciale(R.color.couleur1, "حالة خاصة"),
-        A_EVITE(android.R.color.black, "اقترح ان يتجنب لمدة اسبوعين"),
+        A_EVITE(android.R.color.holo_green_light, "اقترح ان يتجنب لمدة اسبوعين"),
         AVEC_MARCHANDISE(android.R.color.darker_gray, "عندو سلعة"),
 
         ;
