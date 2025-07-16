@@ -10,7 +10,7 @@ data class ParametresAppComptNonSaved(
     val currentActiveFocucedM9AppComptDebugInfos: String = "",
 
     val activeWindowsSearchProduit: Boolean = false,
-    val devStartUpScree: Screen = Screen.FragmentProduitFastSearchDialog,
+    val devStartUpScree: Screen = Screen.A_ClientsLocationGps,
     var enablePerformAutoClickImageDisplayer: Boolean = false,
     val isControleFabVisible: Boolean = false,
 )

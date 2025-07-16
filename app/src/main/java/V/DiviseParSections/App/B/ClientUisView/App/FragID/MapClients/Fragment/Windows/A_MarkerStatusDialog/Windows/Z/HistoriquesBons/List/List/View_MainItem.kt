@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
@@ -36,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +64,10 @@ fun View_MainItem(
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
     val hasVoiceMessage = relative_M8BonVent.vocaleKeyID.isNotEmpty()
+
+    // State for dropdown menu
+    var showDropdownMenu by remember { mutableStateOf(false) }
+    var selectedStatus by remember { mutableStateOf<M8BonVent.EtateActuellementEst?>(null) }
 
     val isCurrentlyPlaying = remember(
         playbackProgress.isPlaying,
@@ -129,24 +135,24 @@ fun View_MainItem(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Delete button at top start
             IconButton(
                 onClick = {
-                        viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(relative_M8BonVent)
+                    viewModel.aCentralFacade.repositorysMainSetter.delete_M8BonVent(relative_M8BonVent)
 
-                        viewModel.deleteVoiceRecordingFromStorage(relative_M8BonVent.vocaleKeyID) { success ->
-                            if (success) {
-                                viewModel.getter.repo8BonVent.delete(
-                                    relative_M8BonVent
-                                )
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Erreur lors de la suppression du message vocal",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                    viewModel.deleteVoiceRecordingFromStorage(relative_M8BonVent.vocaleKeyID) { success ->
+                        if (success) {
+                            viewModel.getter.repo8BonVent.delete(
+                                relative_M8BonVent
+                            )
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Erreur lors de la suppression du message vocal",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-
+                    }
                 },
                 modifier = Modifier.align(Alignment.TopStart)
             ) {
@@ -155,6 +161,46 @@ fun View_MainItem(
                     contentDescription = "Supprimer la transaction",
                     tint = Color.White
                 )
+            }
+
+            // Status dropdown menu at top end
+            Row(
+                modifier = Modifier.align(Alignment.TopEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Display selected status next to the button
+                selectedStatus?.let { status ->
+                    Text(
+                        text = status.nomArabe,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+
+                Box {
+                    IconButton(
+                        onClick = { showDropdownMenu = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Options de statut",
+                            tint = Color.White
+                        )
+                    }
+
+                    StatusDropdownMenu(
+                        expanded = showDropdownMenu,
+                        onDismissRequest = { showDropdownMenu = false },
+                        onStatusSelected = { status ->
+                            selectedStatus = status
+                            val updatedBonVent = relative_M8BonVent.copy(
+                                etateActuellementEst = status
+                            )
+                            viewModel.getter.repo8BonVent.upsert(updatedBonVent)
+                        }
+                    )
+                }
             }
 
             Column(
@@ -171,7 +217,6 @@ fun View_MainItem(
                         IconButton(
                             onClick = {
                                 viewModel.openTransaction(relative_M8BonVent)
-
                             }
                         ) {
                             Icon(

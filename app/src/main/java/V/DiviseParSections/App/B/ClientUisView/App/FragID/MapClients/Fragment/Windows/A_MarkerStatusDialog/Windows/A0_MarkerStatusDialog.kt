@@ -223,6 +223,13 @@ fun MarkerStatusDialog(
                                                 clickedClient = clientId,
                                             )
                                     }
+                                    item {
+                                        M8BonVent.EtateActuellementEst.Speciale
+                                            .ButtonAutreEtates(
+                                                viewModel = viewModel,
+                                                clickedClient = clientId,
+                                            )
+                                    }
 
                                     activeCompt?.let { activeCompt ->
                                         if (activeCompt.vid == 2L) {
