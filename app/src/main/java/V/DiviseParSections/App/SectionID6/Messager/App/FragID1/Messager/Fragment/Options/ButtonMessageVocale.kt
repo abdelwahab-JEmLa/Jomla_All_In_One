@@ -199,6 +199,15 @@ fun ButtonMessageVocale(
                                         )
                                         viewModel.addOrUpdateData(updatedEtate)
 
+                                        if (relative_M8BonVent != null) {
+                                            aCentralFacade.repositorysMainSetter.update_M8BonVent(
+                                                relative_M8BonVent.copy(
+                                                    parent_M17_KeyID = relative_M17Message.keyID,
+                                                    parent_M17_DebugInfos = relative_M17Message.getDebugInfos(),
+                                                )
+                                            )
+                                        }
+
                                         Toast.makeText(
                                             context,
                                             "Message vocal envoyé via Telegram!",
