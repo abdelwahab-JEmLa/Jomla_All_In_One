@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.List
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -8,10 +11,15 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun StatusDropdownMenu(
+    relative_M8BonVent: M8BonVent,
+    viewModel: E0AfficheHistoriqueTransactionsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
 ) {
+
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -19,6 +27,11 @@ fun StatusDropdownMenu(
         DropdownMenuItem(
             text = { Text("اقترح ان يتجنب لمدة اسبوعين") },
             onClick = {
+                val new = focusedValuesGetter.activeCentralValues.copy(
+                    replay_Passed_AuMessage_M8BonVent = relative_M8BonVent
+                )
+                focusedValuesGetter.update_activeCentralValues(new)
+
                 onStatusSelected(M8BonVent.EtateActuellementEst.A_EVITE)
                 onDismissRequest()
             }

@@ -190,6 +190,8 @@ fun View_MainItem(
                     }
 
                     StatusDropdownMenu(
+                        relative_M8BonVent =relative_M8BonVent,
+                        viewModel =viewModel,
                         expanded = showDropdownMenu,
                         onDismissRequest = { showDropdownMenu = false },
                         onStatusSelected = { status ->

@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag_By_datas_A_Affiche_Au_Nom
-import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
@@ -15,12 +14,24 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+
+data class ActiveCentralValues(
+    val replay_Passed_AuMessage_M8BonVent: M8BonVent? =null
+) {
+    companion object{
+        fun get_Default(): ActiveCentralValues {
+           return ActiveCentralValues()
+        }
+    }
+}
 
 @Stable
 class FocusedValuesGetter(
@@ -34,6 +45,13 @@ class FocusedValuesGetter(
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
 ) {
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    private val _activeCentralValues = mutableStateOf(ActiveCentralValues())
+    val activeCentralValues by derivedStateOf { _activeCentralValues.value}
+
+    fun update_activeCentralValues(new: ActiveCentralValues): Unit {
+        _activeCentralValues.value= new
+    }
     val active_Current_M9AppCompt by derivedStateOf {
         repo9AppCompt.datasValue.firstOrNull { it.keyID == ParametresAppComptNonSaved().currentActiveFocucedM9AppComptKeyID }
     }
