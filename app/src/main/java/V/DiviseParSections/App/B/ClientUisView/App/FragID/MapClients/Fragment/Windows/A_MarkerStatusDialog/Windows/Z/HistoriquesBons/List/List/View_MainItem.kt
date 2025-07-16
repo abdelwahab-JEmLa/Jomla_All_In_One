@@ -134,6 +134,7 @@ fun View_MainItem(
 
     Card(
         modifier = Modifier
+            .getSemanticsTag(relative_M17Message,"")
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
