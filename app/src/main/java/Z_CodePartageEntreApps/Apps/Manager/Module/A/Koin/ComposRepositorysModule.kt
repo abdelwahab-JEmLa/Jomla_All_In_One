@@ -9,7 +9,7 @@ import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Set.U
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Set.Upload.RepositorysMainSetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.ModulesCentral
-import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
 import V.DiviseParSections.App.Shared.Repository.ID2ClientRepository.Repository.Repo2Client
@@ -35,7 +35,7 @@ val composRepositorysModule = module {
     single { Repo9AppCompt(context = androidContext(),get()) }
 
     single { Repo2Client(get(), get(), get(),get(), ) }
-    single { CCategoriesCompoRepository(get()) }
+    single { RepoM16CategorieProduit(get()) }
     single { Z_AutreStatesCompoRepository(get()) }
 
     single { A_GroupeValuesA_ProduitsToB_Categories(get(), get()) }

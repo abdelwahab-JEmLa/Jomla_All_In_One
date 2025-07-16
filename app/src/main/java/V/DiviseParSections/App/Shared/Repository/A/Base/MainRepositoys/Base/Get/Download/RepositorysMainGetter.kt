@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.RepoM16CategorieProduit
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.M10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID10VentCouleurOperation.Repository.Repo10OperationVentCouleur
 import V.DiviseParSections.App.Shared.Repository.ID1C2CouleurProduitInfos.Repository.Repo3CouleurProduitInfos
@@ -56,7 +56,6 @@ class RepositorysMainGetter(
     val repo3CouleurProduitInfos: Repo3CouleurProduitInfos,
 
     val a_GroupeValuesA_ProduitsToB_Categories: A_GroupeValuesA_ProduitsToB_Categories,
-    val b3CategoriesCompoRepository: CCategoriesCompoRepository,
 
     val repo2Client: Repo2Client,
     val repo8BonVent: Repo8BonVent,
@@ -71,6 +70,7 @@ class RepositorysMainGetter(
     val repo13TarificationInfos: Repo13TarificationInfos,
     val repo14VentPeriode: Repo14VentPeriode,
     val repo15Grossist: Repo15Grossist,
+    val repoM16CategorieProduit: RepoM16CategorieProduit,
 
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3,
     getterFocusedVars: FocusedValuesGetter,
@@ -139,7 +139,7 @@ class RepositorysMainGetter(
         val targetCatalogue = catalogues[catalogueFilterId] ?: return this
 
         val categoriesInCatalogue =
-            b3CategoriesCompoRepository.datasValue.filter { it.catalogueParentId == targetCatalogue.id }
+            repoM16CategorieProduit.datasValue.filter { it.catalogueParentId == targetCatalogue.id }
                 .map { it.id }
 
         return this.filter { product ->

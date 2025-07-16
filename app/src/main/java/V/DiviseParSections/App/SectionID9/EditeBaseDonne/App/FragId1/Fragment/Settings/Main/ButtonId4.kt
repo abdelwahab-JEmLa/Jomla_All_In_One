@@ -99,7 +99,8 @@ private suspend fun exportAllDataToCsv(context: Context, appDatabase: AppDatabas
     }
 }
 
-private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {   //<--
+//TODO(1): regle avec le shema 
     // RepositorysMainGetter all categories from database
     val categories = appDatabase.categoriesModelDao().getAll()
 
@@ -130,7 +131,8 @@ private suspend fun exportCategoriesToCsv(context: Context, appDatabase: AppData
         writer.write(csvContent.toString())
     }
 }
-private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {
+private suspend fun exportArticlesToCsv(context: Context, appDatabase: AppDatabase, exportDir: File) {  //<--
+//TODO(1): regle avec le shema 
     // RepositorysMainGetter all articles from database
     val articles = appDatabase.ArticlesBasesStatsModelDao().getAll()
 

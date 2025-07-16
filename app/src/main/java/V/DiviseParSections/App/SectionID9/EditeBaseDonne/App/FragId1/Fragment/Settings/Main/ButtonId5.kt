@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Settings.Main
 
 import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.A.ViewModel.EditeBaseDonneMainScreenIdS9ViewModel
-import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.CategoriesTabelle
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,8 @@ import java.io.File
 @Composable
 fun ButtonId5(
     viewModel: EditeBaseDonneMainScreenIdS9ViewModel,
+    list_M1Produit: List<ArticlesBasesStatsTable> = viewModel.aCentralFacade.repositorysMainGetter.repo1ProduitInfos.datasValue,
+    list_CategoriesTabelle: List<CategoriesTabelle> = viewModel.aCentralFacade.repositorysMainGetter.repoM16CategorieProduit.datasValue,
     showLabels: Boolean,
     onImportSuccess: () -> Unit = {}
 ) {
@@ -37,7 +40,7 @@ fun ButtonId5(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val text = "Delete ADD B et K "
+        val text = "Delete ADD l_Produit Et l_Categorie"
 
         if (showLabels) {
             Text(text)
@@ -46,19 +49,10 @@ fun ButtonId5(
         FloatingActionButton(
             onClick = {
                 coroutineScope.launch {
-                    val importedCategories = importCategoriesFromCsv(context)
-                    if (importedCategories.isNotEmpty()) {
-                        viewModel.deleteAddMultiCategories(importedCategories)
-                        Toast.makeText(
-                            context,
-                            "Successfully $text",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        onImportSuccess()
-                    }
+                    viewModel.deleteAddMultiCategories(list_CategoriesTabelle)
+                    viewModel.deleteAddMultiProduits(list_M1Produit)
+                  //  viewModel.deleteAddMultiClients()
                 }
-                viewModel.deleteAddMultiProduits()
-                viewModel.deleteAddMultiClients()
             },
             modifier = Modifier.size(40.dp),
             containerColor = Color.Green
@@ -74,7 +68,8 @@ private suspend fun importCategoriesFromCsv(
     return withContext(Dispatchers.IO) {
         try {
             // Use the same path as ButtonId4
-            val imagesProduitsLocalExternalStorageBasePath = "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
+            val imagesProduitsLocalExternalStorageBasePath =
+                "/storage/emulated/0/Abdelwahab_jeMla.com/RoomDataBasesCsv"
             val csvFile = File(imagesProduitsLocalExternalStorageBasePath, "CategoriesTabelle.csv")
 
             // Check if file exists
@@ -159,7 +154,8 @@ private fun parseCsvLine(line: String): CategoriesTabelle {
         displayedHeader = values[4].toBoolean(),
         itsHeldPourDeplacement = values[5].toBoolean(),
         cSelectionePourDeplace = values[6].toBoolean(),
-        dernierTimeTampsSynchronisationAvecFireBase = values[7].toLongOrNull() ?: System.currentTimeMillis()
+        dernierTimeTampsSynchronisationAvecFireBase = values[7].toLongOrNull()
+            ?: System.currentTimeMillis()
     )
 }
 
@@ -183,11 +179,13 @@ private fun parseCsvValues(line: String): List<String> {
                     insideQuotes = !insideQuotes
                 }
             }
+
             char == ',' && !insideQuotes -> {
                 // Field separator
                 values.add(currentValue.toString())
                 currentValue.clear()
             }
+
             else -> {
                 currentValue.append(char)
             }

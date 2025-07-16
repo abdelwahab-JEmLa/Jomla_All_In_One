@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.SectionID10.PresenterElectroBoutiqueAbdelwahab.App.FragID1.Main.Fragment.View.B.List.Components
-import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

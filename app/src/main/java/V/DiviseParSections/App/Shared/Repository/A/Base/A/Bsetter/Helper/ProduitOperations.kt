@@ -13,15 +13,14 @@ class ProduitOperations(
 ) {
     val bproduitdatabaseSubclassfunctionality = bProduitInfosRepository
 
-    fun deleteAddMultiDatas() {
-        val datas = bproduitdatabaseSubclassfunctionality.datasValue
+    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) {
         CoroutineScope(Dispatchers.IO).launch {
             bproduitdatabaseSubclassfunctionality.dao.deleteAll()
-            bproduitdatabaseSubclassfunctionality.dao.insertAll(datas)
+            bproduitdatabaseSubclassfunctionality.dao.insertAll(list_M1Produit)
 
             ArticlesBasesStatsTable.safe_Remove_DataBase_Ref()
             bproduitdatabaseSubclassfunctionality.ancienRepo.batchFireBaseUpdateArticlesBasesStatsTable(
-                datas
+                list_M1Produit
             )
         }
     }

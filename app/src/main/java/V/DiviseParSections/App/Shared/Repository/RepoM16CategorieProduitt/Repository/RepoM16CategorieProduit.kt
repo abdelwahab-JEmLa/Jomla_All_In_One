@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.Shared.Repository
+package V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository
 
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCompt.Companion.ref
@@ -20,10 +20,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Stable
-class CCategoriesCompoRepository(
+class RepoM16CategorieProduit(
     val a_MasterRepositorysGrpProtoJuin3: A_MasterRepositorysGrpProtoJuin3
 ) {
-    val TAG = "CCategoriesCompoRepository"
+    val TAG = "RepoM16CategorieProduit"
     val parentRepo = a_MasterRepositorysGrpProtoJuin3.repoC_CategorieProduitInfos
     private val composScope = CoroutineScope(Dispatchers.IO)
 

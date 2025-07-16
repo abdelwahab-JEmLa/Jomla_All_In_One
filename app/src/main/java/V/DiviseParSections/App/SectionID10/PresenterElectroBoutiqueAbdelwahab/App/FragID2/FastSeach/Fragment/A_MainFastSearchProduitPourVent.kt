@@ -44,7 +44,7 @@ fun MainFastSearchProduitPourVent(
     val uiState by viewModel.uiState.collectAsState()
     val bProduitInfosRepository = uiState.bProduitInfosRepository
     val products = bProduitInfosRepository.datasValue
-    val categories = viewModel.getter.b3CategoriesCompoRepository.datasValue
+    val categories = viewModel.getter.repoM16CategorieProduit.datasValue
 
     // Fixed: Properly handle the sealed class to extract the product name
     val startTextSearchM1Produit = when (sourceLenceurDeCetteFragment) {

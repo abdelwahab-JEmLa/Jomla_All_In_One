@@ -3,7 +3,7 @@ package V.DiviseParSections.App.Shared.Repository.Z.Passive.Archive
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
-import V.DiviseParSections.App.Shared.Repository.CCategoriesCompoRepository
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.RepoM16CategorieProduit
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 @Stable
 class A_GroupeValuesA_ProduitsToB_Categories(
     val a_ProduitDataBaseComposeRepositoryPJ17: RepoM1Produit,
-    val b3CategoriesCompoRepository: CCategoriesCompoRepository,
+    val b3CategoriesCompoRepository: RepoM16CategorieProduit,
 ) {
     val categoryGroupedSortedProducts: List<ArticlesBasesStatsTable> by derivedStateOf {
         val categoryMap = b3CategoriesCompoRepository.datasValue.associateBy { it.id }

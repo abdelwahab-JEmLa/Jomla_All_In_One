@@ -67,7 +67,7 @@ class RepositorysMainSetter(
         clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
 
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
-    fun deleteAddMultiDatas() = produitOperations.deleteAddMultiDatas()
+    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) = produitOperations.deleteAddMultiDatas(list_M1Produit)
 
 
     fun upsertVentCouleurOperationFacade(

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID9.EditeBaseDonne.App.FragId1.Fragment.Ui
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import V.DiviseParSections.App.Shared.Repository.B4CatalogueCategoriesRepository
-import V.DiviseParSections.App.Shared.Repository.CategoriesTabelle
+import V.DiviseParSections.App.Shared.Repository.RepoM16CategorieProduitt.Repository.CategoriesTabelle
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.A_MasterRepositorysGrpProtoJuin3
 import Z_CodePartageEntreApps.DataBase.ProtoJuin3.A_ProduitInfos.Repository.C.Update.deleteData
 import androidx.compose.material.icons.Icons
@@ -47,7 +47,7 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
     val a_CentralDatasHandlerProtoJuin9 = aCentralFacade.repositorysMainGetter
     val setter = aCentralFacade.repositorysMainSetter
 
-    val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.b3CategoriesCompoRepository
+    val categoriesCompoRepository = a_CentralDatasHandlerProtoJuin9.repoM16CategorieProduit
     val a_ProduitDataBaseComposeRepositoryPJ17 =
         a_CentralDatasHandlerProtoJuin9.repo1ProduitInfos
 
@@ -211,8 +211,8 @@ class EditeBaseDonneMainScreenIdS9ViewModel(
         categoriesCompoRepository.deleteAddMultiDatas(categories)
     }
 
-    fun deleteAddMultiProduits() {
-        setter.deleteAddMultiDatas()
+    fun deleteAddMultiProduits(list_M1Produit: List<ArticlesBasesStatsTable>) {
+        setter.deleteAddMultiDatas(list_M1Produit)
     }
 
     fun addOrUpdateProduit(data: ArticlesBasesStatsTable) {

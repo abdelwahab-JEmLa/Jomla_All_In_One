@@ -50,9 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-   //<--
-   //TODO(2.C Relative Au Todo(1): 
-           //... ici 
+
 @Composable
 fun MaterialExpressiveButtonBar() {
     var selectedButton by remember { mutableStateOf<String?>(null) }
