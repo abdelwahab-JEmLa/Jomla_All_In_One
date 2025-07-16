@@ -185,6 +185,15 @@ fun B_ItemMessagesVocale(
                             isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
                         )
 
+                        // FIXED: BonVentInfoCard moved to the top after MessageHeader
+                        relative_M8BonVent?.let { m8BonVent ->
+                            Spacer(modifier = Modifier.height(12.dp))
+                            BonVentInfoCard(
+                                m8BonVent = m8BonVent,
+                                isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(8.dp))
 
                         when {
@@ -214,14 +223,6 @@ fun B_ItemMessagesVocale(
             }
         }
 
-        // M8BonVent Information Card
-        relative_M8BonVent?.let { m8BonVent ->
-            BonVentInfoCard(
-                m8BonVent = m8BonVent,
-                isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
-            )
-        }
-
         // Divider
         HorizontalDivider(
             modifier = Modifier
@@ -240,24 +241,20 @@ private fun BonVentInfoCard(
 ) {
     val context = LocalContext.current
 
-    Spacer(modifier = Modifier.height(4.dp))
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = androidx.compose.ui.graphics.Color(
-                context.getColor(m8BonVent.etateActuellementEst.color)
-            ).copy(alpha = 0.1f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    // Updated styling to fit better inside the message bubble
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = if (isFromActiveAccount) {
+            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+        } else {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+        },
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(8.dp)
         ) {
             // Header with state and debug info
             Row(
@@ -267,21 +264,29 @@ private fun BonVentInfoCard(
             ) {
                 Text(
                     text = "État: ${m8BonVent.etateActuellementEst.nomArabe}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color(
-                        context.getColor(m8BonVent.etateActuellementEst.color)
-                    )
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
+                    } else {
+                        androidx.compose.ui.graphics.Color(
+                            context.getColor(m8BonVent.etateActuellementEst.color)
+                        )
+                    }
                 )
 
                 Text(
                     text = m8BonVent.get_DebugInfos(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Time information
             Row(
@@ -291,13 +296,21 @@ private fun BonVentInfoCard(
                 Text(
                     text = "Début: ${m8BonVent.heurDebutInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
 
                 Text(
                     text = "Fin: ${m8BonVent.heurFinInString}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
 
@@ -314,18 +327,30 @@ private fun BonVentInfoCard(
                             Icons.Default.VolumeOff
                         },
                         contentDescription = null,
-                        tint = if (m8BonVent.sonVocaleEstEcoute) {
-                            MaterialTheme.colorScheme.primary
+                        tint = if (isFromActiveAccount) {
+                            if (m8BonVent.sonVocaleEstEcoute) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                            }
                         } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
+                            if (m8BonVent.sonVocaleEstEcoute) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         },
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = if (m8BonVent.sonVocaleEstEcoute) "Message vocal écouté" else "Message vocal non écouté",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isFromActiveAccount) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                 }
             }
@@ -336,7 +361,11 @@ private fun BonVentInfoCard(
                 Text(
                     text = "Client: ${m8BonVent.parent_M2Client_DebugInfos}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isFromActiveAccount) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
             }
         }
