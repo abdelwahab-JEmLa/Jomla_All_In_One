@@ -58,10 +58,15 @@ data class M17MessageVocale(
 
     companion object {
         val ref = centralRef.child("Datas17MessageVocale")
+        fun get_default(
+        ): M17MessageVocale {
+            return M17MessageVocale(
+            )
+        }
+
         fun generePushKey() = ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
 
         fun createTestInstance(): List<M17MessageVocale> { return emptyList() }
-
 
         fun removeRef(preparedData: M17MessageVocale) { ArticlesBasesStatsTable.ref.child(preparedData.keyID).removeValue() }
 

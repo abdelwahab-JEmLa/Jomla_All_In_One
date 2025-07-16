@@ -178,6 +178,7 @@ data class M8BonVent(
     // Section keyFireBase et Update Version Id
 
 ) {
+
     fun get_DebugInfos(): String {
         return buildString {
             append("Etate:(parentM2")
@@ -242,6 +243,8 @@ data class M8BonVent(
     )
 
     companion object {
+
+
         const val keyModel = "ID8"
 
         val ref = Firebase.database.getReference(

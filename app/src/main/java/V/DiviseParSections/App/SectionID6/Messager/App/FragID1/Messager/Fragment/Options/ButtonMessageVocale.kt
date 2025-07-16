@@ -55,7 +55,8 @@ fun ButtonMessageVocale(
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val relative_M8BonVent = focusedValuesGetter.active_Central_Values.replay_Passed_AuMessage_M8BonVent
+    val relative_M8BonVent =
+        focusedValuesGetter.active_Central_Values.replay_Passed_AuMessage_M8BonVent
 
     val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
@@ -219,24 +220,31 @@ fun ButtonMessageVocale(
 
                         } else {
                             try {
-                                val active_Current_M9AppCompt_KeyId = active_Current_M9AppCompt?.keyID ?: "null"
+                                val active_Current_M9AppCompt_KeyId =
+                                    active_Current_M9AppCompt?.keyID ?: "null"
+
                                 val parentMessageVID = System.currentTimeMillis()
                                 val originalFileName = "voice_${parentMessageVID}.3gp"
 
-                                val newEtate = M17MessageVocale(
-                                    nomDeSonOriginaleFichie = originalFileName,
-                                    parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
-                                    parent_M9AppCompt_DebugInfos = "Non Definie",
-                                    parentMessageVID = parentMessageVID,
-                                    etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
-                                    timestamps = datesHandler.getCurrentTimestamps()
-                                )
+                                val default_M17Message = M17MessageVocale.get_default()
+                                    .copy(
+                                        parent_M8BonVent_KeyID = relative_M8BonVent?.keyID
+                                            ?: "null",
+                                        parent_M8BonVent_DebugInfos = relative_M8BonVent?.get_DebugInfos()
+                                            ?: "null",
+                                        nomDeSonOriginaleFichie = originalFileName,
+                                        parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
+                                        parent_M9AppCompt_DebugInfos = "Non Definie",
+                                        parentMessageVID = parentMessageVID,
+                                        etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
+                                        timestamps = datesHandler.getCurrentTimestamps()
+                                    )
 
-                                viewModel.addOrUpdateData(newEtate)
+                                viewModel.addOrUpdateData(default_M17Message)
 
-                                currentRecordingEtate = newEtate
+                                currentRecordingEtate = default_M17Message
 
-                                val startResult = newEtate?.let {
+                                val startResult = default_M17Message.let {
                                     audioHandler.startRecording(
                                         context,
                                         it.parentMessageVID,
@@ -288,11 +296,13 @@ fun ButtonMessageVocale(
                         contentDescription = "Envoi en cours via Telegram",
                         tint = Color.White
                     )
+
                     isRecording -> Icon(
                         painter = painterResource(id = R.drawable.ic_telegram_mic),
                         contentDescription = "Enregistrement en cours - Appuyer pour arrêter",
                         tint = Color.White
                     )
+
                     else -> Icon(
                         painter = painterResource(id = R.drawable.ic_telegram_mic),
                         contentDescription = "Commencer l'enregistrement vocal",
