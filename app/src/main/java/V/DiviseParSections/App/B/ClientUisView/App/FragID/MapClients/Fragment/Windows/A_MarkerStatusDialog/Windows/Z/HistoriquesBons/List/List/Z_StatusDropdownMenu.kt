@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -19,6 +20,8 @@ fun StatusDropdownMenu(
     onDismissRequest: () -> Unit,
     onStatusSelected: (M8BonVent.EtateActuellementEst) -> Unit
 ) {
+    val relative_M17MessageVocale = M17MessageVocale.get_default().copy(parent_M8BonVent_KeyID = relative_M8BonVent.keyID, parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos())
+
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
@@ -27,10 +30,9 @@ fun StatusDropdownMenu(
             text = { Text("اقترح ان يتجنب لمدة اسبوعين") },
             onClick = {
                 val new = focusedValuesGetter.active_Central_Values.copy(
-                    replay_Passed_AuMessage_M8BonVent = relative_M8BonVent
+                    m17Message_avec_BonVen = relative_M17MessageVocale
                 )
                 focusedValuesGetter.update_activeCentralValues(new)
-
                 onStatusSelected(M8BonVent.EtateActuellementEst.A_EVITE)
                 onDismissRequest()
             }

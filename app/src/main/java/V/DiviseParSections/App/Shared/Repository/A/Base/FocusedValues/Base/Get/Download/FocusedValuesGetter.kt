@@ -14,6 +14,7 @@ import V.DiviseParSections.App.Shared.Repository.ID9AppCompt.Repository.Z_AppCom
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.M13TarificationInfos.TypeChoisi
 import V.DiviseParSections.App.Shared.Repository.Repo13TarificationInfos.Repository.Repo13TarificationInfos
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.Repo18P.Repository.ParametresAppComptNonSaved
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
 import android.annotation.SuppressLint
@@ -24,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 
 data class ActiveCentralValues(
-    val replay_Passed_AuMessage_M8BonVent: M8BonVent? =null
+    val m17Message_avec_BonVen: M17MessageVocale? =null,
 ) {
     companion object{
         fun get_Default(): ActiveCentralValues {

@@ -179,14 +179,13 @@ fun PressistatntMainActivityButtons_Sec8FWinID1(
         nombreClientAvecCibleCommeLastBonAchat = remainingClients
     )
 
-    val replay_Passed_AuMessage_M8BonVent =
-        focusedValuesGetter.active_Central_Values.replay_Passed_AuMessage_M8BonVent
-    if (showMessageurDialog || replay_Passed_AuMessage_M8BonVent != null) {
+    val m17Message_avec_BonVen = focusedValuesGetter.active_Central_Values.m17Message_avec_BonVen
+    if (showMessageurDialog || m17Message_avec_BonVen != null) {
         A_MessageurTelegram_MainScreen(
             onDismiss = {
                 showMessageurDialog = false
                 focusedValuesGetter.update_activeCentralValues(
-                    focusedValuesGetter.active_Central_Values.copy(replay_Passed_AuMessage_M8BonVent=null)
+                    focusedValuesGetter.active_Central_Values.copy(m17Message_avec_BonVen = null)
                 )
             }
         )

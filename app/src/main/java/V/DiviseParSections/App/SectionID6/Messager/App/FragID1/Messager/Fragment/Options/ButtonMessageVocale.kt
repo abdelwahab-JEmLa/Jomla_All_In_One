@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
+import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
@@ -53,10 +54,16 @@ fun ButtonMessageVocale(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
     focusedValuesGetter: FocusedValuesGetter = viewModel.aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
 ) {
-    val relative_M8BonVent =
-        focusedValuesGetter.active_Central_Values.replay_Passed_AuMessage_M8BonVent
+    val relative_M17Message = focusedValuesGetter.active_Central_Values.m17Message_avec_BonVen
+
+    val relative_M8BonVent = relative_M17Message?.parent_M8BonVent_KeyID?.let {
+        repositorysMainGetter.find_M8BonVent_By_KeyID(
+            it
+        )
+    }
 
     val active_Current_M9AppCompt = aCentralFacade.focusedActiveValuesFacade
         .focusedValuesGetter
@@ -252,15 +259,13 @@ fun ButtonMessageVocale(
                                     )
                                 }
 
-                                if (startResult != null) {
-                                    if (startResult.isFailure) {
-                                        Toast.makeText(
-                                            context,
-                                            "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        return@launch
-                                    }
+                                if (startResult.isFailure) {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur lors du démarrage: ${startResult.exceptionOrNull()?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
                                 }
 
                                 isRecording = true
