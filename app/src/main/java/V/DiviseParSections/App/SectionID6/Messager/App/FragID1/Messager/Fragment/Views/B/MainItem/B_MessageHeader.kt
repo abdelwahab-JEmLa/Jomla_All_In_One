@@ -81,7 +81,7 @@ fun MessageHeader(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                if (parentD_EtateMessageVocale.relativeAuDataBase == M17MessageVocale.RelativeAuDataBase.C3_BonAchate) {
+                if (parentD_EtateMessageVocale.relativeAuDataBase == M17MessageVocale.TypeDeSonRelativeModel.C3_BonAchate) {
                     Text(
                         text = clientName,
                         style = MaterialTheme.typography.titleSmall,
@@ -135,7 +135,7 @@ fun MessageHeader(
                 }
 
                 // Display current state information
-                val currentState = etatesChildKeyIDsList.maxByOrNull { it.timestamps }
+                val currentState = etatesChildKeyIDsList.maxByOrNull { it.creationTimestamps }
                 currentState?.let { state ->
                     val stateText = when (state.etate) {
                         M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT -> "⏺️ En cours d'enregistrement"

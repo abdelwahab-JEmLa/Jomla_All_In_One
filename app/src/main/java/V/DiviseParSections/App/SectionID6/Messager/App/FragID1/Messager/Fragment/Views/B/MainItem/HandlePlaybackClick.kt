@@ -42,7 +42,7 @@ fun handlePlaybackClick(
                                     val newEtate = M17MessageVocale(
                                         parentMessageVID = parentD_EtateMessageVocale.parentMessageVID,
                                         etate = M17MessageVocale.Etate.ECOUTE,
-                                        timestamps = datesHandler.getCurrentTimestamps(),
+                                        creationTimestamps = datesHandler.getCurrentTimestamps(),
                                         parent_M9AppCompt_KeyID = parentD_EtateMessageVocale.parent_M9AppCompt_KeyID,
                                         parent_M9AppCompt_DebugInfos = parentD_EtateMessageVocale.parent_M9AppCompt_DebugInfos,
                                         relativeAuDataBase = parentD_EtateMessageVocale.relativeAuDataBase,

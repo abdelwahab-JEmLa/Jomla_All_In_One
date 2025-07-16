@@ -81,7 +81,7 @@ fun B_ItemMessagesVocale(
     }
     val isSent = list_D_EtateMessageVocale.any { it.etate == M17MessageVocale.Etate.ENVOYER }
 
-    val latestTimestamp = list_D_EtateMessageVocale.maxByOrNull { it.timestamps }?.timestamps ?: 0L
+    val latestTimestamp = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.creationTimestamps ?: 0L
 
     val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
         audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_D_EtateMessageVocale.parentMessageVID && playbackProgress.isPlaying
@@ -179,7 +179,7 @@ fun B_ItemMessagesVocale(
                             clientName = clientName,
                             vendorName = vendorName,
                             messageVID = relative_D_EtateMessageVocale.parentMessageVID,
-                            timestamp = relative_D_EtateMessageVocale.timestamps,
+                            timestamp = relative_D_EtateMessageVocale.creationTimestamps,
                             datesHandler = datesHandler,
                             parentD_EtateMessageVocale = relative_D_EtateMessageVocale,
                             etatesChildKeyIDsList = list_D_EtateMessageVocale,

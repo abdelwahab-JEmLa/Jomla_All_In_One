@@ -3,7 +3,6 @@ package V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.centralRef
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter.Companion.getPushFireBase
 import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,14 +12,12 @@ data class M17MessageVocale(
     var dernierTimeTampsSynchronisationAvecFireBase: Long = System.currentTimeMillis(),
     var creationTimestamps: Long = 0,
 
-    //Forging Keys
-    var relativeAuDataBase: RelativeAuDataBase = RelativeAuDataBase.NONE,
-
-    val parentMessageVID: Long = 0,
-
     //Infos De Base
     var etate: Etate = Etate.EN_COURT_ENREGESTREMENT,
-    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
+    var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.NONE,
+
+    val parentMessageVID: Long = 0,
+    val nomDeSonOriginaleFichie: String = "",
 
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
     val parent_M9AppCompt_KeyID: String = "null",
@@ -33,9 +30,6 @@ data class M17MessageVocale(
     //---------------------------------ForgingKeys.M9AppCompt----------------------------------------------------------------------------------------------------------------------------------
 
     //Etates Mutable
-    val nomDeSonOriginaleFichie: String = "",
-
-    // Section keyFireBase et dernierFireBaseUpdateTimestamps
 ) {
     fun getDebugInfos(): String {
         return buildString {
@@ -44,7 +38,7 @@ data class M17MessageVocale(
         }
     }
 
-    enum class RelativeAuDataBase() {
+    enum class TypeDeSonRelativeModel() {
         NONE,
         C3_BonAchate,
     }

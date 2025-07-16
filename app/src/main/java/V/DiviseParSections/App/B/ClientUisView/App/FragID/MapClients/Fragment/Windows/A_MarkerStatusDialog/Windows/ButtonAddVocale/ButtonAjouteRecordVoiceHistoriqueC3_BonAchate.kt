@@ -155,9 +155,9 @@ fun ButtonAjouteRecordVoiceHistoriqueC3_BonAchate(
                                     parent_M9AppCompt_DebugInfos = activeCompt.get_DebugInfos(),
                                     parentMessageVID = parentMessageVID,
                                     etate = M17MessageVocale.Etate.ENVOYER,
-                                    timestamps = DatesHandler().getCurrentTimestamps(),
+                                    creationTimestamps = DatesHandler().getCurrentTimestamps(),
                                     relativeAuDataBase =
-                                        M17MessageVocale.RelativeAuDataBase.C3_BonAchate,
+                                        M17MessageVocale.TypeDeSonRelativeModel.C3_BonAchate,
                                     parent_M8BonVent_KeyID = currentTransaction?.keyID ?: "null"
                                 )
 

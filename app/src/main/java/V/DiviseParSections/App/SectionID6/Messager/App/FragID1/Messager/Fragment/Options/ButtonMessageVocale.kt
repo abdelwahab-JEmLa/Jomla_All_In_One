@@ -195,7 +195,7 @@ fun ButtonMessageVocale(
                                     if (uploadResult.isSuccess) {
                                         val updatedEtate = etate.copy(
                                             etate = M17MessageVocale.Etate.ENVOYER,
-                                            timestamps = datesHandler.getCurrentTimestamps()
+                                            creationTimestamps = datesHandler.getCurrentTimestamps()
                                         )
                                         viewModel.addOrUpdateData(updatedEtate)
 
@@ -253,7 +253,7 @@ fun ButtonMessageVocale(
                                         parent_M9AppCompt_DebugInfos = "Non Definie",
                                         parentMessageVID = parentMessageVID,
                                         etate = M17MessageVocale.Etate.EN_COURT_ENREGESTREMENT,
-                                        timestamps = datesHandler.getCurrentTimestamps()
+                                        creationTimestamps = datesHandler.getCurrentTimestamps()
                                     )
 
                                 viewModel.addOrUpdateData(default_M17Message)
