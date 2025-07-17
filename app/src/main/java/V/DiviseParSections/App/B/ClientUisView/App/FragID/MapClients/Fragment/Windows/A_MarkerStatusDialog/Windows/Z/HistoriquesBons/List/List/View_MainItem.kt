@@ -3,10 +3,11 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
+import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.creeStrDate_Et_Time_Depuit_CreationTT
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,10 +59,12 @@ import kotlinx.coroutines.launch
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
+    focusedValuesGetter: FocusedValuesGetter = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter,
     relative_M8BonVent: M8BonVent,
-    repositorysMainGetter: RepositorysMainGetter=viewModel.aCentralFacade.repositorysMainGetter
+    repositorysMainGetter: RepositorysMainGetter = viewModel.aCentralFacade.repositorysMainGetter
 ) {
-    val relative_M17Message = repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
+    val relative_M17Message =
+        repositorysMainGetter.find_By_KeyID_M17MessageVocale(relative_M8BonVent.parent_M17Message_KeyID)
 
     // Check if M17Message has an original file to play
     val hasVoiceMessage = relative_M17Message?.nomDeSonOriginaleFichie != null &&
@@ -140,7 +143,7 @@ fun View_MainItem(
 
     Card(
         modifier = Modifier
-            .getSemanticsTag(relative_M17Message,"")
+            .getSemanticsTag(relative_M17Message, "")
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
@@ -150,13 +153,18 @@ fun View_MainItem(
     ) {
         Box(
             modifier = Modifier
-                .getSemanticsTag(relative_M17Message,"relative_M17Message")
-                .getSemanticsTag(relative_M8BonVent,"relative_M8BonVent")
-                .getSemanticsTag(repo17MessageVocaleData,"repo17MessageVocale")  // Fixed: Use properly observed data
-                .getSemanticsTag(repo17MessageVocaleData
-                    .sortedByDescending { it.creationTimestamps }
-                    .map { it.getDebugInfos() },
-                    "repo17MessageVocale_mapped") // Fixed: Use proper data source and cleaner debug tag
+                .getSemanticsTag(relative_M17Message, "relative_M17Message")
+                .getSemanticsTag(relative_M8BonVent, "relative_M8BonVent")
+                .getSemanticsTag(
+                    repo17MessageVocaleData,
+                    "repo17MessageVocale"
+                )  // Fixed: Use properly observed data
+                .getSemanticsTag(
+                    repo17MessageVocaleData
+                        .sortedByDescending { it.creationTimestamps }
+                        .map { it.getDebugInfos() },
+                    "repo17MessageVocale_mapped"
+                ) // Fixed: Use proper data source and cleaner debug tag
                 .fillMaxWidth()
         ) {
             // Delete button at top start
@@ -208,32 +216,50 @@ fun View_MainItem(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                 }
+                val rel_8 =
+                    Box {
+                        IconButton(
+                            modifier = Modifier
+                                .getSemanticsTag(
+                                    "d", "d"
+                                ),
+                            onClick = { showDropdownMenu = true }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Options de statut",
+                                tint = Color.White
+                            )
+                        }
 
-                Box {
-                    IconButton(
-                        onClick = { showDropdownMenu = true }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Options de statut",
-                            tint = Color.White
+                        StatusDropdownMenu(
+                            relative_M8BonVent = relative_M8BonVent,
+                            viewModel = viewModel,
+                            expanded = showDropdownMenu,
+                            onDismissRequest = { showDropdownMenu = false },
+                            onStatusSelected = { status ->
+                                val relative_M17MessageVocale = M17MessageVocale
+                                    .get_default()
+                                    .copy(
+                                        parent_M8BonVent_KeyID = relative_M8BonVent.keyID,
+                                        parent_M9AppCompt_DebugInfos = relative_M8BonVent.get_DebugInfos()
+                                    )
+
+                                val new = focusedValuesGetter.active_Central_Values.copy(
+                                    m17Message_avec_BonVen = relative_M17MessageVocale ,
+                                )
+                                focusedValuesGetter.update_activeCentralValues(new)
+
+                                val updatedBonVent = relative_M8BonVent.copy(
+                                    etateActuellementEst = status ,
+                                )
+
+                                viewModel.getter.repo8BonVent.upsert(updatedBonVent)
+
+                                selectedStatus = status
+                            }
                         )
                     }
-
-                    StatusDropdownMenu(
-                        relative_M8BonVent = relative_M8BonVent,
-                        viewModel = viewModel,
-                        expanded = showDropdownMenu,
-                        onDismissRequest = { showDropdownMenu = false },
-                        onStatusSelected = { status ->
-                            selectedStatus = status
-                            val updatedBonVent = relative_M8BonVent.copy(
-                                etateActuellementEst = status
-                            )
-                            viewModel.getter.repo8BonVent.upsert(updatedBonVent)
-                        }
-                    )
-                }
             }
 
             Column(
@@ -303,42 +329,57 @@ fun View_MainItem(
                                 coroutineScope.launch {
                                     when {
                                         isCurrentlyPlaying -> {
-                                            val stopResult = audioRecorderAndPlayHandler.stopPlayback()
+                                            val stopResult =
+                                                audioRecorderAndPlayHandler.stopPlayback()
                                             if (stopResult.isFailure) {
-                                                val errorMessage = "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
-                                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                                val errorMessage =
+                                                    "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}"
+                                                Toast.makeText(
+                                                    context,
+                                                    errorMessage,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         }
+
                                         else -> {
                                             // Use the original file name from M17Message instead of vocaleKeyID
-                                            val audioSource = relative_M17Message?.nomDeSonOriginaleFichie ?: ""
-                                            val playResult = audioRecorderAndPlayHandler.startPlayback(
-                                                context = context,
-                                                parentMessageVID = relative_M8BonVent.vid,
-                                                firebaseUrl = audioSource, // Use the original file name/path
-                                                onPlaybackComplete = {
-                                                    if (!relative_M8BonVent.sonVocaleEstEcoute) {
-                                                        val currentTimestamp = datesHandler.getCurrentTimestamps()
-                                                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                                            relative_M8BonVent.copy(
-                                                                sonVocaleEstEcoute = true,
-                                                                sonEcoutementEstFaitAutimestamps = currentTimestamp
-                                                            )
-                                                        ) {}
+                                            val audioSource =
+                                                relative_M17Message?.nomDeSonOriginaleFichie ?: ""
+                                            val playResult =
+                                                audioRecorderAndPlayHandler.startPlayback(
+                                                    context = context,
+                                                    parentMessageVID = relative_M8BonVent.vid,
+                                                    firebaseUrl = audioSource, // Use the original file name/path
+                                                    onPlaybackComplete = {
+                                                        if (!relative_M8BonVent.sonVocaleEstEcoute) {
+                                                            val currentTimestamp =
+                                                                datesHandler.getCurrentTimestamps()
+                                                            viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
+                                                                relative_M8BonVent.copy(
+                                                                    sonVocaleEstEcoute = true,
+                                                                    sonEcoutementEstFaitAutimestamps = currentTimestamp
+                                                                )
+                                                            ) {}
+                                                        }
+                                                    },
+                                                    onPlaybackError = { errorMessage ->
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Erreur de lecture du message vocal: $errorMessage",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
                                                     }
-                                                },
-                                                onPlaybackError = { errorMessage ->
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Erreur de lecture du message vocal: $errorMessage",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
-                                                }
-                                            )
+                                                )
 
                                             if (playResult.isFailure) {
-                                                val errorMessage = "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
-                                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                                val errorMessage =
+                                                    "Erreur lors du démarrage: ${playResult.exceptionOrNull()?.message}"
+                                                Toast.makeText(
+                                                    context,
+                                                    errorMessage,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
                                             }
                                         }
                                     }
