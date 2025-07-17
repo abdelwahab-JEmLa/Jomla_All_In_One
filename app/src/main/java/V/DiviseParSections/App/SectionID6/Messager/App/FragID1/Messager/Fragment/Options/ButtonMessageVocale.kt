@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.FocusedValues.Base.Get.Download.FocusedValuesGetter
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
@@ -149,8 +150,18 @@ fun ButtonMessageVocale(
                 )
             }
 
-            // FAB (right side)
+            val update_M8BonVent = relative_M8BonVent?.copy(
+                parent_M17Message_KeyID = relative_M17Message.keyID,
+                parent_M17Message_DebugInfos = relative_M17Message.getDebugInfos(),
+            )
+
             FloatingActionButton(
+                modifier = Modifier
+                    .getSemanticsTag(relative_M8BonVent, "relative_M8BonVent")
+                    .getSemanticsTag(update_M8BonVent, "update_M8")
+                    .getSemanticsTag(relative_M17Message?.getDebugInfos(), "relative_M17Message")
+
+                    .size(56.dp),
                 onClick = {
                     if (!hasRecordPermission) {
                         permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -158,83 +169,7 @@ fun ButtonMessageVocale(
                     }
 
                     coroutineScope.launch {
-                        if (isRecording) {
-                            try {
-                                val stopResult = audioHandler.stopRecording()
-
-                                if (stopResult.isFailure) {
-                                    Toast.makeText(
-                                        context,
-                                        "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    return@launch
-                                }
-
-                                isRecording = false
-                                recordingTimeSeconds = 0
-
-                                val recordedFile = stopResult.getOrThrow()
-
-                                Toast.makeText(
-                                    context,
-                                    "Enregistrement sauvegardé localement",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
-                                currentRecordingEtate?.let { etate ->
-                                    isUploading = true
-
-                                    val uploadResult = audioHandler.uploadAudioFile(
-                                        recordedFile,
-                                        etate.parentMessageVID
-                                    )
-
-                                    isUploading = false
-
-                                    if (uploadResult.isSuccess) {
-                                        val updatedEtate = etate.copy(
-                                            etate = M17MessageVocale.Etate.ENVOYER,
-                                            creationTimestamps = datesHandler.getCurrentTimestamps()
-                                        )
-                                        viewModel.addOrUpdateData(updatedEtate)
-
-                                        if (relative_M8BonVent != null) {
-                                            aCentralFacade.repositorysMainSetter.update_M8BonVent(
-                                                relative_M8BonVent.copy(
-                                                    parent_M17Message_KeyID = relative_M17Message.keyID,
-                                                    parent_M17Message_DebugInfos = relative_M17Message.getDebugInfos(),
-                                                )
-                                            )
-                                        }
-
-                                        Toast.makeText(
-                                            context,
-                                            "Message vocal envoyé via Telegram!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-
-                                currentRecordingEtate = null
-
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Erreur lors de l'arrêt de l'enregistrement: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                isRecording = false
-                                currentRecordingEtate = null
-                            }
-
-                        } else {
+                        if (!isRecording) {
                             try {
                                 val active_Current_M9AppCompt_KeyId =
                                     active_Current_M9AppCompt?.keyID ?: "null"
@@ -244,9 +179,9 @@ fun ButtonMessageVocale(
 
                                 val default_M17Message = M17MessageVocale.get_default()
                                     .copy(
-                                        parent_M8BonVent_KeyID = relative_M8BonVent?.keyID
+                                        parent_M8BonVent_KeyID = relative_M17Message?.parent_M8BonVent_KeyID
                                             ?: "null",
-                                        parent_M8BonVent_DebugInfos = relative_M8BonVent?.get_DebugInfos()
+                                        parent_M8BonVent_DebugInfos = relative_M17Message?.getDebugInfos()
                                             ?: "null",
                                         nomDeSonOriginaleFichie = originalFileName,
                                         parent_M9AppCompt_KeyID = active_Current_M9AppCompt_KeyId,
@@ -294,10 +229,83 @@ fun ButtonMessageVocale(
                                 isRecording = false
                                 currentRecordingEtate = null
                             }
+                        } else {
+
+
+                            try {
+                                val stopResult = audioHandler.stopRecording()
+
+                                if (stopResult.isFailure) {
+                                    Toast.makeText(
+                                        context,
+                                        "Erreur lors de l'arrêt: ${stopResult.exceptionOrNull()?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
+                                }
+
+                                isRecording = false
+                                recordingTimeSeconds = 0
+
+                                val recordedFile = stopResult.getOrThrow()
+
+                                Toast.makeText(
+                                    context,
+                                    "Enregistrement sauvegardé localement",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                currentRecordingEtate?.let { etate ->
+                                    isUploading = true
+
+                                    val uploadResult = audioHandler.uploadAudioFile(
+                                        recordedFile,
+                                        etate.parentMessageVID
+                                    )
+
+                                    isUploading = false
+
+                                    if (uploadResult.isSuccess) {
+                                        val updatedEtate = etate.copy(
+                                            etate = M17MessageVocale.Etate.ENVOYER,
+                                            creationTimestamps = datesHandler.getCurrentTimestamps()
+                                        )
+                                        
+                                        aCentralFacade.repositorysMainSetter.upsert_M17MessageVocale(updatedEtate)
+
+                                        update_M8BonVent?.let { bonVent ->
+                                            aCentralFacade.repositorysMainSetter.update_M8BonVent(bonVent)
+                                        }
+
+                                        Toast.makeText(
+                                            context,
+                                            "Message vocal envoyé via Telegram!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Erreur lors de l'envoi: ${uploadResult.exceptionOrNull()?.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+
+                                currentRecordingEtate = null
+
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors de l'arrêt de l'enregistrement: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                isRecording = false
+                                currentRecordingEtate = null
+                            }
                         }
+
                     }
                 },
-                modifier = Modifier.size(56.dp),
                 containerColor = when {
                     isUploading -> Color(0xFF4CAF50)
                     isRecording -> Color(0xFFFF5722)

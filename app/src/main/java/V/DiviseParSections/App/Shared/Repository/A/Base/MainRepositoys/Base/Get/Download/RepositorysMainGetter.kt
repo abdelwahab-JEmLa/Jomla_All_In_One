@@ -73,10 +73,12 @@ class RepositorysMainGetter(
     val loadingProgress: Float? by derivedStateOf { _loadingProgress.floatValue }
 
     //--------------M8BonVent----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M8BonVent_By_KeyID(keyID: String): M8BonVent? = repo8BonVent.datasValue.find { it.keyID == keyID }
+    fun find_M8BonVent_By_KeyID(keyID: String): M8BonVent? =
+        repo8BonVent.datasValue.find { it.keyID == keyID }
 
     //--------------M9AppCompt----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_M9AppCompt_By_KeyID(keyID: String): Z_AppCompt? = repo9AppCompt.datasValue.find { it.keyID == keyID }
+    fun find_M9AppCompt_By_KeyID(keyID: String): Z_AppCompt? =
+        repo9AppCompt.datasValue.find { it.keyID == keyID }
 
     //--------------M13----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun m13Tarification_By_KeyID(keyID: String): M13TarificationInfos? =
@@ -192,6 +194,7 @@ class RepositorysMainGetter(
         inline fun String?.ifNotNullOrEmpty(block: () -> Unit) {
             if (!this.isNullOrEmpty()) block()
         }
+
 
         inline fun Boolean.ifTrue(block: () -> Unit) {
             if (this) block()

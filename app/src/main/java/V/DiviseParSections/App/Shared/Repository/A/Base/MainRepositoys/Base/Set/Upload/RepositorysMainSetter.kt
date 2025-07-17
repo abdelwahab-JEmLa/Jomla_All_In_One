@@ -22,7 +22,10 @@ import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.M1
 import V.DiviseParSections.App.Shared.Repository.Repo14VentPeriode.Repository.Repo14VentPeriode
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.M15Grossist
 import V.DiviseParSections.App.Shared.Repository.Repo15Grossist.Repository.Repo15Grossist
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.M17MessageVocale
+import V.DiviseParSections.App.Shared.Repository.Repo17MessageVocale.Repository.Repo17MessageVocale
 import V.DiviseParSections.App.Shared.Repository.RepoM1Produit
+import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.C.Update.addOrUpdateData
 import com.google.firebase.database.DatabaseReference
 
 class RepositorysMainSetter(
@@ -38,6 +41,7 @@ class RepositorysMainSetter(
     private val repo13TarificationInfos: Repo13TarificationInfos,
     private val repo14VentPeriode: Repo14VentPeriode,
     private val repo15Grossist: Repo15Grossist,
+    private val repo17MessageVocale: Repo17MessageVocale,
 ) {
     private val get = focusedVarsHandlerFacade.focusedValuesGetter
 
@@ -67,7 +71,8 @@ class RepositorysMainSetter(
         clientOperations.ouvreExistedDataEtNavigatePanie(keyID)
 
     fun deleteAddMultiClients() = clientOperations.deleteAddMultiClients()
-    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) = produitOperations.deleteAddMultiDatas(list_M1Produit)
+    fun deleteAddMultiDatas(list_M1Produit: List<ArticlesBasesStatsTable>) =
+        produitOperations.deleteAddMultiDatas(list_M1Produit)
 
 
     fun upsertVentCouleurOperationFacade(
@@ -93,9 +98,10 @@ class RepositorysMainSetter(
         if (m1produitInfos != null) {
             updateListRelativeVentCouleurPrixVent(
                 repo10OperationVentCouleur,
-                filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod ,
+                filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali = focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod,
                 m1produitInfos.keyID,
-                newPrix)
+                newPrix
+            )
         }
     }
 
@@ -106,12 +112,12 @@ class RepositorysMainSetter(
     }
 
 
-
     fun toggleEtateDeliveryNonTrouveVentOuFacade(produitKey: String) =
         toggleEtateDeliveryNonTrouveVentOu(
-            repo10OperationVentCouleur=repo10OperationVentCouleur,
-            filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali= focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod ,
-            produitKey=produitKey)
+            repo10OperationVentCouleur = repo10OperationVentCouleur,
+            filtered_ListM10Vent_BY_Curr_M14VentPeriod_AND_travailleChezGrossisst3Ali = focusedVarsHandlerFacade.focusedValuesGetter.filtered_ListM10Vent_BY_Curr_M14VentPeriod,
+            produitKey = produitKey
+        )
 
     fun addAuRepoM9AppComptParFacade(defaultGeneratedCompt: Z_AppCompt) {
         repo9AppCompt.addNew(defaultGeneratedCompt)
@@ -130,15 +136,26 @@ class RepositorysMainSetter(
     fun update_M1Produit(data: ArticlesBasesStatsTable) = repoM1Produit.update(data)
 
     //------------repo3 -------------------------------------------------------------------------------------------------------------------------------------
-    fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) = repo10OperationVentCouleur.add_New(data)
-    fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) = repo10OperationVentCouleur.update_If_Exist(data)
+    fun add_New_M10OperationVentCouleur(data: M10OperationVentCouleur) =
+        repo10OperationVentCouleur.add_New(data)
+
+    fun m10OperationVentCouleur_update_IfExist(data: M10OperationVentCouleur) =
+        repo10OperationVentCouleur.update_If_Exist(data)
+
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun addNew_M8BonVent(data: M8BonVent) = repo8BonVent.addNew(data)
     fun update_M8BonVent(data: M8BonVent) = repo8BonVent.updateIfExist(data)
-    fun upsertM8BonVent(data: M8BonVent) { repo8BonVent.upsert(data) }
-    fun delete_M8BonVent(data: M8BonVent) { repo8BonVent.delete(data) }
+    fun upsertM8BonVent(data: M8BonVent) {
+        repo8BonVent.upsert(data)
+    }
+
+    fun delete_M8BonVent(data: M8BonVent) {
+        repo8BonVent.delete(data)
+    }
+
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
     fun update_M9AppCompt(data: Z_AppCompt) = repo9AppCompt.update(data)
+
     //--------------------------------------m10--------------------------------------------------------------------------------------------------------
     fun m10_delete(ventOperationsForProduct: List<M10OperationVentCouleur>) {
         ventOperationsForProduct.map {
@@ -148,19 +165,23 @@ class RepositorysMainSetter(
 
     //------------repo11 -------------------------------------------------------------------------------------------------------------------------------------
     fun repo11AchatOperation_add_New(data: M11AchatOperation) = repo11AchatOperation.add_New(data)
-    fun repo11AchatOperation_deleteMulti(datas:List<M11AchatOperation> ) = repo11AchatOperation.deleteMulti(datas)
-    fun repo11AchatOperation_update_If_Exist(data: M11AchatOperation) = repo11AchatOperation.update_If_Exist(data)
+    fun repo11AchatOperation_deleteMulti(datas: List<M11AchatOperation>) =
+        repo11AchatOperation.deleteMulti(datas)
+
+    fun repo11AchatOperation_update_If_Exist(data: M11AchatOperation) =
+        repo11AchatOperation.update_If_Exist(data)
+
     //------------repo8BonVent -------------------------------------------------------------------------------------------------------------------------------------
-    fun update_M14VentPeriode(data: M14VentPeriode) =  repo14VentPeriode.update_If_Exist(data)
+    fun update_M14VentPeriode(data: M14VentPeriode) = repo14VentPeriode.update_If_Exist(data)
+
     //------------Funcs.Repo15Grossist -------------------------------------------------------------------------------------------------------------------------------------
     fun repo15Grossist_add_New(data: M15Grossist) = repo15Grossist.add_New(data)
     fun repo15Grossist_update_If_Exist(data: M15Grossist) = repo15Grossist.update_If_Exist(data)
+    fun repo15Grossist_deleteMulti(datas: List<M15Grossist>? = null) =
+        repo15Grossist.deleteMulti(datas)
 
-    fun repo15Grossist_deleteMulti(datas:List<M15Grossist>?=null)= repo15Grossist.deleteMulti(datas)
-
-    //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-
+    //------------R17 -------------------------------------------------------------------------------------------------------------------------------------
+    fun upsert_M17MessageVocale(data: M17MessageVocale) = repo17MessageVocale.addOrUpdateData(data)
 
     companion object {
         fun getListDesParentKeys(keyByParent: String): Map<String, String> =
@@ -172,5 +193,6 @@ class RepositorysMainSetter(
         fun genereUnPushKeyFireBase(ref: DatabaseReference): String {
             return ref.push().key ?: throw IllegalStateException("Failed to generate Firebase key")
         }
+
     }
 }

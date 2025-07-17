@@ -79,7 +79,7 @@ data class M17MessageVocale(
 
     //Infos De Base
     var etate: Etate = Etate.EN_COURT_ENREGESTREMENT,
-    var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.NONE,
+    var relativeAuDataBase: TypeDeSonRelativeModel = TypeDeSonRelativeModel.C3_BonAchate,
 
     val parentMessageVID: Long = 0,
     val nomDeSonOriginaleFichie: String = "null.3gp",
@@ -100,9 +100,9 @@ data class M17MessageVocale(
         return buildString {
             append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
             append(" To ")
-            append(etate)
-            append(" To ")
             append(creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps))
+            append(" To ")
+            append(etate)
         }
     }
 
