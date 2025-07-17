@@ -246,13 +246,14 @@ fun View_MainItem(
                                     )
 
                                 val new = focusedValuesGetter.active_Central_Values.copy(
-                                    m17Message_avec_BonVen = relative_M17MessageVocale ,
+                                    m17Message_avec_BonVen = relative_M17MessageVocale,
                                 )
                                 focusedValuesGetter.update_activeCentralValues(new)
 
-                                val updatedBonVent = relative_M8BonVent.copy(
-                                    etateActuellementEst = status ,
-                                )
+                                val updatedBonVent = relative_M8BonVent
+                                    .copy(
+                                        etateActuellementEst = status,
+                                    )
 
                                 viewModel.getter.repo8BonVent.upsert(updatedBonVent)
 

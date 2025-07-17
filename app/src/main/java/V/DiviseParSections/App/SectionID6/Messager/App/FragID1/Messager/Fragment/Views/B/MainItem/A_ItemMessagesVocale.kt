@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
 import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
@@ -46,7 +47,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun B_ItemMessagesVocale(
-    relative_D_EtateMessageVocale: M17MessageVocale,
+    relative_M17MessageVocale: M17MessageVocale,
     viewModel: ViewModelMessageur,
     aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     repositorysMainGetter: RepositorysMainGetter = aCentralFacade.repositorysMainGetter,
@@ -54,9 +55,8 @@ fun B_ItemMessagesVocale(
     uiState: UiState,
 ) {
     val activeCurrent_M9AppCompt = aCentralFacade.focusedActiveValuesFacade.focusedValuesGetter.active_Current_M9AppCompt
-    val relative_M9AppCompt = repositorysMainGetter.find_M9AppCompt_By_KeyID(relative_D_EtateMessageVocale.parent_M9AppCompt_KeyID)
-    val relative_M8BonVent = repositorysMainGetter.find_M8BonVent_By_KeyID(relative_D_EtateMessageVocale.parent_M8BonVent_KeyID)
-
+    val relative_M9AppCompt = repositorysMainGetter.find_M9AppCompt_By_KeyID(relative_M17MessageVocale.parent_M9AppCompt_KeyID)
+    val relative_M8BonVent = repositorysMainGetter.find_M8BonVent_By_KeyID(relative_M17MessageVocale.parent_M8BonVent_KeyID)
 
     val its_ViewMessage_Du_Active_M9AppCompt = relative_M9AppCompt?.keyID == activeCurrent_M9AppCompt?.keyID
 
@@ -67,12 +67,8 @@ fun B_ItemMessagesVocale(
 
     val playbackProgress by audioHandler.playbackProgress.collectAsState()
 
-    val relatedBonAchate = remember(relative_D_EtateMessageVocale.parent_M8BonVent_KeyID, uiState.c3_BonAchate) {
-        uiState.c3_BonAchate.find { it.keyID == relative_D_EtateMessageVocale.parent_M8BonVent_KeyID }
-    }
-
-    val clientName = relatedBonAchate?.parent_M2Client_DebugInfos ?: "Client inconnu"
-    val vendorName = relative_D_EtateMessageVocale.parent_M9AppCompt_DebugInfos.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
+    val clientName = relative_M8BonVent?.parent_M2Client_DebugInfos ?: "Client inconnu"
+    val vendorName = relative_M17MessageVocale.parent_M9AppCompt_DebugInfos.takeIf { it.isNotEmpty() } ?: "Vendeur inconnu"
 
     val isListened = list_D_EtateMessageVocale.any { it.etate == M17MessageVocale.Etate.ECOUTE }
     val isViewed = list_D_EtateMessageVocale.any { it.etate == M17MessageVocale.Etate.VUE }
@@ -84,21 +80,21 @@ fun B_ItemMessagesVocale(
     val latestTimestamp = list_D_EtateMessageVocale.maxByOrNull { it.creationTimestamps }?.creationTimestamps ?: 0L
 
     val isCurrentlyPlaying = remember(playbackProgress.isPlaying, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
-        audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_D_EtateMessageVocale.parentMessageVID && playbackProgress.isPlaying
+        audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M17MessageVocale.parentMessageVID && playbackProgress.isPlaying
     }
 
     val isCurrentlyDownloading = remember(playbackProgress.isDownloading, audioHandler.getCurrentPlaybackSession()?.parentMessageVID) {
-        audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_D_EtateMessageVocale.parentMessageVID && playbackProgress.isDownloading
+        audioHandler.getCurrentPlaybackSession()?.parentMessageVID == relative_M17MessageVocale.parentMessageVID && playbackProgress.isDownloading
     }
 
-    LaunchedEffect(relative_D_EtateMessageVocale.parentMessageVID, isCurrentlyPlaying) {
+    LaunchedEffect(relative_M17MessageVocale.parentMessageVID, isCurrentlyPlaying) {
         if (isCurrentlyPlaying) {
             try {
                 while (isCurrentlyPlaying && audioHandler.isPlaying()) {
                     audioHandler.updatePlaybackProgress()
                     delay(100)
 
-                    if (audioHandler.getCurrentPlaybackSession()?.parentMessageVID != relative_D_EtateMessageVocale.parentMessageVID) {
+                    if (audioHandler.getCurrentPlaybackSession()?.parentMessageVID != relative_M17MessageVocale.parentMessageVID) {
                         break
                     }
                 }
@@ -108,11 +104,11 @@ fun B_ItemMessagesVocale(
         }
     }
 
-    DisposableEffect(relative_D_EtateMessageVocale.parentMessageVID) {
+    DisposableEffect(relative_M17MessageVocale.parentMessageVID) {
         onDispose {
             try {
                 val currentSession = audioHandler.getCurrentPlaybackSession()
-                if (currentSession?.parentMessageVID == relative_D_EtateMessageVocale.parentMessageVID) {
+                if (currentSession?.parentMessageVID == relative_M17MessageVocale.parentMessageVID) {
                     audioHandler.stopPlayback()
                 }
             } catch (e: Exception) {
@@ -138,6 +134,7 @@ fun B_ItemMessagesVocale(
             ) {
                 Card(
                     modifier = Modifier
+                        .getSemanticsTag(relative_M17MessageVocale,"relative_M17MessageVocale")
                         .wrapContentWidth()
                         .padding(
                             start = if (its_ViewMessage_Du_Active_M9AppCompt) 40.dp else 0.dp,
@@ -178,10 +175,10 @@ fun B_ItemMessagesVocale(
                             viewModel = viewModel,
                             clientName = clientName,
                             vendorName = vendorName,
-                            messageVID = relative_D_EtateMessageVocale.parentMessageVID,
-                            timestamp = relative_D_EtateMessageVocale.creationTimestamps,
+                            messageVID = relative_M17MessageVocale.parentMessageVID,
+                            timestamp = relative_M17MessageVocale.creationTimestamps,
                             datesHandler = datesHandler,
-                            parentD_EtateMessageVocale = relative_D_EtateMessageVocale,
+                            parentD_EtateMessageVocale = relative_M17MessageVocale,
                             etatesChildKeyIDsList = list_D_EtateMessageVocale,
                             isFromActiveAccount = its_ViewMessage_Du_Active_M9AppCompt
                         )
@@ -204,7 +201,7 @@ fun B_ItemMessagesVocale(
 
                             isSent -> {
                                 AudioPlayerControls(
-                                    parentD_EtateMessageVocale = relative_D_EtateMessageVocale,
+                                    parentD_EtateMessageVocale = relative_M17MessageVocale,
                                     viewModel = viewModel,
                                     audioHandler = audioHandler,
                                     isCurrentlyPlaying = isCurrentlyPlaying,

@@ -171,7 +171,7 @@ private fun List_Messages(
             B_ItemMessagesVocale(
                 list_D_EtateMessageVocale = allEtatesForMessage,
                 viewModel = viewModel,
-                relative_D_EtateMessageVocale = latestEtate,
+                relative_M17MessageVocale = latestEtate,
                 uiState = uiState
             )
         }
