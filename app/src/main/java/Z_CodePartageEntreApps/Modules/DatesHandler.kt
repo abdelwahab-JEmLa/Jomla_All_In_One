@@ -15,6 +15,8 @@ data class DateAndTimString(
 
 class DatesHandler {
 
+
+
     fun getCurrentTimestamps(): Long {
         return System.currentTimeMillis()
     }
@@ -262,6 +264,37 @@ class DatesHandler {
             return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
         } catch (e: Exception) {
             return ""
+        }
+    }
+    companion object{
+        fun creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps: Long): String {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = creationTimestamps
+
+            // French day names
+            val dayNames = arrayOf(
+                "dimanche", "lundi", "mardi", "mercredi",
+                "jeudi", "vendredi", "samedi"
+            )
+
+            // Get day of week (Calendar.DAY_OF_WEEK returns 1-7, where 1 = Sunday)
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            val dayName = dayNames[dayOfWeek - 1]
+
+            // Get hour, minute, and second
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
+            val second = calendar.get(Calendar.SECOND)
+
+            // Convert to 12-hour format and determine AM/PM
+            val hour12 = if (hour == 0) 12 else if (hour > 12) hour - 12 else hour
+            val amPm = if (hour < 12) "am" else "pm"
+
+            // Format minute and second with leading zero if needed
+            val minuteStr = if (minute < 10) "0$minute" else "$minute"
+            val secondStr = if (second < 10) "0$second" else "$second"
+
+            return "$dayName $hour12:$minuteStr:$secondStr $amPm"
         }
     }
 }

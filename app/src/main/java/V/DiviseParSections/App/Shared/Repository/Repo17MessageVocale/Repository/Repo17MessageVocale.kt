@@ -5,10 +5,9 @@ import V.DiviseParSections.App.Shared.Repository.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.initializeDataReturn
 import Z_CodePartageEntreApps.DataBase.Juin3.Proto.D_EtateMessageVocale.Repository.B.Init.triggerUpdateFbParTimestampsListener
+import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.creeStrDate_Et_Time_Depuit_CreationTT
 import android.content.Context
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -28,7 +29,16 @@ class Repo17MessageVocale(
 
     val _repoState = MutableStateFlow<RepoState?>(null)
     val repoState: StateFlow<RepoState?> = _repoState.asStateFlow()
-    val datasValue by derivedStateOf { _repoState.value?.modelListFlow?: emptyList() }
+
+    // Fixed: Convert to StateFlow to properly observe state changes in Compose
+    val datasValue: StateFlow<List<M17MessageVocale>> =
+        repoState.map { state ->
+            state?.modelListFlow ?: emptyList()
+        }.stateIn(
+            scope = CoroutineScope(Dispatchers.Main),
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     data class RepoState(
         val modelListFlow: List<M17MessageVocale>,
@@ -89,7 +99,10 @@ data class M17MessageVocale(
     fun getDebugInfos(): String {
         return buildString {
             append("KeyID: ${keyID.takeLast(4).uppercase()}\n")
-            append("etate:{$etate}\n")
+            append(" To ")
+            append(etate)
+            append(" To ")
+            append(creeStrDate_Et_Time_Depuit_CreationTT(creationTimestamps))
         }
     }
 

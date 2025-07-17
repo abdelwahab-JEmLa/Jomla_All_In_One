@@ -83,7 +83,9 @@ class RepositorysMainGetter(
         repo13TarificationInfos.datasValue.find { it.keyID == keyID }
 
     //--------------M17----------------------------------------------------------------------------------------------------------------------------------------------------------
-    fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? = repo17MessageVocale.datasValue?.find { it.keyID == keyID }
+    fun find_By_KeyID_M17MessageVocale(keyID: String): M17MessageVocale? =
+        repo17MessageVocale.datasValue.value.find { it.keyID == keyID }
+
 
     //--------------M2Client----------------------------------------------------------------------------------------------------------------------------------------------------------
     fun get_Last_M8BonVent_Par_M2Client(m2Client: M2Client): M8BonVent? {

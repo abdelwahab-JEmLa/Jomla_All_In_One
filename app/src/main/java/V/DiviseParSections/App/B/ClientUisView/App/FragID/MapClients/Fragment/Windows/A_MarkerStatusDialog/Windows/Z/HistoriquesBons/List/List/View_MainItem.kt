@@ -2,9 +2,11 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Windows.Z.HistoriquesBons.List.ViewModel.E0AfficheHistoriqueTransactionsViewModel
 import V.DiviseParSections.App.Shared.Repository.A.Base.A.Bsetter.Helper.DebugsTests.getSemanticsTag
+import V.DiviseParSections.App.Shared.Repository.A.Base.ACentralFacade
 import V.DiviseParSections.App.Shared.Repository.A.Base.MainRepositoys.Base.Get.Download.RepositorysMainGetter
 import V.DiviseParSections.App.Shared.Repository.ID8BonVent.Repository.M8BonVent
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import Z_CodePartageEntreApps.Modules.DatesHandler.Companion.creeStrDate_Et_Time_Depuit_CreationTT
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun View_MainItem(
     viewModel: E0AfficheHistoriqueTransactionsViewModel,
+    aCentralFacade: ACentralFacade = viewModel.aCentralFacade,
     relative_M8BonVent: M8BonVent,
     repositorysMainGetter: RepositorysMainGetter=viewModel.aCentralFacade.repositorysMainGetter
 ) {
@@ -73,6 +76,9 @@ fun View_MainItem(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val playbackProgress by audioRecorderAndPlayHandler.playbackProgress.collectAsState()
+
+    // Fixed: Properly observe the StateFlow for repo17MessageVocale data
+    val repo17MessageVocaleData by aCentralFacade.repositorysMainGetter.repo17MessageVocale.datasValue.collectAsState()
 
     // State for dropdown menu
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -144,7 +150,13 @@ fun View_MainItem(
     ) {
         Box(
             modifier = Modifier
-                .getSemanticsTag(relative_M17Message,"")
+                .getSemanticsTag(relative_M17Message,"relative_M17Message")
+                .getSemanticsTag(relative_M8BonVent,"relative_M8BonVent")
+                .getSemanticsTag(repo17MessageVocaleData,"repo17MessageVocale")  // Fixed: Use properly observed data
+                .getSemanticsTag(repo17MessageVocaleData
+                    .sortedByDescending { it.creationTimestamps }
+                    .map { it.getDebugInfos() },
+                    "repo17MessageVocale_mapped") // Fixed: Use proper data source and cleaner debug tag
                 .fillMaxWidth()
         ) {
             // Delete button at top start
